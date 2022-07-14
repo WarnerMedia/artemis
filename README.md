@@ -15,3 +15,7 @@ Artemis is made up of 3 primary components: the [backend](./backend), the web UI
 ## License
 
 This repository is released under [the MIT license](https://en.wikipedia.org/wiki/MIT_License).  View the [local license file](./LICENSE).
+
+## CLA Test
+
+This is an edit to test that the CLI Assistant is working
