@@ -18,4 +18,4 @@ jobs:
           ANALYZER_DB_NAME: ${{ secrets.TEST_DB_NAME }}
           ANALYZER_DB_USERNAME: ${{ secrets.TEST_DB_USERNAME }}
           ANALYZER_DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-        run: make -C backend unit-test
+        run: make -C backend unit-test ENV=example
