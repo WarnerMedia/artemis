@@ -1,0 +1,5 @@
+{
+    "name": "ESLint Static Scanner",
+    "type": "static_analysis",
+    "image": "$ECR/artemis/node:14-latest"
+}

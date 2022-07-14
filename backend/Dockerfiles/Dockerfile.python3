@@ -1,0 +1,62 @@
+FROM python:3-alpine
+
+ARG MAINTAINER
+LABEL maintainer=$MAINTAINER
+
+ARG GIT_SECRETS_VER=1.3.0
+ARG TFLINT_VER
+ARG TFLINT_SHA
+ARG SHELL_CHECK_VER
+ARG SHELL_CHECK_SHA
+ARG CFN_VER
+ARG CHECKOV_VER
+
+# Copy Artemis libraries into /src for installation
+RUN mkdir -p /src
+COPY ./libs/ /src/
+
+# trufflehog requires git
+# checkov requires libffi-dev
+RUN apk add -q --no-cache gcc musl-dev git make bash grep xz libffi-dev && \
+    pip install -q --upgrade pip && \
+    pip install -q --no-cache-dir pylint trufflehog boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
+    pip install /src/artemislib && \
+    pip install /src/artemisdb && \
+    rm -r /src
+
+
+WORKDIR /app
+RUN wget -q https://github.com/awslabs/git-secrets/archive/$GIT_SECRETS_VER.tar.gz && \
+    tar xzf $GIT_SECRETS_VER.tar.gz && \
+    cd git-secrets-$GIT_SECRETS_VER && \
+    make install && \
+    git secrets --register-aws --global && \
+    cd .. && \
+    rm -rf git-secrets-$GIT_SECRETS_VER $GIT_SECRETS_VER.tar.gz
+
+# Copy git secret patterns file 
+COPY Dockerfiles/data/secret-patterns /app/secret-patterns
+
+# Target the search to just AWS key IDs and secret key banners
+# This assumes that the repo you are testing git secrets is in the /app directory
+RUN git config --unset-all --global secrets.patterns && \
+    git secrets --add-provider --global -- cat secret-patterns
+
+# Alpine uses musl instead of glibc at runtime.
+RUN apk -q del gcc
+
+# Get ShellCheck Plugin Binary. Only prereq is xz
+RUN echo "$SHELL_CHECK_SHA  shellcheck-v${SHELL_CHECK_VER}.linux.x86_64.tar.xz" > shellcheck_checksum.txt && \
+    wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELL_CHECK_VER}/shellcheck-v${SHELL_CHECK_VER}.linux.x86_64.tar.xz && \
+    sha256sum -c shellcheck_checksum.txt && \
+    tar -xJf shellcheck-v${SHELL_CHECK_VER}.linux.x86_64.tar.xz && \
+    cp "shellcheck-v${SHELL_CHECK_VER}/shellcheck" /usr/bin/ && \
+    rm -rf shellcheck-v${SHELL_CHECK_VER} shellcheck_checksum.txt
+
+# Download and Install TFLint
+RUN echo "$TFLINT_SHA  tflint_linux_amd64.zip" > tflint_checksum.txt && \
+    wget -q https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VER}/tflint_linux_amd64.zip && \
+    sha256sum -c tflint_checksum.txt && \
+    unzip tflint_linux_amd64.zip && \
+    install -b -c -v tflint /usr/bin/ && \
+    rm tflint_linux_amd64.zip tflint tflint_checksum.txt

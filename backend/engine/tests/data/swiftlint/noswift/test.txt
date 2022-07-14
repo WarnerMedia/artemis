@@ -1,0 +1,1 @@
+This is not a swift file, and should be ignored by swiftlint

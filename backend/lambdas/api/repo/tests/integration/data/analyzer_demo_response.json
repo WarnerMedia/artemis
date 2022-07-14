@@ -1,0 +1,529 @@
+{
+  "repo": "testorg/testrepo",
+  "scan_id": "129aebb2-024e-4be4-8130-b7d6fe93e375",
+  "service": "github",
+  "branch": null,
+  "status": "completed",
+  "status_detail": {
+    "plugin_name": null,
+    "plugin_start_time": null,
+    "current_plugin": null,
+    "total_plugins": null
+  },
+  "success": false,
+  "truncated": false,
+  "timestamps": {
+    "queued": "2020-03-16T15:43:52.156412+00:00",
+    "start": "2020-03-16T15:44:02.575738+00:00",
+    "end": "2020-03-16T15:50:41.326042+00:00"
+  },
+  "errors": {
+    "wm-metadata": "No repo ownership data was found for repo testorg/testrepo.",
+    "Bundler Audit Scanner": "No such file or directory @ rb_sysopen - /work/base/Gemfile.lock",
+    "NPM Audit Scanner": [
+      "node/private_repo_dependencies/package.json: Your configured registry (https://registry.npmjs.org/) may not support audit requests, or the audit endpoint may be temporarily unavailable."
+    ],
+    "OWASP Dependency Scanner": [
+      "Java build failed"
+    ],
+    "Sensio Security Scanner": [
+      "composer_install failed"
+    ],
+    "FindSecBugs Scanner Java 7": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ]
+  },
+  "results": {
+    "vulnerabilities": {
+      "bash": {
+        "CVE-2019-18276": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "high",
+          "description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
+          "remediation": ""
+        }
+      },
+      "coreutils": {
+        "CVE-2016-2781": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "medium",
+          "description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
+          "remediation": ""
+        },
+        "CVE-2017-18018": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "medium",
+          "description": "In GNU Coreutils through 8.29, chown-core.c in chown and chgrp does not prevent replacement of a plain file with a symlink during use of the POSIX \"-R -L\" options, which allows local users to modify the ownership of arbitrary files by leveraging a race condition.",
+          "remediation": ""
+        }
+      },
+      "dpkg": {
+        "CVE-2017-8283": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "negligible",
+          "description": "dpkg-source in dpkg 1.3.0 through 1.18.23 is able to use a non-GNU patch program and does not offer a protection mechanism for blank-indented diff hunks, which allows remote attackers to conduct directory traversal attacks via a crafted Debian source package, as demonstrated by use of dpkg-source on NetBSD.",
+          "remediation": ""
+        }
+      },
+      "libgcrypt20": {
+        "CVE-2019-12904": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "medium",
+          "description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
+          "remediation": ""
+        }
+      },
+      "libtasn1-6": {
+        "CVE-2018-1000654": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "negligible",
+          "description": "GNU Libtasn1-4.13 libtasn1-4.13 version libtasn1-4.13, libtasn1-4.12 contains a DoS, specifically CPU usage will reach 100% when running asn1Paser against the POC due to an issue in _asn1_expand_object_id(p_tree), after a long time, the program will be killed. This attack appears to be exploitable via parsing a crafted file.",
+          "remediation": ""
+        }
+      },
+      "tar": {
+        "CVE-2019-9923": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "high",
+          "description": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers.",
+          "remediation": ""
+        },
+        "CVE-2018-20482": {
+          "source": [
+            "docker/Dockerfile"
+          ],
+          "severity": "medium",
+          "description": "GNU Tar through 1.30, when --sparse is used, mishandles file shrinkage during read access, which allows local users to cause a denial of service (infinite read loop in sparse_dump_region in sparse.c) by modifying a file that is supposed to be archived by a different user's process (e.g., a system backup running as root).",
+          "remediation": ""
+        }
+      },
+      "uglify-js-2.4.24": {
+        "CVE-2015-8858": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: swig>uglify-js"
+          ],
+          "severity": "low",
+          "description": "Versions of `uglify-js` prior to 2.6.0 are affected by a regular expression denial of service vulnerability when malicious inputs are passed into the `parse()` method.\n\n\n### Proof of Concept\n\n```\nvar u = require('uglify-js');\nvar genstr = function (len, chr) {\n    var result = \"\";\n    for (i=0; i<=len; i++) {\n        result = result + chr;\n    }\n\n    return result;\n}\n\nu.parse(\"var a = \" + genstr(process.argv[2], \"1\") + \".1ee7;\");\n```\n\n### Results\n```\n$ time node test.js 10000\nreal\t0m1.091s\nuser\t0m1.047s\nsys\t0m0.039s\n\n$ time node test.js 80000\nreal\t0m6.486s\nuser\t0m6.229s\nsys\t0m0.094s\n```",
+          "remediation": "Update to version 2.6.0 or later."
+        }
+      },
+      "timespan-2.3.0": {
+        "CVE-2017-16115": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: forever>timespan"
+          ],
+          "severity": "low",
+          "description": "Affected versions of `timespan` are vulnerable to a regular expression denial of service when parsing dates.\n\nThe amplification for this vulnerability is significant, with 50,000 characters resulting in the event loop being blocked for around 10 seconds.",
+          "remediation": "No direct patch is available for this vulnerability.\n\nCurrently, the best available solution is to use a functionally equivalent alternative package.\n\nIt is also sufficient to ensure that user input is not being passed into `timespan`, or that the maximum length of such user input is drastically reduced. Limiting the input length to 150 characters should be sufficient in most cases."
+        }
+      },
+      "debug-2.2.0": {
+        "CVE-2017-16137": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: helmet>connect>debug",
+            "node/dependency_vulnerability_samples/package.json: helmet>connect>finalhandler>debug"
+          ],
+          "severity": "low",
+          "description": "Affected versions of `debug` are vulnerable to regular expression denial of service when untrusted user input is passed into the `o` formatter. \n\nAs it takes 50,000 characters to block the event loop for 2 seconds, this issue is a low severity issue.",
+          "remediation": "Version 2.x.x: Update to version 2.6.9 or later.\nVersion 3.x.x: Update to version 3.1.0 or later.\n"
+        }
+      },
+      "braces-1.8.5": {
+        "https://npmjs.com/advisories/786": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>anymatch>micromatch>braces"
+          ],
+          "severity": "low",
+          "description": "Versions of `braces` prior to 2.3.1 are vulnerable to Regular Expression Denial of Service (ReDoS). Untrusted input may cause catastrophic backtracking while matching regular expressions. This can cause the application to be unresponsive leading to Denial of Service.",
+          "remediation": "Upgrade to version 2.3.1 or higher."
+        }
+      },
+      "set-value-2.0.0": {
+        "CVE-2019-10747": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon>base>cache-base>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>snapdragon>base>cache-base>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>snapdragon>base>cache-base>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>snapdragon>base>cache-base>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>snapdragon>base>cache-base>set-value"
+          ],
+          "severity": "high",
+          "description": "Versions of `set-value` prior to 3.0.1 or 2.0.1 are vulnerable to Prototype Pollution. The `set` function fails to validate which Object properties it updates. This allows attackers to modify the prototype of Object, causing the addition or modification of an existing property on all objects.\n\n",
+          "remediation": "If you are using `set-value` 3.x, upgrade to version 3.0.1 or later.\nIf you are using `set-value` 2.x, upgrade to version 2.0.1 or later.\n"
+        }
+      },
+      "set-value-0.4.3": {
+        "CVE-2019-10747": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon>base>cache-base>union-value>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>snapdragon>base>cache-base>union-value>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>snapdragon>base>cache-base>union-value>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>snapdragon>base>cache-base>union-value>set-value",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>snapdragon>base>cache-base>union-value>set-value"
+          ],
+          "severity": "high",
+          "description": "Versions of `set-value` prior to 3.0.1 or 2.0.1 are vulnerable to Prototype Pollution. The `set` function fails to validate which Object properties it updates. This allows attackers to modify the prototype of Object, causing the addition or modification of an existing property on all objects.\n\n",
+          "remediation": "If you are using `set-value` 3.x, upgrade to version 3.0.1 or later.\nIf you are using `set-value` 2.x, upgrade to version 2.0.1 or later.\n"
+        }
+      },
+      "mixin-deep-1.3.1": {
+        "CVE-2019-10746": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon>base>mixin-deep",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>snapdragon>base>mixin-deep",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>snapdragon>base>mixin-deep",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>snapdragon>base>mixin-deep",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>snapdragon>base>mixin-deep"
+          ],
+          "severity": "high",
+          "description": "Versions of `mixin-deep` prior to 2.0.1 or 1.3.2 are vulnerable to Prototype Pollution. The `mixinDeep` function fails to validate which Object properties it updates. This allows attackers to modify the prototype of Object, causing the addition or modification of an existing property on all objects.\n\n",
+          "remediation": "If you are using `mixin-deep` 2.x, upgrade to version 2.0.1 or later.\nIf you are using `mixin-deep` 1.x, upgrade to version 1.3.2 or later."
+        }
+      },
+      "helmet-csp-1.2.2": {
+        "https://npmjs.com/advisories/1176": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: helmet>helmet-csp"
+          ],
+          "severity": "medium",
+          "description": "Versions of `helmet-csp` before to 2.9.1 are vulnerable to a Configuration Override affecting the application's Content Security Policy (CSP). The package's browser sniffing for Firefox deletes the `default-src` CSP policy, which is the fallback policy. This allows an attacker to remove an application's default CSP, possibly rendering the application vulnerable to Cross-Site Scripting.",
+          "remediation": "Upgrade to version 2.9.1 or later. Setting the `browserSniff` configuration to `false` in vulnerable versions also mitigates the issue."
+        }
+      },
+      "mongodb-2.2.36": {
+        "https://npmjs.com/advisories/1203": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: mongodb"
+          ],
+          "severity": "high",
+          "description": "Versions of `mongodb` prior to 3.1.13 are vulnerable to Denial of Service. The package fails to properly catch an exception when a collection name is invalid and the DB does not exist, crashing the application.",
+          "remediation": "Upgrade to version 3.1.13 or later."
+        }
+      },
+      "kind-of-6.0.2": {
+        "https://npmjs.com/advisories/1490": {
+          "source": [
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>anymatch>micromatch>braces>expand-range>fill-range>randomatic>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon>base>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>snapdragon>base>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>snapdragon>base>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>snapdragon>base>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>snapdragon>base>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon>base>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>snapdragon>base>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>snapdragon>base>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>snapdragon>base>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>snapdragon>base>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon>base>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>snapdragon>base>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>snapdragon>base>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>snapdragon>base>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>snapdragon>base>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon-node>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon-node>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>snapdragon-node>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>to-regex>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>to-regex>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>to-regex>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>to-regex>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>to-regex>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>to-regex>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>to-regex>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>to-regex>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>to-regex>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>to-regex>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>braces>to-regex>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>expand-brackets>to-regex>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>to-regex>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>to-regex>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>to-regex>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>define-property>is-descriptor>is-accessor-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>define-property>is-descriptor>is-data-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>extglob>define-property>is-descriptor>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>kind-of",
+            "node/dependency_vulnerability_samples/package.json: forever>forever-monitor>chokidar>readdirp>micromatch>nanomatch>kind-of"
+          ],
+          "severity": "low",
+          "description": "Versions of `kind-of` 6.x prior to 6.0.3 are vulnerable to a Validation Bypass. A maliciously crafted object can alter the result of the type check, allowing attackers to bypass the type checking validation. ",
+          "remediation": "Upgrade to versions 6.0.3 or later."
+        }
+      }
+    },
+    "secrets": {
+      "ssh/id_rsa": [
+        {
+          "type": "ssh",
+          "line": 1,
+          "commit": "260c212e8815f0db98615738d0ede97e536b9463"
+        }
+      ],
+      "google/fake_key.json": [
+        {
+          "type": "google",
+          "line": 2,
+          "commit": "9da5687c7fbcccdaedb4303abfd77a212df2fc7d"
+        },
+        {
+          "type": "google",
+          "line": 1,
+          "commit": "9da5687c7fbcccdaedb4303abfd77a212df2fc7d"
+        }
+      ],
+      "postgresql/test_settings.json": [
+        {
+          "type": "postgres",
+          "line": 2,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        },
+        {
+          "type": "postgres",
+          "line": 1,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        }
+      ],
+      "mongodb/test_settings1.json": [
+        {
+          "type": "mongo",
+          "line": 2,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        },
+        {
+          "type": "mongo",
+          "line": 1,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        }
+      ],
+      "mongodb/test_settings2.json": [
+        {
+          "type": "mongo",
+          "line": 2,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        },
+        {
+          "type": "mongo",
+          "line": 1,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        }
+      ],
+      "aws/demo": [
+        {
+          "type": "aws",
+          "line": 1,
+          "commit": "d8cf71f4c77dda7feec805acde64281490930d26"
+        }
+      ],
+      "redis/test_settings.json": [
+        {
+          "type": "redis",
+          "line": 1,
+          "commit": "b71ee938d23316822157ae4a8da96872995e2572"
+        }
+      ]
+    },
+    "static_analysis": {
+      "python/unsafe_subprocess/main.py": [
+        {
+          "line": 1,
+          "type": "B404: blacklist",
+          "message": "Consider possible security implications associated with subprocess module.",
+          "severity": "low"
+        },
+        {
+          "line": 3,
+          "type": "B607: start_process_with_partial_path",
+          "message": "Starting a process with a partial executable path",
+          "severity": "low"
+        },
+        {
+          "line": 3,
+          "type": "B602: subprocess_popen_with_shell_equals_true",
+          "message": "subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell",
+          "severity": "low"
+        }
+      ],
+      "app/controllers/application_controller.rb": [
+        {
+          "line": 8,
+          "type": "Basic Auth",
+          "message": "Basic authentication password stored in source code",
+          "severity": ""
+        }
+      ],
+      "app/controllers/posts_controller.rb": [
+        {
+          "line": 50,
+          "type": "Redirect",
+          "message": "Possible unprotected redirect",
+          "severity": ""
+        },
+        {
+          "line": 69,
+          "type": "Redirect",
+          "message": "Possible unprotected redirect",
+          "severity": ""
+        }
+      ],
+      "/work/base/node/bad_javascript/CR789393.md.js": [
+        {
+          "line": 4,
+          "type": "",
+          "message": "Parsing error: Unexpected token i",
+          "severity": "medium"
+        }
+      ],
+      "/work/base/node/bad_javascript/CVE-2017-5088.md.js": [
+        {
+          "line": 12,
+          "type": "",
+          "message": "Parsing error: Unexpected token >",
+          "severity": "medium"
+        }
+      ],
+      "/work/base/node/bad_javascript/CVE-2018-6142.md.js": [
+        {
+          "line": 4,
+          "type": "",
+          "message": "Parsing error: The keyword 'const' is reserved",
+          "severity": "medium"
+        }
+      ],
+      "/work/base/node/bad_javascript/CVE-2018-6143.md.js": [
+        {
+          "line": 4,
+          "type": "",
+          "message": "Parsing error: The keyword 'class' is reserved",
+          "severity": "medium"
+        }
+      ],
+      "JDBCSessionDataStore.java": [
+        {
+          "line": "294",
+          "type": "M S SQL",
+          "message": "A prepared statement is generated from a nonconstant String in org.eclipse.jetty.server.session.JDBCSessionDataStore$SessionTableSchema.getUpdateSessionStatement(Connection, String, SessionContext)",
+          "severity": ""
+        },
+        {
+          "line": "312",
+          "type": "M S SQL",
+          "message": "A prepared statement is generated from a nonconstant String in org.eclipse.jetty.server.session.JDBCSessionDataStore$SessionTableSchema.getExpiredSessionsStatement(Connection, String, String, long)",
+          "severity": ""
+        },
+        {
+          "line": "334",
+          "type": "M S SQL",
+          "message": "A prepared statement is generated from a nonconstant String in org.eclipse.jetty.server.session.JDBCSessionDataStore$SessionTableSchema.getMyExpiredSessionsStatement(Connection, SessionContext, long)",
+          "severity": ""
+        },
+        {
+          "line": "355",
+          "type": "M S SQL",
+          "message": "A prepared statement is generated from a nonconstant String in org.eclipse.jetty.server.session.JDBCSessionDataStore$SessionTableSchema.getAllAncientExpiredSessionsStatement(Connection)",
+          "severity": ""
+        },
+        {
+          "line": "372",
+          "type": "M S SQL",
+          "message": "A prepared statement is generated from a nonconstant String in org.eclipse.jetty.server.session.JDBCSessionDataStore$SessionTableSchema.getCheckSessionExistsStatement(Connection, SessionContext)",
+          "severity": ""
+        },
+        {
+          "line": "424",
+          "type": "M S SQL",
+          "message": "A prepared statement is generated from a nonconstant String in org.eclipse.jetty.server.session.JDBCSessionDataStore$SessionTableSchema.getUpdateStatement(Connection, String, SessionContext)",
+          "severity": ""
+        }
+      ],
+      "ResourceService.java": [
+        {
+          "line": "390",
+          "type": "M S HRS",
+          "message": "HTTP parameter directly written to HTTP header output in org.eclipse.jetty.server.ResourceService.sendWelcome(HttpContent, String, boolean, boolean, HttpServletRequest, HttpServletResponse)",
+          "severity": ""
+        },
+        {
+          "line": "548",
+          "type": "M S HRS",
+          "message": "HTTP parameter directly written to HTTP header output in org.eclipse.jetty.server.ResourceService.passConditionalHeaders(HttpServletRequest, HttpServletResponse, HttpContent)",
+          "severity": ""
+        }
+      ],
+      "auth.json": [
+        {
+          "line": 5,
+          "type": "Password Hardcoded",
+          "message": "A hardcoded password in plain text was identified.",
+          "severity": ""
+        }
+      ],
+      "python/pylint/example.py": [
+        {
+          "line": 1,
+          "type": "unused-import",
+          "message": "Unused import json",
+          "severity": ""
+        }
+      ],
+      "typescript/auth.ts": [
+        {
+          "line": 14,
+          "type": "no-eval",
+          "message": "forbidden eval",
+          "severity": "medium"
+        }
+      ],
+      "typescript/class.tsx": [
+        {
+          "line": 23,
+          "type": "no-eval",
+          "message": "forbidden eval",
+          "severity": "medium"
+        }
+      ],
+      "typescript/src/actions/index.tsx": [
+        {
+          "line": 4,
+          "type": "no-reserved-keywords",
+          "message": "Forbidden reference to reserved keyword: type",
+          "severity": "medium"
+        },
+        {
+          "line": 8,
+          "type": "no-reserved-keywords",
+          "message": "Forbidden reference to reserved keyword: type",
+          "severity": "medium"
+        }
+      ]
+    },
+    "inventory": {
+      "technology_discovery": {
+        "Ruby": 56.87,
+        "Java": 32.85,
+        "JavaScript": 4.66,
+        "TypeScript": 4.08,
+        "Shell": 0.95,
+        "Python": 0.53,
+        "Dockerfile": 0.05
+      }
+    }
+  }
+}

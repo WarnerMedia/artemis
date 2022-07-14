@@ -1,0 +1,60 @@
+{
+  "results": [
+    {
+      "status": false,
+      "tag-id": "test-docker-155702ff75603dad3e85fa0133286cbc-t-1000",
+      "dockerfile": "/Dockerfiles"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-c0a392823ef63a51398fad98c2161a99-t-1000",
+      "dockerfile": "/utilities/migrate_database/Dockerfile"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-3d74f8e60beb0b5c3f9e0b90b44522e0-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.dind"
+    },
+    {
+      "status": false,
+      "tag-id": "test-docker-3f43527af64b920a826ec8763260b525-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.python3"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-dcff6ea60ec3cbae155abaed414c033b-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.php"
+    },
+    {
+      "status": false,
+      "tag-id": "test-docker-1e434c7bdc4a2065a8ab14129ea5c0de-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.golang"
+    },
+    {
+      "status": false,
+      "tag-id": "test-docker-51602b33fe1d9811e9ae245db317b4a8-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.java"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-987b36c604ce57bab1b1768bf0540bb4-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.veracode"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-75eb4ef87372a59a51554fcd69f831b1-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.node14"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-2f2ae0e328d9941c4f79678d2e21e309-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.engine"
+    },
+    {
+      "status": true,
+      "tag-id": "test-docker-b123810fd242868e509063f45efed17b-t-1000",
+      "dockerfile": "/Dockerfiles/Dockerfile.ruby"
+    }
+  ],
+  "dockerfile_count": 11
+}

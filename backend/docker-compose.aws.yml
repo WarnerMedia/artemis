@@ -1,0 +1,22 @@
+version: "3"
+services:
+  engine:
+    image: "${ECR}/${APPLICATION}/engine:latest"
+    scale: 3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/artemis/work:/work
+    env_file:
+      - .env
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ${REGION}
+        awslogs-group: ${LOG_GROUP}
+        tag: engine-${INSTANCE_ID}-{{.ID}}
+        awslogs-datetime-format: "\\[%Y\\-%m\\-%d %H:%M:%S\\]"
+  db_maint:
+    image: "${ECR}/${APPLICATION}/db_maintenance:latest"
+    container_name: "db_maint"
+    env_file:
+      - .env

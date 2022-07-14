@@ -1,0 +1,1 @@
+# SBOM licenses API endpoint

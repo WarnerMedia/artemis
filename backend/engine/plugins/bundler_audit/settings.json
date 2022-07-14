@@ -1,0 +1,5 @@
+{
+    "name": "Bundler Audit Scanner",
+    "type": "vulnerability",
+    "image": "$ECR/artemis/ruby:latest"
+}

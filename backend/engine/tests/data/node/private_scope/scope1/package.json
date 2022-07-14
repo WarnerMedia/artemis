@@ -1,0 +1,21 @@
+{
+    "name": "test-pkg",
+    "private": true,
+    "version": "1.1.0",
+    "description": "",
+    "main": "server.js",
+    "dependencies": {
+        "@scope1/custom-package": "0.0.1",
+        "pkg1": "1.0.0",
+        "pkg2": "1.0.0"
+    },
+    "comments": {
+        "//": "a9 insecure components"
+    },
+    "scripts": {},
+    "devDependencies": {
+        "pkg3": "1.0.0"
+    },
+    "repository": "",
+    "license": ""
+}

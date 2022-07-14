@@ -1,0 +1,6 @@
+{
+    "name": "Veracode SCA",
+    "type": "vulnerability",
+    "image": "$ECR/artemis/veracode:latest",
+    "enabled": "$ARTEMIS_FEATURE_VERACODE_ENABLED"
+}

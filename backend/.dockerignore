@@ -1,0 +1,19 @@
+# All dotfiles and dotdirs
+.*
+
+# All TF stuff
+terraform*
+
+build/
+build_scripts/
+dist/
+end_to_end_tests/
+k8s/
+localstack/
+venv/
+
+Makefile
+README.md
+
+# Allow .temp directory
+!/.temp

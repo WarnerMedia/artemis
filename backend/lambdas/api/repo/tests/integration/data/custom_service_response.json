@@ -1,0 +1,121 @@
+{
+  "repo": "testorg/testrepo",
+  "scan_id": "54de0577-2cd1-47ff-8b05-b0d2b4c87f57",
+  "service": "git.example.com",
+  "branch": null,
+  "status": "completed",
+  "status_detail": {
+    "plugin_name": null,
+    "plugin_start_time": null,
+    "current_plugin": null,
+    "total_plugins": null
+  },
+  "success": false,
+  "truncated": false,
+  "timestamps": {
+    "queued": "2020-03-19T15:02:55.291263+00:00",
+    "start": "2020-03-19T15:02:59.186204+00:00",
+    "end": "2020-03-19T15:05:52.284407+00:00"
+  },
+  "errors": {
+    "Bundler Audit Scanner": "No such file or directory @ rb_sysopen - /work/base/Gemfile.lock",
+    "OWASP Dependency Scanner": [
+      "Java build failed"
+    ],
+    "Sensio Security Scanner": [
+      "composer_install failed"
+    ],
+    "ESLint Static Scanner": [
+      "Plugin returned invalid output: "
+    ],
+    "FindSecBugs Scanner Java 13": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ],
+    "FindSecBugs Scanner Java 7": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ],
+    "FindSecBugs Scanner Java 8": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ]
+  },
+  "results": {
+    "vulnerabilities": {},
+    "secrets": {},
+    "static_analysis": {
+      "src/handler.py": [
+        {
+          "line": 8,
+          "type": "missing-final-newline",
+          "message": "Final newline missing",
+          "severity": ""
+        },
+        {
+          "line": 7,
+          "type": "unused-argument",
+          "message": "Unused argument 'event'",
+          "severity": ""
+        },
+        {
+          "line": 7,
+          "type": "unused-argument",
+          "message": "Unused argument 'context'",
+          "severity": ""
+        },
+        {
+          "line": 1,
+          "type": "unused-import",
+          "message": "Unused import os",
+          "severity": ""
+        },
+        {
+          "line": 2,
+          "type": "unused-import",
+          "message": "Unused import boto3",
+          "severity": ""
+        },
+        {
+          "line": 3,
+          "type": "unused-import",
+          "message": "Unused import logging",
+          "severity": ""
+        },
+        {
+          "line": 4,
+          "type": "unused-import",
+          "message": "Unused import json",
+          "severity": ""
+        },
+        {
+          "line": 5,
+          "type": "unused-import",
+          "message": "Unused import sys",
+          "severity": ""
+        },
+        {
+          "line": 3,
+          "type": "wrong-import-order",
+          "message": "standard import \"import logging\" should be placed before \"import boto3\"",
+          "severity": ""
+        },
+        {
+          "line": 4,
+          "type": "wrong-import-order",
+          "message": "standard import \"import json\" should be placed before \"import boto3\"",
+          "severity": ""
+        },
+        {
+          "line": 5,
+          "type": "wrong-import-order",
+          "message": "standard import \"import sys\" should be placed before \"import boto3\"",
+          "severity": ""
+        }
+      ]
+    },
+    "inventory": {
+      "path": "/work/base/",
+      "output": {
+        "Python": 100.0
+      }
+    }
+  }
+}

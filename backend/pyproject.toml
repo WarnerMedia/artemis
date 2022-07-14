@@ -1,0 +1,36 @@
+[tool.black]
+line-length = 120
+exclude = '/(\.eggs)/'
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths = ["engine", "utilities/scale_down"]
+known_third_party = ["boto3", "botocore", "django", "pytest"]
+known_first_party = [
+    "artemislib",
+    "artemisdb",
+    "artemisapi",
+    "groups",
+    "groups_keys",
+    "groups_members",
+    "ci_tools",
+    "sbom_components",
+    "sbom_licenses",
+    "scans_batch",
+    "search_repositories",
+    "search_scans",
+    "scan_scheduler",
+    "system_status",
+    "repo",
+    "users",
+    "users_keys",
+    "users_services",
+    "authorizer",
+    "api_runner",
+    "db_cleanup",
+    "system_allowlist",
+    "end_to_end_tests",
+    "scale_down",
+    "json_report"
+]

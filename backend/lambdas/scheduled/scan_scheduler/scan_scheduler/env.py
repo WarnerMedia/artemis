@@ -1,0 +1,3 @@
+import os
+
+SCHEDULE_QUEUE = os.environ.get("ARTEMIS_SCHEDULED_SCANS_QUEUE")

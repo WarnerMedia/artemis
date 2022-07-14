@@ -1,0 +1,53 @@
+{
+  "services": {
+    "github": {
+      "secret_loc": "github-api-key",
+      "type": "github",
+      "hostname": null,
+      "url": "https://api.github.com/graphql",
+      "branch_url": null,
+      "diff_url": "https://api.github.com",
+      "allow_all": false,
+      "api_key_add": null,
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "nat_connect": false,
+      "app_integration": true,
+      "http_basic_auth": false,
+      "initial_page": {
+        "cursor": "null"
+      },
+      "secrets_management": {},
+      "application_metadata": {}
+    },
+    "git.example.com": {
+      "secret_loc": "git.example.com-api-key",
+      "type": "github",
+      "hostname": "git.example.com.revproxy.example.com",
+      "url": "https://git.example.com.revproxy.example.com/api/graphql",
+      "branch_url": null,
+      "diff_url": "https://git.example.com.revproxy.example.com/api/v3",
+      "allow_all": true,
+      "api_key_add": null,
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "nat_connect": false,
+      "app_integration": false,
+      "http_basic_auth": false,
+      "initial_page": {
+        "cursor": "null"
+      },
+      "secrets_management": {},
+      "application_metadata": {}
+    }
+  },
+  "repos": [
+    "github/testorg/*",
+    "git.example.com/*"
+  ],
+  "scan_orgs": [
+    "github/testorg",
+    "git.example.com/*"
+  ],
+  "external_orgs": []
+}

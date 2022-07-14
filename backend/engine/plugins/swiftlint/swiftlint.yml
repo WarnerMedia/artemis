@@ -1,0 +1,5 @@
+---
+# This is the configuration file for swiftlint
+# Options here supplement the default configuration
+# An example of what can be done with this file can be seen here:
+# https://raw.githubusercontent.com/realm/SwiftLint/master/.swiftlint.yml

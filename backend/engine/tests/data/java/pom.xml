@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>group</groupId>
+    <artifactId>artifact</artifactId>
+    <version>1.0</version>
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+    <build></build>
+    <dependencies>
+        <!--
+            IMPORTANT: These dependency blocks are formatted specifically for unit testing the parsing of formatting
+            variations. This file should not be autoformatted.
+        -->
+
+        <!-- Standard formatting -->
+        <dependency>
+            <groupId>group1</groupId>
+            <artifactId>artifact1</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- All-on-one-line formatting -->
+        <dependency><groupId>group2</groupId><artifactId>artifact2</artifactId><version>1.0</version></dependency>
+
+        <!-- Mixed formatting -->
+        <dependency><groupId>group3</groupId><artifactId>artifact3</artifactId>
+        <version>1.0</version></dependency>
+
+    </dependencies>
+</project>

@@ -1,0 +1,5 @@
+{
+    "name": "Base Image Discovery",
+    "type": "inventory",
+    "image": "$ECR/artemis/python:3-latest"
+}

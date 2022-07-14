@@ -1,0 +1,60 @@
+version: "3"
+services:
+  database:
+    image: "postgres:11.7"
+    container_name: "artemisdb"
+    ports:
+      - "${ANALYZER_DB_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${ANALYZER_DB_NAME}
+      POSTGRES_USER: ${ANALYZER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${ANALYZER_DB_PASSWORD}
+  localstack:
+    image: "localstack/localstack:latest"
+    container_name: "localstack"
+    volumes:
+      - ${PWD}/localstack:/docker-entrypoint-initaws.d
+    ports:
+      - "8080:8080"
+      - "4566:4566"
+    environment:
+      SERVICES: "sqs"
+      HOSTNAME: "localstack"
+  engine:
+    image: "${APPLICATION}/engine:latest"
+    scale: 1
+    depends_on:
+      - "localstack"
+      - "database"
+    volumes:
+      - ${DOCKER_SOCKET}:/var/run/docker.sock
+      - /tmp/work:/work
+      - $HOME/.aws/credentials:/root/.aws/credentials:ro
+      - ${PWD}/services.json:/srv/engine/services.json
+    environment:
+      AWS_PROFILE: $AWS_PROFILE
+      HOST_HOME: $HOME
+      SQS_ENDPOINT: ${INTERNAL_SQS_ENDPOINT}
+      TASK_QUEUE: ${INTERNAL_TASK_QUEUE}
+      PRIORITY_TASK_QUEUE: ${INTERNAL_PRIORITY_TASK_QUEUE}
+      ECR: ${ECR}
+      CALLBACK_QUEUE: ${INTERNAL_CALLBACK_QUEUE}
+      EVENT_QUEUE: ${INTERNAL_EVENT_QUEUE}
+      S3_BUCKET: ${S3_BUCKET}
+      ANALYZER_DJANGO_SECRET_KEY: ${ANALYZER_DJANGO_SECRET_KEY}
+      ANALYZER_DB_NAME: ${ANALYZER_DB_NAME}
+      ANALYZER_DB_USERNAME: ${ANALYZER_DB_USERNAME}
+      ANALYZER_DB_PASSWORD: ${ANALYZER_DB_PASSWORD}
+      ANALYZER_DB_HOST: ${INTERNAL_ANALYZER_DB_HOST}
+      ANALYZER_DB_PORT: ${ANALYZER_DB_PORT}
+      ARTEMIS_NETWORK: artemis_default
+      ARTEMIS_FEATURE_AQUA_ENABLED: ${ARTEMIS_FEATURE_AQUA_ENABLED}
+      ARTEMIS_FEATURE_VERACODE_ENABLED: ${ARTEMIS_FEATURE_VERACODE_ENABLED}
+      ARTEMIS_GITHUB_APP_ID: ${ARTEMIS_GITHUB_APP_ID}
+      ARTEMIS_PRIVATE_DOCKER_REPOS_KEY: ${ARTEMIS_PRIVATE_DOCKER_REPOS_KEY}
+      ARTEMIS_PLUGIN_JAVA_HEAP_SIZE: ${ARTEMIS_PLUGIN_JAVA_HEAP_SIZE}
+      ARTEMIS_LOCAL_SERVICES_OVERRIDE: ${ARTEMIS_LOCAL_SERVICES_OVERRIDE}
+      ARTEMIS_LINK_GH_CLIENT_ID: ${ARTEMIS_LINK_GH_CLIENT_ID}
+      ARTEMIS_LINK_GH_CLIENT_SECRET: ${ARTEMIS_LINK_GH_CLIENT_SECRET}
+      ARTEMIS_LOG_LEVEL: ${ARTEMIS_LOG_LEVEL}
+      ARTEMIS_STATUS_LAMBDA: ${ARTEMIS_STATUS_LAMBDA}

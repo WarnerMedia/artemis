@@ -1,0 +1,318 @@
+[
+  {
+    "name": "Aqua CLI Scanner",
+    "type": "vulnerability",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:03:46.390563+00:00",
+    "end_time": "2020-03-19T15:03:57.966613+00:00"
+  },
+  {
+    "name": "Bandit",
+    "type": "static_analysis",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:04:24.606236+00:00",
+    "end_time": "2020-03-19T15:04:25.693295+00:00"
+  },
+  {
+    "name": "Brakeman Scanner",
+    "type": "static_analysis",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:03:10.425457+00:00",
+    "end_time": "2020-03-19T15:03:19.365955+00:00"
+  },
+  {
+    "name": "Bundler Audit Scanner",
+    "type": "vulnerability",
+    "success": false,
+    "truncated": false,
+    "details": [
+      {
+        "component": "actionview-4.2.7",
+        "source": "Gemfile.lock",
+        "id": "CVE-2016-6316",
+        "description": "Possible XSS Vulnerability in Action View",
+        "severity": "critical",
+        "remediation": "upgrade to ~> 4.2.7.1, ~> 4.2.8, >= 5.0.0.1"
+      }
+    ],
+    "errors": [],
+    "start_time": "2020-03-19T15:04:15.821527+00:00",
+    "end_time": "2020-03-19T15:04:16.989092+00:00"
+  },
+  {
+    "name": "ESLint Static Scanner",
+    "type": "static_analysis",
+    "success": false,
+    "truncated": false,
+    "details": [],
+    "errors": [
+      "Plugin returned invalid output: "
+    ],
+    "start_time": "2020-03-19T15:05:00.336448+00:00",
+    "end_time": "2020-03-19T15:05:01.578986+00:00"
+  },
+  {
+    "name": "Example",
+    "type": "None",
+    "success": true,
+    "truncated": false,
+    "details": [
+      "Plugin disabled"
+    ],
+    "errors": [],
+    "start_time": "2020-03-19T15:03:46.383476+00:00",
+    "end_time": "2020-03-19T15:03:46.383593+00:00"
+  },
+  {
+    "name": "FindSecBugs Scanner Java 13",
+    "type": "static_analysis",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ],
+    "start_time": "2020-03-19T15:04:26.708723+00:00",
+    "end_time": "2020-03-19T15:04:44.568039+00:00"
+  },
+  {
+    "name": "FindSecBugs Scanner Java 7",
+    "type": "static_analysis",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ],
+    "start_time": "2020-03-19T15:04:44.576615+00:00",
+    "end_time": "2020-03-19T15:05:00.328081+00:00"
+  },
+  {
+    "name": "FindSecBugs Scanner Java 8",
+    "type": "static_analysis",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [
+      "Java Maven build failed or could not find a pom.xml in the project"
+    ],
+    "start_time": "2020-03-19T15:03:57.975616+00:00",
+    "end_time": "2020-03-19T15:04:14.438490+00:00"
+  },
+  {
+    "name": "Git-secrets Scanner",
+    "type": "secrets",
+    "success": false,
+    "truncated": false,
+    "details": [],
+    "errors": [
+      "an issue occurred"
+    ],
+    "start_time": "2020-03-19T15:04:25.702169+00:00",
+    "end_time": "2020-03-19T15:04:26.700233+00:00"
+  },
+  {
+    "name": "NPM Audit Scanner",
+    "type": "vulnerability",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:02:59.694640+00:00",
+    "end_time": "2020-03-19T15:03:10.416691+00:00"
+  },
+  {
+    "name": "Nodejsscan",
+    "type": "static_analysis",
+    "success": false,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:03:19.374660+00:00",
+    "end_time": "2020-03-19T15:03:20.544917+00:00"
+  },
+  {
+    "name": "OWASP Dependency Scanner",
+    "type": "vulnerability",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:05:01.591543+00:00",
+    "end_time": "2020-03-19T15:05:50.818653+00:00"
+  },
+  {
+    "name": "Sensio Security Scanner",
+    "type": "vulnerability",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [
+      "composer_install failed"
+    ],
+    "start_time": "2020-03-19T15:04:16.997844+00:00",
+    "end_time": "2020-03-19T15:04:24.597822+00:00"
+  },
+  {
+    "name": "Pylint Scanner",
+    "type": "static_analysis",
+    "success": false,
+    "truncated": false,
+    "details": [
+      {
+        "filename": "src/handler.py",
+        "line": 8,
+        "column": 0,
+        "message-id": "C0304",
+        "message": "Final newline missing",
+        "type": "missing-final-newline"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 7,
+        "column": 19,
+        "message-id": "W0613",
+        "message": "Unused argument 'event'",
+        "type": "unused-argument"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 7,
+        "column": 26,
+        "message-id": "W0613",
+        "message": "Unused argument 'context'",
+        "type": "unused-argument"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 1,
+        "column": 0,
+        "message-id": "W0611",
+        "message": "Unused import os",
+        "type": "unused-import"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 2,
+        "column": 0,
+        "message-id": "W0611",
+        "message": "Unused import boto3",
+        "type": "unused-import"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 3,
+        "column": 0,
+        "message-id": "W0611",
+        "message": "Unused import logging",
+        "type": "unused-import"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 4,
+        "column": 0,
+        "message-id": "W0611",
+        "message": "Unused import json",
+        "type": "unused-import"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 5,
+        "column": 0,
+        "message-id": "W0611",
+        "message": "Unused import sys",
+        "type": "unused-import"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 3,
+        "column": 0,
+        "message-id": "C0411",
+        "message": "standard import 'import logging' should be placed before 'import boto3'",
+        "type": "wrong-import-order"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 4,
+        "column": 0,
+        "message-id": "C0411",
+        "message": "standard import 'import json' should be placed before 'import boto3'",
+        "type": "wrong-import-order"
+      },
+      {
+        "filename": "src/handler.py",
+        "line": 5,
+        "column": 0,
+        "message-id": "C0411",
+        "message": "standard import 'import sys' should be placed before 'import boto3'",
+        "type": "wrong-import-order"
+      }
+    ],
+    "errors": [],
+    "start_time": "2020-03-19T15:03:37.792549+00:00",
+    "end_time": "2020-03-19T15:03:46.374154+00:00"
+  },
+  {
+    "name": "Technology Discovery",
+    "type": "inventory",
+    "success": true,
+    "truncated": false,
+    "details": {
+      "path": "/work/base/",
+      "output": {
+        "Python": 100.0
+      }
+    },
+    "errors": [],
+    "start_time": "2020-03-19T15:03:20.553867+00:00",
+    "end_time": "2020-03-19T15:03:37.783710+00:00"
+  },
+  {
+    "name": "TruffleHog Scanner",
+    "type": "secrets",
+    "success": false,
+    "truncated": false,
+    "details": [
+      {
+        "id": "4e859ab2-f99e-4aed-9f7e-a32dc1364114",
+        "filename": "src/url.py",
+        "line": 1,
+        "commit": "88b062d2fc650f029f05c3c6c4d94119c89301a0",
+        "type": "urlauth",
+        "author": "email@example.com",
+        "author-timestamp": "2020-02-14T00:39:54.000000+00:00"
+      },
+      {
+        "id": "48899731-301b-420b-8f35-754a9dcbbfeb",
+        "filename": "src/url.py",
+        "line": 1,
+        "commit": "df0478ebe3b8ec7f199b9eaaf680c9dbf45f7692",
+        "type": "urlauth",
+        "author": "email@example.com",
+        "author-timestamp": "2020-02-13T22:35:52.000000+00:00"
+      }
+    ],
+    "errors": [],
+    "start_time": "2020-03-19T15:05:50.827880+00:00",
+    "end_time": "2020-03-19T15:05:52.269860+00:00"
+  },
+  {
+    "name": "eslint",
+    "type": "static_analysis",
+    "success": true,
+    "truncated": false,
+    "details": [],
+    "errors": [],
+    "start_time": "2020-03-19T15:04:14.447073+00:00",
+    "end_time": "2020-03-19T15:04:15.812763+00:00"
+  }
+]

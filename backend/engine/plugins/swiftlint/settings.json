@@ -1,0 +1,5 @@
+{
+  "name": "SwiftLint",
+  "type": "static_analysis",
+  "image": "$ECR/artemis/swift:latest"
+}

@@ -1,0 +1,165 @@
+###############################################################################
+# Build stages
+###############################################################################
+FROM python:3.9-bullseye as srcclr-builder
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Retrieve and install Veracode GPG signing key
+# Add srcclr to the apt repo list
+RUN apt-get update && \
+    apt-get install software-properties-common -y --no-install-recommends && \
+    curl -sSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xdf7dd7a50b746dd4' | gpg --dearmor -o /etc/apt/trusted.gpg.d/veracode-sca-archive.gpg && \
+    echo 'deb https://download.sourceclear.com/ubuntu stable/' >/etc/apt/sources.list.d/veracode-sca.list
+
+FROM python:3.9-bullseye as golang-builder
+
+ARG GOLANGVER=1.16.3
+ARG GOLANGSHA=951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2
+
+RUN mkdir -p /golang/go && \
+    echo "$GOLANGSHA /golang/golang.tar.gz" > /golang_checksum.txt && \
+    curl https://golang.org/dl/go$GOLANGVER.linux-amd64.tar.gz -L -o /golang/golang.tar.gz && \
+    sha256sum -c /golang_checksum.txt && \
+    tar -xzvf /golang/golang.tar.gz -C /golang/go && \
+    rm /golang/golang.tar.gz
+
+FROM python:3.9-bullseye as gradle-builder
+
+ARG GRADLEVER=7.0
+ARG GRADLESHA=eb8b89184261025b0430f5b2233701ff1377f96da1ef5e278af6ae8bac5cc305
+
+RUN mkdir -p /gradle && \
+    echo "$GRADLESHA /gradle/gradle.zip" > /gradle_checksum.txt && \
+    curl https://services.gradle.org/distributions/gradle-$GRADLEVER-bin.zip -L -o /gradle/gradle.zip && \
+    sha256sum -c /gradle_checksum.txt && \
+    unzip /gradle/gradle.zip -d /gradle && \
+    mv /gradle/gradle-$GRADLEVER /gradle/gradle && \
+    rm /gradle/gradle.zip
+
+FROM python:3.9-bullseye as ant-builder
+
+ARG ANTVER=1.10.12
+ARG ANTSHA=2287dc5cfc21043c14e5413f9afb1c87c9f266ec2a9ba2d3bf2285446f6e4ccb59b558bf2e5c57911a05dfa293c7d5c7ad60ac9f744ba11406f4e6f9a27b2403
+
+RUN mkdir -p /ant && \
+    echo "$ANTSHA /ant/ant.tar.gz" > /ant_checksum.txt && \
+    curl https://downloads.apache.org/ant/binaries/apache-ant-$ANTVER-bin.tar.gz -L -o /ant/ant.tar.gz && \
+    sha512sum -c /ant_checksum.txt && \
+    tar -xzvf /ant/ant.tar.gz -C /ant && \
+    mv /ant/apache-ant-$ANTVER /ant/ant && \
+    rm /ant/ant.tar.gz
+
+FROM python:3.9-bullseye as maven-builder
+
+ARG MAVENVER=3.8.6
+ARG MAVENSHA=f790857f3b1f90ae8d16281f902c689e4f136ebe584aba45e4b1fa66c80cba826d3e0e52fdd04ed44b4c66f6d3fe3584a057c26dfcac544a60b301e6d0f91c26
+
+RUN mkdir -p /maven && \
+    echo "$MAVENSHA /maven/maven.tar.gz" > /maven_checksum.txt && \
+    curl https://downloads.apache.org/maven/maven-3/$MAVENVER/binaries/apache-maven-$MAVENVER-bin.tar.gz -L -o /maven/maven.tar.gz && \
+    sha512sum -c /maven_checksum.txt && \
+    tar -xzvf /maven/maven.tar.gz -C /maven && \
+    mv /maven/apache-maven-$MAVENVER /maven/maven && \
+    rm /maven/maven.tar.gz
+
+FROM python:3.9-bullseye as node-builder
+
+ARG NODEVER=14.16.1
+ARG NODESHA=068400cb9f53d195444b9260fd106f7be83af62bb187932656b68166a2f87f44
+
+RUN mkdir -p /node && \
+    echo "$NODESHA /node/node.tar.gz" > /node_checksum.txt && \
+    curl https://nodejs.org/dist/v$NODEVER/node-v$NODEVER-linux-x64.tar.gz -L -o /node/node.tar.gz && \
+    sha256sum -c /node_checksum.txt && \
+    tar -xzvf /node/node.tar.gz -C /node && \
+    mv /node/node-v$NODEVER-linux-x64 /node/node && \
+    rm /node/node.tar.gz
+
+FROM python:3.9-bullseye as ruby-builder
+
+ARG RUBYVER=2.7.2
+ARG RUBYSHA=3f50b100fb52cdf315fa17f41ae2e2538bb0c45abd9a6c569fd70ac851d61b2a
+
+RUN mkdir -p /ruby && \
+    echo "$RUBYSHA /ruby/ruby.tar.bz" > /ruby_checksum.txt && \
+    curl https://rvm_io.global.ssl.fastly.net/binaries/debian/10/x86_64/ruby-$RUBYVER.tar.bz2 -L -o /ruby/ruby.tar.bz && \
+    sha256sum -c /ruby_checksum.txt && \
+    tar -xjvf /ruby/ruby.tar.bz -C /ruby && \
+    mv /ruby/ruby-$RUBYVER /ruby/ruby && \
+    rm /ruby/ruby.tar.bz
+
+FROM php:7.4.22-cli-bullseye as php-builder
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+###############################################################################
+# App stage
+###############################################################################
+FROM python:3.9-slim-bullseye as app
+
+ARG MAINTAINER
+LABEL maintainer=$MAINTAINER
+
+# Copy over the apt config from the builder that has the Docker repository
+# already set up.
+COPY --from=srcclr-builder /etc/apt /etc/apt
+
+# Install Go
+COPY --from=golang-builder /golang/go /usr/local
+ENV PATH="$PATH:/usr/local/go/bin"
+
+# Install Gradle
+COPY --from=gradle-builder /gradle /usr/local
+ENV PATH="$PATH:/usr/local/gradle/bin"
+
+# Install Ant
+COPY --from=ant-builder /ant /usr/local
+ENV PATH="$PATH:/usr/local/ant/bin"
+
+# Install Maven
+COPY --from=maven-builder /maven /usr/local
+ENV PATH="$PATH:/usr/local/maven/bin"
+
+# Install Node
+COPY --from=node-builder /node /usr/local
+ENV PATH="$PATH:/usr/local/node/bin"
+
+# Install Ruby
+COPY --from=ruby-builder /ruby /usr/local
+ENV PATH="$PATH:/usr/local/ruby/bin"
+
+# Install PHP
+COPY --from=php-builder /usr/local/bin/php /usr/local/bin/
+COPY --from=php-builder /usr/local/lib /usr/local
+COPY --from=php-builder /usr/local/bin/composer /usr/local/bin/
+
+# Run all additional config in a single RUN to reduce the layers:
+# - Apply security updates
+# - Install:
+#       srcclr agent
+#       git
+#       OpenJDK
+#       Go tools
+#       libyaml (Ruby dep)
+#       PHP dependencies
+# - Install yarn and bower
+# - Clean up apt cache
+# - Upgrade pip and install boto3 for plugin utils
+# hadolint ignore=DL3008
+RUN apt-get update && \
+    mkdir -p /usr/share/man/man1 && \
+    grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
+    apt-get upgrade -y && \
+    apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list && \
+    apt-get install -y --no-install-recommends \
+    srcclr \
+    git \
+    openjdk-11-jre-headless \
+    govendor \
+    libyaml-0-2 -y \
+    libargon2-1 libcurl4 libedit2 libonig5 libsodium23 libsqlite3-0 libssl1.1 libxml2 zlib1g libncurses6 && \
+    npm install --global yarn bower && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install -q --no-cache-dir boto3==1.16.53

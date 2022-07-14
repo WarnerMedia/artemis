@@ -1,0 +1,5 @@
+{
+    "name": "Bandit",
+    "type": "static_analysis",
+    "image": "$ECR/artemis/python:3-latest"
+}

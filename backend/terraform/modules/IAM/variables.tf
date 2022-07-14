@@ -1,0 +1,3 @@
+variable "app" {}
+
+variable "tags" {}

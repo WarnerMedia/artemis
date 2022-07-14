@@ -1,0 +1,8 @@
+{
+    "name": "Snyk Scanner",
+    "type": "vulnerability",
+    "image": "$ECR/artemis/dind:latest",
+    "feature": "snyk",
+    "build_images": true,
+    "enabled": "$ARTEMIS_FEATURE_SNYK_ENABLED"
+}

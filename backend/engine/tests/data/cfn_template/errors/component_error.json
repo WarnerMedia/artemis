@@ -1,0 +1,27 @@
+{
+  "__ComposerError__": {
+    "context": "expected a single document in the stream",
+    "context_mark": {
+      "__Mark__": {
+        "buffer": "\n  jobTemplate:\n    spec:\n      template:\n        metadata:\n          annotations:\n            iam.amazonaws.com/role: com-cnn-magicwall-s3-sync\n        spec:\n          containers:\n          - name: sync\n            image: amazon/aws-cli\n            command:\n            - sh\n            - -c\n            - |\n              aws s3api put-object-acl --bucket cnn-magicwall-tiles --key versions.json --acl public-read\n              aws s3 cp s3://cnn-magicwall-tiles/versions.json s3://com-cnn-magicwall-tiles/versions.json --acl public-read\n              aws s3 sync s3://cnn-magicwall-tiles s3://com-cnn-magicwall-tiles --acl bucket-owner-full-control\n          restartPolicy: OnFailure\n\n\\x00",
+        "column": 0,
+        "index": 39,
+        "line": 1,
+        "name": "<unicode string>",
+        "pointer": 39
+      }
+    },
+    "note": null,
+    "problem": "but found another document",
+    "problem_mark": {
+      "__Mark__": {
+        "buffer": "\n  jobTemplate:\n    spec:\n      template:\n        metadata:\n          annotations:\n            iam.amazonaws.com/role: ptools\n        spec:\n          containers:\n          - name: sync\n            image: amazon/aws-cli\n            args:\n            - s3\n            - sync\n            - restartPolicy: OnFailure\n\n\\x00",
+        "column": 0,
+        "index": 575,
+        "line": 24,
+        "name": "<unicode string>",
+        "pointer": 575
+      }
+    }
+  }
+}

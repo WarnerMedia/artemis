@@ -1,0 +1,66 @@
+###############################################################################
+# Build stage
+###############################################################################
+FROM python:3.9-bullseye as builder
+
+# Install the Docker repository
+RUN apt-get update \
+    && apt-get install lsb-release software-properties-common -y --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add -
+
+###############################################################################
+# App stage
+###############################################################################
+FROM python:3.9-slim-bullseye as app
+
+ARG MAINTAINER
+LABEL maintainer=$MAINTAINER
+
+RUN mkdir -p /srv/engine \
+    && mkdir -p /src
+
+COPY Pipfile ./
+COPY Pipfile.lock ./
+COPY ./libs/ /src/
+
+# Copy over the apt config from the builder that has the Docker repository
+# already set up.
+COPY --from=builder /etc/apt /etc/apt
+
+# Run all additional config in a single RUN to reduce the layers:
+# - Apply security updates
+# - Install Engine prerequisites
+# - Install Pipenv environment
+# - Install Artemis libraries
+# hadolint ignore=DL3013
+RUN apt-get update \
+    && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
+    && apt-get upgrade -y \
+    && apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list \
+    && apt-get install \
+    docker-ce-cli \
+    git \
+    openssh-client -y --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir pipenv==2020.8.13 \
+    && pipenv install --system --deploy \
+    && pip install /src/artemislib \
+    && pip install /src/artemisdb \
+    && rm -r /src
+
+WORKDIR /srv/engine
+
+COPY ./engine/ ./
+COPY ./services.json /srv/engine/
+
+VOLUME ["/srv/engine/plugins"]
+
+#SSH KEY RELATED
+COPY ./ssh-agent.sh /
+
+CMD ["python", "/srv/engine/engine.py"]

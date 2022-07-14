@@ -1,0 +1,5 @@
+{
+    "name": "TruffleHog Scanner",
+    "type": "secrets",
+    "image": "$ECR/artemis/python:3-latest"
+}

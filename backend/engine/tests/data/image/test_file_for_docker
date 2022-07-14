@@ -1,0 +1,10 @@
+FROM docker:20.10-rc-dind@sha256:0805d140b875b9bc8ebfdbae9ea4b26ba60ee90640a636c575713b6825035f66
+
+# Run all additional config in a single RUN to reduce the layers:
+# - Base apk requirements to execute script
+# - Upgrade pip and install boto3 for plugin utils
+# - Symlink python3 to python for Analyzer Engine benefit
+RUN apk update && apk add git unzip python3 openssl=1.1.1g-r0 py3-pip && \
+    pip3 install --upgrade pip setuptools boto3 && \
+    pip3 install boto3 && \
+    ln -s /usr/bin/python3 /usr/bin/python

@@ -1,0 +1,1 @@
+# Scheduled Scan Handler Lambda

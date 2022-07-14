@@ -1,0 +1,202 @@
+{
+    "$id": "services.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "description": "Artemis Service Configuration",
+    "type": "object",
+    "required": [
+        "services",
+        "repos",
+        "scan_orgs",
+        "external_orgs"
+    ],
+    "properties": {
+        "services": {
+            "type": "object",
+            "descriptipn": "Configuration of a VCS service integration",
+            "required": [
+                "secret_loc",
+                "type",
+                "hostname",
+                "url",
+                "branch_url",
+                "diff_url",
+                "allow_all",
+                "api_key_add",
+                "use_deploy_key",
+                "batch_queries",
+                "nat_connect",
+                "app_integration",
+                "http_basic_auth",
+                "initial_page",
+                "secrets_management",
+                "application_metadata"
+            ],
+            "properties": {
+                "secret_loc": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Secrets Manager key within the application namespace that contains the API key for this service"
+                },
+                "type": {
+                    "type": "enum",
+                    "value": [
+                        "github",
+                        "gitlab",
+                        "bitbucket",
+                        "ado"
+                    ],
+                    "description": "VCS type for this service"
+                },
+                "hostname": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Hostname to put in the 'Host' header in HTTP requests"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "API URL for this VCS service, such as https://api.github.com/graphql for GitHub"
+                },
+                "branch_url": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "URL to API for doing branch operations. For example, the GitLab GraphQL endpoint is used for most operations but the REST API is used for branch information."
+                },
+                "diff_url": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "URL to API for doing diff operations. For example, the GitLab GraphQL endpoint is used for most operations but the REST API is used for diff information."
+                },
+                "allow_all": {
+                    "type": "boolean",
+                    "description": "Whether all repos within this VCS should be scannable. This should be set to false for public VCS hosts like GitHub."
+                },
+                "api_key_add": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Additional data that needs to be added to the API key. For example, because GitLab uses multiple APIs some of them need \"oauth2:$key\" and that is configured here."
+                },
+                "use_deploy_key": {
+                    "type": "boolean",
+                    "description": "Whether to use an SSH key instead of an API key to clone repos from this VCS service."
+                },
+                "batch_queries": {
+                    "type": "boolean",
+                    "description": "Whether this VCS service supports batched queries."
+                },
+                "nat_connect": {
+                    "type": "boolean",
+                    "description": "Whether this VCS service is scanned by engines in the NAT cluster. This is required if Artemis has to connect to the VCS from a single IP."
+                },
+                "app_integration": {
+                    "type": "boolean",
+                    "description": "Whether this VCS service is integrated with using a GitHub App."
+                },
+                "http_basic_auth": {
+                    "type": "boolean",
+                    "description": "Whether this VCS service uses HTTP Basic authentication."
+                },
+                "initial_page": {
+                    "type": "object",
+                    "required": [
+                        "cursor"
+                    ],
+                    "properties": {
+                        "cursor": {
+                            "type": "string",
+                            "description": "Initial cursor value for paging API results. This will normally by \"null\""
+                        }
+                    }
+                },
+                "secrets_management": {
+                    "type": "object",
+                    "description": "Secrets management schemes and include/exclude globs for applying them",
+                    "patternProperties": {
+                        "[a-zA-Z0-9_]+": {
+                            "type": "object",
+                            "required": [
+                                "include",
+                                "exclude"
+                            ],
+                            "properties": {
+                                "include": {
+                                    "type": "array",
+                                    "description": "List of globs for repos that are included in this secrets management scheme.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "exclude": {
+                                    "type": "array",
+                                    "description": "List of globs for repos that are excluded from this secrets management scheme.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "application_metadata": {
+                    "type": "object",
+                    "description": "Application metadata schemes and include/exclude globs for applying them",
+                    "patternProperties": {
+                        "[a-zA-Z0-9_]+": {
+                            "type": "object",
+                            "required": [
+                                "include",
+                                "exclude"
+                            ],
+                            "properties": {
+                                "include": {
+                                    "type": "array",
+                                    "description": "List of globs for repos that are included in this application metadata scheme.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "exclude": {
+                                    "type": "array",
+                                    "description": "List of globs for repos that are excluded from this application metadata scheme.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "repos": {
+            "type": "array",
+            "description": "List of globs for allowed repos when the service configuration has allow_all set to false. Example: github/testorg/*",
+            "items": {
+                "type": "string"
+            }
+        },
+        "scan_orgs": {
+            "type": "array",
+            "description": "Orgs that are included in the orchestrator's scanning. If the item ends in a wildcard the service is queried for all orgs/groups.",
+            "items": {
+                "type": "string"
+            }
+        },
+        "external_orgs": {
+            "type": "array",
+            "description": "Orgs that are considered external. Orgs listed here will only have private repos scanned and not any public repos so that the scope is limited.",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

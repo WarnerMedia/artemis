@@ -1,0 +1,7 @@
+{
+    "name": "Aqua CLI Scanner",
+    "type": "vulnerability",
+    "image": "$ECR/artemis/dind:latest",
+    "build_images": true,
+    "enabled": "$ARTEMIS_FEATURE_AQUA_ENABLED"
+}

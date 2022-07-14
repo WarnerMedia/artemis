@@ -1,0 +1,40 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = "3.9"
+
+[packages]
+boto3 = "*"
+PyGithub = "*"
+requests = "*"
+awscli = "*"
+django = "==3.2.14"
+simplejson = "*"
+cwe = "*"
+pyjwt = "*"
+cryptography = "*"
+
+[dev-packages]
+pytest = "==6.0.1"
+flake8 = ">=3.3.0"
+mock = "==4.0.2"
+moto = "==1.3.14"
+pytest-cache = "==1.0"
+pytest-cov = "==2.10.0"
+pytest-logging = "==2015.11.4"
+pytest-subtests = "==0.3.2"
+pytest-black = "==0.3.12"
+pylint = "*"
+autopep8 = "*"
+black = "==22.3.0"
+isort = "*"
+cfn-lint = "==0.53.0"
+requests = "*"
+python-dotenv = "*"
+checkov = "==2.0.1065"
+
+[pipenv]
+allow_prereleases = true

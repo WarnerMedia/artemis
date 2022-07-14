@@ -1,0 +1,5 @@
+{
+    "name": "OWASP Dependency Scanner",
+    "type": "vulnerability",
+    "image": "$ECR/artemis/java:8-latest"
+}
