@@ -10,7 +10,7 @@ Artemis is an extensible source code scanning tool developed by the WarnerMedia 
 
 ## Overview
 
-Artemis is made up of 3 primary components: the [backend](./backend), the web UI, and the scan orchestrator. Each of these has its own components, architecture, and development processes, which are detailed in the README files within their subdirectories.
+Artemis is made up of 3 primary components: the [backend](./backend), the [web UI](./ui), and the scan orchestrator. Each of these has its own components, architecture, and development processes, which are detailed in the README files within their subdirectories.
 
 ## License
 

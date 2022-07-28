@@ -42,7 +42,32 @@ coverage.xml
 engine/tests/data/auth.json
 
 # Exclude .env files
-.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Exclude vim .swp files
 *.swp
+
+# UI
+# dependencies
+/ui/node_modules
+/ui/.pnp
+/ui/**/.pnp.js
+
+# testing
+/ui/coverage
+
+# misc
+/ui/**/.eslintcache
+/ui/**/npm-debug.log*
+/ui/**/yarn-debug.log*
+/ui/**/yarn-error.log*
+
+# i18n transients
+/ui/src/locale/_build/
+/ui/src/locale/**/*.*js
+
+# linting
+/ui/hadolint

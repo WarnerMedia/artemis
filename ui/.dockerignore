@@ -1,0 +1,8 @@
+/node_modules
+/build
+.DS_Store
+.git
+.gitignore
+.github
+*.log*
+/publicCustom/README.md

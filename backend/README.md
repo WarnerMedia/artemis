@@ -177,4 +177,4 @@ terraform apply
 
 ## License
 
-This repository is released under [the MIT license](https://en.wikipedia.org/wiki/MIT_License).  View the [local license file](./LICENSE).
+This repository is released under [the MIT license](https://en.wikipedia.org/wiki/MIT_License).  View the [local license file](../LICENSE).
