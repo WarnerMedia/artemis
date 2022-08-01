@@ -26,7 +26,7 @@ setup(
     entry_points={"console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]},
     classifiers=[
         "Programming Language :: Python :: 3.9",
-        "License :: Other/Proprietary License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
