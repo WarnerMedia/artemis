@@ -24,7 +24,7 @@ variable "description" {
 }
 
 variable "schedule_expression" {
-  decription = "CloudWatch event schedule expression"
+  description = "CloudWatch event schedule expression"
 }
 
 variable "input" {
