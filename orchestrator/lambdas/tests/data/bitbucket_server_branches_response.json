@@ -1,0 +1,48 @@
+{
+  "size": 5,
+  "limit": 25,
+  "isLastPage": true,
+  "values": [
+    {
+      "id": "refs/heads/main",
+      "displayId": "main",
+      "type": "BRANCH",
+      "latestCommit": "",
+      "latestChangeset": "",
+      "isDefault": true
+    },
+    {
+      "id": "refs/heads/branch1",
+      "displayId": "branch1",
+      "type": "BRANCH",
+      "latestCommit": "",
+      "latestChangeset": "",
+      "isDefault": false
+    },
+    {
+      "id": "refs/heads/branch2",
+      "displayId": "branch2",
+      "type": "BRANCH",
+      "latestCommit": "",
+      "latestChangeset": "",
+      "isDefault": false
+    },
+    {
+      "id": "refs/heads/branch3",
+      "displayId": "branch3",
+      "type": "BRANCH",
+      "latestCommit": "",
+      "latestChangeset": "",
+      "isDefault": false
+    },
+    {
+      "id": "refs/heads/branch4",
+      "displayId": "branch4",
+      "type": "BRANCH",
+      "latestCommit": "",
+      "latestChangeset": "",
+      "isDefault": false
+    }
+  ],
+  "start": 0
+}

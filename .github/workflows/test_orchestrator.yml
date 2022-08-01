@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675 # actions/checkout@v2.3.3
+      - name: setup python environment
+        uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # actions/setup-python@v2.1.4
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+      - name: Run unit tests
+        run: |
+          make -C orchestrator unit-test ENV=example

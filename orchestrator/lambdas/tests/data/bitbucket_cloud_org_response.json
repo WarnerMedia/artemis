@@ -1,0 +1,91 @@
+{
+  "pagelen": 10,
+  "size": 253,
+  "values": [
+    {
+      "scm": "git",
+      "website": "",
+      "has_wiki": true,
+      "uuid": "{}",
+      "links": {
+        "watchers": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/watchers"
+        },
+        "branches": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/refs/branches"
+        },
+        "tags": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/refs/tags"
+        },
+        "commits": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commits"
+        },
+        "clone": [
+          {
+            "href": "https://user@bitbucket.org/testorg/testrepo.git",
+            "name": "https"
+          },
+          {
+            "href": "git@bitbucket.org:testorg/testrepo.git",
+            "name": "ssh"
+          }
+        ],
+        "self": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo"
+        },
+        "source": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/src"
+        },
+        "html": {
+          "href": "https://bitbucket.org/testorg/testrepo"
+        },
+        "avatar": {
+          "href": ""
+        },
+        "hooks": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/hooks"
+        },
+        "forks": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/forks"
+        },
+        "downloads": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/downloads"
+        },
+        "issues": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/issues"
+        },
+        "pullrequests": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/pullrequests"
+        }
+      },
+      "fork_policy": "no_public_forks",
+      "full_name": "testorg/testrepo",
+      "name": "testrepo",
+      "project": {
+        "links": {
+          "self": {
+            "href": "https://bitbucket.org/!api/2.0/workspaces/testorg/projects/testrepo"
+          },
+          "html": {
+            "href": "https://bitbucket.org/testorg/workspace/projects/testrepo"
+          },
+          "avatar": {
+            "href": ""
+          }
+        },
+        "type": "project",
+        "name": "Test Project",
+        "key": "testrepo",
+        "uuid": "{}"
+      },
+      "language": "ruby",
+      "created_on": "2014-04-15T22:27:33.445623+00:00",
+      "mainbranch": {
+        "type": "branch",
+        "name": "main"
+      }
+    }
+  ],
+  "page": 1,
+  "next": "https://bitbucket.org/api/2.0/repositories/testorg?page=2"
+}

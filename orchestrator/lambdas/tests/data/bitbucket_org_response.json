@@ -1,0 +1,95 @@
+{
+  "size": 6,
+  "limit": 100,
+  "isLastPage": true,
+  "values": [
+    {
+      "key": "ABC",
+      "id": 1,
+      "name": "ABC",
+      "description": "ABC group maintained repos",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "https://git.example.com/projects/ABC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "DEF",
+      "id": 302,
+      "name": "DEF",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "https://git.example.com/projects/DEF"
+          }
+        ]
+      }
+    },
+    {
+      "key": "GHI",
+      "id": 61,
+      "name": "GHI",
+      "description": "GHI repos",
+      "public": true,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "https://git.example.com/projects/GHI"
+          }
+        ]
+      }
+    },
+    {
+      "key": "JKL",
+      "id": 22,
+      "name": "JKL",
+      "description": "JKL test repos",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "https://git.example.com/projects/JKL"
+          }
+        ]
+      }
+    },
+    {
+      "key": "MNO",
+      "id": 364,
+      "name": "MNO",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "https://git.example.com/projects/MNO"
+          }
+        ]
+      }
+    },
+    {
+      "key": "PQR",
+      "id": 422,
+      "name": "PQR",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "https://git.example.com/projects/PQR"
+          }
+        ]
+      }
+    }
+  ],
+  "start": 0
+}

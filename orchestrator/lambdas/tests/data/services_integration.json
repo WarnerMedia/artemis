@@ -1,0 +1,77 @@
+{
+  "services": {
+    "github": {
+      "secret_loc": "github-api-key",
+      "type": "github",
+      "hostname": null,
+      "url": "https://api.github.com/graphql",
+      "branch_url": null,
+      "allow_all": false,
+      "api_key_add": null,
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "initial_page": {
+        "cursor": "null"
+      }
+    },
+    "gitlab": {
+      "secret_loc": "gitlab-api-key",
+      "type": "gitlab",
+      "hostname": null,
+      "url": "https://gitlab.com/api/graphql",
+      "branch_url": "https://gitlab.com/api/v4",
+      "allow_all": false,
+      "api_key_add": "oauth2:$key",
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "initial_page": {
+        "cursor": "null"
+      }
+    },
+    "bitbucket": {
+      "secret_loc": "bitbucket-api-key",
+      "type": "bitbucket",
+      "hostname": null,
+      "url": "https://bitbucket.org/api/2.0",
+      "branch_url": null,
+      "allow_all": false,
+      "api_key_add": "other",
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "initial_page": {
+        "cursor": "null"
+      }
+    },
+    "azure": {
+      "secret_loc": "azure-api-key",
+      "type": "ado",
+      "hostname": null,
+      "url": "https://dev.azure.com",
+      "branch_url": null,
+      "diff_url": null,
+      "allow_all": false,
+      "api_key_add": null,
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "nat_connect": false,
+      "app_integration": false,
+      "http_basic_auth": true,
+      "initial_page": {
+        "cursor": "null"
+      }
+    }
+  },
+  "repos": [
+    "azure/testorg/*",
+    "bitbucket/testorg/*",
+    "github/testorg/*",
+    "gitlab/testorg/*"
+  ],
+  "scan_orgs": [
+    "azure/testorg",
+    "bitbucket/testorg",
+    "github/testorg",
+    "gitlab/testorg"
+  ],
+  "external_orgs": []
+}

@@ -1,0 +1,40 @@
+{
+  "data": {
+    "organizations": {
+      "nodes": [
+        {
+          "login": "testorg1"
+        },
+        {
+          "login": "testorg2"
+        },
+        {
+          "login": "testorg3"
+        },
+        {
+          "login": "testorg4"
+        },
+        {
+          "login": "testorg5"
+        },
+        {
+          "login": "testorg6"
+        },
+        {
+          "login": "testorg7"
+        },
+        {
+          "login": "testorg8"
+        },
+        {
+          "login": "testorg9"
+        }
+      ],
+      "pageInfo": {
+        "startCursor": "Y3Vyc29yOnYyOpEC",
+        "endCursor": "Y3Vyc29yOnYyOpHMug==",
+        "hasNextPage": false
+      }
+    }
+  }
+}

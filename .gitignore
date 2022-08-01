@@ -46,6 +46,7 @@ engine/tests/data/auth.json
 .env.development.local
 .env.test.local
 .env.production.local
+.env*.local*
 
 # Exclude vim .swp files
 *.swp

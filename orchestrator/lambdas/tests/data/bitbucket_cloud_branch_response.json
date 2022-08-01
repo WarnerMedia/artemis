@@ -1,0 +1,297 @@
+{
+  "pagelen": 10,
+  "size": 12,
+  "values": [
+    {
+      "name": "origin/testbranch",
+      "links": {
+        "commits": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commits/origin/testbranch"
+        },
+        "self": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/refs/branches/origin/testbranch"
+        },
+        "html": {
+          "href": "https://bitbucket.org/testorg/testrepo/branch/origin/testbranch"
+        }
+      },
+      "default_merge_strategy": "merge_commit",
+      "merge_strategies": [
+        "merge_commit",
+        "squash",
+        "fast_forward"
+      ],
+      "type": "branch",
+      "target": {
+        "hash": "dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a",
+        "repository": {
+          "links": {
+            "self": {
+              "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo"
+            },
+            "html": {
+              "href": "https://bitbucket.org/testorg/testrepo"
+            },
+            "avatar": {
+              "href": "https://bytebucket.org/ravatar/%7B931c323c-da24-4c74-a4a2-e92d23946045%7D?ts=java"
+            }
+          },
+          "type": "repository",
+          "name": "testrepo",
+          "full_name": "testorg/testrepo",
+          "uuid": "{931c323c-da24-4c74-a4a2-e92d23946045}"
+        },
+        "links": {
+          "self": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a"
+          },
+          "comments": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a/comments"
+          },
+          "patch": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/patch/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a"
+          },
+          "html": {
+            "href": "https://bitbucket.org/testorg/testrepo/commits/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a"
+          },
+          "diff": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/diff/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a"
+          },
+          "approve": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a/approve"
+          },
+          "statuses": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/dc75e8a86d315d8b8de032fd8bd616d6f3a6cd5a/statuses"
+          }
+        },
+        "author": {
+          "raw": "Test User 1 <user1@example.com>",
+          "type": "author"
+        },
+        "parents": [
+          {
+            "hash": "c26b1361bd896a5ff2bde4c7c854c555f08240f6",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/c26b1361bd896a5ff2bde4c7c854c555f08240f6"
+              },
+              "html": {
+                "href": "https://bitbucket.org/testorg/testrepo/commits/c26b1361bd896a5ff2bde4c7c854c555f08240f6"
+              }
+            }
+          }
+        ],
+        "date": "2013-12-24T18:00:45+00:00",
+        "message": "Commit message\n",
+        "type": "commit"
+      }
+    },
+    {
+      "name": "development",
+      "links": {
+        "commits": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commits/development"
+        },
+        "self": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/refs/branches/development"
+        },
+        "html": {
+          "href": "https://bitbucket.org/testorg/testrepo/branch/development"
+        }
+      },
+      "default_merge_strategy": "merge_commit",
+      "merge_strategies": [
+        "merge_commit",
+        "squash",
+        "fast_forward"
+      ],
+      "type": "branch",
+      "target": {
+        "hash": "ce2e8bca5623333038cda5b16318673a7b7c014c",
+        "repository": {
+          "links": {
+            "self": {
+              "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo"
+            },
+            "html": {
+              "href": "https://bitbucket.org/testorg/testrepo"
+            },
+            "avatar": {
+              "href": "https://bytebucket.org/ravatar/%7B931c323c-da24-4c74-a4a2-e92d23946045%7D?ts=java"
+            }
+          },
+          "type": "repository",
+          "name": "testrepo",
+          "full_name": "testorg/testrepo",
+          "uuid": "{931c323c-da24-4c74-a4a2-e92d23946045}"
+        },
+        "links": {
+          "self": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/ce2e8bca5623333038cda5b16318673a7b7c014c"
+          },
+          "comments": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/ce2e8bca5623333038cda5b16318673a7b7c014c/comments"
+          },
+          "patch": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/patch/ce2e8bca5623333038cda5b16318673a7b7c014c"
+          },
+          "html": {
+            "href": "https://bitbucket.org/testorg/testrepo/commits/ce2e8bca5623333038cda5b16318673a7b7c014c"
+          },
+          "diff": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/diff/ce2e8bca5623333038cda5b16318673a7b7c014c"
+          },
+          "approve": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/ce2e8bca5623333038cda5b16318673a7b7c014c/approve"
+          },
+          "statuses": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/ce2e8bca5623333038cda5b16318673a7b7c014c/statuses"
+          }
+        },
+        "author": {
+          "raw": "Test User 2 <user2@example.com>",
+          "type": "author",
+          "user": {
+            "display_name": "Test User 2",
+            "uuid": "{13073DBA-D2AE-4BAB-A817-B4B22FC78BEB}",
+            "links": {
+              "self": {
+                "href": ""
+              },
+              "html": {
+                "href": ""
+              },
+              "avatar": {
+                "href": ""
+              }
+            },
+            "nickname": "Test User 2",
+            "type": "user",
+            "account_id": "123456:558bf406-a7fb-4df3-847e-4ae8031d6262"
+          }
+        },
+        "parents": [
+          {
+            "hash": "d373f3ada43f74061f57079a63ee41ee84fa6a23",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/d373f3ada43f74061f57079a63ee41ee84fa6a23"
+              },
+              "html": {
+                "href": "https://bitbucket.org/testorg/testrepo/commits/d373f3ada43f74061f57079a63ee41ee84fa6a23"
+              }
+            }
+          }
+        ],
+        "date": "2019-09-09T19:49:25+00:00",
+        "message": "Another commit message\n",
+        "type": "commit"
+      }
+    },
+    {
+      "name": "main",
+      "links": {
+        "commits": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commits/main"
+        },
+        "self": {
+          "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/refs/branches/main"
+        },
+        "html": {
+          "href": "https://bitbucket.org/testorg/testrepo/branch/main"
+        }
+      },
+      "default_merge_strategy": "merge_commit",
+      "merge_strategies": [
+        "merge_commit",
+        "squash",
+        "fast_forward"
+      ],
+      "type": "branch",
+      "target": {
+        "hash": "df91c68863f772eabc0ba4e2d54ed59389fb0290",
+        "repository": {
+          "links": {
+            "self": {
+              "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo"
+            },
+            "html": {
+              "href": "https://bitbucket.org/testorg/testrepo"
+            },
+            "avatar": {
+              "href": "https://bytebucket.org/ravatar/%7B931c323c-da24-4c74-a4a2-e92d23946045%7D?ts=java"
+            }
+          },
+          "type": "repository",
+          "name": "testrepo",
+          "full_name": "testorg/testrepo",
+          "uuid": "{931c323c-da24-4c74-a4a2-e92d23946045}"
+        },
+        "links": {
+          "self": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/df91c68863f772eabc0ba4e2d54ed59389fb0290"
+          },
+          "comments": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/df91c68863f772eabc0ba4e2d54ed59389fb0290/comments"
+          },
+          "patch": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/patch/df91c68863f772eabc0ba4e2d54ed59389fb0290"
+          },
+          "html": {
+            "href": "https://bitbucket.org/testorg/testrepo/commits/df91c68863f772eabc0ba4e2d54ed59389fb0290"
+          },
+          "diff": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/diff/df91c68863f772eabc0ba4e2d54ed59389fb0290"
+          },
+          "approve": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/df91c68863f772eabc0ba4e2d54ed59389fb0290/approve"
+          },
+          "statuses": {
+            "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/df91c68863f772eabc0ba4e2d54ed59389fb0290/statuses"
+          }
+        },
+        "author": {
+          "raw": "Test User 3 <user3@example.com>",
+          "type": "author",
+          "user": {
+            "display_name": "Test User 3",
+            "uuid": "{13073DBA-D2AE-4BAB-A817-B4B22FC78BEB}",
+            "links": {
+              "self": {
+                "href": ""
+              },
+              "html": {
+                "href": ""
+              },
+              "avatar": {
+                "href": ""
+              }
+            },
+            "nickname": "Test User 3",
+            "type": "user",
+            "account_id": "123456:a814d7b1-e61a-4986-9332-06fe0925586f"
+          }
+        },
+        "parents": [
+          {
+            "hash": "adc6a055e04a3ad18ea1f7e3cd9d0a072c159cc5",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://bitbucket.org/!api/2.0/repositories/testorg/testrepo/commit/adc6a055e04a3ad18ea1f7e3cd9d0a072c159cc5"
+              },
+              "html": {
+                "href": "https://bitbucket.org/testorg/testrepo/commits/adc6a055e04a3ad18ea1f7e3cd9d0a072c159cc5"
+              }
+            }
+          }
+        ],
+        "date": "2016-10-26T20:14:22+00:00",
+        "message": "Yet another commit message\n",
+        "type": "commit"
+      }
+    }
+  ]
+}

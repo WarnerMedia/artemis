@@ -1,0 +1,83 @@
+[
+    {
+        "id": 644,
+        "web_url": "https://git.example.com/groups/testorg1",
+        "name": "Test Org 1",
+        "path": "testorg1",
+        "full_name": "Test Org 1",
+        "full_path": "testorg1",
+        "parent_id": null
+    },
+    {
+        "id": 94,
+        "web_url": "https://git.example.com/groups/testorg2/suborg1/test",
+        "name": "Test",
+        "path": "test",
+        "full_name": "Test Org 2 / Sub Org 1 / Test",
+        "full_path": "testorg2/suborg1/test",
+        "parent_id": 594
+    },
+    {
+        "id": 493,
+        "web_url": "https://git.example.com/groups/testorg3/foo/bar",
+        "name": "Bar",
+        "path": "Bar",
+        "full_name": "Test Org 3 / Foo / Bar",
+        "full_path": "testorg3/foo/bar",
+        "parent_id": 573
+    },
+    {
+        "id": 158,
+        "web_url": "https://git.example.com/groups/testorg4",
+        "name": "testorg4",
+        "path": "testorg4",
+        "full_name": "testorg4",
+        "full_path": "testorg4",
+        "parent_id": null
+    },
+    {
+        "id": 539,
+        "web_url": "https://git.example.com/groups/testorg5/test/foobar",
+        "name": "foobar",
+        "path": "foobar",
+        "full_name": "Test Org 5 / Test / Foobar",
+        "full_path": "testorg5/test/foobar",
+        "parent_id": 593
+    },
+    {
+        "id": 565,
+        "web_url": "https://git.example.com/groups/testorg5",
+        "name": "testorg5",
+        "path": "testorg5",
+        "full_name": "testorg5",
+        "full_path": "testorg5",
+        "parent_id": null
+    },
+    {
+        "id": 659,
+        "web_url": "https://git.example.com/groups/testorg6",
+        "name": "testorg6",
+        "path": "testorg6",
+        "full_name": "testorg6",
+        "full_path": "testorg6",
+        "parent_id": null
+    },
+    {
+        "id": 4,
+        "web_url": "https://git.example.com/groups/testorg5/testorg6/test",
+        "name": "test",
+        "path": "test",
+        "full_name": "Test Org5 / Test Org 6 / test",
+        "full_path": "testorg5/testorg6/test",
+        "parent_id": 593
+    },
+    {
+        "id": 625,
+        "web_url": "https://git.example.com/groups/testorg5/testorg6/test-test",
+        "name": "test-test",
+        "path": "test-test",
+        "full_name": "Test Org 5 / Test Org 6 / test-test",
+        "full_path": "testorg5/testorg6/test-test",
+        "parent_id": 593
+    }
+]

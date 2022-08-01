@@ -1,0 +1,18 @@
+[tool.black]
+line-length = 120
+exclude = '/(\.eggs)/'
+
+[tool.isort]
+profile = "black"
+line_length = 120
+known_third_party = ["boto3", "botocore", "pytest"]
+known_first_party = [
+    "heimdall_utils",
+    "heimdall_orgs",
+    "heimdall_repos",
+    "org_queue",
+    "repo_queue",
+    "repo_scan",
+    "repo_scan_loop",
+    "lambdas"
+]

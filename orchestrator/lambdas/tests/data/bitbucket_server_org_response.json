@@ -1,0 +1,49 @@
+{
+  "size": 1,
+  "limit": 25,
+  "isLastPage": true,
+  "values": [
+    {
+      "slug": "testrepo",
+      "id": 782,
+      "name": "testrepo",
+      "scmId": "git",
+      "state": "AVAILABLE",
+      "statusMessage": "Available",
+      "forkable": true,
+      "project": {
+        "key": "TEST",
+        "id": 422,
+        "name": "test",
+        "public": false,
+        "type": "NORMAL",
+        "links": {
+          "self": [
+            {
+              "href": "https://git.example.com/projects/TEST"
+            }
+          ]
+        }
+      },
+      "public": true,
+      "links": {
+        "clone": [
+          {
+            "href": "https://git.example.com/scm/test/testrepo.git",
+            "name": "http"
+          },
+          {
+            "href": "ssh://git@git.example.com:12345/test/testrepo.git",
+            "name": "ssh"
+          }
+        ],
+        "self": [
+          {
+            "href": "https://git.example.com/projects/TEST/repos/testrepo/browse"
+          }
+        ]
+      }
+    }
+  ],
+  "start": 0
+}
