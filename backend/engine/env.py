@@ -60,3 +60,5 @@ MANDATORY_INCLUDE_PATHS = json.loads(os.environ.get("ARTEMIS_MANDATORY_INCLUDE_P
 PROCESS_SECRETS_WITH_PATH_EXCLUSIONS = (
     os.environ.get("ARTEMIS_PROCESS_SECRETS_WITH_PATH_EXCLUSIONS", "false").lower() == "true"
 )
+# ARTEMIS_METADATA_SCHEME_MODULES is a CSV list of metadata processing plugin modules
+METADATA_SCHEME_MODULES = list(filter(None, os.environ.get("ARTEMIS_METADATA_SCHEME_MODULES", "").split(",")))

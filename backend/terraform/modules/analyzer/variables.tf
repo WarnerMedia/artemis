@@ -201,6 +201,11 @@ variable "mandatory_include_paths" {
   default     = []
 }
 
+variable "metadata_scheme_modules" {
+  description = "CSV list of metadata processing modules"
+  default     = ""
+}
+
 ################################################
 # GitHub App
 ################################################

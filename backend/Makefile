@@ -163,6 +163,9 @@ DB_LIB_SRC = $(shell find ${ARTEMISDB} -type f -name '*.py' -o -name '*.cfg')
 SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg')
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 
+# Engine base image
+ENGINE_BASE := 3.9-slim-bullseye
+
 # Django version
 DJANGO_VER = 3.2.16
 
@@ -452,9 +455,10 @@ dist/engine_scripts.zip: docker-compose.aws.yml aws_env.py
 
 dist/docker/engine: Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
 	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull -t ${ENGINE_TAG} -f Dockerfiles/Dockerfile.engine \
+	$(DOCKER) build . -t ${ENGINE_TAG} -f Dockerfiles/Dockerfile.engine \
 		--no-cache --force-rm \
-		--build-arg MAINTAINER=${MAINTAINER}
+		--build-arg MAINTAINER=${MAINTAINER} \
+		--build-arg ENGINE_BASE=${ENGINE_BASE}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${ENGINE_TAG} ${ECR_URL}${ENGINE_TAG}
 	${DOCKER} tag ${ENGINE_TAG} ${ECR_URL}${ENGINE_TAG}-stage-${LATEST_COMMIT}
