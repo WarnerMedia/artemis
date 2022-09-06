@@ -12,6 +12,13 @@ REGION = os.environ.get("REGION", "us-east-2")
 S3_BUCKET = os.environ.get("S3_BUCKET")
 SECRETS_ENABLED = os.environ.get("SECRETS_ENABLED", "false").lower() == "true"
 
+# Additional routing for event types not handled by default.
+# Environment variable contains a JSON string of the format:
+# {
+#   "event_type": "queue_url"
+# }
+ADDITIONAL_ROUTING = json.loads(os.environ.get("ARTEMIS_ADDITIONAL_EVENT_ROUTING", "{}"))
+
 if SECRETS_QUEUE and AUDIT_QUEUE:
     # This is in a conditional so it doesn't run when this file is loaded during unit testing
     SQS = boto3.client("sqs")
@@ -57,6 +64,11 @@ def process(event):
     elif event["type"] == "audit":
         try:
             SQS.send_message(QueueUrl=AUDIT_QUEUE, MessageBody=json.dumps(event["event"]))
+        except ClientError:
+            print("Unable to queue event")
+    if event["type"] in ADDITIONAL_ROUTING:
+        try:
+            SQS.send_message(QueueUrl=ADDITIONAL_ROUTING[event["type"]], MessageBody=json.dumps(event["event"]))
         except ClientError:
             print("Unable to queue event")
     else:
