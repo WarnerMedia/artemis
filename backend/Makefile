@@ -74,7 +74,6 @@ SCALE_DOWN_LAMBDA_NAT := ${PREFIX}-scale-down-nat
 SCALE_DOWN_LAMBDA_PUBLIC := ${PREFIX}-scale-down-public
 CALLBACK_LAMBDA := ${PREFIX}-callback
 EVENT_DISPATCH_LAMBDA := ${PREFIX}-event-dispatch
-SECRETS_HANDLER_LAMBDA := ${PREFIX}-secrets-handler
 SPLUNK_HANDLER_LAMBDA := ${PREFIX}-splunk-handler
 API_AUTHORIZER_LAMBDA := ${PREFIX}-api-authorizer
 SIGNIN_LAMBDA := ${PREFIX}-signin-handler
@@ -384,7 +383,6 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/api/users_keys.zip \
 		 dist/lambdas/api/users_services.zip \
 		 dist/lambdas/events/event_dispatch.zip \
-		 dist/lambdas/events/secrets_handler.zip \
 		 dist/lambdas/events/splunk_handler.zip \
 		 dist/lambdas/generators/json_report.zip \
 		 dist/lambdas/generators/pdf_report.zip \
@@ -834,7 +832,6 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-api-users_keys \
 				upload_lambda_lambdas-api-users_services \
 				upload_lambda_lambdas-events-event_dispatch \
-				upload_lambda_lambdas-events-secrets_handler \
 				upload_lambda_lambdas-events-splunk_handler \
 				upload_lambda_lambdas-generators-json_report \
 				upload_lambda_lambdas-generators-pdf_report \
@@ -902,7 +899,6 @@ move_lambda_bundles: move_lambda_bundle_artemislib \
 					 move_lambda_bundle_scale_down \
 					 move_lambda_bundle_callback \
 					 move_lambda_bundle_event_dispatch \
-					 move_lambda_bundle_secrets_handler \
 					 move_lambda_bundle_splunk_handler \
 					 move_lambda_bundle_authorizer \
 					 move_lambda_bundle_signin \
@@ -1302,16 +1298,6 @@ deploy_event_dispatch: move_lambda_bundle_event_dispatch
 	@echo "${OK}"
 .PHONY: deploy_event_dispatch
 
-deploy_secrets_handler: move_lambda_bundle_secrets_handler
-	@echo "${INFO}Deploying ${SECRETS_HANDLER_LAMBDA} lambda"
-	aws lambda update-function-code \
-		--function-name ${SECRETS_HANDLER_LAMBDA} \
-		--region ${REGION} \
-		--s3-bucket ${S3_BUCKET} \
-		--s3-key lambdas/secrets_handler/v${VERSION}/secrets_handler.zip
-	@echo "${OK}"
-.PHONY: deploy_secrets_handler
-
 deploy_splunk_handler: move_lambda_bundle_splunk_handler
 	@echo "${INFO}Deploying ${AUDIT_EVENT_LAMBDA} lambda"
 	aws lambda update-function-code \
@@ -1601,7 +1587,6 @@ deploy_lambdas: deploy_repo \
 				deploy_scale_down \
 				deploy_callback \
 				deploy_event_dispatch \
-				deploy_secrets_handler \
 				deploy_splunk_handler \
 				deploy_api_authorizer \
 				deploy_signin \

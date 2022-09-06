@@ -115,7 +115,6 @@ module "analyzer" {
   domain_name                 = "ARTEMIS_ROUTE53_FQDN"
   alternative_names           = []
   api_stage                   = "v1"
-  secrets_enabled             = false
   lambda_cidr                 = "10.0.32.0/20"
   db_kms_key                  = "arn:aws:kms:${local.region}:ACCOUNT_ID:key/KEY_ID"
   database_availability_zones = ["${local.region}a", "${local.region}d"]
@@ -180,3 +179,19 @@ module "metric_alarms" {
   engine_log_group_name      = module.analyzer.engine_log_group_name
   repo_handler_function_name = module.analyzer.repo_handler_function_name
 }
+
+/* Uncomment this if implementing a secrets management lambda
+module "secrets_management" {
+  source = "../../modules/secrets_management"
+
+  app                  = local.app
+  ver                  = local.version
+  environment          = local.environment
+  tags                 = local.tags
+  lambda_architecture  = local.lambda_architecture
+  s3_analyzer_files_id = module.s3.s3_analyzer_files_id
+  lambda_bundle_s3_key = "lambdas/secrets_handler/v${local.version}/secrets_handler.zip"
+  secrets_queue        = module.sqs_queues.secrets_queue
+  secrets_enabled      = false
+}
+*/
