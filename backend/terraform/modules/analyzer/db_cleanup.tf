@@ -41,6 +41,7 @@ resource "aws_lambda_function" "db-cleanup" {
       ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       APPLICATION_TAG             = var.app
+      ARTEMIS_LOG_LEVEL           = var.log_level
     }
   }
 

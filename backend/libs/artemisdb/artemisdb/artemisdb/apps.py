@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class ArtemisDBConfig(AppConfig):
-    name = "artemisdb"
+    name = "artemisdb.artemisdb"
     verbose_name = "Artemis Database"
 
     # Set to False to prevent Django from selecting a configuration class automatically. This is needed due to a

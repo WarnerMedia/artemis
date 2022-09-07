@@ -1,5 +1,6 @@
 from enum import Enum
 from http import HTTPStatus
+from typing import Callable
 
 from django.db.models.query import QuerySet
 
@@ -50,13 +51,23 @@ class Filter:
 
 
 class FilterMapItem:
-    def __init__(self, key: str, exclude: bool = False, value: object = None, others: list = None) -> None:
+    def __init__(
+        self,
+        key: str,
+        exclude: bool = False,
+        value: object = None,
+        others: list = None,
+        generator: Callable[[Filter], QuerySet] = None,
+    ) -> None:
         self.key = key
         self.exclude = exclude
         self.others = others or []
 
-        # Override th evalue from the filter. This is when used in the "others" list
+        # Override the value from the filter. This is when used in the "others" list
         self.value = value
+
+        # Custom QuerySet filter generator overrides all for very complicated filtering
+        self.generator = generator
 
     def __str__(self) -> str:
         return f"FilterMapItem<{self.key}, {self.exclude}>"
@@ -85,9 +96,11 @@ class FilterMap:
             # If a custom FilterMapItem is not provided use the default lookup format
             self._map[alias][filter_type] = FilterMapItem(f"{field}__{filter_type.value}")
 
-    def add_string(self, field: str, alias: str = None) -> None:
+    def add_string(self, field: str, alias: str = None, null: bool = False) -> None:
         for filter_type in [FilterType.EXACT, FilterType.CONTAINS, FilterType.ICONTAINS]:
             self.add(field, alias, filter_type)
+        if null:
+            self.add(field, alias, FilterType.IS_NULL)
 
     def add_timestamp(self, field: str, alias: str = None) -> None:
         for filter_type in [FilterType.EXACT, FilterType.GREATER_THAN, FilterType.LESS_THAN]:
@@ -103,13 +116,18 @@ class FilterMap:
         # Apply filters
         for filter in filters:
             item = self._lookup(filter)
-            f = {item.key: filter.value}
-            for other in item.others:
-                f[other.key] = other.value
-            if item.exclude:
-                qs = qs.exclude(**f)
+            if item.generator is not None:
+                # If the FilterMapItem has a generator function defined use that
+                qs = item.generator(qs, filter)
             else:
-                qs = qs.filter(**f)
+                # Otherwise, apply the filter using the normal construction
+                f = {item.key: filter.value}
+                for other in item.others:
+                    f[other.key] = other.value
+                if item.exclude:
+                    qs = qs.exclude(**f)
+                else:
+                    qs = qs.filter(**f)
         return qs
 
 
@@ -208,6 +226,7 @@ def parse_paging_event(
     nullable_filters: list = None,
     boolean_filters: list = None,
     ordering_aliases: dict = None,
+    mv_validators: dict = None,
 ) -> PageInfo:
     query = event.get("queryStringParameters") or {}
     mv_query = event.get("multiValueQueryStringParameters") or {}
@@ -271,6 +290,11 @@ def parse_paging_event(
     # Fields that are looking for a value in a list
     for filter_field in mv_filters or []:
         if filter_field in mv_query:
+            if filter_field in (mv_validators or {}):
+                # If the multi-value field has a validator defined execute it against the value
+                for mv_value in mv_query[filter_field]:
+                    if not mv_validators[filter_field](mv_value):
+                        raise ValidationError(f"Invalid value for {filter_field}: {mv_value}")
             filters.append(Filter(filter_field, mv_query[filter_field], FilterType.IS_IN))
 
     # Fields that are booleans

@@ -3,7 +3,14 @@ import uuid
 from django.db import transaction
 from django.db.models import Q, QuerySet
 
-from artemisdb.artemisdb.models import Plugin, Scan, Vulnerability
+from artemisdb.artemisdb.models import (
+    Component,
+    Plugin,
+    RepoVulnerabilityScan,
+    Scan,
+    Vulnerability,
+    VulnerabilityScanPlugin,
+)
 from artemislib.logging import Logger
 from processor.sbom import get_component
 from utils.plugin import Result
@@ -117,6 +124,9 @@ def process_vulns(result: Result, scan: Scan, plugin_name: str) -> None:
                 LOG.debug("Updated %s in vuln inventory (%s)", v["id"], vuln.vuln_id)
                 vuln.save()
 
+        source = v.get("source") if isinstance(v.get("source"), list) else [v.get("source", "")]
+        _process_vuln_instance(vuln, scan, plugin, component, source, v.get("filename"), v.get("line"))
+
         if "inventory" in v:
             # Delete the inventory part of the plugin result because we don't need to store it in the DB
             del v["inventory"]
@@ -187,3 +197,41 @@ def _filter_advisory_ids(full_advisory_ids: list) -> list[str]:
         LOG.info("No unfiltered advisory IDs in %s", full_advisory_ids)
         advisory_ids = full_advisory_ids
     return list(advisory_ids)
+
+
+def _process_vuln_instance(
+    vuln: Vulnerability, scan: Scan, plugin: Plugin, component: Component, source: list, filename: str, line: int
+) -> None:
+    """
+    Record the vuln instance for this scan
+    """
+    # Get or create the vuln instance for this repo+branch
+    vuln_instance, _ = RepoVulnerabilityScan.objects.get_or_create(
+        repo=scan.repo, ref=scan.ref, vulnerability=vuln, defaults={"vuln_instance_id": uuid.uuid4(), "resolved": False}
+    )
+    # Map the vuln instance to this scan as coming from this plugin and component
+    vuln_scan, _ = VulnerabilityScanPlugin.objects.get_or_create(vuln_instance=vuln_instance, scan=scan)
+    if not vuln_scan.plugins.filter(pk=plugin.pk).exists():
+        vuln_scan.plugins.add(plugin)
+    if not vuln_scan.components.filter(pk=component.pk).exists():
+        vuln_scan.components.add(component)
+
+    # Record the source location for this specific vuln instance
+    vuln_scan.source.append({"source": source, "filename": filename, "line": line})
+    vuln_scan.save()
+
+
+def resolve_vulns(scan: Scan, error_plugins: list) -> None:
+    # Get the plugins run by this scan, excluding any that failed to execute successfully
+    plugins = Q()
+    for plugin in Plugin.objects.filter(name__in=[p for p in scan.plugins if not p.startswith("-")]).exclude(
+        name__in=error_plugins
+    ):
+        plugins |= Q(vulnerability__plugins=plugin)
+
+    # Get the vuln instances for this repo+ref that have been found by these plugins previously
+    # but that were not found by this scan
+    vuln_instances = RepoVulnerabilityScan.objects.filter(Q(repo=scan.repo, ref=scan.ref) & plugins).exclude(scan=scan)
+
+    # Update the vuln instances to mark them resolved
+    vuln_instances.update(resolved=True, resolved_by=scan)

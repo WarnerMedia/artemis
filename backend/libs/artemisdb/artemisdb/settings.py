@@ -5,7 +5,7 @@ secrets = DjangoSecrets()
 SECRET_KEY = secrets.secret_key
 
 INSTALLED_APPS = [
-    "artemisdb.artemisdb",
+    "artemisdb.artemisdb.apps.ArtemisDBConfig",
 ]
 
 creds = DatabaseCreds()

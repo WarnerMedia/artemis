@@ -95,6 +95,7 @@ SCANS_BATCH_LAMBDA := ${PREFIX}-scans-batch-handler
 DB_CLEANUP_LAMBDA := ${PREFIX}-db-cleanup
 SYSTEM_ALLOWLIST_LAMBDA := ${PREFIX}-system-allowlist-handler
 SEARCH_SCANS_LAMBDA := ${PREFIX}-search-scans-handler
+SEARCH_VULNERABILITIES_LAMBDA := ${PREFIX}-search-vulnerabilities-handler
 
 # Lambda layers
 ARTEMISLIB_LAMBDA_LAYER := ${PREFIX}-artemislib
@@ -163,7 +164,7 @@ SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 
 # Django version
-DJANGO_VER = 3.2.14
+DJANGO_VER = 3.2.15
 
 # Enry Info
 ENRYVER := 1.1.0
@@ -372,6 +373,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/api/scans_batch.zip \
 		 dist/lambdas/api/search_repositories.zip \
 		 dist/lambdas/api/search_scans.zip \
+		 dist/lambdas/api/search_vulnerabilities.zip \
 		 dist/lambdas/api/signin.zip \
 		 dist/lambdas/api/system_allowlist.zip \
 		 dist/lambdas/api/system_status.zip \
@@ -820,6 +822,7 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-api-scans_batch \
 				upload_lambda_lambdas-api-search_repositories \
 				upload_lambda_lambdas-api-search_scans \
+				upload_lambda_lambdas-api-search_vulnerabilities \
 				upload_lambda_lambdas-api-signin \
 				upload_lambda_lambdas-api-system_allowlist \
 				upload_lambda_lambdas-api-system_status \
@@ -887,6 +890,7 @@ move_lambda_bundles: move_lambda_bundle_artemislib \
 					 move_lambda_bundle_groups_members \
 					 move_lambda_bundle_search_repositories \
 					 move_lambda_bundle_search_scans \
+					 move_lambda_bundle_search_vulnerabilities \
 					 move_lambda_bundle_system_allowlist \
 					 move_lambda_bundle_system_status \
 					 move_lambda_bundle_ci_tools \
@@ -1138,11 +1142,32 @@ deploy_search_scans: move_lambda_bundle_search_scans
 		--function-name ${SEARCH_SCANS_LAMBDA} \
 		--region ${REGION} \
 		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:artemis-analyzerlib:$(shell aws lambda list-layer-versions --layer-name artemis-analyzerlib --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:artemis-analyzerdb:$(shell aws lambda list-layer-versions --layer-name artemis-analyzerdb --region=${REGION} | jq -r '.LayerVersions[0].Version') \
+		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
+		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
 		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
 	@echo "${OK}"
 .PHONY: deploy_search_scans
+
+deploy_search_vulnerabilities: move_lambda_bundle_search_vulnerabilities
+	@echo "${INFO}Deploying ${SEARCH_VULNERABILITIES_LAMBDA} lambda"
+	aws lambda update-function-code \
+		--function-name ${SEARCH_VULNERABILITIES_LAMBDA} \
+		--region ${REGION} \
+		--s3-bucket ${S3_BUCKET} \
+		--s3-key lambdas/search_vulnerabilities/v${VERSION}/search_vulnerabilities.zip
+	@echo "${INFO}Waiting for ${SEARCH_VULNERABILITIES_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${SEARCH_VULNERABILITIES_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${SEARCH_VULNERABILITIES_LAMBDA} layer configuration"
+	aws lambda update-function-configuration \
+		--function-name ${SEARCH_VULNERABILITIES_LAMBDA} \
+		--region ${REGION} \
+		--layer \
+		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
+		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
+		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@echo "${OK}"
+.PHONY: deploy_search_vulnerabilities
 
 deploy_system_allowlist: move_lambda_bundle_system_allowlist
 	@echo "${INFO}Deploying ${SYSTEM_ALLOWLIST_LAMBDA} lambda"
@@ -1565,6 +1590,7 @@ deploy_lambdas: deploy_repo \
 				deploy_groups_members \
 				deploy_search_repositories \
 				deploy_search_scans \
+				deploy_search_vulnerabilities \
 				deploy_system_allowlist \
 				deploy_system_status \
 				deploy_task_queue_metrics \

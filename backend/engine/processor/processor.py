@@ -16,7 +16,7 @@ from metadata.metadata import get_all_metadata
 from processor.details import Details
 from processor.sbom import process_sbom
 from processor.scan_details import ScanDetails
-from processor.vulns import process_vulns
+from processor.vulns import process_vulns, resolve_vulns
 from utils.deploy_key import create_ssh_url, git_clone
 from utils.engine import get_key
 from utils.git import git_clean, git_pull, git_reset
@@ -112,6 +112,8 @@ class EngineProcessor:
         # Run analysis tasks here
         current_plugin = 0
 
+        error_plugins = []
+
         for plugin in self.action_details.plugins:
             current_plugin += 1
             logger.info("Running plugin %s against %s:%s", plugin, self.details.repo, self.action_details.branch)
@@ -157,6 +159,12 @@ class EngineProcessor:
                 # but log the exception with stack trace so it can be
                 # investigated.
                 logger.exception("Error running plugin %s: %s", plugin, e)
+                error_plugins.append(plugin)
+
+        # Now that all the plugins have finished resolve any vulns that were found previously via an equivalent
+        # scan but that were not found now. Any plugins that failed to execute successfully are excluded to those
+        # vulnerabilities are not accidentally resolved.
+        resolve_vulns(self.scan.get_scan_object(), error_plugins)
 
     def pull_repo(self):
         logger.info("Pulling repo %s/%s:%s", self.details.service, self.details.repo, self.action_details.branch)

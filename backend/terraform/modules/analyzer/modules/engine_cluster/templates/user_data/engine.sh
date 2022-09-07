@@ -28,10 +28,6 @@ chmod 755 /data
 # Make sure packages are up-to-date
 yum -y update
 
-# Install latest ssm agent
-yum -y install https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-systemctl restart amazon-ssm-agent
-
 # Install dependencies
 yum -y install jq
 amazon-linux-extras install -y docker
@@ -79,6 +75,7 @@ ARTEMIS_STATUS_LAMBDA=${status_lambda}
 S3_BUCKET=${s3_bucket}
 APPLICATION=${application}
 REGION=${region}
+ARTEMIS_DOMAIN_NAME=${domain_name}
 EOF
 
 # Fix ownership of files for ec2-user

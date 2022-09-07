@@ -18,7 +18,7 @@ def secrets_scans(log: Logger) -> None:
 def old_scans(log: Logger) -> None:
     age = get_utc_datetime(offset_minutes=-MAX_SCAN_AGE)
     log.info("Cleaning up scans older than %s", format_timestamp(age))
-    qs = Scan.objects.filter(end_time__lt=age)
+    qs = Scan.objects.filter(created__lt=age)
     sequential_delete(qs, log, LOG_FREQ, "scans")
 
 

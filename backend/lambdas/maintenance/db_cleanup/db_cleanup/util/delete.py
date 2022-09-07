@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import QuerySet
 
 from artemislib.logging import Logger
@@ -23,7 +25,9 @@ def sequential_delete(
             # deleting items individually we will delete what is possible within this
             # Lambda execution and then pick it up in the next Lambda execution.
             if delete_check is None or delete_check(item) is True:
-                item.delete()
+                start = datetime.utcnow()
+                d = item.delete()
+                log.debug("Deleted %s in %s (%s)", item, str(datetime.utcnow() - start), d)
             else:
                 continue
 

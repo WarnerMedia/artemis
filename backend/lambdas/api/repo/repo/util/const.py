@@ -66,7 +66,7 @@ DEFAULT_DISABLED_CATEGORIES = ["sbom"]
 # }
 #
 # In the above example the scan qualifies if plugin1 AND (plugin2 OR plugin3) are enabled
-QUALIFIED_OPTIONAL_PLUGINS = {"nodejsscan", "technology_discovery"}  # Not required for qualification
+QUALIFIED_OPTIONAL_PLUGINS = {"nodejsscan", "technology_discovery", "base_images"}  # Not required for qualification
 QUALIFIED_PLUGINS = {
     "vulnerability": [
         [k] for k in set(PLUGIN_LIST_BY_CATEGORY["vulnerability"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)
@@ -96,7 +96,6 @@ if VERACODE_ENABLED:
     # Add the Veracode plugin if it is enabled
     PLUGIN_LIST_BY_CATEGORY["vulnerability"]["veracode_sca"] = None
     PLUGIN_LIST_BY_CATEGORY["sbom"]["veracode_sbom"] = None
-    QUALIFIED_PLUGINS["sbom"].append(["veracode_sbom"])
     for i in QUALIFIED_PLUGINS["vulnerability"]:
         if i == ["snyk"]:
             # Set veracode_sca as an alterate option to snyk for qualification

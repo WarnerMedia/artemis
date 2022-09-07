@@ -1,4 +1,6 @@
 import uuid
+from datetime import datetime
+from urllib.parse import quote_plus
 
 import simplejson
 from django.db import connection, models
@@ -17,12 +19,16 @@ from artemisdb.artemisdb.consts import (
     Severity,
     SystemAllowListType,
 )
+from artemisdb.artemisdb.env import DOMAIN_NAME
 from artemisdb.artemisdb.fields.ltree import LtreeField
 from artemisdb.artemisdb.util.auth import group_chain_filter
 from artemisdb.artemisdb.util.severity import ComparableSeverity
 from artemislib.datetime import format_timestamp
 from artemislib.db_cache import DBLookupCache
+from artemislib.logging import Logger
 from artemislib.services import get_services_and_orgs_for_scope
+
+LOG = Logger(__name__)
 
 
 class User(models.Model):
@@ -566,6 +572,23 @@ class Scan(models.Model):
     def __str__(self):
         return str(self.scan_id)
 
+    def delete(self):
+        # A scan can potentially have hundreds of thousands or even millions of associated rows in the
+        # dependency table. The dependency table contains a tree structure where the rows have foreign
+        # key relationships to other rows. The result is that when Django performs the cascade deletion
+        # of a scan with a large number of dependency records it can take a long time and consume a lot
+        # of memory as Django builds up the relationships to perform the cascade.
+        #
+        # This is a performance enhancement to bypass the cascade deletion of dependencies by instead
+        # having the database delete the rows associated with the scan being deleted directly instead of
+        # having Django do it.
+        LOG.debug("Deleting %s", self.scan_id)
+        start = datetime.utcnow()
+        with connection.cursor() as cursor:
+            cursor.execute(f"DELETE FROM {Dependency._meta.db_table} WHERE scan_id = %s", [self.pk])
+        LOG.debug("Bulk dependency deletion of scan %s completed in %s", self.scan_id, str(datetime.utcnow() - start))
+        return super(Scan, self).delete()
+
     def to_dict(self, history_format: bool = False):
         initiated_by = None
         if self.owner:
@@ -602,6 +625,7 @@ class Scan(models.Model):
                 },
                 "qualified": self.qualified,
                 "batch_id": str(self.batch.batch_id) if self.batch else None,
+                "batch_description": self.batch.description if self.batch else None,
             }
         return {
             "repo": self.repo.repo,
@@ -634,12 +658,25 @@ class Scan(models.Model):
             },
             "qualified": self.qualified,
             "batch_id": str(self.batch.batch_id) if self.batch else None,
+            "batch_description": self.batch.description if self.batch else None,
         }
 
     def formatted_application_metadata(self):
         # If the raw application metadata is not the format that should be returned
         # in API responses it can be reformatted here.
         return self.application_metadata
+
+    @property
+    def report_url(self) -> str:
+        """
+        Returns a string URL to the report of this scan in the UI. If the ARTEMIS_DOMAIN_NAME
+        environment variable is not set it returns the relative path instead of the full URL.
+        """
+        fqdn = ""
+        if DOMAIN_NAME is not None:
+            fqdn = f"https://{DOMAIN_NAME}"
+        params = f"service={quote_plus(self.repo.service)}&repo={quote_plus(self.repo.repo)}&id={self.scan_id}"
+        return f"{fqdn}/results?{params}"
 
 
 class PluginResult(models.Model):
@@ -1070,3 +1107,86 @@ class Vulnerability(models.Model):
         if ComparableSeverity(b) < ComparableSeverity(a):
             return b
         return a
+
+    def to_dict(self):
+        # Build up the components dict for this vuln
+        components = {}
+        for c in self.components.all():
+            if c.name not in components:
+                components[c.name] = []
+            if c.version not in components[c.name]:
+                components[c.name].append(c.version)
+
+        return {
+            "id": str(self.vuln_id),
+            "advisory_ids": self.advisory_ids,
+            "description": self.description,
+            "severity": self.severity,
+            "remediation": self.remediation,
+            "components": components,
+            "source_plugins": [p.name for p in self.plugins.all()],
+        }
+
+
+class RepoVulnerabilityScan(models.Model):
+    # Externally-facing ID (not PK). This is the canonical ID of the vuln instance within
+    # Artemis. This is an ID so that specific vulnerability findings can be referenced by
+    # external systems.
+    vuln_instance_id = models.UUIDField()
+
+    # The repo that contains this instance of this vulnerability
+    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+
+    # The branch of this repo that contains this instance of this vulnerability
+    ref = models.CharField(max_length=256, null=True)
+
+    # The vulnerability record itself
+    vulnerability = models.ForeignKey(Vulnerability, on_delete=models.CASCADE)
+
+    # The scans that identified this vulnerability instance
+    scan = models.ManyToManyField(Scan, through="VulnerabilityScanPlugin")
+
+    # Whether this instance of this vulnerability has been resolved. A vulnerability is
+    # marked as resolved if a scan of this repository+ref that includes a plugin that can
+    # detect this vulnernability fails to find it.
+    resolved = models.BooleanField(default=False)
+
+    # The scan that resolved this vuln instance
+    resolved_by = models.ForeignKey(Scan, null=True, on_delete=models.SET_NULL, related_name="resolves")
+
+    class Meta:
+        app_label = "artemisdb"
+        unique_together = ["repo", "vulnerability", "ref"]
+
+    def __str__(self):
+        return f"<RepoVulnerabilityScan: {str(self.vuln_instance_id)} {self.repo}, {self.ref}>"
+
+    def to_dict(self):
+        return self.repo.to_dict()
+
+
+class VulnerabilityScanPlugin(models.Model):
+    # The vulnerability instance
+    vuln_instance = models.ForeignKey(RepoVulnerabilityScan, on_delete=models.CASCADE)
+
+    # The scan that identified this vulnerability instance
+    scan = models.ForeignKey(Scan, on_delete=models.CASCADE)
+
+    # The plugins that have identified this instance of this vulnerability
+    plugins = models.ManyToManyField(Plugin)
+
+    # The components found in this scan that have this vulnerability
+    components = models.ManyToManyField(Component)
+
+    # The list of sources where this vulnerability was found in this scan
+    source = models.JSONField(encoder=simplejson.JSONEncoder, default=list)
+
+    class Meta:
+        app_label = "artemisdb"
+        unique_together = ["vuln_instance", "scan"]
+
+    def __str__(self):
+        return f"<VulnerabilityScanPlugin: {self.vulnerability}, {self.scan}>"
+
+    def to_dict(self):
+        return self.vulnerability.to_dict()

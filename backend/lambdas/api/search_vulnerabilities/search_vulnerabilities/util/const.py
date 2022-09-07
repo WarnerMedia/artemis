@@ -1,0 +1,2 @@
+RESOURCE_REPOS_SHORT = "repos"
+RESOURCE_REPOS_LONG = "repositories"

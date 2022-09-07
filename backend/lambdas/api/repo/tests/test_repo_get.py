@@ -138,6 +138,7 @@ TEST_RESULT = {
             },
             "qualified": False,
             "batch_id": None,
+            "batch_description": None,
         },
         {
             "repo": "testorg/testrepo/b398fa85-a907-4dbe-929b-c08dff8e90de",
@@ -167,6 +168,7 @@ TEST_RESULT = {
             },
             "qualified": False,
             "batch_id": None,
+            "batch_description": None,
         },
     ],
     "count": 2,
@@ -204,6 +206,7 @@ TEST_RESULT_INCLUDE_BATCH["results"].append(
         },
         "qualified": False,
         "batch_id": None,
+        "batch_description": None,
     }
 )
 TEST_RESULT_INCLUDE_BATCH["count"] = 3

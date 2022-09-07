@@ -15,6 +15,7 @@ from sbom_licenses.handlers import handler as sbom_licenses_handler
 from scans_batch.handlers import handler as scans_batch_handler
 from search_repositories.handlers import handler as search_repositories_handler
 from search_scans.handlers import handler as search_scans_handler
+from search_vulnerabilities.handlers import handler as search_vulnerabilities_handler
 from system_allowlist.handlers import handler as system_allowlist_handler
 from system_status.handlers import handler as system_status_handler
 from users.handlers import handler as users_handler
@@ -28,6 +29,7 @@ APIS = {
     "scans_batch": {"handler": scans_batch_handler, "kwargs": {}},
     "search_repositories": {"handler": search_repositories_handler, "kwargs": {}},
     "search_scans": {"handler": search_scans_handler, "kwargs": {}},
+    "search_vulnerabilities": {"handler": search_vulnerabilities_handler, "kwargs": {}},
     "system_allowlist": {"handler": system_allowlist_handler, "kwargs": {}},
     "system_status": {"handler": system_status_handler, "kwargs": {"check_maintenance": False}},
     "users": {"handler": users_handler, "kwargs": {}},

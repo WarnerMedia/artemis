@@ -120,8 +120,10 @@ def process_user_auth(event):
     # Get the group info of the user
     group_admin, scopes, features, allowlist_denied = _get_group_permissions(user)
 
-    # Check for any cached GitHub scopes
-    scopes.append(_get_scope_cache("github", user.email))
+    # Check for any cached GitHub scopes and create a group containing a list of scopes
+    github_scope_cache = _get_scope_cache("github", user.email)
+    if github_scope_cache:
+        scopes.append([github_scope_cache])
 
     # If we got this far return success
     return response(

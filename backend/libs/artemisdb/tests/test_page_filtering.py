@@ -142,3 +142,34 @@ class TestPageFiltering(unittest.TestCase):
 
         # Check that the SQL for the generated QuerySet matches the SQL of the expected QuerySet
         self.assertEqual(str(expected.query), str(actual.query))
+
+    def test_filter_generator(self):
+        expected = Repo.objects.exclude(scan__qualified=True).order_by("service", "repo").distinct()
+        page_info = PageInfo(
+            offset=0,
+            limit=DEFAULT_PAGE_SIZE,
+            filters=[
+                Filter("last_qualified_scan", True, FilterType.IS_NULL),
+            ],
+            order_by=["service", "repo"],
+        )
+
+        def _test(qs, filter):
+            if filter.value:
+                qs = qs.exclude(scan__qualified=True)
+            else:
+                qs = qs.filter(scan__qualified=True)
+            return qs
+
+        map = FilterMap()
+        map.add(
+            "last_qualified_scan",
+            filter_type=FilterType.IS_NULL,
+            item=FilterMapItem("last_qualified_scan", generator=_test),
+        )
+
+        qs = Repo.objects.all()
+        actual = apply_filters(qs, map, page_info)
+
+        # Check that the SQL for the generated QuerySet matches the SQL of the expected QuerySet
+        self.assertEqual(str(expected.query), str(actual.query))

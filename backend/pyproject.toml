@@ -20,6 +20,7 @@ known_first_party = [
     "scans_batch",
     "search_repositories",
     "search_scans",
+    "search_vulnerabilities",
     "scan_scheduler",
     "system_status",
     "repo",

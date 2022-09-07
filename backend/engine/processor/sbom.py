@@ -49,7 +49,7 @@ def process_dependency(dep: dict, scan: Scan, parent: Dependency):
         process_dependency(dep=child, scan=scan, parent=dependency)
 
 
-def get_component(name: str, version: str, scan: Scan) -> str:
+def get_component(name: str, version: str, scan: Scan) -> Component:
     label = str(uuid.uuid4()).replace("-", "")  # Dash is not in the allowed character set for ltree labels
     component, _ = Component.objects.get_or_create(name=name, version=version, defaults={"label": label})
 

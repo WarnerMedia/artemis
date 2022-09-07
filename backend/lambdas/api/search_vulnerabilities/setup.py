@@ -4,26 +4,25 @@ from setuptools import find_packages, setup
 # available inside the package for use at runtime.
 __version__ = None  # Will get set in next line
 # pylint: disable=exec-used
-exec(open("artemisdb/__version__.py").read())
+exec(open("search_vulnerabilities/__version__.py").read())
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
 setup(
-    name="artemisdb",
+    name="search_vulnerabilities",
     version=__version__,
     author="WMCSO AppSec",
     author_email="cso_appsec@warnermedia.com",
-    description="Shared library for the Artemis database",
+    description="Search Vulnerabilities API Lambda",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url=("https://github.com/warnermedia/artemis/backend/libs/artemisdb"),
+    url=("https://github.com/warnermedia/artemis/backend/lambdas/api/search_vulnerabilities"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=["django==3.2.15", "psycopg2-binary", "simplejson"],
+    install_requires=[],
     tests_require=["pytest"],
-    entry_points={"console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]},
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",

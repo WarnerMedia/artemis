@@ -40,6 +40,7 @@ data "template_file" "engine-script" {
     engine_block_device      = var.engine_block_device
     application              = var.app
     region                   = var.aws_region
+    domain_name              = var.domain_name
   }
 }
 

@@ -293,6 +293,7 @@ def process_event_info(scan, results, plugin_type):
                 "author": item["author"],
                 "author-timestamp": item["author-timestamp"],
                 "details": results["event_info"][item["id"]],
+                "report_url": scan.report_url,
             }
             queue_event(scan.repo.repo, plugin_type, payload)
     elif plugin_type == "inventory":
