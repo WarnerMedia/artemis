@@ -206,6 +206,11 @@ variable "metadata_scheme_modules" {
   default     = ""
 }
 
+variable "metadata_formatter_module" {
+  description = "Metadata formatter module"
+  default     = ""
+}
+
 variable "additional_event_routing" {
   description = "JSON dict defining additional event routing"
   default     = "{}"

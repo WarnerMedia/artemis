@@ -1,3 +1,4 @@
+import importlib
 import uuid
 from datetime import datetime
 from urllib.parse import quote_plus
@@ -19,7 +20,7 @@ from artemisdb.artemisdb.consts import (
     Severity,
     SystemAllowListType,
 )
-from artemisdb.artemisdb.env import DOMAIN_NAME
+from artemisdb.artemisdb.env import DOMAIN_NAME, METADATA_FORMATTER_MODULE
 from artemisdb.artemisdb.fields.ltree import LtreeField
 from artemisdb.artemisdb.util.auth import group_chain_filter
 from artemisdb.artemisdb.util.severity import ComparableSeverity
@@ -29,6 +30,14 @@ from artemislib.logging import Logger
 from artemislib.services import get_services_and_orgs_for_scope
 
 LOG = Logger(__name__)
+
+METADATA_FORMATTER = None
+if METADATA_FORMATTER_MODULE:
+    try:
+        m = importlib.import_module(METADATA_FORMATTER_MODULE)
+        METADATA_FORMATTER = m.formatter
+    except (ModuleNotFoundError, AttributeError):
+        LOG.error("Unable to load metadata formatter module %s", METADATA_FORMATTER_MODULE)
 
 
 class User(models.Model):
@@ -221,8 +230,9 @@ class Repo(models.Model):
             return cls.objects.none()
 
     def formatted_application_metadata(self):
-        # If the raw application metadata is not the format that should be returned
-        # in API responses it can be reformatted here.
+        # If a custom metadata formatter is configured use it
+        if METADATA_FORMATTER is not None:
+            return METADATA_FORMATTER(self.application_metadata)
         return self.application_metadata
 
 
@@ -668,8 +678,9 @@ class Scan(models.Model):
         }
 
     def formatted_application_metadata(self):
-        # If the raw application metadata is not the format that should be returned
-        # in API responses it can be reformatted here.
+        # If a custom metadata formatter is configured use it
+        if METADATA_FORMATTER is not None:
+            return METADATA_FORMATTER(self.application_metadata)
         return self.application_metadata
 
     @property

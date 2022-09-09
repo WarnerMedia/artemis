@@ -177,24 +177,25 @@ resource "aws_lambda_function" "repo-handler" {
 
   environment {
     variables = {
-      TASK_QUEUE                       = module.public_engine_cluster.task_queue.id
-      PRIORITY_TASK_QUEUE              = module.public_engine_cluster.priority_task_queue.id
-      TASK_QUEUE_NAT                   = module.nat_engine_cluster.task_queue.id
-      PRIORITY_TASK_QUEUE_NAT          = module.nat_engine_cluster.priority_task_queue.id
-      DEFAULT_DEPTH                    = "500"
-      S3_BUCKET                        = var.s3_analyzer_files_id
-      ANALYZER_DJANGO_SECRETS_ARN      = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN            = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      JSON_REPORT_LAMBDA               = aws_lambda_function.json_report.arn
-      SBOM_REPORT_LAMBDA               = aws_lambda_function.sbom_report.arn
-      REPORT_QUEUE                     = var.report_queue.id
-      ARTEMIS_FEATURE_AQUA_ENABLED     = var.aqua_enabled ? 1 : 0
-      ARTEMIS_FEATURE_VERACODE_ENABLED = var.veracode_enabled ? 1 : 0
-      ARTEMIS_FEATURE_SNYK_ENABLED     = var.snyk_enabled ? 1 : 0
-      ARTEMIS_GITHUB_APP_ID            = var.github_app_id
-      ARTEMIS_AUDIT_QUEUE              = var.event_queue.id
-      ARTEMIS_ENVIRONMENT              = var.environment
-      ARTEMIS_DOMAIN_NAME              = var.domain_name
+      TASK_QUEUE                        = module.public_engine_cluster.task_queue.id
+      PRIORITY_TASK_QUEUE               = module.public_engine_cluster.priority_task_queue.id
+      TASK_QUEUE_NAT                    = module.nat_engine_cluster.task_queue.id
+      PRIORITY_TASK_QUEUE_NAT           = module.nat_engine_cluster.priority_task_queue.id
+      DEFAULT_DEPTH                     = "500"
+      S3_BUCKET                         = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      JSON_REPORT_LAMBDA                = aws_lambda_function.json_report.arn
+      SBOM_REPORT_LAMBDA                = aws_lambda_function.sbom_report.arn
+      REPORT_QUEUE                      = var.report_queue.id
+      ARTEMIS_FEATURE_AQUA_ENABLED      = var.aqua_enabled ? 1 : 0
+      ARTEMIS_FEATURE_VERACODE_ENABLED  = var.veracode_enabled ? 1 : 0
+      ARTEMIS_FEATURE_SNYK_ENABLED      = var.snyk_enabled ? 1 : 0
+      ARTEMIS_GITHUB_APP_ID             = var.github_app_id
+      ARTEMIS_AUDIT_QUEUE               = var.event_queue.id
+      ARTEMIS_ENVIRONMENT               = var.environment
+      ARTEMIS_DOMAIN_NAME               = var.domain_name
+      ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
     }
   }
 
