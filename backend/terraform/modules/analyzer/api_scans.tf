@@ -90,11 +90,11 @@ resource "aws_lambda_function" "scans_batch" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scans_batch/v${var.ver}/scans_batch.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_scans_batch_handler)
 
   lifecycle {
     ignore_changes = [

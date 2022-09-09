@@ -193,11 +193,11 @@ resource "aws_lambda_function" "groups-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups/v${var.ver}/groups.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_groups_handler)
 
   lifecycle {
     ignore_changes = [
@@ -243,11 +243,11 @@ resource "aws_lambda_function" "groups-members-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_members/v${var.ver}/groups_members.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_groups_members_handler)
 
   lifecycle {
     ignore_changes = [
@@ -293,11 +293,11 @@ resource "aws_lambda_function" "groups-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_groups_keys_handler)
 
   lifecycle {
     ignore_changes = [

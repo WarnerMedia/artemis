@@ -146,11 +146,11 @@ resource "aws_lambda_function" "repo-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/repo/v${var.ver}/repo.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_repo_handler)
 
   lifecycle {
     ignore_changes = [
@@ -212,11 +212,11 @@ resource "aws_lambda_function" "users-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users/v${var.ver}/users.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_users_handler)
 
   lifecycle {
     ignore_changes = [
@@ -268,11 +268,11 @@ resource "aws_lambda_function" "users-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_users_keys_handler)
 
   lifecycle {
     ignore_changes = [
@@ -322,11 +322,11 @@ resource "aws_lambda_function" "users-services-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_services/v${var.ver}/users_services.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_users_services_handler)
 
   lifecycle {
     ignore_changes = [
@@ -374,9 +374,9 @@ resource "aws_lambda_function" "signin-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn
-  ]
+  ], var.extra_lambda_layers_signin_handler)
 
   lifecycle {
     ignore_changes = [

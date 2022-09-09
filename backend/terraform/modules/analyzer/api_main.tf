@@ -233,10 +233,10 @@ resource "aws_lambda_function" "ci-tools" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/ci_tools/v${var.ver}/ci_tools.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_ci_tools_handler)
 
   lifecycle {
     ignore_changes = [
@@ -480,10 +480,10 @@ resource "aws_lambda_function" "api-authorizer" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/authorizer/v${var.ver}/authorizer.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_api_authorizer)
 
   lifecycle {
     ignore_changes = [

@@ -199,11 +199,11 @@ resource "aws_lambda_function" "sbom_components" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/sbom_components/v${var.ver}/sbom_components.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_sbom_components_handler)
 
   lifecycle {
     ignore_changes = [
@@ -250,11 +250,11 @@ resource "aws_lambda_function" "sbom_licenses" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/sbom_licenses/v${var.ver}/sbom_licenses.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_sbom_licenses_handler)
 
   lifecycle {
     ignore_changes = [
