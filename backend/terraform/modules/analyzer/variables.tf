@@ -211,6 +211,11 @@ variable "metadata_formatter_module" {
   default     = ""
 }
 
+variable "custom_filtering_module" {
+  description = "Custom API filtering module"
+  default     = ""
+}
+
 variable "additional_event_routing" {
   description = "JSON dict defining additional event routing"
   default     = "{}"

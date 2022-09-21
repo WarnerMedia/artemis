@@ -196,6 +196,7 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_ENVIRONMENT               = var.environment
       ARTEMIS_DOMAIN_NAME               = var.domain_name
       ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
+      ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
     }
   }
 
@@ -244,14 +245,15 @@ resource "aws_lambda_function" "users-handler" {
 
   environment {
     variables = {
-      S3_BUCKET                   = var.s3_analyzer_files_id
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_LINK_GH_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
-      ARTEMIS_AUDIT_QUEUE         = var.audit_event_queue.id
-      ARTEMIS_AUDIT_QUEUE         = var.event_queue.id
-      ARTEMIS_ENVIRONMENT         = var.environment
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      S3_BUCKET                       = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_LINK_GH_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
+      ARTEMIS_AUDIT_QUEUE             = var.audit_event_queue.id
+      ARTEMIS_AUDIT_QUEUE             = var.event_queue.id
+      ARTEMIS_ENVIRONMENT             = var.environment
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -300,12 +302,13 @@ resource "aws_lambda_function" "users-keys-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_AUDIT_QUEUE         = var.event_queue.id
-      ARTEMIS_ENVIRONMENT         = var.environment
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
-      S3_BUCKET                   = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_AUDIT_QUEUE             = var.event_queue.id
+      ARTEMIS_ENVIRONMENT             = var.environment
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      S3_BUCKET                       = var.s3_analyzer_files_id
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -354,10 +357,11 @@ resource "aws_lambda_function" "users-services-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_LINK_GH_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_LINK_GH_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 

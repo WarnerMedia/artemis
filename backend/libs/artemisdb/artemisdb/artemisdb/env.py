@@ -9,3 +9,7 @@ else:
 # ARTEMIS_METADATA_FORMATTER_MODULE is a module that contains a custom metadata
 # formatting method with the signature: formatter(dict) -> dict
 METADATA_FORMATTER_MODULE = os.environ.get("ARTEMIS_METADATA_FORMATTER_MODULE")
+
+# ARTEMIS_CUSTOM_FILTERING_MODULE is a module that contains a custom API
+# filtering configuration.
+CUSTOM_FILTERING_MODULE = os.environ.get("ARTEMIS_CUSTOM_FILTERING_MODULE")
