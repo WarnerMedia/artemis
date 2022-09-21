@@ -4,7 +4,11 @@ from artemisapi.validators import ValidationError
 from artemisdb.artemisdb.consts import PluginType, RiskClassification, Severity
 from artemisdb.artemisdb.models import Plugin
 from artemisdb.artemisdb.paging import parse_paging_event
-from search_vulnerabilities.util.const import RESOURCE_REPOS_LONG, RESOURCE_REPOS_SHORT
+from search_vulnerabilities.util.const import (
+    RESOURCE_REPOS_LONG,
+    RESOURCE_REPOS_SHORT,
+    SearchVulnerabilitiesAPIIdentifier,
+)
 
 
 class ParsedEvent:
@@ -22,6 +26,9 @@ class ParsedEvent:
 
         if self.vuln_id and not self.resource and ("offset" in self.query or "limit" in self.query):
             raise ValidationError("Vuln ID is not compatible with paging")
+
+        if self.resource and not self.vuln_id:
+            raise ValidationError("Vuln ID is missing")
 
         if self.resource is None:
             self.paging = parse_paging_event(
@@ -42,6 +49,7 @@ class ParsedEvent:
                 ],
                 mv_filters=["plugin", "severity"],
                 mv_validators={"severity": validate_severity_value, "plugin": validate_plugin_value},
+                api_id=SearchVulnerabilitiesAPIIdentifier.GET_VULNS.value,
             )
         elif self.resource.lower() in (RESOURCE_REPOS_LONG, RESOURCE_REPOS_SHORT):
             self.paging = parse_paging_event(
@@ -53,6 +61,7 @@ class ParsedEvent:
                 ordering_fields=["service", "repo", "risk"],
                 mv_filters=["risk"],
                 mv_validators={"risk": validate_risk_value},
+                api_id=SearchVulnerabilitiesAPIIdentifier.GET_REPOS.value,
             )
         else:
             raise ValidationError(f"Invalid resource: {self.resource}")
