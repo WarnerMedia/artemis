@@ -4,7 +4,7 @@ from artemisapi.authorizer import get_authorizer_info
 from artemisapi.response import response
 from artemisapi.validators import ValidationError
 from search_repositories.get import get
-from search_repositories.util.parsers import parse_event
+from search_repositories.util.events import ParsedEvent
 
 
 def handler(event, _):
@@ -14,7 +14,7 @@ def handler(event, _):
         return response(code=HTTPStatus.FORBIDDEN)
 
     try:
-        parsed_event = parse_event(event)
+        parsed_event = ParsedEvent(event)
     except ValidationError as e:
         return response({"message": e.message}, e.code)
 
