@@ -23,6 +23,14 @@ WARN="  ${TIME}[${YELLOW} \!\! ${CNone}] "
 # Variables
 ###############################################################################
 
+# Pathing
+ROOT_DIR := $(shell pwd)
+WORKING_DIR := ${ROOT_DIR}
+BUILD_DIR := ${ROOT_DIR}/build
+DIST_DIR := ${ROOT_DIR}/dist
+STAGE_DIR := ${ROOT_DIR}/stage
+TERRAFORM := ${WORKING_DIR}/terraform
+
 DOCKER := docker
 PYTHON := python3
 PIP := pip3
@@ -36,10 +44,10 @@ LATEST_COMMIT = $(shell git rev-parse --short HEAD)
 ENV := nonprod
 
 # Load the environment-specific config
-include $(ENV).mk
+include ${WORKING_DIR}/$(ENV).mk
 
 # Application name extracted from Terraform
-PREFIX := $(shell egrep "application\s+=\s+\".+\"" terraform/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
+PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
 
 S3_BUCKET := ${PREFIX}-${ACCOUNT_ID}
 S3_DOCS_BUCKET := ${PREFIX}-docs-${ACCOUNT_ID}
@@ -134,18 +142,13 @@ DB_MAINT_TAG := ${DB_MAINT_PKG}:latest
 VERACODE_PKG := ${PREFIX}/veracode
 VERACODE_TAG := ${VERACODE_PKG}:latest
 # Context: egrep grabs the terraform line that notes whether veracode is enabled. sed removes all spacing. Cut grabs the bool.
-VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" terraform/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
+VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
 
 CHECKOV_VER := 2.0.1065
-
-ROOT_DIR := $(shell pwd)
-BUILD_DIR := ${ROOT_DIR}/build
-DIST_DIR := ${ROOT_DIR}/dist
-STAGE_DIR := ${ROOT_DIR}/stage
 
 FSB_VER := 1.9.0
 FSB_PATCH := -fix2
@@ -210,7 +213,7 @@ DETEKT_VER := 1.19.0
 PSYCOPG2_VER := 2.9.3
 
 # Lambdas
-LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <terraform/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
+LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
@@ -807,7 +810,7 @@ docker_push: stage/docker/engine \
 
 upload_lambda_%:
 	@echo "${INFO}Uploading $* lambda bundle"
-	aws s3 cp dist/$(shell echo $* | sed "s/-/\//g").zip s3://${S3_BUCKET}/lambdas/$(shell echo $* | sed "s/.*-//g")/v${VERSION}/$(shell echo $* | sed "s/.*-//g")-stage-${LATEST_COMMIT}.zip	
+	aws s3 cp ${DIST_DIR}/$(shell echo $* | sed "s/-/\//g").zip s3://${S3_BUCKET}/lambdas/$(shell echo $* | sed "s/.*-//g")/v${VERSION}/$(shell echo $* | sed "s/.*-//g")-stage-${LATEST_COMMIT}.zip
 	@echo "${OK}"
 .PHONY: upload_lambda_%
 
@@ -851,13 +854,13 @@ upload_lambdas: lambdas \
 
 stage_scripts: dist/engine_scripts.zip  ## Stage scripts in S3
 	@echo "${INFO}Deploying scripts bundle"
-	aws s3 cp dist/engine_scripts.zip s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip
+	aws s3 cp ${DIST_DIR}/engine_scripts.zip s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip
 	@echo "${OK}"
 .PHONY: stage_scripts
 
 stage_api_docs:  ## Stage API docs in S3
 	@echo "${INFO}Staging API documentation"
-	aws s3 cp dist/api/index.html s3://${S3_BUCKET}/api/index-stage-${LATEST_COMMIT}.html
+	aws s3 cp ${DIST_DIR}/api/index.html s3://${S3_BUCKET}/api/index-stage-${LATEST_COMMIT}.html
 	@echo "${OK}"
 .PHONY: upload_api_docs
 
