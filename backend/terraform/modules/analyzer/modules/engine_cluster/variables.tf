@@ -32,6 +32,10 @@ variable "public" {
   default     = true
 }
 
+variable "domain_name" {
+  description = "FQDN of the Artemis deployment"
+}
+
 ###############################################################################
 # Cluster configuration
 ###############################################################################

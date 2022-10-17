@@ -121,7 +121,7 @@ resource "aws_lambda_function" "system_allowlist" {
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ], extra_lambda_layers_system_allowlist_handler)
+  ], var.extra_lambda_layers_system_allowlist_handler)
 
   lifecycle {
     ignore_changes = [

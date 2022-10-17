@@ -11,7 +11,7 @@ resource "aws_lambda_function" "update_github_org_users" {
   layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_update_github_orgs_users)
+  ], var.extra_lambda_layers_update_github_org_users)
 
   lifecycle {
     ignore_changes = [

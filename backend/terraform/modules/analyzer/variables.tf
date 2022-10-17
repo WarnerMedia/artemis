@@ -221,6 +221,12 @@ variable "additional_event_routing" {
   default     = "{}"
 }
 
+variable "default_scope" {
+  description = "List of scopes to automatically set for new users"
+  type        = list(string)
+  default     = []
+}
+
 ################################################
 # GitHub App
 ################################################
@@ -344,7 +350,7 @@ variable "extra_lambda_layers_sbom_licenses_handler" {
   default     = []
 }
 
-variable "extra_lambda_layers_db_cleanup_handler" {
+variable "extra_lambda_layers_db_cleanup" {
   description = "Extra layers that should be applied to the DB cleanup lambda"
   type        = list(string)
   default     = []
@@ -406,6 +412,12 @@ variable "extra_lambda_layers_users_services_handler" {
 
 variable "extra_lambda_layers_signin_handler" {
   description = "Extra layers that should be applied to the signin handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scans_batch_handler" {
+  description = "Extra layers that should be applied to the scans batch handler lambda"
   type        = list(string)
   default     = []
 }

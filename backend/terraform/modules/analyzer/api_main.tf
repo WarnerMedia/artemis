@@ -521,6 +521,7 @@ resource "aws_lambda_function" "api-authorizer" {
       ARTEMIS_MAINTENANCE_MODE             = var.maintenance_mode
       ARTEMIS_MAINTENANCE_MODE_MESSAGE     = var.maintenance_mode_message
       ARTEMIS_MAINTENANCE_MODE_RETRY_AFTER = var.maintenance_mode_retry_after
+      ARTEMIS_DEFAULT_SCOPE                = jsonencode(var.default_scope)
     }
   }
 

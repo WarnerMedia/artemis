@@ -31,10 +31,14 @@ module "public_engine_cluster" {
   lambda_layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_engine_scaling)
+  ], var.extra_lambda_layers_engine_scale_down)
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
+
+  domain_name = var.domain_name
+
+  metadata_scheme_modules = var.metadata_scheme_modules
 }
 
 module "nat_engine_cluster" {
@@ -70,8 +74,12 @@ module "nat_engine_cluster" {
   lambda_layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_engine_scaling)
+  ], var.extra_lambda_layers_engine_scale_down)
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
+
+  domain_name = var.domain_name
+
+  metadata_scheme_modules = var.metadata_scheme_modules
 }

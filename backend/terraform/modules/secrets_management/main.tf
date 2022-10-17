@@ -74,7 +74,7 @@ module "write-logs" {
   iam_role_names = [
     aws_iam_role.secrets-role.name
   ]
-  name      = "${var.app}-write-logs"
+  name      = "${var.app}-secrets-management-write-logs"
   resources = ["arn:aws:logs:*:*:*"]
 }
 
