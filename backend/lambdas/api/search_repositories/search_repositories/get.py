@@ -1,8 +1,8 @@
 from django.db.models.query import QuerySet
 
+from artemisapi.const import SearchRepositoriesAPIIdentifier
 from artemisdb.artemisdb.models import Repo
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
-from search_repositories.util.const import SearchRepositoriesAPIIdentifier
 
 
 def get(parsed_event, scope):

@@ -5,15 +5,12 @@ from uuid import UUID
 from django.db.models import Q
 from django.db.models.query import QuerySet
 
+from artemisapi.const import SearchVulnerabilitiesAPIIdentifier
 from artemisapi.response import response
 from artemisapi.validators import ValidationError
 from artemisdb.artemisdb.models import Repo, Vulnerability
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
-from search_vulnerabilities.util.const import (
-    RESOURCE_REPOS_LONG,
-    RESOURCE_REPOS_SHORT,
-    SearchVulnerabilitiesAPIIdentifier,
-)
+from search_vulnerabilities.util.const import RESOURCE_REPOS_LONG, RESOURCE_REPOS_SHORT
 from search_vulnerabilities.util.events import ParsedEvent
 
 

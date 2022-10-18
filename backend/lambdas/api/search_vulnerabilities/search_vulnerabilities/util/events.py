@@ -1,14 +1,11 @@
 from urllib.parse import unquote
 
+from artemisapi.const import SearchVulnerabilitiesAPIIdentifier
 from artemisapi.validators import ValidationError
 from artemisdb.artemisdb.consts import PluginType, RiskClassification, Severity
 from artemisdb.artemisdb.models import Plugin
 from artemisdb.artemisdb.paging import parse_paging_event
-from search_vulnerabilities.util.const import (
-    RESOURCE_REPOS_LONG,
-    RESOURCE_REPOS_SHORT,
-    SearchVulnerabilitiesAPIIdentifier,
-)
+from search_vulnerabilities.util.const import RESOURCE_REPOS_LONG, RESOURCE_REPOS_SHORT
 
 
 class ParsedEvent:

@@ -1,6 +1,6 @@
+from artemisapi.const import SearchRepositoriesAPIIdentifier
 from artemisdb.artemisdb.consts import RiskClassification
 from artemisdb.artemisdb.paging import parse_paging_event
-from search_repositories.util.const import SearchRepositoriesAPIIdentifier
 
 
 class ParsedEvent:
