@@ -1394,7 +1394,7 @@ deploy_artemislib_layer: move_lambda_bundle_artemislib
 deploy_artemisdb_layer: move_lambda_bundle_artemisdb
 	@echo "${INFO}Deploying artemisdb lambda layer"
 	aws lambda publish-layer-version \
-		--layer-name ${artemisdb_LAMBDA_LAYER} \
+		--layer-name ${ARTEMISDB_LAMBDA_LAYER} \
 		--region ${REGION} \
 		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/artemisdb/v${VERSION}/artemisdb.zip \
 		--compatible-runtimes python${LAMBDA_PYTHON_VER}
