@@ -421,3 +421,9 @@ variable "extra_lambda_layers_scans_batch_handler" {
   type        = list(string)
   default     = []
 }
+
+variable "extra_env_vars_event_dispatch" {
+  description = "Extra environment variables to configure for the event dispatch lambda"
+  type        = map(string)
+  default     = {}
+}
