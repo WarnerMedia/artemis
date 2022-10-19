@@ -137,4 +137,6 @@ def queue_gitlab_repository(
         diff_base=options_org_repo["diff_base"],
         schedule_run=options_org_repo["schedule_run"],
         batch_id=options_org_repo["batch_id"],
+        include_paths=options_org_repo["include_paths"],
+        exclude_paths=options_org_repo["exclude_paths"],
     )

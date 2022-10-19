@@ -3,17 +3,31 @@ import os
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from fnmatch import fnmatch
 from typing import Tuple
+from urllib.parse import quote_plus
 
 import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
 
+from artemisdb.artemisdb.models import PluginConfig
 from artemislib.logging import Logger
 from artemislib.util import dict_eq
-from env import ECR, ENGINE_DIR, ENGINE_ID, HOST_WORKING_DIR, PLUGIN_JAVA_HEAP_SIZE, REGION, SQS_ENDPOINT
+from env import (
+    ECR,
+    ENGINE_DIR,
+    ENGINE_ID,
+    HOST_WORKING_DIR,
+    PLUGIN_JAVA_HEAP_SIZE,
+    PROCESS_SECRETS_WITH_PATH_EXCLUSIONS,
+    REGION,
+    SQS_ENDPOINT,
+)
 
 log = Logger(__name__)
+
+UI_SECRETS_TAB_INDEX = 3
 
 
 @dataclass
@@ -128,21 +142,55 @@ def execute_docker_pull(image, log_error) -> bool:
     return True
 
 
-def get_plugin_settings(plugin) -> PluginSettings:
+def get_plugin_settings(plugin: str) -> PluginSettings:
+    """
+    Get plugin settings
+    """
     plugin_path = os.path.join(ENGINE_DIR, "plugins", plugin)
     settings_path = os.path.join(plugin_path, "settings.json")
+
     with open(settings_path) as f:
         settings = json.loads(f.read())
-        image = settings.get("image").replace("$ECR", ECR)
-        if image.startswith("/"):
-            image = image[1:]
+        image = settings.get("image", "")
+
         return PluginSettings(
-            image=image,
+            image=_fix_image_path(image),
             disabled=is_plugin_disabled(settings),
             name=settings.get("name"),
             plugin_type=settings.get("type", "misc"),
             feature=settings.get("feature"),
         )
+
+
+def _fix_image_path(image_path: str) -> str:
+    image = image_path.replace("$ECR", ECR)
+
+    if image.startswith("/"):
+        image = image[1:]
+
+    return image
+
+
+def _get_plugin_config(plugin: str, full_repo: str) -> dict:
+    """
+    Get plugin config from DB if one exists
+    """
+    # Order by ID descending (generally, newest will come first)
+    plugin_configs = PluginConfig.objects.filter(plugin__name=plugin).order_by("-id")
+
+    # Plugin settings are only applied if the repo matches the scope
+    for plugin_config in plugin_configs:
+        scopes = plugin_config.scope
+
+        # The first plugin config with a matching scope will be used.
+        # If creating multiple plugin configs for a single plugin,
+        # there should be no overlap in scopes.
+        for scope in scopes:
+            if fnmatch(full_repo, scope):
+                return plugin_config.config
+
+    # If no match found, return empty dict
+    return {}
 
 
 def is_plugin_disabled(settings: dict) -> bool:
@@ -176,7 +224,9 @@ def is_plugin_disabled(settings: dict) -> bool:
 def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, features=None) -> Result:
     if features is None:
         features = {}
+
     settings = get_plugin_settings(plugin)
+
     if not settings.image:
         return Result(
             name=settings.name if settings.name else plugin,
@@ -218,8 +268,12 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
                 debug=[],
             )
 
+    # Get plugin config from DB if one exists and is applicable to this repo
+    full_repo = f"{scan.repo.service}/{scan.repo.repo}"
+    plugin_config = _get_plugin_config(plugin, full_repo)
+
     plugin_command = get_plugin_command(
-        scan.scan_id, scan.repo.repo, settings.image, plugin, depth, include_dev, scan_images
+        scan.scan_id, scan.repo.repo, settings.image, plugin, depth, include_dev, scan_images, plugin_config
     )
 
     # Run the plugin inside the settings.image
@@ -279,6 +333,9 @@ def process_event_info(scan, results, plugin_type):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
     if plugin_type == "secrets":
+        if not PROCESS_SECRETS_WITH_PATH_EXCLUSIONS and (scan.include_paths or scan.exclude_paths):
+            log.info("Skipping secrets event processing of scan with path inclusions/exclusions")
+            return
         for item in results.get("details", []):
             payload = {
                 "timestamp": timestamp,
@@ -293,7 +350,13 @@ def process_event_info(scan, results, plugin_type):
                 "author": item["author"],
                 "author-timestamp": item["author-timestamp"],
                 "details": results["event_info"][item["id"]],
-                "report_url": scan.report_url,
+                "report_url": (
+                    f"{scan.report_url}&tab={UI_SECRETS_TAB_INDEX}"  # Report URL + Secrets tab selection
+                    f"#st_filename={quote_plus(item['filename'])}"  # Filter on filename
+                    f"&st_line={item['line']}"  # Filter on line number
+                    f"&st_commit={item['commit']}"  # Filter on commit hash
+                    f"&st_resource={results['event_info'][item['id']]['type']}"  # Filter on secrets type
+                ),
             }
             queue_event(scan.repo.repo, plugin_type, payload)
     elif plugin_type == "inventory":
@@ -427,8 +490,7 @@ def get_iso_timestamp():
     return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
 
 
-def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_images):
-
+def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_images, plugin_config):
     profile = os.environ.get("AWS_PROFILE")
     cmd = [
         "docker",
@@ -441,6 +503,7 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
         "-v",
         "%s:/work" % os.path.join(HOST_WORKING_DIR, str(scan_id)),
     ]
+
     if profile:
         # When running locally AWS_PROFILE may be set. If so, pass the credentials and profile name down to the plugin
         # container. Also pass down the local DB connection info.
@@ -476,6 +539,7 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
                 f"ANALYZER_DB_CREDS_ARN={os.environ.get('ANALYZER_DB_CREDS_ARN', '')}",
             ]
         )
+
     cmd.extend(
         [
             "-e",
@@ -485,6 +549,7 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
             "/srv/engine/plugins/%s/main.py" % plugin,
             get_engine_vars(repo, depth=depth, include_dev=include_dev),
             json.dumps(scan_images),
+            json.dumps(plugin_config),
         ]
     )
 

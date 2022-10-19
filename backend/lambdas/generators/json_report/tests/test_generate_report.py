@@ -436,7 +436,7 @@ class TestGenerateReport(unittest.TestCase):
 
     def test_get_static_analysis_report_diff_no_overlap(self):
         expected_report = PLUGIN_RESULTS(
-            {}, PluginErrors(), False, {"critical": 0, "high": 0, "medium": 0, "low": 0, "negligible": 0, "": 0}
+            {}, PluginErrors(), True, {"critical": 0, "high": 0, "medium": 0, "low": 0, "negligible": 0, "": 0}
         )
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
         mock_scan.pluginresult_set.filter.return_value = [TEST_ESLINT]

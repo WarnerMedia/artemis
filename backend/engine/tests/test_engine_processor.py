@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
+from analyzerdb.analyzerdb.models import Scan
 from processor import processor as engine_processor
 from processor.details import Details
 from processor.scan_details import ScanDetails
@@ -135,7 +136,12 @@ class TestEngineProcessor(unittest.TestCase):
         self.assertEqual(engine_processor.git_pull, git_pull_mock)
         expected_result = "test return"
         git_pull_mock.return_value = expected_result
-        processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, {}, object)
+
+        class DummyDBScanObject:
+            def get_scan_object():
+                return Scan()
+
+        processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, DummyDBScanObject, object)
         result = processor.pull_repo()
         self.assertTrue(git_pull_mock.called)
         self.assertTrue(get_api_key.called)

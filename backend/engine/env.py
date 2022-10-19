@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -54,3 +55,8 @@ if re.match(r"^\d{1,4}[mg]$", PLUGIN_JAVA_HEAP_SIZE) is None:
     PLUGIN_JAVA_HEAP_SIZE = DEFAULT_PLUGIN_JAVA_HEAP_SIZE
 
 STATUS_LAMBDA = os.environ.get("ARTEMIS_STATUS_LAMBDA")
+
+MANDATORY_INCLUDE_PATHS = json.loads(os.environ.get("ARTEMIS_MANDATORY_INCLUDE_PATHS") or "[]")
+PROCESS_SECRETS_WITH_PATH_EXCLUSIONS = (
+    os.environ.get("ARTEMIS_PROCESS_SECRETS_WITH_PATH_EXCLUSIONS", "false").lower() == "true"
+)

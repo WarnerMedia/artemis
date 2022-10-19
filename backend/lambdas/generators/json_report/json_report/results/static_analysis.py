@@ -53,8 +53,6 @@ def get_static_analysis(scan: Scan, params: dict) -> PLUGIN_RESULTS:
         if not plugin.details:
             continue
 
-        success = False
-
         for detail in plugin.details:
             # Build the item from the detail so it can be run through the AllowList
             item = {
@@ -72,6 +70,8 @@ def get_static_analysis(scan: Scan, params: dict) -> PLUGIN_RESULTS:
             ):
                 # Static analysis item severity is filtered or item is allowlisted or not included in diff so skip it
                 continue
+
+            success = False  # Reached a non-whitelisted, non-filtered item
 
             # Remove the filename from the item because it's not needed anymore
             del item["filename"]

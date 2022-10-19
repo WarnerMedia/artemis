@@ -68,6 +68,8 @@ class RepoQueueOptions:
         diff_base,
         schedule_run,
         batch_id,
+        include_paths,
+        exclude_paths,
     ):
         self.plugins = plugins
         self.depth = depth
@@ -79,6 +81,8 @@ class RepoQueueOptions:
         self.diff_base = diff_base
         self.schedule_run = schedule_run
         self.batch_id = batch_id
+        self.include_paths = include_paths
+        self.exclude_paths = exclude_paths
 
     @classmethod
     def create_using_dict(cls, options_map):
@@ -93,6 +97,8 @@ class RepoQueueOptions:
             options_map.get("diff_base"),
             options_map.get("schedule_run"),
             options_map.get("batch_id"),
+            options_map.get("include_paths"),
+            options_map.get("exclude_paths"),
         )
 
     def __eq__(self, other):
@@ -108,6 +114,8 @@ class RepoQueueOptions:
             and self.categories == other.categories
             and self.diff_base == other.diff_base
             and self.batch_id == other.batch_id
+            and self.include_paths == other.include_paths
+            and self.exclude_paths == other.exclude_paths
         )
 
 
@@ -161,6 +169,8 @@ def queue_repo(repo_fields: RepoQueueFields, nat_connect, identity) -> str:
         diff_base=repo_fields.options.diff_base,
         schedule_run=repo_fields.options.schedule_run,
         batch_id=repo_fields.options.batch_id,
+        include_paths=repo_fields.options.include_paths,
+        exclude_paths=repo_fields.options.exclude_paths,
     )
     return scan_id
 

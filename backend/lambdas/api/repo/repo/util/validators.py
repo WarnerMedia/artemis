@@ -15,6 +15,7 @@ from repo.util.const import (
     INVALID_REF_CHARS,
     MAX_DIFF_BASE,
     MAX_PAGE_SIZE,
+    MAX_PATH_LENGTH,
     PLUGIN_CATEGORIES,
     PLUGINS,
     QUERY_PARAMS,
@@ -267,6 +268,17 @@ class Validator:
         if batch_id is not None and not ScanBatch.objects.filter(batch_id=batch_id).exists():
             raise ValidationError(f"batch {batch_id} does not exist")
 
+        include_paths = req.get("include_paths", [])
+        self._validate_paths(include_paths, "include_paths")
+
+        exclude_paths = req.get("exclude_paths", [])
+        self._validate_paths(exclude_paths, "exclude_paths")
+
+        if include_paths and not exclude_paths:
+            # If include paths are set without any exclude paths the exclude path defaults to everything.
+            # The effect of this is that you can use include_paths alone to target specific paths.
+            req["exclude_paths"] = ["*"]
+
         for key in req:
             if key not in SCAN_PARAMS:
                 raise ValidationError("Unknown parameter: %s" % key)
@@ -411,3 +423,17 @@ class Validator:
         else:
             # Validate the filters, which are in the same structure as the query params when getting a normal scan
             self.validate_request_query({"query_params": req["filters"]})
+
+    def _validate_paths(self, paths, param_name) -> None:
+        if not isinstance(paths, list):
+            raise ValidationError(f"{param_name} must be a list")
+
+        for path in paths:
+            if not isinstance(path, str):
+                raise ValidationError(f"{param_name} must be a list of strings")
+
+            if ".." in path or "\0" in path or "$" in path or path.startswith("./") or path.startswith("/"):
+                raise ValidationError(f"{param_name} path is invalid: {path}")
+
+            if len(path) > MAX_PATH_LENGTH:
+                raise ValidationError(f"{param_name} path exceeds max length ({MAX_PATH_LENGTH})")

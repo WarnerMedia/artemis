@@ -70,6 +70,8 @@ def build_options_map(req_list):
             "diff_base": req.get("diff_base"),
             "schedule_run": req.get("schedule_run"),
             "batch_id": req.get("batch_id"),
+            "include_paths": req.get("include_paths", []),
+            "exclude_paths": req.get("exclude_paths", []),
         }
 
     return options_map

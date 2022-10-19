@@ -2,16 +2,20 @@
 Utility functions for running git commands
 """
 import os
+import shutil
 import subprocess
 from datetime import timezone
+from pathlib import Path
 
 from dateutil.parser import parse
 
 from artemislib.logging import Logger
-from env import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET, REV_PROXY_SECRET_HEADER
+from env import MANDATORY_INCLUDE_PATHS, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET, REV_PROXY_SECRET_HEADER
 from utils.engine import get_key
 
 log = Logger(__name__)
+
+EXCLUDE_EXEMPTIONS = [".git", ".gitignore"]
 
 
 def git_pull(
@@ -22,6 +26,8 @@ def git_pull(
     branch: str = None,
     diff_base: str = None,
     http_basic_auth: bool = False,
+    include: list = None,
+    exclude: list = None,
 ) -> bool:
     """
     Downloads repository using 'git init' and 'git pull', using the https url of the repository
@@ -72,6 +78,9 @@ def git_pull(
         if r.returncode != 0:
             log.error(r.stderr.decode("utf-8").replace(api_key, "xxxxxxxx"))
             return False
+
+    # Update the working tree to apply the path inclusions and exclusions
+    _apply_path_exclusions(base, include, exclude)
 
     return True
 
@@ -284,7 +293,7 @@ def git_clean(git_dir) -> dict:
             log.info(line)
 
 
-def git_reset(git_dir) -> dict:
+def git_reset(git_dir, include: list = None, exclude: list = None) -> None:
     """
     Reset the index and working tree to undo any file modifications.
     """
@@ -310,3 +319,101 @@ def git_reset(git_dir) -> dict:
         return
 
     log.info(r.stdout.decode("utf-8").strip())
+
+    # Update the working tree to apply the path inclusions and exclusions as these would
+    # have also been reset
+    _apply_path_exclusions(git_dir, include, exclude)
+
+
+def _apply_path_exclusions(git_dir: str, include: list = None, exclude: list = None) -> None:
+    # Store the file paths to restore later
+    inclusions = _gather_inclusions(git_dir, include)
+
+    log.info("Removing excluded paths from the working tree")
+    for path in exclude or []:
+        _exclude_path(git_dir, path)
+
+    log.info("Restoring included paths back into the working tree")
+    for path in inclusions:
+        _git_restore(git_dir, path)
+
+    log.info("Restoring mandatory included paths back into the working tree")
+    for path in MANDATORY_INCLUDE_PATHS:
+        _git_restore(git_dir, path)
+
+
+def _exclude_path(git_dir: str, path: str) -> None:
+    """
+    Remove a path from the working tree
+    """
+    log.debug("Removing: %s", path)
+
+    try:
+        for f in Path(git_dir).glob(path):
+            if f.name in EXCLUDE_EXEMPTIONS:
+                # Don't accidentally delete these files
+                continue
+            if f.is_dir():
+                shutil.rmtree(f)
+            else:
+                f.unlink()
+    except FileNotFoundError:
+        # Depending on how the glob in the path argument is defined the
+        # iteration may throw this exception if the top directory was
+        # deleted first, but that's ok.
+        pass
+
+
+def _git_restore(git_dir: str, path: str) -> None:
+    """
+    Restore the path back into the working tree
+    """
+    log.debug("Restoring: %s", path)
+
+    # Run `git restore` to restore working tree files
+    # Docs: https://git-scm.com/docs/git-restore
+    r = subprocess.run(
+        [
+            "git",
+            "restore",
+            path,
+        ],
+        cwd=git_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    # Something went wrong so log it and bail
+    if r.returncode != 0:
+        log.error(r.stderr.decode("utf-8"))
+        return
+
+
+def _gather_inclusions(git_dir: str, include: list[str]) -> list[str]:
+    ret = []
+
+    exemptions = _build_exclude_exemptions(git_dir)
+    for path in include:
+        for f in Path(git_dir).glob(path):
+            exempted = False
+            for e in exemptions:
+                if f == e or e in f.parents:
+                    # If the file path is directly equal to an exlude exemption or is
+                    # within an exempted path it can be ignored because it won't be excluded
+                    exempted = True
+            if exempted:
+                continue
+            ret.append(str(f.relative_to(git_dir)))
+
+    return ret
+
+
+def _build_exclude_exemptions(git_dir: str) -> list:
+    ret = []
+
+    root_dir = Path(git_dir)
+    for path in EXCLUDE_EXEMPTIONS:
+        ret.append(root_dir / Path(path))
+
+    return ret

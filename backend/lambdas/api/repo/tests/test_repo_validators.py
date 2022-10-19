@@ -485,6 +485,13 @@ class TestValidators(unittest.TestCase):
                 with self.assertRaises(ValidationError):
                     self.validator.validate_request_query(test_case)
 
+    def test_path_validators(self):
+        test_cases = ["./foo", "/foo", "../foo", "foo/../../../bar", "A" * 4097, "foo\0bar", "$FOOBAR"]
+        for test_case in test_cases:
+            with self.subTest(test_case=test_case):
+                with self.assertRaises(ValidationError):
+                    self.validator._validate_paths([test_case], "test")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -98,6 +98,7 @@ module "s3-policy" {
     var.s3_analyzer_files_arn,
     "${var.s3_analyzer_files_arn}/scripts/*",
     "${var.s3_analyzer_files_arn}/services.json",
+    "${var.s3_analyzer_files_arn}/plugins/*",
   ]
 }
 

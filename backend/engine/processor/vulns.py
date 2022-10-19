@@ -3,6 +3,7 @@ import uuid
 from django.db import transaction
 from django.db.models import Q, QuerySet
 
+from artemisdb.artemisdb.consts import Severity
 from artemisdb.artemisdb.models import (
     Component,
     Plugin,
@@ -48,6 +49,9 @@ def process_vulns(result: Result, scan: Scan, plugin_name: str) -> None:
     plugin = Plugin.objects.get(name=plugin_name)
     for v in result.details:
         advisory_ids = _filter_advisory_ids(v.get("inventory", {}).get("advisory_ids", [v["id"]]))
+
+        # Make sure the severity value is valid
+        v["severity"] = _filter_invalid_severity(v["severity"])
 
         # Build a Q filter for any of the advisory IDs
         adv_ids_filter = None
@@ -235,3 +239,13 @@ def resolve_vulns(scan: Scan, error_plugins: list) -> None:
 
     # Update the vuln instances to mark them resolved
     vuln_instances.update(resolved=True, resolved_by=scan)
+
+
+def _filter_invalid_severity(severity: str) -> str:
+    # Any severities that are not known are changed to NONE. This can happen when a vuln is new
+    # and doesn't have a CVSS score yet. Different tools handle this differently and this should
+    # account for them.
+    try:
+        return Severity(severity.lower()).value
+    except ValueError:
+        return Severity.NONE.value

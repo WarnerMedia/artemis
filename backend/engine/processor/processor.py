@@ -153,7 +153,11 @@ class EngineProcessor:
                     # Clean and reset the repo in case the plugin wrote any files to disk. This way files created or
                     # modified by one plugin won't pollute the repo for subsequent plugins.
                     git_clean(os.path.join(self.action_details.scan_working_dir, "base"))
-                    git_reset(os.path.join(self.action_details.scan_working_dir, "base"))
+                    git_reset(
+                        os.path.join(self.action_details.scan_working_dir, "base"),
+                        self.scan.get_scan_object().include_paths,
+                        self.scan.get_scan_object().exclude_paths,
+                    )
             except Exception as e:  # pylint: disable=broad-except
                 # Catch everything so that an error doesn't kill the engine
                 # but log the exception with stack trace so it can be
@@ -191,6 +195,8 @@ class EngineProcessor:
             self.action_details.branch,
             self.action_details.diff_base,
             self.service_dict.get("http_basic_auth", False),
+            self.scan.get_scan_object().include_paths,
+            self.scan.get_scan_object().exclude_paths,
         )
         if self.action_details.diff_base:
             # This has to happen AFTER the call to git_pull() above

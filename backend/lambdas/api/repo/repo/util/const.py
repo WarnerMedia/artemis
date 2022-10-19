@@ -150,6 +150,8 @@ SCAN_PARAMS = [
     "diff_base",
     "schedule_run",
     "batch_id",
+    "include_paths",
+    "exclude_paths",
 ]
 
 GITLAB_QUERY_WITH_BRANCH = """
@@ -202,3 +204,5 @@ DEFAULT_S3_DL_EXPIRATION_SECONDS = 3600  # 1 hour
 REPORT_S3_DL_EXPIRATION_SECONDS = 300  # 5 Minutes
 
 SCOPE_CACHE_EXPIRATION_MINUTES = 60
+
+MAX_PATH_LENGTH = 4096

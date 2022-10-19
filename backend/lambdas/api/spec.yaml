@@ -2028,6 +2028,16 @@ components:
         batch_id:
           description: Scan Batch ID
           type: string
+        include_paths:
+          description: List of paths within the repo to include in the scan. Stacks with exclude_paths. Optional, by default the entire repo is scanned. If include_paths is used and exclude_paths is missing or empty exclude_paths defaults to ["*"].
+          type: array
+          items:
+            type: string
+        exclude_paths:
+          description: List of paths within the repo to exclude from the scan. If include_paths is used and exclude_paths is missing or empty exclude_paths defaults to ["*"].
+          type: array
+          items:
+            type: string
     ScanRequestWithRepoOrg:
       allOf:
         - $ref: "#/components/schemas/ScanRequest"

@@ -76,6 +76,7 @@ S3_BUCKET=${s3_bucket}
 APPLICATION=${application}
 REGION=${region}
 ARTEMIS_DOMAIN_NAME=${domain_name}
+ARTEMIS_MANDATORY_INCLUDE_PATHS=${mandatory_include_paths}
 EOF
 
 # Fix ownership of files for ec2-user

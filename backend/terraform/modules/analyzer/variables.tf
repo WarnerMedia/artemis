@@ -195,6 +195,12 @@ variable "pub_plugin_java_heap_size" {
   default = "2g"
 }
 
+variable "mandatory_include_paths" {
+  description = "Repository paths that cannot be excluded from scans"
+  type        = list(string)
+  default     = []
+}
+
 ################################################
 # GitHub App
 ################################################

@@ -41,6 +41,7 @@ data "template_file" "engine-script" {
     application              = var.app
     region                   = var.aws_region
     domain_name              = var.domain_name
+    mandatory_include_paths  = jsonencode(var.mandatory_include_paths)
   }
 }
 

@@ -53,6 +53,7 @@ print("ARTEMIS_PRIVATE_DOCKER_REPOS_KEY=private_docker_repo_creds")
 print(f"DOCKER_SOCKET={DOCKER_SOCKET}")
 print("ARTEMIS_PLUGIN_JAVA_HEAP_SIZE=2g")
 print("ARTEMIS_LOG_LEVEL=DEBUG")
+print("ARTEMIS_NETWORK=artemis_default")
 
 # These values need to be updated for the environment Artemis is deployed in
 print("APPLICATION=artemis")  # Update if changing in the Terraform
@@ -66,3 +67,4 @@ print("ARTEMIS_STATUS_LAMBDA=arn:aws:lambda:us-east-2:AWS_ACCOUNT_ID:function:ar
 print("ARTEMIS_GITHUB_APP_ID=")
 print("ARTEMIS_LINK_GH_CLIENT_ID=")
 print("ARTEMIS_LINK_GH_CLIENT_SECRET=")
+print("ARTEMIS_MANDATORY_INCLUDE_PATHS=")

@@ -9,11 +9,20 @@ BASELINE=0
 # Fail closed if an error accessing Artemis occurs
 FAIL_CLOSED=0
 
+# Defaults
+DEFAULT_CATEGORIES="[\"vulnerability\", \"secret\"]"
+DEFAULT_PLUGINS="[\"-truffle_hog\", \"-aqua_cli_scanner\"]"
+
 usage() {
-    echo "artemis-scan.sh [-h] [-b] [-c] <SERVICE> <REPO> <BRANCH> <SEVERITY>"
+    echo "artemis-scan.sh [-h] [-b] [-c] [-P...] [-C...] [-i...] [-e...] <SERVICE> <REPO> <BRANCH> <SEVERITY>"
     echo "  -h  Print this message"
     echo "  -b  Perform a baseline-qualified scan"
     echo "  -c  Fail-closed when Artemis is in maintenance mode (default is to fail-open)"
+    echo "  -C  Specify one or more categories of plugins to run (preface each with - to exclude)"
+    echo "      Categories are: inventory, sbom, secret, static_analysis, and vulnerability"
+    echo "  -P  Specify one or more plugins to include/exclude (preface each with - to exclude)"
+    echo "  -i  Specify a path within the repo to include in the scan"
+    echo "  -e  Specify a path within the repo to exclude from the scan"
     echo ""
     echo "  Positional arguments:"
     echo "    SERVICE   Service name (github, gitlab, etc.)"
@@ -24,7 +33,12 @@ usage() {
     echo "  The ARTEMIS_API_KEY environment variable must be set to authenticate to the API"
 }
 
-while getopts ":bch" opt; do
+userCategories=()
+userPlugins=()
+includePaths=()
+excludePaths=()
+
+while getopts ":bch:C:P:i:e:" opt; do
   case "$opt" in
     b) BASELINE=1
       ;;
@@ -32,6 +46,14 @@ while getopts ":bch" opt; do
       ;;
     h) usage
       exit 0;;
+    C) userCategories+=( "${OPTARG}" )
+      ;;
+    P) userPlugins+=( "${OPTARG}" )
+      ;;
+    i) includePaths+=( "${OPTARG}" )
+      ;;
+    e) excludePaths+=( "${OPTARG}" )
+      ;;
   esac
 done
 
@@ -62,14 +84,69 @@ RESOURCE=$2
 BRANCH=$3
 SEVERITY=$4
 
-# Default scan config
-CATEGORIES="[\"vulnerability\", \"secret\"]"
-PLUGINS="[\"-truffle_hog\", \"-aqua_cli_scanner\"]"
-
 if [ $BASELINE -eq 1 ]; then
     # Baseline scan config
     CATEGORIES="[\"vulnerability\", \"secret\", \"static_analysis\", \"technology_discovery\", \"sbom\"]"
     PLUGINS="[\"-truffle_hog\", \"-aqua_cli_scanner\", \"-nodejsscan\"]"
+else
+    # Use user-specified categories, if any
+    if [ ${#userCategories[@]} -gt 0 ]; then
+        for i in "${!userCategories[@]}"; do
+            if [ "$i" -eq 0 ]; then
+                CATEGORIES="\"${userCategories[$i]}\""
+            else
+                CATEGORIES="$CATEGORIES, \"${userCategories[$i]}\""
+            fi
+        done
+        CATEGORIES="[$CATEGORIES]"
+    else
+        # If no categories specified, use defaults
+        CATEGORIES="$DEFAULT_CATEGORIES"
+    fi
+
+    # Use user-specified plugins, if any
+    if [ ${#userPlugins[@]} -gt 0 ]; then
+        for i in "${!userPlugins[@]}"; do
+            if [ "$i" -eq 0 ]; then
+                PLUGINS="\"${userPlugins[$i]}\""
+            else
+                PLUGINS="$PLUGINS, \"${userPlugins[$i]}\""
+            fi
+        done
+        PLUGINS="[$PLUGINS]"
+    else
+        # If no plugins specified, use defaults
+        PLUGINS="$DEFAULT_PLUGINS"
+    fi
+
+    # Include any paths specified
+    if [ ${#includePaths[@]} -gt 0 ]; then
+        for i in "${!includePaths[@]}"; do
+            if [ "$i" -eq 0 ]; then
+                INCLUDE_PATHS="\"${includePaths[$i]}\""
+            else
+                INCLUDE_PATHS="$INCLUDE_PATHS, \"${includePaths[$i]}\""
+            fi
+        done
+        INCLUDE_PATHS="[$INCLUDE_PATHS]"
+    else
+        INCLUDE_PATHS="[]"
+    fi
+
+    # Exclude any paths specified
+    if [ ${#excludePaths[@]} -gt 0 ]; then
+        for i in "${!excludePaths[@]}"; do
+            if [ "$i" -eq 0 ]; then
+                EXCLUDE_PATHS="\"${excludePaths[$i]}\""
+            else
+                EXCLUDE_PATHS="$EXCLUDE_PATHS, \"${excludePaths[$i]}\""
+            fi
+        done
+        EXCLUDE_PATHS="[$EXCLUDE_PATHS]"
+    else
+        EXCLUDE_PATHS="[]"
+    fi
+
 fi
 
 # Helper method to print the log message with ISO8601 timestamp prepended
@@ -97,7 +174,9 @@ RESP=$(curl --silent --write-out "\n%{http_code}" \
     --data "{
     \"branch\": \"$BRANCH\",
     \"plugins\": $PLUGINS,
-    \"categories\": $CATEGORIES
+    \"categories\": $CATEGORIES,
+    \"include_paths\": $INCLUDE_PATHS,
+    \"exclude_paths\": $EXCLUDE_PATHS
 }")
 
 HTTP_CODE=$(echo -n "$RESP" | tail -n1)
@@ -134,7 +213,7 @@ do
     sleep 10
     RESP=$(curl --silent --write-out "\n%{http_code}" \
         --request GET \
-        --url "$ARTEMIS_API/$SERVICE/$SCAN?format=summary&results=vulnerabilities&${SEVERITY_ARGS}results=secrets" \
+        --url "$ARTEMIS_API/$SERVICE/$SCAN?format=summary&results=vulnerabilities&${SEVERITY_ARGS}results=secrets&results=static_analysis" \
         --header "x-api-key: $ARTEMIS_API_KEY")
 
     HTTP_CODE=$(echo -n "$RESP" | tail -n1)

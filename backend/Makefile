@@ -164,7 +164,7 @@ SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 
 # Django version
-DJANGO_VER = 3.2.15
+DJANGO_VER = 3.2.16
 
 # Enry Info
 ENRYVER := 1.1.0

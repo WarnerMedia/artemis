@@ -544,6 +544,8 @@ class Scan(models.Model):
     include_dev = models.BooleanField(default=False)
     callback = models.JSONField(encoder=simplejson.JSONEncoder, default=dict)
     batch_priority = models.BooleanField(default=False)
+    include_paths = models.JSONField(encoder=simplejson.JSONEncoder, default=list)
+    exclude_paths = models.JSONField(encoder=simplejson.JSONEncoder, default=list)
 
     # Diff specification
     diff_base = models.CharField(max_length=256, null=True)
@@ -622,6 +624,8 @@ class Scan(models.Model):
                     "callback": self.callback,
                     "batch_priority": self.batch_priority,
                     "diff_compare": self.diff_compare,
+                    "include_paths": self.include_paths,
+                    "exclude_paths": self.exclude_paths,
                 },
                 "qualified": self.qualified,
                 "batch_id": str(self.batch.batch_id) if self.batch else None,
@@ -642,6 +646,8 @@ class Scan(models.Model):
                 "callback": self.callback,
                 "batch_priority": self.batch_priority,
                 "diff_compare": self.diff_compare,
+                "include_paths": self.include_paths,
+                "exclude_paths": self.exclude_paths,
             },
             "status": self.status,
             "status_detail": {
@@ -1039,6 +1045,17 @@ class Plugin(models.Model):
 
     # The plugin type
     type = models.CharField(max_length=64, choices=[(t, t.value) for t in PluginType])
+
+
+class PluginConfig(models.Model):
+    # Each plugin config is tied to a plugin
+    plugin = models.ForeignKey("Plugin", on_delete=models.CASCADE)
+
+    # Scope of this config
+    scope = models.JSONField(encoder=simplejson.JSONEncoder)
+
+    # Plugin specific configuration JSON
+    config = models.JSONField(encoder=simplejson.JSONEncoder)
 
 
 class EnginePlugin(models.Model):

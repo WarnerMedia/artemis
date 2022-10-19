@@ -16,10 +16,10 @@ RUN mkdir -p /src
 COPY ./libs/ /src/
 
 # trufflehog requires git
-# checkov requires libffi-dev
+# checkov requires awscli and libffi-dev
 RUN apk add -q --no-cache gcc musl-dev git make bash grep xz libffi-dev && \
     pip install -q --upgrade pip && \
-    pip install -q --no-cache-dir pylint trufflehog boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
+    pip install -q --no-cache-dir awscli pylint trufflehog boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
     pip install /src/artemislib && \
     pip install /src/artemisdb && \
     rm -r /src
@@ -34,7 +34,7 @@ RUN wget -q https://github.com/awslabs/git-secrets/archive/$GIT_SECRETS_VER.tar.
     cd .. && \
     rm -rf git-secrets-$GIT_SECRETS_VER $GIT_SECRETS_VER.tar.gz
 
-# Copy git secret patterns file 
+# Copy git secret patterns file
 COPY Dockerfiles/data/secret-patterns /app/secret-patterns
 
 # Target the search to just AWS key IDs and secret key banners

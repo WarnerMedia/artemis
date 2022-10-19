@@ -34,6 +34,7 @@ def parse_args(in_args=None, extra_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("engine_vars", type=str, nargs="?", default="{}")
     parser.add_argument("images", type=str, nargs="?", default="{}")
+    parser.add_argument("config", type=str, nargs="?", default="{}")
     parser.add_argument("path", type=str, nargs="?", default=CODE_DIRECTORY)
 
     for arg in extra_args or []:
@@ -50,6 +51,12 @@ def parse_args(in_args=None, extra_args=None):
         args.engine_vars = json.loads(args.engine_vars)
     except json.JSONDecodeError:
         args.engine_vars = {}
+
+    # Load the config dict
+    try:
+        args.config = json.loads(args.config)
+    except json.JSONDecodeError:
+        args.config = {}
 
     # Load the images dict
     try:

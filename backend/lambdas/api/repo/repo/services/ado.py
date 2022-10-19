@@ -166,5 +166,7 @@ def _queue_repo(service: str, org_repo: str, repo: dict, branch_name: str, optio
         diff_base=options["diff_base"],
         schedule_run=options["schedule_run"],
         batch_id=options["batch_id"],
+        include_paths=options["include_paths"],
+        exclude_paths=options["exclude_paths"],
     )
     return scan_id

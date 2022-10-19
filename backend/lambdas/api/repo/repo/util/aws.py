@@ -63,6 +63,8 @@ class AWSConnect:
         diff_base=None,
         schedule_run=None,
         batch_id=None,
+        include_paths: list = None,
+        exclude_paths: list = None,
     ):
         # If the request included batch_priority=True then this is a batch scan
         # and has lower priority than on-demand scans. Put these scans in the
@@ -93,6 +95,8 @@ class AWSConnect:
             batch_priority=batch_priority,
             schedule_run=schedule_run,
             batch_id=batch_id,
+            include_paths=include_paths,
+            exclude_paths=exclude_paths,
         )
         try:
             self._SQS.send_message(
@@ -138,6 +142,8 @@ class AWSConnect:
         batch_priority=DEFAULT_BATCH_PRIORITY,
         schedule_run=None,
         batch_id=None,
+        include_paths: list = None,
+        exclude_paths: list = None,
     ):
         """
         Creates the scan record in the database
@@ -185,6 +191,8 @@ class AWSConnect:
                 qualified=is_qualified(plugins),
                 schedule_run=run,
                 batch=batch,
+                include_paths=include_paths or [],
+                exclude_paths=exclude_paths or [],
             )
         return scan
 
