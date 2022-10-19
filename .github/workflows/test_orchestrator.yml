@@ -1,8 +1,10 @@
-name: CI
+name: Orchestrator Unit Tests
 
 on:
   pull_request:
-    branches: [main]
+    paths:
+      - "orchestrator/**"
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -13,6 +15,6 @@ jobs:
         with:
           python-version: "3.9"
           architecture: "x64"
-      - name: Run unit tests
+      - name: Run orchestrator tests
         run: |
           make -C orchestrator unit-test ENV=example
