@@ -1448,7 +1448,7 @@ deploy_lambdas: deploy_repo \
 				deploy_scheduled_scan_handler \
 				deploy_ci_tools \
 				deploy_scans_batch \
-        deploy_db_cleanup
+				deploy_db_cleanup
 .PHONY: deploy_lambdas
 
 deploy_scripts:  ## Deploy scripts to S3
@@ -1465,7 +1465,10 @@ deploy_api_docs:  ## Deploy API docs to the docs S3 bucket
 
 deploy_ci_tools_scripts:  ## Deploy CI tools to S3
 	@echo "${INFO}Deploying CI tools"
-	aws s3 cp --recursive ci-tools s3://${S3_BUCKET}/ci-tools
+	mkdir -p ${DIST_DIR}/ci-tools
+	cp -r ci-tools/* ${DIST_DIR}/ci-tools
+	sed -i'' -e 's/$${ARTEMIS_FQDN:-}/${ARTEMIS_FQDN}/g' ${DIST_DIR}/ci-tools/shell/artemis-scan.sh
+	aws s3 cp --recursive ${DIST_DIR}ci-tools s3://${S3_BUCKET}/ci-tools
 	@echo "${OK}"
 .PHONY: deploy_ci_tools_scripts
 
