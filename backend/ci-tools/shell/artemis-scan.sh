@@ -76,7 +76,7 @@ then
 fi
 
 # Scan parameters
-ARTEMIS="${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
+ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
 ARTEMIS_API="$ARTEMIS/api/v1"
 ARTEMIS_RESULTS="$ARTEMIS/results"
 SERVICE=$1
@@ -162,6 +162,7 @@ for i in "${VALUES[@]}"; do
 done
 
 log "Running Artemis scan against $BRANCH branch of $SERVICE/$RESOURCE"
+log "Artemis API endpoint: $ARTEMIS_API"
 
 # Initiate the scan. The default config is to scan for vulnerabilities and secrets but not scan using truffle_hog
 # because it's long-running and in a CI context we only care about secrets in the current code and not the commit
