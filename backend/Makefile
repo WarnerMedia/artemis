@@ -233,6 +233,9 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_members
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
 
+# Artemis scan configuration
+ARTEMIS_SCAN_ARGS := ""
+
 ###############################################################################
 # Help target
 ###############################################################################
@@ -335,7 +338,7 @@ lint_api_spec:
 
 artemis_scan:
 	@echo "${INFO}Running Artemis scan"
-	$(CURDIR)/ci-tools/shell/artemis-scan.sh github ${REPO_NAME} ${BRANCH_NAME} ${SEVERITY_LEVELS}
+	$(CURDIR)/ci-tools/shell/artemis-scan.sh ${ARTEMIS_SCAN_ARGS} github ${REPO_NAME} ${BRANCH_NAME} ${SEVERITY_LEVELS}
 .PHONY: artemis_scan
 
 ###############################################################################
