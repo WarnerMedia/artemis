@@ -234,7 +234,7 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
 
 # Artemis scan configuration
-ARTEMIS_SCAN_ARGS := ""
+ARTEMIS_SCAN_ARGS :=
 
 ###############################################################################
 # Help target
