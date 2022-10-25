@@ -409,7 +409,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 ###############################################################################
 
 dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
-	@echo "${INFO}Building $*"
+	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests
@@ -419,7 +419,7 @@ dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
 	@echo "${OK}"
 
 dist/lambdas/layers/artemisdb.zip: ${DB_LIB_SRC}
-	@echo "${INFO}Building $*"
+	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISDB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} psycopg2-binary==${PSYCOPG2_VER}
@@ -430,7 +430,7 @@ dist/lambdas/layers/artemisdb.zip: ${DB_LIB_SRC}
 	@echo "${OK}"
 
 dist/lambdas/layers/artemisapi.zip: ${API_LIB_SRC}
-	@echo "${INFO}Building $*"
+	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
 	mkdir -p ${DIST_DIR}/lambdas/layers/artemisapi/python
