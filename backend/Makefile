@@ -1215,13 +1215,13 @@ deploy_splunk_handler: move_lambda_bundle_splunk_handler
 	@echo "${OK}"
 .PHONY: deploy_splunk_handler
 
-deploy_api_authorizer: move_lambda_bundle_api_authorizer
+deploy_api_authorizer: move_lambda_bundle_authorizer
 	@echo "${INFO}Deploying ${API_AUTHORIZER_LAMBDA} lambda"
 	aws lambda update-function-code \
 		--function-name ${API_AUTHORIZER_LAMBDA} \
 		--region ${REGION} \
 		--s3-bucket ${S3_BUCKET} \
-		--s3-key lambdas/api_authorizer/v${VERSION}/api_authorizer.zip
+		--s3-key lambdas/authorizer/v${VERSION}/authorizer.zip
 	@echo "${INFO}Waiting for ${API_AUTHORIZER_LAMBDA} update to complete"
 	aws lambda wait function-updated --function-name ${API_AUTHORIZER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
@@ -1471,7 +1471,7 @@ deploy_ci_tools_scripts:  ## Deploy CI tools to S3
 	mkdir -p ${DIST_DIR}/ci-tools
 	cp -r ci-tools/* ${DIST_DIR}/ci-tools
 	sed -i'' -e 's/$${ARTEMIS_FQDN:-}/${ARTEMIS_FQDN}/g' ${DIST_DIR}/ci-tools/shell/artemis-scan.sh
-	aws s3 cp --recursive ${DIST_DIR}ci-tools s3://${S3_BUCKET}/ci-tools
+	aws s3 cp --recursive ${DIST_DIR}/ci-tools s3://${S3_BUCKET}/ci-tools
 	@echo "${OK}"
 .PHONY: deploy_ci_tools_scripts
 
