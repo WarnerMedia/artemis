@@ -5,9 +5,10 @@ from uuid import UUID
 from django.db.models import Q
 from django.db.models.query import QuerySet
 
+from artemisapi.const import SearchVulnerabilitiesAPIIdentifier
 from artemisapi.response import response
 from artemisapi.validators import ValidationError
-from artemisdb.artemisdb.models import Repo, Scan, Vulnerability
+from artemisdb.artemisdb.models import Repo, Vulnerability
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
 from search_vulnerabilities.util.const import RESOURCE_REPOS_LONG, RESOURCE_REPOS_SHORT
 from search_vulnerabilities.util.events import ParsedEvent
@@ -95,7 +96,13 @@ def _get_vuln_repos(vuln_id: str, paging: PageInfo, admin: bool = False, scope: 
             pk__in=Repo.in_scope(scope),
             repovulnerabilityscan__in=vuln.repovulnerabilityscan_set.filter(resolved=False),
         )
-    qs = apply_filters(qs, filter_map=map, page_info=paging, default_order=["service", "repo"])
+    qs = apply_filters(
+        qs,
+        filter_map=map,
+        page_info=paging,
+        default_order=["service", "repo"],
+        api_id=SearchVulnerabilitiesAPIIdentifier.GET_REPOS.value,
+    )
 
     # Mimic DRF limit-offset paging
     return page(
@@ -121,7 +128,13 @@ def _get_vuln_list(paging: PageInfo, admin: bool = False, scope: dict = False):
     map.add("plugins__name", "plugin", filter_type=FilterType.IS_IN)
 
     qs = Vulnerability.objects.all()
-    qs = apply_filters(qs, filter_map=map, page_info=paging, default_order=["-added"])
+    qs = apply_filters(
+        qs,
+        filter_map=map,
+        page_info=paging,
+        default_order=["-added"],
+        api_id=SearchVulnerabilitiesAPIIdentifier.GET_VULNS.value,
+    )
 
     # Mimic DRF limit-offset paging
     return page(qs, paging.offset, paging.limit, "search/vulnerabilities", query_str=paging.query_str)
@@ -148,7 +161,7 @@ def _vuln_id(qs: QuerySet, filter: Filter) -> QuerySet:
     try:
         UUID(str(filter.value))
         is_uuid = True
-    except:
+    except ValueError:
         is_uuid = False
 
     # Filter the QuerySet based on the filter type

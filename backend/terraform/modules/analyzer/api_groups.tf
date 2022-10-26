@@ -193,11 +193,11 @@ resource "aws_lambda_function" "groups-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups/v${var.ver}/groups.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_groups_handler)
 
   lifecycle {
     ignore_changes = [
@@ -224,8 +224,9 @@ resource "aws_lambda_function" "groups-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -243,11 +244,11 @@ resource "aws_lambda_function" "groups-members-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_members/v${var.ver}/groups_members.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_groups_members_handler)
 
   lifecycle {
     ignore_changes = [
@@ -274,8 +275,9 @@ resource "aws_lambda_function" "groups-members-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -293,11 +295,11 @@ resource "aws_lambda_function" "groups-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_groups_keys_handler)
 
   lifecycle {
     ignore_changes = [
@@ -324,8 +326,9 @@ resource "aws_lambda_function" "groups-keys-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 

@@ -1,3 +1,5 @@
+ARG ENGINE_BASE=3.9-slim-bullseye
+
 ###############################################################################
 # Build stage
 ###############################################################################
@@ -15,7 +17,7 @@ RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python:3.9-slim-bullseye as app
+FROM python:$ENGINE_BASE as app
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER

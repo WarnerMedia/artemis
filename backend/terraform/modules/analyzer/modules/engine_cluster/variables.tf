@@ -32,6 +32,10 @@ variable "public" {
   default     = true
 }
 
+variable "domain_name" {
+  description = "FQDN of the Artemis deployment"
+}
+
 ###############################################################################
 # Cluster configuration
 ###############################################################################
@@ -147,6 +151,11 @@ variable "private_docker_repos_key" {
 
 variable "plugin_java_heap_size" {
   default = "2g"
+}
+
+variable "metadata_scheme_modules" {
+  description = "CSV list of metadata processing modules"
+  default = ""
 }
 
 ################################################

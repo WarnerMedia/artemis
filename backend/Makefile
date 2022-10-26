@@ -23,6 +23,14 @@ WARN="  ${TIME}[${YELLOW} \!\! ${CNone}] "
 # Variables
 ###############################################################################
 
+# Pathing
+ROOT_DIR := $(shell pwd)
+WORKING_DIR := ${ROOT_DIR}
+BUILD_DIR := ${ROOT_DIR}/build
+DIST_DIR := ${ROOT_DIR}/dist
+STAGE_DIR := ${ROOT_DIR}/stage
+TERRAFORM := ${WORKING_DIR}/terraform
+
 DOCKER := docker
 PYTHON := python3
 PIP := pip3
@@ -36,10 +44,10 @@ LATEST_COMMIT = $(shell git rev-parse --short HEAD)
 ENV := nonprod
 
 # Load the environment-specific config
-include $(ENV).mk
+include ${WORKING_DIR}/$(ENV).mk
 
 # Application name extracted from Terraform
-PREFIX := $(shell egrep "application\s+=\s+\".+\"" terraform/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
+PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
 
 S3_BUCKET := ${PREFIX}-${ACCOUNT_ID}
 S3_DOCS_BUCKET := ${PREFIX}-docs-${ACCOUNT_ID}
@@ -74,7 +82,6 @@ SCALE_DOWN_LAMBDA_NAT := ${PREFIX}-scale-down-nat
 SCALE_DOWN_LAMBDA_PUBLIC := ${PREFIX}-scale-down-public
 CALLBACK_LAMBDA := ${PREFIX}-callback
 EVENT_DISPATCH_LAMBDA := ${PREFIX}-event-dispatch
-SECRETS_HANDLER_LAMBDA := ${PREFIX}-secrets-handler
 SPLUNK_HANDLER_LAMBDA := ${PREFIX}-splunk-handler
 API_AUTHORIZER_LAMBDA := ${PREFIX}-api-authorizer
 SIGNIN_LAMBDA := ${PREFIX}-signin-handler
@@ -135,18 +142,13 @@ DB_MAINT_TAG := ${DB_MAINT_PKG}:latest
 VERACODE_PKG := ${PREFIX}/veracode
 VERACODE_TAG := ${VERACODE_PKG}:latest
 # Context: egrep grabs the terraform line that notes whether veracode is enabled. sed removes all spacing. Cut grabs the bool.
-VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" terraform/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
+VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
 
 CHECKOV_VER := 2.0.1065
-
-ROOT_DIR := $(shell pwd)
-BUILD_DIR := ${ROOT_DIR}/build
-DIST_DIR := ${ROOT_DIR}/dist
-STAGE_DIR := ${ROOT_DIR}/stage
 
 FSB_VER := 1.9.0
 FSB_PATCH := -fix2
@@ -162,6 +164,9 @@ ENGINE_SRC = $(shell find engine -type f -name '*.py' -o -name '*.json' -o -name
 DB_LIB_SRC = $(shell find ${ARTEMISDB} -type f -name '*.py' -o -name '*.cfg')
 SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg')
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
+
+# Engine base image
+ENGINE_BASE := 3.9-slim-bullseye
 
 # Django version
 DJANGO_VER = 3.2.16
@@ -208,7 +213,7 @@ DETEKT_VER := 1.19.0
 PSYCOPG2_VER := 2.9.3
 
 # Lambdas
-LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <terraform/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
+LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
@@ -227,6 +232,9 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_keys
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_members
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
+
+# Artemis scan configuration
+ARTEMIS_SCAN_ARGS :=
 
 ###############################################################################
 # Help target
@@ -330,7 +338,7 @@ lint_api_spec:
 
 artemis_scan:
 	@echo "${INFO}Running Artemis scan"
-	$(CURDIR)/ci-tools/shell/artemis-scan.sh github ${REPO_NAME} ${BRANCH_NAME} ${SEVERITY_LEVELS}
+	$(CURDIR)/ci-tools/shell/artemis-scan.sh ${ARTEMIS_SCAN_ARGS} github ${REPO_NAME} ${BRANCH_NAME} ${SEVERITY_LEVELS}
 .PHONY: artemis_scan
 
 ###############################################################################
@@ -381,7 +389,6 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/api/users_keys.zip \
 		 dist/lambdas/api/users_services.zip \
 		 dist/lambdas/events/event_dispatch.zip \
-		 dist/lambdas/events/secrets_handler.zip \
 		 dist/lambdas/events/splunk_handler.zip \
 		 dist/lambdas/generators/json_report.zip \
 		 dist/lambdas/generators/pdf_report.zip \
@@ -402,7 +409,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 ###############################################################################
 
 dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
-	@echo "${INFO}Building $*"
+	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests
@@ -412,7 +419,7 @@ dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
 	@echo "${OK}"
 
 dist/lambdas/layers/artemisdb.zip: ${DB_LIB_SRC}
-	@echo "${INFO}Building $*"
+	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISDB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} psycopg2-binary==${PSYCOPG2_VER}
@@ -423,7 +430,7 @@ dist/lambdas/layers/artemisdb.zip: ${DB_LIB_SRC}
 	@echo "${OK}"
 
 dist/lambdas/layers/artemisapi.zip: ${API_LIB_SRC}
-	@echo "${INFO}Building $*"
+	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
 	mkdir -p ${DIST_DIR}/lambdas/layers/artemisapi/python
@@ -452,9 +459,10 @@ dist/engine_scripts.zip: docker-compose.aws.yml aws_env.py
 
 dist/docker/engine: Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
 	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull -t ${ENGINE_TAG} -f Dockerfiles/Dockerfile.engine \
+	$(DOCKER) build . -t ${ENGINE_TAG} -f Dockerfiles/Dockerfile.engine \
 		--no-cache --force-rm \
-		--build-arg MAINTAINER=${MAINTAINER}
+		--build-arg MAINTAINER=${MAINTAINER} \
+		--build-arg ENGINE_BASE=${ENGINE_BASE}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${ENGINE_TAG} ${ECR_URL}${ENGINE_TAG}
 	${DOCKER} tag ${ENGINE_TAG} ${ECR_URL}${ENGINE_TAG}-stage-${LATEST_COMMIT}
@@ -805,7 +813,7 @@ docker_push: stage/docker/engine \
 
 upload_lambda_%:
 	@echo "${INFO}Uploading $* lambda bundle"
-	aws s3 cp dist/$(shell echo $* | sed "s/-/\//g").zip s3://${S3_BUCKET}/lambdas/$(shell echo $* | sed "s/.*-//g")/v${VERSION}/$(shell echo $* | sed "s/.*-//g")-stage-${LATEST_COMMIT}.zip	
+	aws s3 cp ${DIST_DIR}/$(shell echo $* | sed "s/-/\//g").zip s3://${S3_BUCKET}/lambdas/$(shell echo $* | sed "s/.*-//g")/v${VERSION}/$(shell echo $* | sed "s/.*-//g")-stage-${LATEST_COMMIT}.zip
 	@echo "${OK}"
 .PHONY: upload_lambda_%
 
@@ -830,7 +838,6 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-api-users_keys \
 				upload_lambda_lambdas-api-users_services \
 				upload_lambda_lambdas-events-event_dispatch \
-				upload_lambda_lambdas-events-secrets_handler \
 				upload_lambda_lambdas-events-splunk_handler \
 				upload_lambda_lambdas-generators-json_report \
 				upload_lambda_lambdas-generators-pdf_report \
@@ -850,13 +857,13 @@ upload_lambdas: lambdas \
 
 stage_scripts: dist/engine_scripts.zip  ## Stage scripts in S3
 	@echo "${INFO}Deploying scripts bundle"
-	aws s3 cp dist/engine_scripts.zip s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip
+	aws s3 cp ${DIST_DIR}/engine_scripts.zip s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip
 	@echo "${OK}"
 .PHONY: stage_scripts
 
 stage_api_docs:  ## Stage API docs in S3
 	@echo "${INFO}Staging API documentation"
-	aws s3 cp dist/api/index.html s3://${S3_BUCKET}/api/index-stage-${LATEST_COMMIT}.html
+	aws s3 cp ${DIST_DIR}/api/index.html s3://${S3_BUCKET}/api/index-stage-${LATEST_COMMIT}.html
 	@echo "${OK}"
 .PHONY: upload_api_docs
 
@@ -898,7 +905,6 @@ move_lambda_bundles: move_lambda_bundle_artemislib \
 					 move_lambda_bundle_scale_down \
 					 move_lambda_bundle_callback \
 					 move_lambda_bundle_event_dispatch \
-					 move_lambda_bundle_secrets_handler \
 					 move_lambda_bundle_splunk_handler \
 					 move_lambda_bundle_authorizer \
 					 move_lambda_bundle_signin \
@@ -928,13 +934,7 @@ deploy_repo: move_lambda_bundle_repo
 	aws lambda wait function-updated --function-name ${REPO_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${REPO_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${REPO_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${REPO_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_repo
 
@@ -949,13 +949,7 @@ deploy_users: move_lambda_bundle_users
 	aws lambda wait function-updated --function-name ${USERS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${USERS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${USERS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${USERS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_users
 
@@ -970,13 +964,7 @@ deploy_users_keys: move_lambda_bundle_users_keys
 	aws lambda wait function-updated --function-name ${USERS_KEYS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${USERS_KEYS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${USERS_KEYS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${USERS_KEYS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_users_keys
 
@@ -991,13 +979,7 @@ deploy_users_services: move_lambda_bundle_users_services
 	aws lambda wait function-updated --function-name ${USERS_SERVICES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${USERS_SERVICES_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${USERS_SERVICES_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${USERS_SERVICES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_users_services
 
@@ -1012,13 +994,7 @@ deploy_sbom_components: move_lambda_bundle_sbom_components
 	aws lambda wait function-updated --function-name ${SBOM_COMPONENTS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SBOM_COMPONENTS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SBOM_COMPONENTS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SBOM_COMPONENTS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_sbom_components
 
@@ -1033,13 +1009,7 @@ deploy_sbom_licenses: move_lambda_bundle_sbom_licenses
 	aws lambda wait function-updated --function-name ${SBOM_LICENSES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SBOM_LICENSES_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SBOM_LICENSES_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SBOM_LICENSES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_sbom_licenses
 
@@ -1054,13 +1024,7 @@ deploy_groups: move_lambda_bundle_groups
 	aws lambda wait function-updated --function-name ${GROUPS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${GROUPS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${GROUPS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${GROUPS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_groups
 
@@ -1075,13 +1039,7 @@ deploy_groups_keys: move_lambda_bundle_groups_keys
 	aws lambda wait function-updated --function-name ${GROUPS_KEYS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${GROUPS_KEYS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${GROUPS_KEYS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${GROUPS_KEYS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_groups_keys
 
@@ -1096,13 +1054,7 @@ deploy_groups_members: move_lambda_bundle_groups_members
 	aws lambda wait function-updated --function-name ${GROUPS_MEMBERS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${GROUPS_MEMBERS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${GROUPS_MEMBERS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${GROUPS_MEMBERS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_groups_members
 
@@ -1117,13 +1069,7 @@ deploy_search_repositories: move_lambda_bundle_search_repositories
 	aws lambda wait function-updated --function-name ${SEARCH_REPOSITORIES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SEARCH_REPOSITORIES_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SEARCH_REPOSITORIES_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SEARCH_REPOSITORIES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_search_repositories
 
@@ -1138,13 +1084,7 @@ deploy_search_scans: move_lambda_bundle_search_scans
 	aws lambda wait function-updated --function-name ${SEARCH_SCANS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SEARCH_SCANS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SEARCH_SCANS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SEARCH_SCANS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_search_scans
 
@@ -1159,13 +1099,7 @@ deploy_search_vulnerabilities: move_lambda_bundle_search_vulnerabilities
 	aws lambda wait function-updated --function-name ${SEARCH_VULNERABILITIES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SEARCH_VULNERABILITIES_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SEARCH_VULNERABILITIES_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SEARCH_VULNERABILITIES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_search_vulnerabilities
 
@@ -1180,13 +1114,7 @@ deploy_system_allowlist: move_lambda_bundle_system_allowlist
 	aws lambda wait function-updated --function-name ${SYSTEM_ALLOWLIST_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SYSTEM_ALLOWLIST_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SYSTEM_ALLOWLIST_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SYSTEM_ALLOWLIST_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_system_allowlist
 
@@ -1201,13 +1129,7 @@ deploy_system_status: move_lambda_bundle_system_status
 	aws lambda wait function-updated --function-name ${SYSTEM_STATUS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SYSTEM_STATUS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SYSTEM_STATUS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SYSTEM_STATUS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_system_status
 
@@ -1222,12 +1144,7 @@ deploy_ci_tools: move_lambda_bundle_ci_tools
 	aws lambda wait function-updated --function-name ${CI_TOOLS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${CI_TOOLS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${CI_TOOLS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${CI_TOOLS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_ci_tools
 
@@ -1252,12 +1169,7 @@ deploy_scale_down: move_lambda_bundle_scale_down
 	aws lambda wait function-updated --function-name ${SCALE_DOWN_LAMBDA_NAT} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SCALE_DOWN_LAMBDA_NAT} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SCALE_DOWN_LAMBDA_NAT} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SCALE_DOWN_LAMBDA_NAT} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Deploying ${SCALE_DOWN_LAMBDA_PUBLIC} lambda"
 	aws lambda update-function-code \
@@ -1269,12 +1181,7 @@ deploy_scale_down: move_lambda_bundle_scale_down
 	aws lambda wait function-updated --function-name ${SCALE_DOWN_LAMBDA_PUBLIC} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SCALE_DOWN_LAMBDA_PUBLIC} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SCALE_DOWN_LAMBDA_PUBLIC} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SCALE_DOWN_LAMBDA_PUBLIC} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_scale_down_nat
 
@@ -1298,16 +1205,6 @@ deploy_event_dispatch: move_lambda_bundle_event_dispatch
 	@echo "${OK}"
 .PHONY: deploy_event_dispatch
 
-deploy_secrets_handler: move_lambda_bundle_secrets_handler
-	@echo "${INFO}Deploying ${SECRETS_HANDLER_LAMBDA} lambda"
-	aws lambda update-function-code \
-		--function-name ${SECRETS_HANDLER_LAMBDA} \
-		--region ${REGION} \
-		--s3-bucket ${S3_BUCKET} \
-		--s3-key lambdas/secrets_handler/v${VERSION}/secrets_handler.zip
-	@echo "${OK}"
-.PHONY: deploy_secrets_handler
-
 deploy_splunk_handler: move_lambda_bundle_splunk_handler
 	@echo "${INFO}Deploying ${AUDIT_EVENT_LAMBDA} lambda"
 	aws lambda update-function-code \
@@ -1318,23 +1215,18 @@ deploy_splunk_handler: move_lambda_bundle_splunk_handler
 	@echo "${OK}"
 .PHONY: deploy_splunk_handler
 
-deploy_api_authorizer: move_lambda_bundle_api_authorizer
+deploy_api_authorizer: move_lambda_bundle_authorizer
 	@echo "${INFO}Deploying ${API_AUTHORIZER_LAMBDA} lambda"
 	aws lambda update-function-code \
 		--function-name ${API_AUTHORIZER_LAMBDA} \
 		--region ${REGION} \
 		--s3-bucket ${S3_BUCKET} \
-		--s3-key lambdas/api_authorizer/v${VERSION}/api_authorizer.zip
+		--s3-key lambdas/authorizer/v${VERSION}/authorizer.zip
 	@echo "${INFO}Waiting for ${API_AUTHORIZER_LAMBDA} update to complete"
 	aws lambda wait function-updated --function-name ${API_AUTHORIZER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${API_AUTHORIZER_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${API_AUTHORIZER_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${API_AUTHORIZER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_api_authorizer
 
@@ -1349,11 +1241,7 @@ deploy_signin: move_lambda_bundle_signin
 	aws lambda wait function-updated --function-name ${SIGNIN_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SIGNIN_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SIGNIN_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SIGNIN_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_signin
 
@@ -1368,12 +1256,7 @@ deploy_json_report: move_lambda_bundle_json_report
 	aws lambda wait function-updated --function-name ${JSON_REPORT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${JSON_REPORT_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${JSON_REPORT_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${JSON_REPORT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_json_report
 
@@ -1388,12 +1271,7 @@ deploy_pdf_report: move_lambda_bundle_pdf_report
 	aws lambda wait function-updated --function-name ${PDF_REPORT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${PDF_REPORT_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${PDF_REPORT_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${PDF_REPORT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_pdf_report
 
@@ -1408,12 +1286,7 @@ deploy_sbom_report: move_lambda_bundle_sbom_report
 	aws lambda wait function-updated --function-name ${SBOM_REPORT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SBOM_REPORT_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SBOM_REPORT_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SBOM_REPORT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_sbom_report
 
@@ -1428,12 +1301,7 @@ deploy_report_cleanup: move_lambda_bundle_report_cleanup
 	aws lambda wait function-updated --function-name ${REPORT_CLEANUP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${REPORT_CLEANUP_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${REPORT_CLEANUP_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${REPORT_CLEANUP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_report_cleanup
 
@@ -1448,12 +1316,7 @@ deploy_update_github_org_users: move_lambda_bundle_update_github_org_users
 	aws lambda wait function-updated --function-name ${UPDATE_GITHUB_ORG_USERS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${UPDATE_GITHUB_ORG_USERS_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${UPDATE_GITHUB_ORG_USERS_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${UPDATE_GITHUB_ORG_USERS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_update_github_org_users
 
@@ -1468,12 +1331,7 @@ deploy_scan_scheduler: move_lambda_bundle_scan_scheduler
 	aws lambda wait function-updated --function-name ${SCAN_SCHEDULER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SCAN_SCHEDULER_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SCAN_SCHEDULER_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SCAN_SCHEDULER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_scan_scheduler
 
@@ -1488,12 +1346,7 @@ deploy_scheduled_scan_handler: move_lambda_bundle_scheduled_scan_handler
 	aws lambda wait function-updated --function-name ${SCHEDULED_SCAN_HANDLER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SCHEDULED_SCAN_HANDLER_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SCHEDULED_SCAN_HANDLER_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SCHEDULED_SCAN_HANDLER_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_scheduled_scan_handler
 
@@ -1508,13 +1361,7 @@ deploy_scans_batch: move_lambda_bundle_scans_batch
 	aws lambda wait function-updated --function-name ${SCANS_BATCH_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${SCANS_BATCH_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${SCANS_BATCH_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISAPI_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISAPI_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${SCANS_BATCH_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_scans_batch
 
@@ -1529,12 +1376,7 @@ deploy_db_cleanup: move_lambda_bundle_db_cleanup
 	aws lambda wait function-updated --function-name ${DB_CLEANUP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${DB_CLEANUP_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${DB_CLEANUP_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISLIB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISLIB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${ARTEMISDB_LAMBDA_LAYER}:$(shell aws lambda list-layer-versions --layer-name ${ARTEMISDB_LAMBDA_LAYER} --region=${REGION} | jq -r '.LayerVersions[0].Version')
+	@build_scripts/update_lambda_layers.py --function-name ${DB_CLEANUP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_db_cleanup
 
@@ -1555,7 +1397,7 @@ deploy_artemislib_layer: move_lambda_bundle_artemislib
 deploy_artemisdb_layer: move_lambda_bundle_artemisdb
 	@echo "${INFO}Deploying artemisdb lambda layer"
 	aws lambda publish-layer-version \
-		--layer-name ${artemisdb_LAMBDA_LAYER} \
+		--layer-name ${ARTEMISDB_LAMBDA_LAYER} \
 		--region ${REGION} \
 		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/artemisdb/v${VERSION}/artemisdb.zip \
 		--compatible-runtimes python${LAMBDA_PYTHON_VER}
@@ -1597,7 +1439,6 @@ deploy_lambdas: deploy_repo \
 				deploy_scale_down \
 				deploy_callback \
 				deploy_event_dispatch \
-				deploy_secrets_handler \
 				deploy_splunk_handler \
 				deploy_api_authorizer \
 				deploy_signin \
@@ -1610,7 +1451,7 @@ deploy_lambdas: deploy_repo \
 				deploy_scheduled_scan_handler \
 				deploy_ci_tools \
 				deploy_scans_batch \
-        deploy_db_cleanup
+				deploy_db_cleanup
 .PHONY: deploy_lambdas
 
 deploy_scripts:  ## Deploy scripts to S3
@@ -1627,7 +1468,10 @@ deploy_api_docs:  ## Deploy API docs to the docs S3 bucket
 
 deploy_ci_tools_scripts:  ## Deploy CI tools to S3
 	@echo "${INFO}Deploying CI tools"
-	aws s3 cp --recursive ci-tools s3://${S3_BUCKET}/ci-tools
+	mkdir -p ${DIST_DIR}/ci-tools
+	cp -r ci-tools/* ${DIST_DIR}/ci-tools
+	sed -i'' -e 's/$${ARTEMIS_FQDN:-}/${ARTEMIS_FQDN}/g' ${DIST_DIR}/ci-tools/shell/artemis-scan.sh
+	aws s3 cp --recursive ${DIST_DIR}/ci-tools s3://${S3_BUCKET}/ci-tools
 	@echo "${OK}"
 .PHONY: deploy_ci_tools_scripts
 

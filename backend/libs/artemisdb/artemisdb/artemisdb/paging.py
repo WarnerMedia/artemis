@@ -1,3 +1,4 @@
+import importlib
 from enum import Enum
 from http import HTTPStatus
 from typing import Callable
@@ -5,8 +6,9 @@ from typing import Callable
 from django.db.models.query import QuerySet
 
 from artemisdb.artemisdb.consts import DEFAULT_PAGE_SIZE
-from artemisdb.artemisdb.env import API_PATH
+from artemisdb.artemisdb.env import API_PATH, CUSTOM_FILTERING_MODULE
 from artemislib.datetime import from_iso_timestamp
+from artemislib.logging import Logger
 
 try:
     # If the Artemis API library is present load the response method and validation exception
@@ -30,6 +32,28 @@ class FilterType(Enum):
     LESS_THAN = "lt"
     IS_NULL = "isnull"
     IS_IN = "in"
+
+
+LOG = Logger(__name__)
+
+CUSTOM_FILTERING = None
+
+
+def load_custom_filtering():
+    # This method loads the custom filtering once. This is done so that custom
+    # filtering is loaded on-demand after artemisdb loads, removing circular
+    # import problems with the Filter, FilterMap, etc. classes.
+    global CUSTOM_FILTERING
+    if CUSTOM_FILTERING is not None:
+        return
+
+    CUSTOM_FILTERING = {}
+    if CUSTOM_FILTERING_MODULE:
+        try:
+            m = importlib.import_module(CUSTOM_FILTERING_MODULE)
+            CUSTOM_FILTERING = m.CUSTOM_FILTERING
+        except (ModuleNotFoundError, AttributeError):
+            LOG.error("Unable to load custom filtering module %s", CUSTOM_FILTERING_MODULE)
 
 
 class Filter:
@@ -112,10 +136,13 @@ class FilterMap:
     def _lookup(self, filter: Filter) -> FilterMapItem:
         return self._map.get(filter.field, {}).get(filter.type)
 
-    def apply(self, qs: QuerySet, filters: list[Filter]) -> QuerySet:
+    def apply(self, qs: QuerySet, filters: list[Filter], custom_filter_map=None) -> QuerySet:
         # Apply filters
         for filter in filters:
             item = self._lookup(filter)
+            if item is None and custom_filter_map is not None:
+                # Filter didn't match the built-in filters so check the custom ones
+                item = custom_filter_map._lookup(filter)
             if item.generator is not None:
                 # If the FilterMapItem has a generator function defined use that
                 qs = item.generator(qs, filter)
@@ -227,7 +254,24 @@ def parse_paging_event(
     boolean_filters: list = None,
     ordering_aliases: dict = None,
     mv_validators: dict = None,
+    api_id: str = None,
 ) -> PageInfo:
+    load_custom_filtering()
+    if api_id in CUSTOM_FILTERING:
+        # Merge in any custom filter fields
+        ordering_fields = (ordering_fields or []) + CUSTOM_FILTERING[api_id].get("ordering_fields", [])
+        exact_filters = (exact_filters or []) + CUSTOM_FILTERING[api_id].get("exact_filters", [])
+        substring_filters = (substring_filters or []) + CUSTOM_FILTERING[api_id].get("substring_filters", [])
+        timestamp_filters = (timestamp_filters or []) + CUSTOM_FILTERING[api_id].get("timestamp_filters", [])
+        mv_filters = (mv_filters or []) + CUSTOM_FILTERING[api_id].get("mv_filters", [])
+        nullable_filters = (nullable_filters or []) + CUSTOM_FILTERING[api_id].get("nullable_filters", [])
+        boolean_filters = (boolean_filters or []) + CUSTOM_FILTERING[api_id].get("boolean_filters", [])
+
+        ordering_aliases = ordering_aliases or {}
+        ordering_aliases.update(CUSTOM_FILTERING[api_id].get("ordering_aliases", {}))
+        mv_validators = mv_validators or {}
+        mv_validators.update(CUSTOM_FILTERING[api_id].get("mv_validators", {}))
+
     query = event.get("queryStringParameters") or {}
     mv_query = event.get("multiValueQueryStringParameters") or {}
 
@@ -335,10 +379,19 @@ def parse_paging_event(
 
 
 def apply_filters(
-    qs: QuerySet, filter_map: FilterMap, page_info: PageInfo, distinct: bool = True, default_order: list[str] = None
+    qs: QuerySet,
+    filter_map: FilterMap,
+    page_info: PageInfo,
+    distinct: bool = True,
+    default_order: list[str] = None,
+    api_id: str = None,
 ) -> QuerySet:
+    # Get any custom filters
+    load_custom_filtering()
+    custom_filter_map = CUSTOM_FILTERING.get(api_id, {}).get("filter_map")
+
     # Apply filters
-    qs = filter_map.apply(qs, page_info.filters)
+    qs = filter_map.apply(qs, page_info.filters, custom_filter_map)
 
     # Apply ordering
     if page_info.order_by:

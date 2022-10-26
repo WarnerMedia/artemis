@@ -6,10 +6,6 @@ from json_report.results.static_analysis import get_static_analysis
 from json_report.results.vuln import get_vulns
 from json_report.util.const import FORMAT_FULL
 
-# This is a mapping of application metadata schemes to formatting methods.
-# The structure is {"scheme": callable}
-APP_METADATA_SCHEMES = {}
-
 
 def get_report(scan_id, params=None):
     try:
@@ -51,7 +47,7 @@ def get_report(scan_id, params=None):
     success = vuln_results.success and secret_results.success and sa_results.success and inv_results.success
 
     report = scan.to_dict()
-    report["application_metadata"] = get_application_metadata(scan)
+    report["application_metadata"] = scan.formatted_application_metadata()
     report["success"] = success
     report["truncated"] = False  # Legacy field, static value
     report["errors"] = errors.errors
@@ -75,17 +71,3 @@ def get_report(scan_id, params=None):
         report["results"] = {}
 
     return report
-
-
-def get_application_metadata(scan) -> dict:
-    # No schemes defined, return the raw results
-    if not APP_METADATA_SCHEMES:
-        return scan.application_metadata or {}
-
-    app_metadata = scan.application_metadata
-    result = {}
-    for scheme in APP_METADATA_SCHEMES:
-        if scheme in app_metadata:
-            scheme_metadata = app_metadata[scheme]
-            result[scheme] = APP_METADATA_SCHEMES[scheme](scheme_metadata)
-    return result

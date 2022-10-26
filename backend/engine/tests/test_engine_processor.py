@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from analyzerdb.analyzerdb.models import Scan
+from artemisdb.artemisdb.models import Scan
 from processor import processor as engine_processor
 from processor.details import Details
 from processor.scan_details import ScanDetails

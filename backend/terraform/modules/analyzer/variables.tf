@@ -201,6 +201,32 @@ variable "mandatory_include_paths" {
   default     = []
 }
 
+variable "metadata_scheme_modules" {
+  description = "CSV list of metadata processing modules"
+  default     = ""
+}
+
+variable "metadata_formatter_module" {
+  description = "Metadata formatter module"
+  default     = ""
+}
+
+variable "custom_filtering_module" {
+  description = "Custom API filtering module"
+  default     = ""
+}
+
+variable "additional_event_routing" {
+  description = "JSON dict defining additional event routing"
+  default     = "{}"
+}
+
+variable "default_scope" {
+  description = "List of scopes to automatically set for new users"
+  type        = list(string)
+  default     = []
+}
+
 ################################################
 # GitHub App
 ################################################
@@ -222,4 +248,182 @@ variable "heimdall_scans_cron" {
 variable "service-integrations" {
   description = "List of service integrations"
   type        = list(any)
+}
+
+################################################
+# Lambda Customization
+################################################
+
+variable "extra_lambda_layers_json_report" {
+  description = "Extra layers that should be applied to the JSON report lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_pdf_report" {
+  description = "Extra layers that should be applied to the PDF report lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_report_cleanup" {
+  description = "Extra layers that should be applied to the report cleanup lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_sbom_report" {
+  description = "Extra layers that should be applied to the SBOM report lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_handler" {
+  description = "Extra layers that should be applied to the groups handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_members_handler" {
+  description = "Extra layers that should be applied to the groups members handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_keys_handler" {
+  description = "Extra layers that should be applied to the groups keys handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_scans_batch_handler" {
+  description = "Extra layers that should be applied to the scans batch handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_update_github_org_users" {
+  description = "Extra layers that should be applied to the update GitHub org users lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_search_repositories_handler" {
+  description = "Extra layers that should be applied to the search repositories handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_search_scans_handler" {
+  description = "Extra layers that should be applied to the search scans handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_search_vulnerabilities_handler" {
+  description = "Extra layers that should be applied to the search vulnerabilities handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_system_allowlist_handler" {
+  description = "Extra layers that should be applied to the system allowlist handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_system_status_handler" {
+  description = "Extra layers that should be applied to the system status handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_sbom_components_handler" {
+  description = "Extra layers that should be applied to the SBOM components handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_sbom_licenses_handler" {
+  description = "Extra layers that should be applied to the SBOM licenses handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_db_cleanup" {
+  description = "Extra layers that should be applied to the DB cleanup lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_ci_tools_handler" {
+  description = "Extra layers that should be applied to the CI tools handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_api_authorizer" {
+  description = "Extra layers that should be applied to the API authorizer lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scan_scheduler" {
+  description = "Extra layers that should be applied to the scan scheduler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scheduled_scan_handler" {
+  description = "Extra layers that should be applied to the scheduled scan handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_engine_scale_down" {
+  description = "Extra layers that should be applied to the engine scale down lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_repo_handler" {
+  description = "Extra layers that should be applied to the repo handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_users_handler" {
+  description = "Extra layers that should be applied to the users handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_users_keys_handler" {
+  description = "Extra layers that should be applied to the users keys handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_users_services_handler" {
+  description = "Extra layers that should be applied to the users services handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_signin_handler" {
+  description = "Extra layers that should be applied to the signin handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scans_batch_handler" {
+  description = "Extra layers that should be applied to the scans batch handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_env_vars_event_dispatch" {
+  description = "Extra environment variables to configure for the event dispatch lambda"
+  type        = map(string)
+  default     = {}
 }

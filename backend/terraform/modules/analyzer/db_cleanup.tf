@@ -8,10 +8,10 @@ resource "aws_lambda_function" "db-cleanup" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/db_cleanup/v${var.ver}/db_cleanup.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_db_cleanup)
 
   lifecycle {
     ignore_changes = [
