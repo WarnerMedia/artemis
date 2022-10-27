@@ -155,7 +155,13 @@ variable "plugin_java_heap_size" {
 
 variable "metadata_scheme_modules" {
   description = "CSV list of metadata processing modules"
-  default = ""
+  default     = ""
+}
+
+variable "mandatory_include_paths" {
+  description = "Repository paths that cannot be excluded from scans"
+  type        = list(string)
+  default     = []
 }
 
 ################################################

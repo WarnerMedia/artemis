@@ -113,14 +113,6 @@ variable "maintenance_mode_retry_after" {
 
 variable "app" {}
 
-variable "engine_size" {
-  default = "m5.large"
-}
-
-variable "pub_engine_size" {
-  default = "m5.large"
-}
-
 variable "database_cidrs" {
   description = "CIDRs for the Artemis Database"
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
@@ -188,10 +180,6 @@ variable "private_docker_repos_key" {
 }
 
 variable "plugin_java_heap_size" {
-  default = "2g"
-}
-
-variable "pub_plugin_java_heap_size" {
   default = "2g"
 }
 
@@ -426,4 +414,48 @@ variable "extra_env_vars_event_dispatch" {
   description = "Extra environment variables to configure for the event dispatch lambda"
   type        = map(string)
   default     = {}
+}
+
+################################################
+# Public Engine Cluster Customization
+################################################
+
+variable "pub_engine_size" {
+  default = "m5.large"
+}
+
+variable "engine_scale_min_public" {
+  description = "Minimum number of engines to run in the group"
+  default     = 1
+}
+
+variable "engine_scale_max_public" {
+  description = "Maximum number of engines to run in the group"
+  default     = 2
+}
+
+variable "pub_plugin_java_heap_size" {
+  default = "2g"
+}
+
+################################################
+# NAT Engine Cluster Customization
+################################################
+
+variable "nat_engine_size" {
+  default = "m5.large"
+}
+
+variable "engine_scale_min_nat" {
+  description = "Minimum number of engines to run in the group"
+  default     = 1
+}
+
+variable "engine_scale_max_nat" {
+  description = "Maximum number of engines to run in the group"
+  default     = 2
+}
+
+variable "nat_plugin_java_heap_size" {
+  default = "2g"
 }
