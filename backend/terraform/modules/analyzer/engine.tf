@@ -11,6 +11,11 @@ module "public_engine_cluster" {
   vpc_route_table_id = var.vpc_route_table_id
   engine_cidr        = "10.0.4.0/24"
 
+  engine_size           = var.pub_engine_size
+  engine_scale_min      = var.engine_scale_min_public
+  engine_scale_max      = var.engine_scale_max_public
+  plugin_java_heap_size = var.pub_plugin_java_heap_size
+
   s3_analyzer_files_arn    = var.s3_analyzer_files_arn
   s3_analyzer_files_bucket = var.s3_analyzer_files_bucket
   s3_analyzer_files_id     = var.s3_analyzer_files_id
@@ -39,6 +44,7 @@ module "public_engine_cluster" {
   domain_name = var.domain_name
 
   metadata_scheme_modules = var.metadata_scheme_modules
+  mandatory_include_paths = var.mandatory_include_paths
 }
 
 module "nat_engine_cluster" {
@@ -54,6 +60,11 @@ module "nat_engine_cluster" {
   vpc_route_table_id = var.vpc_route_table_id
   engine_cidr        = "10.0.1.0/24"
 
+  engine_size           = var.nat_engine_size
+  engine_scale_min      = var.engine_scale_min_nat
+  engine_scale_max      = var.engine_scale_max_nat
+  plugin_java_heap_size = var.nat_plugin_java_heap_size
+
   s3_analyzer_files_arn    = var.s3_analyzer_files_arn
   s3_analyzer_files_bucket = var.s3_analyzer_files_bucket
   s3_analyzer_files_id     = var.s3_analyzer_files_id
@@ -82,4 +93,5 @@ module "nat_engine_cluster" {
   domain_name = var.domain_name
 
   metadata_scheme_modules = var.metadata_scheme_modules
+  mandatory_include_paths = var.mandatory_include_paths
 }
