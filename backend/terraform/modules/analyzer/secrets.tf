@@ -18,8 +18,9 @@ resource "aws_secretsmanager_secret" "db-master-password" {
 }
 
 resource "random_password" "db-master-password" {
-  length  = 16
-  special = true
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?" # Default TF value minus @
 }
 
 resource "aws_secretsmanager_secret_version" "db-master-password" {
@@ -33,8 +34,9 @@ resource "aws_secretsmanager_secret" "db-user" {
 }
 
 resource "random_password" "db-user" {
-  length  = 16
-  special = true
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?" # Default TF value minus @
 }
 
 resource "aws_secretsmanager_secret_version" "db-user" {
