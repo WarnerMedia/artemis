@@ -52,12 +52,13 @@ module "nat_engine_cluster" {
 
   app               = var.app
   name              = "nat"
+  public            = false
   aws_region        = var.aws_region
   availability_zone = var.availability_zone
   tags              = var.tags
 
   vpc_id             = var.vpc_id
-  vpc_route_table_id = var.vpc_route_table_id
+  vpc_route_table_id = aws_route_table.lambda_routes.id
   engine_cidr        = "10.0.1.0/24"
 
   engine_size           = var.nat_engine_size

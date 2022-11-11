@@ -60,6 +60,7 @@ resource "aws_security_group" "db" {
     protocol  = "tcp"
     security_groups = [
       module.public_engine_cluster.engine-sec-group.id,
+      module.nat_engine_cluster.engine-sec-group.id,
       aws_security_group.lambda-sg.id
     ]
     cidr_blocks = aws_subnet.database.*.cidr_block
