@@ -36,6 +36,11 @@ variable "domain_name" {
   description = "FQDN of the Artemis deployment"
 }
 
+variable "revproxy_domain_substring" {
+  description = "Base domain for the reverse proxy to access VCS, if used"
+  default     = ""
+}
+
 ###############################################################################
 # Cluster configuration
 ###############################################################################

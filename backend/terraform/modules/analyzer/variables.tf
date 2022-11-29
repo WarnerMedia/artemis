@@ -147,6 +147,11 @@ variable "s3_analyzer_files_arn" {}
 
 variable "s3_analyzer_files_bucket" {}
 
+variable "revproxy_domain_substring" {
+  description = "Base domain for the reverse proxy to access VCS, if used"
+  default     = ""
+}
+
 ###############################################
 # SQS Variables
 ################################################

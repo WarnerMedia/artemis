@@ -197,6 +197,7 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_DOMAIN_NAME               = var.domain_name
       ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
       ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
+      ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
     }
   }
 
