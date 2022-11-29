@@ -45,6 +45,8 @@ module "public_engine_cluster" {
 
   metadata_scheme_modules = var.metadata_scheme_modules
   mandatory_include_paths = var.mandatory_include_paths
+
+  revproxy_domain_substring = var.revproxy_domain_substring
 }
 
 module "nat_engine_cluster" {
@@ -95,4 +97,6 @@ module "nat_engine_cluster" {
 
   metadata_scheme_modules = var.metadata_scheme_modules
   mandatory_include_paths = var.mandatory_include_paths
+
+  revproxy_domain_substring = var.revproxy_domain_substring
 }
