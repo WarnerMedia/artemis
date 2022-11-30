@@ -218,19 +218,17 @@ resource "aws_secretsmanager_secret_version" "service-integration" {
   })
 }
 
-resource "aws_secretsmanager_secret" "revproxy-api-key" {
-  name        = "${var.app}/revproxy-api-key"
-  description = "Authentication token for revproxy"
+# The revproxy API key is managed externally to Artemis and may be stored in
+# another region
+provider "aws" {
+  alias   = "revproxy-key"
+  region  = var.revproxy_secret_region
+  profile = var.profile
 }
 
-resource "random_password" "revproxy-api-key" {
-  length  = 16
-  special = true
-}
-
-resource "aws_secretsmanager_secret_version" "revproxy-api-key" {
-  secret_id     = aws_secretsmanager_secret.revproxy-api-key.id
-  secret_string = random_password.revproxy-api-key.result
+data "aws_secretsmanager_secret" "revproxy-api-key" {
+  provider = aws.revproxy-key
+  name     = var.revproxy_secret
 }
 
 ###############################################################################

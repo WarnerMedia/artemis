@@ -41,6 +41,16 @@ variable "revproxy_domain_substring" {
   default     = ""
 }
 
+variable "revproxy_secret" {
+  description = "Secrets Manager item that contains the revproxy key"
+  default     = "artemis/revproxy-api-key"
+}
+
+variable "revproxy_secret_region" {
+  description = "AWS region containing the Secrets Manager item that contains the revproxy key"
+  default     = "us-east-2"
+}
+
 ###############################################################################
 # Cluster configuration
 ###############################################################################

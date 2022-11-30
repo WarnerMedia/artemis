@@ -14,6 +14,7 @@ from repo.util.env import (
     DEFAULT_INCLUDE_DEV,
     DEFAULT_ORG,
     REV_PROXY_SECRET,
+    REV_PROXY_SECRET_REGION,
 )
 
 
@@ -24,7 +25,7 @@ class GetProxySecret:
         if not cls._secret:
             from repo.util.aws import AWSConnect  # pylint: disable=import-outside-toplevel
 
-            aws_connect = AWSConnect()
+            aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
             cls._secret = aws_connect.get_key(REV_PROXY_SECRET)["SecretString"]
         return cls._secret
 

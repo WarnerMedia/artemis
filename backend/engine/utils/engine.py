@@ -68,13 +68,13 @@ def cleanup_images(images: list) -> None:
         remover.remove_docker_image(image)
 
 
-def get_key(secret_name: str):
+def get_key(secret_name: str, region=REGION):
     """
     Gets secret key from AWS Secrets Manager
     """
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=REGION)
+    client = session.client(service_name="secretsmanager", region_name=region)
 
     try:
         return client.get_secret_value(SecretId=secret_name)

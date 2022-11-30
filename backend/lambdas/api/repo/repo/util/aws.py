@@ -27,21 +27,21 @@ class LambdaError(Exception):
 
 
 class AWSConnect:
-    _instance = None
+    _instances = {}
     _SQS = None
     _S3 = None
     _S3_CLIENT = None
     _SECRETS_MANAGER = None
 
     def __new__(cls, region=AWS_DEFAULT_REGION):
-        if cls._instance is None:
-            cls._instance = super(AWSConnect, cls).__new__(cls)
-            cls._instance._SQS = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=region)
-            cls._instance._S3 = boto3.resource("s3", region_name=region)
-            cls._instance._S3_CLIENT = boto3.client("s3", region_name=region)
-            cls._instance._SECRETS_MANAGER = boto3.client("secretsmanager", region_name=region)
-            cls._instance._LAMBDA = boto3.client("lambda", region_name=region)
-        return cls._instance
+        if region not in cls._instances:
+            cls._instances[region] = super(AWSConnect, cls).__new__(cls)
+            cls._instances[region]._SQS = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=region)
+            cls._instances[region]._S3 = boto3.resource("s3", region_name=region)
+            cls._instances[region]._S3_CLIENT = boto3.client("s3", region_name=region)
+            cls._instances[region]._SECRETS_MANAGER = boto3.client("secretsmanager", region_name=region)
+            cls._instances[region]._LAMBDA = boto3.client("lambda", region_name=region)
+        return cls._instances[region]
 
     def queue_repo_for_scan(
         self,

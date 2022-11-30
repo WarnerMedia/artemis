@@ -80,6 +80,8 @@ ARTEMIS_DOMAIN_NAME=${domain_name}
 ARTEMIS_MANDATORY_INCLUDE_PATHS=${mandatory_include_paths}
 ARTEMIS_METADATA_SCHEME_MODULES=${metadata_scheme_modules}
 ARTEMIS_REVPROXY_DOMAIN_SUBSTRING=${revproxy_domain_substring}
+ARTEMIS_REVPROXY_SECRET=${revproxy_secret}
+ARTEMIS_REVPROXY_SECRET_REGION=${revproxy_secret_region}
 EOF
 
 # Fix ownership of files for ec2-user

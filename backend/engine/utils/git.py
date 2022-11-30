@@ -10,7 +10,13 @@ from pathlib import Path
 from dateutil.parser import parse
 
 from artemislib.logging import Logger
-from env import MANDATORY_INCLUDE_PATHS, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET, REV_PROXY_SECRET_HEADER
+from env import (
+    MANDATORY_INCLUDE_PATHS,
+    REV_PROXY_DOMAIN_SUBSTRING,
+    REV_PROXY_SECRET,
+    REV_PROXY_SECRET_HEADER,
+    REV_PROXY_SECRET_REGION,
+)
 from utils.engine import get_key
 
 log = Logger(__name__)
@@ -114,7 +120,7 @@ def set_reverse_proxy_key(url: str, repo: str, base: str) -> bool:
     # we need to also provide the key necessary to pass through the reverse proxy.
     if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING not in url:
         return True
-    rev_proxy_key = get_key(REV_PROXY_SECRET)["SecretString"]
+    rev_proxy_key = get_key(REV_PROXY_SECRET, REV_PROXY_SECRET_REGION)["SecretString"]
     return _set_extra_header(repo, REV_PROXY_SECRET_HEADER, rev_proxy_key, base)
 
 
