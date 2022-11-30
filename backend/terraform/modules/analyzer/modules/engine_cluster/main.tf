@@ -44,6 +44,8 @@ data "template_file" "engine-script" {
     mandatory_include_paths   = jsonencode(var.mandatory_include_paths)
     metadata_scheme_modules   = var.metadata_scheme_modules
     revproxy_domain_substring = var.revproxy_domain_substring
+    revproxy_secret           = var.revproxy_secret
+    revproxy_secret_region    = var.revproxy_secret_region
   }
 }
 

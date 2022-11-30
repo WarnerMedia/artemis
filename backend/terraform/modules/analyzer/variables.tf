@@ -16,6 +16,10 @@ variable "aws_region" {
   description = "The region in which to deploy"
 }
 
+variable "profile" {
+  description = "AWS profile"
+}
+
 variable "availability_zone" {
   description = "The AZ in which to deploy NAT engine EC2s"
 }
@@ -150,6 +154,16 @@ variable "s3_analyzer_files_bucket" {}
 variable "revproxy_domain_substring" {
   description = "Base domain for the reverse proxy to access VCS, if used"
   default     = ""
+}
+
+variable "revproxy_secret" {
+  description = "Secrets Manager item that contains the revproxy key"
+  default     = "artemis/revproxy-api-key"
+}
+
+variable "revproxy_secret_region" {
+  description = "AWS region containing the Secrets Manager item that contains the revproxy key"
+  default     = "us-east-2"
 }
 
 ###############################################

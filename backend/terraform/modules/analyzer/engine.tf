@@ -47,6 +47,8 @@ module "public_engine_cluster" {
   mandatory_include_paths = var.mandatory_include_paths
 
   revproxy_domain_substring = var.revproxy_domain_substring
+  revproxy_secret           = var.revproxy_secret
+  revproxy_secret_region    = var.revproxy_secret_region
 }
 
 module "nat_engine_cluster" {
@@ -99,4 +101,6 @@ module "nat_engine_cluster" {
   mandatory_include_paths = var.mandatory_include_paths
 
   revproxy_domain_substring = var.revproxy_domain_substring
+  revproxy_secret           = var.revproxy_secret
+  revproxy_secret_region    = var.revproxy_secret_region
 }

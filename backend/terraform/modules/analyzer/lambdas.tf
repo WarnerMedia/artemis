@@ -198,6 +198,8 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
       ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
+      ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
+      ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
     }
   }
 
@@ -466,7 +468,7 @@ module "access-secret-manager-keys" {
   name = "${var.app}-access-secret-manager-keys"
   resources = [
     "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/*",
-    aws_secretsmanager_secret.revproxy-api-key.arn
+    data.aws_secretsmanager_secret.revproxy-api-key.arn
   ]
 }
 
