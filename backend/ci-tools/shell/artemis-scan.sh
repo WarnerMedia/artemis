@@ -87,7 +87,7 @@ if [ -z "${ARTEMIS_API_KEY:-}" ]; then
 fi
 
 # Scan parameters
-ARTEMIS="ARTEMIS_FQDN"  # NOTE: REPLACE WITH FQDN OF RUNNING ARTEMIS INSTANCE
+ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
 ARTEMIS_API="$ARTEMIS/api/v1"
 ARTEMIS_RESULTS="$ARTEMIS/results"
 SERVICE=$1

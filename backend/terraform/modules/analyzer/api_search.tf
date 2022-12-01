@@ -173,11 +173,11 @@ resource "aws_lambda_function" "search_repositories" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/search_repositories/v${var.ver}/search_repositories.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_search_repositories_handler)
 
   lifecycle {
     ignore_changes = [
@@ -204,9 +204,11 @@ resource "aws_lambda_function" "search_repositories" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_DOMAIN_NAME               = var.domain_name
+      ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
+      ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
     }
   }
 
@@ -224,11 +226,11 @@ resource "aws_lambda_function" "search_scans" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/search_scans/v${var.ver}/search_scans.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_search_scans_handler)
 
   lifecycle {
     ignore_changes = [
@@ -255,9 +257,10 @@ resource "aws_lambda_function" "search_scans" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -275,11 +278,11 @@ resource "aws_lambda_function" "search_vulnerabilities" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/search_vulnerabilities/v${var.ver}/search_vulnerabilities.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_search_vulnerabilities_handler)
 
   lifecycle {
     ignore_changes = [
@@ -306,9 +309,11 @@ resource "aws_lambda_function" "search_vulnerabilities" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_DOMAIN_NAME               = var.domain_name
+      ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
+      ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
     }
   }
 

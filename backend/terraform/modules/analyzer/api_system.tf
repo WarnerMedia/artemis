@@ -117,11 +117,11 @@ resource "aws_lambda_function" "system_allowlist" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/system_allowlist/v${var.ver}/system_allowlist.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_system_allowlist_handler)
 
   lifecycle {
     ignore_changes = [
@@ -148,8 +148,9 @@ resource "aws_lambda_function" "system_allowlist" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -167,11 +168,11 @@ resource "aws_lambda_function" "system_status" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/system_status/v${var.ver}/system_status.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_system_status_handler)
 
   lifecycle {
     ignore_changes = [

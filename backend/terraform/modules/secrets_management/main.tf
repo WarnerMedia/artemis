@@ -6,7 +6,7 @@ resource "aws_lambda_function" "secrets-handler" {
   function_name = "${var.app}-secrets-handler"
 
   s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/secrets_handler/v${var.ver}/secrets_handler.zip"
+  s3_key    = var.lambda_bundle_s3_key
 
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
@@ -34,6 +34,24 @@ resource "aws_lambda_function" "secrets-handler" {
 # Event Stream Permissions
 ###############################################################################
 
+data "aws_iam_policy_document" "lambda-assume-policy" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type = "Service"
+
+      identifiers = [
+        "lambda.amazonaws.com",
+      ]
+    }
+  }
+}
+
 resource "aws_iam_role" "secrets-role" {
   name               = "${var.app}-secrets-management-lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda-assume-policy.json
@@ -45,6 +63,21 @@ resource "aws_iam_role" "secrets-role" {
     }
   )
 }
+
+module "write-logs" {
+  source = "../role_policy_attachment"
+  actions = [
+    "logs:CreateLogGroup",
+    "logs:CreateLogStream",
+    "logs:PutLogEvents",
+  ]
+  iam_role_names = [
+    aws_iam_role.secrets-role.name
+  ]
+  name      = "${var.app}-secrets-management-write-logs"
+  resources = ["arn:aws:logs:*:*:*"]
+}
+
 
 module "secrets-queue-receive" {
   source = "../role_policy_attachment"

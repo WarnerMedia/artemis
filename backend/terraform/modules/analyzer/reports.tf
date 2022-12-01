@@ -8,10 +8,10 @@ resource "aws_lambda_function" "json_report" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/json_report/v${var.ver}/json_report.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_json_report)
 
   lifecycle {
     ignore_changes = [
@@ -38,8 +38,9 @@ resource "aws_lambda_function" "json_report" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
     }
   }
 
@@ -57,10 +58,10 @@ resource "aws_lambda_function" "pdf_report" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/pdf_report/v${var.ver}/pdf_report.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_pdf_report)
 
   lifecycle {
     ignore_changes = [
@@ -87,9 +88,10 @@ resource "aws_lambda_function" "pdf_report" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      S3_BUCKET                   = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      S3_BUCKET                         = var.s3_analyzer_files_id
+      ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
     }
   }
 
@@ -107,10 +109,10 @@ resource "aws_lambda_function" "report_cleanup" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/report_cleanup/v${var.ver}/report_cleanup.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_report_cleanup)
 
   lifecycle {
     ignore_changes = [
@@ -158,10 +160,10 @@ resource "aws_lambda_function" "sbom_report" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/sbom_report/v${var.ver}/sbom_report.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_sbom_report)
 
   lifecycle {
     ignore_changes = [

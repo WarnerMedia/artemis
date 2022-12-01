@@ -32,6 +32,25 @@ variable "public" {
   default     = true
 }
 
+variable "domain_name" {
+  description = "FQDN of the Artemis deployment"
+}
+
+variable "revproxy_domain_substring" {
+  description = "Base domain for the reverse proxy to access VCS, if used"
+  default     = ""
+}
+
+variable "revproxy_secret" {
+  description = "Secrets Manager item that contains the revproxy key"
+  default     = "artemis/revproxy-api-key"
+}
+
+variable "revproxy_secret_region" {
+  description = "AWS region containing the Secrets Manager item that contains the revproxy key"
+  default     = "us-east-2"
+}
+
 ###############################################################################
 # Cluster configuration
 ###############################################################################
@@ -147,6 +166,17 @@ variable "private_docker_repos_key" {
 
 variable "plugin_java_heap_size" {
   default = "2g"
+}
+
+variable "metadata_scheme_modules" {
+  description = "CSV list of metadata processing modules"
+  default     = ""
+}
+
+variable "mandatory_include_paths" {
+  description = "Repository paths that cannot be excluded from scans"
+  type        = list(string)
+  default     = []
 }
 
 ################################################

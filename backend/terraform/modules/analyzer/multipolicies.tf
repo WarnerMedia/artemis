@@ -8,7 +8,6 @@ module "write-logs" {
   iam_role_names = [
     aws_iam_role.metrics-assume-role.name,
     aws_iam_role.lambda-assume-role.name,
-    aws_iam_role.secrets-role.name,
     aws_iam_role.callback-assume-role.name,
     module.public_engine_cluster.scale-down-assume-role.name,
     module.nat_engine_cluster.scale-down-assume-role.name,

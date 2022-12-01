@@ -1,3 +1,4 @@
+from enum import Enum
 from http import HTTPStatus
 
 DEFAULT_RESPONSE_MESSAGE_OVERRIDES = {
@@ -5,3 +6,16 @@ DEFAULT_RESPONSE_MESSAGE_OVERRIDES = {
     HTTPStatus.UNAUTHORIZED: "Unauthenticated",
     HTTPStatus.FORBIDDEN: "Unauthorized",
 }
+
+###############################################################################
+# API Identifiers
+###############################################################################
+
+
+class SearchRepositoriesAPIIdentifier(Enum):
+    GET = "search_repositories_get"
+
+
+class SearchVulnerabilitiesAPIIdentifier(Enum):
+    GET_VULNS = "search_vulnerabilities_get_vulns"
+    GET_REPOS = "search_vulnerabilities_get_repos"

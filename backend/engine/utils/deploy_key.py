@@ -3,7 +3,7 @@ import os
 import pathlib
 import subprocess
 
-from env import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET, REV_PROXY_SECRET_HEADER
+from env import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET, REV_PROXY_SECRET_HEADER, REV_PROXY_SECRET_REGION
 from utils.engine import get_key
 
 log = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ def git_clone(
         log.error("ssh deploy agent file not found! Repo cannot be pulled.")
         return False
     if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in project_url:
-        rev_proxy_key = get_key(REV_PROXY_SECRET)["SecretString"]
+        rev_proxy_key = get_key(REV_PROXY_SECRET, REV_PROXY_SECRET_REGION)["SecretString"]
     else:
         rev_proxy_key = ""
     args = ["sh", ssh_deploy_agent, service_ssh_key, service_name, project_url, REV_PROXY_SECRET_HEADER, rev_proxy_key]

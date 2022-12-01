@@ -146,11 +146,11 @@ resource "aws_lambda_function" "repo-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/repo/v${var.ver}/repo.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_repo_handler)
 
   lifecycle {
     ignore_changes = [
@@ -177,24 +177,29 @@ resource "aws_lambda_function" "repo-handler" {
 
   environment {
     variables = {
-      TASK_QUEUE                       = module.public_engine_cluster.task_queue.id
-      PRIORITY_TASK_QUEUE              = module.public_engine_cluster.priority_task_queue.id
-      TASK_QUEUE_NAT                   = module.nat_engine_cluster.task_queue.id
-      PRIORITY_TASK_QUEUE_NAT          = module.nat_engine_cluster.priority_task_queue.id
-      DEFAULT_DEPTH                    = "500"
-      S3_BUCKET                        = var.s3_analyzer_files_id
-      ANALYZER_DJANGO_SECRETS_ARN      = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN            = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      JSON_REPORT_LAMBDA               = aws_lambda_function.json_report.arn
-      SBOM_REPORT_LAMBDA               = aws_lambda_function.sbom_report.arn
-      REPORT_QUEUE                     = var.report_queue.id
-      ARTEMIS_FEATURE_AQUA_ENABLED     = var.aqua_enabled ? 1 : 0
-      ARTEMIS_FEATURE_VERACODE_ENABLED = var.veracode_enabled ? 1 : 0
-      ARTEMIS_FEATURE_SNYK_ENABLED     = var.snyk_enabled ? 1 : 0
-      ARTEMIS_GITHUB_APP_ID            = var.github_app_id
-      ARTEMIS_AUDIT_QUEUE              = var.event_queue.id
-      ARTEMIS_ENVIRONMENT              = var.environment
-      ARTEMIS_DOMAIN_NAME              = var.domain_name
+      TASK_QUEUE                        = module.public_engine_cluster.task_queue.id
+      PRIORITY_TASK_QUEUE               = module.public_engine_cluster.priority_task_queue.id
+      TASK_QUEUE_NAT                    = module.nat_engine_cluster.task_queue.id
+      PRIORITY_TASK_QUEUE_NAT           = module.nat_engine_cluster.priority_task_queue.id
+      DEFAULT_DEPTH                     = "500"
+      S3_BUCKET                         = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      JSON_REPORT_LAMBDA                = aws_lambda_function.json_report.arn
+      SBOM_REPORT_LAMBDA                = aws_lambda_function.sbom_report.arn
+      REPORT_QUEUE                      = var.report_queue.id
+      ARTEMIS_FEATURE_AQUA_ENABLED      = var.aqua_enabled ? 1 : 0
+      ARTEMIS_FEATURE_VERACODE_ENABLED  = var.veracode_enabled ? 1 : 0
+      ARTEMIS_FEATURE_SNYK_ENABLED      = var.snyk_enabled ? 1 : 0
+      ARTEMIS_GITHUB_APP_ID             = var.github_app_id
+      ARTEMIS_AUDIT_QUEUE               = var.event_queue.id
+      ARTEMIS_ENVIRONMENT               = var.environment
+      ARTEMIS_DOMAIN_NAME               = var.domain_name
+      ARTEMIS_METADATA_FORMATTER_MODULE = var.metadata_formatter_module
+      ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
+      ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
+      ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
+      ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
     }
   }
 
@@ -212,11 +217,11 @@ resource "aws_lambda_function" "users-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users/v${var.ver}/users.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_users_handler)
 
   lifecycle {
     ignore_changes = [
@@ -243,14 +248,15 @@ resource "aws_lambda_function" "users-handler" {
 
   environment {
     variables = {
-      S3_BUCKET                   = var.s3_analyzer_files_id
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_LINK_GH_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
-      ARTEMIS_AUDIT_QUEUE         = var.audit_event_queue.id
-      ARTEMIS_AUDIT_QUEUE         = var.event_queue.id
-      ARTEMIS_ENVIRONMENT         = var.environment
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      S3_BUCKET                       = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_LINK_GH_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
+      ARTEMIS_AUDIT_QUEUE             = var.audit_event_queue.id
+      ARTEMIS_AUDIT_QUEUE             = var.event_queue.id
+      ARTEMIS_ENVIRONMENT             = var.environment
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -268,11 +274,11 @@ resource "aws_lambda_function" "users-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_users_keys_handler)
 
   lifecycle {
     ignore_changes = [
@@ -299,12 +305,13 @@ resource "aws_lambda_function" "users-keys-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_AUDIT_QUEUE         = var.event_queue.id
-      ARTEMIS_ENVIRONMENT         = var.environment
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
-      S3_BUCKET                   = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_AUDIT_QUEUE             = var.event_queue.id
+      ARTEMIS_ENVIRONMENT             = var.environment
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      S3_BUCKET                       = var.s3_analyzer_files_id
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -322,11 +329,11 @@ resource "aws_lambda_function" "users-services-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_services/v${var.ver}/users_services.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn,
     aws_lambda_layer_version.artemisapi.arn
-  ]
+  ], var.extra_lambda_layers_users_services_handler)
 
   lifecycle {
     ignore_changes = [
@@ -353,10 +360,11 @@ resource "aws_lambda_function" "users-services-handler" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_LINK_GH_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
-      ARTEMIS_DOMAIN_NAME         = var.domain_name
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_LINK_GH_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
+      ARTEMIS_DOMAIN_NAME             = var.domain_name
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
     }
   }
 
@@ -374,9 +382,9 @@ resource "aws_lambda_function" "signin-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn
-  ]
+  ], var.extra_lambda_layers_signin_handler)
 
   lifecycle {
     ignore_changes = [
@@ -460,7 +468,7 @@ module "access-secret-manager-keys" {
   name = "${var.app}-access-secret-manager-keys"
   resources = [
     "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/*",
-    aws_secretsmanager_secret.revproxy-api-key.arn
+    data.aws_secretsmanager_secret.revproxy-api-key.arn
   ]
 }
 

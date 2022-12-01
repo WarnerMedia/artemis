@@ -1,6 +1,9 @@
-name: Test
+name: Backend Unit Tests
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - "backend/**"
 
 jobs:
   test:
@@ -10,7 +13,7 @@ jobs:
       - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # actions/setup-python@v2.1.4
         with:
           python-version: "3.9"
-      - name: Run tests
+      - name: Run backend tests
         env:
           ANALYZER_DJANGO_SECRET_KEY: ${{ secrets.TEST_DJANGO_SECRET_KEY }}
           ANALYZER_DB_HOST: ${{ secrets.TEST_DB_HOST }}

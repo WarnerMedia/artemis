@@ -16,6 +16,10 @@ variable "aws_region" {
   description = "The region in which to deploy"
 }
 
+variable "profile" {
+  description = "AWS profile"
+}
+
 variable "availability_zone" {
   description = "The AZ in which to deploy NAT engine EC2s"
 }
@@ -113,14 +117,6 @@ variable "maintenance_mode_retry_after" {
 
 variable "app" {}
 
-variable "engine_size" {
-  default = "m5.large"
-}
-
-variable "pub_engine_size" {
-  default = "m5.large"
-}
-
 variable "database_cidrs" {
   description = "CIDRs for the Artemis Database"
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
@@ -154,6 +150,21 @@ variable "s3_analyzer_files_id" {}
 variable "s3_analyzer_files_arn" {}
 
 variable "s3_analyzer_files_bucket" {}
+
+variable "revproxy_domain_substring" {
+  description = "Base domain for the reverse proxy to access VCS, if used"
+  default     = ""
+}
+
+variable "revproxy_secret" {
+  description = "Secrets Manager item that contains the revproxy key"
+  default     = "artemis/revproxy-api-key"
+}
+
+variable "revproxy_secret_region" {
+  description = "AWS region containing the Secrets Manager item that contains the revproxy key"
+  default     = "us-east-2"
+}
 
 ###############################################
 # SQS Variables
@@ -191,12 +202,34 @@ variable "plugin_java_heap_size" {
   default = "2g"
 }
 
-variable "pub_plugin_java_heap_size" {
-  default = "2g"
-}
-
 variable "mandatory_include_paths" {
   description = "Repository paths that cannot be excluded from scans"
+  type        = list(string)
+  default     = []
+}
+
+variable "metadata_scheme_modules" {
+  description = "CSV list of metadata processing modules"
+  default     = ""
+}
+
+variable "metadata_formatter_module" {
+  description = "Metadata formatter module"
+  default     = ""
+}
+
+variable "custom_filtering_module" {
+  description = "Custom API filtering module"
+  default     = ""
+}
+
+variable "additional_event_routing" {
+  description = "JSON dict defining additional event routing"
+  default     = "{}"
+}
+
+variable "default_scope" {
+  description = "List of scopes to automatically set for new users"
   type        = list(string)
   default     = []
 }
@@ -222,4 +255,226 @@ variable "heimdall_scans_cron" {
 variable "service-integrations" {
   description = "List of service integrations"
   type        = list(any)
+}
+
+################################################
+# Lambda Customization
+################################################
+
+variable "extra_lambda_layers_json_report" {
+  description = "Extra layers that should be applied to the JSON report lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_pdf_report" {
+  description = "Extra layers that should be applied to the PDF report lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_report_cleanup" {
+  description = "Extra layers that should be applied to the report cleanup lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_sbom_report" {
+  description = "Extra layers that should be applied to the SBOM report lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_handler" {
+  description = "Extra layers that should be applied to the groups handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_members_handler" {
+  description = "Extra layers that should be applied to the groups members handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_keys_handler" {
+  description = "Extra layers that should be applied to the groups keys handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_groups_scans_batch_handler" {
+  description = "Extra layers that should be applied to the scans batch handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_update_github_org_users" {
+  description = "Extra layers that should be applied to the update GitHub org users lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_search_repositories_handler" {
+  description = "Extra layers that should be applied to the search repositories handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_search_scans_handler" {
+  description = "Extra layers that should be applied to the search scans handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_search_vulnerabilities_handler" {
+  description = "Extra layers that should be applied to the search vulnerabilities handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_system_allowlist_handler" {
+  description = "Extra layers that should be applied to the system allowlist handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_system_status_handler" {
+  description = "Extra layers that should be applied to the system status handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_sbom_components_handler" {
+  description = "Extra layers that should be applied to the SBOM components handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_sbom_licenses_handler" {
+  description = "Extra layers that should be applied to the SBOM licenses handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_db_cleanup" {
+  description = "Extra layers that should be applied to the DB cleanup lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_ci_tools_handler" {
+  description = "Extra layers that should be applied to the CI tools handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_api_authorizer" {
+  description = "Extra layers that should be applied to the API authorizer lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scan_scheduler" {
+  description = "Extra layers that should be applied to the scan scheduler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scheduled_scan_handler" {
+  description = "Extra layers that should be applied to the scheduled scan handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_engine_scale_down" {
+  description = "Extra layers that should be applied to the engine scale down lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_repo_handler" {
+  description = "Extra layers that should be applied to the repo handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_users_handler" {
+  description = "Extra layers that should be applied to the users handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_users_keys_handler" {
+  description = "Extra layers that should be applied to the users keys handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_users_services_handler" {
+  description = "Extra layers that should be applied to the users services handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_signin_handler" {
+  description = "Extra layers that should be applied to the signin handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_scans_batch_handler" {
+  description = "Extra layers that should be applied to the scans batch handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_env_vars_event_dispatch" {
+  description = "Extra environment variables to configure for the event dispatch lambda"
+  type        = map(string)
+  default     = {}
+}
+
+################################################
+# Public Engine Cluster Customization
+################################################
+
+variable "pub_engine_size" {
+  default = "m5.large"
+}
+
+variable "engine_scale_min_public" {
+  description = "Minimum number of engines to run in the group"
+  default     = 1
+}
+
+variable "engine_scale_max_public" {
+  description = "Maximum number of engines to run in the group"
+  default     = 2
+}
+
+variable "pub_plugin_java_heap_size" {
+  default = "2g"
+}
+
+################################################
+# NAT Engine Cluster Customization
+################################################
+
+variable "nat_engine_size" {
+  default = "m5.large"
+}
+
+variable "engine_scale_min_nat" {
+  description = "Minimum number of engines to run in the group"
+  default     = 1
+}
+
+variable "engine_scale_max_nat" {
+  description = "Maximum number of engines to run in the group"
+  default     = 2
+}
+
+variable "nat_plugin_java_heap_size" {
+  default = "2g"
 }

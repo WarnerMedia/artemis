@@ -25,3 +25,7 @@ output "engine-log-group" {
 output "scale-down-assume-role" {
   value = aws_iam_role.scale-down-assume-role
 }
+
+output "subnet" {
+  value = aws_subnet.subnet
+}

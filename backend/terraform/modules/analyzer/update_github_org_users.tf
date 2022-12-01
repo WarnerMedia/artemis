@@ -8,10 +8,10 @@ resource "aws_lambda_function" "update_github_org_users" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/update_github_org_users/v${var.ver}/update_github_org_users.zip"
 
-  layers = [
+  layers = concat([
     aws_lambda_layer_version.artemislib.arn,
     aws_lambda_layer_version.artemisdb.arn
-  ]
+  ], var.extra_lambda_layers_update_github_org_users)
 
   lifecycle {
     ignore_changes = [
