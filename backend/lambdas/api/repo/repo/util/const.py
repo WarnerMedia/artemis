@@ -78,6 +78,12 @@ QUALIFIED_PLUGINS = {
     "sbom": [[k] for k in set(PLUGIN_LIST_BY_CATEGORY["sbom"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)],
 }
 
+# This is a list of plugins that have been disabled in this deployment. They will still be allowed
+# to be specified in a scan request as a disabled plugin and not throw an error. Specifying them as
+# an explicitly enabled plugin will return an error but a different error than if a completely unknown
+# plugin name were to be included in the request.
+DISABLED_PLUGINS = []
+
 # Add in plugins that can be disabled per-environment and are enabled in this environment
 if AQUA_ENABLED:
     # Add the Aqua plugin if it is enabled
@@ -86,6 +92,15 @@ if AQUA_ENABLED:
         if i == ["trivy"]:
             # Set aqua_cli_scanner as an alternate option to trivy for qualification
             i.append("aqua_cli_scanner")
+else:
+    DISABLED_PLUGINS.append("aqua_cli_scanner")
+
+if SNYK_ENABLED:
+    # Add the Snyk plugin if it is enabled
+    PLUGIN_LIST_BY_CATEGORY["vulnerability"]["snyk"] = "snyk"  # Still feature-flagged
+    QUALIFIED_PLUGINS["sbom"].append(["snyk"])
+else:
+    DISABLED_PLUGINS.append("snyk")
 
 if SNYK_ENABLED:
     # Add the Snyk plugin if it is enabled
@@ -100,6 +115,9 @@ if VERACODE_ENABLED:
         if i == ["snyk"]:
             # Set veracode_sca as an alterate option to snyk for qualification
             i.append("veracode_sca")
+else:
+    DISABLED_PLUGINS.append("veracode_sca")
+    DISABLED_PLUGINS.append("veracode_sbom")
 
 PLUGINS = []
 for plugin_cat in PLUGIN_LIST_BY_CATEGORY:

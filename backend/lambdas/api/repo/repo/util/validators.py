@@ -9,6 +9,7 @@ from artemisdb.artemisdb.models import ScanBatch, ScanScheduleRun
 from repo.util.const import (
     DEFAULT_REPORT_TYPE,
     DEFAULT_SCAN_QUERY_PARAMS,
+    DISABLED_PLUGINS,
     FORMAT,
     FORMAT_FULL,
     HISTORY_QUERY_PARAMS,
@@ -224,9 +225,19 @@ class Validator:
         plugins = req.get("plugins", [])
         if not isinstance(plugins, list):
             raise ValidationError("plugins must be a list")
+        # Remove any negated, disabled plugins from the list so they are ignored and not stored in the scan record
+        for plugin in DISABLED_PLUGINS:
+            if f"-{plugin}" in plugins:
+                plugins.remove(f"-{plugin}")
+        # Validate the remaining plugins
         for plugin in plugins:
             if not isinstance(plugin, str):
                 raise ValidationError("plugins must be a list of strings")
+
+            if plugin in DISABLED_PLUGINS:
+                # Plugin is supported but disabled in this deployment. Return a validation error indicating as such.
+                raise ValidationError(f"Plugin {plugin} is disabled")
+
             # Check both plugin inclusion ("plugin_name") and exclusion ("-plugin_name")
             if (not plugin.startswith("-") and plugin.lower() not in PLUGINS) or (
                 plugin.startswith("-") and plugin.lower()[1:] not in PLUGINS
