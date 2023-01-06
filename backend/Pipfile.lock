@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7f032a7a19eb708c9a996996dbd2a50d01aa6bbb893fab0957552c53bead2f7a"
+            "sha256": "0002d3fef97e8ca94fa8f0170c235cff0965e544a8154d70f56bcbeedbdb6395"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -218,6 +218,14 @@
             "markers": "python_version >= '3.7'",
             "version": "==1.0.1"
         },
+        "packaging": {
+            "hashes": [
+                "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb",
+                "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"
+            ],
+            "index": "pypi",
+            "version": "==21.3"
+        },
         "pyasn1": {
             "hashes": [
                 "sha256:760db2dafe04091b000af018c45dff6e3d7a204cd9341b760d72689217a611cc",
@@ -265,6 +273,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==1.5.0"
+        },
+        "pyparsing": {
+            "hashes": [
+                "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb",
+                "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"
+            ],
+            "markers": "python_full_version >= '3.6.8'",
+            "version": "==3.0.9"
         },
         "python-dateutil": {
             "hashes": [
@@ -1298,11 +1314,11 @@
         },
         "packaging": {
             "hashes": [
-                "sha256:2198ec20bd4c017b8f9717e00f0c8714076fc2fd93816750ab48e2c41de2cfd3",
-                "sha256:957e2148ba0e1a3b282772e791ef1d8083648bc131c8ab0c1feba110ce1146c3"
+                "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb",
+                "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"
             ],
-            "markers": "python_version >= '3.7'",
-            "version": "==22.0"
+            "index": "pypi",
+            "version": "==21.3"
         },
         "pathspec": {
             "hashes": [
