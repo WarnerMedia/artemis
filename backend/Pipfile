@@ -16,6 +16,7 @@ simplejson = "*"
 cwe = "*"
 pyjwt = "*"
 cryptography = "*"
+packaging = "==21.3"
 
 [dev-packages]
 pytest = "==6.0.1"
