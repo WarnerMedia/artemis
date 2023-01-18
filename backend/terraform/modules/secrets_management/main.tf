@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 ###############################################################################
 # Secrets Management Lambda
 ###############################################################################
@@ -89,6 +91,18 @@ module "secrets-queue-receive" {
   iam_role_names = [aws_iam_role.secrets-role.name]
   name           = "${var.app}-secrets-queue-receive"
   resources      = [var.secrets_queue.arn]
+}
+
+module "access-secret-manager-keys" {
+  source  = "../role_policy_attachment"
+  actions = ["secretsmanager:GetSecretValue"]
+  iam_role_names = [
+    aws_iam_role.secrets-role.name
+  ]
+  name = "${var.app}-secrets-management-access-secret-manager-keys"
+  resources = [
+    "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/*"
+  ]
 }
 
 resource "aws_lambda_permission" "secrets-handler" {

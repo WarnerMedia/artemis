@@ -68,7 +68,7 @@ def process(event):
             print("Unable to queue event")
     elif event["type"] in ADDITIONAL_ROUTING:
         try:
-            SQS.send_message(QueueUrl=ADDITIONAL_ROUTING[event["type"]], MessageBody=json.dumps(event["event"]))
+            SQS.send_message(QueueUrl=ADDITIONAL_ROUTING[event["type"]], MessageBody=json.dumps(event))
         except ClientError:
             print("Unable to queue event")
     else:
