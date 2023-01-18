@@ -6,6 +6,10 @@ variable "environment" {
   description = "Environment name"
 }
 
+variable "aws_region" {
+  description = "The region in which to deploy"
+}
+
 variable "tags" {
   type = map(any)
 }
