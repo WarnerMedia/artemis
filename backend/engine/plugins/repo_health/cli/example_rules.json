@@ -1,0 +1,61 @@
+{
+    "name": "Example Rules",
+    "version": "0.1.2",
+    "rules": [
+        {
+            "type": "branch_commit_signing"
+        },
+        {
+            "type": "branch_enforce_admins"
+        },
+        {
+            "type": "branch_pull_requests",
+            "expect": {
+                "dismiss_stale_reviews": true,
+                "require_code_owner_reviews": true
+            },
+            "min_approvals": 1
+        },
+        {
+            "type": "branch_status_checks",
+            "expect": {
+                "strict": true
+            }
+        },
+        {
+            "type": "branch_status_checks",
+            "enabled": true,
+            "name": "Branch - Build Required",
+            "description": "Branch protection rules are enabled to enforce that the 'build' status check passes",
+            "checks": {
+                "all_of": [
+                    "build"
+                ]
+            }
+        },
+        {
+            "type": "repo_code_scanning"
+        },
+        {
+            "type": "repo_files",
+            "enabled": false,
+            "name": "Repository - Metadata Files Exist",
+            "description": "Repository has a hypothetical 'metadata.yaml' file and a '.github/CODEOWNERS' file",
+            "files": {
+                "any_of": [
+                    "metadata.yaml"
+                ],
+                "all_of": [
+                    ".github/CODEOWNERS"
+                ]
+            }
+        },
+        {
+            "type": "repo_secret_scanning",
+            "require_push_protection": true
+        },
+        {
+            "type": "repo_security_alerts"
+        }
+    ]
+}

@@ -8,12 +8,11 @@ from typing import Tuple
 from urllib.parse import quote_plus
 
 import boto3
-from botocore.exceptions import ClientError
-from django.db.models import Q
-
 from artemisdb.artemisdb.models import PluginConfig
 from artemislib.logging import Logger
 from artemislib.util import dict_eq
+from botocore.exceptions import ClientError
+from django.db.models import Q
 from env import (
     ECR,
     ENGINE_DIR,
@@ -52,7 +51,7 @@ class PluginSettings:
     feature: str
 
 
-def get_engine_vars(repo, depth=None, include_dev=False):
+def get_engine_vars(repo, service, ref, depth=None, include_dev=False):
     """
     Returns a json str that can be converted back to a dict by the plugin.
     The object will container information known to the engine
@@ -65,6 +64,8 @@ def get_engine_vars(repo, depth=None, include_dev=False):
     return json.dumps(
         {
             "repo": repo,
+            "service": service,
+            "ref": ref,
             "ecr_url": ECR,
             "depth": depth,
             "include_dev": include_dev,
@@ -273,7 +274,16 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
     plugin_config = _get_plugin_config(plugin, full_repo)
 
     plugin_command = get_plugin_command(
-        scan.scan_id, scan.repo.repo, settings.image, plugin, depth, include_dev, scan_images, plugin_config
+        scan.scan_id,
+        scan.repo.repo,
+        scan.repo.service,
+        scan.ref,
+        settings.image,
+        plugin,
+        depth,
+        include_dev,
+        scan_images,
+        plugin_config,
     )
 
     # Run the plugin inside the settings.image
@@ -382,7 +392,9 @@ def queue_event(repo, plugin_type, payload):
 
 def get_secret_raw_wl(scan):
     # Get the non-expired secret_raw whitelist for the repo and convert it into a list of the whitelisted strings
-    from artemisdb.artemisdb.consts import AllowListType  # pylint: disable=import-outside-toplevel
+    from artemisdb.artemisdb.consts import (
+        AllowListType,  # pylint: disable=import-outside-toplevel
+    )
 
     wl = []
     for item in scan.repo.allowlistitem_set.filter(
@@ -395,7 +407,9 @@ def get_secret_raw_wl(scan):
 
 def get_secret_al(scan):
     # Get the non-expired secret whitelist for the repo and convert it into a list
-    from artemisdb.artemisdb.consts import AllowListType  # pylint: disable=import-outside-toplevel
+    from artemisdb.artemisdb.consts import (
+        AllowListType,  # pylint: disable=import-outside-toplevel
+    )
 
     return scan.repo.allowlistitem_set.filter(
         Q(item_type=AllowListType.SECRET.value),
@@ -490,7 +504,7 @@ def get_iso_timestamp():
     return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
 
 
-def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_images, plugin_config):
+def get_plugin_command(scan_id, repo, service, ref, image, plugin, depth, include_dev, scan_images, plugin_config):
     profile = os.environ.get("AWS_PROFILE")
     cmd = [
         "docker",
@@ -502,6 +516,8 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
         ENGINE_ID,
         "-v",
         "%s:/work" % os.path.join(HOST_WORKING_DIR, str(scan_id)),
+        "-e",
+        f"ARTEMIS_GITHUB_APP_ID={os.environ.get('ARTEMIS_GITHUB_APP_ID', '')}",
     ]
 
     if profile:
@@ -547,7 +563,7 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
             image,
             "python",
             "/srv/engine/plugins/%s/main.py" % plugin,
-            get_engine_vars(repo, depth=depth, include_dev=include_dev),
+            get_engine_vars(repo, service, ref, depth=depth, include_dev=include_dev),
             json.dumps(scan_images),
             json.dumps(plugin_config),
         ]
