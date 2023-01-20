@@ -72,7 +72,7 @@ const DraggableDialog = (props: DraggableDialogProps) => {
 		...dialogProps
 	} = props;
 
-	const handleClose = (event: object, reason: string) => {
+	const handleClose = (_event: object, reason: string) => {
 		return reason === "backdropClick" ? false : true;
 	};
 

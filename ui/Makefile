@@ -130,7 +130,7 @@ install: package.json package-lock.json  ## Install all NPM dependency packages
 	@echo "${INFO}Installing all NPM dependency packages"
 	@echo "npm version is: "
 	$(NPM) -v
-	$(NPM) install
+	$(NPM) ci
 	$(NPM) ls -a
 	@echo "${OK}"
 

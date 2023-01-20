@@ -79,23 +79,27 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 				let dt: any;
 				let format: string;
 				let error: string | null = null;
+
 				switch (code) {
-					case "invalidDate":
+					case "invalidDate": {
 						error = invalidDateMessage
 							? invalidDateMessage
 							: i18n._(t`Invalid date format`);
 						break;
-					case "disablePast":
+					}
+					case "disablePast": {
 						error = minDateMessage
 							? minDateMessage
 							: i18n._(t`Must be a future date`);
 						break;
-					case "disableFuture":
+					}
+					case "disableFuture": {
 						error = maxDateMessage
 							? maxDateMessage
 							: i18n._(t`Must be a past date`);
 						break;
-					case "maxDate":
+					}
+					case "maxDate": {
 						if (maxDateMessage) {
 							error = maxDateMessage;
 						} else {
@@ -110,7 +114,8 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = i18n._(t`Date can not be after ${format}`);
 						}
 						break;
-					case "minDate":
+					}
+					case "minDate": {
 						if (minDateMessage) {
 							error = minDateMessage;
 						} else {
@@ -125,7 +130,8 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = i18n._(t`Date can not be before ${format}`);
 						}
 						break;
-					case "maxTime":
+					}
+					case "maxTime": {
 						if (maxDateMessage) {
 							error = maxDateMessage;
 						} else {
@@ -144,7 +150,8 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 								: i18n._(t`Date can not be after ${format}`);
 						}
 						break;
-					case "minTime":
+					}
+					case "minTime": {
 						if (minDateMessage) {
 							error = minDateMessage;
 						} else {
@@ -163,14 +170,16 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 								: i18n._(t`Date can not be before ${format}`);
 						}
 						break;
-					case "shouldDisableDate":
+					}
+					case "shouldDisableDate": {
 						// shouldDisableDate returned true, render custom message according to the `shouldDisableDate` logic
 						error = getShouldDisableDateError(value);
 						break;
-					default:
+					}
+					default: {
 						// null indicates there isn't a validation error, so clear existing form error for this field
 						setMuiError(null);
-						let newErrors = {
+						const newErrors = {
 							...form.errors,
 						};
 						delete newErrors[field.name];
@@ -178,6 +187,7 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							...newErrors,
 						});
 						form.setFieldValue(field.name, value, true);
+					}
 				}
 				if (error) {
 					setMuiError(error);

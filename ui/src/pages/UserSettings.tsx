@@ -69,11 +69,15 @@ import {
 } from "@mui/icons-material";
 import { useLingui } from "@lingui/react";
 import { Trans, t } from "@lingui/macro";
-import * as QueryString from "query-string";
+import queryString from "query-string";
 import * as Yup from "yup";
 
 import client from "api/client";
-import { capitalize, formatDate } from "utils/formatters";
+import {
+	capitalize,
+	formatDate,
+	SPLIT_MULTILINE_CSN_REGEX,
+} from "utils/formatters";
 import CustomCopyToClipboard from "components/CustomCopyToClipboard";
 import DraggableDialog from "components/DraggableDialog";
 import DateTimeCell, { ExpiringDateTimeCell } from "components/DateTimeCell";
@@ -104,6 +108,7 @@ import TooltipCell from "components/TooltipCell";
 import ScopeCell from "components/ScopeCell";
 import { IThemeColors, themeColors } from "app/colors";
 import { selectTheme, setTheme } from "features/theme/themeSlice";
+import { pluginsDisabled } from "app/scanPlugins";
 
 const useStyles = makeStyles()((theme) => ({
 	addKeyFormField: {
@@ -229,7 +234,7 @@ const useStyles = makeStyles()((theme) => ({
 	},
 	tableToolbarButtons: {
 		marginLeft: theme.spacing(3),
-		"& > *": {
+		"& > :not(:first-of-type)": {
 			marginLeft: theme.spacing(1),
 		},
 	},
@@ -240,7 +245,7 @@ const useStyles = makeStyles()((theme) => ({
 		padding: "8px",
 		alignItems: "center",
 		justifyContent: "flex-end",
-		"& > *": {
+		"& > button": {
 			marginLeft: theme.spacing(1),
 		},
 	},
@@ -305,26 +310,18 @@ const NoResults = (props: { title: string }) => (
 	</Paper>
 );
 
-export const BackButton = () => {
+export const BackButton = (props: { fromRedirect?: boolean }) => {
 	const { classes } = useStyles();
 	const navigate = useNavigate();
 
 	const onBack = () => {
-		if (
-			window.history.length > 3 &&
-			document.referrer.includes(window.location.hostname)
-		) {
+		if (props.fromRedirect) {
 			// redirected here via service auth code,
 			// back should go back to page before auth redirect
 			navigate(-2);
 		} else if (window.history.length > 2) {
 			// navigated here from another page, so return to it
-			// FIXME: user has to click back button twice to redirect back to /
-			// have tried adjusting link from NavBar to use navigate("/settings") instead of LinkTo
-			// and moving BackButton component inside UserSettings so it shares useNavigate
-			// neither fixed it, temporary work-around: navigate back twice
 			navigate(-1);
-			navigate(-1); // work-around to make this work first time
 		} else {
 			// navigated directly here (such as via URL), force nav to scans page
 			navigate("/");
@@ -538,6 +535,7 @@ export default function UserSettings() {
 		undefined
 	);
 	const [hideWelcome, setHideWelcome] = useState(false);
+	const [fromRedirect, setFromRedirect] = useState(false);
 
 	const pageQueryParamsSchema = Yup.object().shape({
 		code: Yup.string()
@@ -565,7 +563,7 @@ export default function UserSettings() {
 		// throws an exception if validation fails
 		const getSearchParams = (): PageQueryParams | null => {
 			if (location.search) {
-				const search = QueryString.parse(location.search);
+				const search = queryString.parse(location.search);
 				if (Object.keys(search)) {
 					// schema validation will also transform query params to their correct types
 					const validValues = pageQueryParamsSchema.validateSync(search, {
@@ -602,8 +600,9 @@ export default function UserSettings() {
 		// replace page history to remove any query params
 		// prevents auth code from being processed again on reload or page navigation
 		// re-add other query params if other page params added in future
-		navigate(location.pathname); // /settings
+		navigate(location.pathname, { replace: true }); // /settings
 		if (searchParams?.code) {
+			setFromRedirect(true);
 			dispatch(
 				linkVcsService({
 					url: "/users/self/services",
@@ -637,16 +636,19 @@ export default function UserSettings() {
 	};
 
 	const getFeatureTooltipChips = (obj?: User | Key | null) => {
-		let tooltips: string[] = [];
-		let chips: React.ReactNode[] = [];
+		const tooltips: string[] = [];
+		const chips: React.ReactNode[] = [];
 
 		if (!obj) {
 			return [tooltips, chips];
 		}
 
-		const orderedFeatures = Object.keys(obj?.features ?? {}).sort((a, b) => {
-			return a.localeCompare(b);
-		});
+		// order & remove any disabled plugins
+		const orderedFeatures = Object.keys(obj?.features ?? {})
+			.filter((f) => !(f in pluginsDisabled))
+			.sort((a, b) => {
+				return a.localeCompare(b);
+			});
 
 		orderedFeatures.forEach((feat: string) => {
 			const featName = capitalize(feat);
@@ -681,7 +683,7 @@ export default function UserSettings() {
 	};
 
 	const getThemeChips = () => {
-		let chips: React.ReactNode[] = [];
+		const chips: React.ReactNode[] = [];
 		const handleClick = (theme: keyof IThemeColors) => {
 			if (theme !== colors.name) {
 				dispatch(setTheme(theme));
@@ -1027,7 +1029,7 @@ export default function UserSettings() {
 		);
 	};
 
-	const CollapsibleRow = (props: { row?: RowDef | null }) => {
+	const CollapsibleRow = () => {
 		return (
 			<Box className={classes.collapsibleRow}>
 				<Typography
@@ -1249,7 +1251,7 @@ export default function UserSettings() {
 			try {
 				// not using redux-saga here because we aren't storing result in redux store
 				let features = {};
-				if (currentUser?.features?.snyk) {
+				if (currentUser?.features?.snyk && !("snyk" in pluginsDisabled)) {
 					features = { snyk: values?.snyk ?? false };
 				}
 				const response = await client.addUserKey({
@@ -1347,9 +1349,9 @@ export default function UserSettings() {
 		};
 
 		const getDelimitedValues = (input: string) => {
-			let values: string[] = [];
-			input.split(/\s*[,\s]/gm).forEach((value) => {
-				let trimmed = value.trim();
+			const values: string[] = [];
+			input.split(SPLIT_MULTILINE_CSN_REGEX).forEach((value) => {
+				const trimmed = value.trim();
 				if (trimmed.length > 0) {
 					values.push(trimmed);
 				}
@@ -1752,34 +1754,35 @@ export default function UserSettings() {
 									</Paper>
 								</Box>
 
-								{currentUser?.features?.snyk && (
-									<Box marginTop={2} marginBottom={1}>
-										<FormControl component="fieldset">
-											<FormLabel component="legend">Features</FormLabel>
-											<FormHelperText style={{ paddingBottom: "1em" }}>
-												<Trans>
-													Allow this key to use additional scan features
-												</Trans>
-											</FormHelperText>
+								{currentUser?.features?.snyk &&
+									!("snyk" in pluginsDisabled) && (
+										<Box marginTop={2} marginBottom={1}>
+											<FormControl component="fieldset">
+												<FormLabel component="legend">Features</FormLabel>
+												<FormHelperText style={{ paddingBottom: "1em" }}>
+													<Trans>
+														Allow this key to use additional scan features
+													</Trans>
+												</FormHelperText>
 
-											<FormGroup row>
-												<FormControlLabel
-													control={
-														<>
-															<Field
-																id="snyk"
-																component={Checkbox}
-																type="checkbox"
-																name="snyk"
-															/>
-														</>
-													}
-													label={i18n._(t`Snyk Vulnerability Plugin`)}
-												/>
-											</FormGroup>
-										</FormControl>
-									</Box>
-								)}
+												<FormGroup row>
+													<FormControlLabel
+														control={
+															<>
+																<Field
+																	id="snyk"
+																	component={Checkbox}
+																	type="checkbox"
+																	name="snyk"
+																/>
+															</>
+														}
+														label={i18n._(t`Snyk Vulnerability Plugin`)}
+													/>
+												</FormGroup>
+											</FormControl>
+										</Box>
+									)}
 
 								<Box className={classes.addKeyFormField}>
 									<Field
@@ -1857,6 +1860,38 @@ export default function UserSettings() {
 		);
 	};
 
+	const exportData = () => {
+		return keys.map((k) => ({
+			id: k.id,
+			name: k.name,
+			created: k.created,
+			last_used: k.last_used,
+			expires: k.expires,
+			scope: k.scope,
+			admin: k.admin,
+			features: k.features,
+		}));
+	};
+
+	const toCsv = (data: Key) => {
+		const features = [];
+		if (data.features) {
+			for (const [name, enabled] of Object.entries(data.features)) {
+				features.push(`${name} (${enabled ? "enabled" : "disabled"})`);
+			}
+		}
+		return {
+			id: data.id,
+			name: data.name,
+			created: data.created,
+			last_used: data.last_used,
+			expires: data.expires,
+			scope: data.scope,
+			admin: data.admin,
+			features: features,
+		};
+	};
+
 	const listKeys = () => (
 		<>
 			{(keyCount || keysStatus !== "loading") && (
@@ -1900,6 +1935,12 @@ export default function UserSettings() {
 							return deleteKey?.id === id;
 						}}
 						collapsibleParentClassName={classes.collapsibleParent}
+						menuOptions={{
+							exportFile: "keys",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+							toCsv: toCsv,
+						}}
 					/>
 					<DraggableDialog
 						open={!!selectedRow}
@@ -2100,7 +2141,7 @@ export default function UserSettings() {
 	return (
 		<Container>
 			<Box displayPrint="none">
-				<BackButton />
+				<BackButton fromRedirect={fromRedirect} />
 			</Box>
 
 			{userInfo()}

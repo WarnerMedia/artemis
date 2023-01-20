@@ -3,7 +3,7 @@ import { Trans } from "@lingui/macro";
 
 const ScopeCell = (props: { value?: string | string[] | null }) => {
 	const { value } = props;
-	let files = <></>;
+	const files = <></>;
 	if (value) {
 		if (Array.isArray(value)) {
 			const count = value.length;

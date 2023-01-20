@@ -14,6 +14,7 @@ import {
 	Error as ErrorIcon,
 	HourglassFull as HourglassFullIcon,
 	Info as InfoIcon,
+	Inventory as InventoryIcon,
 	Layers as LayersIcon,
 	Security as SecurityIcon,
 	VpnKey as VpnKeyIcon,
@@ -34,6 +35,15 @@ import {
 	colorTech,
 } from "app/colors";
 import { AnalysisReport, ScanErrors } from "features/scans/scansSchemas";
+import {
+	getFeatureName,
+	pluginKeys,
+	sbomPlugins,
+	secretPlugins,
+	staticPlugins,
+	techPlugins,
+	vulnPlugins,
+} from "app/scanPlugins";
 
 const useStyles = makeStyles()(() => ({
 	cellContent: {
@@ -92,6 +102,12 @@ const useStyles = makeStyles()(() => ({
 		borderRadius: "0px 10px 10px 0px", // rounded right top-and-bottom corners
 		cursor: "pointer",
 	},
+	chipIcon: {
+		"& .MuiChip-icon": {
+			marginLeft: "10px",
+			marginRight: "-14px",
+		},
+	},
 }));
 
 // make the individual scan progress bars a little thicker
@@ -114,7 +130,7 @@ const BorderLinearProgress = withStyles(LinearProgress, (theme: Theme) => ({
 }));
 
 const alertPopupContent = (errors: ScanErrors) => {
-	let elts = [];
+	const elts = [];
 	for (const [key, value] of Object.entries(errors)) {
 		elts.push(<Typography key={key}>{value}</Typography>);
 	}
@@ -141,7 +157,7 @@ const StatusCell = (props: StatusCellProps) => {
 	};
 
 	switch (row.status) {
-		case "queued":
+		case "queued": {
 			let ago = 0;
 			// calculate minutes ago scan was queued
 			if (row.timestamps.queued) {
@@ -170,35 +186,66 @@ const StatusCell = (props: StatusCellProps) => {
 					</Box>
 				</Box>
 			);
-		case "completed":
+		}
+		case "completed": {
 			// try to determine ahead of results_summary fetch what results will be displayed
 			// so we can display a preview while loading
 			const hasVulnResults =
+				row?.results_summary?.vulnerabilities ||
 				row.scan_options.categories?.includes("vulnerability") ||
-				row?.results_summary?.vulnerabilities;
+				row.scan_options.plugins?.some((plugin) => {
+					return vulnPlugins.includes(plugin);
+				});
 			const hasAnalysisResults =
+				row?.results_summary?.static_analysis ||
 				row.scan_options.categories?.includes("static_analysis") ||
-				row?.results_summary?.static_analysis;
+				row.scan_options.plugins?.some((plugin) => {
+					return staticPlugins.includes(plugin);
+				});
 			const hasSecretResults =
+				typeof row?.results_summary?.secrets === "number" ||
 				row.scan_options.categories?.includes("secret") ||
-				typeof row?.results_summary?.secrets === "number";
+				row.scan_options.plugins?.some((plugin) => {
+					return secretPlugins.includes(plugin);
+				});
 			const hasInventoryResults =
+				row?.results_summary?.inventory ||
 				row.scan_options.categories?.includes("inventory") ||
-				row?.results_summary?.inventory;
+				row.scan_options.plugins?.some((plugin) => {
+					return techPlugins.includes(plugin);
+				});
+			// sbom results are not part of scan results or summary
+			const hasSbomResults =
+				row.scan_options.categories?.includes("sbom") ||
+				row.scan_options.plugins?.some((plugin) => {
+					return sbomPlugins.includes(plugin);
+				});
 
 			// if any results_summary section is null then some subset of plugins ran
-			let info = undefined;
+			// sbom category not default, so not running sbom not considered a subset
+			let info: { [key: string]: string } = {};
 			if (
 				row?.results_summary?.vulnerabilities === null ||
 				row?.results_summary?.static_analysis === null ||
 				row?.results_summary?.secrets === null ||
 				row?.results_summary?.inventory === null
 			) {
-				info = {
-					plugins: i18n._(
-						t`This scan ran with a subset of plugins. View scan results for additional details`
-					),
-				};
+				info["plugins"] = i18n._(t`This scan ran with a subset of plugins.`);
+			}
+			if (
+				(row?.scan_options?.include_paths &&
+					row?.scan_options?.include_paths.length > 0) ||
+				(row?.scan_options?.exclude_paths &&
+					row?.scan_options?.exclude_paths.length > 0)
+			) {
+				info["paths"] = i18n._(
+					t`This scan ran against a subset of source code due to include/exclude paths.`
+				);
+			}
+			if (Object.keys(info).length > 0) {
+				info["results"] = i18n._(
+					t`Results may vary compared to scans run with other options. View scan results for additional details`
+				);
 			}
 
 			return (
@@ -518,8 +565,18 @@ const StatusCell = (props: StatusCellProps) => {
 							}
 						/>
 					)}
+					{hasSbomResults && (
+						<Tooltip
+							describeChild
+							id="tooltip-sbom"
+							arrow={true}
+							title={i18n._(t`Software Bill of Materials (SBOM)`)}
+						>
+							<Chip className={classes.chipIcon} icon={<InventoryIcon />} />
+						</Tooltip>
+					)}
 
-					{info && (
+					{Object.keys(info).length > 0 && (
 						<Box component="span">
 							{popoverOpen && (
 								<Alert
@@ -553,12 +610,16 @@ const StatusCell = (props: StatusCellProps) => {
 					)}
 				</Box>
 			);
+		}
 		case "error":
 		case "failed":
-		case "terminated":
+		case "terminated": {
 			let errors = row.errors ? { ...row.errors } : row.errors;
-			if (errors && Object.keys(errors).length === 0) {
-				errors = undefined;
+			if (errors) {
+				// reset obj if there are no errors
+				if (Object.keys(errors).length === 0) {
+					errors = undefined;
+				}
 			}
 
 			let status = <Trans>Failed</Trans>;
@@ -605,7 +666,8 @@ const StatusCell = (props: StatusCellProps) => {
 					<Box component="span">{status}</Box>
 				</Box>
 			);
-		case "processing":
+		}
+		case "processing": {
 			return (
 				<Box className={classes.cellContent}>
 					<Box component="span">
@@ -618,13 +680,18 @@ const StatusCell = (props: StatusCellProps) => {
 					</Box>
 				</Box>
 			);
-		default:
+		}
+		default: {
 			// processing/running plugin <plugin>
 			const current = row.status_detail.current_plugin || 1;
 			const total = row.status_detail.total_plugins || 1;
 			// add 1 to total plugin count so that when final plugin is running
 			// progress % won't show 100% prematurely
 			const progress = (current / (total + 1)) * 100;
+			const pluginName = getFeatureName(
+				row.status_detail.plugin_name || "",
+				pluginKeys
+			);
 
 			return (
 				<Box className={classes.cellContent}>
@@ -634,10 +701,11 @@ const StatusCell = (props: StatusCellProps) => {
 						style={{ width: "100%" }}
 					/>
 					<Trans>
-						Running plugin {current} of {total}: {row.status_detail.plugin_name}
+						Running plugin {current} of {total}: {pluginName}
 					</Trans>
 				</Box>
 			);
+		}
 	}
 };
 export default StatusCell;

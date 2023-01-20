@@ -51,7 +51,7 @@ const ListItemMetaMultiField = (props: {
 	const { data, includeIcon = false } = props;
 	const [popoverOpen, setPopoverOpen] = useState(false);
 
-	let metaData: React.ReactNode[] = [];
+	const metaData: React.ReactNode[] = [];
 	let requirementsMet = false;
 	let metaRequirements = 2;
 
@@ -96,7 +96,7 @@ const ListItemMetaMultiField = (props: {
 		requirementsMet = metaRequirements === 0;
 	}
 
-	let metaLabel = [
+	const metaLabel = [
 		<React.Fragment key="scan-samplemeta-label">
 			<Trans>Meta Data Sample1 / Sample2</Trans>
 		</React.Fragment>,

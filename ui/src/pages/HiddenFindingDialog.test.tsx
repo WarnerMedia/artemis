@@ -11,7 +11,6 @@ import {
 	findingVulnRawRow,
 } from "../../testData/testMockData";
 import { capitalize, formatDate } from "utils/formatters";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup";
 
 beforeAll(() => {
 	// ensure consistent timezone for tests
@@ -85,10 +84,10 @@ describe("HiddenFindingDialog component", () => {
 	});
 
 	describe("general tests applicable to all forms", () => {
-		let user: UserEvent;
+		let user: any;
 		beforeEach(async () => {
 			// remove hidden findings in mock data to put form into "add" mode
-			let vuln = JSON.parse(JSON.stringify(vulnRow));
+			const vuln = JSON.parse(JSON.stringify(vulnRow));
 			vuln.hasHiddenFindings = false;
 			vuln.hiddenFindings = null;
 			vuln.unhiddenFindings = [];
@@ -166,7 +165,9 @@ describe("HiddenFindingDialog component", () => {
 				await waitFor(() => {
 					expect(expiresField).toHaveValue(now);
 				});
-				expect(screen.getByText("Must be a future date")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByText("Must be a future date")).toBeInTheDocument();
+				});
 
 				const tomorrow = formatDateForExpirationField(
 					DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON()
@@ -251,7 +252,7 @@ describe("HiddenFindingDialog component", () => {
 	describe("tests for all add forms", () => {
 		it("add dialog has expected elements", async () => {
 			// remove hidden findings in mock data to put form into "add" mode
-			let vuln = JSON.parse(JSON.stringify(vulnRow));
+			const vuln = JSON.parse(JSON.stringify(vulnRow));
 			vuln.hasHiddenFindings = false;
 			vuln.hiddenFindings = null;
 			vuln.unhiddenFindings = [];
@@ -757,7 +758,7 @@ describe("HiddenFindingDialog component", () => {
 
 		it("vulnerability add dialog", async () => {
 			// remove hidden findings in mock data to put form into "add" mode
-			let vuln = JSON.parse(JSON.stringify(vulnRow));
+			const vuln = JSON.parse(JSON.stringify(vulnRow));
 			vuln.hasHiddenFindings = false;
 			vuln.hiddenFindings = null;
 			vuln.unhiddenFindings = [];
@@ -869,7 +870,7 @@ describe("HiddenFindingDialog component", () => {
 		// vuln add dialog where "anywhere" is selected for Hide For field
 		it("vulnerability raw add dialog", async () => {
 			// remove hidden findings in mock data to put form into "add" mode
-			let vuln = JSON.parse(JSON.stringify(vulnRow));
+			const vuln = JSON.parse(JSON.stringify(vulnRow));
 			vuln.hasHiddenFindings = false;
 			vuln.hiddenFindings = null;
 			vuln.unhiddenFindings = [];

@@ -1,4 +1,10 @@
 import { t } from "@lingui/macro";
+import { capitalize } from "utils/formatters";
+import {
+	APP_AQUA_ENABLED,
+	APP_SNYK_ENABLED,
+	APP_VERACODE_ENABLED,
+} from "app/globals";
 
 export interface ScanPlugin {
 	displayName: string;
@@ -10,11 +16,14 @@ interface ScanPluginKeys {
 	[name: string]: ScanPlugin;
 }
 
-const GROUP_SECRETS = t`Secret Detection`;
-const GROUP_ANALYSIS = t`Static Analysis`;
-const GROUP_VULN = t`Vulnerability Detection`;
-const GROUP_INVENTORY = t`Technology Inventory`;
+export const GROUP_SECRETS = t`Secret Detection`;
+export const GROUP_ANALYSIS = t`Static Analysis`;
+export const GROUP_VULN = t`Vulnerability Detection`;
+export const GROUP_INVENTORY = t`Technology Inventory`;
+export const GROUP_SBOM = t`Software Bill of Materials`;
 
+// all plugin information (enabled & disabled)
+// keys should match apiName
 export const secretPluginsKeys: ScanPluginKeys = {
 	gitsecrets: {
 		displayName: t`Git Secrets`,
@@ -27,7 +36,6 @@ export const secretPluginsKeys: ScanPluginKeys = {
 		group: GROUP_SECRETS,
 	},
 };
-export const secretPluginsObjects = Object.values(secretPluginsKeys);
 
 export const staticPluginsKeys: ScanPluginKeys = {
 	cfn_python_lint: {
@@ -106,7 +114,6 @@ export const staticPluginsKeys: ScanPluginKeys = {
 		group: GROUP_ANALYSIS,
 	},
 };
-export const staticPluginsObjects = Object.values(staticPluginsKeys);
 
 export const techPluginsKeys: ScanPluginKeys = {
 	base_images: {
@@ -120,7 +127,6 @@ export const techPluginsKeys: ScanPluginKeys = {
 		group: GROUP_INVENTORY,
 	},
 };
-export const techPluginsObjects = Object.values(techPluginsKeys);
 
 export const vulnPluginsKeys: ScanPluginKeys = {
 	aqua_cli_scanner: {
@@ -160,30 +166,105 @@ export const vulnPluginsKeys: ScanPluginKeys = {
 		group: GROUP_VULN,
 	},
 };
-export const vulnPluginsObjects = Object.values(vulnPluginsKeys);
 
-// these are used in the formik state, and also in the addScan client.ts file
-export const secretPlugins = secretPluginsObjects.map(
-	(p: ScanPlugin) => p.apiName
-);
-export const staticPlugins = staticPluginsObjects.map(
-	(p: ScanPlugin) => p.apiName
-);
-export const techPlugins = techPluginsObjects.map((p: ScanPlugin) => p.apiName);
-export const vulnPlugins = vulnPluginsObjects.map((p: ScanPlugin) => p.apiName);
+export const sbomPluginsKeys: ScanPluginKeys = {
+	veracode_sbom: {
+		displayName: t`Veracode SBOM`,
+		apiName: "veracode_sbom",
+		group: GROUP_SBOM,
+	},
+};
 
-// dev/experimental plugins or plugins that are not enabled for all users by default
-export const nonDefaultPlugins = ["snyk"];
+// feature-flagged plugins, dev/experimental plugins or plugins that are not enabled for all users by default
+export const nonDefaultPlugins: string[] = [];
+
+// any enabled plugins that should be excluded (not run) by default
+export const excludePlugins: string[] = ["nodejsscan"];
+
+export const pluginsDisabled: { [name: string]: boolean } = {};
+
+if (!APP_AQUA_ENABLED) {
+	pluginsDisabled["aqua_cli_scanner"] = true;
+}
+
+if (APP_SNYK_ENABLED) {
+	nonDefaultPlugins.push("snyk");
+} else {
+	pluginsDisabled["snyk"] = true;
+}
+
+if (!APP_VERACODE_ENABLED) {
+	pluginsDisabled["veracode_sca"] = true;
+	pluginsDisabled["veracode_sbom"] = true;
+}
+
+// enabled plugins
+export const secretPlugins = Object.keys(secretPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
+export const staticPlugins = Object.keys(staticPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
+export const techPlugins = Object.keys(techPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
+export const vulnPlugins = Object.keys(vulnPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
+export const sbomPlugins = Object.keys(sbomPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
+
+export const secretPluginsObjects = secretPlugins.map(
+	(k) => secretPluginsKeys[k]
+);
+export const staticPluginsObjects = staticPlugins.map(
+	(k) => staticPluginsKeys[k]
+);
+export const techPluginsObjects = techPlugins.map((k) => techPluginsKeys[k]);
+export const vulnPluginsObjects = vulnPlugins.map((k) => vulnPluginsKeys[k]);
+export const sbomPluginsObjects = sbomPlugins.map((k) => sbomPluginsKeys[k]);
+
 // display names for different plugin categories
-export const pluginCatalog = [
-	{ name: "Secret Plugin", plugins: secretPluginsObjects },
-	{ name: "Static Analysis Plugin", plugins: staticPluginsObjects },
-	{ name: "Technology Inventory Plugin", plugins: techPluginsObjects },
-	{ name: "Vulnerability Plugin", plugins: vulnPluginsObjects },
-];
+export interface IPluginCatalog {
+	[type: string]: {
+		displayName: string;
+		plugins: ScanPlugin[];
+	};
+}
+
+export const pluginCatalog: IPluginCatalog = {
+	secret: { displayName: GROUP_SECRETS, plugins: secretPluginsObjects },
+	static_analysis: {
+		displayName: GROUP_ANALYSIS,
+		plugins: staticPluginsObjects,
+	},
+	inventory: { displayName: GROUP_INVENTORY, plugins: techPluginsObjects },
+	vulnerability: { displayName: GROUP_VULN, plugins: vulnPluginsObjects },
+	sbom: { displayName: GROUP_SBOM, plugins: sbomPluginsObjects },
+};
+
+export interface IPluginKeys {
+	[x: string]: ScanPlugin;
+}
 export const pluginKeys = {
 	...secretPluginsKeys,
 	...staticPluginsKeys,
 	...techPluginsKeys,
 	...vulnPluginsKeys,
+	...sbomPluginsKeys,
+};
+
+export const isFeatureDisabled = (apiName: string) => apiName.startsWith("-");
+
+// get category or plugin display name from api name
+// e.g. "owasp_dependency_check" => "OWASP Check (Java)"
+export const getFeatureName = (
+	apiName: string,
+	featureObj: IPluginCatalog | IPluginKeys
+) => {
+	const feat = isFeatureDisabled(apiName) ? apiName.slice(1) : apiName;
+	return feat in featureObj && featureObj[feat]?.displayName
+		? featureObj[feat].displayName
+		: capitalize(feat);
 };

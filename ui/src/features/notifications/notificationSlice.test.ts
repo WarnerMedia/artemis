@@ -101,7 +101,7 @@ describe("notifications reducers", () => {
 			message: "Message to be purged",
 			type: "warn",
 		};
-		let initialState = JSON.parse(JSON.stringify(state));
+		const initialState = JSON.parse(JSON.stringify(state));
 		initialState.entities[payload.message] = payload;
 		initialState.ids.push(payload.message);
 

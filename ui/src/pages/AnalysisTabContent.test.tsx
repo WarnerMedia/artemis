@@ -1,9 +1,14 @@
-import { render, screen, waitFor } from "test-utils";
-import { AnalysisTabContent } from "./ResultsPage";
+import queryString from "query-string";
+import { render, screen, waitFor, within } from "test-utils";
+import { AnalysisTabContent, FILTER_PREFIX_ANALYSIS } from "./ResultsPage";
 import { mockCurrentUser, mockScan002 } from "../../testData/testMockData";
 import { AnalysisReport } from "features/scans/scansSchemas";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup";
+import { validateSelect } from "./SearchPageTestCommon";
+import { act } from "react-dom/test-utils";
+
+const HASH_PREFIX = FILTER_PREFIX_ANALYSIS;
+const mockSaveFilters = jest.fn();
 
 // hiddenFindings you can override in tests
 let hiddenFindings: HiddenFinding[] = [];
@@ -20,6 +25,7 @@ const openAnalysisDialog = async () => {
 			scan={mockScan002 as AnalysisReport}
 			hiddenFindings={hiddenFindings}
 			currentUser={mockCurrentUser}
+			saveFilters={mockSaveFilters}
 		/>
 	);
 
@@ -27,7 +33,7 @@ const openAnalysisDialog = async () => {
 	// first finding for this file (0)
 	const analysisType =
 		Object.entries(mockScan002.results.static_analysis).filter(
-			([key, value]) => key === analysisFile
+			([key]) => key === analysisFile
 		)[0][1][0].type || "No Type";
 
 	const cell = screen.getByRole("rowheader", {
@@ -45,7 +51,7 @@ const openAnalysisDialog = async () => {
 };
 
 // close dialog by clicking ok
-const closeAnalysisDialog = async (user: UserEvent) => {
+const closeAnalysisDialog = async (user: any) => {
 	// clicking the ok button should close the dialog
 	const okButton = screen.getByRole("button", { name: /^ok$/i });
 	expect(okButton).toBeInTheDocument();
@@ -57,10 +63,15 @@ const closeAnalysisDialog = async (user: UserEvent) => {
 
 describe("AnalysisTabContent component", () => {
 	// increase this test timeout since waiting for async dialog operations can take some time
-	jest.setTimeout(30000);
+	jest.setTimeout(60000);
+
+	afterEach(() => {
+		mockSaveFilters.mockReset();
+	});
+
 	describe("analysisDialogContent", () => {
 		it("contains no findings", () => {
-			let scan: AnalysisReport = JSON.parse(JSON.stringify(mockScan002));
+			const scan: AnalysisReport = JSON.parse(JSON.stringify(mockScan002));
 			// clear scan results sections
 			if (scan?.results_summary) {
 				scan.results_summary.static_analysis = null;
@@ -74,6 +85,7 @@ describe("AnalysisTabContent component", () => {
 					scan={scan}
 					hiddenFindings={hiddenFindings}
 					currentUser={mockCurrentUser}
+					saveFilters={mockSaveFilters}
 				/>
 			);
 
@@ -98,7 +110,7 @@ describe("AnalysisTabContent component", () => {
 			// first finding for this file (0)
 			const analysisFinding = Object.entries(
 				mockScan002.results.static_analysis
-			).filter(([key, value]) => key === analysisFile)[0][1][0];
+			).filter(([key]) => key === analysisFile)[0][1][0];
 
 			hiddenFindings = [
 				{
@@ -120,6 +132,192 @@ describe("AnalysisTabContent component", () => {
 			});
 			expect(findingButton).toBeInTheDocument();
 			await closeAnalysisDialog(user);
+		});
+
+		it("dialog contains expected fields", async () => {
+			const user = await openAnalysisDialog();
+			const dialog = screen.getByRole("dialog");
+			const finding = Object.entries(
+				mockScan002.results.static_analysis
+			).filter(([key]) => key === analysisFile)[0][1][0];
+
+			within(dialog).getByText("Medium");
+			within(dialog).getByText("Found in Source File");
+			within(dialog).getByText(`${analysisFile} (Line ${finding.line})`);
+			within(dialog).getByText("Details");
+			within(dialog).getByText(finding.message);
+
+			await closeAnalysisDialog(user);
+		});
+
+		describe("filters", () => {
+			it("contains column filters for each column", () => {
+				render(
+					<AnalysisTabContent
+						scan={mockScan002 as AnalysisReport}
+						hiddenFindings={hiddenFindings}
+						currentUser={mockCurrentUser}
+						saveFilters={mockSaveFilters}
+					/>
+				);
+
+				const filterGroup = screen.getByRole("group", {
+					name: /filter results/i,
+				});
+				const firstFilter = within(filterGroup).getByRole("textbox", {
+					name: /file/i,
+				});
+				expect(firstFilter).toHaveFocus();
+				expect(firstFilter).toHaveAttribute("placeholder", "Contains");
+				expect(
+					within(filterGroup).getByRole("textbox", { name: /line/i })
+				).toHaveAttribute("placeholder", "Exact");
+				expect(
+					within(filterGroup).getByRole("textbox", { name: /type/i })
+				).toHaveAttribute("placeholder", "Contains");
+				within(filterGroup).getByRole("button", { name: /severity /i });
+			});
+
+			it("filters add to url hash parameters", async () => {
+				jest.useFakeTimers(); // use fake timers since filter input is debounced with setTimeout()
+
+				const { user } = render(
+					<AnalysisTabContent
+						scan={mockScan002 as AnalysisReport}
+						hiddenFindings={hiddenFindings}
+						currentUser={mockCurrentUser}
+						saveFilters={mockSaveFilters}
+					/>,
+					null,
+					{
+						advanceTimers: jest.advanceTimersByTime,
+					}
+				);
+
+				const filterGroup = screen.getByRole("group", {
+					name: /filter results/i,
+				});
+				const fileFilter = within(filterGroup).getByRole("textbox", {
+					name: /file/i,
+				});
+				const fileValue = "/path/to/a/new/@library/file-name-1.0.3b6";
+				await act(async () => await user.type(fileFilter, fileValue));
+
+				jest.runOnlyPendingTimers();
+				await waitFor(() => expect(fileFilter).toHaveDisplayValue(fileValue));
+
+				await validateSelect({
+					label: /severity/i,
+					withinElement: filterGroup,
+					options: [
+						"None",
+						`Negligible: ${mockScan002.results_summary.static_analysis.negligible}`,
+						`Low: ${mockScan002.results_summary.static_analysis.low}`,
+						`Medium: ${mockScan002.results_summary.static_analysis.medium}`,
+						`High: ${mockScan002.results_summary.static_analysis.high}`,
+						`Critical: ${mockScan002.results_summary.static_analysis.critical}`,
+					],
+					defaultOption: "",
+					disabled: false,
+					selectOption: `Critical: ${mockScan002.results_summary.static_analysis.critical}`,
+					user,
+				});
+
+				const lineFilter = await within(filterGroup).findByRole("textbox", {
+					name: /line/i,
+				});
+				const lineValue = "1234";
+				await act(async () => await user.type(lineFilter, lineValue));
+				jest.runOnlyPendingTimers();
+				await waitFor(() => expect(lineFilter).toHaveDisplayValue(lineValue));
+
+				const typeFilter = await within(filterGroup).findByRole("textbox", {
+					name: /type/i,
+				});
+				const typeValue = "a great type";
+				await act(async () => await user.type(typeFilter, typeValue));
+				jest.runOnlyPendingTimers();
+				await waitFor(() => expect(typeFilter).toHaveDisplayValue(typeValue));
+
+				expect(mockSaveFilters).toHaveBeenLastCalledWith(HASH_PREFIX, {
+					filename: { filter: fileValue },
+					line: { filter: lineValue, match: "exact" },
+					resource: {
+						filter: typeValue,
+					},
+					severity: { filter: "critical" },
+				});
+
+				jest.useRealTimers();
+			});
+
+			it("Url hash params populate filters", async () => {
+				const fileValue = "/path/to/a/new/@library/file-name-1.0.3b6";
+				const lineValue = "1234";
+				const typeValue = "a great type";
+				const severityValue = `Critical: ${mockScan002.results_summary.vulnerabilities.critical}`;
+
+				const obj: any = {};
+				obj[`${HASH_PREFIX}filename`] = fileValue;
+				obj[`${HASH_PREFIX}severity`] = "critical";
+				obj[`${HASH_PREFIX}line`] = lineValue;
+				obj[`${HASH_PREFIX}resource`] = typeValue;
+				const hash = queryString.stringify(obj);
+
+				// mock window.location.reload
+				const globalWindow = global.window;
+				global.window = Object.create(window);
+				Object.defineProperty(window, "location", {
+					value: {
+						hash,
+					},
+				});
+
+				const { user } = render(
+					<AnalysisTabContent
+						scan={mockScan002 as AnalysisReport}
+						hiddenFindings={hiddenFindings}
+						currentUser={mockCurrentUser}
+						saveFilters={mockSaveFilters}
+					/>
+				);
+
+				const filterGroup = screen.getByRole("group", {
+					name: /filter results/i,
+				});
+				const fileFilter = within(filterGroup).getByRole("textbox", {
+					name: /file/i,
+				});
+				await waitFor(() => expect(fileFilter).toHaveDisplayValue(fileValue));
+
+				const lineFilter = await within(filterGroup).findByRole("textbox", {
+					name: /line/i,
+				});
+				await waitFor(() => expect(lineFilter).toHaveDisplayValue(lineValue));
+
+				const typeFilter = await within(filterGroup).findByRole("textbox", {
+					name: /type/i,
+				});
+				await waitFor(() => expect(typeFilter).toHaveDisplayValue(typeValue));
+
+				await validateSelect({
+					label: /severity/i,
+					withinElement: filterGroup,
+					options: [
+						"None",
+						`Negligible: ${mockScan002.results_summary.static_analysis.negligible}`,
+						`Low: ${mockScan002.results_summary.static_analysis.low}`,
+						`Medium: ${mockScan002.results_summary.static_analysis.medium}`,
+						`High: ${mockScan002.results_summary.static_analysis.high}`,
+						`Critical: ${mockScan002.results_summary.static_analysis.critical}`,
+					],
+					defaultOption: severityValue,
+					disabled: false,
+					user,
+				});
+
+				global.window = globalWindow;
+			});
 		});
 	});
 });

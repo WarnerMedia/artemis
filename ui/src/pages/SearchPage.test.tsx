@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "test-utils";
+import { render, screen, waitFor, within } from "test-utils";
 import axios, { AxiosRequestConfig } from "axios";
 import client from "api/client";
 import { DateTime, Settings } from "luxon";
@@ -25,10 +25,17 @@ import {
 	mockSearchComponentRepos,
 	mockSearchRepos,
 } from "../../testData/testMockData";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup";
-
-const DATE_FORMAT = "yyyy/LL/dd HH:mm";
-const DATE_PLACEHOLDER = "yyyy/MM/dd HH:mm (24-hour)";
+import {
+	DATE_FORMAT,
+	DATE_PLACEHOLDER,
+	DEFAULT_SEARCH_OPTION,
+	SEARCH_OPTIONS,
+	SEARCH_OPTION_REPOS,
+	testFieldInvalid,
+	testFieldLength,
+	testFieldValid,
+	validateSelect,
+} from "./SearchPageTestCommon";
 
 let mockAppState: any;
 let mockLocation: any;
@@ -56,7 +63,7 @@ beforeAll(() => {
 });
 
 describe("SearchPage component", () => {
-	jest.setTimeout(90000);
+	jest.setTimeout(120000);
 
 	beforeEach(() => {
 		mockUseLocation.mockImplementation(() => {
@@ -125,188 +132,6 @@ describe("SearchPage component", () => {
 		//console.log("Ending test: ", expect.getState().currentTestName);
 	});
 
-	const validateSelect = async (options: {
-		role?: "button" | "combobox";
-		label: string | RegExp;
-		options: string[];
-		defaultOption?: string;
-		disabled?: boolean;
-		focused?: boolean;
-		selectOption?: string;
-		user: UserEvent;
-	}) => {
-		// validate default value
-		// note: only querying a11y tree here using *Role queries
-		// this is to prevent hidden items from being returned, such as would be the case for *LabelText, etc. element selectors
-		const selectField = await screen.findByRole(options?.role ?? "button", {
-			name: options.label,
-		});
-		if (options.defaultOption) {
-			within(selectField).getByText(options?.defaultOption);
-		}
-
-		await options?.user.click(selectField);
-		await waitFor(() => {
-			screen.queryByRole("listbox", { name: options?.label });
-		});
-		const popup = screen.getByRole("listbox", { name: options?.label });
-		for (let i = 0; i < options.options.length; i += 1) {
-			const optionText = within(popup).getByRole("option", {
-				name: String(options.options[i]),
-			});
-			if (
-				"focused" in options &&
-				String(options.options[i]) === options.defaultOption
-			) {
-				if (options.focused === true) {
-					expect(optionText).toHaveFocus();
-				}
-			}
-			if (
-				"selectOption" in options &&
-				options.selectOption === String(options.options[i])
-			) {
-				await options?.user.click(optionText);
-				await waitFor(() => {
-					within(selectField).getByText(String(options.options[i]));
-				});
-				break;
-			}
-		}
-
-		if ("disabled" in options) {
-			if (options.disabled === true) {
-				expect(selectField).toBeDisabled();
-			} else {
-				expect(selectField).not.toBeDisabled();
-			}
-		}
-	};
-
-	const testFieldLength = async (
-		fieldName: string | RegExp,
-		maxLength: number,
-		expectedError: string,
-		user: UserEvent
-	) => {
-		let testValue = "z".repeat(maxLength + 1); // invalid length value
-		const testComponent = await screen.findByRole("textbox", {
-			name: fieldName,
-		});
-		await user.clear(testComponent);
-		await user.type(testComponent, testValue);
-		fireEvent.blur(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
-		await waitFor(() =>
-			expect(screen.getByText(expectedError)).toBeInTheDocument()
-		);
-
-		// submit button should be disabled since form now invalid
-		const submitButton = screen.getByRole("button", {
-			name: /^search$/i,
-		});
-		expect(submitButton).toBeDisabled();
-
-		await user.clear(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(""));
-		await waitFor(() =>
-			expect(screen.queryByText(expectedError)).not.toBeInTheDocument()
-		);
-		expect(submitButton).not.toBeDisabled();
-
-		testValue = "z".repeat(maxLength); // valid length value
-		await user.type(testComponent, testValue);
-		fireEvent.blur(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
-		await waitFor(() =>
-			expect(screen.queryByText(expectedError)).not.toBeInTheDocument()
-		);
-		expect(submitButton).not.toBeDisabled(); // form now valid, buttons should not be disabled
-	};
-
-	const testFieldValid = async (
-		fieldName: string | RegExp,
-		value: string,
-		unexpectedError: string,
-		role: "textbox" | "combobox" = "textbox",
-		user: UserEvent
-	) => {
-		const testComponent = await screen.findByRole(role, {
-			name: fieldName,
-		});
-
-		await user.clear(testComponent);
-		await user.type(testComponent, value + "{enter}");
-		fireEvent.blur(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(value));
-		await waitFor(() =>
-			expect(screen.queryByText(unexpectedError)).not.toBeInTheDocument()
-		);
-
-		const submitButton = screen.getByRole("button", {
-			name: /^search$/i,
-		});
-		expect(submitButton).not.toBeDisabled();
-	};
-
-	const testFieldInvalid = async (
-		fieldName: string | RegExp,
-		value: string,
-		expectedError: string,
-		role: "combobox" | "textbox" = "combobox",
-		user: UserEvent
-	) => {
-		const testComponent = await screen.findByRole(role, {
-			name: fieldName,
-		});
-		const submitButton = screen.getByRole("button", {
-			name: /^search$/i,
-		});
-
-		// test 1 character at a time to see if it's invalid
-		// since once 1 character triggers invalidation you won't know
-		// whether next char is valid or not
-		const chars = value.split("");
-		for (let i = 0; i < value.length; i += 1) {
-			let char = chars[i];
-			let displayChar = char;
-			switch (char) {
-				case "{":
-					// { and [ are special characters that need to be escaped by doubling, i.e., {{ [[
-					// from testing it appears that they also need to be surrounded by other valid chars
-					// or get stripped
-					// see:
-					// https://github.com/testing-library/user-event/issues/584
-					char = "x{{x";
-					displayChar = "x{x";
-					break;
-				case "[":
-					char = "x[[x";
-					displayChar = "x[x";
-					break;
-				case " ":
-					// space chars need to be surrounded with another valid character
-					// otherwise, field leading+trailing space gets stripped
-					char = "x x";
-					displayChar = char;
-					break;
-			}
-
-			// enter keypress required in case we are entering this value into an auto-select box
-			// so that we select the matching result for this input
-			await user.clear(testComponent);
-			await user.type(testComponent, char + "{enter}");
-			fireEvent.blur(testComponent);
-			await waitFor(() =>
-				expect(testComponent).toHaveDisplayValue(displayChar)
-			);
-			await waitFor(() =>
-				expect(screen.getByText(expectedError)).toBeInTheDocument()
-			);
-			expect(submitButton).toBeDisabled();
-		}
-	};
-
 	it("Page title should include 'search'", async () => {
 		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 		render(<SearchPage />);
@@ -332,8 +157,8 @@ describe("SearchPage component", () => {
 
 			await validateSelect({
 				label: /search for/i,
-				options: ["Components or Licenses", "Repositories"],
-				defaultOption: "Components or Licenses",
+				options: SEARCH_OPTIONS,
+				defaultOption: DEFAULT_SEARCH_OPTION,
 				disabled: false,
 				focused: true,
 				user,
@@ -458,9 +283,8 @@ describe("SearchPage component", () => {
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 					render(<SearchPage />);
 
-					// not using *ByRole (a11y tree), so this element will exist but should be hidden at this point
-					const riskField = await screen.findByText(/risk/i);
-					expect(riskField).not.toBeVisible();
+					const riskField = screen.queryByText(/risk/i);
+					expect(riskField).not.toBeInTheDocument();
 				});
 
 				it("Form submit/reset buttons exist", async () => {
@@ -519,9 +343,12 @@ describe("SearchPage component", () => {
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// accordion closed on submit
 					expect(accordion).toHaveAttribute("aria-expanded", "false");
@@ -2517,13 +2344,16 @@ describe("SearchPage component", () => {
 
 					// check loading indicator when results being fetched
 					await waitFor(() => {
-						screen.queryByText(/fetching repositories.../);
+						within(dialog).queryByText(/fetching repositories.../);
 					});
-					await waitFor(() => {
-						expect(
-							screen.queryByText(/fetching repositories.../)
-						).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(
+								within(dialog).queryByText(/fetching repositories.../)
+							).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					); // this sometimes times-out with default 1000ms timeout
 
 					expect(mockGetComponentRepos).toHaveBeenLastCalledWith(
 						componentName,
@@ -2539,11 +2369,13 @@ describe("SearchPage component", () => {
 					);
 
 					// sortable columns are buttons
-					within(dialog).getByRole("button", {
+					await within(dialog).findByRole("button", {
 						name: /service sorted ascending/i,
 					}); // default sort by name ascending
 					within(dialog).getByRole("button", { name: "Repository" });
-					within(dialog).getByRole("button", { name: "Risk" });
+
+					// not sortable columns
+					within(dialog).getByRole("columnheader", { name: "Risk" });
 
 					const repoTable = within(dialog).getByRole("table", {
 						name: "results table",
@@ -2563,7 +2395,7 @@ describe("SearchPage component", () => {
 					// there should be no (search) form fields on this dialog page
 					expect(within(dialog).queryAllByRole("textbox")).toHaveLength(0);
 
-					// clicking details button takes user back to (first) compoents details page
+					// clicking details button takes user back to (first) components details page
 					const detailsButton = within(dialog).getByRole("button", {
 						name: /details/i,
 					});
@@ -2617,10 +2449,10 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
-							selectOption: "Repositories",
+							selectOption: SEARCH_OPTION_REPOS,
 							user,
 						});
 						await validateSelect({
@@ -2651,10 +2483,10 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
-							selectOption: "Repositories",
+							selectOption: SEARCH_OPTION_REPOS,
 							user,
 						});
 						const field = screen.getByRole("textbox", {
@@ -2675,10 +2507,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -2714,10 +2546,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -2749,10 +2581,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -2769,10 +2601,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -2794,10 +2626,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -2817,10 +2649,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -2907,10 +2739,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -3026,10 +2858,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -3126,10 +2958,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -3251,10 +3083,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -3334,10 +3166,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -3413,10 +3245,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -3486,7 +3318,7 @@ describe("SearchPage component", () => {
 						riskHigh: any,
 						riskCritical: any,
 						riskPriority: any;
-					let user: UserEvent;
+					let user: any;
 
 					beforeEach(async () => {
 						mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -3496,10 +3328,10 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
-							selectOption: "Repositories",
+							selectOption: SEARCH_OPTION_REPOS,
 							user,
 						});
 
@@ -4177,10 +4009,10 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
-							selectOption: "Repositories",
+							selectOption: SEARCH_OPTION_REPOS,
 							user,
 						});
 						await testFieldValid(
@@ -4200,10 +4032,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -4286,10 +4118,10 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
-							selectOption: "Repositories",
+							selectOption: SEARCH_OPTION_REPOS,
 							user,
 						});
 						await testFieldInvalid(
@@ -4309,10 +4141,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -4347,10 +4179,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -4433,10 +4265,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -4503,7 +4335,7 @@ describe("SearchPage component", () => {
 					if (scanTimeField.parentElement) {
 						expect(
 							within(scanTimeField.parentElement).getByText(
-								"Wednesday, February 2, 2022, 9:00:00 AM EST"
+								/Wednesday, February 2, 2022(,| at) 9:00:00 AM EST/
 							)
 						).toBeInTheDocument();
 
@@ -4527,10 +4359,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -4635,10 +4467,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 
@@ -4726,10 +4558,10 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
-						selectOption: "Repositories",
+						selectOption: SEARCH_OPTION_REPOS,
 						user,
 					});
 

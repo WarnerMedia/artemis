@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "test-utils";
+import { render, screen, waitFor } from "test-utils";
 import axios, { AxiosRequestConfig } from "axios";
 import client from "api/client";
 import { Settings } from "luxon";
@@ -24,7 +24,12 @@ import {
 	mockSearchComponents,
 	mockSearchRepos,
 } from "../../testData/testMockData";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup";
+import {
+	DEFAULT_SEARCH_OPTION,
+	SEARCH_OPTIONS,
+	testFieldLength,
+	validateSelect,
+} from "pages/SearchPageTestCommon";
 
 // REPLACE ME: MODIFY THESE TESTS TO MATCH YOUR SEARCH application_metadata IMPLEMENTATION
 // SEE ALSO: SearchMetaField.tsx, searchMetaSchemas.ts
@@ -113,105 +118,6 @@ describe("SearchPage component", () => {
 		//console.log("Ending test: ", expect.getState().currentTestName);
 	});
 
-	const validateSelect = async (options: {
-		role?: "button" | "combobox";
-		label: string | RegExp;
-		options: string[];
-		defaultOption?: string;
-		disabled?: boolean;
-		focused?: boolean;
-		selectOption?: string;
-		user: UserEvent;
-	}) => {
-		// validate default value
-		// note: only querying a11y tree here using *Role queries
-		// this is to prevent hidden items from being returned, such as would be the case for *LabelText, etc. element selectors
-		const selectField = await screen.findByRole(options?.role ?? "button", {
-			name: options.label,
-		});
-		if (options.defaultOption) {
-			within(selectField).getByText(options?.defaultOption);
-		}
-
-		await options?.user.click(selectField);
-		await waitFor(() => {
-			screen.queryByRole("listbox", { name: options?.label });
-		});
-		const popup = screen.getByRole("listbox", { name: options?.label });
-		for (let i = 0; i < options.options.length; i += 1) {
-			const optionText = within(popup).getByRole("option", {
-				name: String(options.options[i]),
-			});
-			if (
-				"focused" in options &&
-				String(options.options[i]) === options.defaultOption
-			) {
-				if (options.focused === true) {
-					expect(optionText).toHaveFocus();
-				}
-			}
-			if (
-				"selectOption" in options &&
-				options.selectOption === String(options.options[i])
-			) {
-				await options?.user.click(optionText);
-				await waitFor(() => {
-					within(selectField).getByText(String(options.options[i]));
-				});
-				break;
-			}
-		}
-
-		if ("disabled" in options) {
-			if (options.disabled === true) {
-				expect(selectField).toBeDisabled();
-			} else {
-				expect(selectField).not.toBeDisabled();
-			}
-		}
-	};
-
-	const testFieldLength = async (
-		fieldName: string | RegExp,
-		maxLength: number,
-		expectedError: string,
-		user: UserEvent
-	) => {
-		let testValue = "z".repeat(maxLength + 1); // invalid length value
-		const testComponent = await screen.findByRole("textbox", {
-			name: fieldName,
-		});
-		await user.clear(testComponent);
-		await user.type(testComponent, testValue);
-		fireEvent.blur(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
-		await waitFor(() =>
-			expect(screen.getByText(expectedError)).toBeInTheDocument()
-		);
-
-		// submit button should be disabled since form now invalid
-		const submitButton = screen.getByRole("button", {
-			name: /^search$/i,
-		});
-		expect(submitButton).toBeDisabled();
-
-		await user.clear(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(""));
-		await waitFor(() =>
-			expect(screen.queryByText(expectedError)).not.toBeInTheDocument()
-		);
-		expect(submitButton).not.toBeDisabled();
-
-		testValue = "z".repeat(maxLength); // valid length value
-		await user.type(testComponent, testValue);
-		fireEvent.blur(testComponent);
-		await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
-		await waitFor(() =>
-			expect(screen.queryByText(expectedError)).not.toBeInTheDocument()
-		);
-		expect(submitButton).not.toBeDisabled(); // form now valid, buttons should not be disabled
-	};
-
 	describe("Form fields and defaults", () => {
 		describe("Repositories form", () => {
 			describe("Validate expected fields and default options", () => {
@@ -240,8 +146,8 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
 							selectOption: "Repositories",
 							user,
@@ -269,8 +175,8 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
 							selectOption: "Repositories",
 							user,
@@ -301,8 +207,8 @@ describe("SearchPage component", () => {
 					// switch to repositories form
 					await validateSelect({
 						label: /search for/i,
-						options: ["Components or Licenses", "Repositories"],
-						defaultOption: "Components or Licenses",
+						options: SEARCH_OPTIONS,
+						defaultOption: DEFAULT_SEARCH_OPTION,
 						disabled: false,
 						selectOption: "Repositories",
 						user,
@@ -376,8 +282,8 @@ describe("SearchPage component", () => {
 						// switch to repositories form
 						await validateSelect({
 							label: /search for/i,
-							options: ["Components or Licenses", "Repositories"],
-							defaultOption: "Components or Licenses",
+							options: SEARCH_OPTIONS,
+							defaultOption: DEFAULT_SEARCH_OPTION,
 							disabled: false,
 							selectOption: "Repositories",
 							user,

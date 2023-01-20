@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Formik, Form, Field } from "formik";
+import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
+import { Formik, Form, Field, useFormikContext } from "formik";
 // note: using webpack > 2 so we can just import everything from @mui/material
 // instead of having to import each individual component to reduce bundle size
 // see: https://material-ui.com/guides/minimizing-bundle-size/#when-and-how-to-use-tree-shaking
@@ -18,13 +18,20 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
+	InputAdornment,
 	LinearProgress,
 	Paper,
 	Typography,
 } from "@mui/material";
 import {
+	AccountTree as AccountTreeIcon,
 	BugReport as BugReportIcon,
+	CreateNewFolder as CreateNewFolderIcon,
 	ExpandMore as ExpandMoreIcon,
+	Folder as FolderIcon,
+	FolderOff as FolderOffIcon,
+	History as HistoryIcon,
+	Inventory as InventoryIcon,
 	Layers as LayersIcon,
 	OpenInNew as OpenInNewIcon,
 	PlayCircleOutline as PlayCircleOutlineIcon,
@@ -39,10 +46,9 @@ import { useTheme } from "@mui/material/styles";
 import { Checkbox, TextField } from "formik-mui";
 import { useLingui } from "@lingui/react";
 import { Trans, t } from "@lingui/macro";
-import * as Yup from "yup";
-import * as QueryString from "query-string";
+import queryString from "query-string";
 
-import { AppDispatch } from "app/store";
+import store, { AppDispatch } from "app/store";
 import { RootState } from "app/rootReducer";
 import {
 	addScan,
@@ -52,13 +58,21 @@ import {
 } from "features/scans/scansSlice";
 import { selectCurrentUser } from "features/users/currentUserSlice";
 import { clearAllNotifications } from "features/notifications/notificationsSlice";
-import { ScanOptionsForm, SubmitContext } from "features/scans/scansSchemas";
+import {
+	AnalysisReport,
+	ScanHistoryResponse,
+	ScanOptionsForm,
+	scanOptionsFormSchema,
+	ScanResultsSummary,
+	SCAN_DEPTH,
+	SubmitContext,
+} from "features/scans/scansSchemas";
 import ActivityTable, {
 	ActivityDataLoadCallback,
 } from "components/ActivityTable";
 import AutoCompleteField from "components/AutoCompleteField";
 
-import { handleException } from "api/client";
+import client, { handleException, RequestMeta } from "api/client";
 import {
 	ScanPlugin,
 	secretPlugins,
@@ -69,16 +83,34 @@ import {
 	techPluginsObjects,
 	vulnPlugins,
 	vulnPluginsObjects,
+	sbomPluginsObjects,
+	GROUP_SECRETS,
+	GROUP_ANALYSIS,
+	GROUP_INVENTORY,
+	GROUP_VULN,
+	GROUP_SBOM,
+	excludePlugins,
+	secretPluginsKeys,
+	staticPluginsKeys,
+	techPluginsKeys,
+	vulnPluginsKeys,
+	sbomPluginsKeys,
+	pluginCatalog,
 } from "../app/scanPlugins";
 import WelcomeDialog from "components/WelcomeDialog";
 import WelcomeDialogContent from "custom/WelcomeDialogContent";
 import {
+	APP_API_BATCH_SIZE,
 	APP_DEMO_USER_REPO,
 	APP_DEMO_USER_VCSORG,
+	APP_TABLE_EXPORT_MAX,
 	APP_URL_PROVISION,
 	STORAGE_LOCAL_WELCOME,
 } from "app/globals";
 import runMigrations from "custom/runMigrations";
+import { User } from "features/users/usersSchemas";
+import { exportMetaData } from "custom/SearchMetaField";
+import { DELETED_REGEX } from "utils/formatters";
 
 const useStyles = makeStyles()((theme) => ({
 	accordionDetails: {
@@ -108,9 +140,12 @@ const useStyles = makeStyles()((theme) => ({
 		display: "flex",
 		justifyContent: "flex-start",
 	},
+	categoryHelpText: {
+		color: theme.palette.text.secondary,
+	},
 	heading: {
 		fontSize: theme.typography.pxToRem(15),
-		fontWeight: theme.typography.fontWeightRegular as any,
+		fontWeight: theme.typography.fontWeightRegular,
 	},
 	formPaper: {
 		marginBottom: theme.spacing(3),
@@ -139,6 +174,69 @@ const useStyles = makeStyles()((theme) => ({
 		marginRight: theme.spacing(1),
 	},
 }));
+
+const getCategoryHelpText = (enabledCount = 0, totalCount = 0) => {
+	return (
+		<Trans>
+			{enabledCount} of {totalCount} plugins selected
+		</Trans>
+	);
+};
+
+// whether category checkbox should display in an indeterminate state, i.e. [-]
+// true = indeterminate indicating subset of plugins are selected
+const isCategoryIndeterminate = (enabledCount = 0, totalCount = 0) => {
+	return enabledCount > 0 && enabledCount < totalCount;
+};
+
+const setPageTitle = (scan?: ScanOptionsForm) => {
+	let title = "Artemis";
+	if (scan?.vcsOrg && scan?.repo) {
+		// get org part of service/org
+		// org is anything after first /
+		const firstSlash = scan.vcsOrg.indexOf("/");
+		if (firstSlash !== -1) {
+			title = `Artemis: ${scan.vcsOrg.substring(firstSlash + 1)}/${scan.repo}`;
+		} else {
+			// vcsOrg is just the service name
+			title = `Artemis: ${scan.repo}`;
+		}
+	}
+	document.title = title;
+};
+
+// start a scan
+// validates values (currentUser required to validate vcsOrg scope)
+// navigate passed so that SPA doesn't reload when calling window.location.replace()
+export const startScan = (
+	navigate: NavigateFunction,
+	values: ScanOptionsForm,
+	currentUser?: User
+) => {
+	try {
+		const validValues = scanOptionsFormSchema(currentUser).validateSync(
+			values,
+			{
+				strict: false,
+			}
+		);
+		sessionStorage.clear();
+		store.dispatch(clearScans());
+		store.dispatch(addScan(validValues));
+
+		navigate(
+			"/?" +
+				queryString.stringify({
+					repo: validValues.repo,
+					submitContext: "scan",
+					vcsOrg: validValues.vcsOrg,
+				}),
+			{ replace: true }
+		); // reload form with data in URL query string
+	} catch (err) {
+		handleException(err);
+	}
+};
 
 const MainPage = () => {
 	const { classes } = useStyles();
@@ -170,19 +268,23 @@ const MainPage = () => {
 		vcsOrg: null, // Autoselect component - when no option selected defaults to null
 		repo: "",
 		branch: "",
-		secrets: true, // all scan categories enabled by default
+		secrets: true, // all scan categories except sbom selected by default
 		staticAnalysis: true,
 		inventory: true,
 		vulnerability: true,
+		sbom: false,
 		// numeric field but init to "", as using null/undefined won't clear field in formik form reset
 		depth: "",
 		includeDev: false,
 		submitContext: "view" as SubmitContext,
 		// We need the api names for the formik initial state in order to create the prechecked checkboxes.
 		secretPlugins,
-		staticPlugins,
+		staticPlugins: staticPlugins.filter((p) => !excludePlugins.includes(p)),
 		techPlugins,
 		vulnPlugins,
+		sbomPlugins: [], // no sbom plugins selected by default
+		includePaths: "",
+		excludePaths: "",
 	};
 	const [submitContext, setSubmitContext] = useState<SubmitContext>("view");
 	const [validatedData, setValidatedData] = useState<ScanOptionsForm | null>(
@@ -192,101 +294,21 @@ const MainPage = () => {
 		useState<ScanOptionsForm>(emptyValues);
 	const [hideWelcome, setHideWelcome] = useState(true);
 
-	// note: this schema lives on the web form page so I can
-	// use local state variable vcsOrg as a .oneOf() to check for valid options
-	const scanOptionsFormSchema: Yup.SchemaOf<ScanOptionsForm> = Yup.object({
-		vcsOrg: Yup.string()
-			.trim()
-			.nullable()
-			.default(null)
-			.required(i18n._(t`Required`))
-			.oneOf(currentUser?.scan_orgs ?? [], i18n._(t`Invalid value`)),
-		repo: Yup.string()
-			.trim()
-			.required(i18n._(t`Required`))
-			.matches(
-				/^[a-zA-Z0-9.\-_/]+$/,
-				i18n._(t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /`)
-			)
-			.when("vcsOrg", {
-				// if VCS does not contain /Org suffix, then repo must contain Org/ Prefix
-				is: (vcsOrg: string) => vcsOrg && !vcsOrg.includes("/"),
-				then: Yup.string().matches(
-					/\//,
-					i18n._(t`Missing "Organization/" Prefix`)
-				),
-			}),
-		branch: Yup.string()
-			// doesn't match all sequences in the git-check-ref-format spec, but prevents most
-			// individual disallowed characters
-			// see: https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
-			.trim()
-			.matches(
-				/^[^ ~^:?*[\\]*$/,
-				i18n._(
-					t`Contains one of more of the following invalid characters: space, \, ~, ^, :, ?, *, [`
-				)
-			),
-		secrets: Yup.boolean().when(
-			// at least one scan feature category must be enabled
-			["staticAnalysis", "inventory", "vulnerability"],
-			{
-				is: false,
-				then: Yup.boolean().oneOf(
-					[true],
-					i18n._(t`At least one feature must be enabled`)
-				),
-			}
-		),
-		staticAnalysis: Yup.boolean(),
-		inventory: Yup.boolean(),
-		vulnerability: Yup.boolean(),
-		depth: Yup.number()
-			.positive(i18n._(t`Positive integer`))
-			.integer(i18n._(t`Positive integer`))
-			.transform(function (value, originalvalue) {
-				// default value "" casts as NaN, so instead cast to undefined
-				return originalvalue === "" ? undefined : value;
-			}),
-		includeDev: Yup.boolean(),
-		submitContext: Yup.mixed<SubmitContext>().oneOf(["view", "scan"]),
-		secretPlugins: Yup.array(),
-		staticPlugins: Yup.array(),
-		techPlugins: Yup.array(),
-		vulnPlugins: Yup.array(),
-	}).defined();
-
-	const setPageTitle = (scan?: ScanOptionsForm) => {
-		let title = t`Artemis`;
-
-		if (scan?.vcsOrg && scan?.repo) {
-			// get org part of service/org
-			// org is anything after first /
-			const firstSlash = scan.vcsOrg.indexOf("/");
-			if (firstSlash !== -1) {
-				title = t`Artemis: ${scan.vcsOrg.substring(firstSlash + 1)}/${
-					scan.repo
-				}`;
-			} else {
-				// vcsOrg is just the service name
-				title = t`Artemis: ${scan.repo}`;
-			}
-		}
-		document.title = i18n._(title);
-	};
-
 	// get any prior form values passed-in URL query params and validate matches schema
 	// returns null if no query params or validation fails
 	// returns null so validatedData can be initialized to null (if form never submitted)
 	const getSearchParams = (): ScanOptionsForm | null => {
 		if (location.search) {
-			const search = QueryString.parse(location.search);
+			const search = queryString.parse(location.search);
 			if (Object.keys(search)) {
 				try {
 					// schema validation will also transform query params to their correct types
-					const validValues = scanOptionsFormSchema.validateSync(search, {
-						strict: false, // setting to false will trim fields on validate
-					});
+					const validValues = scanOptionsFormSchema(currentUser).validateSync(
+						search,
+						{
+							strict: false, // setting to false will trim fields on validate
+						}
+					);
 					return { ...emptyValues, ...validValues };
 				} catch (err) {
 					return null;
@@ -325,9 +347,12 @@ const MainPage = () => {
 		setAccordionExpanded(false);
 		try {
 			// trim form value strings
-			const validValues = scanOptionsFormSchema.validateSync(values, {
-				strict: false, // setting to false will trim fields on validate
-			});
+			const validValues = scanOptionsFormSchema(currentUser).validateSync(
+				values,
+				{
+					strict: false, // setting to false will trim fields on validate
+				}
+			);
 			// save form
 			// we can't just pass-around the known org/repo/scanid
 			// b/c vcs/org may be different elements of org and repo combined
@@ -342,7 +367,7 @@ const MainPage = () => {
 				vcsOrg: validValues.vcsOrg,
 			};
 
-			const search = QueryString.stringify(requiredValidValuesForQueryString);
+			const search = queryString.stringify(requiredValidValuesForQueryString);
 			navigate("/?" + search, { replace: true }); // reload form with data in URL query string
 			setPageTitle(validValues);
 			if (submitContext === "scan") {
@@ -372,6 +397,9 @@ const MainPage = () => {
 					match: "exact",
 					filter: "summary",
 				};
+				// clear any "view" context filters
+				delete metaOpts.filters.initiated_by;
+				delete metaOpts.filters.include_batch;
 				delete metaOpts.currentPage;
 				delete metaOpts.itemsPerPage;
 				dispatch(getCurrentScan({ meta: metaOpts }));
@@ -380,6 +408,217 @@ const MainPage = () => {
 				dispatch(getScanHistory({ data: validatedData, meta: metaOpts }));
 			}
 		}
+	};
+
+	// callback to get scan data for export
+	const exportFetch = async (meta?: RequestMeta) => {
+		if (validatedData && scansStatus !== "loading") {
+			const metaOpts = {
+				...meta,
+				filters: {
+					...meta?.filters,
+				},
+			};
+			if (submitContext === "scan") {
+				// get a single scan (the one just added)
+				metaOpts.filters["format"] = {
+					match: "exact",
+					filter: "summary",
+				};
+				// clear any "view" context filters
+				delete metaOpts.filters.initiated_by;
+				delete metaOpts.filters.include_batch;
+				delete metaOpts.currentPage;
+				delete metaOpts.itemsPerPage;
+				const response: AnalysisReport = await client.getCurrentScan({
+					meta: metaOpts,
+				});
+				return [response];
+			} else {
+				// get scans for the repo
+				const batchSize = APP_API_BATCH_SIZE; // resolve results in batches to avoid rate limits
+				metaOpts.currentPage = 0;
+				metaOpts.itemsPerPage = APP_TABLE_EXPORT_MAX;
+				const response: ScanHistoryResponse = await client.getScanHistory({
+					data: validatedData,
+					meta: metaOpts,
+				});
+				let batchPromises: Promise<AnalysisReport>[] = [];
+				let batchStart = 0;
+				for (let i = 0; i < response.results.length; i += 1) {
+					const result = response.results[i];
+					if (
+						"service" in result &&
+						"repo" in result &&
+						"scan_id" in result &&
+						result.status !== "queued"
+					) {
+						// fetch scan fields missing from history (AnalysisReport extending ScanHistory, e.g., success, results_summary)
+						// get summary results not full
+						const url = [result.service, result.repo, result.scan_id].join("/");
+						batchPromises.push(
+							client.getScanById(url, {
+								meta: {
+									filters: {
+										format: {
+											match: "exact",
+											filter: "summary",
+										},
+									},
+								},
+							})
+						);
+						if (
+							batchPromises.length === batchSize ||
+							i === response.results.length - 1
+						) {
+							const batchResults = await Promise.all(batchPromises);
+							for (
+								let j = batchStart, k = 0;
+								k < batchResults.length;
+								j += 1, k += 1
+							) {
+								response.results[j].results_summary = batchResults[k]
+									.results_summary
+									? ({
+											...batchResults[k].results_summary,
+									  } as ScanResultsSummary)
+									: undefined;
+								response.results[j].engine_id = batchResults[k].engine_id;
+								response.results[j].application_metadata = batchResults[k]
+									.application_metadata
+									? { ...batchResults[k].application_metadata }
+									: undefined;
+								response.results[j].success = batchResults[k].success;
+								response.results[j].truncated = batchResults[k].truncated;
+								response.results[j].errors = batchResults[k].errors
+									? { ...batchResults[k].errors }
+									: undefined;
+								response.results[j].alerts = batchResults[k].alerts
+									? { ...batchResults[k].alerts }
+									: undefined;
+								response.results[j].debug = batchResults[k].debug
+									? { ...batchResults[k].debug }
+									: undefined;
+							}
+							batchPromises = [];
+							batchStart = i + 1;
+						}
+					}
+				}
+				return response.results;
+			}
+		}
+		return [];
+	};
+
+	const toCsv = (data: AnalysisReport) => {
+		const allPlugins = {
+			...secretPluginsKeys,
+			...staticPluginsKeys,
+			...techPluginsKeys,
+			...vulnPluginsKeys,
+			...sbomPluginsKeys,
+		};
+
+		const plugins = data.scan_options.plugins
+			? data.scan_options.plugins
+					.map((p) => {
+						const disabled = p.startsWith("-");
+						const name = p.replace(/^-/, "");
+						const displayName =
+							name in allPlugins ? allPlugins[name].displayName : name;
+						return disabled ? `${displayName} (not run)` : displayName;
+					})
+					.sort()
+			: undefined;
+
+		const categories = data.scan_options.categories
+			? data.scan_options.categories
+					.map((c) => {
+						const disabled = c.startsWith("-");
+						const name = c.replace(/^-/, "");
+						const displayName =
+							name in pluginCatalog ? pluginCatalog[name].displayName : name;
+						return disabled ? `${displayName} (not run)` : displayName;
+					})
+					.sort()
+			: undefined;
+
+		let pluginName = data.status_detail.plugin_name;
+		if (pluginName && pluginName in allPlugins) {
+			pluginName = allPlugins[pluginName].displayName;
+		}
+
+		return {
+			scan_id: data.scan_id,
+			repo: data.repo,
+			service: data.service,
+			branch: data.branch,
+			"timestamps.queued": data.timestamps.queued,
+			"timestamps.start": data.timestamps.start,
+			"timestamps.end": data.timestamps.end,
+			initiated_by: data.initiated_by
+				? data.initiated_by.replace(DELETED_REGEX, " (Deleted)")
+				: null,
+			status: data.status,
+			"status_detail.current_plugin": data.status_detail.current_plugin,
+			"status_detail.plugin_name": pluginName,
+			"status_detail.plugin_start_time": data.status_detail.plugin_start_time,
+			"status_detail.total_plugins": data.status_detail.total_plugins,
+			"scan_options.categories": categories,
+			"scan_options.plugins": plugins,
+			"scan_options.depth": data.scan_options.depth,
+			"scan_options.include_dev": data.scan_options.include_dev,
+			"scan_options.callback.client_id": data.scan_options.callback?.client_id,
+			"scan_options.callback.url": data.scan_options.callback?.url,
+			"scan_options.batch_priority": data.scan_options.batch_priority,
+			"scan_options.include_paths": data.scan_options.include_paths,
+			"scan_options.exclude_paths": data.scan_options.exclude_paths,
+			qualified: data.qualified,
+			batch_id: data.batch_id,
+			batch_description: data.batch_description,
+			engine_id: data.engine_id,
+			application_metadata: exportMetaData(data.application_metadata ?? null),
+			success: data.success,
+			truncated: data.truncated,
+			errors: data.errors,
+			alerts: data.alerts,
+			debug: data.debug,
+			"results_summary.vulnerabilities.critical":
+				data.results_summary?.vulnerabilities?.critical,
+			"results_summary.vulnerabilities.high":
+				data.results_summary?.vulnerabilities?.high,
+			"results_summary.vulnerabilities.medium":
+				data.results_summary?.vulnerabilities?.medium,
+			"results_summary.vulnerabilities.low":
+				data.results_summary?.vulnerabilities?.low,
+			"results_summary.vulnerabilities.negligible":
+				data.results_summary?.vulnerabilities?.negligible,
+			"results_summary.vulnerabilities.not_specified": data.results_summary
+				?.vulnerabilities
+				? data.results_summary.vulnerabilities[""]
+				: null,
+			"results_summary.secrets": data.results_summary?.secrets,
+			"results_summary.static_analysis.critical":
+				data.results_summary?.static_analysis?.critical,
+			"results_summary.static_analysis.high":
+				data.results_summary?.static_analysis?.high,
+			"results_summary.static_analysis.medium":
+				data.results_summary?.static_analysis?.medium,
+			"results_summary.static_analysis.low":
+				data.results_summary?.static_analysis?.low,
+			"results_summary.static_analysis.negligible":
+				data.results_summary?.static_analysis?.negligible,
+			"results_summary.static_analysis.not_specified": data.results_summary
+				?.static_analysis
+				? data.results_summary.static_analysis[""]
+				: null,
+			"results_summary.inventory.technology_discovery":
+				data.results_summary?.inventory?.technology_discovery,
+			"results_summary.inventory.base_images":
+				data.results_summary?.inventory?.base_images,
+		};
 	};
 
 	const focusFirstField = () => {
@@ -417,6 +656,30 @@ const MainPage = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	// because startScan updates url with SPA routing, app will not reload & parse updated query params
+	// instead, monitor search location for changes to ensure submitContext and validatedData.submitContext are current
+	// (submitContext controls state of scan activity table, i.e. whether showing a single running scan progress or viewing a list of scans)
+	useEffect(() => {
+		if (location.search) {
+			const search = queryString.parse(location.search);
+			if (
+				"submitContext" in search &&
+				search["submitContext"] !== submitContext &&
+				(search["submitContext"] === "scan" ||
+					search["submitContext"] === "view")
+			) {
+				setSubmitContext(search["submitContext"] as SubmitContext);
+				setValidatedData((prevState) => {
+					return {
+						...prevState,
+						submitContext: search["submitContext"],
+					} as ScanOptionsForm;
+				});
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [location.search]);
 
 	// initialize form with values from URL query params
 	// AFTER async call to get VCS/Orgs resolves
@@ -471,7 +734,7 @@ const MainPage = () => {
 		<>
 			<WelcomeDialog
 				open={!hideWelcome}
-				onClose={onCloseWelcome}
+				onOk={onCloseWelcome}
 				title={i18n._(t`Welcome to Artemis`)}
 			>
 				<WelcomeDialogContent />
@@ -480,7 +743,7 @@ const MainPage = () => {
 				<Formik
 					initialValues={initialValues}
 					enableReinitialize={true}
-					validationSchema={scanOptionsFormSchema}
+					validationSchema={scanOptionsFormSchema(currentUser)}
 					onSubmit={onSubmit}
 				>
 					{({ submitForm, isValid, values, errors, touched, dirty }) => (
@@ -554,6 +817,13 @@ const MainPage = () => {
 											fullWidth
 											variant="outlined"
 											disabled={usersStatus === "loading"}
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FolderIcon />
+													</InputAdornment>
+												),
+											}}
 										/>
 									</Box>
 									<Accordion
@@ -586,6 +856,13 @@ const MainPage = () => {
 														fullWidth
 														variant="outlined"
 														disabled={usersStatus === "loading"}
+														InputProps={{
+															startAdornment: (
+																<InputAdornment position="start">
+																	<AccountTreeIcon />
+																</InputAdornment>
+															),
+														}}
 													/>
 												</Box>
 												<Box marginBottom={2}>
@@ -598,81 +875,6 @@ const MainPage = () => {
 															Restrict Scan Features
 														</FormLabel>
 
-														<FormGroup row>
-															<FormControlLabel
-																className={classes.scanCategory}
-																control={
-																	<>
-																		<Field
-																			id="secrets"
-																			component={Checkbox}
-																			type="checkbox"
-																			name="secrets"
-																			disabled={usersStatus === "loading"}
-																		/>
-																		<VpnKeyIcon
-																			className={classes.scanFeaturesIcon}
-																		/>
-																	</>
-																}
-																label={i18n._(t`Secret Detection`)}
-															/>
-															<FormControlLabel
-																className={classes.scanCategory}
-																control={
-																	<>
-																		<Field
-																			id="staticAnalysis"
-																			component={Checkbox}
-																			type="checkbox"
-																			name="staticAnalysis"
-																			disabled={usersStatus === "loading"}
-																		/>
-																		<BugReportIcon
-																			className={classes.scanFeaturesIcon}
-																		/>
-																	</>
-																}
-																label={i18n._(t`Static Analysis`)}
-															/>
-															<FormControlLabel
-																className={classes.scanCategory}
-																control={
-																	<>
-																		<Field
-																			id="inventory"
-																			component={Checkbox}
-																			type="checkbox"
-																			name="inventory"
-																			disabled={usersStatus === "loading"}
-																		/>
-																		<LayersIcon
-																			className={classes.scanFeaturesIcon}
-																		/>
-																	</>
-																}
-																label={i18n._(t`Technology Inventory`)}
-															/>
-															<FormControlLabel
-																className={classes.scanCategory}
-																control={
-																	<>
-																		<Field
-																			id="vulnerability"
-																			component={Checkbox}
-																			type="checkbox"
-																			name="vulnerability"
-																			disabled={usersStatus === "loading"}
-																		/>
-																		<SecurityIcon
-																			className={classes.scanFeaturesIcon}
-																		/>
-																	</>
-																}
-																label={i18n._(t`Vulnerability Detection`)}
-															/>
-														</FormGroup>
-
 														{touched["secrets"] && !!errors["secrets"] && (
 															<FormHelperText>
 																{errors["secrets"]}
@@ -680,38 +882,73 @@ const MainPage = () => {
 														)}
 
 														<FormGroup row>
-															<div className={classes.scanCategory}>
+															<PluginsSelector
+																name="secrets"
+																group="secretPlugins"
+																plugins={secretPluginsObjects}
+																label={i18n._(GROUP_SECRETS)}
+																icon={
+																	<VpnKeyIcon
+																		className={classes.scanFeaturesIcon}
+																	/>
+																}
+																disabled={usersStatus === "loading"}
+																className={classes.scanCategory}
+															/>
+															<PluginsSelector
+																name="staticAnalysis"
+																group="staticPlugins"
+																plugins={staticPluginsObjects}
+																label={i18n._(GROUP_ANALYSIS)}
+																icon={
+																	<BugReportIcon
+																		className={classes.scanFeaturesIcon}
+																	/>
+																}
+																disabled={usersStatus === "loading"}
+																className={classes.scanCategory}
+															/>
+															<PluginsSelector
+																name="inventory"
+																group="techPlugins"
+																plugins={techPluginsObjects}
+																label={i18n._(GROUP_INVENTORY)}
+																icon={
+																	<LayersIcon
+																		className={classes.scanFeaturesIcon}
+																	/>
+																}
+																disabled={usersStatus === "loading"}
+																className={classes.scanCategory}
+															/>
+															<PluginsSelector
+																name="vulnerability"
+																group="vulnPlugins"
+																plugins={vulnPluginsObjects}
+																label={i18n._(GROUP_VULN)}
+																icon={
+																	<SecurityIcon
+																		className={classes.scanFeaturesIcon}
+																	/>
+																}
+																disabled={usersStatus === "loading"}
+																className={classes.scanCategory}
+															/>
+															{sbomPluginsObjects.length > 0 && (
 																<PluginsSelector
-																	formikStateGroupName={"secretPlugins"}
-																	idName={"secret"}
-																	isDisabled={!values.secrets}
-																	plugins={secretPluginsObjects}
+																	name="sbom"
+																	group="sbomPlugins"
+																	plugins={sbomPluginsObjects}
+																	label={i18n._(GROUP_SBOM)}
+																	icon={
+																		<InventoryIcon
+																			className={classes.scanFeaturesIcon}
+																		/>
+																	}
+																	disabled={usersStatus === "loading"}
+																	className={classes.scanCategory}
 																/>
-															</div>
-															<div className={classes.scanCategory}>
-																<PluginsSelector
-																	formikStateGroupName={"staticPlugins"}
-																	idName={"static"}
-																	isDisabled={!values.staticAnalysis}
-																	plugins={staticPluginsObjects}
-																/>
-															</div>
-															<div className={classes.scanCategory}>
-																<PluginsSelector
-																	formikStateGroupName={"techPlugins"}
-																	idName={"tech"}
-																	isDisabled={!values.inventory}
-																	plugins={techPluginsObjects}
-																/>
-															</div>
-															<div className={classes.scanCategory}>
-																<PluginsSelector
-																	formikStateGroupName={"vulnPlugins"}
-																	idName={"vuln"}
-																	isDisabled={!values.vulnerability}
-																	plugins={vulnPluginsObjects}
-																/>
-															</div>
+															)}
 														</FormGroup>
 													</FormControl>
 												</Box>
@@ -723,12 +960,19 @@ const MainPage = () => {
 														label={i18n._(t`Commit History (optional)`)}
 														name="depth"
 														min={1}
-														placeholder={"500"}
+														placeholder={String(SCAN_DEPTH)}
 														style={{
 															width: 300,
 														}}
 														variant="outlined"
 														disabled={usersStatus === "loading"}
+														InputProps={{
+															startAdornment: (
+																<InputAdornment position="start">
+																	<HistoryIcon />
+																</InputAdornment>
+															),
+														}}
 													/>
 												</Box>
 												<Box>
@@ -746,6 +990,68 @@ const MainPage = () => {
 															label={i18n._(t`Scan Developer Dependencies`)}
 														/>
 													</FormGroup>
+												</Box>
+												<Box marginTop={2} marginBottom={2}>
+													<Field
+														id="includePaths"
+														component={TextField}
+														type="text"
+														label={i18n._(t`Include Paths (optional)`)}
+														name="includePaths"
+														disabled={usersStatus === "loading"}
+														multiline={true}
+														placeholder={i18n._(
+															t`One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)`
+														)}
+														variant="outlined"
+														fullWidth
+														helperText={
+															touched["includePaths"] &&
+															!!errors["includePaths"]
+																? errors["includePaths"]
+																: i18n._(
+																		t`Include these files or directories in the scan. Defined alone, limits the scan to only these paths`
+																  )
+														}
+														InputProps={{
+															startAdornment: (
+																<InputAdornment position="start">
+																	<CreateNewFolderIcon />
+																</InputAdornment>
+															),
+														}}
+													/>
+												</Box>
+												<Box marginTop={2}>
+													<Field
+														id="excludePaths"
+														component={TextField}
+														type="text"
+														label={i18n._(t`Exclude Paths (optional)`)}
+														name="excludePaths"
+														disabled={usersStatus === "loading"}
+														multiline={true}
+														placeholder={i18n._(
+															t`One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)`
+														)}
+														variant="outlined"
+														fullWidth
+														helperText={
+															touched["excludePaths"] &&
+															!!errors["excludePaths"]
+																? errors["excludePaths"]
+																: i18n._(
+																		t`Exclude these files or directories from the scan`
+																  )
+														}
+														InputProps={{
+															startAdornment: (
+																<InputAdornment position="start">
+																	<FolderOffIcon />
+																</InputAdornment>
+															),
+														}}
+													/>
 												</Box>
 											</div>
 										</AccordionDetails>
@@ -820,7 +1126,9 @@ const MainPage = () => {
 						aria-describedby="scan-activity-loading"
 						aria-busy={scansStatus === "loading"}
 						onDataLoad={onDataLoad}
+						exportFetch={exportFetch}
 						data={validatedData}
+						toCsv={toCsv}
 					/>
 				</Paper>
 			</Container>
@@ -828,66 +1136,139 @@ const MainPage = () => {
 	);
 };
 
-interface PSProps {
-	formikStateGroupName: string;
-	idName: string;
-	isDisabled: boolean;
+export interface PSProps {
+	label: string;
+	group: string;
+	name: string;
 	plugins: ScanPlugin[];
+	icon: React.ReactNode;
+	disabled?: boolean;
+	className?: string;
 }
 
 export const PluginsSelector = ({
-	formikStateGroupName,
-	idName,
-	isDisabled,
+	label,
+	group,
+	name,
 	plugins,
+	icon,
+	disabled = false,
+	className,
 }: PSProps) => {
 	const [accordionExpanded, setAccordionExpanded] = useState(false);
-	const usersStatus = useSelector(
-		(state: RootState) => state.currentUser.status
-	);
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
+	const { values, setFieldValue } = useFormikContext<any>();
+	const pluginNames = plugins.map((p: ScanPlugin) => p.apiName);
+
+	const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		event.stopPropagation();
+		setFieldValue(name, event.target.checked);
+		setFieldValue(group, event.target.checked ? [...pluginNames] : []);
+	};
+
+	const handlePluginChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		event.stopPropagation();
+		const currentPlugins = values[group] ? [...values[group]] : [];
+		if (event.target.checked) {
+			currentPlugins.push(event.target.value);
+		} else {
+			const index = currentPlugins.indexOf(event.target.value);
+			if (index > -1) {
+				currentPlugins.splice(index, 1);
+			}
+		}
+		setFieldValue(group, currentPlugins);
+
+		if (currentPlugins.length === 0) {
+			setFieldValue(name, false);
+		} else if (currentPlugins.length === pluginNames.length) {
+			setFieldValue(name, true);
+		}
+	};
 
 	return (
-		<Accordion
-			expanded={!isDisabled && accordionExpanded}
-			onChange={() => {
-				setAccordionExpanded(!accordionExpanded);
-			}}
-			disabled={isDisabled}
-		>
-			<AccordionSummary
-				expandIcon={<ExpandMoreIcon />}
-				aria-controls="scan-options-section-content"
-				id={`scan-options-section-header-${idName}`}
+		<div className={className}>
+			<Accordion
+				expanded={accordionExpanded}
+				onChange={() => {
+					setAccordionExpanded(!accordionExpanded);
+				}}
 			>
-				<Typography className={classes.heading}>
-					<Trans>Plugins</Trans>
-				</Typography>
-			</AccordionSummary>
-			<Divider />
-			<AccordionDetails className={classes.pluginSelectorPlugins}>
-				{plugins.map((plugin) => {
-					return (
-						<Box key={plugin.apiName}>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-label={
+						accordionExpanded
+							? i18n._(t`Hide ${label} plugins`)
+							: i18n._(t`Show ${label} plugins`)
+					}
+					aria-controls={`scan-features-${name}-content`}
+					id={`scan-features-${name}-header`}
+				>
+					<Typography className={classes.heading}>
+						<>
 							<FormControlLabel
+								className={className}
 								control={
-									<Field
-										id={plugin.apiName}
-										component={Checkbox}
-										type="checkbox"
-										name={formikStateGroupName}
-										value={plugin.apiName}
-										disabled={usersStatus === "loading"}
-									/>
+									<>
+										<Field
+											id={name}
+											component={Checkbox}
+											type="checkbox"
+											name={name}
+											disabled={disabled}
+											indeterminate={isCategoryIndeterminate(
+												Array(values[group]) ? values[group].length : 0,
+												pluginNames.length
+											)}
+											onChange={handleCategoryChange}
+										/>
+										{icon}
+									</>
 								}
-								label={i18n._(plugin.displayName)}
+								label={label}
+								onFocus={(event) => event.stopPropagation()}
+								onClick={(event) => event.stopPropagation()}
 							/>
-						</Box>
-					);
-				})}
-			</AccordionDetails>
-		</Accordion>
+							<Box style={{ textAlign: "center" }}>
+								<Typography
+									variant="caption"
+									className={classes.categoryHelpText}
+								>
+									{getCategoryHelpText(
+										Array(values[group]) ? values[group].length : 0,
+										pluginNames.length
+									)}
+								</Typography>
+							</Box>
+						</>
+					</Typography>
+				</AccordionSummary>
+				<Divider />
+				<AccordionDetails className={classes.pluginSelectorPlugins}>
+					{plugins.map((plugin) => {
+						return (
+							<Box key={plugin.apiName}>
+								<FormControlLabel
+									control={
+										<Field
+											id={plugin.apiName}
+											component={Checkbox}
+											type="checkbox"
+											name={group}
+											value={plugin.apiName}
+											disabled={disabled}
+											onChange={handlePluginChange}
+										/>
+									}
+									label={i18n._(plugin.displayName)}
+								/>
+							</Box>
+						);
+					})}
+				</AccordionDetails>
+			</Accordion>
+		</div>
 	);
 };
 

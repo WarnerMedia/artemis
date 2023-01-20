@@ -23,6 +23,8 @@ import { FilterList as FilterListIcon } from "@mui/icons-material";
 
 import AppGlobals from "app/globals";
 import { FilterDef, RequestMeta } from "api/client";
+import TableMenu, { ExportFormats, FetchData } from "./TableMenu";
+import { ToCsvFormat } from "utils/formatters";
 
 export type Order = "asc" | "desc";
 
@@ -72,12 +74,20 @@ export type EnhancedTableClickCallback = (row: RowDef | null) => void;
 
 export type EnhancedTableCollapsibleOpen = (id: string | number) => boolean;
 
+interface MenuOptions {
+	exportFile: string; // fileName prefix, a date stamp will also be added
+	exportFormats: ExportFormats[]; // export formats to support
+	exportFetch?: FetchData; // async callback to fetch data or
+	exportData?: () => RowDef[]; // function returning data to export
+	toCsv?: ToCsvFormat; // format object fields for CSV
+}
+
 interface EnhancedTableProps {
 	id?: string; // row field to use for unique key, defaults to keyId if unsupplied
 	columns: ColDef[];
-	rows: any[];
+	rows: RowDef[];
 	defaultOrder?: Order; // how all columns will be ordered initially unless overridden in ColDef.order, default: "asc"
-	defaultOrderBy: keyof RowDef; // field to default order by
+	defaultOrderBy?: keyof RowDef; // field to default order by
 	disableRowClick?: boolean; // completely disable row click, not just for an individual column
 	onRowSelect?: EnhancedTableClickCallback;
 	selectedRow?: RowDef | null; // set to null in parent to clear the selected row in the table
@@ -87,12 +97,12 @@ interface EnhancedTableProps {
 	collapsibleParentClassName?: string; // if parent row style should change when collapsibleRow is open
 	filters?: FilterDef;
 	onDataLoad?: DataLoadCallback; // callback for loading table data, such as when doing server-side filtering, sorting, or paging
+	// to load server-side data data on component mount (via call to onDataLoad), either filters or reloadCount options must be defined
 	totalRows?: number; // for server-side-fetched data, define total count of unpaged rows returned
 	reloadCount?: number; // when managing data server-side, update this count to force a data reload, such as after an add/delete operation
 	rowsPerPage?: number; // set default TablePagination rowsPerPage setting
 	rowsPerPageOptions?: Array<number | { value: number; label: string }>; // set default TablePagination rowsPerPageOptions setting
-
-	// to load server-side data data on component mount (via call to onDataLoad), either filters or reloadCount options must be defined
+	menuOptions?: MenuOptions;
 }
 
 function descendingCompare<T>(a: T, b: T) {
@@ -169,7 +179,7 @@ interface EnhancedTableHeadProps {
 		column?: ColDef
 	) => void;
 	order: Order;
-	orderBy: keyof RowDef;
+	orderBy: keyof RowDef | null;
 	columns: ColDef[];
 	filters?: FilterDef;
 }
@@ -321,6 +331,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		totalRows,
 		reloadCount,
 		rowsPerPageOptions,
+		menuOptions,
 	} = props;
 	let initialOrder: Order = defaultOrder ?? "asc";
 	let defaultOrderMap = undefined;
@@ -333,7 +344,9 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 			}
 		}
 	}
-	const [orderBy, setOrderBy] = useState<keyof RowDef>(defaultOrderBy);
+	const [orderBy, setOrderBy] = useState<keyof RowDef | null>(
+		defaultOrderBy ?? null
+	);
 	const [order, setOrder] = useState<Order>(initialOrder);
 	const [orderMap, setOrderMap] = useState<OrderMap | undefined>(
 		defaultOrderMap
@@ -356,12 +369,16 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 				setPage(currentPage);
 			}
 			if (reloadCount !== undefined) {
-				onDataLoad({
+				const params: RequestMeta = {
 					currentPage: currentPage,
 					itemsPerPage: rowsPerPage,
-					orderBy: order === "desc" ? `-${String(orderBy)}` : String(orderBy),
 					filters: filters ?? {},
-				});
+				};
+				if (orderBy) {
+					params.orderBy =
+						order === "desc" ? `-${String(orderBy)}` : String(orderBy);
+				}
+				onDataLoad(params);
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -384,13 +401,16 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		setOrderMap(column?.orderMap);
 
 		if (onDataLoad) {
-			onDataLoad({
+			const params: RequestMeta = {
 				currentPage: page,
 				itemsPerPage: rowsPerPage,
-				orderBy:
-					newOrder === "desc" ? `-${String(property)}` : String(property),
 				filters: filters ?? {},
-			});
+			};
+			if (property) {
+				params.orderBy =
+					newOrder === "desc" ? `-${String(property)}` : String(property);
+			}
+			onDataLoad(params);
 		}
 	};
 
@@ -406,15 +426,19 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		}
 	};
 
-	const handleChangePage = (event: unknown, newPage: number) => {
+	const handleChangePage = (_event: unknown, newPage: number) => {
 		setPage(newPage);
 		if (onDataLoad) {
-			onDataLoad({
+			const params: RequestMeta = {
 				currentPage: newPage,
 				itemsPerPage: rowsPerPage,
-				orderBy: order === "desc" ? `-${String(orderBy)}` : String(orderBy),
 				filters: filters ?? {},
-			});
+			};
+			if (orderBy) {
+				params.orderBy =
+					order === "desc" ? `-${String(orderBy)}` : String(orderBy);
+			}
+			onDataLoad(params);
 		}
 	};
 
@@ -425,12 +449,16 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		setRowsPerPage(newRowsPerPage);
 		setPage(0);
 		if (onDataLoad) {
-			onDataLoad({
+			const params: RequestMeta = {
 				currentPage: 0,
 				itemsPerPage: newRowsPerPage,
-				orderBy: order === "desc" ? `-${String(orderBy)}` : String(orderBy),
 				filters: filters ?? {},
-			});
+			};
+			if (orderBy) {
+				params.orderBy =
+					order === "desc" ? `-${String(orderBy)}` : String(orderBy);
+			}
+			onDataLoad(params);
 		}
 	};
 
@@ -477,7 +505,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 
 	const tableCells = (row: RowDef, columns: ColDef[], rowNum: number) => {
 		const labelId = `enhanced-table-checkbox-${rowNum}`;
-		let cells: React.ReactNode[] = [];
+		const cells: React.ReactNode[] = [];
 
 		columns.forEach((column: ColDef, index: number) => {
 			// "" and 0 rowValues are valid
@@ -543,17 +571,21 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedRow]);
 
-	let filteredRows = [];
+	let filteredRows: RowDef[] = [];
 	let count = 0;
 	if (onDataLoad) {
 		filteredRows = rows;
 		count = totalRows ?? 0;
 	} else {
-		filteredRows = stableSort(
-			rows.filter(handleChangeFilters),
-			getComparator(order, orderBy, orderMap),
-			order
-		);
+		if (orderBy) {
+			filteredRows = stableSort(
+				rows.filter(handleChangeFilters),
+				getComparator(order, orderBy, orderMap),
+				order
+			);
+		} else {
+			filteredRows = [...rows.filter(handleChangeFilters)];
+		}
 		count = filteredRows.length;
 		filteredRows = filteredRows.slice(
 			page * rowsPerPage,
@@ -566,12 +598,16 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		if (filters) {
 			setPage(0);
 			if (onDataLoad) {
-				onDataLoad({
+				const params: RequestMeta = {
 					currentPage: 0,
 					itemsPerPage: rowsPerPage,
-					orderBy: order === "desc" ? `-${String(orderBy)}` : String(orderBy),
 					filters: filters ?? {},
-				});
+				};
+				if (orderBy) {
+					params.orderBy =
+						order === "desc" ? `-${String(orderBy)}` : String(orderBy);
+				}
+				onDataLoad(params);
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -589,9 +625,54 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [page, filteredRows.length]);
 
+	let exportFetch: FetchData = async () => Promise.resolve([]);
+	if (menuOptions?.exportFetch) {
+		exportFetch = async () => {
+			const params: RequestMeta = {
+				currentPage: 0,
+				itemsPerPage: AppGlobals.APP_TABLE_EXPORT_MAX,
+				filters: filters ?? {},
+			};
+			if (orderBy) {
+				params.orderBy =
+					order === "desc" ? `-${String(orderBy)}` : String(orderBy);
+			}
+			return menuOptions?.exportFetch
+				? menuOptions.exportFetch(params)
+				: Promise.resolve([]);
+		};
+	} else if (menuOptions?.exportData) {
+		exportFetch = async () => {
+			let r: RowDef[] = [];
+			if (menuOptions.exportData) {
+				const data = menuOptions.exportData();
+				if (orderBy) {
+					r = stableSort(
+						data.filter(handleChangeFilters),
+						getComparator(order, orderBy, orderMap),
+						order
+					);
+				} else {
+					r = [...data.filter(handleChangeFilters)];
+				}
+			}
+			return Promise.resolve(r);
+		};
+	}
+
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
+				{menuOptions && (
+					<Box display="flex" justifyContent="right">
+						<TableMenu
+							exportFile={menuOptions?.exportFile ?? "table_data"}
+							exportFormats={menuOptions?.exportFormats ?? []}
+							exportFetch={exportFetch}
+							toCsv={menuOptions?.toCsv}
+						/>
+					</Box>
+				)}
 				<TableContainer>
 					<Table
 						className={classes.table}

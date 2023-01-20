@@ -48,6 +48,9 @@ const useStyles = makeStyles()((theme) => ({
 		zIndex: 1,
 	},
 	logo: {
+		width: "50px",
+		height: "50px",
+		marginLeft: "5px",
 		marginRight: "20px",
 	},
 	logoSvg: {
@@ -178,7 +181,7 @@ const NavBar = (props: INavBar) => {
 												id="settings-menu"
 												anchorEl={anchorEl}
 												transformOrigin={{
-													horizontal: "right",
+													horizontal: "center",
 													vertical: "top",
 												}}
 												open={menuOpen}

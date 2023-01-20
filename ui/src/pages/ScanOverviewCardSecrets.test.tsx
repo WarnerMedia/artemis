@@ -7,7 +7,7 @@ import { VpnKey as VpnKeyIcon } from "@mui/icons-material";
 
 // results_summary?.secrets // is number | null
 // which is different then the other properties on results_summary, a potential gotcha spot
-// add a test for this to ensure it's working and continues working.
+// add a test for this to ensure it's working and continues working
 
 // verify these with a test:
 // if null, was not run
@@ -19,7 +19,7 @@ describe("Overview Card Secrets test", () => {
 		{
 			name: "name",
 			value: 0,
-			color: "#000000",
+			palette: { background: "#000000", text: "#fff" },
 		},
 	];
 
@@ -53,7 +53,7 @@ describe("Overview Card Secrets test", () => {
 		{
 			name: "name",
 			value: 0,
-			color: "#000000",
+			palette: { background: "#000000", text: "#fff" },
 		},
 	];
 
@@ -85,7 +85,7 @@ describe("Overview Card Secrets test", () => {
 		{
 			name: "someSecretTypeName",
 			value: 8,
-			color: "#FFFFFF",
+			palette: { background: "#FFFFFF", text: "#000" },
 		},
 	];
 

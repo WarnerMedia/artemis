@@ -1,6 +1,11 @@
-import { render, screen, waitFor } from "test-utils";
-import MainPage from "./MainPage";
+import { fireEvent, render, screen, waitFor, within } from "test-utils";
+import MainPage, { startScan } from "./MainPage";
 import { APP_DEMO_USER_REPO, APP_DEMO_USER_VCSORG } from "app/globals";
+import {
+	AnalysisReport,
+	MAX_PATH_LENGTH,
+	ScanOptionsForm,
+} from "features/scans/scansSchemas";
 
 jest.mock("react-redux", () => ({
 	...(jest.requireActual("react-redux") as any),
@@ -14,13 +19,26 @@ jest.mock("react-router-dom", () => ({
 	useLocation: jest.fn(),
 	useNavigate: jest.fn(),
 }));
+jest.mock("api/client", () => ({
+	...(jest.requireActual("api/client") as any),
+	__esModule: true,
+	handleException: jest.fn(),
+}));
 /* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
 /* eslint-disable */
 import { useLocation, useNavigate } from "react-router-dom";
-import { mockStoreEmpty } from "../../testData/testMockData";
+import {
+	mockStoreEmpty,
+	mockStoreScanId,
+	mockStoreSingleScan,
+} from "../../testData/testMockData";
 import { STORAGE_LOCAL_WELCOME } from "app/globals";
-import { getScanHistory } from "features/scans/scansSlice";
+import store from "app/store";
+import { addScan, getScanHistory } from "features/scans/scansSlice";
+import { pluginCatalog, sbomPlugins } from "app/scanPlugins";
+import { User } from "features/users/usersSchemas";
+import { handleException } from "api/client";
 
 let mockAppState: any;
 let mockLocation: any;
@@ -37,7 +55,7 @@ let origHideWelcome: string | null;
 let localStorageSetItemSpy: any;
 
 describe("MainPage component", () => {
-	jest.setTimeout(60000);
+	jest.setTimeout(120000);
 
 	beforeAll(() => {
 		origHideWelcome = localStorage.getItem(STORAGE_LOCAL_WELCOME);
@@ -168,10 +186,13 @@ describe("MainPage component", () => {
 		});
 
 		test("vcs field loads options", async () => {
+			jest.useFakeTimers();
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 			mockAppState.currentUser.status = "loading";
 
-			const { rerender, user } = render(<MainPage />);
+			const { rerender, user } = render(<MainPage />, null, {
+				advanceTimers: jest.advanceTimersByTime,
+			});
 			// initial field state
 			const initialField = screen.getByLabelText(/loading options/i);
 			expect(initialField).toBeInTheDocument();
@@ -181,16 +202,16 @@ describe("MainPage component", () => {
 			// user now loaded
 			mockAppState.currentUser.status = "succeeded";
 			rerender(<MainPage />);
+			jest.runOnlyPendingTimers();
 
 			// after options loaded
 			// findBy* = async
-			await screen.findByRole("combobox", { name: "Version Control System" });
-			const loadedField = screen.getByRole("combobox", {
+			const loadedField = await screen.findByRole("combobox", {
 				name: "Version Control System",
 			});
 			expect(loadedField).toBeInTheDocument();
 			expect(loadedField).toBeEnabled();
-			// FIXME: expect(loadedField).toHaveFocus(); // first form element focused
+			expect(loadedField).toHaveFocus(); // first form element focused
 
 			// user clicks next field without entering a value for vcs field
 			await user.click(loadedField);
@@ -202,6 +223,8 @@ describe("MainPage component", () => {
 
 			// actions should be disabled
 			screen.getByRole("button", { name: /start scan/i });
+
+			jest.useRealTimers();
 		});
 
 		test("onboarding link exists", async () => {
@@ -606,6 +629,351 @@ describe("MainPage component", () => {
 					)
 				);
 			});
+		});
+	});
+
+	describe("Scan features", () => {
+		let user: any;
+		let optionsRegion: HTMLElement;
+
+		beforeAll(() => {
+			localStorage.setItem(STORAGE_LOCAL_WELCOME, "1"); // hide welcome dialog
+		});
+
+		beforeEach(async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			const renderOpts = render(<MainPage />);
+			user = renderOpts.user;
+
+			// wait for current user info to load
+			await waitFor(() =>
+				expect(screen.queryByText(/^loading options$/)).not.toBeInTheDocument()
+			);
+
+			const optionsAccordion = screen.getByRole("button", {
+				name: /new scan options/i,
+			});
+			await user.click(optionsAccordion);
+
+			optionsRegion = screen.getByRole("region", {
+				name: /new scan options/i,
+			});
+		});
+
+		test("all scan categories except sbom enabled by default", async () => {
+			// check each scan category and plugins enabled (disabled for sbom)
+			for (const [name, values] of Object.entries(pluginCatalog)) {
+				if (sbomPlugins.length === 0 && name === "sbom") {
+					continue;
+				}
+
+				const categoryCheckbox = within(optionsRegion).getByRole("checkbox", {
+					name: values.displayName,
+				});
+				// all categories should be checked by default except sbom
+				if (name === "sbom") {
+					expect(categoryCheckbox).not.toBeChecked();
+				} else {
+					expect(categoryCheckbox).toBeChecked();
+				}
+			}
+		});
+
+		const pluginsToTest = [
+			["secret", "enabled"],
+			["static_analysis", "enabled"],
+			["inventory", "enabled"],
+			["vulnerability", "enabled"],
+		];
+		if (sbomPlugins.length > 0) {
+			pluginsToTest.push(["sbom", "disabled"]);
+		}
+
+		test.each(pluginsToTest)(
+			"all %p plugins %p by default",
+			async (category, enabled) => {
+				// expand plugin accordion
+				const pluginAccordion = within(optionsRegion).getByRole("button", {
+					name: `Show ${pluginCatalog[category].displayName} plugins`,
+				});
+				await user.click(pluginAccordion);
+				// region name changed since accordion expanded
+				const pluginsRegion = within(optionsRegion).getByRole("region", {
+					name: `Hide ${pluginCatalog[category].displayName} plugins`,
+				});
+
+				// ensure all plugin checkbox states match category
+				pluginCatalog[category].plugins.forEach((plugin) => {
+					const pluginCheckbox = within(pluginsRegion).getByRole("checkbox", {
+						name: plugin.displayName,
+					});
+					if (enabled === "enabled" && plugin.apiName !== "nodejsscan") {
+						expect(pluginCheckbox).toBeChecked();
+					} else {
+						expect(pluginCheckbox).not.toBeChecked();
+					}
+				});
+			}
+		);
+
+		test("if all scan categories and plugins disabled, display error", async () => {
+			// disable all scan categories
+			expect(
+				within(optionsRegion).queryByText(
+					/at least one scan feature or plugin must be enabled/i
+				)
+			).not.toBeInTheDocument();
+
+			for (const [name, values] of Object.entries(pluginCatalog)) {
+				if (sbomPlugins.length === 0 && name === "sbom") {
+					continue;
+				}
+
+				const categoryCheckbox = within(optionsRegion).getByRole("checkbox", {
+					name: values.displayName,
+				});
+				// all categories should be checked by default except sbom
+				if (name !== "sbom") {
+					expect(categoryCheckbox).toBeChecked();
+					await user.click(categoryCheckbox);
+					expect(categoryCheckbox).not.toBeChecked();
+				}
+			}
+
+			const commitHistory = within(optionsRegion).getByRole("spinbutton", {
+				name: /commit history \(optional\)/i,
+			});
+			await user.click(commitHistory);
+			await waitFor(() => {
+				expect(
+					within(optionsRegion).getByText(
+						/at least one scan feature or plugin must be enabled/i
+					)
+				).toBeInTheDocument();
+			});
+
+			const category = Object.keys(pluginCatalog)[0];
+
+			// enable single plugin to clear error
+			const pluginAccordion = within(optionsRegion).getByRole("button", {
+				name: `Show ${pluginCatalog[category].displayName} plugins`,
+			});
+			await user.click(pluginAccordion);
+			// region name changed since accordion expanded
+			const pluginsRegion = within(optionsRegion).getByRole("region", {
+				name: `Hide ${pluginCatalog[category].displayName} plugins`,
+			});
+
+			const plugin = pluginCatalog[category].plugins[0];
+			const pluginCheckbox = within(pluginsRegion).getByRole("checkbox", {
+				name: plugin.displayName,
+			});
+			expect(pluginCheckbox).not.toBeChecked();
+			await user.click(pluginCheckbox);
+			expect(pluginCheckbox).toBeChecked();
+
+			// error cleared
+			await waitFor(() => {
+				expect(
+					within(optionsRegion).queryByText(
+						/at least one scan feature or plugin must be enabled/i
+					)
+				).not.toBeInTheDocument();
+			});
+		});
+
+		describe.each([
+			["include paths", /include paths \(optional\)/i],
+			["exclude paths", /exclude paths \(optional\)/i],
+		])("Test %p field", (_title, fieldRegex) => {
+			test("allows valid relative paths newline or comma separated", async () => {
+				const testPaths = [
+					"src",
+					"dev",
+					"dir/*",
+					"thing/**/otherthing",
+					"    spaces    ",
+					"ending_slash/",
+				];
+				const field = within(optionsRegion).getByLabelText(fieldRegex);
+				await user.type(field, testPaths.join("{enter}"));
+				fireEvent.blur(field);
+				await waitFor(() =>
+					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument()
+				);
+
+				await user.type(field, testPaths.join(", "));
+				fireEvent.blur(field);
+				await waitFor(() =>
+					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument()
+				);
+			});
+
+			test("disallows paths over 4096 chars", async () => {
+				const maxInput = "x".repeat(MAX_PATH_LENGTH);
+				const field = within(optionsRegion).getByLabelText(fieldRegex);
+				// paste requires focusing the field
+				field.focus();
+				// paste the input instead of using .type() as type times-out on long input
+				await user.paste(maxInput);
+				fireEvent.blur(field);
+				await waitFor(() =>
+					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument()
+				);
+
+				// add 1 extra character to exceed max path length
+				await user.clear(field);
+				field.focus();
+				await user.paste(maxInput + "x");
+				fireEvent.blur(field);
+				await waitFor(() =>
+					expect(
+						screen.getByText(/invalid path, longer than/i)
+					).toBeInTheDocument()
+				);
+			});
+
+			test.each([[".."], ["\\0"], ["$"]])(
+				"disallows paths that include invalid character: %p",
+				async (chars) => {
+					const field = within(optionsRegion).getByLabelText(fieldRegex);
+					await user.clear(field);
+					await waitFor(() =>
+						expect(
+							screen.queryByText(
+								/invalid path, must be relative to repository/i
+							)
+						).not.toBeInTheDocument()
+					);
+					await user.type(field, chars);
+					fireEvent.blur(field);
+					await waitFor(() => expect(field).toHaveDisplayValue(chars));
+					await waitFor(() =>
+						expect(
+							screen.getByText(/invalid path, must be relative to repository/i)
+						).toBeInTheDocument()
+					);
+				}
+			);
+
+			test.each([["./"], ["/"]])(
+				"disallows paths that start with: %p",
+				async (chars) => {
+					const field = within(optionsRegion).getByLabelText(fieldRegex);
+					await user.clear(field);
+					await waitFor(() =>
+						expect(
+							screen.queryByText(
+								/invalid path, must be relative to repository/i
+							)
+						).not.toBeInTheDocument()
+					);
+
+					// test only these chars - should produce error
+					await user.type(field, chars);
+					fireEvent.blur(field);
+					await waitFor(() => expect(field).toHaveDisplayValue(chars));
+					await waitFor(() =>
+						expect(
+							screen.getByText(/invalid path, must be relative to repository/i)
+						).toBeInTheDocument()
+					);
+
+					// string doesn't start with these characters - should produce no errors
+					await user.clear(field);
+					await user.type(field, "startstring" + chars);
+					fireEvent.blur(field);
+					await waitFor(() =>
+						expect(field).toHaveDisplayValue("startstring" + chars)
+					);
+					await waitFor(() =>
+						expect(
+							screen.queryByText(
+								/invalid path, must be relative to repository/i
+							)
+						).not.toBeInTheDocument()
+					);
+
+					// test starts with these characters - should produce error
+					await user.clear(field);
+					await user.type(field, chars + "endstring");
+					fireEvent.blur(field);
+					await waitFor(() =>
+						expect(field).toHaveDisplayValue(chars + "endstring")
+					);
+					await waitFor(() =>
+						expect(
+							screen.getByText(/invalid path, must be relative to repository/i)
+						).toBeInTheDocument()
+					);
+				}
+			);
+		});
+	});
+
+	describe("startScan", () => {
+		const vcsOrg = "goodVcs/goodOrg";
+		const repo = "repo";
+		let formValues: ScanOptionsForm;
+		let currentUser: User;
+
+		beforeEach(() => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
+			const scan: AnalysisReport = mockAppState.scans.entities[mockStoreScanId];
+
+			currentUser = mockAppState.currentUser.entities["self"];
+			formValues = {
+				vcsOrg: vcsOrg,
+				repo: repo,
+				branch: scan.branch ?? "",
+				secrets: scan.scan_options.categories?.includes("secret") ?? true,
+				staticAnalysis:
+					scan.scan_options.categories?.includes("static_analysis") ?? true,
+				inventory: scan.scan_options.categories?.includes("inventory") ?? true,
+				vulnerability:
+					scan.scan_options.categories?.includes("vulnerability") ?? true,
+				sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+				depth: scan.scan_options?.depth ?? "",
+				includeDev: scan.scan_options?.include_dev ?? false,
+				secretPlugins: [],
+				staticPlugins: [],
+				techPlugins: [],
+				vulnPlugins: [],
+				sbomPlugins: [],
+				includePaths: scan.scan_options?.include_paths
+					? scan.scan_options?.include_paths.join(", ")
+					: "",
+				excludePaths: scan.scan_options?.exclude_paths
+					? scan.scan_options?.exclude_paths.join(", ")
+					: "",
+			};
+		});
+
+		test("validates values", async () => {
+			const mockNavigate = jest.fn();
+			const dispatchSpy = jest.spyOn(store, "dispatch");
+			currentUser.scan_orgs = [];
+
+			startScan(mockNavigate, formValues, currentUser);
+			expect(handleException).toHaveBeenCalled();
+
+			expect(dispatchSpy).not.toHaveBeenCalled();
+			expect(mockNavigate).not.toHaveBeenCalled();
+		});
+
+		test("calls addScan and navigate", async () => {
+			const mockNavigate = jest.fn();
+			const dispatchSpy = jest.spyOn(store, "dispatch");
+			startScan(mockNavigate, formValues, currentUser);
+
+			expect(dispatchSpy).toHaveBeenLastCalledWith(addScan(formValues));
+
+			expect(mockNavigate).toHaveBeenLastCalledWith(
+				`/?repo=${encodeURIComponent(
+					repo
+				)}&submitContext=scan&vcsOrg=${encodeURIComponent(vcsOrg)}`,
+				{ replace: true }
+			);
 		});
 	});
 });

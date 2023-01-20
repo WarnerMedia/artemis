@@ -2,31 +2,31 @@ import { RootState } from "app/rootReducer";
 import { sampleMetaData2, sampleMetaData3, sampleMetaData4, sampleMetaData5, sampleMetaData6 } from "custom/sampleMetaData";
 
 export const mockColors = [
-	"#9C27B0",
-	"#9E9E9E",
-	"#F44336",
-	"#66BB6A",
-	"#E91E63",
-	"#FFEB3B",
-	"#FF7043",
-	"#9CCC65",
-	"#607D8B",
-	"#EC407A",
-	"#5C6BC0",
-	"#EF5350",
-	"#FFEE58",
-	"#4CAF50",
-	"#FFA726",
-	"#009688",
-	"#CDDC39",
-	"#2196F3",
-	"#FFCA28",
-	"#673AB7",
-	"#26C6DA",
-	"#AB47BC",
-	"#03A9F4",
-	"#FF5722",
-	"#FF9800",
+	{background: "#9C27B0", text: "#fff"},
+	{background: "#9E9E9E", text: "#fff"},
+	{background: "#F44336", text: "#fff"},
+	{background: "#66BB6A", text: "#fff"},
+	{background: "#E91E63", text: "#fff"},
+	{background: "#FFEB3B", text: "#fff"},
+	{background: "#FF7043", text: "#fff"},
+	{background: "#9CCC65", text: "#fff"},
+	{background: "#607D8B", text: "#fff"},
+	{background: "#EC407A", text: "#fff"},
+	{background: "#5C6BC0", text: "#fff"},
+	{background: "#EF5350", text: "#fff"},
+	{background: "#FFEE58", text: "#fff"},
+	{background: "#4CAF50", text: "#fff"},
+	{background: "#FFA726", text: "#fff"},
+	{background: "#009688", text: "#fff"},
+	{background: "#CDDC39", text: "#fff"},
+	{background: "#2196F3", text: "#fff"},
+	{background: "#FFCA28", text: "#fff"},
+	{background: "#673AB7", text: "#fff"},
+	{background: "#26C6DA", text: "#fff"},
+	{background: "#AB47BC", text: "#fff"},
+	{background: "#03A9F4", text: "#fff"},
+	{background: "#FF5722", text: "#fff"},
+	{background: "#FF9800", text: "#fff"},
 ];
 
 // from the mirage API
@@ -143,6 +143,8 @@ export const mockScan001 = {
 			client_id: null,
 		},
 		batch_priority: false,
+		include_paths: [],
+		exclude_paths: [],
 	},
 	status: "completed",
 	application_metadata: {},
@@ -221,11 +223,12 @@ export const mockScan001 = {
 			},
 			somevuln05: {
 				"CVE-2020-9999": {
-					source: ["node/some/path/here", "node/some/path/here"],
+					source: ["node/some/path/here1", "node/some/path/here2"],
 					severity: "critical",
 					description:
 						"Prototype Pollution",
-					remediation: "",
+					remediation: "a remediation",
+					source_plugins: ["plugin1", "plugin2", "plugin3", "plugin4"],
 				},
 			},
 			somevuln06: {
@@ -334,6 +337,8 @@ export const mockScan002 = {
 			client_id: null,
 		},
 		batch_priority: false,
+		include_paths: [],
+		exclude_paths: [],
 	},
 	status: "completed",
 	application_metadata: {},
@@ -1423,6 +1428,8 @@ mockStoreSingleScan.scans.entities[mockStoreScanId] = {
 			client_id: null,
 		},
 		batch_priority: false,
+		include_paths: [],
+		exclude_paths: [],
 	},
 	status_detail: {
 		plugin_name: "inventory scan",
@@ -1549,7 +1556,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -1626,7 +1635,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -1699,7 +1710,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -1772,7 +1785,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -1852,7 +1867,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -1925,7 +1942,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -1995,7 +2014,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2088,7 +2109,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2154,7 +2177,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2224,7 +2249,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2294,7 +2321,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2367,7 +2396,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2433,7 +2464,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin static_analysis scan',
 				status_detail: {
@@ -2530,7 +2563,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -2601,7 +2636,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -2691,7 +2728,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin vulnerability scan',
 				status_detail: {
@@ -2788,7 +2827,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -2852,7 +2893,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin static_analysis scan',
 				status_detail: {
@@ -2949,7 +2992,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -3015,7 +3060,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin inventory scan',
 				status_detail: {
@@ -3105,7 +3152,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin static_analysis scan',
 				status_detail: {
@@ -3202,7 +3251,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -3285,7 +3336,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -3376,7 +3429,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -3476,7 +3531,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin inventory scan',
 				status_detail: {
@@ -3559,7 +3616,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -3649,7 +3708,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin static_analysis scan',
 				status_detail: {
@@ -3739,7 +3800,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'terminated',
 				status_detail: {
@@ -3822,7 +3885,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -3913,7 +3978,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -4006,7 +4073,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'processing',
 				status_detail: {
@@ -4089,7 +4158,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin secret scan',
 				status_detail: {
@@ -4179,7 +4250,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'error',
 				status_detail: {
@@ -4263,7 +4336,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -4353,7 +4428,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -4439,7 +4516,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -4532,7 +4611,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -4616,7 +4697,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin vulnerability scan',
 				status_detail: {
@@ -4706,7 +4789,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin secret scan',
 				status_detail: {
@@ -4789,7 +4874,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -4883,7 +4970,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -4973,7 +5062,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin secret scan',
 				status_detail: {
@@ -5063,7 +5154,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin inventory scan',
 				status_detail: {
@@ -5153,7 +5246,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin vulnerability scan',
 				status_detail: {
@@ -5250,7 +5345,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -5347,7 +5444,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -5433,7 +5532,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'failed',
 				status_detail: {
@@ -5527,7 +5628,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'completed',
 				status_detail: {
@@ -5620,7 +5723,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'running plugin inventory scan',
 				status_detail: {
@@ -5710,7 +5815,9 @@ export const mockStore50Scans: RootState = {
 						url: null,
 						client_id: null
 					},
-					batch_priority: false
+					batch_priority: false,
+					include_paths: [],
+					exclude_paths: [],
 				},
 				status: 'processing',
 				status_detail: {
@@ -6828,8 +6935,9 @@ export const mockStoreScanSlice: RootState = {
 					plugins: [],
 					depth: null,
 					include_dev: true,
-					//callback:[],
 					batch_priority: true,
+					include_paths: [],
+					exclude_paths: [],
 				},
 			},
 			xyz321: {
@@ -6860,8 +6968,9 @@ export const mockStoreScanSlice: RootState = {
 					plugins: [],
 					depth: null,
 					include_dev: true,
-					//callback:[],
 					batch_priority: true,
+					include_paths: [],
+					exclude_paths: [],
 				},
 			},
 			scan_id: {
@@ -6892,8 +7001,9 @@ export const mockStoreScanSlice: RootState = {
 					plugins: [],
 					depth: null,
 					include_dev: true,
-					//callback:[],
 					batch_priority: true,
+					include_paths: [],
+					exclude_paths: [],
 				},
 			},
 		},
@@ -7634,6 +7744,90 @@ export const mockSearchRepos = {
 			}
 	],
 	count: 20,
+	next: null,
+	previous: null
+};
+
+export const mockSearchVulnerabilities = {
+	results: [{
+		id: "a63626e9-my-pretend-id-8698bedd967b",
+		advisory_ids: [
+			"https://github.com/advisories/GHSA-00000",
+			"CVE-2022-0101",
+		],
+		description: "This is a vulnerability description",
+		severity: "high",
+		remediation: "Fix it, asap",
+		components: {
+			"component1-name": ["1.0.0", "1.0.1", "1.0.2"],
+			"component2-name": ["2.0.0", "2.0.1", "2.0.2"],
+		},
+		source_plugins: [
+			"node_dependencies",
+			"aqua_cli_scanner",
+			"trivy",
+			"veracode_sca",
+			"snyk",
+			"a_totes_new_plugin",
+			"youve_never_seen_this_plugin_before",
+		],
+	},
+	{
+		id: "b73626e9-my-pretend-id-8698bedd968c",
+		advisory_ids: ["CVE-2022-0202"],
+		description: "This is another vulnerability description",
+		severity: "critical",
+		remediation: "This is another remediation text",
+		components: {
+			"component3-name": ["7.1.2"],
+		},
+		source_plugins: ["snyk", "veracode_sca"],
+	},
+	{
+		id: "c83626e9-my-pretend-id-8698bedd969d",
+		advisory_ids: [
+			"https://github.com/advisories/GHSA-9999",
+			"https://github.com/advisories/GHSA-9998",
+			"CVE-2014-0101",
+			"CVE-2014-0111",
+		],
+		description: "What is this still doing here?",
+		severity: "high",
+		remediation: "This should have been remediated by now",
+		components: {
+			"legacy-component": ["0.0.1", "0.0.2", "0.0.3"],
+		},
+		source_plugins: ["veracode_sca"],
+	},
+	{
+		id: "d93626e9-my-pretend-id-8698bedd96ae",
+		advisory_ids: ["CVE-2024-9999"],
+		description: "This vuln is so new it's a -1 day",
+		severity: "critical",
+		remediation:
+			"No patches available yet, better use some other security controls",
+		components: {
+			javathing: ["4.3.2"],
+		},
+		source_plugins: [
+			"veracode_sca",
+			"snyk",
+			"aqua_cli_scanner",
+			"trivy",
+		],
+	},
+	{
+		id: "ea3626e9-my-pretend-id-8698bedd96bf",
+		advisory_ids: ["CVE-2000-9999"],
+		description: "Oh noes, y2k",
+		severity: "",
+		remediation: "Rollback all clocks to 1999, party on.",
+		components: {
+			allthethings: ["1.9.99"],
+		},
+		source_plugins: ["aqua_cli_scanner", "trivy"],
+	}],
+	count: 5,
 	next: null,
 	previous: null
 };

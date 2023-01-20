@@ -52,7 +52,7 @@ const scansSlice = createSlice({
 	// because they are called by some async logic from redux-sagas instead of directly
 	// by action
 	extraReducers: (builder) => {
-		builder.addCase(addScan.pending, (state, action) => {
+		builder.addCase(addScan.pending, (state) => {
 			state.status = "loading";
 		});
 		builder.addCase(addScan.fulfilled, (state, action) => {

@@ -32,11 +32,6 @@ describe("BackButton component", () => {
 	});
 
 	it("direct navigation to page goes back to /", async () => {
-		const origReferrer = document.referrer;
-		Object.defineProperty(document, "referrer", {
-			value: "",
-			configurable: true,
-		});
 		mockHistory = ["1", "2"];
 
 		const { user } = render(<BackButton />);
@@ -45,16 +40,9 @@ describe("BackButton component", () => {
 
 		await user.click(button);
 		expect(mockNavigate).toBeCalledWith("/");
-
-		Object.defineProperty(document, "referrer", { value: origReferrer });
 	});
 
 	it("navigation to page goes back to prior page", async () => {
-		const origReferrer = document.referrer;
-		Object.defineProperty(document, "referrer", {
-			value: "",
-			configurable: true,
-		});
 		mockHistory = ["1", "2", "3"];
 
 		const { user } = render(<BackButton />);
@@ -63,25 +51,14 @@ describe("BackButton component", () => {
 
 		await user.click(button);
 		expect(mockNavigate).toBeCalledWith(-1);
-
-		Object.defineProperty(document, "referrer", { value: origReferrer });
 	});
 
 	it("redirection back to this page goes back 2 pages", async () => {
-		const origReferrer = document.referrer;
-		Object.defineProperty(document, "referrer", {
-			value: "localhost",
-			configurable: true,
-		});
-		mockHistory = ["1", "2", "3", "4"];
-
-		const { user } = render(<BackButton />);
+		const { user } = render(<BackButton fromRedirect={true} />);
 		const button = screen.getByRole("button", { name: "Back" });
 		expect(button).toBeInTheDocument();
 
 		await user.click(button);
 		expect(mockNavigate).toBeCalledWith(-2);
-
-		Object.defineProperty(document, "referrer", { value: origReferrer });
 	});
 });
