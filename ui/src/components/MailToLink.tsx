@@ -4,6 +4,7 @@ import { Email as EmailIcon } from "@mui/icons-material";
 import { Trans, t } from "@lingui/macro";
 import { useLingui } from "@lingui/react";
 import { APP_EMAIL_AUTHOR } from "app/globals";
+import { DELETED_REGEX } from "utils/formatters";
 
 interface MailToLinkProps {
 	recipient?: string;
@@ -25,12 +26,11 @@ const EMAIL_REGEX = new RegExp(
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 );
 
-const DELETED_REGEX = new RegExp(/_DELETED_[0-9]+$/);
-
 const MailToLink = (props: MailToLinkProps) => {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
-	let { recipient, subject, body, text, tooltip } = props;
+	const { subject, body, text, tooltip } = props;
+	let { recipient } = props;
 	let elt = <>{text}</>;
 	let tooltipTitle = text;
 

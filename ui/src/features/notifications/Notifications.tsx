@@ -51,7 +51,7 @@ const Notifications = () => {
 	}, [allNotifications, defaultHideDuration]);
 
 	const onDismissAllNotifications = (
-		event: React.SyntheticEvent | Event,
+		_event: React.SyntheticEvent | Event,
 		reason?: string
 	) => {
 		// note: by default, snackbars allow a user to click outside the snackbar (ie. "clickaway")

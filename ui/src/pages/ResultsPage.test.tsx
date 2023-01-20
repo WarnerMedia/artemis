@@ -11,12 +11,19 @@ jest.mock("react-router-dom", () => ({
 	...(jest.requireActual("react-router-dom") as any),
 	useLocation: jest.fn(),
 }));
+jest.mock("pages/MainPage", () => ({
+	...(jest.requireActual("pages/MainPage") as any),
+	__esModule: true,
+	startScan: jest.fn(),
+}));
 /* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
 /* eslint-disable */
 import { useLocation } from "react-router-dom";
+import { startScan } from "pages/MainPage";
+import * as Yup from "yup";
 import { getScanById } from "features/scans/scansSlice";
-import ResultsPage from "./ResultsPage";
+import ResultsPage, { getResultFilters, setResultFilters } from "./ResultsPage";
 import {
 	mockHiddenFindings003,
 	mockScan001,
@@ -24,6 +31,7 @@ import {
 	mockStoreEmpty,
 	mockStoreSingleScan,
 } from "../../testData/testMockData";
+import { FilterDef } from "api/client";
 
 let mockAppState: any;
 let mockLocation: any;
@@ -261,6 +269,9 @@ describe("ResultsPage component", () => {
 				expect(within(scanid.parentElement).getByText(id)).toBeInTheDocument();
 			}
 
+			// batch description should not exist since it's not in the scan data
+			expect(screen.queryByText(/^Batch Description$/)).not.toBeInTheDocument();
+
 			const queudDateElapsed = await screen.findByText(
 				/^Queued Date \/ Queued Time Elapsed$/
 			);
@@ -293,6 +304,33 @@ describe("ResultsPage component", () => {
 				).toBeInTheDocument();
 			}
 		});
+
+		it("should display batch description if it's in the scan data", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
+			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			const id = mockStoreScanId;
+			const scan = mockAppState.scans.entities[id];
+			const repo = scan.repo;
+			const service = scan.service;
+			const batchDescription = "this is a description";
+			mockAppState.scans.entities[id].batch_description = batchDescription;
+			// page needs query params to get the scan
+			mockLocation = {
+				search: `?id=${id}&repo=${repo}&service=${service}&tab=3`,
+			};
+			render(<ResultsPage />);
+
+			// wait for scan data to load
+			const batchDescriptionElt = await screen.findByText(
+				/^Batch Description$/
+			);
+			expect(batchDescriptionElt).toBeInTheDocument();
+			if (batchDescriptionElt.parentElement) {
+				expect(
+					within(batchDescriptionElt.parentElement).getByText(batchDescription)
+				).toBeInTheDocument();
+			}
+		});
 	});
 
 	describe("Navigation buttons", () => {
@@ -306,17 +344,23 @@ describe("ResultsPage component", () => {
 			).toBeInTheDocument();
 		});
 
-		it("should display a disabled refresh button while loading scan data", () => {
+		it("refresh/rescan buttons should be disabled while loading scan data", () => {
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 			mockAppState.scans.status = "loading";
 
 			render(<ResultsPage />);
+
 			const refreshButton = screen.getByRole("button", {
 				name: /refresh scan results/i,
 			});
-
 			expect(refreshButton).toBeInTheDocument();
 			expect(refreshButton).toBeDisabled();
+
+			const rescanButton = screen.getByRole("button", {
+				name: /new scan with these options/i,
+			});
+			expect(rescanButton).toBeInTheDocument();
+			expect(rescanButton).toBeDisabled();
 		});
 
 		it("clicking refresh button should dispatch getScanbyId", async () => {
@@ -346,6 +390,97 @@ describe("ResultsPage component", () => {
 						},
 					},
 				})
+			);
+		});
+
+		it("clicking new scan button displays confirmation dialog with cancel button", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
+			const id = mockStoreScanId;
+			const repo = mockAppState.scans.entities[id].repo;
+			const service = mockAppState.scans.entities[id].service;
+			// page needs query params to get the scan
+			mockLocation = {
+				search: `?id=${id}&repo=${repo}&service=${service}`,
+			};
+
+			const { user } = render(<ResultsPage />);
+			const rescanButton = screen.getByRole("button", {
+				name: /new scan with these options/i,
+			});
+			await user.click(rescanButton);
+
+			// cancel rescan in dialog
+			const dialog = screen.getByRole("dialog", { name: /new scan/i });
+			const cancelButton = within(dialog).getByRole("button", {
+				name: /cancel/i,
+			});
+			await user.click(cancelButton);
+			await waitFor(() =>
+				expect(
+					screen.queryByRole("dialog", { name: /new scan/i })
+				).not.toBeInTheDocument()
+			);
+			expect(startScan).not.toHaveBeenCalled();
+		});
+
+		it("clicking new scan button displays confirmation dialog with start scan button", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
+			const id = mockStoreScanId;
+			const scan = mockAppState.scans.entities[id];
+			const repo = scan.repo;
+			const service = scan.service;
+			// page needs query params to get the scan
+			mockLocation = {
+				search: `?id=${id}&repo=${repo}&service=${service}`,
+			};
+
+			const { user } = render(<ResultsPage />);
+			const rescanButton = screen.getByRole("button", {
+				name: /new scan with these options/i,
+			});
+			await user.click(rescanButton);
+
+			// start scan in dialog
+			const dialog = screen.getByRole("dialog", { name: /new scan/i });
+			const startScanButton = within(dialog).getByRole("button", {
+				name: /start scan/i,
+			});
+			await user.click(startScanButton);
+			await waitFor(() =>
+				expect(
+					screen.queryByRole("dialog", { name: /new scan/i })
+				).not.toBeInTheDocument()
+			);
+			expect(startScan).toHaveBeenLastCalledWith(
+				expect.any(Function), // navigate
+				{
+					// values
+					vcsOrg: "goodVcs/goodOrg", // service = goodVcs, repo = goodOrg/repo
+					repo: "repo",
+					branch: scan.branch,
+					secrets: scan.scan_options.categories?.includes("secret") ?? true,
+					staticAnalysis:
+						scan.scan_options.categories?.includes("static_analysis") ?? true,
+					inventory:
+						scan.scan_options.categories?.includes("inventory") ?? true,
+					vulnerability:
+						scan.scan_options.categories?.includes("vulnerability") ?? true,
+					sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+					depth: scan.scan_options?.depth ?? "",
+					includeDev: scan.scan_options?.include_dev ?? false,
+					secretPlugins: [],
+					staticPlugins: [],
+					techPlugins: [],
+					vulnPlugins: [],
+					sbomPlugins: [],
+					includePaths: scan.scan_options?.include_paths
+						? scan.scan_options?.include_paths.join(", ")
+						: "",
+					excludePaths: scan.scan_options?.exclude_paths
+						? scan.scan_options?.exclude_paths.join(", ")
+						: "",
+				},
+				mockAppState.currentUser.entities["self"] // currentUser
 			);
 		});
 	});
@@ -589,6 +724,208 @@ describe("ResultsPage component", () => {
 			expect(
 				screen.getByText(`1–${findingCount} of ${findingCount}`)
 			).toBeInTheDocument();
+		});
+	});
+
+	describe("getResultFilters", () => {
+		let globalWindow: any;
+		const mockNavigate = jest.fn();
+
+		beforeEach(() => {
+			globalWindow = global.window;
+			global.window = Object.create(window);
+		});
+
+		afterEach(() => {
+			global.window = globalWindow;
+			mockNavigate.mockClear();
+		});
+
+		it("Modifies filters if all hash params are valid", () => {
+			const schema = Yup.object().shape({
+				test_a_string: Yup.string(),
+				test_a_number: Yup.number(),
+			});
+			const prefix = "test_";
+			const filters: FilterDef = {
+				a_string: {
+					filter: "",
+				},
+				a_number: {
+					filter: "",
+					match: "exact",
+				},
+			};
+
+			const hash = `#${prefix}a_string=stringValue&${prefix}a_number=1234`;
+			Object.defineProperty(window, "location", {
+				value: {
+					hash: hash,
+				},
+				writable: true,
+			});
+
+			const results = getResultFilters(schema, prefix, filters);
+			expect(results).toEqual({
+				a_string: {
+					filter: "stringValue",
+				},
+				a_number: {
+					filter: "1234",
+					match: "exact",
+				},
+			});
+		});
+
+		it("Does not modify filters if any hash params are invalid", () => {
+			const schema = Yup.object().shape({
+				test_a_string: Yup.string(),
+				test_a_number: Yup.number(),
+			});
+			const prefix = "test_";
+			const filters: FilterDef = {
+				a_string: {
+					filter: "origStringValue",
+				},
+				a_number: {
+					filter: "origNumberValue",
+					match: "exact",
+				},
+			};
+
+			const hash = `#${prefix}a_string=stringValue&${prefix}a_number=anotherStringValue`;
+			Object.defineProperty(window, "location", {
+				value: {
+					hash: hash,
+				},
+				writable: true,
+			});
+
+			const results = getResultFilters(schema, prefix, filters);
+			expect(results).toEqual(filters); // no filter change since "anotherStringValue" !== number
+		});
+	});
+
+	describe("setResultFilters", () => {
+		let globalWindow: any;
+		const mockNavigate = jest.fn();
+
+		beforeEach(() => {
+			globalWindow = global.window;
+			global.window = Object.create(window);
+		});
+
+		afterEach(() => {
+			global.window = globalWindow;
+			mockNavigate.mockClear();
+		});
+
+		it("adds filters to url hash", () => {
+			const prefix = "test_";
+			const filters: FilterDef = {
+				testFilter: {
+					filter: "testValue",
+				},
+			};
+			const hash = "";
+			const pathname = "testPath";
+			const search = "?testSearch";
+			const state = {
+				testState: "testValue",
+			};
+
+			Object.defineProperty(window, "location", {
+				value: {
+					hash: hash,
+					pathname: pathname,
+					search: search,
+				},
+				writable: true,
+			});
+			mockLocation = {
+				hash: hash,
+				pathname: pathname,
+				search: search,
+				state: state,
+			};
+			setResultFilters(prefix, filters, mockLocation, mockNavigate);
+			expect(mockNavigate).toHaveBeenLastCalledWith(
+				`${pathname}${search}#${prefix}testFilter=${filters["testFilter"].filter}`,
+				{ preventScrollReset: true, replace: true, state: state }
+			);
+		});
+
+		it("removes filters matching prefix before adding new filters", () => {
+			const prefix = "test_";
+			const filters: FilterDef = {
+				testFilter: {
+					filter: "testValue",
+				},
+				testFilter2: {
+					filter: "testValue2",
+				},
+			};
+			const hash = `#${prefix}testFilter=oldValue&${prefix}testFilter2=oldValue2`;
+			const pathname = "testPath";
+			const search = "?testSearch";
+			const state = {
+				testState: "testValue",
+			};
+
+			Object.defineProperty(window, "location", {
+				value: {
+					hash: hash,
+					pathname: pathname,
+					search: search,
+				},
+				writable: true,
+			});
+			mockLocation = {
+				hash: hash,
+				pathname: pathname,
+				search: search,
+				state: state,
+			};
+			setResultFilters(prefix, filters, mockLocation, mockNavigate);
+			expect(mockNavigate).toHaveBeenLastCalledWith(
+				`${pathname}${search}#${prefix}testFilter=${filters["testFilter"].filter}&${prefix}testFilter2=${filters["testFilter2"].filter}`,
+				{ preventScrollReset: true, replace: true, state: state }
+			);
+		});
+
+		it("does not navigate if hash filters don't change", () => {
+			const prefix = "test_";
+			const filters: FilterDef = {
+				testFilter: {
+					filter: "testValue",
+				},
+				testFilter2: {
+					filter: "testValue2",
+				},
+			};
+			const hash = `#${prefix}testFilter=testValue&${prefix}testFilter2=testValue2`;
+			const pathname = "testPath";
+			const search = "?testSearch";
+			const state = {
+				testState: "testValue",
+			};
+
+			Object.defineProperty(window, "location", {
+				value: {
+					hash: hash,
+					pathname: pathname,
+					search: search,
+				},
+				writable: true,
+			});
+			mockLocation = {
+				hash: hash,
+				pathname: pathname,
+				search: search,
+				state: state,
+			};
+			setResultFilters(prefix, filters, mockLocation, mockNavigate);
+			expect(mockNavigate).not.toHaveBeenCalled();
 		});
 	});
 });

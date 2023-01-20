@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field, FormikHelpers } from "formik";
+import { Formik, Form, Field } from "formik";
 import { Checkbox, Switch, TextField } from "formik-mui";
 import {
 	Alert,
@@ -43,14 +43,18 @@ import { useLingui } from "@lingui/react";
 import { Trans, t } from "@lingui/macro";
 import * as Yup from "yup";
 
-import { FilterDef, RequestMeta } from "api/client";
+import client, { FilterDef, RequestMeta } from "api/client";
 import CustomCopyToClipboard from "components/CustomCopyToClipboard";
 import DraggableDialog from "components/DraggableDialog";
 import DateTimeCell from "components/DateTimeCell";
 import EnhancedTable, { ColDef, RowDef } from "components/EnhancedTable";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
-import { nonDefaultPlugins, pluginCatalog } from "app/scanPlugins";
+import {
+	nonDefaultPlugins,
+	pluginCatalog,
+	pluginsDisabled,
+} from "app/scanPlugins";
 import { AppDispatch } from "app/store";
 import { selectCurrentUser } from "features/users/currentUserSlice";
 import {
@@ -64,7 +68,11 @@ import {
 import { User, ScanFeatures } from "features/users/usersSchemas";
 import TooltipCell from "components/TooltipCell";
 import ScopeCell from "components/ScopeCell";
-import { capitalize } from "utils/formatters";
+import {
+	capitalize,
+	DELETED_REGEX,
+	SPLIT_MULTILINE_CSN_REGEX,
+} from "utils/formatters";
 
 const useStyles = makeStyles()((theme) => ({
 	addUserFormField: {
@@ -143,7 +151,7 @@ const useStyles = makeStyles()((theme) => ({
 	},
 	tableToolbarButtons: {
 		marginLeft: theme.spacing(3),
-		"& > *": {
+		"& > :not(:first-of-type)": {
 			marginLeft: theme.spacing(1),
 		},
 	},
@@ -154,7 +162,7 @@ const useStyles = makeStyles()((theme) => ({
 		padding: "8px",
 		alignItems: "center",
 		justifyContent: "flex-end",
-		"& > *": {
+		"& > button": {
 			marginLeft: theme.spacing(1),
 		},
 	},
@@ -340,8 +348,6 @@ export default function UsersPage() {
 		undefined
 	);
 	const [reloadCount, setReloadCount] = useState(0);
-	const supportFiltering = true;
-	const supportOrdering = true;
 	const [filters, setFilters] = useState<FilterDef>({
 		email: {
 			filter: "",
@@ -359,6 +365,40 @@ export default function UsersPage() {
 
 	const onDataLoad = (meta?: RequestMeta) => {
 		dispatch(getUsers({ meta: meta }));
+	};
+
+	const exportFetch = async (meta?: RequestMeta) => {
+		const response = await client.getUsers({
+			meta: {
+				...meta,
+				filters: filters,
+			},
+		});
+		return response.results.map((r) => ({
+			email: r.email,
+			admin: r.admin,
+			last_login: r.last_login,
+			scope: r.scope,
+			features: r.features,
+		}));
+	};
+
+	const toCsv = (data: User) => {
+		const features = [];
+		if (data.features) {
+			for (const [name, enabled] of Object.entries(data.features)) {
+				features.push(`${name} (${enabled ? "enabled" : "disabled"})`);
+			}
+		}
+		return {
+			email: data.email
+				? data.email.replace(DELETED_REGEX, " (Deleted)")
+				: null,
+			admin: data.admin,
+			last_login: data.last_login,
+			scope: data.scope,
+			features: features,
+		};
 	};
 
 	useEffect(() => {
@@ -444,7 +484,7 @@ export default function UsersPage() {
 		);
 	};
 
-	const CollapsibleRow = (props: { row?: RowDef | null }) => {
+	const CollapsibleRow = () => {
 		return (
 			<Box className={classes.collapsibleRow}>
 				<Typography
@@ -495,7 +535,7 @@ export default function UsersPage() {
 		{
 			field: "email",
 			headerName: i18n._(t`Email`),
-			sortable: supportOrdering,
+			sortable: true,
 			children: TooltipCell,
 			bodyStyle: {
 				maxWidth: "20rem", // limit field length for long email addresses
@@ -517,13 +557,13 @@ export default function UsersPage() {
 			field: "admin",
 			headerName: i18n._(t`Admin`),
 			children: BooleanCell,
-			sortable: supportOrdering,
+			sortable: true,
 		},
 		{
 			field: "last_login",
 			headerName: i18n._(t`Last Login`),
 			children: DateTimeCell,
-			sortable: supportOrdering,
+			sortable: true,
 		},
 		{
 			field: "id",
@@ -538,7 +578,7 @@ export default function UsersPage() {
 		},
 	];
 
-	let rows: RowDef[] = users.map((user) => {
+	const rows: RowDef[] = users.map((user) => {
 		return {
 			id: `id-${user.email}`, // unique id column with different value than email column
 			email: user.email,
@@ -594,20 +634,25 @@ export default function UsersPage() {
 			admin: Yup.boolean(),
 			features: Yup.array().of(Yup.object()).nullable(),
 		});
+		const editUserFormSchema = Yup.object({
+			scope: Yup.array().of(Yup.string()),
+			admin: Yup.boolean(),
+			features: Yup.array().of(Yup.object()).nullable(),
+		});
+
+		const defaultFeatures: { [key: string]: boolean } = {};
+		nonDefaultPlugins.map((feat) => (defaultFeatures[feat] = false));
 
 		const initialValues = (): AddUserForm => {
 			return {
 				email: selectedRow?.email ?? "",
 				scope: selectedRow?.scope ?? [],
 				admin: selectedRow?.admin ?? false,
-				features: selectedRow?.features ?? { snyk: false },
+				features: selectedRow?.features ?? defaultFeatures,
 			};
 		};
 
-		const onSubmit = async (
-			values: AddUserForm,
-			actions: FormikHelpers<AddUserForm>
-		) => {
+		const onSubmit = async (values: AddUserForm) => {
 			if (selectedRow) {
 				dispatch(
 					updateUser({
@@ -691,9 +736,9 @@ export default function UsersPage() {
 		};
 
 		const getDelimitedSet = (input: string) => {
-			let valueset = new Set<string>();
-			input.split(/\s*[,\s]/gm).forEach((value) => {
-				let trimmed = value.trim();
+			const valueset = new Set<string>();
+			input.split(SPLIT_MULTILINE_CSN_REGEX).forEach((value) => {
+				const trimmed = value.trim();
 				if (trimmed.length > 0) {
 					valueset.add(trimmed);
 				}
@@ -702,8 +747,18 @@ export default function UsersPage() {
 		};
 
 		const renderFeatures = (features: ScanFeatures) => {
-			let formFeatures: React.ReactNode[] = [];
-			let allFeatures = { ...features };
+			const formFeatures: React.ReactNode[] = [];
+			const allFeatures = { ...features };
+
+			// don't display a feature for any disabled plugins
+			// even if it's in the user's features object
+			if (Object.keys(allFeatures).length > 0) {
+				for (const p of Object.keys(pluginsDisabled)) {
+					if (p in allFeatures) {
+						delete allFeatures[p];
+					}
+				}
+			}
 
 			// ensure all scan features available
 			// including ones added after user was created
@@ -715,13 +770,13 @@ export default function UsersPage() {
 			});
 			if (allFeatures) {
 				Object.entries(allFeatures).forEach(([name, enabled]) => {
-					let label = capitalize(name);
-					for (let i = 0; i < pluginCatalog.length; i += 1) {
-						const plugin = pluginCatalog[i].plugins.find(
-							(n) => n.apiName === name
-						);
+					let label = capitalize(name); // fallback if we can't find a defined plugin display name
+					for (const [, values] of Object.entries(pluginCatalog)) {
+						const plugin = values.plugins.find((n) => n.apiName === name);
 						if (plugin) {
-							label = `${plugin?.displayName} ${pluginCatalog[i].name}`;
+							label = i18n._(
+								t`${plugin?.displayName} ${values.displayName} Plugin`
+							);
 							break;
 						}
 					}
@@ -747,13 +802,25 @@ export default function UsersPage() {
 					);
 				});
 			}
-			return <FormGroup row>{formFeatures}</FormGroup>;
+			return formFeatures.length > 0 ? (
+				<Box marginTop={2} marginBottom={1}>
+					<FormControl component="fieldset">
+						<FormLabel component="legend">Features</FormLabel>
+						<FormHelperText style={{ paddingBottom: "1em" }}>
+							<Trans>Allow this user to use additional scan features</Trans>
+						</FormHelperText>
+						<FormGroup row>{formFeatures}</FormGroup>
+					</FormControl>
+				</Box>
+			) : (
+				formFeatures
+			);
 		};
 
 		return (
 			<Formik
 				initialValues={initialValues()}
-				validationSchema={addUserFormSchema}
+				validationSchema={selectedRow ? editUserFormSchema : addUserFormSchema}
 				onSubmit={onSubmit}
 			>
 				{({
@@ -787,7 +854,7 @@ export default function UsersPage() {
 										type="text"
 										maxRows={3}
 										className={classes.addUserFormField}
-										autoFocus={!Boolean(selectedRow)}
+										autoFocus={!selectedRow}
 										inputProps={{ maxLength: 256 }}
 										component={TextField}
 										variant="outlined"
@@ -1056,17 +1123,7 @@ export default function UsersPage() {
 									</Paper>
 								</Box>
 
-								<Box marginTop={2} marginBottom={1}>
-									<FormControl component="fieldset">
-										<FormLabel component="legend">Features</FormLabel>
-										<FormHelperText style={{ paddingBottom: "1em" }}>
-											<Trans>
-												Allow this user to use additional scan features
-											</Trans>
-										</FormHelperText>
-										{renderFeatures(values.features)}
-									</FormControl>
-								</Box>
+								{renderFeatures(values.features)}
 							</DialogContent>
 
 							{(usersState.status === "loading" || isSubmitting) && (
@@ -1181,44 +1238,42 @@ export default function UsersPage() {
 						{addUserForm()}
 					</DraggableDialog>
 
-					{supportFiltering && (
-						<Box marginBottom={2}>
-							<Box m={1} component="span">
-								<FilterField
-									field="email"
-									autoFocus={true}
-									label={i18n._(t`Email`)}
-									value={filters["email"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box m={1} component="span">
-								<FilterField
-									field="scope"
-									label={i18n._(t`Scope`)}
-									value={filters["scope"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<Zoom
-									in={Object.values(filters).some((value) => value.filter)}
-									unmountOnExit
-								>
-									<Fab
-										aria-label={i18n._(t`Clear all filters`)}
-										color="primary"
-										size="small"
-										onClick={clearAllFilters}
-									>
-										<ClearIcon fontSize="small" />
-									</Fab>
-								</Zoom>
-							</Box>
+					<Box>
+						<Box m={1} component="span">
+							<FilterField
+								field="email"
+								autoFocus={true}
+								label={i18n._(t`Email`)}
+								value={filters["email"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+							/>
 						</Box>
-					)}
+						<Box m={1} component="span">
+							<FilterField
+								field="scope"
+								label={i18n._(t`Scope`)}
+								value={filters["scope"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+							/>
+						</Box>
+						<Box component="span" m={1}>
+							<Zoom
+								in={Object.values(filters).some((value) => value.filter)}
+								unmountOnExit
+							>
+								<Fab
+									aria-label={i18n._(t`Clear all filters`)}
+									color="primary"
+									size="small"
+									onClick={clearAllFilters}
+								>
+									<ClearIcon fontSize="small" />
+								</Fab>
+							</Zoom>
+						</Box>
+					</Box>
 				</>
 			)}
 			{/* don't add/remove table dom element
@@ -1243,6 +1298,12 @@ export default function UsersPage() {
 					reloadCount={reloadCount}
 					rowsPerPage={20}
 					filters={filters}
+					menuOptions={{
+						exportFile: "users",
+						exportFormats: ["csv", "json"],
+						exportFetch: exportFetch,
+						toCsv: toCsv,
+					}}
 				/>
 			</div>
 			{!usersState.totalRecords && (

@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
 	Box,
+	Button,
 	createTheme,
+	DialogActions,
+	DialogContent,
 	FormControlLabel,
 	IconButton,
+	ListItemIcon,
+	ListItemText,
+	Menu,
+	MenuItem,
 	Paper,
 	Switch,
 	Table,
@@ -25,19 +32,27 @@ import {
 	AssignmentLate as AssignmentLateIcon,
 	AssignmentTurnedIn as AssignmentTurnedInIcon,
 	Autorenew as AutorenewIcon,
+	Check as CheckIcon,
+	LowPriority as LowPriorityIcon,
+	MoreVert as MoreVertIcon,
 	OpenInNew as OpenInNewIcon,
+	PlayCircleOutline as PlayCircleOutlineIcon,
+	RuleFolder as RuleFolderIcon,
+	Share as ShareIcon,
+	TouchApp as TouchAppIcon,
+	Verified as VerifiedIcon,
 } from "@mui/icons-material";
 import { keyframes } from "tss-react";
 import { makeStyles } from "tss-react/mui";
 import { useLingui } from "@lingui/react";
 import { Trans, t } from "@lingui/macro";
 import * as Yup from "yup";
-import * as QueryString from "query-string";
+import queryString from "query-string";
 
-import CustomCopyToClipboard from "components/CustomCopyToClipboard";
-import { formatDate } from "utils/formatters";
-import AppGlobals from "app/globals";
+import { formatDate, ToCsvFormat } from "utils/formatters";
+import AppGlobals, { APP_NOTIFICATION_DELAY } from "app/globals";
 import { RootState } from "app/rootReducer";
+import { addNotification } from "features/notifications/notificationsSlice";
 import { selectAllScans, selectTotalScans } from "features/scans/scansSlice";
 import { selectCurrentUser } from "features/users/currentUserSlice";
 import {
@@ -47,8 +62,30 @@ import {
 } from "features/scans/scansSchemas";
 import StatusCell from "components/StatusCell";
 import { RequestMeta } from "api/client";
+import { startScan } from "pages/MainPage";
+import {
+	sbomPlugins,
+	secretPlugins,
+	staticPlugins,
+	techPlugins,
+	vulnPlugins,
+} from "app/scanPlugins";
+import CopyToClipboard from "react-copy-to-clipboard";
+import DraggableDialog from "./DraggableDialog";
+import TableMenu, { FetchData } from "./TableMenu";
 
 const useStyles = makeStyles()(() => ({
+	alertPopup: {
+		position: "absolute", // floating over content
+		zIndex: 100,
+		"& > .MuiAlert-action": {
+			alignItems: "flex-start",
+		},
+	},
+	numberedList: {
+		paddingLeft: 0,
+		listStyle: "inside decimal",
+	},
 	refreshSpin: {
 		animation: `${keyframes`
 		from {
@@ -72,12 +109,15 @@ export type ActivityDataLoadCallback = (meta?: RequestMeta) => void;
 
 interface ActivityTableProps {
 	onDataLoad: ActivityDataLoadCallback;
+	exportFetch: FetchData; // async callback to fetch data
 	data: ScanOptionsForm | null;
+	toCsv: ToCsvFormat;
 }
 
 interface TableState {
 	autoReload: boolean;
 	showMyScans: boolean;
+	includeBatch: boolean;
 	currentPage: number;
 	itemsPerPage: number;
 }
@@ -86,6 +126,7 @@ const tableStateSchema: Yup.SchemaOf<TableState> = Yup.object()
 	.shape({
 		autoReload: Yup.boolean().defined(),
 		showMyScans: Yup.boolean().defined(),
+		includeBatch: Yup.boolean().defined(),
 		currentPage: Yup.number()
 			.defined()
 			.min(0)
@@ -106,8 +147,180 @@ const tableStateSchema: Yup.SchemaOf<TableState> = Yup.object()
 	})
 	.defined();
 
+interface ReportActionProps {
+	row: AnalysisReport;
+	onStartScanSelected: (row: AnalysisReport) => void;
+	vcsOrg?: string | null;
+	repo?: string | null;
+}
+
+const ReportAction = (props: ReportActionProps) => {
+	const { row, onStartScanSelected, vcsOrg, repo } = props;
+	const { classes } = useStyles();
+	const dispatch = useDispatch();
+	const { i18n } = useLingui();
+	const navigate = useNavigate();
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const [isCopied, setCopied] = useState(false);
+	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+	const menuOpen = Boolean(anchorEl);
+	const resultsUrl = `results?org=${encodeURIComponent(
+		vcsOrg || ""
+	)}&repo=${encodeURIComponent(repo || "")}&id=${encodeURIComponent(
+		row.scan_id
+	)}`;
+	let ReportButton = <AssignmentIcon />;
+	let tooltip = i18n._(t`View results`);
+	let newTabTooltip = i18n._(t`View results in new tab`);
+	let reportClass = classes.resultsLoading;
+
+	// cancel any active setTimeout when component unmounted
+	useEffect(() => {
+		return function cleanup() {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+				setTimeoutId(null);
+			}
+		};
+	}, [timeoutId]);
+
+	const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
+
+	if (row.success === true) {
+		reportClass = classes.resultsPass;
+		ReportButton = <AssignmentTurnedInIcon className={reportClass} />;
+		tooltip = i18n._(t`View successful results`);
+		newTabTooltip = i18n._(t`View successful results in new tab`);
+	} else if (row.success === false) {
+		reportClass = classes.resultsFail;
+		ReportButton = <AssignmentLateIcon className={reportClass} />;
+		tooltip = i18n._(t`View failed results`);
+		newTabTooltip = i18n._(t`View failed results in new tab`);
+	}
+
+	return (
+		<>
+			<Tooltip title={tooltip}>
+				<span>
+					<IconButton
+						size="small"
+						aria-label={tooltip}
+						onClick={() => {
+							navigate(resultsUrl, {
+								state: { fromScanForm: true } as ScanFormLocationState,
+							});
+						}}
+					>
+						{ReportButton}
+					</IconButton>
+				</span>
+			</Tooltip>
+			<Tooltip title={newTabTooltip}>
+				<span>
+					<IconButton
+						size="small"
+						aria-label={newTabTooltip}
+						href={resultsUrl}
+						target="_blank"
+					>
+						{<OpenInNewIcon className={reportClass} />}
+					</IconButton>
+				</span>
+			</Tooltip>
+			<Tooltip title={i18n._(t`More Actions...`)}>
+				<IconButton
+					id="table-scan-actions-menu-button"
+					aria-label={
+						menuOpen
+							? i18n._(t`Close More Actions Menu`)
+							: i18n._(t`Open More Actions Menu`)
+					}
+					aria-controls="table-menu"
+					aria-haspopup="true"
+					aria-expanded={menuOpen ? "true" : undefined}
+					onClick={handleMenuClick}
+					size="small"
+				>
+					<MoreVertIcon />
+				</IconButton>
+			</Tooltip>
+			<Menu
+				id="table-scan-actions-menu"
+				anchorEl={anchorEl}
+				transformOrigin={{
+					horizontal: "center",
+					vertical: "top",
+				}}
+				open={menuOpen}
+				onClose={handleMenuClose}
+				MenuListProps={{
+					"aria-labelledby": "table-scan-actions-menu-button",
+				}}
+			>
+				<CopyToClipboard
+					text={window.location.origin + "/" + resultsUrl}
+					onCopy={() => {
+						setCopied(true);
+						setTimeoutId(
+							setTimeout(() => {
+								setTimeoutId(null);
+								setCopied(false);
+							}, APP_NOTIFICATION_DELAY)
+						);
+					}}
+				>
+					<MenuItem
+						onClick={() => {
+							dispatch(addNotification(i18n._(t`Copied to clipboard`), "info"));
+							handleMenuClose();
+						}}
+					>
+						<ListItemIcon>
+							{isCopied ? (
+								<CheckIcon fontSize="medium" />
+							) : (
+								<ShareIcon fontSize="medium" />
+							)}
+						</ListItemIcon>
+						<ListItemText>
+							<Trans>Copy link to these results</Trans>
+						</ListItemText>
+					</MenuItem>
+				</CopyToClipboard>
+				<MenuItem
+					onClick={() => {
+						handleMenuClose();
+						onStartScanSelected(row);
+					}}
+				>
+					<ListItemIcon>
+						<PlayCircleOutlineIcon fontSize="medium" />
+					</ListItemIcon>
+					<ListItemText>
+						<Trans>New scan with these options</Trans>
+					</ListItemText>
+				</MenuItem>
+			</Menu>
+		</>
+	);
+};
+
+const NoResults = () => (
+	<Box marginTop={2}>
+		<Typography align="center" style={{ fontStyle: "italic" }}>
+			<Trans>No matching scans to display</Trans>
+		</Typography>
+	</Box>
+);
+
 const ActivityTable = (props: ActivityTableProps) => {
-	const { onDataLoad, data } = props;
+	const { onDataLoad, exportFetch, data, toCsv } = props;
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
 	const navigate = useNavigate(); // only for navigation, e.g. replace(), push(), goBack()
@@ -115,6 +328,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 	const stateDefaults: TableState = {
 		autoReload: true,
 		showMyScans: false,
+		includeBatch: false,
 		currentPage: 0,
 		itemsPerPage: AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT,
 	};
@@ -124,11 +338,17 @@ const ActivityTable = (props: ActivityTableProps) => {
 	const [showMyScans, setShowMyScans] = useState<boolean>(
 		stateDefaults.showMyScans
 	);
+	const [includeBatch, setIncludeBatch] = useState<boolean>(
+		stateDefaults.includeBatch
+	);
 	const [currentPage, setCurrentPage] = useState<number>(
 		stateDefaults.currentPage
 	);
 	const [itemsPerPage, setItemsPerPage] = useState<number>(
 		stateDefaults.itemsPerPage
+	);
+	const [scanToRestart, setScanToRestart] = useState<AnalysisReport | null>(
+		null
 	);
 
 	const scansStatus = useSelector((state: RootState) => state.scans.status);
@@ -143,7 +363,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 	// returns defaults if no hash params or validation fails
 	const getHashParams = (): TableState => {
 		if (location.hash) {
-			const hash = QueryString.parse(location.hash);
+			const hash = queryString.parse(location.hash);
 			if (Object.keys(hash)) {
 				try {
 					// schema validation will also transform hash params to their correct types
@@ -162,19 +382,28 @@ const ActivityTable = (props: ActivityTableProps) => {
 	// update URL hash with new table state
 	const setTableState = (state: TableState) => {
 		// this needs to be window here and not history to preserve the hash on navigation
-		window.location.hash = QueryString.stringify({ ...state });
+		window.location.hash = queryString.stringify({ ...state });
 	};
 
 	// generate table filters based on table options
-	// such as "show on my scans" toggle
-	const getFilters = (show: boolean = showMyScans) => {
-		let filters: RequestMeta["filters"] = {};
+	// such as "show only my scans" and "include batched scans" toggles
+	const getFilters = (
+		show: boolean = showMyScans,
+		batch: boolean = includeBatch
+	) => {
+		const filters: RequestMeta["filters"] = {};
 		// check both currentUser & currenUser.email to make TypeScript happy in subsequent assignment
 		// in theory, only currentUser?.email check should be required to ensure not undefined
 		if (show && currentUser && currentUser?.email) {
 			filters["initiated_by"] = {
 				match: "exact",
 				filter: currentUser.email,
+			};
+		}
+		if (batch) {
+			filters["include_batch"] = {
+				match: "exact",
+				filter: "true",
 			};
 		}
 		return filters;
@@ -233,6 +462,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 			// form data has been reset, reset table state
 			setAutoReload(stateDefaults.autoReload);
 			setShowMyScans(stateDefaults.showMyScans);
+			setIncludeBatch(stateDefaults.includeBatch);
 			setCurrentPage(stateDefaults.currentPage);
 			setItemsPerPage(stateDefaults.itemsPerPage);
 		} else if (scansStatus !== "loading") {
@@ -240,6 +470,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 			const hashParams = getHashParams();
 			setAutoReload(hashParams.autoReload);
 			setShowMyScans(hashParams.showMyScans);
+			setIncludeBatch(hashParams.includeBatch);
 			setCurrentPage(hashParams.currentPage);
 			setItemsPerPage(hashParams.itemsPerPage);
 
@@ -247,7 +478,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 			onDataLoad({
 				currentPage: hashParams.currentPage,
 				itemsPerPage: hashParams.itemsPerPage,
-				filters: getFilters(hashParams.showMyScans),
+				filters: getFilters(hashParams.showMyScans, hashParams.includeBatch),
 			});
 		}
 
@@ -257,11 +488,12 @@ const ActivityTable = (props: ActivityTableProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data, currentUser]);
 
-	const handleChangePage = (event: unknown, newPage: number) => {
+	const handleChangePage = (_event: unknown, newPage: number) => {
 		setCurrentPage(newPage);
 		setTableState({
 			autoReload,
 			showMyScans,
+			includeBatch,
 			currentPage: newPage,
 			itemsPerPage,
 		});
@@ -278,6 +510,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 		setTableState({
 			autoReload,
 			showMyScans,
+			includeBatch,
 			currentPage: page,
 			itemsPerPage: count,
 		});
@@ -288,102 +521,77 @@ const ActivityTable = (props: ActivityTableProps) => {
 		});
 	};
 
-	const handleFilterChange = (show: boolean) => {
+	const handleFilterChange = (show: boolean, batch: boolean) => {
 		const page = 0; // reset page # since filtering will affect current page
 		setShowMyScans(show);
+		setIncludeBatch(batch);
 		setCurrentPage(page);
 		setTableState({
 			autoReload,
 			showMyScans: show,
+			includeBatch: batch,
 			currentPage: page,
 			itemsPerPage,
 		});
-		onDataLoad({ currentPage: page, itemsPerPage, filters: getFilters(show) });
+		onDataLoad({
+			currentPage: page,
+			itemsPerPage,
+			filters: getFilters(show, batch),
+		});
 	};
 
-	interface ReportActionProps {
-		row: AnalysisReport;
-	}
-
-	const ReportAction = (props: ReportActionProps) => {
-		const { row } = props;
-		const resultsUrl = `results?org=${encodeURIComponent(
-			data?.vcsOrg || ""
-		)}&repo=${encodeURIComponent(data?.repo || "")}&id=${encodeURIComponent(
-			row.scan_id
-		)}`;
-		const resultsUnavailable =
-			!("success" in row) || typeof row.success !== "boolean";
-		let ReportButton = <AssignmentIcon />;
-		let tooltip = i18n._(t`Fetching report status...`);
-		let newTabTooltip = tooltip;
-		let shareTooltip = tooltip;
-		let reportClass = classes.resultsLoading;
-
-		if (row.success === true) {
-			reportClass = classes.resultsPass;
-			ReportButton = <AssignmentTurnedInIcon className={reportClass} />;
-			tooltip = i18n._(t`View successful report`);
-			newTabTooltip = i18n._(t`View successful report in new tab`);
-			shareTooltip = i18n._(t`Copy link to this report`);
-		} else if (row.success === false) {
-			reportClass = classes.resultsFail;
-			ReportButton = <AssignmentLateIcon className={reportClass} />;
-			tooltip = i18n._(t`View failed report`);
-			newTabTooltip = i18n._(t`View failed report in new tab`);
-			shareTooltip = i18n._(t`Copy link to this report`);
-		}
-
-		return (
-			<>
-				<Tooltip title={tooltip}>
-					<span>
-						<IconButton
-							size="small"
-							aria-label={tooltip}
-							onClick={() => {
-								navigate(resultsUrl, {
-									state: { fromScanForm: true } as ScanFormLocationState,
-								});
-							}}
-							disabled={resultsUnavailable}
-						>
-							{ReportButton}
-						</IconButton>
-					</span>
-				</Tooltip>
-				<Tooltip title={newTabTooltip}>
-					<span>
-						<IconButton
-							size="small"
-							aria-label={newTabTooltip}
-							href={resultsUrl}
-							target="_blank"
-							disabled={resultsUnavailable}
-						>
-							{<OpenInNewIcon className={reportClass} />}
-						</IconButton>
-					</span>
-				</Tooltip>
-				<CustomCopyToClipboard
-					icon="share"
-					size="small"
-					copyTarget={window.location.origin + "/" + resultsUrl}
-					className={reportClass}
-					copyLabel={shareTooltip}
-					disabled={resultsUnavailable}
-				/>
-			</>
+	// create a new scan based on options from current scan
+	const handleRescan = async (scan: AnalysisReport) =>
+		startScan(
+			navigate,
+			{
+				vcsOrg: data?.vcsOrg ?? null,
+				repo: data?.repo ?? "",
+				branch: scan.branch ?? "",
+				secrets: scan.scan_options.categories?.includes("secret") ?? true,
+				staticAnalysis:
+					scan.scan_options.categories?.includes("static_analysis") ?? true,
+				inventory: scan.scan_options.categories?.includes("inventory") ?? true,
+				vulnerability:
+					scan.scan_options.categories?.includes("vulnerability") ?? true,
+				sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+				depth: scan.scan_options?.depth ?? "",
+				includeDev: scan.scan_options?.include_dev ?? false,
+				// removes any disabled plugins from new scan
+				secretPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => secretPlugins.includes(p) || secretPlugins.includes(`-${p}`)
+					),
+				staticPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => staticPlugins.includes(p) || staticPlugins.includes(`-${p}`)
+					),
+				techPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => techPlugins.includes(p) || techPlugins.includes(`-${p}`)
+					),
+				vulnPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => vulnPlugins.includes(p) || vulnPlugins.includes(`-${p}`)
+					),
+				sbomPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`)
+					),
+				includePaths: scan.scan_options?.include_paths
+					? scan.scan_options?.include_paths.join(", ")
+					: "",
+				excludePaths: scan.scan_options?.exclude_paths
+					? scan.scan_options?.exclude_paths.join(", ")
+					: "",
+			},
+			currentUser
 		);
-	};
-
-	const NoResults = () => (
-		<Box marginTop={2}>
-			<Typography align="center" style={{ fontStyle: "italic" }}>
-				<Trans>No matching scans to display</Trans>
-			</Typography>
-		</Box>
-	);
 
 	return (
 		<div>
@@ -443,6 +651,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 											setTableState({
 												autoReload: !autoReload,
 												showMyScans,
+												includeBatch,
 												currentPage,
 												itemsPerPage,
 											});
@@ -454,21 +663,51 @@ const ActivityTable = (props: ActivityTableProps) => {
 								label={i18n._(t`Auto Refresh`)}
 							/>
 						) : (
-							<FormControlLabel
-								control={
-									<Switch
-										checked={showMyScans}
-										onChange={() => {
-											handleFilterChange(!showMyScans);
-										}}
-										name="tableShowMyScans"
-										color="primary"
-										disabled={scansStatus === "loading"}
-									/>
-								}
-								label={i18n._(t`Show only my scans`)}
-							/>
+							<>
+								<FormControlLabel
+									control={
+										<Switch
+											checked={showMyScans}
+											onChange={() => {
+												handleFilterChange(!showMyScans, includeBatch);
+											}}
+											name="tableShowMyScans"
+											color="primary"
+											disabled={scansStatus === "loading"}
+										/>
+									}
+									label={i18n._(t`Show only my scans`)}
+								/>
+								<FormControlLabel
+									control={
+										<Switch
+											checked={includeBatch}
+											onChange={() => {
+												handleFilterChange(showMyScans, !includeBatch);
+											}}
+											name="tableIncludeBatch"
+											color="primary"
+											disabled={scansStatus === "loading"}
+										/>
+									}
+									label={i18n._(t`Include batched scans`)}
+								/>
+							</>
 						)}
+						<Box display="flex" justifyContent="right">
+							<TableMenu
+								exportFile={
+									data.submitContext === "scan" ? "scan_single" : "scan_history"
+								}
+								exportFormats={["csv", "json"]}
+								exportFetch={() =>
+									exportFetch({
+										filters: getFilters(showMyScans, includeBatch),
+									})
+								}
+								toCsv={toCsv}
+							/>
+						</Box>
 					</div>
 
 					{scansTotal > 0 ? (
@@ -491,10 +730,57 @@ const ActivityTable = (props: ActivityTableProps) => {
 									})
 								}
 							>
+								<DraggableDialog
+									open={Boolean(scanToRestart)}
+									title={i18n._(t`New Scan`)}
+									maxWidth="md"
+								>
+									<DialogContent dividers={true}>
+										<Trans>
+											Start a new scan using the same options used in this scan?
+											<br />
+											Initiating a new scan will reload this page to display
+											scan progress.
+										</Trans>
+									</DialogContent>
+
+									<DialogActions>
+										<Button
+											aria-label={i18n._(t`Start Scan`)}
+											size="small"
+											variant="contained"
+											startIcon={<PlayCircleOutlineIcon />}
+											disabled={!scanToRestart || scansStatus === "loading"}
+											autoFocus={Boolean(scanToRestart)}
+											onClick={() => {
+												if (scanToRestart) {
+													handleRescan(scanToRestart);
+												}
+												setScanToRestart(null);
+											}}
+										>
+											<Trans>Start Scan</Trans>
+										</Button>
+
+										<Button
+											aria-label={i18n._(t`Cancel`)}
+											size="small"
+											onClick={() => {
+												setScanToRestart(null);
+											}}
+										>
+											<Trans>Cancel</Trans>
+										</Button>
+									</DialogActions>
+								</DraggableDialog>
+
 								<TableContainer component={Paper}>
 									<Table aria-label={i18n._(t`Scans table`)} size="small">
 										<TableHead>
 											<TableRow>
+												<TableCell>
+													<Trans>Type</Trans>
+												</TableCell>
 												<TableCell>
 													<Trans>Branch</Trans>
 												</TableCell>
@@ -521,6 +807,60 @@ const ActivityTable = (props: ActivityTableProps) => {
 												<TableRow key={row.scan_id}>
 													<TableCell
 														style={{
+															maxWidth: "5rem",
+															width: "5rem",
+														}}
+													>
+														<Tooltip
+															title={
+																row?.scan_options?.batch_priority
+																	? row?.batch_description
+																		? i18n._(
+																				t`Batched Scan: ${row.batch_description}`
+																		  )
+																		: i18n._(t`Batched Scan`)
+																	: i18n._(t`On-Demand Scan`)
+															}
+														>
+															{row?.scan_options?.batch_priority ? (
+																<LowPriorityIcon fontSize="small" />
+															) : (
+																<TouchAppIcon fontSize="small" />
+															)}
+														</Tooltip>
+														{row?.qualified && (
+															<Tooltip title={i18n._(t`Qualified Scan`)}>
+																<VerifiedIcon fontSize="small" />
+															</Tooltip>
+														)}
+														{((row?.scan_options?.include_paths &&
+															row?.scan_options?.include_paths.length > 0) ||
+															(row?.scan_options?.exclude_paths &&
+																row?.scan_options?.exclude_paths.length >
+																	0)) && (
+															<Tooltip
+																title={i18n._(
+																	t`Include paths: ${
+																		row?.scan_options?.include_paths.length > 0
+																			? row?.scan_options?.include_paths.join(
+																					", "
+																			  )
+																			: "None"
+																	} ; Exclude paths: ${
+																		row?.scan_options?.exclude_paths.length > 0
+																			? row?.scan_options?.exclude_paths.join(
+																					", "
+																			  )
+																			: "None"
+																	}`
+																)}
+															>
+																<RuleFolderIcon fontSize="small" />
+															</Tooltip>
+														)}
+													</TableCell>
+													<TableCell
+														style={{
 															textOverflow: "ellipsis",
 															overflow: "hidden",
 															whiteSpace: "nowrap",
@@ -530,9 +870,25 @@ const ActivityTable = (props: ActivityTableProps) => {
 													>
 														<Tooltip
 															describeChild
-															title={row.branch ? row.branch : ""}
+															title={
+																row.branch ? (
+																	row.branch
+																) : (
+																	<i>
+																		<Trans>Default</Trans>
+																	</i>
+																)
+															}
 														>
-															<span>{row.branch}</span>
+															<span>
+																{row.branch ? (
+																	row.branch
+																) : (
+																	<i>
+																		<Trans>Default</Trans>
+																	</i>
+																)}
+															</span>
 														</Tooltip>
 													</TableCell>
 													<TableCell
@@ -573,7 +929,14 @@ const ActivityTable = (props: ActivityTableProps) => {
 														}}
 													>
 														{row.status !== "queued" && (
-															<ReportAction row={row} />
+															<ReportAction
+																vcsOrg={data?.vcsOrg}
+																repo={data?.repo}
+																row={row}
+																onStartScanSelected={(row: AnalysisReport) =>
+																	setScanToRestart(row)
+																}
+															/>
 														)}
 													</TableCell>
 												</TableRow>

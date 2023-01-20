@@ -11,7 +11,7 @@ import { Task } from "@redux-saga/types";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
-import axios, { CancelTokenSource } from "axios";
+import axios from "axios";
 
 import client, {
 	handleException,
@@ -42,7 +42,7 @@ interface ScanTasks {
 // object containing background tasks to get scans by id
 // can be cancelled if user changes page or initiates a new scan
 const scanTasks: ScanTasks = {};
-let cancelToken: CancelTokenSource | null = null;
+let abortController: AbortController | null = null;
 
 // cancel any prior queued background scan tasks
 // this cancels both the saga tasks as well as the underlying axios requests
@@ -56,9 +56,9 @@ const _cancelScanTasks = () => {
 		delete scanTasks[id];
 	}
 	// cancel the actual axios requests
-	if (cancelToken) {
-		cancelToken.cancel("queued background scan request cancelled");
-		cancelToken = null;
+	if (abortController) {
+		abortController.abort("queued background scan request cancelled");
+		abortController = null;
 	}
 };
 
@@ -137,7 +137,7 @@ function* _getScanByIdSaga(
 		// if we had a queued task for this scan, remove it from the queue
 		delete scanTasks[url];
 		if (Object.keys(scanTasks).length === 0) {
-			cancelToken = null;
+			abortController = null;
 		}
 	}
 }
@@ -160,13 +160,12 @@ function* _getScanHistorySaga(
 			//
 			// maintain a list of forked background scan tasks in case user requests a DIFFERENT saga action (e,g starting a new scan),
 			// as this will NOT terminate THIS saga, so the forked scans won't be cancelled automatically
-			const ct = axios.CancelToken; // all scan task "batches" share a common cancel token so they can all be cancelled with 1 cancel call
-			cancelToken = ct.source();
+			abortController = new AbortController(); // All scan tasks use the same abort controller so they can all be aborted at once
 			console.debug("queueing new scan tasks:", response.results.length);
 			for (let i = 0; i < response.results.length; i += 1) {
-				let result = response.results[i];
+				const result = response.results[i];
 				if ("service" in result && "repo" in result && "scan_id" in result) {
-					let scan = selectScanById(store.getState(), result.scan_id);
+					const scan = selectScanById(store.getState(), result.scan_id);
 
 					// if individual results for this scan state are already fetched, return those fields (summary, success, etc.)
 					// this helps if same page of results is reloaded (such as by navigating back from viewing a scan's results)
@@ -198,17 +197,17 @@ function* _getScanHistorySaga(
 							result.application_metadata = { ...scan.application_metadata };
 						}
 					} else if (result.status !== "queued") {
-						// fetch the rest of the scan fields we are missing from history (status, results_summary)
+						// fetch the rest of the scan fields we are missing from history (AnalysisReport extending ScanHistory, e.g., success, results_summary)
 						// note we get a scan summary (format=summary), not full results for each scan
-						let id = [result.service, result.repo, result.scan_id].join("/");
+						const id = [result.service, result.repo, result.scan_id].join("/");
 
-						// pass-in a cancel token so these requests can be cancelled
+						// pass-in an abort controller so these requests can be cancelled
 						// and format=summary so only summary results are returned
 						scanTasks[id] = (yield fork(_getScanByIdSaga, {
 							payload: {
 								url: id,
 								meta: {
-									cancelToken: cancelToken,
+									abortController: abortController,
 									filters: {
 										format: {
 											match: "exact",

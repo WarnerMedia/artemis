@@ -41,7 +41,7 @@ Web UI for Artemis source code security scanner.
 If you already have [prerequisites](#-prerequisites) installed, after cloning this project you can get up and running by:
 
 ```shell
-npm install
+npm ci
 npm start
 ```
 
@@ -55,8 +55,9 @@ Once you have the project running, you will want to customize it to meet your ne
 1. Review the `.env.*` files in the project root directory and modify to meet your requirements
 2. Populate the variables in the `nonprod.mk` and `prod.mk` Makefiles to match your deployment
 3. Customize the `homepage` field in `package.json` to match your deployment. Refer to [create-react-app documentation](https://create-react-app.dev/docs/deployment/#step-1-add-homepage-to-packagejson)
-4. Review and customize files in the `src/custom` directory to meet the requirements of your application, such as customizing the application logo, page footer, and welcome message
-5. Populate the `publicCustom` directory with any files you want to either add to the app's `public` directory or overwrite default files, such as `favicon.ico`
+4. Review and customize files in the `src/custom` directory to meet the requirements of your application, such as customizing the application logo, page footer, welcome message, and data export message
+   - Search for "REPLACE ME" strings
+5. Populate the `public` directory with any files you want to add, such as `favicon.ico`
 
 ### ✅ Prerequisites
 
@@ -67,7 +68,7 @@ For Windows or Linux development, comparable steps exist, omitting certain utili
 2. Install an IDE with support for ECMAScript, React, Redux language features or plugins, such as [Visual Studio Code](https://code.visualstudio.com/)
 3. Install [Homebrew](https://brew.sh/), a package manager for many of the tools we will be using
 4. Install [Node via NVM](#-native-development)
-5. Install [Python 3](#-aws-cli)
+5. Install Python 3
 6. Install a container management tool, such as [Docker Desktop](https://www.docker.com/products/docker-desktop)
 7. Install Git. This can be accomplished by installing Apple XCode from the App Store, via Homebrew, or [directly](https://git-scm.com/download/mac)
 8. Clone _this_ GitHub project
@@ -106,7 +107,7 @@ To develop natively in the shell:
 5. Install linters used by project that aren't covered by NPM:
    - `brew install hadolint`
 6. Install all project dependencies
-   - `npm install` or `make install`
+   - `npm ci` or `make install`
 
 #### 🚢 Container Development
 
@@ -284,6 +285,7 @@ This project is using the following checks for code style and standards:
 ### 🛡️ Secure Coding
 
 - [Snyk: 10 React Security Best Practices](https://snyk.io/blog/10-react-security-best-practices/) - Good overview of security considerations when writing a React app
+- [Snyk: 10 npm Security Best Practices](https://snyk.io/blog/ten-npm-security-best-practices/) - Good recommendations for using npm in a project more securely
 - Any other standards/best practice guides related to the current application stack (JavaScript, React, Redux, etc.)
 
 ### 🛠️ Development Patterns
@@ -353,6 +355,7 @@ For a complete reference, refer to the [Web Content Accessability Guidelines (WC
 - Features should be tested (AND include automated tests where possible)
   - Create mocks in `src/api/server.ts` for local dev testing
   - Also test against real Artemis APIs/data
+- Ensure the application version is updated with each change
 - PR pushes should not fail automated checks
 - All new and existing tests should PASS
 

@@ -60,11 +60,14 @@ export interface VulnComponent {
 
 export interface SearchVulnerability {
 	id: string;
+	advisory_ids: string[];
+	vuln_id?: string[]; // generated client-side
 	description: string;
 	severity: Severities;
 	remediation: string;
 	components: VulnComponent;
 	source_plugins: string[];
+	plugin: string[]; // generated client-side
 }
 
 export interface SearchVulnsResponse extends Response {
@@ -130,7 +133,7 @@ export const repoSchema = (message?: string) => {
 		});
 };
 
-export const serviceSchema = (message?: string) => {
+export const serviceSchema = () => {
 	return Yup.string()
 		.trim()
 		.matches(
@@ -208,6 +211,7 @@ const searchVulnerabilitySchema: Yup.SchemaOf<SearchVulnerability> =
 	Yup.object()
 		.shape({
 			id: Yup.string().defined(),
+			advisory_ids: Yup.array().defined().of(Yup.string().defined()),
 			description: Yup.string().defined(),
 			severity: severitySchema.defined(),
 			remediation: Yup.string().defined(),

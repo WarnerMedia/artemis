@@ -19,7 +19,14 @@ import {
 } from "features/vcsServices/vcsServicesSchemas";
 import { formatDate } from "utils/formatters";
 import AppGlobals from "app/globals";
-import * as QueryString from "query-string";
+import {
+	sbomPlugins,
+	secretPlugins,
+	staticPlugins,
+	techPlugins,
+	vulnPlugins,
+} from "app/scanPlugins";
+import queryString from "query-string";
 import {
 	sampleMetaData1,
 	sampleMetaData2,
@@ -41,10 +48,13 @@ interface ScanOpts {
 	branch: string | null;
 	depth: number | null;
 	includeDev: boolean;
+	includePaths?: string[];
+	excludePaths?: string[];
 	categories: ScanCategories[];
 	plugins: string[];
 	initiatedBy: string | null;
 	progressToFailure?: boolean;
+	batch?: boolean;
 }
 
 interface Entity extends ScanHistory {
@@ -81,15 +91,15 @@ interface SecretFindingRawResult {
 // mock a REST API server
 // MirageJS will intercept requests and match them against defined router patterns to return pre-canned results
 // this will only run in dev mode and in test to return deterministic results based on input
-// otherwise, calls in production will go to the real DSO APIs
-export function makeServer({ environment = "development" } = {}) {
-	let server = createServer({
+// otherwise, calls in production will go to the real Artemis APIs
+export function makeServer() {
+	const server = createServer({
 		routes() {
 			this.namespace = process.env.REACT_APP_API_NAMESPACE || "/api";
 
 			// add request delay in dev, NOT in test
 			if (process.env.NODE_ENV === "development") {
-				this.timing = 2000; // enable 2-second delay to slow down ALL the API requests to view UI progress bars, animations
+				this.timing = AppGlobals.APP_DEV_REQUEST_DELAY; // enable API response delay to slow down ALL the API requests to view UI progress bars, animations
 			}
 
 			// passing-in a userIndex will return a (non-random) user from the list
@@ -150,7 +160,7 @@ export function makeServer({ environment = "development" } = {}) {
 					userIndex || userIndex === 0
 						? userIndex
 						: Math.floor(Math.random() * users.length);
-				let user = users[i];
+				const user = users[i];
 				let email = user;
 				// random users are actually groups (name instead of email address)
 				if (email && Math.random() < 0.4) {
@@ -212,7 +222,7 @@ export function makeServer({ environment = "development" } = {}) {
 
 			let [defaultUser, defaultEmail] = getRandomUser({ includeNull: false }); // can pass-in a userId here to test a specific user
 			const defaults: any = {
-				scanCount: 260, // several full pages of scan results plus a final page with a few results
+				scanCount: 1000, // several full pages of scan results plus a final page with a few results
 				userCount: 43, // users in getRandomUser
 				goodVcs: "goodVcs",
 				badVcs: "badVcs",
@@ -226,7 +236,15 @@ export function makeServer({ environment = "development" } = {}) {
 					"secret",
 					"static_analysis",
 					"vulnerability",
+					"sbom",
 				] as ScanCategories[],
+				plugins: [
+					...techPlugins,
+					...secretPlugins,
+					...staticPlugins,
+					...vulnPlugins,
+					...sbomPlugins,
+				],
 				depth: 500,
 				includeDev: false,
 				limit: 50, // API items per page default
@@ -259,7 +277,7 @@ export function makeServer({ environment = "development" } = {}) {
 							]),
 					  ];
 			// common fields to all requested scans for a particular repo
-			let location: Location = {
+			const location: Location = {
 				service: "",
 				org: "",
 				repo: "",
@@ -284,6 +302,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fermentum turpis eget mauris sollicitudin sagittis. Vestibulum dapibus at tellus vitae dictum. Donec et dolor quis urna malesuada interdum. Integer dignissim quam id mauris vehicula, id eleifend lectus aliquet. Morbi lectus libero, vulputate a eros id, pellentesque pellentesque nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum lobortis ante et faucibus. Vivamus elementum blandit quam eu eleifend. Integer nunc lorem, luctus at nunc aliquet, semper interdum arcu. Proin facilisis ornare purus at semper. Integer non lobortis velit, lobortis elementum magna. Duis tincidunt, nulla sed euismod rhoncus, nunc magna tempus velit, in imperdiet lacus nibh vel dui. Suspendisse ullamcorper sem nulla, at cursus lectus pretium vitae. Aliquam erat volutpat. Phasellus pharetra nunc vitae tellus porta, ultrices fermentum libero venenatis. Cras in sem lectus. Nulla urna risus, varius in ultricies at, vehicula quis dui. Etiam tincidunt lectus urna, non porttitor ligula scelerisque ut. Morbi tincidunt nulla et quam accumsan dictum eget vitae velit. Sed vitae mi vestibulum, dapibus mi ac, ultrices ligula. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam luctus tellus a mauris viverra, at vestibulum nunc vestibulum. Morbi tempus varius dolor, non tincidunt ipsum aliquet egestas. Morbi at augue luctus, elementum magna eu, dapibus ante. Pellentesque accumsan non enim sed luctus. Morbi vel faucibus lorem. Proin arcu enim, facilisis et blandit sit amet, pellentesque vel mauris. Aenean ex diam, suscipit eu molestie id, lacinia quis neque. Sed velit sem, gravida at molestie ut, suscipit a quam. Fusce viverra nisi mauris, eu porta nulla suscipit ut.	Aenean a congue odio. In maximus nisi non blandit placerat. Vestibulum eleifend urna eu augue molestie, non molestie justo tincidunt. Vivamus elit odio, sodales id pellentesque et, maximus quis urna. Nullam commodo lacus nisi, vel scelerisque augue eleifend ac. Phasellus efficitur libero non velit aliquam, sit amet faucibus justo iaculis. Maecenas orci arcu, lobortis vel purus non, maximus auctor erat. Fusce ac interdum risus. Aenean dictum, magna ac mollis bibendum, arcu lacus bibendum dui, eu semper quam felis a urna. Ut eleifend euismod sapien, et facilisis nisi porta blandit. Pellentesque viverra nisl vitae lacus ultrices condimentum.",
 						remediation: "",
+						// test without source_plugins field
 					},
 					"CVE-2021-0101": {
 						source: ["docker/Dockerfile", "docker/Dockerfile.multistage"],
@@ -291,6 +310,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Pellentesque viverra nisl vitae lacus ultrices condimentum. ThisIsAVeryLongRunOnLineToTestLineWrappingInTheLeftGridBoxInTheDialogDisplayingTheseResultsToTheUser.",
 						remediation: "Won't fix",
+						source_plugins: null,
 					},
 					"CVE-2018-00000": {
 						source: ["docker/Dockerfile.multistage"],
@@ -298,6 +318,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse convallis tempor ligula vel tempus.",
 						remediation: "",
+						source_plugins: ["Trivy"],
 					},
 					"CVE-2016-00000": {
 						source: ["docker/Dockerfile"],
@@ -305,6 +326,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras elementum fringilla elementum.",
 						remediation: "",
+						source_plugins: ["Trivy", "Aqua Container Security"],
 					},
 				},
 				component1: {
@@ -350,6 +372,18 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 						remediation: "imagine a remediation here",
+						source_plugins: [
+							"Plugin3",
+							"Plugin4",
+							"Plugin6",
+							"Plugin7",
+							"Plugin8",
+							"Plugin1",
+							"Plugin2",
+							"Plugin5",
+							"Plugin9",
+							"Plugin10",
+						],
 					},
 					"CVE-2017-0000": {
 						source: [
@@ -361,6 +395,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sollicitudin pellentesque luctus.",
 						remediation: "",
+						source_plugins: ["Trivy", "Aqua Container Security", "NPM Audit"],
 					},
 				},
 				component2: {
@@ -397,6 +432,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 						remediation: "You might consider fixing it",
+						source_plugins: ["Bundler Audit"],
 					},
 				},
 				component6: {
@@ -406,6 +442,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Urna molestie at elementum eu.",
 						remediation: ":(",
+						source_plugins: ["NPM Audit"],
 					},
 				},
 				component7: {
@@ -415,6 +452,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eu non diam phasellus vestibulum.",
 						remediation: "",
+						source_plugins: ["NPM Audit"],
 					},
 				},
 				component8: {
@@ -424,6 +462,7 @@ export function makeServer({ environment = "development" } = {}) {
 						description: "Imperitus fiximus immediatus",
 						remediation:
 							"we recommend that this be fixed. quickly. i'm talking to you",
+						source_plugins: ["NPM Audit"],
 					},
 				},
 			};
@@ -686,7 +725,7 @@ export function makeServer({ environment = "development" } = {}) {
 					updated: "2021-02-02T14:02:02Z",
 				},
 			];
-			let userKeys: Key[] = [
+			const userKeys: Key[] = [
 				{
 					id: generateId(),
 					name: "admin api key",
@@ -729,14 +768,14 @@ export function makeServer({ environment = "development" } = {}) {
 					features: {},
 				},
 			];
-			let userVcsServices: VcsService[] = [];
+			const userVcsServices: VcsService[] = [];
 
 			// remove hidden findings from vuln object
 			const filterVulns = (
 				vulns: ResultsVulnComponents
 			): ResultsVulnComponents => {
 				// deep-copy vulns input
-				let vr: ResultsVulnComponents = JSON.parse(JSON.stringify(vulns));
+				const vr: ResultsVulnComponents = JSON.parse(JSON.stringify(vulns));
 
 				// filter out (remove) any matching hidden findings
 				hiddenFindings.forEach((f) => {
@@ -756,7 +795,7 @@ export function makeServer({ environment = "development" } = {}) {
 						f.value.severity = vr[f.value.component][f.value.id].severity;
 						if (dateOk) {
 							// remove finding for for each source file
-							let i = vr[f.value.component][f.value.id].source.findIndex(
+							const i = vr[f.value.component][f.value.id].source.findIndex(
 								(source) => {
 									return source === f.value.source;
 								}
@@ -795,7 +834,7 @@ export function makeServer({ environment = "development" } = {}) {
 
 			// calculate vuln summary report
 			const genVulnSummary = (scan: AnalysisReport) => {
-				let summary = {
+				const summary = {
 					critical: 0,
 					high: 0,
 					medium: 0,
@@ -805,8 +844,10 @@ export function makeServer({ environment = "development" } = {}) {
 				};
 
 				if (
-					scan.scan_options.categories &&
-					scan.scan_options.categories.includes("vulnerability")
+					(scan.scan_options.categories &&
+						scan.scan_options.categories.includes("vulnerability")) ||
+					(scan.scan_options.plugins &&
+						isPluginInCategory(scan.scan_options.plugins || [], vulnPlugins))
 				) {
 					for (const [, vulnList] of Object.entries(
 						scan?.results?.vulnerabilities ?? {}
@@ -830,7 +871,7 @@ export function makeServer({ environment = "development" } = {}) {
 			// remove hidden findings from secrets object
 			const filterSecrets = (secrets: SecretFindingRawResult) => {
 				// deep-copy secrets input
-				let sr: SecretFindingRawResult = JSON.parse(JSON.stringify(secrets));
+				const sr: SecretFindingRawResult = JSON.parse(JSON.stringify(secrets));
 
 				// filter out (remove) any matching hidden findings
 				hiddenFindings.forEach((f) => {
@@ -878,8 +919,10 @@ export function makeServer({ environment = "development" } = {}) {
 			const genSecretsSummary = (scan: AnalysisReport) => {
 				let count = 0;
 				if (
-					scan.scan_options.categories &&
-					scan.scan_options.categories.includes("secret")
+					(scan.scan_options.categories &&
+						scan.scan_options.categories.includes("secret")) ||
+					(scan.scan_options.plugins &&
+						isPluginInCategory(scan.scan_options.plugins || [], secretPlugins))
 				) {
 					for (const [, secretList] of Object.entries(
 						scan?.results?.secrets ?? {}
@@ -961,7 +1004,7 @@ export function makeServer({ environment = "development" } = {}) {
 			// remove hidden findings from secrets object
 			const filterAnalysis = (analysis: ResultsAnalysis): ResultsAnalysis => {
 				// deep-copy analysis input
-				let ar: ResultsAnalysis = JSON.parse(JSON.stringify(analysis));
+				const ar: ResultsAnalysis = JSON.parse(JSON.stringify(analysis));
 
 				// filter out (remove) any matching hidden findings
 				hiddenFindings.forEach((f) => {
@@ -995,7 +1038,7 @@ export function makeServer({ environment = "development" } = {}) {
 
 			// calculate analysis summary report
 			const genAnalysisSummary = (scan: AnalysisReport) => {
-				let summary = {
+				const summary = {
 					critical: 0,
 					high: 0,
 					medium: 0,
@@ -1004,8 +1047,10 @@ export function makeServer({ environment = "development" } = {}) {
 					"": 0,
 				};
 				if (
-					scan.scan_options.categories &&
-					scan.scan_options.categories.includes("static_analysis")
+					(scan.scan_options.categories &&
+						scan.scan_options.categories.includes("static_analysis")) ||
+					(scan.scan_options.plugins &&
+						isPluginInCategory(scan.scan_options.plugins || [], staticPlugins))
 				) {
 					for (const [, analysisList] of Object.entries(
 						scan?.results?.static_analysis ?? {}
@@ -1090,17 +1135,78 @@ export function makeServer({ environment = "development" } = {}) {
 				);
 			};
 
+			const isPluginInCategory = (
+				scanPlugins: string[],
+				categoryPlugins: string[]
+			) => {
+				for (let i = 0; i < scanPlugins.length; i += 1) {
+					if (categoryPlugins.includes(scanPlugins[i])) {
+						return true;
+					}
+				}
+				return false;
+			};
+
 			function* generateScanContent(
 				entity: Entity
 			): IterableIterator<AnalysisReport> {
 				let currentPlugin = 0;
-				let totalPlugins = 0;
+				let totalPlugins = 0; // counting categories as plugins
+
+				// condense all plugins in a category into a single scan generator increment
+				// instead of having to progress through all enabled plugins
 				if (entity.scan_options.categories) {
-					const enabledCats = entity.scan_options.categories.filter(
+					const enabledCats: string[] = entity.scan_options.categories.filter(
 						(cat: string) => {
 							return !cat.startsWith("-");
 						}
 					);
+					// count the category if any plugin in that category is enabled
+					if (
+						isPluginInCategory(
+							entity.scan_options.plugins || [],
+							vulnPlugins
+						) &&
+						!enabledCats.includes("vulnerability")
+					) {
+						enabledCats.push("vulnerability");
+					}
+					if (
+						isPluginInCategory(
+							entity.scan_options.plugins || [],
+							staticPlugins
+						) &&
+						!enabledCats.includes("static_analysis")
+					) {
+						enabledCats.push("static_analysis");
+					}
+					if (
+						isPluginInCategory(
+							entity.scan_options.plugins || [],
+							secretPlugins
+						) &&
+						!enabledCats.includes("secret")
+					) {
+						enabledCats.push("secret");
+					}
+					if (
+						isPluginInCategory(
+							entity.scan_options.plugins || [],
+							techPlugins
+						) &&
+						!enabledCats.includes("inventory")
+					) {
+						enabledCats.push("inventory");
+					}
+					if (
+						isPluginInCategory(
+							entity.scan_options.plugins || [],
+							sbomPlugins
+						) &&
+						!enabledCats.includes("sbom")
+					) {
+						enabledCats.push("sbom");
+					}
 					totalPlugins = enabledCats.length;
 				}
 				// get scanId from repo (field after last /)
@@ -1165,9 +1271,9 @@ export function makeServer({ environment = "development" } = {}) {
 				let category: ScanCategories = "vulnerability";
 				let plugin_name = `${category} scan`;
 				if (
-					totalPlugins === 4 ||
 					(entity.scan_options.categories &&
-						entity.scan_options.categories.includes(category))
+						entity.scan_options.categories.includes(category)) ||
+					isPluginInCategory(entity.scan_options.plugins || [], vulnPlugins)
 				) {
 					scan.status = `running plugin ${plugin_name}`;
 					currentPlugin += 1;
@@ -1185,9 +1291,9 @@ export function makeServer({ environment = "development" } = {}) {
 				category = "secret";
 				plugin_name = `${category} scan`;
 				if (
-					totalPlugins === 4 ||
 					(entity.scan_options.categories &&
-						entity.scan_options.categories.includes(category))
+						entity.scan_options.categories.includes(category)) ||
+					isPluginInCategory(entity.scan_options.plugins || [], secretPlugins)
 				) {
 					scan.status = `running plugin ${plugin_name}`;
 					currentPlugin += 1;
@@ -1205,9 +1311,9 @@ export function makeServer({ environment = "development" } = {}) {
 				category = "static_analysis";
 				plugin_name = `${category} scan`;
 				if (
-					totalPlugins === 4 ||
 					(entity.scan_options.categories &&
-						entity.scan_options.categories.includes(category))
+						entity.scan_options.categories.includes(category)) ||
+					isPluginInCategory(entity.scan_options.plugins || [], staticPlugins)
 				) {
 					scan.status = `running plugin ${plugin_name}`;
 					currentPlugin += 1;
@@ -1225,9 +1331,9 @@ export function makeServer({ environment = "development" } = {}) {
 				category = "inventory";
 				plugin_name = `${category} scan`;
 				if (
-					totalPlugins === 4 ||
 					(entity.scan_options.categories &&
-						entity.scan_options.categories.includes(category))
+						entity.scan_options.categories.includes(category)) ||
+					isPluginInCategory(entity.scan_options.plugins || [], techPlugins)
 				) {
 					scan.status = `running plugin ${plugin_name}`;
 					currentPlugin += 1;
@@ -1239,6 +1345,25 @@ export function makeServer({ environment = "development" } = {}) {
 					};
 					yield scan;
 					generateInventoryResults(scan);
+				}
+
+				category = "sbom";
+				plugin_name = `${category} scan`;
+				if (
+					(entity.scan_options.categories &&
+						entity.scan_options.categories.includes(category)) ||
+					isPluginInCategory(entity.scan_options.plugins || [], sbomPlugins)
+				) {
+					scan.status = `running plugin ${plugin_name}`;
+					currentPlugin += 1;
+					scan.status_detail = {
+						plugin_name: plugin_name,
+						plugin_start_time: formatNewDate(),
+						current_plugin: currentPlugin,
+						total_plugins: totalPlugins,
+					};
+					yield scan;
+					// sbom results are not included with regular scan results
 				}
 
 				scan.status = "completed";
@@ -1283,7 +1408,7 @@ export function makeServer({ environment = "development" } = {}) {
 			}
 
 			const getRandomFeatures = () => {
-				let features: any = {};
+				const features: any = {};
 
 				// should any features be available?
 				if (Math.random() < 0.5) {
@@ -1541,7 +1666,7 @@ export function makeServer({ environment = "development" } = {}) {
 					service: "azure",
 					repo: "tv/dev",
 					risk: "priority",
-					last_qualified_scan: "2022-02-02T14:00:00Z",
+					last_qualified_scan: "2022-02-02T14:00:00Z", // added for filtering, removed in getFilteredResults
 					qualified_scan: {
 						created: "2022-02-02T14:00:00Z",
 						scan_id: generateId(),
@@ -1760,7 +1885,7 @@ export function makeServer({ environment = "development" } = {}) {
 				if (!("name" in request.params)) {
 					return createResponse(400, "Invalid request, missing name");
 				}
-				const name = request.params.name;
+				const name: string = request.params.name;
 				if (!("version" in request.params)) {
 					return createResponse(400, "Invalid request, missing version");
 				}
@@ -1791,7 +1916,7 @@ export function makeServer({ environment = "development" } = {}) {
 				// miragejs doesn't correctly handle query params that can have multiple values
 				// so parse them out of the querystring using QueryString and replace the miragejs qs
 				if (request?.queryParams && "risk" in request.queryParams) {
-					const search: any = QueryString.parse(request.url);
+					const search: any = queryString.parse(request.url);
 					if ("risk" in search) {
 						request.queryParams["risk"] = search["risk"];
 					}
@@ -1806,9 +1931,26 @@ export function makeServer({ environment = "development" } = {}) {
 			});
 
 			this.get("/search/vulnerabilities", (_schema, request) => {
+				const vulnIds = [
+					generateId(),
+					generateId(),
+					generateId(),
+					generateId(),
+					generateId(),
+				];
 				const vulns = [
 					{
-						id: "CVE-2022-0101",
+						id: vulnIds[0],
+						advisory_ids: [
+							"https://github.com/advisories/GHSA-00000",
+							"CVE-2022-0101",
+						],
+						vuln_id: [
+							// added for filtering, removed in getFilteredResults
+							vulnIds[0],
+							"https://github.com/advisories/GHSA-00000",
+							"CVE-2022-0101",
+						],
 						description: "This is a vulnerability description",
 						severity: "high",
 						remediation: "Fix it, asap",
@@ -1823,24 +1965,47 @@ export function makeServer({ environment = "development" } = {}) {
 							"trivy",
 							"veracode_sca",
 							"snyk",
-							"technology_discovery",
-							"base_images",
+							"a_totes_new_plugin",
+							"youve_never_seen_this_plugin_before",
+						],
+						plugin: [
+							"node_dependencies",
+							"aqua_cli_scanner",
+							"trivy",
+							"veracode_sca",
+							"snyk",
 							"a_totes_new_plugin",
 							"youve_never_seen_this_plugin_before",
 						],
 					},
 					{
-						id: "CVE-2022-0202",
+						id: vulnIds[1],
+						advisory_ids: ["CVE-2022-0202"],
+						vuln_id: [vulnIds[1], "CVE-2022-0202"],
 						description: "This is another vulnerability description",
 						severity: "critical",
 						remediation: "This is another remediation text",
 						components: {
 							"component3-name": ["7.1.2"],
 						},
-						source_plugins: ["snyk"],
+						source_plugins: ["snyk", "veracode_sca"],
+						plugin: ["snyk", "veracode_sca"],
 					},
 					{
-						id: "CVE-2014-0101",
+						id: vulnIds[2],
+						advisory_ids: [
+							"https://github.com/advisories/GHSA-9999",
+							"https://github.com/advisories/GHSA-9998",
+							"CVE-2014-0101",
+							"CVE-2014-0111",
+						],
+						vuln_id: [
+							vulnIds[2],
+							"https://github.com/advisories/GHSA-9999",
+							"https://github.com/advisories/GHSA-9998",
+							"CVE-2014-0101",
+							"CVE-2014-0111",
+						],
 						description: "What is this still doing here?",
 						severity: "high",
 						remediation: "This should have been remediated by now",
@@ -1848,16 +2013,38 @@ export function makeServer({ environment = "development" } = {}) {
 							"legacy-component": ["0.0.1", "0.0.2", "0.0.3"],
 						},
 						source_plugins: ["veracode_sca"],
+						plugin: ["veracode_sca"],
 					},
 					{
-						id: "CVE-2024-9999",
+						id: vulnIds[3],
+						advisory_ids: ["CVE-2024-9999"],
+						vuln_id: [vulnIds[3], "CVE-2024-9999"],
 						description: "This vuln is so new it's a -1 day",
 						severity: "critical",
 						remediation: "No patches available yet",
 						components: {
 							javathing: ["4.3.2"],
 						},
-						source_plugins: ["veracode_sca"],
+						source_plugins: [
+							"veracode_sca",
+							"snyk",
+							"aqua_cli_scanner",
+							"trivy",
+						],
+						plugin: ["veracode_sca", "snyk", "aqua_cli_scanner", "trivy"],
+					},
+					{
+						id: vulnIds[4],
+						advisory_ids: ["CVE-2000-9999"],
+						vuln_id: [vulnIds[4], "CVE-2000-9999"],
+						description: "Oh noes, y2k",
+						severity: "",
+						remediation: "Rollback all clocks to 1999, party on.",
+						components: {
+							allthethings: ["1.9.99"],
+						},
+						source_plugins: ["aqua_cli_scanner", "trivy"],
+						plugin: ["aqua_cli_scanner", "trivy"],
 					},
 				];
 				const entity: { ids: string[]; entities: any } = {
@@ -1869,17 +2056,21 @@ export function makeServer({ environment = "development" } = {}) {
 				});
 				// miragejs doesn't correctly handle query params that can have multiple values
 				// so parse them out of the querystring using QueryString and replace the miragejs qs
-				if (request?.queryParams && "severity" in request.queryParams) {
-					const search: any = QueryString.parse(request.url);
-					if ("severity" in search) {
+				if (request?.queryParams) {
+					const search: any = queryString.parse(request.url);
+					if ("severity" in request.queryParams && "severity" in search) {
 						request.queryParams["severity"] = search["severity"];
+					}
+					if ("plugin" in request.queryParams && "plugin" in search) {
+						request.queryParams["plugin"] = search["plugin"];
 					}
 				}
 				return getFilteredResults(
 					request,
 					entity,
 					"search/vulnerabilities",
-					vulns.length
+					vulns.length,
+					["vuln_id", "plugin"]
 				);
 			});
 
@@ -1897,7 +2088,7 @@ export function makeServer({ environment = "development" } = {}) {
 					// miragejs doesn't correctly handle query params that can have multiple values
 					// so parse them out of the querystring using QueryString and replace the miragejs qs
 					if (request?.queryParams && "risk" in request.queryParams) {
-						const search: any = QueryString.parse(request.url);
+						const search: any = queryString.parse(request.url);
 						if ("risk" in search) {
 							request.queryParams["risk"] = search["risk"];
 						}
@@ -1912,7 +2103,7 @@ export function makeServer({ environment = "development" } = {}) {
 				}
 			);
 
-			this.get("/system/status", (_schema) => {
+			this.get("/system/status", () => {
 				const currentCheck = formatDate(DateTime.utc().toJSON(), "long");
 				const nextCheck = formatDate(
 					DateTime.utc()
@@ -1936,7 +2127,7 @@ export function makeServer({ environment = "development" } = {}) {
 
 			// user requests /users
 			// return a mocked current user
-			this.get("/users/self", (_schema) => {
+			this.get("/users/self", () => {
 				return {
 					scan_orgs: [
 						...new Set([
@@ -2302,10 +2493,22 @@ export function makeServer({ environment = "development" } = {}) {
 				return newService;
 			});
 
+			const categoryNotDisabled = (category: string) =>
+				!category.startsWith("-");
+
 			// creates a generator function for returning scan results
 			// add scan entity to scans entities object
 			// and return json for a queued item
 			const addScan = (scanOpts: ScanOpts) => {
+				let excludePaths = scanOpts?.excludePaths ?? [];
+				if (
+					scanOpts?.includePaths &&
+					scanOpts.includePaths.length > 0 &&
+					(!scanOpts?.excludePaths || scanOpts?.excludePaths.length === 0)
+				) {
+					excludePaths = ["*"];
+				}
+
 				const entity: Entity = {
 					progressToFailure: scanOpts.progressToFailure || false,
 					// scanHistory has scanId appended to repo path
@@ -2322,7 +2525,9 @@ export function makeServer({ environment = "development" } = {}) {
 							url: null,
 							client_id: null,
 						},
-						batch_priority: false,
+						batch_priority: scanOpts?.batch ?? false,
+						include_paths: scanOpts?.includePaths ?? [],
+						exclude_paths: excludePaths,
 					},
 					status: "queued",
 					status_detail: {
@@ -2336,6 +2541,16 @@ export function makeServer({ environment = "development" } = {}) {
 						start: null, // start time is null when queued
 						end: null,
 					},
+					batch_id: scanOpts?.batch ? generateId() : null,
+					batch_description:
+						scanOpts?.batch && Math.random() < 0.5
+							? `Batch Scan ${DateTime.utc()
+									.minus({ days: Math.floor(Math.random() * 365) })
+									.toJSON()}`
+							: null,
+					qualified:
+						scanOpts.categories.length === defaults.categories.length &&
+						scanOpts.categories.every(categoryNotDisabled),
 				};
 				entity["gen"] = generateScanContent(entity);
 				[defaultUser, defaultEmail] = getRandomUser({ includeNull: true });
@@ -2388,15 +2603,22 @@ export function makeServer({ environment = "development" } = {}) {
 				const categories = getCategories(
 					attrs.categories || defaults.categories
 				);
+				const plugins = getPlugins(
+					attrs.categories || defaults.categories,
+					attrs.plugins || defaults.plugins
+				);
 				addScan({
 					scanId: scanId,
 					branch: attrs.branch || defaults.branch,
 					categories: categories,
-					plugins: categories, // TODO: not the same as categories, but close enough for testing at this point
+					plugins: plugins,
 					depth: attrs.depth || defaults.depth,
 					includeDev: attrs.include_dev || defaults.includeDev,
+					includePaths: attrs.include_paths || [],
+					excludePaths: attrs.exclude_paths || [],
 					initiatedBy: defaults.currentUser,
 					progressToFailure: true,
+					batch: false, // user-initiated scans aren't batched
 				});
 				// return queued new scan
 				return {
@@ -2492,12 +2714,9 @@ export function makeServer({ environment = "development" } = {}) {
 			);
 
 			// negative test case to generate a 401 / session timeout
-			this.post(
-				`/${defaults.sessionVcs}/${defaults.sessionOrg}/:repo`,
-				(_schema) => {
-					return createResponse(401, "Session timeout");
-				}
-			);
+			this.post(`/${defaults.sessionVcs}/${defaults.sessionOrg}/:repo`, () => {
+				return createResponse(401, "Session timeout");
+			});
 
 			// return = any b/c this is an AnalysisReport with extra mock fields
 			// and may also not contain a scan_id because it's returning a scan history result
@@ -2665,21 +2884,98 @@ export function makeServer({ environment = "development" } = {}) {
 			// input: array that contains only categories to run
 			// output: array that includes all categories, categories that won't run prefixed with -
 			const getCategories = (catsToRun: ScanCategories[]) => {
-				let categories: any = [];
+				const categories: ScanCategories[] = [];
 				defaults.categories.forEach((cat: ScanCategories) => {
-					if (catsToRun.includes(cat)) {
-						categories.push(cat);
-					} else {
-						categories.push("-" + cat);
-					}
+					categories.push(
+						`${catsToRun.includes(cat) ? "" : "-"}${cat}` as ScanCategories
+					);
 				});
 				return categories;
+			};
+
+			// input: array that contains only plugins to run
+			// output: array that includes all plugins, plugins that won't run prefixed with -
+			const getPlugins = (
+				catsToRun: ScanCategories[],
+				pluginsToRun: string[]
+			) => {
+				let plugins: string[] = [];
+
+				// check each scan category,
+				// if enabled, enable all plugins in that category
+				// if disabled, disable all plugins in that category
+				defaults.categories.forEach((cat: ScanCategories) => {
+					switch (cat) {
+						case "inventory":
+							if (catsToRun.includes(cat)) {
+								plugins = [...plugins, ...techPlugins];
+							} else {
+								plugins = [
+									...plugins,
+									...techPlugins.map((plugin) => `-${plugin}`),
+								];
+							}
+							break;
+						case "secret":
+							if (catsToRun.includes(cat)) {
+								plugins = [...plugins, ...secretPlugins];
+							} else {
+								plugins = [
+									...plugins,
+									...secretPlugins.map((plugin) => `-${plugin}`),
+								];
+							}
+							break;
+						case "vulnerability":
+							if (catsToRun.includes(cat)) {
+								plugins = [...plugins, ...vulnPlugins];
+							} else {
+								plugins = [
+									...plugins,
+									...vulnPlugins.map((plugin) => `-${plugin}`),
+								];
+							}
+							break;
+						case "static_analysis":
+							if (catsToRun.includes(cat)) {
+								plugins = [...plugins, ...staticPlugins];
+							} else {
+								plugins = [
+									...plugins,
+									...staticPlugins.map((plugin) => `-${plugin}`),
+								];
+							}
+							break;
+						case "sbom":
+							if (catsToRun.includes(cat)) {
+								plugins = [...plugins, ...sbomPlugins];
+							} else {
+								plugins = [
+									...plugins,
+									...sbomPlugins.map((plugin) => `-${plugin}`),
+								];
+							}
+							break;
+					}
+				});
+
+				// loop through plugins specified and individually enable or disable
+				for (let i = 0; i < plugins.length; i += 1) {
+					for (let j = 0; j < pluginsToRun.length; j += 1) {
+						if (
+							plugins[i].replace(/^-/, "") === pluginsToRun[j].replace(/^-/, "")
+						) {
+							plugins[i] = pluginsToRun[j];
+						}
+					}
+				}
+				return plugins;
 			};
 
 			const getRandomCategories = () => {
 				const categories: ScanCategories[] = [...defaults.categories];
 
-				let retCategories: ScanCategories[] = [];
+				const retCategories: ScanCategories[] = [];
 				for (let i = 0; i < categories.length; i += 1) {
 					if (Math.random() < 0.5) {
 						retCategories.push(categories[i]);
@@ -2687,6 +2983,19 @@ export function makeServer({ environment = "development" } = {}) {
 				}
 
 				return retCategories;
+			};
+
+			const getRandomPlugins = () => {
+				const plugins: string[] = [...defaults.plugins];
+
+				const retPlugins: string[] = [];
+				for (let i = 0; i < plugins.length; i += 1) {
+					if (Math.random() < 0.1) {
+						retPlugins.push(plugins[i]);
+					}
+				}
+
+				return retPlugins;
 			};
 
 			// generate a bunch of random scan history that can be paged in subsequent calls
@@ -2699,16 +3008,26 @@ export function makeServer({ environment = "development" } = {}) {
 				for (let i = 0; i < defaults.scanCount; i += 1) {
 					const scanId = i === 0 && useScanId ? useScanId : generateId();
 					const categories = getCategories(getRandomCategories());
+					const plugins = getPlugins(categories, getRandomPlugins());
 					const [, randomEmail] = getRandomUser({ includeNull: true });
 					const entity = addScan({
 						scanId: scanId,
 						branch: getRandomBranchName(),
 						categories: categories,
-						plugins: categories, // TODO: plugins not same as categories but use them at this point
+						plugins: plugins,
 						depth: Math.floor(Math.random() * (defaults.depth ?? 0)),
 						includeDev: Math.random() < 0.5,
 						initiatedBy: randomEmail,
 						progressToFailure: false,
+						batch: Math.random() < 0.75, // more batched scans
+						includePaths:
+							Math.random() < 0.5
+								? ["include1", "include2", "include3", "include4"]
+								: [],
+						excludePaths:
+							Math.random() < 0.5
+								? ["exclude1", "exclude2", "exclude3", "exclude4"]
+								: [],
 					});
 
 					// set each scan to be at a different status phase
@@ -2773,26 +3092,45 @@ export function makeServer({ environment = "development" } = {}) {
 						: 0;
 				const initiatedBy =
 					request?.queryParams && request.queryParams.initiated_by;
-				let filteredScans: Adapter = {
+				const includeBatch =
+					request?.queryParams && request.queryParams.include_batch;
+				const filteredScans: Adapter = {
 					ids: [],
 					entities: {},
 				};
 				let returnFrom = scans;
-				if (initiatedBy) {
+				// filter scan results
+				if (initiatedBy || !includeBatch) {
 					scans.ids.forEach((scanId) => {
-						if (
-							scanId in scans.entities &&
-							scans.entities[scanId].initiated_by === initiatedBy
-						) {
-							filteredScans.entities[scanId] = scans.entities[scanId];
-							filteredScans.ids.push(scanId);
+						if (scanId in scans.entities) {
+							if (initiatedBy && !includeBatch) {
+								if (
+									scans.entities[scanId].initiated_by === initiatedBy &&
+									!scans.entities[scanId].scan_options?.batch_priority
+								) {
+									filteredScans.entities[scanId] = scans.entities[scanId];
+									filteredScans.ids.push(scanId);
+								}
+							} else if (
+								initiatedBy &&
+								scans.entities[scanId].initiated_by === initiatedBy
+							) {
+								filteredScans.entities[scanId] = scans.entities[scanId];
+								filteredScans.ids.push(scanId);
+							} else if (
+								!includeBatch &&
+								!scans.entities[scanId].scan_options?.batch_priority
+							) {
+								filteredScans.entities[scanId] = scans.entities[scanId];
+								filteredScans.ids.push(scanId);
+							}
 						}
 					});
 					returnFrom = filteredScans;
 				}
 
 				const scanIds = returnFrom.ids.slice(offset, offset + limit);
-				let results: any = [];
+				const results: any = [];
 				scanIds.forEach((scanId) => {
 					if (scanId in returnFrom.entities) {
 						results.push(getScanResultsById(scanId, "history"));
@@ -2808,6 +3146,9 @@ export function makeServer({ environment = "development" } = {}) {
 					if (initiatedBy) {
 						previous += `&initiated_by=${initiatedBy}`;
 					}
+					if (includeBatch) {
+						previous += "&include_batch=true";
+					}
 				}
 				if (offset + limit < defaults.scanCount) {
 					next = `${location.service}/${location.org}/${
@@ -2815,6 +3156,9 @@ export function makeServer({ environment = "development" } = {}) {
 					}/history?limit=${limit}&offset=${offset + limit}`;
 					if (initiatedBy) {
 						next += `&initiated_by=${initiatedBy}`;
+					}
+					if (includeBatch) {
+						next += "&include_batch=true";
 					}
 				}
 
@@ -2896,7 +3240,7 @@ export function makeServer({ environment = "development" } = {}) {
 			const keyExists = (obj: any, key: string) => {
 				if (!obj || (typeof obj !== "object" && !Array.isArray(obj))) {
 					return null;
-				} else if (obj.hasOwnProperty(key)) {
+				} else if (key in obj) {
 					return obj[key];
 				} else if (Array.isArray(obj)) {
 					for (let i = 0; i < obj.length; i++) {
@@ -2934,13 +3278,15 @@ export function makeServer({ environment = "development" } = {}) {
 						// eslint-disable-next-line no-loop-func
 						filteredIds = filteredIds.filter((id: string) => {
 							if (id in adapter.entities) {
-								let entity = adapter.entities[id];
+								const entity = adapter.entities[id];
 								if (param.endsWith("__contains")) {
-									let field = param.replace(/__contains$/, "");
+									const field = param.replace(/__contains$/, "");
 									// if we can't find an exact match with the filter on the field name
 									// also try simple plural (e.g. "license" => "licenses")
-									let v =
-										keyExists(entity, field) || keyExists(entity, field + "s");
+									let v = keyExists(entity, field);
+									if (v === null) {
+										v = keyExists(entity, field + "s");
+									}
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
 										return valueArr.some((item: string) => {
@@ -2955,9 +3301,11 @@ export function makeServer({ environment = "development" } = {}) {
 										});
 									}
 								} else if (param.endsWith("__icontains")) {
-									let field = param.replace(/__icontains$/, "");
-									let v =
-										keyExists(entity, field) || keyExists(entity, field + "s");
+									const field = param.replace(/__icontains$/, "");
+									let v = keyExists(entity, field);
+									if (v === null) {
+										v = keyExists(entity, field + "s");
+									}
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
 										return valueArr.some((item: string) => {
@@ -2975,24 +3323,30 @@ export function makeServer({ environment = "development" } = {}) {
 									}
 								} else if (param.endsWith("__lt")) {
 									const field = param.replace(/__lt$/, "");
-									let v =
-										keyExists(entity, field) || keyExists(entity, field + "s");
+									let v = keyExists(entity, field);
+									if (v === null) {
+										v = keyExists(entity, field + "s");
+									}
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
 										return valueArr.some((item: string) => item < value);
 									}
 								} else if (param.endsWith("__gt")) {
 									const field = param.replace(/__gt$/, "");
-									let v =
-										keyExists(entity, field) || keyExists(entity, field + "s");
+									let v = keyExists(entity, field);
+									if (v === null) {
+										v = keyExists(entity, field + "s");
+									}
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
 										return valueArr.some((item: string) => item > value);
 									}
 								} else if (param.endsWith("__isnull")) {
 									const field = param.replace(/__isnull$/, "");
-									let v =
-										keyExists(entity, field) || keyExists(entity, field + "s");
+									let v = keyExists(entity, field);
+									if (v === null) {
+										v = keyExists(entity, field + "s");
+									}
 									const valueArr = Array.isArray(v) ? [...v] : [v];
 									const isNull = !(value.toLocaleLowerCase() === "false");
 									if (valueArr.length === 0) {
@@ -3003,9 +3357,11 @@ export function makeServer({ environment = "development" } = {}) {
 									});
 								} else {
 									// exact
-									let field = param;
-									let v =
-										keyExists(entity, field) || keyExists(entity, field + "s");
+									const field = param;
+									let v = keyExists(entity, field);
+									if (v === null) {
+										v = keyExists(entity, field + "s");
+									}
 									const valueArr = Array.isArray(v) ? [...v] : [v];
 									return valueArr.some((item: string) => {
 										if (item && typeof item === "object") {
@@ -3073,7 +3429,7 @@ export function makeServer({ environment = "development" } = {}) {
 				}
 
 				const entityIds = orderedIds.slice(offset, offset + limit);
-				let results: any = [];
+				const results: any = [];
 				entityIds.forEach((entityId: string) => {
 					if (entityId in adapter.entities) {
 						const result = { ...adapter.entities[entityId] };
@@ -3177,7 +3533,7 @@ export function makeServer({ environment = "development" } = {}) {
 			// negative test case to generate a 401 / session timeout
 			this.get(
 				`/${defaults.sessionVcs}/${defaults.sessionOrg}/:repo/history`,
-				(_schema, request) => {
+				() => {
 					return createResponse(401, "Session timeout");
 				}
 			);

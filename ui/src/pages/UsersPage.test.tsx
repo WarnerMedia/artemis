@@ -197,10 +197,23 @@ describe("UsersPage component", () => {
 					name: "Administrator",
 				});
 				expect(administratorCheckbox).toBeInTheDocument();
-				const snykCheckbox = screen.getByRole("checkbox", {
-					name: "Snyk Vulnerability Plugin",
-				});
-				expect(snykCheckbox).toBeInTheDocument();
+
+				if (process.env.REACT_APP_AQUA_ENABLED === "true") {
+					console.log("Snyk feature enabled, testing it is enabled...");
+					expect(
+						screen.getByRole("checkbox", {
+							name: "Snyk Vulnerability Detection Plugin",
+						})
+					).toBeInTheDocument();
+				} else {
+					console.log("Snyk feature disabled, testing it is disabled...");
+					expect(
+						screen.queryByRole("checkbox", {
+							name: "Snyk Vulnerability Detection Plugin",
+						})
+					).not.toBeInTheDocument();
+				}
+
 				const addItemToScopeButton = screen.getByRole("button", {
 					name: "Add this item to scope",
 				});
@@ -425,10 +438,21 @@ describe("UsersPage component", () => {
 				});
 				expect(administratorCheckbox).toBeInTheDocument();
 
-				const snykCheckbox = screen.getByRole("checkbox", {
-					name: "Snyk Vulnerability Plugin",
-				});
-				expect(snykCheckbox).toBeInTheDocument();
+				if (process.env.REACT_APP_AQUA_ENABLED === "true") {
+					console.log("Snyk feature enabled, testing it is enabled...");
+					expect(
+						screen.getByRole("checkbox", {
+							name: "Snyk Vulnerability Detection Plugin",
+						})
+					).toBeInTheDocument();
+				} else {
+					console.log("Snyk feature disabled, testing it is disabled...");
+					expect(
+						screen.queryByRole("checkbox", {
+							name: "Snyk Vulnerability Detection Plugin",
+						})
+					).not.toBeInTheDocument();
+				}
 
 				const feature1Checkbox = screen.getByRole("checkbox", {
 					name: "Feature1",

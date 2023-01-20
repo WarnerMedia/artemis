@@ -9,7 +9,7 @@ test("should create pending, rejected, fulfilled actions", () => {
 });
 
 test("should create an action that sets pending type on call", () => {
-	const testActions = createSagaActions<Number, String>("test/actions");
+	const testActions = createSagaActions<number, string>("test/actions");
 	expect(testActions("testMe")).toEqual({
 		type: "test/actions/pending",
 		payload: "testMe",
@@ -17,7 +17,7 @@ test("should create an action that sets pending type on call", () => {
 });
 
 test("should create an action that sets meta args for fulfilled", () => {
-	const testActions = createSagaActions<Number, String>("test/actions");
+	const testActions = createSagaActions<number, string>("test/actions");
 	expect(testActions.fulfilled(3, "arg")).toEqual({
 		type: "test/actions/fulfilled",
 		payload: 3,
@@ -26,7 +26,7 @@ test("should create an action that sets meta args for fulfilled", () => {
 });
 
 test("should create an action that sets meta args for rejected", () => {
-	const testActions = createSagaActions<Number, String>("test/actions");
+	const testActions = createSagaActions<number, string>("test/actions");
 	expect(testActions.rejected("error", "arg")).toEqual({
 		type: "test/actions/rejected",
 		error: "error",

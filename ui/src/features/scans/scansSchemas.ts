@@ -1,5 +1,10 @@
+import { i18n } from "@lingui/core";
+import { t } from "@lingui/macro";
 import * as Yup from "yup";
+
 import { Response } from "api/client";
+import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
+import { User } from "features/users/usersSchemas";
 import { AppMeta, appMetaSchema } from "custom/scanMetaSchemas";
 
 // interfaces
@@ -15,7 +20,9 @@ export type ScanCategories =
 	| "static_analysis"
 	| "-static_analysis"
 	| "inventory"
-	| "-inventory";
+	| "-inventory"
+	| "sbom"
+	| "-sbom";
 
 interface ScanCallback {
 	url?: string | null;
@@ -39,6 +46,8 @@ interface AnalysisScanOptions {
 	include_dev?: boolean;
 	callback?: ScanCallback;
 	batch_priority?: boolean;
+	include_paths: string[];
+	exclude_paths: string[];
 }
 
 interface ScanStatusDetail {
@@ -99,6 +108,7 @@ interface VulnDetails {
 	severity: Severities;
 	description: string;
 	remediation?: string;
+	source_plugins?: string[] | null;
 }
 
 interface ComponentVulns {
@@ -154,6 +164,9 @@ export interface ScanHistory {
 	status: string;
 	status_detail: ScanStatusDetail;
 	scan_options: AnalysisScanOptions;
+	qualified?: boolean;
+	batch_id?: string | null;
+	batch_description?: string | null;
 }
 
 export interface AnalysisReport extends ScanHistory {
@@ -183,6 +196,7 @@ export interface ScanOptionsForm {
 	staticAnalysis?: boolean;
 	inventory?: boolean;
 	vulnerability?: boolean;
+	sbom?: boolean;
 	depth?: number | "";
 	includeDev?: boolean;
 	submitContext?: SubmitContext;
@@ -190,6 +204,9 @@ export interface ScanOptionsForm {
 	staticPlugins?: string[];
 	techPlugins?: string[];
 	vulnPlugins?: string[];
+	sbomPlugins?: string[];
+	includePaths?: string;
+	excludePaths?: string;
 }
 
 export interface ScanOptions {
@@ -198,6 +215,8 @@ export interface ScanOptions {
 	depth?: number;
 	include_dev?: boolean;
 	plugins?: string[];
+	include_paths?: string[];
+	exclude_paths?: string[];
 }
 
 // validation schemas...
@@ -232,6 +251,8 @@ const scanOptionsSchema = Yup.object()
 		include_dev: Yup.boolean().defined(),
 		callback: scanCallbackSchema,
 		batch_priority: Yup.boolean().defined(),
+		include_paths: Yup.array().defined().of(Yup.string().defined()),
+		exclude_paths: Yup.array().defined().of(Yup.string().defined()),
 	})
 	.defined();
 
@@ -320,6 +341,9 @@ export const analysisReportSchema: Yup.SchemaOf<any> = Yup.object()
 		debug: Yup.object().nullable(),
 		results_summary: scanResultsSummarySchema,
 		results: scanResultsSchema,
+		qualified: Yup.boolean().nullable(),
+		batch_id: scanIdSchema.nullable(),
+		batch_description: Yup.string().nullable(),
 	})
 	.defined();
 
@@ -337,6 +361,9 @@ export const scanHistorySchema: Yup.SchemaOf<any> = Yup.object()
 		status: Yup.string().defined(),
 		status_detail: scanStatusDetailSchema,
 		scan_options: scanOptionsSchema,
+		qualified: Yup.boolean().nullable(),
+		batch_id: scanIdSchema.nullable(),
+		batch_description: Yup.string().nullable(),
 	})
 	.defined();
 
@@ -350,3 +377,169 @@ export const scanHistoryResponseSchema = Yup.object().shape({
 		})
 		.defined(),
 });
+
+export const SCAN_DEPTH = 500;
+export const MAX_PATH_LENGTH = 4096;
+const PATH_INVALID_FORMAT = -1;
+const PATH_INVALID_LENGTH = 1;
+const PATH_VALID = 0;
+
+const validScanPaths = (paths?: string): number => {
+	if (paths) {
+		const pathArr = paths.split(SPLIT_MULTILINE_CN_REGEX);
+		for (const p of pathArr) {
+			const path = p.trim();
+			if (path.length > 0) {
+				if (
+					path.includes("..") ||
+					path.includes("\\0") ||
+					path.includes("$") ||
+					path.startsWith("./") ||
+					path.startsWith("/")
+				) {
+					return PATH_INVALID_FORMAT;
+				}
+				if (path.length > MAX_PATH_LENGTH) {
+					return PATH_INVALID_LENGTH;
+				}
+			}
+		}
+	}
+	return PATH_VALID;
+};
+
+export const scanOptionsFormSchema = (
+	currentUser?: User
+): Yup.SchemaOf<ScanOptionsForm> => {
+	return Yup.object({
+		vcsOrg: Yup.string()
+			.trim()
+			.nullable()
+			.default(null)
+			.required(i18n._(t`Required`))
+			.oneOf(currentUser?.scan_orgs ?? [], i18n._(t`Invalid value`)),
+		repo: Yup.string()
+			.trim()
+			.required(i18n._(t`Required`))
+			.matches(
+				/^[a-zA-Z0-9.\-_/]+$/,
+				i18n._(t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /`)
+			)
+			.when("vcsOrg", {
+				// if VCS does not contain /Org suffix, then repo must contain Org/ Prefix
+				is: (vcsOrg: string) => vcsOrg && !vcsOrg.includes("/"),
+				then: Yup.string().matches(
+					/\//,
+					i18n._(t`Missing "Organization/" Prefix`)
+				),
+			}),
+		branch: Yup.string()
+			// doesn't match all sequences in the git-check-ref-format spec, but prevents most
+			// individual disallowed characters
+			// see: https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
+			.trim()
+			.matches(
+				/^[^ ~^:?*[\\]*$/,
+				i18n._(
+					t`Contains one of more of the following invalid characters: space, \, ~, ^, :, ?, *, [`
+				)
+			),
+		secrets: Yup.boolean(),
+		staticAnalysis: Yup.boolean(),
+		inventory: Yup.boolean(),
+		vulnerability: Yup.boolean(),
+		sbom: Yup.boolean(),
+		depth: Yup.number()
+			.positive(i18n._(t`Positive integer`))
+			.integer(i18n._(t`Positive integer`))
+			.transform(function (value, originalvalue) {
+				// default value "" casts as NaN, so instead cast to undefined
+				return originalvalue === "" ? undefined : value;
+			}),
+		includeDev: Yup.boolean(),
+		submitContext: Yup.mixed<SubmitContext>().oneOf(["view", "scan"]),
+		secretPlugins: Yup.array(),
+		staticPlugins: Yup.array(),
+		techPlugins: Yup.array(),
+		vulnPlugins: Yup.array(),
+		sbomPlugins: Yup.array(),
+		includePaths: Yup.string().test({
+			name: "is-include-path",
+			test(value, ctx) {
+				const valid = validScanPaths(value);
+				if (valid !== PATH_VALID) {
+					return ctx.createError({
+						message: i18n._(
+							valid === PATH_INVALID_FORMAT
+								? t`Invalid path, must be relative to repository base directory and contain valid characters`
+								: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`
+						),
+					});
+				}
+				return true;
+			},
+		}),
+		excludePaths: Yup.string()
+			.trim()
+			.test({
+				name: "is-exclude-path",
+				test(value, ctx) {
+					const valid = validScanPaths(value);
+					if (valid !== PATH_VALID) {
+						return ctx.createError({
+							message: i18n._(
+								valid === PATH_INVALID_FORMAT
+									? t`Invalid path, must be relative to repository base directory and contain valid characters`
+									: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`
+							),
+						});
+					}
+					return true;
+				},
+			}),
+	})
+		.test(
+			"secrets",
+			i18n._(t`At least one scan feature or plugin must be enabled`),
+			function (
+				{
+					secrets,
+					staticAnalysis,
+					inventory,
+					vulnerability,
+					sbom,
+					secretPlugins,
+					staticPlugins,
+					techPlugins,
+					vulnPlugins,
+					sbomPlugins,
+				},
+				testContext
+			) {
+				if (
+					// check false instead of falsy
+					// so if these params are missing validation won't fail
+					// use case: reloading page with url params
+					secrets === false &&
+					staticAnalysis === false &&
+					inventory === false &&
+					vulnerability === false &&
+					sbom === false &&
+					(!secretPlugins || secretPlugins.length === 0) &&
+					(!staticPlugins || staticPlugins.length === 0) &&
+					(!techPlugins || techPlugins.length === 0) &&
+					(!vulnPlugins || vulnPlugins.length === 0) &&
+					(!sbomPlugins || sbomPlugins.length === 0)
+				) {
+					return testContext.createError({
+						path: "secrets",
+						message: i18n._(
+							t`At least one scan feature or plugin must be enabled`
+						),
+					});
+				}
+				return true;
+			}
+		)
+		.defined();
+};

@@ -4,36 +4,102 @@ import { Formik, Form } from "formik";
 import { render } from "../test-utils";
 
 const psMock = {
-	formikStateGroupName: "fooString",
-	idName: "bazString",
-	isDisabled: true,
+	label: "Category",
+	name: "category",
+	group: "categoryPlugins",
 	plugins: [
 		{ displayName: "Wilburs Secrets", apiName: "some_pig", group: "pigs" },
-		{ displayName: `Ms Piggy`, apiName: "ms_piggie", group: "pigs" },
+		{ displayName: "Ms Piggy", apiName: "ms_piggie", group: "pigs" },
 	],
+	icon: <></>,
 };
 
 describe("ScanOptionsSummary component", () => {
+	let user: any;
 	beforeEach(() => {
-		render(
-			<Formik initialValues={{}} onSubmit={() => {}}>
-				{({ submitForm, isValid, values }) => (
+		const renderArgs = render(
+			<Formik
+				initialValues={{
+					category: true,
+					categoryPlugins: ["some_pig", "ms_piggie"],
+				}}
+				onSubmit={() => {}}
+			>
+				{() => (
 					<Form>
 						<PluginsSelector {...psMock} />
 					</Form>
 				)}
 			</Formik>
 		);
+		user = renderArgs.user;
 	});
 
-	it("displays the plugin names inside the accordion", async () => {
-		expect(screen.getByText(/Plugins/)).toBeInTheDocument();
-		expect(screen.getByText(/Wilburs Secrets/)).toBeInTheDocument();
-		expect(screen.getByText(/Ms Piggy/)).toBeInTheDocument();
-	});
+	it("all plugins checked then category checked; all plugins unchecked then category unchecked; otherwise, indeterminate set", async () => {
+		// category has a title and is checked (since form category: true)
+		const categoryCheck = screen.getByRole("checkbox", { name: "Category" });
+		expect(categoryCheck).toBeChecked();
+		// checkbox should not be indeterminate since all plugins checked
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "false");
+		screen.getByText("2 of 2 plugins selected");
 
-	it("when the checkbox is unchecked, then the accordion is disabled", async () => {
-		const selector = screen.getByRole("button");
-		expect(selector).toHaveClass("Mui-disabled");
+		// expand the accordion
+		const expandButton = screen.getByRole("button", {
+			name: `Show ${psMock.label} plugins`,
+		});
+		await user.click(expandButton);
+
+		// check each plugin selected
+		const pluginCheck1 = screen.getByRole("checkbox", {
+			name: psMock.plugins[0].displayName,
+		});
+		expect(pluginCheck1).toBeChecked();
+
+		const pluginCheck2 = screen.getByRole("checkbox", {
+			name: psMock.plugins[1].displayName,
+		});
+		expect(pluginCheck2).toBeChecked();
+
+		// uncheck 1st plugin
+		// indeterminate should be set (subset of plugins checked), plugin selection count should be updated, category should still be checked
+		await user.click(pluginCheck1);
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "true");
+		screen.getByText("1 of 2 plugins selected");
+		expect(categoryCheck).toBeChecked();
+
+		// uncheck 2nd plugin
+		// indeterminate should not be set (all plugins unchecked), plugin selection count should be updated, category should be unchecked
+		await user.click(pluginCheck2);
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "false");
+		screen.getByText("0 of 2 plugins selected");
+		expect(categoryCheck).not.toBeChecked();
+
+		// clicking categoryt checkbox should enable all plugins
+		await user.click(categoryCheck);
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "false");
+		screen.getByText("2 of 2 plugins selected");
+		expect(pluginCheck1).toBeChecked();
+		expect(pluginCheck2).toBeChecked();
+
+		// clicking categoryt checkbox should disable all plugins
+		await user.click(categoryCheck);
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "false");
+		screen.getByText("0 of 2 plugins selected");
+		expect(pluginCheck1).not.toBeChecked();
+		expect(pluginCheck2).not.toBeChecked();
+
+		// check 1st plugin
+		// indeterminate should be set (subset of plugins checked), plugin selection count should be updated, category should not be unchecked
+		await user.click(pluginCheck1);
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "true");
+		screen.getByText("1 of 2 plugins selected");
+		expect(categoryCheck).not.toBeChecked();
+
+		// check 2nd plugin
+		// indeterminate should not be set (all plugins checked), plugin selection count should be updated, category should be unchecked
+		await user.click(pluginCheck2);
+		expect(categoryCheck).toHaveAttribute("data-indeterminate", "false");
+		screen.getByText("2 of 2 plugins selected");
+		expect(categoryCheck).toBeChecked();
 	});
 });

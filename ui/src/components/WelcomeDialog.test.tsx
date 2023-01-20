@@ -4,7 +4,7 @@ import WelcomeDialog from "./WelcomeDialog";
 describe("WelcomeDialog component", () => {
 	it("!open, dialog isn't displayed", () => {
 		const { container } = render(
-			<WelcomeDialog open={false} onClose={() => {}} title="my title">
+			<WelcomeDialog open={false} onOk={() => {}} title="my title">
 				Content
 			</WelcomeDialog>
 		);
@@ -13,7 +13,7 @@ describe("WelcomeDialog component", () => {
 
 	it("open, dialog is displayed with title and content", () => {
 		render(
-			<WelcomeDialog open={true} onClose={() => {}} title="my title">
+			<WelcomeDialog open={true} onOk={() => {}} title="my title">
 				The Dialog Content
 			</WelcomeDialog>
 		);
@@ -23,10 +23,10 @@ describe("WelcomeDialog component", () => {
 		screen.getByText(/the dialog content/i);
 	});
 
-	it("'don't show' option unchecked, onClose called with false", async () => {
+	it("'don't show' option unchecked, onOk called with false", async () => {
 		const mockOnClose = jest.fn();
 		const { user } = render(
-			<WelcomeDialog open={true} onClose={mockOnClose} title="my title">
+			<WelcomeDialog open={true} onOk={mockOnClose} title="my title">
 				Content
 			</WelcomeDialog>
 		);
@@ -34,10 +34,10 @@ describe("WelcomeDialog component", () => {
 		expect(mockOnClose.mock.calls[0][0]).toBe(false);
 	});
 
-	it("'don't show' option checked, onClose called with true", async () => {
+	it("'don't show' option checked, onOk called with true", async () => {
 		const mockOnClose = jest.fn();
 		const { user } = render(
-			<WelcomeDialog open={true} onClose={mockOnClose} title="my title">
+			<WelcomeDialog open={true} onOk={mockOnClose} title="my title">
 				Content
 			</WelcomeDialog>
 		);
@@ -46,5 +46,42 @@ describe("WelcomeDialog component", () => {
 		);
 		await user.click(screen.getByRole("button", { name: /ok/i }));
 		expect(mockOnClose.mock.calls[0][0]).toBe(true);
+	});
+
+	it("okText changes dialog confirmation button text", async () => {
+		const mockOnClose = jest.fn();
+		const { user } = render(
+			<WelcomeDialog
+				open={true}
+				onOk={mockOnClose}
+				title="my title"
+				okText="I Acknowledge"
+			>
+				Content
+			</WelcomeDialog>
+		);
+		expect(
+			screen.queryByRole("button", { name: /ok/i })
+		).not.toBeInTheDocument();
+		await user.click(screen.getByRole("button", { name: "I Acknowledge" }));
+		expect(mockOnClose.mock.calls[0][0]).toBe(false);
+	});
+
+	it("onCancel attribute adds cancel button that calls onCancel", async () => {
+		const mockOnClose = jest.fn();
+		const mockOnCancel = jest.fn();
+		const { user } = render(
+			<WelcomeDialog
+				open={true}
+				onOk={mockOnClose}
+				onCancel={mockOnCancel}
+				title="my title"
+			>
+				Content
+			</WelcomeDialog>
+		);
+		await user.click(screen.getByRole("button", { name: /cancel/i }));
+		expect(mockOnClose).not.toHaveBeenCalled();
+		expect(mockOnCancel).toHaveBeenCalled();
 	});
 });

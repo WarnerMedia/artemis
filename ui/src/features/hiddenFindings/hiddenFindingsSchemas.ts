@@ -3,6 +3,14 @@ import * as Yup from "yup";
 import { Severities } from "features/scans/scansSchemas";
 
 // interfaces
+export const HiddenFindingTypeValues = [
+	"vulnerability",
+	"vulnerability_raw",
+	"secret",
+	"secret_raw",
+	"static_analysis",
+];
+
 export type HiddenFindingType =
 	| "static_analysis"
 	| "secret"
@@ -123,13 +131,7 @@ const hiddenFindingValueVulnRawSchema = Yup.object()
 export const hiddenFindingSchema: Yup.SchemaOf<HiddenFinding> = Yup.object()
 	.shape({
 		id: Yup.string(), // note: not required for schema validation b/c we add this field after validation
-		type: Yup.string().oneOf([
-			"vulnerability",
-			"vulnerability_raw",
-			"secret",
-			"secret_raw",
-			"static_analysis",
-		]),
+		type: Yup.string().oneOf(HiddenFindingTypeValues),
 		value: Yup.object().when("type", (type: HiddenFindingType) => {
 			switch (type) {
 				case "static_analysis":

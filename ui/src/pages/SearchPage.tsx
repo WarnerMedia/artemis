@@ -37,6 +37,7 @@ import {
 	FormControl,
 	FormControlLabel,
 	FormGroup,
+	FormLabel,
 	Grid,
 	GridSize,
 	IconButton,
@@ -48,22 +49,23 @@ import {
 	ListItemText,
 	MenuItem,
 	Paper,
-	Select as MuiSelect,
-	SelectChangeEvent,
+	Slide,
+	TextField as MuiTextField,
 	Tooltip,
 	Typography,
 	useTheme,
 } from "@mui/material";
 import {
 	ArrowBackIos as ArrowBackIosIcon,
-	Extension as ExtensionIcon,
 	Filter1 as Filter1Icon,
 	Clear as ClearIcon,
+	Close as CloseIcon,
 	Cloud as CloudIcon,
 	Description as DescriptionIcon,
 	ExpandMore as ExpandMoreIcon,
 	FilterList as FilterListIcon,
 	Folder as FolderIcon,
+	Grading as GradingIcon,
 	OpenInNew as OpenInNewIcon,
 	RadioButtonChecked as RadioButtonCheckedIcon,
 	RadioButtonUnchecked as RadioButtonUncheckedIcon,
@@ -77,21 +79,21 @@ import { makeStyles } from "tss-react/mui";
 import { Trans, t } from "@lingui/macro";
 import { useLingui } from "@lingui/react";
 import * as Yup from "yup";
-import * as QueryString from "query-string";
+import queryString from "query-string";
 import {
+	GROUP_VULN,
 	pluginKeys,
-	ScanPlugin,
-	secretPlugins,
-	secretPluginsObjects,
-	staticPlugins,
-	staticPluginsObjects,
-	techPlugins,
-	techPluginsObjects,
+	sbomPluginsKeys,
+	secretPluginsKeys,
+	staticPluginsKeys,
+	techPluginsKeys,
 	vulnPlugins,
+	vulnPluginsKeys,
 	vulnPluginsObjects,
 } from "app/scanPlugins";
 import AutoCompleteField from "components/AutoCompleteField";
 import DatePickerField from "components/FormikPickers";
+import { PluginsSelector, PSProps } from "pages/MainPage";
 import {
 	colorCritical,
 	colorHigh,
@@ -113,8 +115,11 @@ import {
 	matchNullDateSchema,
 	matchStringSchema,
 	repoSchema,
+	SearchComponent,
 	SearchComponentsResponse,
+	SearchRepo,
 	SearchReposResponse,
+	SearchVulnerability,
 	SearchVulnsResponse,
 	serviceSchema,
 	VulnComponent,
@@ -135,12 +140,21 @@ import SearchMetaField, {
 	initialMetaFilters,
 	metaFields,
 	MetaFiltersT,
+	exportMetaData,
 } from "custom/SearchMetaField";
 import { metaQueryParamsSchema, metaSchema } from "custom/searchMetaSchemas";
 
 const useStyles = makeStyles()((theme) => ({
 	accordionDetails: {
 		flexGrow: 1,
+	},
+	advisoryIdLink: {
+		"&.MuiButton-root": {
+			padding: 0,
+			verticalAlign: "initial",
+			maxWidth: "28em",
+			justifyContent: "start",
+		},
 	},
 	autoComplete: {
 		border: `1px solid ${theme.palette.primary.main}`,
@@ -167,9 +181,8 @@ const useStyles = makeStyles()((theme) => ({
 		"& > *:first-of-type": {
 			marginLeft: theme.spacing(6),
 		},
-		"& > *": {
+		"& > :not(:first-of-type)": {
 			marginLeft: theme.spacing(0.5),
-			marginRight: theme.spacing(0.5),
 		},
 	},
 	chipPlugins: {
@@ -375,6 +388,13 @@ const useStyles = makeStyles()((theme) => ({
 		borderColor: theme.palette.error.main,
 		fill: theme.palette.error.main,
 	},
+	scanCategory: {
+		flex: 1,
+	},
+	scanFeaturesIcon: {
+		color: "darkgrey",
+		marginRight: theme.spacing(1),
+	},
 	tabDialogGrid: {
 		overflowWrap: "break-word",
 	},
@@ -386,6 +406,9 @@ const useStyles = makeStyles()((theme) => ({
 const COMPONENT_NAME_LENGTH = 100;
 const COMPONENT_VERSION_LENGTH = 32;
 const COMPONENT_LICENSE_LENGTH = 120;
+const VULN_ID_LENGTH = 100;
+const DESCRIPTION_LENGTH = 100;
+const REMEDIATION_LENGTH = 100;
 
 type SearchCategoryT = "component" | "repo" | "vuln";
 
@@ -409,7 +432,9 @@ const RiskValues = ["null", "low", "moderate", "high", "critical", "priority"];
 type MatchRiskT = Risks;
 const RiskValues = ["low", "moderate", "high", "critical", "priority"];
 
-type MatchSeverityT = Severities | "null";
+const PluginValues = [...vulnPlugins];
+
+type MatchSeverityT = Severities | ""; // None = ""
 
 type ComponentFiltersT = {
 	category: "component";
@@ -442,16 +467,20 @@ type RepoFiltersT = MetaFiltersT & {
 
 type VulnFiltersT = {
 	category: "vuln";
-	id_match: MatchStringT;
-	id: string;
+	vuln_id_match: MatchStringT;
+	vuln_id: string;
 	description_match: MatchStringT;
 	description: string;
+	remediation_match: MatchStringT;
+	remediation: string;
 	severity: MatchSeverityT[];
 	component_name_match: MatchStringT;
 	component_name: string;
 	component_version_match: MatchStringT;
 	component_version: string;
-	source_plugins: ScanPlugin | null; // autocomplete defaults to null when no option selected
+	plugin: string[];
+	vulnerability: boolean;
+	vulnPlugins: string[];
 };
 
 type SearchFiltersT = ComponentFiltersT | RepoFiltersT | VulnFiltersT;
@@ -488,22 +517,26 @@ const initialRepoFilters: RepoFiltersT = {
 
 const initialVulnFilters: VulnFiltersT = {
 	category: "vuln",
-	id_match: "icontains",
-	id: "",
+	vuln_id_match: "icontains",
+	vuln_id: "",
 	description_match: "icontains",
 	description: "",
+	remediation_match: "icontains",
+	remediation: "",
 	severity: [],
 	component_name_match: "icontains",
 	component_name: "",
 	component_version_match: "icontains",
 	component_version: "",
-	source_plugins: null, // autocomplete defaults to null when no option selected
+	plugin: [],
+	vulnerability: false,
+	vulnPlugins: [],
 };
 
 export interface MatcherT {
 	[name: string]: {
 		label: string;
-		props?: ChipProps;
+		props?: ChipProps | PSProps;
 	};
 }
 
@@ -516,6 +549,7 @@ export interface FormFieldDef {
 			| "KeyboardDateTimePickerField"
 			| "MatchChipField"
 			| "MatchDateField"
+			| "MatchPluginsSelectorField"
 			| "MatchStringField"
 			| "TextField"
 			| "SpacerField";
@@ -534,6 +568,33 @@ const getMaxDate = () => {
 	return DateTime.now().plus({ minutes: 1 }).toJSDate();
 };
 
+// combine separate arrays for each plugin category into a unified plugin array
+// and omit plugin categories
+// translates form values used by PluginsSelector component into plugin array
+// passed in url query string or to data table filters
+const getVulnQueryValues = (values: AddQueryParams) => {
+	const queryValues: AddQueryParams = {};
+	const sourcePlugins: string[] = [];
+
+	// copy-over each key
+	for (const [k, v] of Object.entries(values)) {
+		// omit categories
+		if (k === "vulnerability") {
+			continue;
+		}
+		// combine individual filter categories into plugin
+		if (k === "vulnPlugins") {
+			sourcePlugins.push(...v);
+			continue;
+		}
+		queryValues[k] = v;
+	}
+	if (sourcePlugins.length) {
+		queryValues.plugin = [...sourcePlugins];
+	}
+	return queryValues;
+};
+
 const MatchChipField = (props: MatchFieldProps) => {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
@@ -545,38 +606,41 @@ const MatchChipField = (props: MatchFieldProps) => {
 	};
 
 	const chips = () => {
-		let nodes: ReactNode[] = [];
+		const nodes: ReactNode[] = [];
 		for (const [label, v] of Object.entries(matchOptions)) {
-			nodes.push(
-				<Chip
-					{...v?.props}
-					key={`${props.id}-chip-${label}`}
-					role="checkbox"
-					disabled={props?.disabled}
-					label={i18n._(v.label)}
-					aria-checked={values[props.name].includes(label)}
-					icon={
-						values[props.name].includes(label) ? (
-							<RadioButtonCheckedIcon className={v?.props?.className} />
-						) : (
-							<RadioButtonUncheckedIcon className={v?.props?.className} />
-						)
-					}
-					clickable={true}
-					onClick={() => {
-						let newValue: string[] = [...values[props.name]];
-						const idx = newValue.findIndex((itm: string) => {
-							return itm === label;
-						});
-						if (idx === -1) {
-							newValue.push(label);
-						} else {
-							newValue.splice(idx, 1);
+			// check chip props from union, not pluginselector
+			if (v?.props && !("group" in v.props)) {
+				nodes.push(
+					<Chip
+						{...v.props}
+						key={`${props.id}-chip-${label}`}
+						role="checkbox"
+						disabled={props?.disabled}
+						label={i18n._(v.label)}
+						aria-checked={values[props.name].includes(label)}
+						icon={
+							values[props.name].includes(label) ? (
+								<RadioButtonCheckedIcon className={v.props?.className} />
+							) : (
+								<RadioButtonUncheckedIcon className={v.props?.className} />
+							)
 						}
-						setFieldValue(props.name, newValue, true);
-					}}
-				/>
-			);
+						clickable={true}
+						onClick={() => {
+							const newValue: string[] = [...values[props.name]];
+							const idx = newValue.findIndex((itm: string) => {
+								return itm === label;
+							});
+							if (idx === -1) {
+								newValue.push(label);
+							} else {
+								newValue.splice(idx, 1);
+							}
+							setFieldValue(props.name, newValue, true);
+						}}
+					/>
+				);
+			}
 		}
 		// add clear button if any chips are selected
 		if (Array.isArray(values[props.name]) && values[props.name].length > 0) {
@@ -606,7 +670,7 @@ const MatchChipField = (props: MatchFieldProps) => {
 				<FormControlLabel
 					value={props.label}
 					control={<div className={classes.chipArray}>{chips()}</div>}
-					label={props.label}
+					label={i18n._(props.label)}
 					labelPlacement="start"
 				/>
 			</FormGroup>
@@ -619,7 +683,7 @@ const MatchDateField = (props: MatchFieldProps) => {
 	const { matchOptions, ...fieldProps } = props;
 
 	const menuItems = () => {
-		let nodes: ReactNode[] = [];
+		const nodes: ReactNode[] = [];
 		for (const [label, values] of Object.entries(matchOptions)) {
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-date-item-${label}`}>
@@ -652,12 +716,48 @@ const MatchDateField = (props: MatchFieldProps) => {
 	);
 };
 
+const MatchPluginsSelectorField = (props: MatchFieldProps) => {
+	const { classes } = useStyles();
+	const { i18n } = useLingui();
+	const { matchOptions } = props;
+
+	const selectors = () => {
+		const nodes: ReactNode[] = [];
+		for (const [label, v] of Object.entries(matchOptions)) {
+			// check pluginselector props from union, not chip
+			if (v?.props && "group" in v.props) {
+				nodes.push(
+					<PluginsSelector
+						{...v.props}
+						key={`${props.id}-plugin-${label}`}
+						disabled={props?.disabled}
+						label={i18n._(v.label)}
+						name={label}
+						className={classes.scanCategory}
+					/>
+				);
+			}
+		}
+		return nodes;
+	};
+
+	return (
+		<FormControl component="fieldset">
+			<FormLabel component="legend">
+				<Trans>{props.label}</Trans>
+			</FormLabel>
+
+			<FormGroup row>{selectors()}</FormGroup>
+		</FormControl>
+	);
+};
+
 const MatchStringField = (props: MatchFieldProps) => {
 	const { classes } = useStyles();
 	const { matchOptions, ...fieldProps } = props;
 
 	const menuItems = () => {
-		let nodes: ReactNode[] = [];
+		const nodes: ReactNode[] = [];
 		for (const [label, values] of Object.entries(matchOptions)) {
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
@@ -697,7 +797,7 @@ const ComponentsCell = (props: {
 	const { i18n } = useLingui();
 	const { value } = props;
 	if (value) {
-		let tooltipTitle: string[] = [];
+		const tooltipTitle: string[] = [];
 		for (const [name, versionArray] of Object.entries(value)) {
 			tooltipTitle.push(`${name} (${versionArray.join(", ")})`);
 		}
@@ -812,6 +912,25 @@ const PluginsCell = (props: { value?: string[] | null }) => {
 	return <></>;
 };
 
+// vulnerabilities: [vuln_id1, vulnid_id2, ... vulnid_idN]
+const VulnerabilitiesCell = (props: { value?: string[] | null }) => {
+	const { i18n } = useLingui();
+	const { value } = props;
+
+	if (value && Array.isArray(value)) {
+		let cellValue = value[0];
+		if (value.length > 1) {
+			cellValue += " + " + i18n._(t`${value.length - 1} more`);
+		}
+		return (
+			<Tooltip title={value.join(", ")} describeChild>
+				<span>{cellValue}</span>
+			</Tooltip>
+		);
+	}
+	return <></>;
+};
+
 // cell requires full row data to get service/repo for generating vcs link
 const RepoCell = (props: { row?: RowDef | null }) => {
 	const { row } = props;
@@ -837,24 +956,6 @@ const RepoCell = (props: { row?: RowDef | null }) => {
 	);
 };
 
-// transform form value format <=> API format
-interface TransformersI {
-	[name: string]: {
-		toValue: (fromVal: string) => ScanPlugin | null;
-		fromValue: (toVal: ScanPlugin | null) => string;
-	};
-}
-const transformers: TransformersI = {
-	source_plugins: {
-		toValue: (fromVal: string) => {
-			return fromVal in pluginKeys ? pluginKeys[fromVal] : null;
-		},
-		fromValue: (toVal: ScanPlugin | null) => {
-			return toVal?.apiName ?? "";
-		},
-	},
-};
-
 const formatDateValue = (date?: Date | null) => {
 	return date ? date.toJSON() : null;
 };
@@ -865,8 +966,14 @@ interface AddQueryParams {
 
 const getTableFilters = (values: AddQueryParams) => {
 	// convert form field schema to API filters
-	let filters: FilterDef = {};
-	for (const [k, v] of Object.entries(values)) {
+	const filters: FilterDef = {};
+	let queryParams: AddQueryParams = {};
+	if (values.category === "vuln") {
+		queryParams = getVulnQueryValues(values);
+	} else {
+		queryParams = { ...values };
+	}
+	for (const [k, v] of Object.entries(queryParams)) {
 		if (!(k.endsWith("_match") || k.endsWith("_to"))) {
 			const matcher = values[`${k}_match`] ?? "exact";
 			/* FUTURE
@@ -874,14 +981,12 @@ const getTableFilters = (values: AddQueryParams) => {
 			*/
 
 			let value = v;
-			if (k in transformers) {
-				value = transformers[k].fromValue(v);
-			} else if (Object.prototype.toString.call(v) === "[object Date]") {
+			if (Object.prototype.toString.call(v) === "[object Date]") {
 				value = formatDateValue(v);
 			}
 
 			switch (matcher) {
-				case "lt":
+				case "lt": {
 					if (value) {
 						filters[k] = {
 							match: "lt",
@@ -889,7 +994,8 @@ const getTableFilters = (values: AddQueryParams) => {
 						};
 					}
 					break;
-				case "gt":
+				}
+				case "gt": {
 					if (value) {
 						filters[k] = {
 							match: "gt",
@@ -897,8 +1003,9 @@ const getTableFilters = (values: AddQueryParams) => {
 						};
 					}
 					break;
+				}
 				/* FUTURE
-				case "bt":
+				case "bt": {
 					if (value) {
 						filters[k] = {
 							match: "bt",
@@ -906,8 +1013,9 @@ const getTableFilters = (values: AddQueryParams) => {
 						};
 					}
 					break;
+				}
 				*/
-				case "exact":
+				case "exact": {
 					if (value && (!Array.isArray(value) || value.length)) {
 						filters[k] = {
 							match: "exact",
@@ -915,7 +1023,8 @@ const getTableFilters = (values: AddQueryParams) => {
 						};
 					}
 					break;
-				case "icontains":
+				}
+				case "icontains": {
 					if (value) {
 						filters[k] = {
 							match: "icontains",
@@ -923,18 +1032,21 @@ const getTableFilters = (values: AddQueryParams) => {
 						};
 					}
 					break;
-				case "null":
+				}
+				case "null": {
 					filters[k] = {
 						match: "null",
 						filter: "true", // API uses a boolean, must have a value set or field gets removed from query
 					};
 					break;
-				case "notnull":
+				}
+				case "notnull": {
 					filters[k] = {
 						match: "null",
 						filter: "false", // API uses a boolean, must have a value set or field gets removed from query
 					};
 					break;
+				}
 			}
 		}
 	}
@@ -1072,7 +1184,7 @@ const ComponentFiltersForm = (props: {
 				)
 			),
 		service_match: matchStringSchema(i18n._(t`Invalid service matcher`)),
-		service: serviceSchema(),
+		service: serviceSchema().nullable(),
 		repo_match: matchStringSchema(i18n._(t`Invalid repository matcher`)),
 		repo: repoSchema(),
 		last_scan_match: matchDateSchema(i18n._(t`Invalid scan time matcher`)),
@@ -1176,12 +1288,13 @@ const RepoFiltersForm = (props: {
 	const riskSchema = Yup.string()
 		.trim()
 		.oneOf(RiskValues, i18n._(t`Invalid risk`));
+
 	const schema = Yup.object({
 		service_match: matchStringSchema(i18n._(t`Invalid service matcher`)),
-		service: serviceSchema(),
+		service: serviceSchema().nullable(),
 		repo_match: matchStringSchema(i18n._(t`Invalid repository matcher`)),
 		repo: repoSchema(),
-		risk: Yup.array().of(riskSchema),
+		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
 		last_qualified_scan_match: matchNullDateSchema(
 			i18n._(t`Invalid last qualified scan time matcher`)
 		),
@@ -1304,6 +1417,10 @@ const VulnFiltersForm = (props: {
 }) => {
 	const { i18n } = useLingui();
 
+	const pluginSchema = Yup.string()
+		.trim()
+		.oneOf(PluginValues, i18n._(t`Invalid plugin`));
+
 	const severitySchema = Yup.string()
 		.trim()
 		.oneOf(
@@ -1311,13 +1428,40 @@ const VulnFiltersForm = (props: {
 			i18n._(t`Invalid severity`)
 		);
 	const schema = Yup.object({
-		id_match: matchStringSchema(i18n._(t`Invalid vulnerability id matcher`)),
-		id: Yup.string().trim(),
+		vuln_id_match: matchStringSchema(
+			i18n._(t`Invalid vulnerability id matcher`)
+		),
+		vuln_id: Yup.string()
+			.trim()
+			.max(
+				VULN_ID_LENGTH,
+				i18n._(
+					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`
+				)
+			),
 		description_match: matchStringSchema(
 			i18n._(t`Invalid description matcher`)
 		),
-		description: Yup.string().trim(),
-		severity: Yup.array().of(severitySchema),
+		description: Yup.string()
+			.trim()
+			.max(
+				DESCRIPTION_LENGTH,
+				i18n._(
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
+				)
+			),
+		remediation_match: matchStringSchema(
+			i18n._(t`Invalid remediation matcher`)
+		),
+		remediation: Yup.string()
+			.trim()
+			.max(
+				REMEDIATION_LENGTH,
+				i18n._(
+					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`
+				)
+			),
+		severity: Yup.array().of(severitySchema).ensure(), // ensures an array, even when 1 value
 		component_name_match: matchStringSchema(
 			i18n._(t`Invalid component name matcher`)
 		),
@@ -1340,16 +1484,7 @@ const VulnFiltersForm = (props: {
 					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
 				)
 			),
-		source_plugins: Yup.object({
-			displayName: Yup.string().defined(),
-			apiName: Yup.string()
-				.defined()
-				.oneOf(
-					[...secretPlugins, ...staticPlugins, ...techPlugins, ...vulnPlugins],
-					i18n._(t`Invalid plugin`)
-				),
-			group: Yup.string().defined(),
-		}).nullable(),
+		plugin: Yup.array().of(pluginSchema).ensure(), // ensures an array, even when 1 value
 	}).defined();
 
 	return <FiltersForm category="vuln" schema={schema} {...props} />;
@@ -1392,6 +1527,24 @@ const ComponentRepoDialog = (props: {
 		}
 	};
 
+	const exportFetch = async (meta?: RequestMeta) => {
+		const response = await client.getComponentRepos(
+			selectedRow?.name,
+			selectedRow?.version,
+			{
+				meta: {
+					...meta,
+					filters: {},
+				},
+			}
+		);
+		return response.results.map((r) => ({
+			service: r.service,
+			repo: r.repo,
+			risk: r.risk,
+		}));
+	};
+
 	const repoSearchResults = () => {
 		const columns: ColDef[] = [
 			{
@@ -1417,6 +1570,8 @@ const ComponentRepoDialog = (props: {
 				field: "risk",
 				headerName: i18n._(t`Risk`),
 				children: RiskChip,
+				sortable: false,
+				// no orderMap, ordered backend by API
 			},
 			// component sub-repos don't have (last_)qualified_scan or application_metadata fields
 		];
@@ -1434,6 +1589,11 @@ const ComponentRepoDialog = (props: {
 					rowsPerPage={rowsPerPage}
 					rowsPerPageOptions={rowsPerPageOptions}
 					reloadCount={0}
+					menuOptions={{
+						exportFile: "search_component_repos",
+						exportFormats: ["csv", "json"],
+						exportFetch: exportFetch,
+					}}
 				/>
 			</>
 		);
@@ -1502,6 +1662,8 @@ const VulnRepoDialog = (props: {
 	const [tableFilters, setTableFilters] = useState<FilterDef>({});
 	const [rowsPerPage] = useState(10);
 	const rowsPerPageOptions = [5, 10, 20];
+	const [selectedRepoRow, setSelectedRepoRow] = useState<RowDef | null>(null);
+	const containerRef = useRef(null);
 
 	const onSubmit = (values: any) => {
 		setTotalRows(0);
@@ -1510,6 +1672,7 @@ const VulnRepoDialog = (props: {
 	};
 
 	const handleReset = () => {
+		onRepoRowSelect(null);
 		setSubmitting(true);
 		setTotalRows(0);
 		setResultRows([]);
@@ -1551,6 +1714,55 @@ const VulnRepoDialog = (props: {
 		}
 	};
 
+	const exportFetch = async (meta?: RequestMeta) => {
+		const response = await client.getVulnerabilityRepos(selectedRow?.id, {
+			meta: {
+				...meta,
+				filters: tableFilters,
+			},
+		});
+		return response.results.map((r) => ({
+			service: r.service,
+			repo: r.repo,
+			risk: r.risk,
+			qualified_scan: r.qualified_scan,
+			application_metadata: r.application_metadata,
+		}));
+	};
+
+	const toCsv = (data: SearchRepo) => {
+		let scanUrl = "";
+		if (
+			data.service &&
+			data.repo &&
+			data.qualified_scan?.scan_id &&
+			data.qualified_scan?.created
+		) {
+			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
+				data.service
+			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
+				data.qualified_scan.scan_id
+			)} (created ${data.qualified_scan.created})`;
+		}
+
+		return {
+			service: data.service,
+			repo: data.repo,
+			risk: data.risk ?? "",
+			qualified_scan: scanUrl,
+			application_metadata: exportMetaData(data.application_metadata),
+		};
+	};
+
+	const onRepoRowSelect = (row: RowDef | null) => {
+		// filter form dom removed when selecting a row
+		// save form values, so form will be re-populated when row de-selected
+		if (row && repoFormRef.current) {
+			setRepoFormValues({ ...repoFormRef.current.values });
+		}
+		setSelectedRepoRow(row);
+	};
+
 	const repoSearchResults = () => {
 		const columns: ColDef[] = [
 			{
@@ -1576,6 +1788,7 @@ const VulnRepoDialog = (props: {
 				field: "risk",
 				headerName: i18n._(t`Risk`),
 				children: RiskChip,
+				// no orderMap, ordered backend by API
 			},
 			{
 				field: "last_qualified_scan", // duplicated field from qualified_scan so matches filtering name
@@ -1592,12 +1805,20 @@ const VulnRepoDialog = (props: {
 					columns={columns}
 					rows={resultRows}
 					defaultOrderBy="service"
+					onRowSelect={onRepoRowSelect}
+					selectedRow={selectedRepoRow}
 					disableRowClick={submitting}
 					onDataLoad={onDataLoad}
 					totalRows={totalRows}
 					rowsPerPage={rowsPerPage}
 					rowsPerPageOptions={rowsPerPageOptions}
 					filters={tableFilters}
+					menuOptions={{
+						exportFile: "search_vuln_repos",
+						exportFormats: ["csv", "json"],
+						exportFetch: exportFetch,
+						toCsv: toCsv,
+					}}
 				/>
 			</>
 		);
@@ -1609,67 +1830,100 @@ const VulnRepoDialog = (props: {
 				<Paper
 					className={classes.tablePaper}
 					style={{ marginBottom: theme.spacing(3) }}
+					ref={containerRef}
 				>
-					<Accordion
-						expanded={accordionExpanded}
-						onChange={() => {
-							setAccordionExpanded(!accordionExpanded);
-						}}
+					<Typography
+						component="h2"
+						variant="h6"
+						align="center"
+						className={classes.paperHeader}
 					>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="vuln-repos-search-filters-accordion"
-							id="vuln-repos-search-filters-accordion"
+						<Trans>Repositories</Trans>
+					</Typography>
+					{selectedRepoRow ? (
+						<Slide
+							direction="up"
+							in={Boolean(selectedRepoRow)}
+							container={containerRef.current}
 						>
-							<FilterListIcon style={{ marginRight: theme.spacing(2) }} />
-							<Typography>
-								<Trans>Search Filters</Trans>
-							</Typography>
-						</AccordionSummary>
-						<Divider />
-						<AccordionDetails>
-							<div className={classes.accordionDetails}>
-								<RepoFiltersForm
-									onSubmit={onSubmit}
-									submitting={submitting}
-									formValues={repoFormValues}
-									formRef={repoFormRef}
-									setValid={setValid}
-								/>
-							</div>
-						</AccordionDetails>
-					</Accordion>
+							<Box>
+								<IconButton
+									aria-label={i18n._(t`Close repository details`)}
+									onClick={() => onRepoRowSelect(null)}
+									edge="end"
+									size="small"
+									style={{ float: "right" }}
+								>
+									<CloseIcon fontSize="small" />
+								</IconButton>
+								<RepoDialogContent selectedRow={selectedRepoRow} />
+							</Box>
+						</Slide>
+					) : (
+						<Box>
+							<Accordion
+								expanded={accordionExpanded}
+								onChange={() => {
+									setAccordionExpanded(!accordionExpanded);
+								}}
+							>
+								<AccordionSummary
+									expandIcon={<ExpandMoreIcon />}
+									aria-controls="vuln-repos-search-filters-accordion"
+									id="vuln-repos-search-filters-accordion"
+								>
+									<FilterListIcon style={{ marginRight: theme.spacing(2) }} />
+									<Typography>
+										<Trans>Search Filters</Trans>
+									</Typography>
+								</AccordionSummary>
+								<Divider />
+								<AccordionDetails>
+									<div className={classes.accordionDetails}>
+										<RepoFiltersForm
+											onSubmit={onSubmit}
+											submitting={submitting}
+											formValues={repoFormValues}
+											formRef={repoFormRef}
+											setValid={setValid}
+										/>
+									</div>
+								</AccordionDetails>
+							</Accordion>
 
-					{/* submit button is outside filter forms, so use an innerRef so we can access the various forms' handleSubmit functions */}
-					<div className={classes.formButtons}>
-						<Button
-							className={classes.formButton}
-							variant="contained"
-							color="primary"
-							startIcon={<SearchIcon />}
-							disabled={submitting || !repoFormValid}
-							onClick={() => {
-								// only hide scan options when user clicks "Search", not when page loads with pre-populated search options
-								// so user can see search options populated in form
-								setAccordionExpanded(false);
-								handleSubmit();
-							}}
-						>
-							<Trans>Search</Trans>
-						</Button>
-						<Button
-							type="reset"
-							style={{ marginLeft: "auto" }}
-							className={classes.formButton}
-							variant="contained"
-							color="primary"
-							startIcon={<ReplayIcon />}
-							onClick={() => handleReset()}
-							disabled={submitting}
-						>
-							<Trans>Reset Filters</Trans>
-						</Button>
-					</div>
+							{/* submit button is outside filter forms, so use an innerRef so we can access the various forms' handleSubmit functions */}
+							<div className={classes.formButtons}>
+								<Button
+									className={classes.formButton}
+									variant="contained"
+									color="primary"
+									startIcon={<SearchIcon />}
+									disabled={submitting || !repoFormValid}
+									onClick={() => {
+										onRepoRowSelect(null);
+										// only hide scan options when user clicks "Search", not when page loads with pre-populated search options
+										// so user can see search options populated in form
+										setAccordionExpanded(false);
+										handleSubmit();
+									}}
+								>
+									<Trans>Search</Trans>
+								</Button>
+								<Button
+									type="reset"
+									style={{ marginLeft: "auto" }}
+									className={classes.formButton}
+									variant="contained"
+									color="primary"
+									startIcon={<ReplayIcon />}
+									onClick={() => handleReset()}
+									disabled={submitting}
+								>
+									<Trans>Reset Filters</Trans>
+								</Button>
+							</div>
+						</Box>
+					)}
 				</Paper>
 
 				{submitting && <LinearProgress />}
@@ -1690,11 +1944,23 @@ const VulnRepoDialog = (props: {
 			</DialogContent>
 			<DialogActions>
 				<Box displayPrint="none" className={classes.dialogButtons}>
-					<Button color="primary" onClick={() => onBack()}>
+					<Button
+						color="primary"
+						onClick={() => {
+							onRepoRowSelect(null);
+							onBack();
+						}}
+					>
 						<Trans>Details</Trans>
 					</Button>
 
-					<Button color="primary" onClick={() => onClose()}>
+					<Button
+						color="primary"
+						onClick={() => {
+							onRepoRowSelect(null);
+							onClose();
+						}}
+					>
 						<Trans>OK</Trans>
 					</Button>
 				</Box>
@@ -1900,15 +2166,12 @@ const VulnDialogContent = (props: {
 		);
 	}
 
-	let pluginNames: string[] = [];
-	let pluginChips: React.ReactNode[] = [];
-	let componentNames: string[] = [];
+	const pluginNames: string[] = [];
+	const pluginChips: React.ReactNode[] = [];
+	const componentNames: string[] = [];
 
-	if (
-		selectedRow?.source_plugins &&
-		Array.isArray(selectedRow?.source_plugins)
-	) {
-		for (const plugin of selectedRow?.source_plugins) {
+	if (selectedRow?.plugin && Array.isArray(selectedRow?.plugin)) {
+		for (const plugin of selectedRow.plugin) {
 			const pluginName =
 				plugin in pluginKeys && pluginKeys[plugin]?.displayName
 					? pluginKeys[plugin].displayName
@@ -1937,13 +2200,41 @@ const VulnDialogContent = (props: {
 		<>
 			<DialogContent dividers={true}>
 				<span>
-					<SeverityChip value={selectedRow?.severity} />{" "}
-					<VulnLink vulnId={selectedRow?.id} addTitle={true} />
+					<SeverityChip value={selectedRow?.severity} />
 				</span>
 				<Grid container spacing={3}>
 					{/* left column */}
 					<Grid item xs={6} className={classes.tabDialogGrid}>
 						<List>
+							<ListItem key="vuln-ids">
+								<ListItemText
+									primary={
+										<>
+											{i18n._(t`Vulnerability IDs`) +
+												` (${selectedRow?.vuln_id.length})`}{" "}
+											{selectedRow?.vuln_id.length > 0 && (
+												<CustomCopyToClipboard
+													copyTarget={selectedRow?.vuln_id.join(", ")}
+												/>
+											)}
+										</>
+									}
+									secondary={
+										<ol>
+											{selectedRow?.vuln_id.map((id: string) => (
+												<li key={`vuln-item-${id}`}>
+													<VulnLink
+														key={`vuln-link-${id}`}
+														vulnId={id}
+														addTitle={false}
+														className={classes.advisoryIdLink}
+													/>
+												</li>
+											))}
+										</ol>
+									}
+								/>
+							</ListItem>
 							<ListItem key="vuln-description">
 								<ListItemText
 									primary={
@@ -1974,38 +2265,39 @@ const VulnDialogContent = (props: {
 									secondary={selectedRow?.remediation ?? ""}
 								/>
 							</ListItem>
-							<ListItem key="vuln-components">
-								<ListItemText
-									primary={
-										<>
-											{i18n._(t`Components`) + ` (${componentNames.length})`}{" "}
-											{componentNames.length > 0 && (
-												<CustomCopyToClipboard copyTarget={componentNames} />
-											)}
-										</>
-									}
-									secondary={
-										<ol className={classes.dialogListItems}>
-											{componentNames.map((component: string) => {
-												return (
-													<li key={`component-${component}`}>{component}</li>
-												);
-											})}
-										</ol>
-									}
-								/>
-							</ListItem>
 						</List>
 					</Grid>
 
 					{/* right column */}
 					<Grid item xs={6}>
+						<ListItem key="vuln-components">
+							<ListItemText
+								primary={
+									<>
+										{i18n._(t`Components`) + ` (${componentNames.length})`}{" "}
+										{componentNames.length > 0 && (
+											<CustomCopyToClipboard copyTarget={componentNames} />
+										)}
+									</>
+								}
+								secondary={
+									<ol className={classes.dialogListItems}>
+										{componentNames.map((component: string) => {
+											return (
+												<li key={`component-${component}`}>{component}</li>
+											);
+										})}
+									</ol>
+								}
+							/>
+						</ListItem>
 						<List>
 							<ListItem key="vuln-source-plugins">
 								<ListItemText
 									primary={
 										<>
-											{i18n._(t`Discovered By Plugins`)}
+											{i18n._(t`Discovered By Plugins`) +
+												` (${pluginNames.length})`}{" "}
 											{pluginNames.length > 0 && (
 												<CustomCopyToClipboard copyTarget={pluginNames} />
 											)}
@@ -2049,7 +2341,7 @@ const FormFields = (props: {
 	); // current user is "self" id
 	const { category, values, errors, touched, submitting, setFieldValue } =
 		props;
-	let fields: ReactNode[] = [];
+	const fields: ReactNode[] = [];
 
 	const filterOptions = createFilterOptions<any>();
 
@@ -2130,8 +2422,18 @@ const FormFields = (props: {
 			},
 		},
 	};
+	const matchPlugins: MatcherT = {
+		vulnerability: {
+			label: GROUP_VULN,
+			props: {
+				group: "vulnPlugins",
+				plugins: vulnPluginsObjects,
+				icon: <SecurityIcon className={classes.scanFeaturesIcon} />,
+			},
+		},
+	};
 	const matchSeverity: MatcherT = {
-		null: {
+		"": {
 			label: t`None`,
 			props: {
 				variant: "outlined",
@@ -2417,13 +2719,13 @@ const FormFields = (props: {
 	};
 
 	const vulnFields: FormFieldDef = {
-		id_match: {
+		vuln_id_match: {
 			id: "vuln-id-match",
 			label: t`Vulnerability Match`,
 			component: "MatchStringField",
 			size: 3,
 		},
-		id: {
+		vuln_id: {
 			id: "vuln-id",
 			label: t`Vulnerability`,
 			component: "TextField",
@@ -2441,6 +2743,19 @@ const FormFields = (props: {
 			label: t`Description`,
 			component: "TextField",
 			icon: <SubjectIcon />,
+			size: 9,
+		},
+		remediation_match: {
+			id: "vuln-remediation-match",
+			label: t`Remediation Match`,
+			component: "MatchStringField",
+			size: 3,
+		},
+		remediation: {
+			id: "vuln-remediation",
+			label: t`Remediation`,
+			component: "TextField",
+			icon: <GradingIcon />,
 			size: 9,
 		},
 		spacer_1: {
@@ -2488,34 +2803,12 @@ const FormFields = (props: {
 			component: "SpacerField",
 			size: 3,
 		},
-		source_plugins: {
+		plugin: {
 			id: "vuln-plugin",
 			label: t`Discovered by Plugin`,
-			component: "AutoCompleteField",
+			component: "MatchPluginsSelectorField",
 			size: 9,
-			fieldProps: {
-				options: [
-					...secretPluginsObjects,
-					...staticPluginsObjects,
-					...techPluginsObjects,
-					...vulnPluginsObjects,
-				],
-				placeholder: i18n._(t`Select a plugin`),
-				groupBy: (option: { group: string }) => option.group,
-				getOptionLabel: (option: { displayName: string }) => {
-					return option.displayName;
-				},
-				InputProps: {
-					startAdornment: (
-						<InputAdornment
-							position="start"
-							style={{ paddingLeft: theme.spacing(1) }}
-						>
-							<ExtensionIcon />
-						</InputAdornment>
-					),
-				},
-			},
+			matchOptions: matchPlugins,
 		},
 	};
 
@@ -2540,7 +2833,7 @@ const FormFields = (props: {
 	for (const [name, props] of Object.entries(fieldDef)) {
 		const fieldName = name as keyof SearchFiltersT;
 		switch (props.component) {
-			case "AutoCompleteField":
+			case "AutoCompleteField": {
 				fields.push(
 					<Grid item xs={props.size} key={`grid-item-autocomplete-${props.id}`}>
 						<AutoCompleteField
@@ -2567,7 +2860,9 @@ const FormFields = (props: {
 					</Grid>
 				);
 				break;
-			case "KeyboardDateTimePickerField":
+			}
+
+			case "KeyboardDateTimePickerField": {
 				// 2nd date field must have same name as first field + _to suffix
 				const dateFrom = name.replace(/_to$/, "");
 				const dateTo = `${dateFrom}_to`;
@@ -2600,7 +2895,9 @@ const FormFields = (props: {
 					</Grid>
 				);
 				break;
-			case "MatchChipField":
+			}
+
+			case "MatchChipField": {
 				fields.push(
 					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
 						<MatchChipField
@@ -2617,7 +2914,9 @@ const FormFields = (props: {
 					</Grid>
 				);
 				break;
-			case "MatchDateField":
+			}
+
+			case "MatchDateField": {
 				fields.push(
 					<Grid item xs={props.size} key={`grid-item-match-date-${props.id}`}>
 						<MatchDateField
@@ -2634,7 +2933,25 @@ const FormFields = (props: {
 					</Grid>
 				);
 				break;
-			case "MatchStringField":
+			}
+
+			case "MatchPluginsSelectorField": {
+				fields.push(
+					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
+						<MatchPluginsSelectorField
+							{...props?.fieldProps}
+							id={props.id}
+							name={name}
+							disabled={submitting}
+							label={i18n._(props.label)}
+							matchOptions={props?.matchOptions ?? matchPlugins}
+						/>
+					</Grid>
+				);
+				break;
+			}
+
+			case "MatchStringField": {
 				fields.push(
 					<Grid item xs={props.size} key={`grid-item-match-string-${props.id}`}>
 						<MatchStringField
@@ -2651,7 +2968,9 @@ const FormFields = (props: {
 					</Grid>
 				);
 				break;
-			case "SpacerField":
+			}
+
+			case "SpacerField": {
 				fields.push(
 					<Grid
 						item
@@ -2660,7 +2979,9 @@ const FormFields = (props: {
 					></Grid>
 				);
 				break;
-			case "TextField":
+			}
+
+			case "TextField": {
 				// disable field if matcher is "null"
 				const matcher = `${name}_match`;
 				fields.push(
@@ -2702,6 +3023,7 @@ const FormFields = (props: {
 					</Grid>
 				);
 				break;
+			}
 		}
 	}
 	return <>{fields}</>;
@@ -2932,7 +3254,6 @@ const SearchPage = () => {
 		);
 		*/
 
-	/* FUTURE: to support a vulnerability search schema
 	const severitySchema = Yup.string()
 		.trim()
 		.oneOf(
@@ -2940,24 +3261,94 @@ const SearchPage = () => {
 			i18n._(t`Invalid severity`)
 		);
 
+	const pluginSchema = Yup.string()
+		.trim()
+		.oneOf(PluginValues, i18n._(t`Invalid plugin`));
+
 	const vulnQueryParamsSchema = Yup.object({
-		id: Yup.string().trim(), // any other validation here? length?
-		id__icontains: Yup.string().trim(),
-		desc: Yup.string().trim(), // any other validation here? length?
-		description__icontains: Yup.string().trim(),
-		severity: Yup.array().of(severitySchema).ensure(), // ensures an array, even when 1 value
-		component_name: Yup.string().trim().max(COMPONENT_NAME_LENGTH, i18n._(t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`)),
-		component_name__icontains: Yup.string().trim().max(COMPONENT_NAME_LENGTH, i18n._(t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`)),
-		component_version: Yup.string().trim().max(COMPONENT_VERSION_LENGTH, i18n._(t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`)),
-		component_version__icontains: Yup.string().trim().max(COMPONENT_VERSION_LENGTH, i18n._(t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`)),
-		source_plugins: Yup.string() // autocomplete defaults to null (no option selected)
+		vuln_id: Yup.string()
 			.trim()
-			.oneOf(
-				[...secretPlugins, ...staticPlugins, ...techPlugins, ...vulnPlugins],
-				i18n._(t`Invalid plugin`)
+			.max(
+				VULN_ID_LENGTH,
+				i18n._(
+					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`
+				)
 			),
+		vuln_id__icontains: Yup.string()
+			.trim()
+			.max(
+				VULN_ID_LENGTH,
+				i18n._(
+					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`
+				)
+			),
+		description: Yup.string()
+			.trim()
+			.max(
+				DESCRIPTION_LENGTH,
+				i18n._(
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
+				)
+			),
+		description__icontains: Yup.string()
+			.trim()
+			.max(
+				DESCRIPTION_LENGTH,
+				i18n._(
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
+				)
+			),
+		remediation: Yup.string()
+			.trim()
+			.max(
+				REMEDIATION_LENGTH,
+				i18n._(
+					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`
+				)
+			),
+		remediation__icontains: Yup.string()
+			.trim()
+			.max(
+				REMEDIATION_LENGTH,
+				i18n._(
+					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`
+				)
+			),
+		severity: Yup.array().of(severitySchema).ensure(), // ensures an array, even when 1 value
+		component_name: Yup.string()
+			.trim()
+			.max(
+				COMPONENT_NAME_LENGTH,
+				i18n._(
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
+				)
+			),
+		component_name__icontains: Yup.string()
+			.trim()
+			.max(
+				COMPONENT_NAME_LENGTH,
+				i18n._(
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
+				)
+			),
+		component_version: Yup.string()
+			.trim()
+			.max(
+				COMPONENT_VERSION_LENGTH,
+				i18n._(
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
+				)
+			),
+		component_version__icontains: Yup.string()
+			.trim()
+			.max(
+				COMPONENT_VERSION_LENGTH,
+				i18n._(
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
+				)
+			),
+		plugin: Yup.array().of(pluginSchema).ensure(), // ensures an array, even when 1 value
 	}).defined();
-	*/
 
 	const [accordionExpanded, setAccordionExpanded] = useState(true);
 	const [componentFormValues, setComponentFormValues] =
@@ -2975,8 +3366,9 @@ const SearchPage = () => {
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
 	const [tableFilters, setTableFilters] = useState<FilterDef>({});
 
-	type CategoryT = MatcherT & {
+	type CategoryT = {
 		[name: string]: {
+			label: string;
 			component?: React.ReactNode;
 			schema: any;
 			initialValues: SearchFiltersT;
@@ -3008,7 +3400,6 @@ const SearchPage = () => {
 			initialValues: initialRepoFilters,
 			setValues: setRepoFormValues,
 		},
-		/* FUTURE: support vulnerability searches /search/vulnerability
 		vuln: {
 			label: t`Vulnerabilities`,
 			component: (
@@ -3021,7 +3412,6 @@ const SearchPage = () => {
 			initialValues: initialVulnFilters,
 			setValues: setVulnFormValues,
 		},
-		*/
 	};
 
 	const searchCategorySchema = Yup.object({
@@ -3036,9 +3426,39 @@ const SearchPage = () => {
 		Object.keys(searchCategories)[0] as string
 	);
 
+	// sort plugin array into separate arrays for each plugin category
+	// and set category enabled if all plugins in that category are enabled
+	// translates plugin passed in url params to form values used by PluginsSelector component
+	const getVulnSearchParams = (values: VulnFiltersT) => {
+		const queryValues: any = {};
+		const pluginsVuln: string[] = [];
+
+		// copy-over each key
+		for (const [k, v] of Object.entries(values)) {
+			if (k === "plugin" && Array.isArray(v)) {
+				// add each plugin to corresponding category array
+				for (const plugin of v) {
+					if (plugin in vulnPluginsKeys) {
+						pluginsVuln.push(plugin);
+					}
+				}
+			}
+			queryValues[k] = v;
+		}
+
+		queryValues.vulnPlugins = [...pluginsVuln];
+
+		// set categories if all plugins in that category are selected
+		queryValues.vulnerability = pluginsVuln.length === vulnPlugins.length;
+
+		// unused by pluginsselector, set empty
+		queryValues.plugin = [];
+		return queryValues;
+	};
+
 	const getSearchParams = (): SearchFiltersT | null => {
 		if (location?.search) {
-			const search = QueryString.parse(location.search);
+			const search = queryString.parse(location.search);
 			if (Object.keys(search)) {
 				try {
 					// schema validation coerces values to correct types
@@ -3066,9 +3486,7 @@ const SearchPage = () => {
 							let [name, matcher] = k.split("__"); // field__matcher
 							const matchName = `${name}_match`; // name already validated against schema
 							if (name in values) {
-								if (name in transformers && typeof v === "string") {
-									values[name] = transformers[name].toValue(v);
-								} else if (Array.isArray(v)) {
+								if (Array.isArray(v)) {
 									values[name] = [...v];
 								} else if (matcher === "null") {
 									// convert queryparam __null=false => internal matcher, "notnull"
@@ -3086,6 +3504,9 @@ const SearchPage = () => {
 								// if there's no matcher, it's an exact match (field=value)
 								values[matchName] = matcher ?? "exact";
 							}
+						}
+						if (values.category === "vuln") {
+							values = getVulnSearchParams(values);
 						}
 						return values;
 					}
@@ -3133,6 +3554,102 @@ const SearchPage = () => {
 		}
 	};
 
+	const exportFetch = async (meta?: RequestMeta) => {
+		const config = {
+			meta: {
+				...meta,
+				filters: tableFilters,
+			},
+		};
+		switch (searchCategory) {
+			case "repo": {
+				const response = await client.getRepos(config);
+				return response.results.map((r) => ({
+					service: r.service,
+					repo: r.repo,
+					risk: r.risk,
+					qualified_scan: r.qualified_scan,
+					application_metadata: r.application_metadata,
+				}));
+			}
+			case "vuln": {
+				const response = await client.getVulnerabilities(config);
+				return response.results.map((r) => ({
+					id: r.id,
+					advisory_ids: r.advisory_ids,
+					description: r.description,
+					severity: r.severity,
+					remediation: r.remediation,
+					components: r.components,
+					source_plugins: r.source_plugins,
+				}));
+			}
+			default: {
+				const response = await client.getComponents(config);
+				return response.results.map((r) => ({
+					name: r.name,
+					version: r.version,
+					licenses: r.licenses,
+				}));
+			}
+		}
+	};
+
+	const componentToCsv = (data: SearchComponent) => ({
+		name: data.name,
+		version: data.version,
+		licenses: data.licenses.map((license) => license.name).join(", "),
+	});
+
+	const repoToCsv = (data: SearchRepo) => {
+		let scanUrl = "";
+		if (
+			data.service &&
+			data.repo &&
+			data.qualified_scan?.scan_id &&
+			data.qualified_scan?.created
+		) {
+			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
+				data.service
+			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
+				data.qualified_scan.scan_id
+			)} (created ${data.qualified_scan.created})`;
+		}
+		return {
+			service: data.service,
+			repo: data.repo,
+			risk: data.risk ?? "",
+			qualified_scan: scanUrl,
+			application_metadata: exportMetaData(data.application_metadata),
+		};
+	};
+
+	const vulnToCsv = (data: SearchVulnerability) => {
+		const components = [];
+		for (const [name, versions] of Object.entries(data.components)) {
+			components.push(`${name} (${versions.join(", ")})`);
+		}
+		const allPlugins = {
+			...secretPluginsKeys,
+			...staticPluginsKeys,
+			...techPluginsKeys,
+			...vulnPluginsKeys,
+			...sbomPluginsKeys,
+		};
+		return {
+			id: data.id,
+			advisory_ids: data.advisory_ids.join(", "),
+			description: data.description,
+			severity: data.severity,
+			remediation: data.remediation,
+			components: components.join(", "),
+			source_plugins: data.source_plugins
+				.map((p) => (p in allPlugins ? allPlugins[p].displayName : p))
+				.sort()
+				.join(", "),
+		};
+	};
+
 	useEffect(() => {
 		document.title = i18n._(t`Artemis - Search`);
 	}, [i18n]);
@@ -3144,52 +3661,60 @@ const SearchPage = () => {
 		setReloadCount(0);
 		setAccordionExpanded(true);
 		switch (category) {
-			case "component":
+			case "component": {
 				if (componentFormRef.current) {
 					// set to empty values, not values that may have come from query params
 					setComponentFormValues({ ...initialComponentFilters });
 					componentFormRef.current.handleReset();
 				}
 				break;
-			case "repo":
+			}
+			case "repo": {
 				if (repoFormRef.current) {
 					setRepoFormValues({ ...initialRepoFilters });
 					repoFormRef.current.handleReset();
 				}
 				break;
-			case "vuln":
+			}
+			case "vuln": {
 				if (vulnFormRef.current) {
 					setVulnFormValues({ ...initialVulnFilters });
 					vulnFormRef.current.handleReset();
 				}
 				break;
+			}
 		}
 	};
 
 	const handleSubmit = (category: string) => {
 		switch (category) {
-			case "component":
+			case "component": {
 				if (componentFormRef.current) {
 					setSubmitting(true);
 					componentFormRef.current.handleSubmit();
 				}
 				break;
-			case "repo":
+			}
+			case "repo": {
 				if (repoFormRef.current) {
 					setSubmitting(true);
 					repoFormRef.current.handleSubmit();
 				}
 				break;
-			case "vuln":
+			}
+			case "vuln": {
 				if (vulnFormRef.current) {
 					setSubmitting(true);
 					vulnFormRef.current.handleSubmit();
 				}
 				break;
+			}
 		}
 	};
 
-	const handleSearchCategoryChange = (event: SelectChangeEvent) => {
+	const handleSearchCategoryChange = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
 		if (typeof event.target.value === "string") {
 			const category = event.target.value;
 			handleReset(category);
@@ -3220,60 +3745,68 @@ const SearchPage = () => {
 				*/
 
 				let value = v;
-				if (k in transformers) {
-					value = transformers[k].fromValue(v);
-				} else if (Object.prototype.toString.call(v) === "[object Date]") {
+				if (Object.prototype.toString.call(v) === "[object Date]") {
 					value = formatDateValue(v);
 				}
 
 				switch (matcher) {
-					case "lt":
+					case "lt": {
 						if (value) {
 							queryValues[`${k}__lt`] = value;
 						}
 						break;
-					case "gt":
+					}
+					case "gt": {
 						if (value) {
 							queryValues[`${k}__gt`] = value;
 						}
 						break;
+					}
 					/* FUTURE: for comparing between 2 scans
-					case "bt":
+					case "bt": {
 						if (value) {
 							queryValues[`${k}__bt`] = value;
 							queryValues[`${k}_to`] = toValue;
 						}
 						break;
-						*/
-					case "exact":
+					}
+					*/
+					case "exact": {
 						if (value && (!Array.isArray(value) || value.length)) {
 							queryValues[k] = Array.isArray(value) ? [...value] : value;
 						}
 						break;
-					case "icontains":
+					}
+					case "icontains": {
 						if (value) {
 							queryValues[`${k}__icontains`] = value;
 						}
 						break;
-					case "null":
+					}
+					case "null": {
 						queryValues[`${k}__null`] = "true";
 						break;
-					case "notnull":
+					}
+					case "notnull": {
 						queryValues[`${k}__null`] = "false";
 						break;
+					}
 				}
 			}
 		}
-		const search = QueryString.stringify({ ...queryValues });
+		if (values.category === "vuln") {
+			queryValues = getVulnQueryValues(queryValues);
+		}
+		const search = queryString.stringify({ ...queryValues });
 		navigate("/search?" + search); // add search options to url query params
 	};
 
 	const onSubmit = (values: any) => {
 		setTotalRows(0);
 		setResultRows([]);
-		addQueryParams(values);
+		addQueryParams(values); // these are validated values from validateSync in handleSubmit()
 		setTableFilters(getTableFilters(values));
-		// iniate a table reload. table has to initiate calling onDataLoad so it can pass-in current page & other table details
+		// initiate a table reload. table has to initiate calling onDataLoad so it can pass-in current page & other table details
 		setReloadCount((priorCount) => (priorCount += 1));
 	};
 
@@ -3294,15 +3827,9 @@ const SearchPage = () => {
 	}, []);
 
 	const searchFilters = () => {
-		// Adding/removing forms from the DOM in Formik produces null field errors
-		// so add all forms to DOM and selectively hide sections that are N/A based on current search category
 		return (
 			<div>
-				<div
-					style={{
-						display: searchCategory === "component" ? "initial" : "none",
-					}}
-				>
+				{searchCategory === "component" && (
 					<ComponentFiltersForm
 						onSubmit={onSubmit}
 						submitting={submitting}
@@ -3310,10 +3837,8 @@ const SearchPage = () => {
 						formRef={componentFormRef}
 						setValid={(isValid: boolean) => setComponentFormValid(isValid)}
 					/>
-				</div>
-				<div
-					style={{ display: searchCategory === "repo" ? "initial" : "none" }}
-				>
+				)}
+				{searchCategory === "repo" && (
 					<RepoFiltersForm
 						onSubmit={onSubmit}
 						submitting={submitting}
@@ -3321,10 +3846,8 @@ const SearchPage = () => {
 						formRef={repoFormRef}
 						setValid={(isValid: boolean) => setRepoFormValid(isValid)}
 					/>
-				</div>
-				<div
-					style={{ display: searchCategory === "vuln" ? "initial" : "none" }}
-				>
+				)}
+				{searchCategory === "vuln" && (
 					<VulnFiltersForm
 						onSubmit={onSubmit}
 						submitting={submitting}
@@ -3332,7 +3855,7 @@ const SearchPage = () => {
 						formRef={vulnFormRef}
 						setValid={(isValid: boolean) => setVulnFormValid(isValid)}
 					/>
-				</div>
+				)}
 			</div>
 		);
 	};
@@ -3387,6 +3910,12 @@ const SearchPage = () => {
 					rowsPerPage={rowsPerPage}
 					rowsPerPageOptions={rowsPerPageOptions}
 					filters={tableFilters}
+					menuOptions={{
+						exportFile: "search_components",
+						exportFormats: ["csv", "json"],
+						exportFetch: exportFetch,
+						toCsv: componentToCsv,
+					}}
 				/>
 				<DraggableDialog
 					open={!!selectedRow}
@@ -3434,6 +3963,7 @@ const SearchPage = () => {
 				field: "risk",
 				headerName: i18n._(t`Risk`),
 				children: RiskChip,
+				// no orderMap, ordered backend by API
 			},
 			{
 				field: "last_qualified_scan", // duplicated field from qualified_scan so matches filtering name
@@ -3458,6 +3988,12 @@ const SearchPage = () => {
 					rowsPerPage={rowsPerPage}
 					rowsPerPageOptions={rowsPerPageOptions}
 					filters={tableFilters}
+					menuOptions={{
+						exportFile: "search_repos",
+						exportFormats: ["csv", "json"],
+						exportFetch: exportFetch,
+						toCsv: repoToCsv,
+					}}
 				/>
 				<DraggableDialog
 					open={!!selectedRow}
@@ -3473,25 +4009,29 @@ const SearchPage = () => {
 	};
 
 	const vulnSearchResults = () => {
+		let dialogTitle =
+			selectedRow?.vuln_id &&
+			Array.isArray(selectedRow?.vuln_id) &&
+			selectedRow?.vuln_id.length
+				? selectedRow.vuln_id[0]
+				: i18n._(t`Vulnerability`);
+		if (selectedRow?.vuln_id.length > 1) {
+			dialogTitle += " + " + i18n._(t`${selectedRow?.vuln_id.length - 1} more`);
+		}
+
+		// no vuln results fields are sortable
 		const columns: ColDef[] = [
 			{
-				field: "id",
-				headerName: i18n._(t`Vulnerability`),
-				children: TooltipCell,
-				bodyStyle: {
-					maxWidth: "20rem", // limit field length for long vulnerability ids
-					width: "20rem",
-					minWidth: "20rem",
-					overflowWrap: "anywhere",
-					textOverflow: "ellipsis",
-					whiteSpace: "nowrap",
-					overflow: "hidden",
-				},
+				field: "vuln_id",
+				headerName: i18n._(t`Vulnerabilities`),
+				children: VulnerabilitiesCell,
+				sortable: false,
 			},
 			{
 				field: "severity",
 				headerName: i18n._(t`Severity`),
 				children: SeverityChip,
+				sortable: false,
 			},
 			{
 				field: "components",
@@ -3500,21 +4040,19 @@ const SearchPage = () => {
 				sortable: false,
 			},
 			{
-				field: "source_plugins",
+				field: "plugin",
 				headerName: i18n._(t`Discovered By Plugins`),
 				children: PluginsCell,
 				sortable: false,
 			},
 		];
 
-		// TODO: assumes severity will be an order_by option
 		return (
 			<>
 				<EnhancedTable
 					id="id"
 					columns={columns}
 					rows={resultRows}
-					defaultOrderBy="id"
 					onRowSelect={onRowSelect}
 					selectedRow={selectedRow}
 					disableRowClick={submitting}
@@ -3523,11 +4061,17 @@ const SearchPage = () => {
 					rowsPerPage={rowsPerPage}
 					rowsPerPageOptions={rowsPerPageOptions}
 					filters={tableFilters}
+					menuOptions={{
+						exportFile: "search_vulns",
+						exportFormats: ["csv", "json"],
+						exportFetch: exportFetch,
+						toCsv: vulnToCsv,
+					}}
 				/>
 				<DraggableDialog
 					open={!!selectedRow}
 					onClose={() => onRowSelect(null)}
-					title={selectedRow?.id ?? i18n._(t`Vulnerability`)}
+					title={dialogTitle}
 					copyTitle={true}
 					maxWidth="lg"
 					fullWidth={true}
@@ -3606,12 +4150,10 @@ const SearchPage = () => {
 								variant="outlined"
 								style={{ minWidth: "18em", marginBottom: theme.spacing(2) }}
 							>
-								<InputLabel id="category-label">
-									<Trans>Search For</Trans>
-								</InputLabel>
-								<MuiSelect
+								<MuiTextField
+									select
+									label={i18n._(t`Search For`)}
 									disabled={submitting}
-									labelId="category-label"
 									id="category"
 									name="category"
 									value={searchCategory}
@@ -3619,7 +4161,7 @@ const SearchPage = () => {
 									autoFocus
 								>
 									{searchCategoryNodes()}
-								</MuiSelect>
+								</MuiTextField>
 							</FormControl>
 						</FormGroup>
 					</Box>

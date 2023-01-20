@@ -84,7 +84,10 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 				onCopy={() => {
 					setCopied(true);
 					setTimeoutId(
-						setTimeout(() => setCopied(false), APP_NOTIFICATION_DELAY)
+						setTimeout(() => {
+							setTimeoutId(null);
+							setCopied(false);
+						}, APP_NOTIFICATION_DELAY)
 					);
 				}}
 			>

@@ -61,7 +61,7 @@ function* _getUserKeysSaga(
 			yield put(
 				addNotification(
 					i18n._(
-						t`User API key count exceeds 200. Currently users can only manage 200 keys at a time. Please remove some expired or unused keys`
+						t`User API key count exceeds ${maxCount}. Currently users can only manage ${maxCount} keys at a time. Please remove some expired or unused keys`
 					),
 					"warning"
 				)

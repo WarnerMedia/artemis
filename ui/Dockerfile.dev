@@ -1,12 +1,12 @@
 # Note: This Dockerfile creates an image intended ONLY for local development and testing
 # it may contain unnessary source code and artifacts that are NOT intended for deployment
 
-FROM node:16-bullseye-slim
+FROM node:18-bullseye-slim
 
 WORKDIR /app
 
 # Note: don't copy all source code immediately
-# just grab the package file and npm install dependencies
+# just grab the package file and npm ci dependencies
 # that way, the expensive dependency install can be performed ONCE in a layer
 # and it's inexpensive to rebuild the container when
 # modifications are made to the source code in subsequent layers
@@ -21,7 +21,7 @@ RUN apt-get update && \
 	apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list && \
 	apt-get install -y --no-install-recommends jq wget ca-certificates make && \
 	wget --quiet \
-	https://github.com/hadolint/hadolint/releases/download/v2.6.0/hadolint-Linux-x86_64 \
+	https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 \
 	-O ./hadolint && \
 	sha512sum -c hadolint.sha512 && \
 	chmod 0766 ./hadolint && \
@@ -29,9 +29,10 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 # hadolint ignore=DL3059
-RUN npm install -g npm@^8.12.1 && \
-	npm install && \
-	npm install -g serve@^13.0.2
+RUN npm install -g npm@^9.2.0 && \
+	npm ci && \
+	npm install -g serve@^14.1.2 && \
+	npm ls -a
 
 COPY . .
 COPY publicCustom ./public/

@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, CancelTokenSource } from "axios";
+import axios, { RawAxiosRequestHeaders, AxiosRequestConfig } from "axios";
 import * as Yup from "yup";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
@@ -8,7 +8,6 @@ import { setGlobalException } from "features/globalException/globalExceptionSlic
 import {
 	AnalysisReport,
 	analysisReportResponseSchema,
-	ScanCategories,
 	ScanHistory,
 	ScanHistoryResponse,
 	scanHistoryResponseSchema,
@@ -34,12 +33,18 @@ import {
 } from "features/users/usersSchemas";
 import { DateTime } from "luxon";
 import {
+	sbomPlugins,
 	secretPlugins,
 	staticPlugins,
 	techPlugins,
 	vulnPlugins,
 } from "app/scanPlugins";
-import { APP_NOTIFICATION_DELAY, STORAGE_SESSION_SCAN } from "app/globals";
+import {
+	APP_NOTIFICATION_DELAY,
+	PREFIX_CVEID,
+	PREFIX_GHSA,
+	STORAGE_SESSION_SCAN,
+} from "app/globals";
 import {
 	VcsService,
 	VcsServiceRequest,
@@ -66,6 +71,7 @@ import {
 	searchVulnsResponseSchema,
 } from "features/search/searchSchemas";
 import adjustMetadata from "custom/clientCustom";
+import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
 
 // only support filtering by string|string[] field values for now
 export interface FilterDef {
@@ -87,7 +93,7 @@ export interface RequestMeta {
 	itemsPerPage?: number;
 	filters?: FilterDef;
 	orderBy?: string;
-	cancelToken?: CancelTokenSource;
+	abortController?: AbortController;
 }
 
 export interface Client extends AxiosRequestConfig {
@@ -243,7 +249,7 @@ const client = async (
 		...customConfig,
 		headers: {
 			...headers,
-			...customConfig.headers,
+			...(customConfig.headers as RawAxiosRequestHeaders),
 		},
 	};
 	if (data) {
@@ -267,44 +273,53 @@ const client = async (
 					: value.filter;
 				switch (value.match) {
 					// axios handles uri encoding params in buildURL.js
-					case "exact": // accepts multiple filters
+					case "exact": {
+						// accepts multiple filters
 						const filters = Array.isArray(value.filter)
 							? [...value.filter]
 							: [value.filter];
-						for (let filter of filters) {
+						for (const filter of filters) {
 							params.append(param, filter);
 						}
 						break;
-					case "gt":
+					}
+					case "gt": {
 						params.append(`${param}__gt`, singleFilter);
 						break;
-					case "lt":
+					}
+					case "lt": {
 						params.append(`${param}__lt`, singleFilter);
 						break;
-					case "bt": // requires 2 filters
+					}
+					case "bt": {
+						// requires 2 filters
 						if (Array.isArray(value.filter) && value.filter.length > 1) {
 							params.append(`${param}__gt`, value.filter[0]);
 							params.append(`${param}__lt`, value.filter[1]);
 						}
 						break;
-					case "null":
+					}
+					case "null": {
 						params.append(`${param}__isnull`, singleFilter); // isnull expects a boolean (string)
 						break;
-					case "contains":
+					}
+					case "contains": {
 						params.append(`${param}__contains`, singleFilter);
 						break;
-					default:
+					}
+					default: {
 						// icontains
 						params.append(`${param}__icontains`, singleFilter);
 						break;
+					}
 				}
 			}
 		}
 		if (meta.orderBy) {
 			params.append("order_by", meta.orderBy);
 		}
-		if (meta.cancelToken) {
-			config.cancelToken = meta.cancelToken.token;
+		if (meta.abortController) {
+			config.signal = meta.abortController.signal;
 		}
 		config.params = params;
 	}
@@ -404,7 +419,6 @@ client.getComponentRepos = async (
 
 // ensure user object fields match formats expected by UI for value display
 // note: this function will mutate response object fields
-//
 const adjustRepo = (response: SearchRepo) => {
 	if (response?.application_metadata) {
 		adjustMetadata(response?.application_metadata);
@@ -446,16 +460,50 @@ client.getRepos = async ({
 	}
 };
 
+// sort advisory ids by
+// 1. CVEID
+// 2. GHSA url
+// 3. rest sorted alphabetically
+const sortAdvisoryIds = (a: string, b: string) => {
+	if (a.startsWith(PREFIX_CVEID) && !b.startsWith(PREFIX_CVEID)) {
+		return -1;
+	} else if (b.startsWith(PREFIX_CVEID)) {
+		return 1;
+	} else if (a.startsWith(PREFIX_GHSA) && !b.startsWith(PREFIX_GHSA)) {
+		return -1;
+	} else if (b.startsWith(PREFIX_GHSA)) {
+		return 1;
+	}
+	return b.localeCompare(a);
+};
+
 // ensure user object fields match formats expected by UI for value display
 // note: this function will mutate response object fields
 const adjustVuln = (response: SearchVulnerability) => {
-	if (response?.source_plugins) {
-		response?.source_plugins.sort();
-	}
 	for (const [name, versions] of Object.entries(response?.components)) {
 		if (versions) {
 			response.components[name].sort();
 		}
+	}
+	if (response?.advisory_ids) {
+		response?.advisory_ids.sort(sortAdvisoryIds);
+
+		// duplicate advisory_ids field as vuln_id
+		// this matches the name of the filter option
+		// so that the data table can correlate the filter name with the column name
+		response.vuln_id = [...response.advisory_ids];
+	} else {
+		response.vuln_id = [];
+	}
+	if (response?.source_plugins) {
+		response?.source_plugins.sort();
+
+		// duplicate source_plugins field as plugin
+		// this matches the name of the filter option
+		// so that the data table can correlate the filter name with the column name
+		response.plugin = [...response.source_plugins];
+	} else {
+		response.plugin = [];
 	}
 };
 
@@ -709,7 +757,7 @@ const adjustScanHistory = (response: ScanHistory) => {
 	// scan history doesn't provide separate scan_id field, it's appended to repo field
 	// split it out so we have a separate id for use in CreateEntityAdapter
 	if (!response?.scan_id) {
-		let parts = response.repo.split("/");
+		const parts = response.repo.split("/");
 		response.scan_id = parts.pop();
 		response.repo = parts.join("/");
 	}
@@ -763,7 +811,6 @@ client.addScan = async ({
 	customConfig = {},
 }: ScanRequest): Promise<AnalysisReport> => {
 	const scanOpts: ScanOptions = {};
-	const categories: ScanCategories[] = [];
 	const parts = data.vcsOrg ? data.vcsOrg.split("/") : []; // vcs/org
 
 	// we only check vcsOrg here and not also repo (which is also required)
@@ -774,12 +821,9 @@ client.addScan = async ({
 		throw new Error(i18n._(t`VCS/Org required`));
 	}
 
-	// this is a list we're building of all plugins disabled for the scan
-	let minusPlugins: string[] = [];
-
-	// Calculates the removed plugins by subtraction.
+	// Calculates removed plugins by subtraction
 	// (AllKnownPlugins) - (RemainingUICheckedPlugins) = (ThePluginsTheUserUnchecked)
-	// We have to do this because formik only reports the checked checkboxes, whereas we want to know the unchecked ones.
+	// We have to do this because formik only reports the checked checkboxes, whereas we want to know the unchecked ones
 	const getRemovedPlugins = (
 		allPlugins: string[],
 		checkedPlugins: string[]
@@ -788,7 +832,6 @@ client.addScan = async ({
 
 		allPlugins.forEach((pluginName) => {
 			if (!checkedPlugins.includes(pluginName)) {
-				// we submit the minused plugins to the api to exclude them from scans
 				removedPlugins.push(`-${pluginName}`);
 			}
 		});
@@ -807,29 +850,71 @@ client.addScan = async ({
 	if (data.includeDev) {
 		scanOpts.include_dev = data.includeDev;
 	}
-	if (data.inventory) {
-		categories.push("inventory");
-		const removed = getRemovedPlugins(techPlugins, data.techPlugins || []);
-		minusPlugins = [...minusPlugins, ...removed];
+	if (data.includePaths) {
+		scanOpts.include_paths = [];
+		data.includePaths.split(SPLIT_MULTILINE_CN_REGEX).forEach((p) => {
+			const path = p.trim();
+			if (path.length > 0 && scanOpts.include_paths) {
+				scanOpts.include_paths.push(path);
+			}
+		});
 	}
-	if (data.secrets) {
-		categories.push("secret");
-		const removed = getRemovedPlugins(secretPlugins, data.secretPlugins || []);
-		minusPlugins = [...minusPlugins, ...removed];
-	}
-	if (data.staticAnalysis) {
-		categories.push("static_analysis");
-		const removed = getRemovedPlugins(staticPlugins, data.staticPlugins || []);
-		minusPlugins = [...minusPlugins, ...removed];
-	}
-	if (data.vulnerability) {
-		categories.push("vulnerability");
-		const removed = getRemovedPlugins(vulnPlugins, data.vulnPlugins || []);
-		minusPlugins = [...minusPlugins, ...removed];
+	if (data.excludePaths) {
+		scanOpts.exclude_paths = [];
+		data.excludePaths.split(SPLIT_MULTILINE_CN_REGEX).forEach((p) => {
+			const path = p.trim();
+			if (path.length > 0 && scanOpts.exclude_paths) {
+				scanOpts.exclude_paths.push(path);
+			}
+		});
 	}
 
-	scanOpts.categories = categories;
-	scanOpts.plugins = minusPlugins;
+	scanOpts.categories = [
+		data.inventory ? "inventory" : "-inventory",
+		data.secrets ? "secret" : "-secret",
+		data.staticAnalysis ? "static_analysis" : "-static_analysis",
+		data.vulnerability ? "vulnerability" : "-vulnerability",
+		data.sbom ? "sbom" : "-sbom",
+	];
+	if (data.inventory) {
+		scanOpts.plugins = [
+			...getRemovedPlugins(techPlugins, data.techPlugins || []),
+		];
+	} else {
+		scanOpts.plugins = [...(data.techPlugins ?? [])];
+	}
+	if (data.secrets) {
+		scanOpts.plugins = [
+			...scanOpts.plugins,
+			...getRemovedPlugins(secretPlugins, data.secretPlugins || []),
+		];
+	} else {
+		scanOpts.plugins = [...scanOpts.plugins, ...(data.secretPlugins ?? [])];
+	}
+	if (data.staticAnalysis) {
+		scanOpts.plugins = [
+			...scanOpts.plugins,
+			...getRemovedPlugins(staticPlugins, data.staticPlugins || []),
+		];
+	} else {
+		scanOpts.plugins = [...scanOpts.plugins, ...(data.staticPlugins ?? [])];
+	}
+	if (data.vulnerability) {
+		scanOpts.plugins = [
+			...scanOpts.plugins,
+			...getRemovedPlugins(vulnPlugins, data.vulnPlugins || []),
+		];
+	} else {
+		scanOpts.plugins = [...scanOpts.plugins, ...(data.vulnPlugins ?? [])];
+	}
+	if (data.sbom) {
+		scanOpts.plugins = [
+			...scanOpts.plugins,
+			...getRemovedPlugins(sbomPlugins, data.sbomPlugins || []),
+		];
+	} else {
+		scanOpts.plugins = [...scanOpts.plugins, ...(data.sbomPlugins ?? [])];
+	}
 
 	try {
 		const postResponse = await client(
@@ -865,6 +950,17 @@ client.addScan = async ({
 		// store URI for this latest scan so we can display it as user's current scan in a history list
 		sessionStorage.setItem(STORAGE_SESSION_SCAN, currentScan);
 
+		let excludePaths = scanOpts?.exclude_paths ?? [];
+		// if include_paths defined but exclude_paths undefined, set exclude_paths to "*" (all)
+		// this is only for initial scan status display purposes, the API will do the same for subsequent scan fetch results
+		if (
+			scanOpts?.include_paths &&
+			scanOpts.include_paths.length > 0 &&
+			(!scanOpts?.exclude_paths || scanOpts?.exclude_paths.length === 0)
+		) {
+			excludePaths = ["*"];
+		}
+
 		// don't immediately get the queued scan info by calling getCurrentScan
 		// if that fails for any reason then it will fail the entire addScan process
 		// and getCurrentScan won't be called subsequently to update scan details
@@ -878,6 +974,14 @@ client.addScan = async ({
 				queued: DateTime.utc().toISO(),
 				start: null, // start time null when queued
 				end: null,
+			},
+			// we don't get full scan info back from the create scan call
+			// so augment with options requested for the scan so that the UI
+			// displays the correct scan indicators (e.g., having include/exclude paths)
+			// before the full scan data is fetched when scan starts
+			scan_options: {
+				include_paths: scanOpts?.include_paths ?? [],
+				exclude_paths: excludePaths,
 			},
 		} as AnalysisReport;
 	} catch (err: any) {

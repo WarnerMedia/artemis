@@ -8,6 +8,7 @@ import {
 	DialogContent,
 	FormControlLabel,
 } from "@mui/material";
+import { CheckCircleOutline as CheckCircleOutlineIcon } from "@mui/icons-material";
 import { makeStyles } from "tss-react/mui";
 import DraggableDialog from "components/DraggableDialog";
 import { useState } from "react";
@@ -24,7 +25,7 @@ const useStyles = makeStyles()((theme) => ({
 		padding: "8px",
 		alignItems: "center",
 		justifyContent: "space-between",
-		"& > *": {
+		"& > :not(:first-of-type)": {
 			marginLeft: theme.spacing(1),
 		},
 	},
@@ -32,21 +33,28 @@ const useStyles = makeStyles()((theme) => ({
 
 const WelcomeDialog = (props: {
 	open: boolean;
-	onClose: any;
+	onOk: any;
 	children: React.ReactNode;
 	title: string;
+	okText?: React.ReactNode;
+	onCancel?: any;
 }) => {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
-	const { open, onClose, children, title } = props;
+	const { open, onOk, children, title, okText, onCancel } = props;
 	const [hideWelcome, setHideWelcome] = useState(false);
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setHideWelcome(event.target.checked);
 	};
 
-	const handleClose = () => {
-		onClose(hideWelcome);
+	const handleOk = () => {
+		onOk(hideWelcome);
+	};
+
+	const handleCancel = () => {
+		setHideWelcome(false);
+		onCancel();
 	};
 
 	const dialogContent = () => {
@@ -69,9 +77,24 @@ const WelcomeDialog = (props: {
 						/>
 					</Box>
 					<Box displayPrint="none" className={classes.viewActions}>
-						<Button color="primary" onClick={handleClose}>
-							<Trans>OK</Trans>
-						</Button>
+						{okText ? (
+							<Button
+								onClick={handleOk}
+								variant="contained"
+								startIcon={<CheckCircleOutlineIcon />}
+							>
+								{okText}
+							</Button>
+						) : (
+							<Button color="primary" onClick={handleOk}>
+								<Trans>OK</Trans>
+							</Button>
+						)}
+						{onCancel && (
+							<Button color="primary" onClick={handleCancel}>
+								<Trans>Cancel</Trans>
+							</Button>
+						)}
 					</Box>
 				</DialogActions>
 			</>

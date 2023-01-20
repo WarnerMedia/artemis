@@ -1,6 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+	useState,
+	useEffect,
+	useRef,
+	ChangeEvent,
+	useCallback,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import {
+	Location,
+	NavigateFunction,
+	useNavigate,
+	useLocation,
+} from "react-router-dom";
 import { DateTime } from "luxon";
 import { Formik, Form, Field, FormikHelpers } from "formik";
 import { Select, TextField } from "formik-mui";
@@ -38,7 +49,6 @@ import {
 	ListItemText,
 	MenuItem,
 	Paper,
-	Select as MuiSelect,
 	Tabs,
 	Tab,
 	TextField as MuiTextField,
@@ -46,12 +56,14 @@ import {
 	Tooltip,
 	Typography,
 	Theme,
-	SelectChangeEvent,
 	Zoom,
+	InputBaseComponentProps,
+	CircularProgress,
 } from "@mui/material";
 import { keyframes } from "tss-react";
 import { makeStyles, withStyles } from "tss-react/mui";
 import { useTheme } from "@mui/material/styles";
+import createPalette from "@mui/material/styles/createPalette";
 import {
 	AccountTree as AccountTreeIcon,
 	AddCircleOutline as AddCircleOutlineIcon,
@@ -65,6 +77,7 @@ import {
 	Clear as ClearIcon,
 	Cloud as CloudIcon,
 	Code as CodeIcon,
+	CreateNewFolder as CreateNewFolderIcon,
 	Delete as DeleteIcon,
 	Edit as EditIcon,
 	ErrorOutlineOutlined as ErrorOutlinedIcon,
@@ -72,14 +85,18 @@ import {
 	Extension as ExtensionIcon,
 	FilterList as FilterListIcon,
 	Folder as FolderIcon,
+	FolderOff as FolderOffIcon,
 	Help as HelpIcon,
 	History as HistoryIcon,
 	Info as InfoIcon,
 	Layers as LayersIcon,
+	LowPriority as LowPriorityIcon,
 	OpenInNew as OpenInNewIcon,
 	Person as PersonIcon,
+	PlayCircleOutline as PlayCircleOutlineIcon,
 	Queue as QueueIcon,
 	ReportProblemOutlined as ReportProblemOutlinedIcon,
+	SaveAlt as SaveAltIcon,
 	Security as SecurityIcon,
 	Tune as TuneIcon,
 	Visibility as VisibilityIcon,
@@ -94,11 +111,12 @@ import {
 	PieChart,
 	Pie,
 	ResponsiveContainer,
+	Tooltip as ChartTooltip,
 } from "recharts";
 import { useLingui } from "@lingui/react";
 import { Trans, t, plural } from "@lingui/macro";
 import * as Yup from "yup";
-import * as QueryString from "query-string";
+import queryString from "query-string";
 
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 // https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/221#issuecomment-566502780
@@ -118,7 +136,7 @@ import {
 	vs,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-import { FilterDef, HiddenFindingsRequest } from "api/client";
+import { FilterDef, handleException, HiddenFindingsRequest } from "api/client";
 import { AppDispatch } from "app/store";
 import {
 	colorCritical,
@@ -129,14 +147,18 @@ import {
 } from "app/colors";
 import {
 	capitalize,
-	formatDate,
 	compareButIgnoreLeadingDashes,
+	DELETED_REGEX,
+	exportToJson,
+	formatDate,
 	vcsHotLink,
 } from "utils/formatters";
 import { RootState } from "app/rootReducer";
 import DraggableDialog from "components/DraggableDialog";
 import { ExpiringDateTimeCell } from "components/DateTimeCell";
 import DatePickerField from "components/FormikPickers";
+import WelcomeDialog from "components/WelcomeDialog";
+import ExportDialogContent from "custom/ExportDialogContent";
 import {
 	addHiddenFinding,
 	clearHiddenFindings,
@@ -157,13 +179,13 @@ import { selectCurrentUser } from "features/users/currentUserSlice";
 import {
 	HiddenFinding,
 	HiddenFindingType,
+	HiddenFindingTypeValues,
 } from "features/hiddenFindings/hiddenFindingsSchemas";
 import {
 	AnalysisFinding,
 	AnalysisReport,
 	ScanCategories,
 	ScanErrors,
-	ScanFormLocationState,
 	SecretFinding,
 	SecretFindingResult,
 	SeverityLevels,
@@ -179,15 +201,52 @@ import ResultsMetaField from "custom/ResultsMetaField";
 import MailToLink from "components/MailToLink";
 import { User } from "features/users/usersSchemas";
 import TooltipCell from "components/TooltipCell";
-import { Key, Path } from "history";
 import { SeverityChip } from "components/ChipCell";
-import { pluginKeys } from "app/scanPlugins";
+import {
+	pluginCatalog,
+	pluginKeys,
+	isFeatureDisabled,
+	getFeatureName,
+	secretPlugins,
+	staticPlugins,
+	techPlugins,
+	sbomPlugins,
+	vulnPlugins,
+} from "app/scanPlugins";
+import { PREFIX_NVD, STORAGE_LOCAL_EXPORT_ACKNOWLEDGE } from "app/globals";
+import { startScan } from "pages/MainPage";
 
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
 const randomMC = require("random-material-color");
 
 SyntaxHighlighter.registerLanguage("json", json);
+
+const TAB_OVERVIEW = 0;
+const TAB_VULN = 1;
+const TAB_ANALYSIS = 2;
+const TAB_SECRET = 3;
+const TAB_INVENTORY = 4;
+const TAB_RAW = 5;
+const TAB_HIDDEN = 6;
+
+const COMPONENT_LENGTH = 120;
+const VULN_ID_LENGTH = 120;
+const FILEPATH_LENGTH = 120;
+const LINE_MAX = 9999999999;
+const LINE_LENGTH = 10;
+const RESOURCE_LENGTH = 40;
+const COMMIT_LENGTH = 40;
+
+export const FILTER_PREFIX_VULN = "vn_";
+export const FILTER_PREFIX_ANALYSIS = "sa_";
+export const FILTER_PREFIX_SECRET = "st_";
+export const FILTER_PREFIX_HIDDEN = "hf_";
+
+const severitySchema = (message: string) =>
+	Yup.string()
+		.trim()
+		.oneOf(["negligible", "low", "medium", "high", "critical"], message);
 
 const StyledBadge = withStyles(Badge, (theme: Theme) => ({
 	badge: {
@@ -236,7 +295,7 @@ const useStyles = makeStyles()((theme) => ({
 			alignItems: "flex-start",
 		},
 	},
-	// TODO: The following alertText classes don't use [error|warning].light, revisit for MUIv5
+	// the following alertText classes don't use [error|warning].light
 	alertTextError: {
 		color:
 			theme.palette.mode === "dark" ? "rgb(250, 179, 174)" : "rgb(97, 26, 21)",
@@ -253,8 +312,14 @@ const useStyles = makeStyles()((theme) => ({
 		marginRight: theme.spacing(0.5),
 		marginBottom: theme.spacing(0.5),
 	},
+	chartTooltip: {
+		border: "1px solid white",
+		opacity: 0.9,
+		background: "rgba(97, 97, 97, 0.92)",
+		color: "#fff",
+	},
 	dialogButtons: {
-		"& > *": {
+		"& > :not(:first-of-type)": {
 			marginLeft: theme.spacing(1),
 		},
 	},
@@ -267,6 +332,9 @@ const useStyles = makeStyles()((theme) => ({
 	},
 	filterField: {
 		height: "2.75em",
+	},
+	filterGroup: {
+		gap: theme.spacing(1),
 	},
 	findingDetails: {
 		overflow: "hidden",
@@ -317,6 +385,13 @@ const useStyles = makeStyles()((theme) => ({
 		overflow: "hidden",
 		textOverflow: "ellipsis",
 	},
+	longListItemText: {
+		whiteSpace: "nowrap",
+		overflowX: "hidden",
+		overflowY: "auto",
+		maxHeight: "5rem",
+		textOverflow: "ellipsis",
+	},
 	metaDataList: {
 		paddingLeft: "1em",
 	},
@@ -325,6 +400,10 @@ const useStyles = makeStyles()((theme) => ({
 		"& > *": {
 			marginLeft: theme.spacing(2),
 		},
+	},
+	numberedList: {
+		paddingLeft: 0,
+		listStyle: "inside decimal",
 	},
 	overviewCard: {
 		marginTop: theme.spacing(1),
@@ -447,6 +526,9 @@ const useStyles = makeStyles()((theme) => ({
 	tableDescription: {
 		padding: theme.spacing(2),
 		paddingBottom: theme.spacing(3),
+		marginTop: theme.spacing(2),
+		borderBottom: "1px solid rgba(81, 81, 81, 1)",
+		width: "100%",
 	},
 	tableInfo: {
 		padding: theme.spacing(2),
@@ -472,6 +554,35 @@ const useStyles = makeStyles()((theme) => ({
 		verticalAlign: "middle",
 	},
 }));
+
+// get result filters from url query params hash parameters
+// returns new FilterDef object matching input @filters with each field "filter" populated by validated values from url query hash parameters
+//
+// @schema - Yup schema to validate hash parameter values against
+// @prefix - prefix to differentiate hash parameters for various result types, e.g., "vn" for vulnerability. Each parameter in the schema should begin with this prefix
+// @filters - FilterDef object to populate with validated data
+export const getResultFilters = (
+	schema: Yup.SchemaOf<any>,
+	prefix: string = "",
+	filters: FilterDef
+) => {
+	const hash = queryString.parse(window.location.hash);
+	try {
+		const values = schema.validateSync(hash, {
+			strict: false, // trim fields
+			stripUnknown: true, // remove keys not in schema
+		});
+		for (const f in values) {
+			const field = f.replace(prefix, "");
+			if (values[f] && field in filters) {
+				filters[field].filter = String(values[f]);
+			}
+		}
+	} catch (err) {
+		console.warn("invalid result filters, discarding");
+	}
+	return filters;
+};
 
 const FindingAccordion = withStyles(Accordion, (theme, _props, classes) => ({
 	root: {
@@ -573,7 +684,7 @@ export const FindingTypeChip = (props: {
 
 	let chip = <></>;
 	switch (value) {
-		case "secret":
+		case "secret": {
 			chip = (
 				<Chip
 					icon={<VpnKeyIcon />}
@@ -587,7 +698,8 @@ export const FindingTypeChip = (props: {
 				/>
 			);
 			break;
-		case "secret_raw":
+		}
+		case "secret_raw": {
 			chip = (
 				<Chip
 					icon={<VpnKeyIcon />}
@@ -601,7 +713,8 @@ export const FindingTypeChip = (props: {
 				/>
 			);
 			break;
-		case "static_analysis":
+		}
+		case "static_analysis": {
 			chip = (
 				<Chip
 					icon={<BugReportIcon />}
@@ -615,7 +728,8 @@ export const FindingTypeChip = (props: {
 				/>
 			);
 			break;
-		case "vulnerability":
+		}
+		case "vulnerability": {
 			chip = (
 				<Chip
 					icon={<SecurityIcon />}
@@ -629,7 +743,8 @@ export const FindingTypeChip = (props: {
 				/>
 			);
 			break;
-		case "vulnerability_raw":
+		}
+		case "vulnerability_raw": {
 			chip = (
 				<Chip
 					icon={<SecurityIcon />}
@@ -643,6 +758,7 @@ export const FindingTypeChip = (props: {
 				/>
 			);
 			break;
+		}
 	}
 	return chip;
 };
@@ -676,7 +792,7 @@ export const SourceCell = (props: { row?: RowDef | null }) => {
 		return <></>;
 	};
 
-	let files = <></>;
+	const files = <></>;
 	if (row?.source) {
 		if (Array.isArray(row.source)) {
 			const count = row.source.length;
@@ -803,12 +919,13 @@ export const HiddenFindingDialog = (props: {
 	useEffect(() => {
 		if (open) {
 			switch (hiddenFindingState.status) {
-				case "succeeded":
+				case "succeeded": {
 					dispatch(resetStatus());
 					setDeleteConfirm(false);
 					setAccordionExpanded(false);
 					onClose();
 					break;
+				}
 			}
 		}
 	}, [open, hiddenFindingState.status, dispatch, onClose]);
@@ -882,7 +999,7 @@ export const HiddenFindingDialog = (props: {
 		if (row?.hiddenFindings && Array.isArray(row.hiddenFindings)) {
 			row.hiddenFindings.forEach((hf: HiddenFinding) => {
 				if (hf.type === type) {
-					let data: HiddenFinding | {} = {};
+					let data: HiddenFinding | Record<string, unknown> = {};
 					if (type === "secret_raw") {
 						data = {
 							value: {
@@ -931,14 +1048,14 @@ export const HiddenFindingDialog = (props: {
 			}
 		} else {
 			// create a new hidden finding per type (different value obj structures)
-			let data = {
+			const data = {
 				// common fields for all allowlist objs
 				created_by: row?.createdBy ?? undefined,
 				expires: expires,
 				reason: reason,
 			};
 			switch (type) {
-				case "secret":
+				case "secret": {
 					request = {
 						url,
 						data: {
@@ -953,7 +1070,8 @@ export const HiddenFindingDialog = (props: {
 					};
 					dispatch(addHiddenFinding(request));
 					break;
-				case "secret_raw":
+				}
+				case "secret_raw": {
 					request = {
 						url,
 						data: {
@@ -966,7 +1084,8 @@ export const HiddenFindingDialog = (props: {
 					};
 					dispatch(addHiddenFinding(request));
 					break;
-				case "static_analysis":
+				}
+				case "static_analysis": {
 					request = {
 						url,
 						data: {
@@ -981,7 +1100,8 @@ export const HiddenFindingDialog = (props: {
 					};
 					dispatch(addHiddenFinding(request));
 					break;
-				case "vulnerability":
+				}
+				case "vulnerability": {
 					if (row.source && Array.isArray(row.source)) {
 						// create separate hidden finding for each source file
 						row.source.forEach((source: string) => {
@@ -1005,7 +1125,8 @@ export const HiddenFindingDialog = (props: {
 						);
 					}
 					break;
-				case "vulnerability_raw":
+				}
+				case "vulnerability_raw": {
 					request = {
 						url,
 						data: {
@@ -1018,9 +1139,11 @@ export const HiddenFindingDialog = (props: {
 					};
 					dispatch(addHiddenFinding(request));
 					break;
-				default:
+				}
+				default: {
 					console.error("unknown finding type");
 					break;
+				}
 			}
 		}
 		return;
@@ -1076,7 +1199,7 @@ export const HiddenFindingDialog = (props: {
 			row?.hiddenFindings && Array.isArray(row.hiddenFindings)
 				? row.hiddenFindings.length
 				: 0;
-		let details = [
+		const details = [
 			<FindingListItem
 				key="finding-details-category"
 				id="finding-details-category"
@@ -1141,7 +1264,7 @@ export const HiddenFindingDialog = (props: {
 		}
 
 		switch (type) {
-			case "secret":
+			case "secret": {
 				if (item?.resource) {
 					details.push(
 						<FindingListItem
@@ -1186,8 +1309,9 @@ export const HiddenFindingDialog = (props: {
 					/>
 				);
 				break;
+			}
 
-			case "secret_raw":
+			case "secret_raw": {
 				details.push(
 					<FindingListItem
 						key="finding-details-type"
@@ -1231,8 +1355,9 @@ export const HiddenFindingDialog = (props: {
 					/>
 				);
 				break;
+			}
 
-			case "static_analysis":
+			case "static_analysis": {
 				if (item?.severity) {
 					details.push(
 						<FindingListItem
@@ -1277,8 +1402,9 @@ export const HiddenFindingDialog = (props: {
 					/>
 				);
 				break;
+			}
 
-			case "vulnerability":
+			case "vulnerability": {
 				if (item?.severity) {
 					details.push(
 						<FindingListItem
@@ -1389,8 +1515,9 @@ export const HiddenFindingDialog = (props: {
 					);
 				}
 				break;
+			}
 
-			case "vulnerability_raw":
+			case "vulnerability_raw": {
 				if (item?.severity) {
 					details.push(
 						<FindingListItem
@@ -1451,6 +1578,7 @@ export const HiddenFindingDialog = (props: {
 					);
 				}
 				break;
+			}
 		}
 		return details;
 	};
@@ -1837,7 +1965,7 @@ const HiddenFindingCell = (props: { row?: RowDef | null }) => {
 
 	let CellButton = <VisibilityIcon />;
 	let title = i18n._(t`Hide this finding`);
-	let warnings = [];
+	const warnings = [];
 	if (row?.hiddenFindings && row?.hiddenFindings.length > 0) {
 		CellButton = <VisibilityOffIcon />;
 		title = i18n._(t`Modify hidden finding`);
@@ -1906,10 +2034,15 @@ const HiddenFindingCell = (props: { row?: RowDef | null }) => {
 	);
 };
 
+interface Palette {
+	background: string;
+	text: string;
+}
+
 interface ChartData {
 	name: string;
 	value: number;
-	color: string;
+	palette: Palette;
 }
 
 type TabChangerFunction = () => void;
@@ -1925,6 +2058,46 @@ interface OverviewCardProps {
 	tabChanger?: TabChangerFunction | undefined;
 	isTabDisabled: boolean;
 }
+
+interface CustomTooltipPayloadI {
+	dataKey: string;
+	name: string;
+	payload: {
+		palette: Palette;
+	};
+	type?: string;
+	value: number;
+}
+
+interface CustomTooltipI {
+	active: boolean;
+	payload: CustomTooltipPayloadI[];
+}
+
+export const CustomChartTooltip = ({ active, payload }: CustomTooltipI) => {
+	const { classes } = useStyles();
+	if (active && payload && payload.length) {
+		return (
+			<Chip
+				className={classes.chartTooltip}
+				style={{
+					background: payload[0].payload.palette.background ?? "",
+					color: payload[0].payload.palette.text ?? "",
+				}}
+				label={
+					// add percentage if value is a decimal
+					`${payload[0].name}: ${
+						payload[0].value % 1 !== 0
+							? `${payload[0].value}%`
+							: payload[0].value
+					}`
+				}
+			/>
+		);
+	}
+
+	return null;
+};
 
 export const OverviewCard = ({
 	titleText,
@@ -2009,9 +2182,18 @@ export const OverviewCard = ({
 											paddingAngle={5}
 										>
 											{chartData.map((entry) => (
-												<Cell fill={entry.color} key={entry.name} />
+												<Cell
+													fill={entry.palette.background}
+													key={entry.name}
+												/>
 											))}
 										</Pie>
+										<ChartTooltip
+											content={
+												// @ts-ignore
+												<CustomChartTooltip />
+											}
+										/>
 										<Legend iconType="circle" />
 									</PieChart>
 								</ResponsiveContainer>
@@ -2134,8 +2316,8 @@ export const ScanMessages = (props: {
 export const OverviewTabContent = (props: {
 	scan: AnalysisReport;
 	hfRows: RowDef[];
-	tabChanger?: Function;
-	sharedColors: string[];
+	tabChanger?: (n: number) => void;
+	sharedColors: Palette[];
 	tabsStatus: {
 		isDisabledVulns: boolean;
 		isDisabledStat: boolean;
@@ -2169,27 +2351,35 @@ export const OverviewTabContent = (props: {
 	}
 
 	const nameTrans: NameTransType = {
-		critical: t`critical`,
-		high: t`high`,
-		medium: t`medium`,
-		low: t`low`,
-		negligible: t`negligible`,
+		critical: t`Critical`,
+		high: t`High`,
+		medium: t`Medium`,
+		low: t`Low`,
+		negligible: t`Negligible`,
+	};
+
+	const hfTrans: NameTransType = {
+		vulnerability: t`Vulnerabilities`,
+		vulnerability_raw: t`Vulnerabilities (Raw)`,
+		secret: t`Secrets`,
+		secret_raw: t`Secrets (Raw)`,
+		static_analysis: t`Static Analysis`,
 	};
 
 	// chart data selecting and formatting
 	const vulnsChartData = Object.entries(vulns).map((v) => ({
-		name: v[0] in nameTrans ? nameTrans[v[0]] : i18n._(t`not specified`),
+		name: v[0] in nameTrans ? nameTrans[v[0]] : i18n._(t`Not Specified`),
 		value: v[1],
-		color: getVulnColor(v[0]),
+		palette: getVulnColor(v[0]),
 	}));
 
 	const statAnalysisChartData = Object.entries(statAnalysis).map((sa) => ({
-		name: sa[0] in nameTrans ? nameTrans[sa[0]] : i18n._(t`not specified`),
+		name: sa[0] in nameTrans ? nameTrans[sa[0]] : i18n._(t`Not Specified`),
 		value: sa[1],
-		color: getVulnColor(sa[0]),
+		palette: getVulnColor(sa[0]),
 	}));
 
-	let dictSecrets: { [type: string]: number } = {};
+	const dictSecrets: { [type: string]: number } = {};
 	Object.values(secrets).forEach((arr) => {
 		arr.forEach((secObject) => {
 			const { type } = secObject;
@@ -2201,9 +2391,9 @@ export const OverviewTabContent = (props: {
 	const secretsSummarizedChartData = Object.entries(dictSecrets)
 		.sort((aArr, bArr) => bArr[1] - aArr[1])
 		.map((sec, i) => ({
-			name: sec[0],
+			name: sec[0].length > 3 ? capitalize(sec[0]) : sec[0].toUpperCase(),
 			value: Number(sec[1]),
-			color: sharedColors[i % sharedColors.length],
+			palette: sharedColors[i % sharedColors.length],
 		}));
 
 	const techDiscoveredChartData = Object.entries(techDiscovered)
@@ -2213,7 +2403,7 @@ export const OverviewTabContent = (props: {
 		.map((tech, i) => ({
 			name: tech[0],
 			value: tech[1],
-			color: sharedColors[i % sharedColors.length],
+			palette: sharedColors[i % sharedColors.length],
 		}));
 
 	const baseImagesSummarized = Object.keys(
@@ -2235,9 +2425,9 @@ export const OverviewTabContent = (props: {
 			return bArr[1] - aArr[1];
 		})
 		.map((hf, i) => ({
-			name: hf[0],
+			name: hf[0] in hfTrans ? hfTrans[hf[0]] : hf[0],
 			value: Number(hf[1]),
-			color: sharedColors[i % sharedColors.length],
+			palette: sharedColors[i % sharedColors.length],
 		}));
 
 	const hfCount = hfChartData.reduce((prev, curr) => {
@@ -2261,7 +2451,7 @@ export const OverviewTabContent = (props: {
 					scanOptionWasNotRun={results_summary?.vulnerabilities === null}
 					chartData={vulnsChartData}
 					nothingFoundText={i18n._(t`No vulnerabilities detected`)}
-					tabChanger={tabChanger && (() => tabChanger(1))}
+					tabChanger={tabChanger && (() => tabChanger(TAB_VULN))}
 					isTabDisabled={tabsStatus.isDisabledVulns}
 				/>
 				<OverviewCard
@@ -2270,7 +2460,7 @@ export const OverviewTabContent = (props: {
 					scanOptionWasNotRun={results_summary?.static_analysis === null}
 					chartData={statAnalysisChartData}
 					nothingFoundText={i18n._(t`No static analysis findings detected`)}
-					tabChanger={tabChanger && (() => tabChanger(2))}
+					tabChanger={tabChanger && (() => tabChanger(TAB_ANALYSIS))}
 					isTabDisabled={tabsStatus.isDisabledStat}
 				/>
 				<OverviewCard
@@ -2279,7 +2469,7 @@ export const OverviewTabContent = (props: {
 					scanOptionWasNotRun={results_summary?.secrets === null}
 					chartData={secretsSummarizedChartData}
 					nothingFoundText={i18n._(t`No secrets detected`)}
-					tabChanger={tabChanger && (() => tabChanger(3))}
+					tabChanger={tabChanger && (() => tabChanger(TAB_SECRET))}
 					isTabDisabled={tabsStatus.isDisabledSecrets}
 				/>
 				<OverviewCard
@@ -2290,7 +2480,7 @@ export const OverviewTabContent = (props: {
 					nothingFoundText={i18n._(t`No technology inventory detected`)}
 					hasExtraText={true}
 					extraText={techInventoryExtraText}
-					tabChanger={tabChanger && (() => tabChanger(4))}
+					tabChanger={tabChanger && (() => tabChanger(TAB_INVENTORY))}
 					isTabDisabled={tabsStatus.isDisabledInventory}
 				/>
 				<OverviewCard
@@ -2301,7 +2491,7 @@ export const OverviewTabContent = (props: {
 					nothingFoundText={i18n._(t`No findings are hidden`)}
 					hasExtraText={true}
 					extraText={hiddenFindingsExtraText}
-					tabChanger={tabChanger && (() => tabChanger(6))}
+					tabChanger={tabChanger && (() => tabChanger(TAB_HIDDEN))}
 					isTabDisabled={tabsStatus.isDisabledHFs}
 				/>
 			</Grid>
@@ -2310,22 +2500,24 @@ export const OverviewTabContent = (props: {
 };
 
 function getVulnColor(vulnSeverity: string) {
+	const colorBlack = "rgba(0, 0, 0, 0.87)";
+	const colorWhite = "#fff";
 	switch (vulnSeverity) {
 		case "critical":
-			return colorCritical;
+			return { background: colorCritical, text: colorWhite };
 		case "high":
-			return colorHigh;
+			return { background: colorHigh, text: colorWhite };
 		case "medium":
-			return colorMedium;
+			return { background: colorMedium, text: colorBlack };
 		case "low":
-			return colorLow;
+			return { background: colorLow, text: colorBlack };
 		case "negligible":
-			return colorNegligible;
+			return { background: colorNegligible, text: colorBlack };
 		case "":
-			return colorNegligible;
+			return { background: colorNegligible, text: colorBlack };
 		default:
 			console.warn(`Unexpected vulnerability severity found: ${vulnSeverity}`);
-			return colorNegligible;
+			return { background: colorNegligible, text: colorBlack };
 	}
 }
 
@@ -2378,10 +2570,17 @@ const FindingDialogActions = (props: {
 interface FilterFieldProps {
 	field: string;
 	label: string;
+	placeholder?: string;
 	value?: string | string[];
 	autoFocus?: boolean;
 	onClear: (field: string) => void;
-	onChange: (field: string, value: string) => void;
+	onChange: (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => void;
+	inputProps?: InputBaseComponentProps;
+	type?: React.InputHTMLAttributes<unknown>["type"];
 }
 
 const FilterField = (props: FilterFieldProps) => {
@@ -2390,10 +2589,13 @@ const FilterField = (props: FilterFieldProps) => {
 	const {
 		field,
 		label,
+		placeholder,
 		value = "",
 		autoFocus = false,
 		onClear,
 		onChange,
+		inputProps,
+		type = "text",
 	} = props;
 	// maintain an internal field value
 	// so we can echo user input
@@ -2427,7 +2629,7 @@ const FilterField = (props: FilterFieldProps) => {
 		}
 		setFieldValue(newValue);
 		debounceRef.current = setTimeout(() => {
-			onChange(field, newValue);
+			onChange(event, field, newValue);
 			debounceRef.current = null;
 		}, debounceMs);
 	};
@@ -2436,12 +2638,15 @@ const FilterField = (props: FilterFieldProps) => {
 		<MuiTextField
 			id={`filter-${field}`}
 			name={`filter-${field}`}
+			type={type}
 			variant="outlined"
 			autoFocus={autoFocus}
 			value={fieldValue}
 			size="small"
 			style={{ maxWidth: "13em" }}
 			label={label}
+			placeholder={placeholder}
+			inputProps={inputProps}
 			InputProps={{
 				className: classes.filterField,
 				autoComplete: "off",
@@ -2473,7 +2678,11 @@ interface SeverityFilterFieldProps {
 	value?: string | string[];
 	summary?: SeverityLevels | null;
 	autoFocus?: boolean;
-	onChange: (field: string, value: string) => void;
+	onChange: (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => void;
 }
 
 const SeverityFilterField = (props: SeverityFilterFieldProps) => {
@@ -2493,7 +2702,7 @@ const SeverityFilterField = (props: SeverityFilterFieldProps) => {
 			size="small"
 			className={classes.selectFilter}
 			onChange={(event) => {
-				onChange("severity", event.target.value);
+				onChange(event, "severity", event.target.value);
 			}}
 			InputProps={{
 				className: classes.filterField,
@@ -2553,10 +2762,14 @@ const findingSourceFiles = (findings?: HiddenFinding[]) => {
 	return <></>;
 };
 
-export const VulnLink = (props: { vulnId: string; addTitle?: boolean }) => {
-	const { classes } = useStyles();
+export const VulnLink = (props: {
+	vulnId: string;
+	addTitle?: boolean;
+	className?: string;
+}) => {
+	const { classes, cx } = useStyles();
 	const { i18n } = useLingui();
-	const { vulnId, addTitle } = props;
+	const { vulnId, addTitle, className } = props;
 	const cveIdRegex = /^CVE-\d{4}-\d{4,8}$/;
 	// strict www regex for now, only allow alphanum, _, ., /, &, =, -, prefixed with https://
 	// we can expand this if new vulnids are added later
@@ -2573,7 +2786,7 @@ export const VulnLink = (props: { vulnId: string; addTitle?: boolean }) => {
 	);
 
 	if (cveIdRegex.test(vulnId)) {
-		url = `https://nvd.nist.gov/vuln/detail/${vulnId}`;
+		url = `${PREFIX_NVD}${vulnId}`;
 	} else if (wwwAllowed.test(vulnId)) {
 		url = vulnId;
 		text = addTitle ? (
@@ -2592,6 +2805,7 @@ export const VulnLink = (props: { vulnId: string; addTitle?: boolean }) => {
 					target="_blank"
 					rel="noopener noreferrer nofollow"
 					size="small"
+					className={cx(className)}
 				>
 					{text}
 				</Button>
@@ -2606,7 +2820,7 @@ export const VulnLink = (props: { vulnId: string; addTitle?: boolean }) => {
 							target="_blank"
 							rel="noopener noreferrer nofollow"
 							size="small"
-							className={classes.vulnLinkButton}
+							className={cx(classes.vulnLinkButton, className)}
 						>
 							{vulnId}
 						</Button>
@@ -2620,28 +2834,50 @@ export const VulnLink = (props: { vulnId: string; addTitle?: boolean }) => {
 	return link;
 };
 
+type SaveFiltersT = (prefix: string, filters: FilterDef) => void;
+
 export const VulnTabContent = (props: {
 	scan: AnalysisReport;
 	hiddenFindings: HiddenFinding[];
 	currentUser: User;
+	saveFilters: SaveFiltersT;
 }) => {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const { i18n } = useLingui();
-	const { scan, hiddenFindings, currentUser } = props;
+	const { scan, hiddenFindings, currentUser, saveFilters } = props;
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
 	const [selectedRowNum, setSelectedRowNum] = useState<number | null>(null);
 	const [hideRowNum, setHideRowNum] = useState<number | null>(null);
-	const [filters, setFilters] = useState<FilterDef>({
-		component: {
-			filter: "",
-		},
-		id: {
-			filter: "",
-		},
-		severity: {
-			filter: "",
-		},
+	const hashPrefix = FILTER_PREFIX_VULN;
+	// validates url hash params, so must begin with hashPrefix
+	const schema = Yup.object().shape({
+		vn_component: Yup.string()
+			.trim()
+			.max(
+				COMPONENT_LENGTH,
+				i18n._(t`Component must be less than ${COMPONENT_LENGTH} characters`)
+			),
+		vn_id: Yup.string()
+			.trim()
+			.max(
+				VULN_ID_LENGTH,
+				i18n._(t`Vulnerability must be less than ${VULN_ID_LENGTH} characters`)
+			),
+		vn_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
+	const [filters, setFilters] = useState<FilterDef>(
+		getResultFilters(schema, hashPrefix, {
+			component: {
+				filter: "",
+			},
+			id: {
+				filter: "",
+			},
+			severity: {
+				filter: "",
+			},
+		})
+	);
 
 	const dialogTitle = (): string => {
 		let title = selectedRow?.id ?? "";
@@ -2651,6 +2887,25 @@ export const VulnTabContent = (props: {
 		}
 		return title as string;
 	};
+	const pluginChips: React.ReactNode[] = [];
+
+	if (
+		selectedRow?.source_plugins &&
+		Array.isArray(selectedRow?.source_plugins)
+	) {
+		// don't need to convert plugin api name => displayName
+		// API already returns the display names
+		for (const plugin of selectedRow.source_plugins) {
+			pluginChips.push(
+				<Chip
+					className={classes.chipPlugins}
+					key={`source-plugin-${plugin}`}
+					label={plugin}
+					size="small"
+				/>
+			);
+		}
+	}
 
 	const vulnDialogContent = () => {
 		return (
@@ -2727,6 +2982,24 @@ export const VulnTabContent = (props: {
 									/>
 								</ListItem>
 							</List>
+							<List>
+								<ListItem key="vuln-source-plugins">
+									<ListItemText
+										primary={
+											<>
+												{i18n._(t`Discovered By Plugins`) +
+													` (${pluginChips.length})`}{" "}
+												{pluginChips.length > 0 && (
+													<CustomCopyToClipboard
+														copyTarget={selectedRow?.source_plugins.join(", ")}
+													/>
+												)}
+											</>
+										}
+										secondary={pluginChips}
+									/>
+								</ListItem>
+							</List>
 						</Grid>
 					</Grid>
 				</DialogContent>
@@ -2761,7 +3034,7 @@ export const VulnTabContent = (props: {
 			},
 		},
 	];
-	let rows: RowDef[] = [];
+	const rows: RowDef[] = [];
 
 	for (const [component, vulns] of Object.entries(
 		scan.results?.vulnerabilities ?? {}
@@ -2816,9 +3089,35 @@ export const VulnTabContent = (props: {
 				source: details.source,
 				description: details.description,
 				remediation: details.remediation ?? "",
+				source_plugins:
+					details.source_plugins &&
+					Array.isArray(details.source_plugins) &&
+					details.source_plugins.length
+						? [...details.source_plugins].sort() // copy array to sort const
+						: undefined,
 			});
 		}
 	}
+
+	const exportData = () => {
+		const data: RowDef[] = [];
+		for (const [component, vulns] of Object.entries(
+			scan.results?.vulnerabilities ?? {}
+		)) {
+			for (const [id, details] of Object.entries(vulns ?? {})) {
+				data.push({
+					component,
+					id,
+					severity: details.severity,
+					source: details.source,
+					description: details.description,
+					remediation: details.remediation,
+					source_plugins: details.source_plugins,
+				});
+			}
+		}
+		return data;
+	};
 
 	const onRowSelect = (row: RowDef | null) => {
 		setSelectedRow(row);
@@ -2837,6 +3136,7 @@ export const VulnTabContent = (props: {
 		const newFilters = { ...filters };
 		newFilters[field].filter = "";
 		setFilters(newFilters);
+		saveFilters(hashPrefix, newFilters);
 	};
 
 	const clearAllFilters = () => {
@@ -2845,14 +3145,20 @@ export const VulnTabContent = (props: {
 			for (const field in prevState) {
 				newFilters[field].filter = "";
 			}
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
 
-	const handleOnChange = (field: string, value: string) => {
+	const handleOnChange = (
+		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
 			newFilters[field].filter = value;
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
@@ -2861,52 +3167,54 @@ export const VulnTabContent = (props: {
 		<>
 			{rows.length ? (
 				<>
-					<Box className={classes.showFilters}>
-						<Box className={classes.tableDescription} displayPrint="none">
-							<Box component="span" m={1}>
-								<FilterField
-									field="component"
-									autoFocus={true}
-									label={i18n._(t`Component`)}
-									value={filters["component"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<FilterField
-									field="id"
-									label={i18n._(t`Vulnerability`)}
-									value={filters["id"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<SeverityFilterField
-									value={filters["severity"].filter}
-									onChange={handleOnChange}
-									summary={scan?.results_summary?.vulnerabilities}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<Zoom
-									in={Object.values(filters).some((value) => value.filter)}
-									unmountOnExit
+					<FormControl
+						component="fieldset"
+						className={cx(classes.tableDescription, classes.showFilters)}
+					>
+						<FormLabel component="legend">
+							<Trans>Filter Results</Trans>
+						</FormLabel>
+
+						<FormGroup row className={classes.filterGroup}>
+							<FilterField
+								field="component"
+								autoFocus={true}
+								label={i18n._(t`Component`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["component"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: COMPONENT_LENGTH }}
+							/>
+							<FilterField
+								field="id"
+								label={i18n._(t`Vulnerability`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["id"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: VULN_ID_LENGTH }}
+							/>
+							<SeverityFilterField
+								value={filters["severity"].filter}
+								onChange={handleOnChange}
+								summary={scan?.results_summary?.vulnerabilities}
+							/>
+							<Zoom
+								in={Object.values(filters).some((value) => value.filter)}
+								unmountOnExit
+							>
+								<Fab
+									aria-label={i18n._(t`Clear all filters`)}
+									color="primary"
+									size="small"
+									onClick={clearAllFilters}
 								>
-									<Fab
-										aria-label={i18n._(t`Clear all filters`)}
-										color="primary"
-										size="small"
-										onClick={clearAllFilters}
-									>
-										<ClearIcon fontSize="small" />
-									</Fab>
-								</Zoom>
-							</Box>
-						</Box>
-						<Divider />
-					</Box>
+									<ClearIcon fontSize="small" />
+								</Fab>
+							</Zoom>
+						</FormGroup>
+					</FormControl>
 
 					<EnhancedTable
 						columns={columns}
@@ -2915,6 +3223,11 @@ export const VulnTabContent = (props: {
 						onRowSelect={onRowSelect}
 						selectedRow={selectedRow}
 						filters={filters}
+						menuOptions={{
+							exportFile: "scan_vulnerabilities",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+						}}
 					/>
 					<DraggableDialog
 						open={!!selectedRow}
@@ -2954,7 +3267,7 @@ export const SourceCodeHotLink = (props: {
 	}
 	// note: use i18n instead of <Trans> element for tooltip title
 	// otherwise, a11y can't determine the title properly
-	let text = addTitle ? (
+	const text = addTitle ? (
 		<Trans>View in Version Control</Trans>
 	) : (
 		i18n._(t`View in Version Control`)
@@ -3002,24 +3315,52 @@ export const AnalysisTabContent = (props: {
 	scan: AnalysisReport;
 	hiddenFindings: HiddenFinding[];
 	currentUser: User;
+	saveFilters: SaveFiltersT;
 }) => {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const { i18n } = useLingui();
-	const { scan, hiddenFindings, currentUser } = props;
+	const { scan, hiddenFindings, currentUser, saveFilters } = props;
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
 	const [selectedRowNum, setSelectedRowNum] = useState<number | null>(null);
 	const [hideRowNum, setHideRowNum] = useState<number | null>(null);
-	const [filters, setFilters] = useState<FilterDef>({
-		filename: {
-			filter: "",
-		},
-		resource: {
-			filter: "",
-		},
-		severity: {
-			filter: "",
-		},
+	const hashPrefix = FILTER_PREFIX_ANALYSIS;
+	// validates url hash params, so must begin with hashPrefix
+	const schema = Yup.object().shape({
+		sa_filename: Yup.string()
+			.trim()
+			.max(
+				FILEPATH_LENGTH,
+				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`)
+			),
+		sa_line: Yup.number()
+			.positive(i18n._(t`Line must be a positive integer`))
+			.integer(i18n._(t`Line must be a positive integer`))
+			.max(LINE_MAX, i18n._(t`Line must be less than ${LINE_MAX}`)),
+		sa_resource: Yup.string()
+			.trim()
+			.max(
+				RESOURCE_LENGTH,
+				i18n._(t`Resource must be less than ${RESOURCE_LENGTH} characters`)
+			),
+		sa_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
+	const [filters, setFilters] = useState<FilterDef>(
+		getResultFilters(schema, hashPrefix, {
+			filename: {
+				filter: "",
+			},
+			line: {
+				filter: "",
+				match: "exact",
+			},
+			resource: {
+				filter: "",
+			},
+			severity: {
+				filter: "",
+			},
+		})
+	);
 
 	const columns: ColDef[] = [
 		{ field: "filename", headerName: i18n._(t`File`) },
@@ -3043,7 +3384,7 @@ export const AnalysisTabContent = (props: {
 		},
 	];
 
-	let rows: RowDef[] = [];
+	const rows: RowDef[] = [];
 
 	for (const [filename, items] of Object.entries(
 		scan.results?.static_analysis ?? {}
@@ -3104,7 +3445,7 @@ export const AnalysisTabContent = (props: {
 									<ListItemText
 										primary={
 											<>
-												{i18n._(t`Found in Source File:`)}
+												{i18n._(t`Found in Source File`)}
 												{selectedRow?.filename && selectedRow?.line && (
 													<CustomCopyToClipboard
 														copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
@@ -3161,6 +3502,24 @@ export const AnalysisTabContent = (props: {
 		);
 	};
 
+	const exportData = () => {
+		const data: RowDef[] = [];
+		for (const [filename, items] of Object.entries(
+			scan.results?.static_analysis ?? {}
+		)) {
+			items.forEach((item: AnalysisFinding) => {
+				data.push({
+					filename,
+					line: item.line,
+					resource: item.type,
+					message: item.message,
+					severity: item.severity,
+				});
+			});
+		}
+		return data;
+	};
+
 	const onRowSelect = (row: RowDef | null) => {
 		setSelectedRow(row);
 		setSelectedRowNum(null);
@@ -3178,6 +3537,7 @@ export const AnalysisTabContent = (props: {
 		const newFilters = { ...filters };
 		newFilters[field].filter = "";
 		setFilters(newFilters);
+		saveFilters(hashPrefix, newFilters);
 	};
 
 	const clearAllFilters = () => {
@@ -3186,14 +3546,20 @@ export const AnalysisTabContent = (props: {
 			for (const field in prevState) {
 				newFilters[field].filter = "";
 			}
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
 
-	const handleOnChange = (field: string, value: string) => {
+	const handleOnChange = (
+		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
 			newFilters[field].filter = value;
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
@@ -3202,52 +3568,63 @@ export const AnalysisTabContent = (props: {
 		<>
 			{rows.length ? (
 				<>
-					<Box className={classes.showFilters}>
-						<Box className={classes.tableDescription} displayPrint="none">
-							<Box component="span" m={1}>
-								<FilterField
-									field="filename"
-									autoFocus={true}
-									label={i18n._(t`File`)}
-									value={filters["filename"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<FilterField
-									field="resource"
-									label={i18n._(t`Type`)}
-									value={filters["resource"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<SeverityFilterField
-									value={filters["severity"].filter}
-									onChange={handleOnChange}
-									summary={scan?.results_summary?.static_analysis}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<Zoom
-									in={Object.values(filters).some((value) => value.filter)}
-									unmountOnExit
+					<FormControl
+						component="fieldset"
+						className={cx(classes.tableDescription, classes.showFilters)}
+					>
+						<FormLabel component="legend">
+							<Trans>Filter Results</Trans>
+						</FormLabel>
+
+						<FormGroup row className={classes.filterGroup}>
+							<FilterField
+								field="filename"
+								autoFocus={true}
+								label={i18n._(t`File`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["filename"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: FILEPATH_LENGTH }}
+							/>
+							<FilterField
+								field="line"
+								label={i18n._(t`Line`)}
+								placeholder={i18n._(t`Exact`)}
+								value={filters["line"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: LINE_LENGTH }}
+							/>
+							<FilterField
+								field="resource"
+								label={i18n._(t`Type`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["resource"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: RESOURCE_LENGTH }}
+							/>
+							<SeverityFilterField
+								value={filters["severity"].filter}
+								onChange={handleOnChange}
+								summary={scan?.results_summary?.static_analysis}
+							/>
+							<Zoom
+								in={Object.values(filters).some((value) => value.filter)}
+								unmountOnExit
+							>
+								<Fab
+									aria-label={i18n._(t`Clear all filters`)}
+									color="primary"
+									size="small"
+									onClick={clearAllFilters}
 								>
-									<Fab
-										aria-label={i18n._(t`Clear all filters`)}
-										color="primary"
-										size="small"
-										onClick={clearAllFilters}
-									>
-										<ClearIcon fontSize="small" />
-									</Fab>
-								</Zoom>
-							</Box>
-						</Box>
-						<Divider />
-					</Box>
+									<ClearIcon fontSize="small" />
+								</Fab>
+							</Zoom>
+						</FormGroup>
+					</FormControl>
 
 					<EnhancedTable
 						columns={columns}
@@ -3256,6 +3633,11 @@ export const AnalysisTabContent = (props: {
 						onRowSelect={onRowSelect}
 						selectedRow={selectedRow}
 						filters={filters}
+						menuOptions={{
+							exportFile: "scan_static_analysis",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+						}}
 					/>
 					<DraggableDialog
 						open={!!selectedRow}
@@ -3290,24 +3672,57 @@ export const SecretsTabContent = (props: {
 	scan: AnalysisReport;
 	hiddenFindings: HiddenFinding[];
 	currentUser: User;
+	saveFilters: SaveFiltersT;
 }) => {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const { i18n } = useLingui();
-	const { scan, hiddenFindings, currentUser } = props;
+	const { scan, hiddenFindings, currentUser, saveFilters } = props;
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
 	const [selectedRowNum, setSelectedRowNum] = useState<number | null>(null);
 	const [hideRowNum, setHideRowNum] = useState<number | null>(null);
-	const [filters, setFilters] = useState<FilterDef>({
-		filename: {
-			filter: "",
-		},
-		resource: {
-			filter: "",
-		},
-		commit: {
-			filter: "",
-		},
+	const hashPrefix = FILTER_PREFIX_SECRET;
+	// validates url hash params, so must begin with hashPrefix
+	const schema = Yup.object().shape({
+		st_filename: Yup.string()
+			.trim()
+			.max(
+				FILEPATH_LENGTH,
+				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`)
+			),
+		st_line: Yup.number()
+			.positive(i18n._(t`Line must be a positive integer`))
+			.integer(i18n._(t`Line must be a positive integer`))
+			.max(LINE_MAX, i18n._(t`Line must be less than ${LINE_MAX}`)),
+		st_resource: Yup.string()
+			.trim()
+			.max(
+				RESOURCE_LENGTH,
+				i18n._(t`Resource must be less than ${RESOURCE_LENGTH} characters`)
+			),
+		st_commit: Yup.string()
+			.trim()
+			.max(
+				COMMIT_LENGTH,
+				i18n._(t`Commit must be less than ${COMMIT_LENGTH} characters`)
+			),
 	});
+	const [filters, setFilters] = useState<FilterDef>(
+		getResultFilters(schema, hashPrefix, {
+			filename: {
+				filter: "",
+			},
+			line: {
+				filter: "",
+				match: "exact",
+			},
+			resource: {
+				filter: "",
+			},
+			commit: {
+				filter: "",
+			},
+		})
+	);
 
 	const columns: ColDef[] = [
 		{ field: "filename", headerName: i18n._(t`File`) },
@@ -3325,7 +3740,7 @@ export const SecretsTabContent = (props: {
 			},
 		},
 	];
-	let rows: RowDef[] = [];
+	const rows: RowDef[] = [];
 
 	for (const [filename, items] of Object.entries(scan.results?.secrets ?? {})) {
 		items.forEach((item: SecretFinding) => {
@@ -3375,7 +3790,7 @@ export const SecretsTabContent = (props: {
 									<ListItemText
 										primary={
 											<>
-												{i18n._(t`Found in Source File:`)}
+												{i18n._(t`Found in Source File`)}
 												{selectedRow?.filename && selectedRow?.line && (
 													<CustomCopyToClipboard
 														copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
@@ -3432,6 +3847,23 @@ export const SecretsTabContent = (props: {
 		);
 	};
 
+	const exportData = () => {
+		const data: RowDef[] = [];
+		for (const [filename, items] of Object.entries(
+			scan.results?.secrets ?? {}
+		)) {
+			items.forEach((item: SecretFinding) => {
+				data.push({
+					filename,
+					line: item.line,
+					resource: item.type,
+					commit: item.commit,
+				});
+			});
+		}
+		return data;
+	};
+
 	const onRowSelect = (row: RowDef | null) => {
 		setSelectedRow(row);
 		setSelectedRowNum(null);
@@ -3449,6 +3881,7 @@ export const SecretsTabContent = (props: {
 		const newFilters = { ...filters };
 		newFilters[field].filter = "";
 		setFilters(newFilters);
+		saveFilters(hashPrefix, newFilters);
 	};
 
 	const clearAllFilters = () => {
@@ -3457,14 +3890,20 @@ export const SecretsTabContent = (props: {
 			for (const field in prevState) {
 				newFilters[field].filter = "";
 			}
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
 
-	const handleOnChange = (field: string, value: string) => {
+	const handleOnChange = (
+		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
 			newFilters[field].filter = value;
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
@@ -3473,54 +3912,67 @@ export const SecretsTabContent = (props: {
 		<>
 			{rows.length ? (
 				<>
-					<Box className={classes.showFilters}>
-						<Box className={classes.tableDescription} displayPrint="none">
-							<Box component="span" m={1}>
-								<FilterField
-									field="filename"
-									autoFocus={true}
-									label={i18n._(t`File`)}
-									value={filters["filename"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<FilterField
-									field="resource"
-									label={i18n._(t`Type`)}
-									value={filters["resource"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<FilterField
-									field="commit"
-									label={i18n._(t`Commit`)}
-									value={filters["commit"].filter}
-									onClear={handleOnClear}
-									onChange={handleOnChange}
-								/>
-							</Box>
-							<Box component="span" m={1}>
-								<Zoom
-									in={Object.values(filters).some((value) => value.filter)}
-									unmountOnExit
+					<FormControl
+						component="fieldset"
+						className={cx(classes.tableDescription, classes.showFilters)}
+					>
+						<FormLabel component="legend">
+							<Trans>Filter Results</Trans>
+						</FormLabel>
+
+						<FormGroup row className={classes.filterGroup}>
+							<FilterField
+								field="filename"
+								autoFocus={true}
+								label={i18n._(t`File`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["filename"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: FILEPATH_LENGTH }}
+							/>
+							<FilterField
+								field="line"
+								label={i18n._(t`Line`)}
+								placeholder={i18n._(t`Exact`)}
+								value={filters["line"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: LINE_LENGTH }}
+							/>
+							<FilterField
+								field="resource"
+								label={i18n._(t`Type`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["resource"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: RESOURCE_LENGTH }}
+							/>
+							<FilterField
+								field="commit"
+								label={i18n._(t`Commit`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["commit"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: COMMIT_LENGTH }}
+							/>
+							<Zoom
+								in={Object.values(filters).some((value) => value.filter)}
+								unmountOnExit
+							>
+								<Fab
+									aria-label={i18n._(t`Clear all filters`)}
+									color="primary"
+									size="small"
+									onClick={clearAllFilters}
 								>
-									<Fab
-										aria-label={i18n._(t`Clear all filters`)}
-										color="primary"
-										size="small"
-										onClick={clearAllFilters}
-									>
-										<ClearIcon fontSize="small" />
-									</Fab>
-								</Zoom>
-							</Box>
-						</Box>
-						<Divider />
-					</Box>
+									<ClearIcon fontSize="small" />
+								</Fab>
+							</Zoom>
+						</FormGroup>
+					</FormControl>
 
 					<EnhancedTable
 						columns={columns}
@@ -3529,6 +3981,11 @@ export const SecretsTabContent = (props: {
 						onRowSelect={onRowSelect}
 						selectedRow={selectedRow}
 						filters={filters}
+						menuOptions={{
+							exportFile: "scan_secrets",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+						}}
 					/>
 					<DraggableDialog
 						open={!!selectedRow}
@@ -3561,7 +4018,7 @@ export const SecretsTabContent = (props: {
 
 const InventoryTabContent = (props: {
 	scan: AnalysisReport;
-	sharedColors: string[];
+	sharedColors: Palette[];
 }) => {
 	const { classes, cx } = useStyles();
 	const { i18n } = useLingui();
@@ -3571,7 +4028,7 @@ const InventoryTabContent = (props: {
 		{ field: "image", headerName: i18n._(t`Image`) },
 		{ field: "tag", headerName: i18n._(t`Tag`) },
 	];
-	let rows: RowDef[] = [];
+	const rows: RowDef[] = [];
 
 	for (const [image, items] of Object.entries(
 		scan.results?.inventory?.base_images ?? {}
@@ -3585,19 +4042,38 @@ const InventoryTabContent = (props: {
 		});
 	}
 
+	const exportData = () => {
+		const data: RowDef[] = [];
+		for (const [image, items] of Object.entries(
+			scan.results?.inventory?.base_images ?? {}
+		)) {
+			items?.tags.forEach((tag: string) => {
+				data.push({
+					image,
+					tag,
+				});
+			});
+		}
+		return data;
+	};
+
 	interface TechData {
 		name: string;
 		value: number;
+		palette: Palette;
 	}
 
-	let techData: TechData[] = [];
+	const techData: TechData[] = [];
+	let i = 0;
 	for (const [name, value] of Object.entries(
 		scan.results?.inventory?.technology_discovery ?? {}
 	)) {
 		techData.push({
 			name,
 			value,
+			palette: sharedColors[i % sharedColors.length],
 		});
+		i += 1;
 	}
 	// sort technology discovery by % discovered descending
 	// also ensures pie graph orders slices by size
@@ -3664,18 +4140,25 @@ const InventoryTabContent = (props: {
 												techData.map((entry, i) => (
 													<Cell
 														key={`cell-${i}`}
-														fill={sharedColors[i % sharedColors.length]}
+														fill={entry.palette.background}
 													/>
 												))
 											}
 										</Pie>
+
+										<ChartTooltip
+											content={
+												// @ts-ignore
+												<CustomChartTooltip />
+											}
+										/>
 
 										{/* legend to left of pie chart with items listed vertically */}
 										<Legend
 											layout="vertical"
 											iconType="circle"
 											wrapperStyle={{ top: 0, left: 25, maxHeight: 10 }}
-											formatter={(value, entry, index) => {
+											formatter={(value, entry) => {
 												// recharts LegendPayload includes a payload object that is not in the type description
 												// overriding type checking here but ensuring existence before use
 												// @ts-ignore
@@ -3686,6 +4169,7 @@ const InventoryTabContent = (props: {
 												return value;
 											}}
 										/>
+										<ChartTooltip />
 									</PieChart>
 								</ResponsiveContainer>
 							</div>
@@ -3712,7 +4196,16 @@ const InventoryTabContent = (props: {
 					</Typography>
 				</Toolbar>
 				{scan.results?.inventory?.base_images ? (
-					<EnhancedTable columns={columns} rows={rows} defaultOrderBy="image" />
+					<EnhancedTable
+						columns={columns}
+						rows={rows}
+						defaultOrderBy="image"
+						menuOptions={{
+							exportFile: "scan_images",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+						}}
+					/>
 				) : (
 					<NoResults title={i18n._(t`No base images found`)} />
 				)}
@@ -3721,18 +4214,30 @@ const InventoryTabContent = (props: {
 	);
 };
 
+interface CodeTabState {
+	style: string;
+	showLineNumbers: boolean;
+	wrapLongLines: boolean;
+}
+
+type SetCodeTabState = (s: CodeTabState) => void;
+
 interface AllStylesT {
 	[key: string]: { [key: string]: React.CSSProperties };
 }
 
-const CodeTabContent = (props: { scan: AnalysisReport }) => {
+const CodeTabContent = (props: {
+	scan: AnalysisReport;
+	state: CodeTabState;
+	setState: SetCodeTabState;
+}) => {
+	const dispatch = useDispatch();
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
-	const theme = useTheme();
-	// set default code style theme based on light/dark mode
-	const [style, setStyle] = useState(
-		theme.palette.mode === "dark" ? "materialDark" : "materialLight"
-	);
+	const { scan, state, setState } = props;
+	const [creatingJson, setCreatingJson] = useState(false);
+	const [skipDialog, setSkipDialog] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false);
 	const allStyles: AllStylesT = {
 		a11yDark: { ...a11yDark },
 		atomDark: { ...atomDark },
@@ -3747,27 +4252,64 @@ const CodeTabContent = (props: { scan: AnalysisReport }) => {
 		solarizedlight: { ...solarizedlight },
 		vs: { ...vs },
 	};
-	const [showLineNumbers, setShowLineNumbers] = useState(false);
-	const [wrapLongLines, setWrapLongLines] = useState(false);
-	const { scan } = props;
 
-	const handleStyleChange = (event: SelectChangeEvent<string>) => {
-		setStyle(event.target.value);
+	const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setState({
+			style: event.target.value,
+			showLineNumbers: state.showLineNumbers,
+			wrapLongLines: state.wrapLongLines,
+		});
 	};
+
+	const handleJsonDownload = async () => {
+		dispatch(addNotification(i18n._(t`Generating JSON File`), "info"));
+		setCreatingJson(true);
+		try {
+			exportToJson("scan", scan);
+		} catch (e) {
+			handleException(e);
+		} finally {
+			setCreatingJson(false);
+		}
+	};
+
+	const onDialogOk = (disable: boolean) => {
+		localStorage.setItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE, disable ? "1" : "0");
+		handleJsonDownload();
+		setDialogOpen(false);
+		setSkipDialog(disable);
+	};
+
+	useEffect(() => {
+		setSkipDialog(
+			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE)))
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<>
+			<WelcomeDialog
+				open={dialogOpen}
+				onOk={onDialogOk}
+				onCancel={() => setDialogOpen(false)}
+				title={i18n._(t`Confirm Download`)}
+				okText={<Trans>I Acknowledge</Trans>}
+			>
+				<ExportDialogContent />
+			</WelcomeDialog>
+
 			<FormGroup row className={classes.rawToolbar}>
 				<FormControl variant="outlined" className={classes.formControl}>
-					<InputLabel id="theme-select-label">
-						<Trans>Theme</Trans>
-					</InputLabel>
 					{/* not using Formik fields here as its overkill for just an unvalidated immediate-change selector */}
-					<MuiSelect
-						labelId="theme-select-label"
+					<MuiTextField
+						select
 						id="theme-select"
+						label={i18n._(t`Theme`)}
+						variant="outlined"
 						autoFocus
-						value={style}
+						value={state.style}
+						size="small"
 						onChange={handleStyleChange}
 					>
 						<MenuItem value="a11yDark">
@@ -3806,15 +4348,19 @@ const CodeTabContent = (props: { scan: AnalysisReport }) => {
 						<MenuItem value="vs">
 							vs <Trans>(light)</Trans>
 						</MenuItem>
-					</MuiSelect>
+					</MuiTextField>
 				</FormControl>
 
 				<FormControlLabel
 					control={
 						<Checkbox
-							checked={showLineNumbers}
+							checked={state.showLineNumbers}
 							onChange={() => {
-								setShowLineNumbers(!showLineNumbers);
+								setState({
+									style: state.style,
+									showLineNumbers: !state.showLineNumbers,
+									wrapLongLines: state.wrapLongLines,
+								});
 							}}
 							name="showLineNumbers"
 						/>
@@ -3824,9 +4370,13 @@ const CodeTabContent = (props: { scan: AnalysisReport }) => {
 				<FormControlLabel
 					control={
 						<Checkbox
-							checked={wrapLongLines}
+							checked={state.wrapLongLines}
 							onChange={() => {
-								setWrapLongLines(!wrapLongLines);
+								setState({
+									style: state.style,
+									showLineNumbers: state.showLineNumbers,
+									wrapLongLines: !state.wrapLongLines,
+								});
 							}}
 							name="wrapLongLines"
 						/>
@@ -3835,13 +4385,36 @@ const CodeTabContent = (props: { scan: AnalysisReport }) => {
 				/>
 
 				<CustomCopyToClipboard size="medium" copyTarget={scan} />
+
+				<Tooltip title={i18n._(t`Download`)}>
+					<span>
+						<IconButton
+							aria-label={i18n._(t`Download`)}
+							onClick={() => {
+								if (skipDialog) {
+									handleJsonDownload();
+								} else {
+									setDialogOpen(true);
+								}
+							}}
+							size="medium"
+							disabled={creatingJson}
+						>
+							{creatingJson ? (
+								<CircularProgress color="inherit" size={24} />
+							) : (
+								<SaveAltIcon fontSize="medium" />
+							)}
+						</IconButton>
+					</span>
+				</Tooltip>
 			</FormGroup>
 
 			<SyntaxHighlighter
 				language="json"
-				style={allStyles[style]}
-				showLineNumbers={showLineNumbers}
-				wrapLongLines={wrapLongLines}
+				style={allStyles[state.style]}
+				showLineNumbers={state.showLineNumbers}
+				wrapLongLines={state.wrapLongLines}
 			>
 				{JSON.stringify(scan, null, 2)}
 			</SyntaxHighlighter>
@@ -3860,30 +4433,64 @@ interface HiddenFindingsSummary extends SeverityLevels {
 export const HiddenFindingsTabContent = (props: {
 	hiddenFindingsConsolidatedRows: RowDef[];
 	hiddenFindingsSummary: HiddenFindingsSummary;
+	saveFilters: SaveFiltersT;
 }) => {
 	const { i18n } = useLingui();
 	const { classes, cx } = useStyles();
 	const dispatch: AppDispatch = useDispatch();
-	const { hiddenFindingsConsolidatedRows, hiddenFindingsSummary } = props;
+	const { hiddenFindingsConsolidatedRows, hiddenFindingsSummary, saveFilters } =
+		props;
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
-	const [filters, setFilters] = useState<FilterDef>({
-		type: {
-			filter: "",
-			match: "exact",
-		},
-		source: {
-			filter: "",
-		},
-		location: {
-			filter: "",
-		},
-		component: {
-			filter: "",
-		},
-		severity: {
-			filter: "",
-		},
+	const hashPrefix = FILTER_PREFIX_HIDDEN;
+	// validates url hash params, so must begin with hashPrefix
+	const schema = Yup.object().shape({
+		hf_type: Yup.string()
+			.trim()
+			.oneOf(HiddenFindingTypeValues, i18n._(t`Invalid category`)),
+		hf_source: Yup.string()
+			.trim()
+			.max(
+				FILEPATH_LENGTH,
+				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`)
+			),
+		hf_location: Yup.string()
+			.trim()
+			.max(
+				VULN_ID_LENGTH,
+				i18n._(
+					t`Id/Line location must be less than ${VULN_ID_LENGTH} characters`
+				)
+			),
+		hf_component: Yup.string()
+			.trim()
+			.max(
+				COMPONENT_LENGTH,
+				i18n._(
+					t`Component/commit must be less than ${COMPONENT_LENGTH} characters`
+				)
+			),
+		hf_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
+	const [filters, setFilters] = useState<FilterDef>(
+		getResultFilters(schema, hashPrefix, {
+			type: {
+				filter: "",
+				match: "exact",
+			},
+			source: {
+				filter: "",
+			},
+			location: {
+				filter: "",
+			},
+			component: {
+				filter: "",
+			},
+			severity: {
+				filter: "",
+			},
+		})
+	);
 
 	const onRowSelect = (row: RowDef | null) => {
 		// reset finding load state to idle so dialog stays open (refer to HiddenFindingDialog useEffect auto-close)
@@ -3944,10 +4551,46 @@ export const HiddenFindingsTabContent = (props: {
 		},
 	];
 
+	const exportData = () => {
+		const data: RowDef[] = [];
+		hiddenFindingsConsolidatedRows.forEach((hf) => {
+			hf.hiddenFindings.forEach((f: HiddenFinding) => {
+				data.push({
+					id: f.id,
+					type: f.type,
+					location: hf.location,
+					component: hf.component,
+					source: "source" in f.value ? f.value.source : "",
+					severity: "severity" in f.value ? f.value.severity : "",
+					expires: f.expires,
+					reason: f.reason,
+					created_by: f.created_by,
+					created: f.created,
+					updated_by: f.updated_by,
+					updated: f.updated,
+				});
+			});
+		});
+		return data;
+	};
+
+	const toCsv = (data: HiddenFinding) => {
+		return {
+			...data,
+			created_by: data.created_by
+				? data.created_by.replace(DELETED_REGEX, " (Deleted)")
+				: null,
+			updated_by: data.updated_by
+				? data.updated_by.replace(DELETED_REGEX, " (Deleted)")
+				: null,
+		};
+	};
+
 	const handleOnClear = (field: string) => {
 		const newFilters = { ...filters };
 		newFilters[field].filter = "";
 		setFilters(newFilters);
+		saveFilters(hashPrefix, newFilters);
 	};
 
 	const clearAllFilters = () => {
@@ -3956,14 +4599,20 @@ export const HiddenFindingsTabContent = (props: {
 			for (const field in prevState) {
 				newFilters[field].filter = "";
 			}
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
 
-	const handleOnChange = (field: string, value: string) => {
+	const handleOnChange = (
+		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
 			newFilters[field].filter = value;
+			saveFilters(hashPrefix, newFilters);
 			return newFilters;
 		});
 	};
@@ -3982,11 +4631,15 @@ export const HiddenFindingsTabContent = (props: {
 							/>
 						</Box>
 					</Box>
-					<Box
+					<FormControl
+						component="fieldset"
 						className={cx(classes.tableDescription, classes.showFilters)}
-						displayPrint="none"
 					>
-						<Box component="span" m={1}>
+						<FormLabel component="legend">
+							<Trans>Filter Results</Trans>
+						</FormLabel>
+
+						<FormGroup row className={classes.filterGroup}>
 							<MuiTextField
 								select
 								id="filter-type"
@@ -3997,8 +4650,10 @@ export const HiddenFindingsTabContent = (props: {
 								value={filters["type"].filter}
 								size="small"
 								className={classes.selectFilter}
-								onChange={(event) => {
-									handleOnChange("type", event.target.value);
+								onChange={(
+									event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+								) => {
+									handleOnChange(event, "type", event.target.value);
 								}}
 								InputProps={{
 									className: classes.filterField,
@@ -4045,42 +4700,38 @@ export const HiddenFindingsTabContent = (props: {
 									/>
 								</MenuItem>
 							</MuiTextField>
-						</Box>
-						<Box component="span" m={1}>
 							<FilterField
 								field="source"
 								label={i18n._(t`File`)}
+								placeholder={i18n._(t`Contains`)}
 								value={filters["source"].filter}
 								onClear={handleOnClear}
 								onChange={handleOnChange}
+								inputProps={{ maxLength: FILEPATH_LENGTH }}
 							/>
-						</Box>
-						<Box component="span" m={1}>
 							<FilterField
 								field="location"
 								label={i18n._(t`Id/Line`)}
+								placeholder={i18n._(t`Contains`)}
 								value={filters["location"].filter}
 								onClear={handleOnClear}
 								onChange={handleOnChange}
+								inputProps={{ maxLength: VULN_ID_LENGTH }}
 							/>
-						</Box>
-						<Box component="span" m={1}>
 							<FilterField
 								field="component"
 								label={i18n._(t`Component/Commit`)}
+								placeholder={i18n._(t`Contains`)}
 								value={filters["component"].filter}
 								onClear={handleOnClear}
 								onChange={handleOnChange}
+								inputProps={{ maxLength: COMPONENT_LENGTH }}
 							/>
-						</Box>
-						<Box component="span" m={1}>
 							<SeverityFilterField
 								value={filters["severity"].filter}
 								onChange={handleOnChange}
 								summary={hiddenFindingsSummary}
 							/>
-						</Box>
-						<Box component="span" m={1}>
 							<Zoom
 								in={Object.values(filters).some((value) => value.filter)}
 								unmountOnExit
@@ -4094,9 +4745,8 @@ export const HiddenFindingsTabContent = (props: {
 									<ClearIcon fontSize="small" />
 								</Fab>
 							</Zoom>
-						</Box>
-					</Box>
-					<Divider />
+						</FormGroup>
+					</FormControl>
 
 					<EnhancedTable
 						columns={columns}
@@ -4105,6 +4755,12 @@ export const HiddenFindingsTabContent = (props: {
 						onRowSelect={onRowSelect}
 						selectedRow={selectedRow}
 						filters={filters}
+						menuOptions={{
+							exportFile: "repo_allowlist",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+							toCsv: toCsv,
+						}}
 					/>
 					<HiddenFindingDialog
 						open={!!selectedRow}
@@ -4145,104 +4801,45 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 			"-secret",
 			"-static_analysis",
 			"-inventory",
+			"-sbom",
 		] as ScanCategories[]);
+	const pluginsList =
+		scan?.scan_options?.plugins?.slice().sort(compareButIgnoreLeadingDashes) ||
+		[];
 
-	const getPluginChip = (label: string) => {
-		const disabled = label.startsWith("-");
-		const plugin = disabled ? label.slice(1) : label;
-		const pluginName =
-			plugin in pluginKeys && pluginKeys[plugin]?.displayName
-				? pluginKeys[plugin].displayName
-				: capitalize(plugin);
-
+	const getFeatureChip = (apiName: string, label: string) => {
+		const disabled = isFeatureDisabled(apiName);
 		return (
 			<Chip
 				className={classes.chipPlugins}
 				disabled={disabled}
-				key={label}
-				label={<Trans>{pluginName}</Trans>}
+				aria-disabled={disabled}
+				key={apiName}
+				label={<Trans>{label}</Trans>}
 				size="small"
 				variant={disabled ? "outlined" : "filled"}
 			/>
 		);
 	};
 
-	const getCategoryChip = (apiCategory: ScanCategories) => {
-		const getChip = (translatedLabel: string) => {
-			return (
-				<Chip
-					className={classes.chipPlugins}
-					key={translatedLabel}
-					label={translatedLabel}
-					size="small"
-				/>
-			);
-		};
-
-		const getChipDisabledChip = (translatedLabel: string) => {
-			return (
-				<Chip
-					className={classes.chipPlugins}
-					disabled
-					key={translatedLabel}
-					label={translatedLabel}
-					size="small"
-					variant="outlined"
-				/>
-			);
-		};
-
-		switch (apiCategory) {
-			case "-vulnerability":
-				return getChipDisabledChip(i18n._(t`Vulnerability`));
-
-			case "vulnerability":
-				return getChip(i18n._(t`Vulnerability`));
-
-			case "-secret":
-				return getChipDisabledChip(i18n._(t`Secret`));
-
-			case "secret":
-				return getChip(i18n._(t`Secret`));
-
-			case "-static_analysis":
-				return getChipDisabledChip(i18n._(t`Static Analysis`));
-
-			case "static_analysis":
-				return getChip(i18n._(t`Static Analysis`));
-
-			case "-inventory":
-				return getChipDisabledChip(i18n._(t`Inventory`));
-
-			case "inventory":
-				return getChip(i18n._(t`Inventory`));
-		}
-	};
-
-	const pluginsList = scan?.scan_options?.plugins?.slice() || [];
-	pluginsList.sort(compareButIgnoreLeadingDashes);
-
-	const categoryChips: React.ReactNode[] = categories.map((cat) =>
-		getCategoryChip(cat)
+	const categoryChips: React.ReactNode[] = categories.map((apiName) =>
+		getFeatureChip(apiName, getFeatureName(apiName, pluginCatalog))
 	);
 
-	const pluginChips: React.ReactNode[] | undefined = pluginsList?.map(
-		(plugin) => getPluginChip(plugin)
+	const pluginChips: React.ReactNode[] | undefined = pluginsList.map(
+		(apiName) => getFeatureChip(apiName, getFeatureName(apiName, pluginKeys))
 	);
 
-	function parseDashAsNotRun(str: string) {
-		if (str.startsWith("-")) {
-			let newStr = str.slice(1) + " (not run)";
-			return newStr;
-		}
-		return str;
-	}
-
-	const categoriesTooltip = categories.map((cat) =>
-		capitalize(parseDashAsNotRun(cat))
+	const categoriesTooltip = categories.map((apiName) =>
+		isFeatureDisabled(apiName)
+			? i18n._(t`${getFeatureName(apiName, pluginCatalog)} (not run)`)
+			: i18n._(t`${getFeatureName(apiName, pluginCatalog)}`)
 	);
-	const pluginsListTooltip = pluginsList.map((plug) =>
-		capitalize(parseDashAsNotRun(plug))
+
+	const pluginsListTooltip = pluginsList.map((apiName) =>
+		isFeatureDisabled(apiName)
+			? i18n._(t`${getFeatureName(apiName, pluginKeys)} (not run)`)
+			: i18n._(t`${getFeatureName(apiName, pluginKeys)}`)
 	);
 
 	return (
@@ -4354,6 +4951,98 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 											scan?.scan_options?.batch_priority
 												? i18n._(t`Yes`)
 												: i18n._(t`No`)
+										}
+									/>
+								</Tooltip>
+							</ListItem>
+							{scan?.batch_description && (
+								<ListItem key="batch-description">
+									<ListItemIcon>
+										<LowPriorityIcon />
+									</ListItemIcon>
+									<Tooltip describeChild title={scan?.batch_description}>
+										<ListItemText
+											classes={{ secondary: classes.listItemText }}
+											primary={i18n._(t`Batch Description`)}
+											secondary={scan?.batch_description}
+										/>
+									</Tooltip>
+								</ListItem>
+							)}
+							<ListItem key="scan_options-include-paths">
+								<ListItemIcon>
+									<CreateNewFolderIcon />
+								</ListItemIcon>
+								<Tooltip
+									describeChild
+									title={
+										scan?.scan_options?.include_paths
+											? scan?.scan_options?.include_paths.join(", ")
+											: i18n._(t`None`)
+									}
+								>
+									<ListItemText
+										classes={{ secondary: classes.longListItemText }}
+										primary={i18n._(
+											t`Include Paths (${
+												scan?.scan_options?.include_paths
+													? scan?.scan_options?.include_paths.length
+													: 0
+											})`
+										)}
+										secondary={
+											scan?.scan_options?.include_paths &&
+											Array.isArray(scan?.scan_options?.include_paths) &&
+											scan?.scan_options?.include_paths.length > 0 ? (
+												<ol className={classes.numberedList}>
+													{scan?.scan_options?.include_paths.map((path) => (
+														<li key={`include-path-${path}`}>{path}</li>
+													))}
+												</ol>
+											) : (
+												<i>
+													<Trans>None</Trans>
+												</i>
+											)
+										}
+									/>
+								</Tooltip>
+							</ListItem>
+							<ListItem key="scan_options-exclude-paths">
+								<ListItemIcon>
+									<FolderOffIcon />
+								</ListItemIcon>
+								<Tooltip
+									describeChild
+									title={
+										scan?.scan_options?.exclude_paths
+											? scan?.scan_options?.exclude_paths.join(", ")
+											: i18n._(t`None`)
+									}
+								>
+									<ListItemText
+										classes={{ secondary: classes.longListItemText }}
+										primary={i18n._(
+											t`Exclude Paths (${
+												scan?.scan_options?.exclude_paths
+													? scan?.scan_options?.exclude_paths.length
+													: 0
+											})`
+										)}
+										secondary={
+											scan?.scan_options?.exclude_paths &&
+											Array.isArray(scan?.scan_options?.exclude_paths) &&
+											scan?.scan_options?.exclude_paths.length > 0 ? (
+												<ol className={classes.numberedList}>
+													{scan?.scan_options?.exclude_paths.map((path) => (
+														<li key={`exclude-path-${path}`}>{path}</li>
+													))}
+												</ol>
+											) : (
+												<i>
+													<Trans>None</Trans>
+												</i>
+											)
 										}
 									/>
 								</Tooltip>
@@ -4625,16 +5314,68 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 	);
 };
 
+// updates url to match current result filters
+// @prefix - prefix to differentiate hash parameters for various result types, e.g., "vn" for vulnerability. Each hash parameter will be prefixed with this value
+// @filters - FilterDef object with result filters to convert to url query hash params
+// @returns - void, performs page navigation
+export const setResultFilters = (
+	prefix: string = "",
+	filters: FilterDef | null = null,
+	location: Location,
+	navigate: NavigateFunction
+): void => {
+	const hash = queryString.parse(window.location.hash);
+	const keys = Object.keys(hash);
+
+	// remove existing filters matching prefix
+	if (keys.length) {
+		for (const k of keys) {
+			if (k.startsWith(prefix)) {
+				delete hash[k];
+			}
+		}
+	}
+	// add new filters
+	const addFilters: { [key: string]: string } = {};
+	if (filters && Object.keys(filters).length) {
+		for (const f in filters) {
+			if (filters[f].filter) {
+				addFilters[`${prefix}${f}`] = String(filters[f].filter);
+			}
+		}
+	}
+
+	const hashString = "#" + queryString.stringify({ ...hash, ...addFilters });
+	if (hashString !== window.location.hash) {
+		// invoke navigation although we only want to update url hash params
+		// this is done b/c we need to use navigate() to maintain state so Back button properly navigates to prior page
+		// this will invoke a page reload, but so does setting window.location.hash
+		navigate(`${location.pathname}${location?.search}${hashString}`, {
+			state: location?.state,
+			replace: true,
+			preventScrollReset: true,
+		});
+	}
+};
+
 export const TabContent = (props: {
 	activeTab: number;
-	onTabChange: Function;
+	onTabChange: (n: number) => void;
 	scan: AnalysisReport;
 	hiddenFindings: HiddenFinding[];
 	currentUser: User;
-	sharedColors: string[];
+	sharedColors: Palette[];
 }) => {
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
+	const location = useLocation();
+	const navigate = useNavigate();
+	const theme = useTheme();
+	const [codeTabState, setCodeTabState] = useState<CodeTabState>({
+		style: theme.palette.mode === "dark" ? "materialDark" : "materialLight",
+		showLineNumbers: false,
+		wrapLongLines: false,
+	});
 	const {
 		activeTab,
 		scan,
@@ -4644,9 +5385,10 @@ export const TabContent = (props: {
 		onTabChange,
 	} = props;
 
-	const getTotalCounts = () => {
-		let imageCount = scan?.results_summary?.inventory?.base_images ?? 0;
-		let techCount = scan?.results_summary?.inventory?.technology_discovery ?? 0;
+	const getTotalCounts = useCallback(() => {
+		const imageCount = scan?.results_summary?.inventory?.base_images ?? 0;
+		const techCount =
+			scan?.results_summary?.inventory?.technology_discovery ?? 0;
 		return {
 			secrets: scan?.results_summary?.secrets ?? 0,
 			inventory: imageCount || techCount ? `${techCount}/${imageCount}` : 0,
@@ -4662,9 +5404,9 @@ export const TabContent = (props: {
 				  )
 				: 0,
 		};
-	};
+	}, [scan?.results_summary]);
 
-	const [counts] = useState(getTotalCounts());
+	const [counts, setCount] = useState(getTotalCounts());
 	const [hiddenFindingsConsolidatedRows, setHiddenFindingsConsolidatedRows] =
 		useState<RowDef[]>([]);
 	const [hiddenFindingsSummary, setHiddenFindingsSummary] =
@@ -4686,8 +5428,8 @@ export const TabContent = (props: {
 	// rollup vulnerability findings with only differing source files into single finding
 	// to match other areas in results
 	useEffect(() => {
-		let rows: RowDef[] = [];
-		let summary = {
+		const rows: RowDef[] = [];
+		const summary = {
 			critical: 0,
 			high: 0,
 			medium: 0,
@@ -4718,7 +5460,7 @@ export const TabContent = (props: {
 			let unhiddenFindings: string[] = [];
 
 			switch (item.type) {
-				case "static_analysis":
+				case "static_analysis": {
 					row = {
 						...row,
 						source: item.value.filename,
@@ -4735,8 +5477,9 @@ export const TabContent = (props: {
 						summary[item.value.severity] += 1;
 					}
 					break;
+				}
 
-				case "secret":
+				case "secret": {
 					row = {
 						...row,
 						source: item.value.filename,
@@ -4750,8 +5493,9 @@ export const TabContent = (props: {
 					rows.push(row);
 					summary.secret += 1;
 					break;
+				}
 
-				case "secret_raw":
+				case "secret_raw": {
 					row = {
 						...row,
 						source: i18n._(t`Any`),
@@ -4764,9 +5508,10 @@ export const TabContent = (props: {
 					rows.push(row);
 					summary.secret_raw += 1;
 					break;
+				}
 
 				// combine vuln findings with same id & component, this matches how these would be hidden in the vulns tab
-				case "vulnerability":
+				case "vulnerability": {
 					const rowMatch = rows.find((er) => {
 						if (
 							er.type === "vulnerability" &&
@@ -4816,8 +5561,9 @@ export const TabContent = (props: {
 						}
 					}
 					break;
+				}
 
-				case "vulnerability_raw":
+				case "vulnerability_raw": {
 					row = {
 						...row,
 						source: i18n._(t`Any`),
@@ -4833,6 +5579,7 @@ export const TabContent = (props: {
 						summary[item.value.severity] += 1;
 					}
 					break;
+				}
 			}
 		});
 
@@ -4840,7 +5587,12 @@ export const TabContent = (props: {
 		setHiddenFindingsSummary(summary);
 	}, [hiddenFindings, scan, currentUser.email, i18n]);
 
-	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+	// update tab badge counts if user or scan results change
+	useEffect(() => {
+		setCount(getTotalCounts());
+	}, [getTotalCounts, currentUser.email, scan?.results_summary]);
+
+	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		onTabChange(newValue);
 	};
 
@@ -4852,10 +5604,10 @@ export const TabContent = (props: {
 	const isDisabledStat = !scan?.results_summary?.static_analysis;
 	const isDisabledSecrets = typeof scan?.results_summary?.secrets !== "number";
 	const isDisabledInventory = !scan?.results_summary?.inventory;
-	const isDisabledHFs = false; // always available to allowlist a new hidden finding
+	const isDisabledHFs = false; // always available to allowlist a new HF
 
 	return (
-		<Paper>
+		<Paper id="tab-paper">
 			<Paper square>
 				<Tabs
 					value={activeTab}
@@ -4869,7 +5621,7 @@ export const TabContent = (props: {
 						className={classes.tab}
 						label={i18n._(t`Overview`)}
 						icon={<AssessmentIcon />}
-						{...a11yProps(0)}
+						{...a11yProps(TAB_OVERVIEW)}
 					/>
 					<Tab
 						className={classes.tab}
@@ -4883,7 +5635,7 @@ export const TabContent = (props: {
 								<SecurityIcon />
 							</StyledBadge>
 						}
-						{...a11yProps(1)}
+						{...a11yProps(TAB_VULN)}
 						disabled={isDisabledVulns}
 					/>
 					<Tab
@@ -4898,7 +5650,7 @@ export const TabContent = (props: {
 								<BugReportIcon />
 							</StyledBadge>
 						}
-						{...a11yProps(2)}
+						{...a11yProps(TAB_ANALYSIS)}
 						disabled={isDisabledStat}
 					/>
 					<Tab
@@ -4913,7 +5665,7 @@ export const TabContent = (props: {
 								<VpnKeyIcon />
 							</StyledBadge>
 						}
-						{...a11yProps(3)}
+						{...a11yProps(TAB_SECRET)}
 						disabled={isDisabledSecrets}
 					/>
 					<Tab
@@ -4928,14 +5680,14 @@ export const TabContent = (props: {
 								<LayersIcon />
 							</StyledBadge>
 						}
-						{...a11yProps(4)}
+						{...a11yProps(TAB_INVENTORY)}
 						disabled={isDisabledInventory}
 					/>
 					<Tab
 						className={classes.tab}
 						label={i18n._(t`Raw`)}
 						icon={<CodeIcon />}
-						{...a11yProps(5)}
+						{...a11yProps(TAB_RAW)}
 					/>
 					<Tab
 						className={classes.tab}
@@ -4949,12 +5701,12 @@ export const TabContent = (props: {
 								<VisibilityOffIcon />
 							</StyledBadge>
 						}
-						{...a11yProps(6)}
+						{...a11yProps(TAB_HIDDEN)}
 					/>
 				</Tabs>
 			</Paper>
 
-			<TabPanel value={activeTab} index={0}>
+			<TabPanel value={activeTab} index={TAB_OVERVIEW}>
 				<OverviewTabContent
 					scan={scan}
 					hfRows={hiddenFindingsConsolidatedRows}
@@ -4969,47 +5721,58 @@ export const TabContent = (props: {
 					}}
 				/>
 			</TabPanel>
-			<TabPanel value={activeTab} index={1}>
+			<TabPanel value={activeTab} index={TAB_VULN}>
 				<VulnTabContent
 					scan={scan}
 					hiddenFindings={hiddenFindings}
 					currentUser={currentUser}
+					saveFilters={(prefix, filters) =>
+						setResultFilters(prefix, filters, location, navigate)
+					}
 				/>
 			</TabPanel>
-			<TabPanel value={activeTab} index={2}>
+			<TabPanel value={activeTab} index={TAB_ANALYSIS}>
 				<AnalysisTabContent
 					scan={scan}
 					hiddenFindings={hiddenFindings}
 					currentUser={currentUser}
+					saveFilters={(prefix, filters) =>
+						setResultFilters(prefix, filters, location, navigate)
+					}
 				/>
 			</TabPanel>
-			<TabPanel value={activeTab} index={3}>
+			<TabPanel value={activeTab} index={TAB_SECRET}>
 				<SecretsTabContent
 					scan={scan}
 					hiddenFindings={hiddenFindings}
 					currentUser={currentUser}
+					saveFilters={(prefix, filters) =>
+						setResultFilters(prefix, filters, location, navigate)
+					}
 				/>
 			</TabPanel>
-			<TabPanel value={activeTab} index={4}>
+			<TabPanel value={activeTab} index={TAB_INVENTORY}>
 				<InventoryTabContent scan={scan} sharedColors={sharedColors} />
 			</TabPanel>
-			<TabPanel value={activeTab} index={5}>
-				<CodeTabContent scan={scan} />
+			<TabPanel value={activeTab} index={TAB_RAW}>
+				<CodeTabContent
+					scan={scan}
+					state={codeTabState}
+					setState={setCodeTabState}
+				/>
 			</TabPanel>
-			<TabPanel value={activeTab} index={6}>
+			<TabPanel value={activeTab} index={TAB_HIDDEN}>
 				<HiddenFindingsTabContent
 					hiddenFindingsConsolidatedRows={hiddenFindingsConsolidatedRows}
 					hiddenFindingsSummary={hiddenFindingsSummary}
+					saveFilters={(prefix, filters) =>
+						setResultFilters(prefix, filters, location, navigate)
+					}
 				/>
 			</TabPanel>
 		</Paper>
 	);
 };
-
-interface CustomLocation extends Path {
-	state: ScanFormLocationState; // defaults to unknown
-	key: Key;
-}
 
 const ResultsPage = () => {
 	const { classes } = useStyles();
@@ -5017,9 +5780,9 @@ const ResultsPage = () => {
 	const theme = useTheme();
 	const dispatch: AppDispatch = useDispatch();
 	const navigate = useNavigate(); // only for navigation, e.g. replace(), push(), goBack()
-	const location = useLocation() as CustomLocation; // for location, since history.location is mutable
+	const location = useLocation(); // for location, since history.location is mutable
 	const [id, setId] = useState<string | null>(null);
-	const [activeTab, setActiveTab] = useState(0);
+	const [activeTab, setActiveTab] = useState(TAB_OVERVIEW);
 	const [initialFindingCount, setInitialFindingCount] = useState<number | null>(
 		null
 	);
@@ -5038,7 +5801,9 @@ const ResultsPage = () => {
 	const usersStatus = useSelector(
 		(state: RootState) => state.currentUser.status
 	);
-	const [sharedColors, setSharedColors] = useState<string[]>([]);
+	const [sharedColors, setSharedColors] = useState<Palette[]>([]);
+	const [startingRescan, setStartingRescan] = useState(false);
+	const [rescanDialogOpen, setRescanDialogOpen] = useState(false);
 
 	const resultsScanSchema = Yup.object().shape(
 		{
@@ -5089,7 +5854,7 @@ const ResultsPage = () => {
 				.matches(
 					/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 				), // UUID
-			tab: Yup.number().min(0).max(6).integer(),
+			tab: Yup.number().min(TAB_OVERVIEW).max(TAB_HIDDEN).integer(),
 		},
 		[["org", "service"]]
 	);
@@ -5098,8 +5863,8 @@ const ResultsPage = () => {
 	// returns null if no hash params or validation fails
 	const getSearchParams = (): ResultsScan | null => {
 		if (location.search) {
-			const search = QueryString.parse(location.search);
-			if (Object.keys(search)) {
+			const search = queryString.parse(location.search);
+			if (Object.keys(search).length) {
 				try {
 					// schema validation will also transform query params to their correct types
 					const validValues = resultsScanSchema.validateSync(search, {
@@ -5126,13 +5891,19 @@ const ResultsPage = () => {
 
 		// add new tab id to url search query string
 		if (location.search) {
-			let search = QueryString.parse(location.search);
-			if (Object.keys(search)) {
+			const search = queryString.parse(location.search);
+			if (Object.keys(search).length) {
 				search["tab"] = String(tab);
-				navigate(location.pathname + "?" + QueryString.stringify(search), {
-					state: location?.state,
-					replace: true,
-				});
+				navigate(
+					`${location.pathname}?${queryString.stringify(search)}${
+						window.location.hash
+					}`,
+					{
+						state: location?.state,
+						replace: true,
+						preventScrollReset: true,
+					}
+				);
 			}
 		}
 	};
@@ -5212,12 +5983,13 @@ const ResultsPage = () => {
 				// don't activate a disabled tab (category that wasn't run)
 				// instead, redirect to overview tab
 				if (
-					(tab === 1 && !scan?.results_summary?.vulnerabilities) ||
-					(tab === 2 && !scan?.results_summary?.static_analysis) ||
-					(tab === 3 && typeof scan?.results_summary?.secrets !== "number") ||
-					(tab === 4 && !scan?.results_summary?.inventory)
+					(tab === TAB_VULN && !scan?.results_summary?.vulnerabilities) ||
+					(tab === TAB_ANALYSIS && !scan?.results_summary?.static_analysis) ||
+					(tab === TAB_SECRET &&
+						typeof scan?.results_summary?.secrets !== "number") ||
+					(tab === TAB_INVENTORY && !scan?.results_summary?.inventory)
 				) {
-					tab = 0;
+					tab = TAB_OVERVIEW;
 				}
 				setActiveTab(tab);
 			}
@@ -5242,7 +6014,7 @@ const ResultsPage = () => {
 
 	useEffect(() => {
 		function generateChartColors(count: number) {
-			let colors: string[] = [];
+			const colors: Palette[] = [];
 
 			const shades =
 				theme.palette.mode === "dark"
@@ -5254,7 +6026,14 @@ const ResultsPage = () => {
 				while (colors.indexOf(color) !== -1) {
 					color = randomMC.getColor({ shades: shades });
 				}
-				colors.push(color);
+				// create a mui palette for this color so we can get the contrasting text color
+				const palette = createPalette({
+					primary: { main: color },
+				});
+				colors.push({
+					background: color,
+					text: palette.primary.contrastText,
+				});
 			}
 
 			return colors;
@@ -5290,7 +6069,7 @@ const ResultsPage = () => {
 		const handBackButton = (event: React.SyntheticEvent) => {
 			event.preventDefault();
 
-			if (location?.state?.fromScanForm && window.history.length > 2) {
+			if (location?.state?.fromScanForm && window.history.length > 1) {
 				// user modified hidden findings while viewing scan results
 				// clear the scan cache so hidden finding changes will be applied to new scan results
 				// that will be fetched when navigating back to viewing scans on main page
@@ -5307,12 +6086,75 @@ const ResultsPage = () => {
 
 		return (
 			<Button
-				autoFocus
 				startIcon={<ArrowBackIosIcon />}
 				onClick={handBackButton}
+				disabled={startingRescan}
 			>
 				<Trans>Back to Scans</Trans>
 			</Button>
+		);
+	};
+
+	// create a new scan based on options from current scan results
+	const handleRescan = async (scan: AnalysisReport) => {
+		setStartingRescan(true);
+
+		// determine service + org from service + repo (where org may be part of the repo string)
+		const serviceRepo = `${scan.service}/${scan.repo}`;
+		const vcsOrg = currentUser?.scan_orgs
+			? currentUser?.scan_orgs.find((org) => serviceRepo.startsWith(org))
+			: null;
+		const repo = vcsOrg ? serviceRepo.replace(`${vcsOrg}/`, "") : null;
+
+		startScan(
+			navigate,
+			{
+				vcsOrg: vcsOrg ?? scan.service,
+				repo: repo ?? scan.repo,
+				branch: scan.branch ?? "",
+				secrets: scan.scan_options.categories?.includes("secret") ?? true,
+				staticAnalysis:
+					scan.scan_options.categories?.includes("static_analysis") ?? true,
+				inventory: scan.scan_options.categories?.includes("inventory") ?? true,
+				vulnerability:
+					scan.scan_options.categories?.includes("vulnerability") ?? true,
+				sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+				depth: scan.scan_options?.depth ?? "",
+				includeDev: scan.scan_options?.include_dev ?? false,
+				// removes any disabled plugins from new scan
+				secretPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => secretPlugins.includes(p) || secretPlugins.includes(`-${p}`)
+					),
+				staticPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => staticPlugins.includes(p) || staticPlugins.includes(`-${p}`)
+					),
+				techPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => techPlugins.includes(p) || techPlugins.includes(`-${p}`)
+					),
+				vulnPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => vulnPlugins.includes(p) || vulnPlugins.includes(`-${p}`)
+					),
+				sbomPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`)
+					),
+				includePaths: scan.scan_options?.include_paths
+					? scan.scan_options?.include_paths.join(", ")
+					: "",
+				excludePaths: scan.scan_options?.exclude_paths
+					? scan.scan_options?.exclude_paths.join(", ")
+					: "",
+			},
+			currentUser
 		);
 	};
 
@@ -5327,7 +6169,7 @@ const ResultsPage = () => {
 							className={scansStatus === "loading" ? classes.refreshSpin : ""}
 						/>
 					}
-					disabled={!scan || scansStatus === "loading"}
+					disabled={!scan || scansStatus === "loading" || startingRescan}
 					onClick={() => {
 						dispatch(
 							getScanById({
@@ -5342,6 +6184,58 @@ const ResultsPage = () => {
 					}}
 				>
 					<Trans>Refresh Scan Results</Trans>
+				</Button>
+
+				<DraggableDialog
+					open={rescanDialogOpen}
+					title={i18n._(t`New Scan`)}
+					maxWidth="md"
+				>
+					<DialogContent dividers={true}>
+						<Trans>
+							Start a new scan using the same options used in this scan?
+							<br />
+							Initiating a new scan will navigate to the main scan page to
+							display scan progress.
+						</Trans>
+					</DialogContent>
+
+					<DialogActions>
+						<Button
+							aria-label={i18n._(t`Start Scan`)}
+							size="small"
+							variant="contained"
+							startIcon={<PlayCircleOutlineIcon />}
+							disabled={!scan || scansStatus === "loading" || startingRescan}
+							autoFocus={rescanDialogOpen}
+							onClick={() => {
+								setRescanDialogOpen(false);
+								if (scan) {
+									handleRescan(scan);
+								}
+							}}
+						>
+							<Trans>Start Scan</Trans>
+						</Button>
+
+						<Button
+							aria-label={i18n._(t`Cancel`)}
+							size="small"
+							onClick={() => {
+								setRescanDialogOpen(false);
+							}}
+						>
+							<Trans>Cancel</Trans>
+						</Button>
+					</DialogActions>
+				</DraggableDialog>
+
+				<Button
+					startIcon={<PlayCircleOutlineIcon />}
+					disabled={!scan || scansStatus === "loading" || startingRescan}
+					onClick={() => setRescanDialogOpen(true)}
+				>
+					<Trans>New scan with these options</Trans>
 				</Button>
 			</Box>
 

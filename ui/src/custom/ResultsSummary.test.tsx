@@ -7,7 +7,7 @@ describe("ResultsSummary component", () => {
 	jest.setTimeout(90000);
 
 	it("Displays field1/field2 from sample_metadata", () => {
-		let scan = JSON.parse(JSON.stringify(scanMockData));
+		const scan = JSON.parse(JSON.stringify(scanMockData));
 		scan.application_metadata = {
 			sample_metadata: {
 				field1: "Meta Value 1",
@@ -34,7 +34,7 @@ describe("ResultsSummary component", () => {
 	});
 
 	it("Displays field3 from sample_metadata", () => {
-		let scan = JSON.parse(JSON.stringify(scanMockData));
+		const scan = JSON.parse(JSON.stringify(scanMockData));
 		scan.application_metadata = {
 			sample_metadata: {
 				field1: "Meta Value 1",
@@ -57,7 +57,7 @@ describe("ResultsSummary component", () => {
 	});
 
 	it("Displays unknown if field3 from sample_metadata is null", () => {
-		let scan = JSON.parse(JSON.stringify(scanMockData));
+		const scan = JSON.parse(JSON.stringify(scanMockData));
 		scan.application_metadata = {
 			sample_metadata: {
 				field1: "Meta Value 1",
@@ -78,7 +78,7 @@ describe("ResultsSummary component", () => {
 	});
 
 	it("Displays errors if fields 1 & 2 from sample_metadata are null", () => {
-		let scan = JSON.parse(JSON.stringify(scanMockData));
+		const scan = JSON.parse(JSON.stringify(scanMockData));
 		scan.application_metadata = {
 			sample_metadata: {
 				field1: null,
@@ -101,7 +101,7 @@ describe("ResultsSummary component", () => {
 	});
 
 	it("Displays tooltip and guidance popup if no field1, field2 metadata found", async () => {
-		let scan = JSON.parse(JSON.stringify(scanMockData));
+		const scan = JSON.parse(JSON.stringify(scanMockData));
 		scan.application_metadata = {
 			sample_metadata: {
 				field1: null,

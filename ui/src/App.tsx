@@ -17,8 +17,6 @@ import { en } from "make-plural/plurals";
 import { messages as enMessages } from "locale/en/messages";
 
 // apply material-ui cross-browser style normalizaion
-import createCache from "@emotion/cache";
-import { CacheProvider } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { makeStyles } from "tss-react/mui";
@@ -43,18 +41,13 @@ import { useSelector } from "react-redux";
 // footer appears on all pages, so load it statically
 import Footer from "custom/Footer";
 
-// load each SPA route dynamically only if user acceses page
+// load each SPA route dynamically only if user accesses page
 // enables code-splitting to reduce bundle size and page load times
 const MainPage = React.lazy(() => import("pages/MainPage"));
 const ResultsPage = React.lazy(() => import("pages/ResultsPage"));
 const SearchPage = React.lazy(() => import("pages/SearchPage"));
 const UsersPage = React.lazy(() => import("pages/UsersPage"));
 const UserSettings = React.lazy(() => import("pages/UserSettings"));
-
-export const muiCache = createCache({
-	key: "mui",
-	prepend: true,
-});
 
 // browser language preference
 // currently used for displaying times in locale-specific format
@@ -265,9 +258,7 @@ export function App() {
 	return (
 		<Provider store={store}>
 			<I18nProvider i18n={i18n}>
-				<CacheProvider value={muiCache}>
-					<ThemedApp />
-				</CacheProvider>
+				<ThemedApp />
 			</I18nProvider>
 		</Provider>
 	);

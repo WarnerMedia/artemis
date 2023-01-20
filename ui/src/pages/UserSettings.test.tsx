@@ -7,8 +7,15 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
+jest.mock("react-router-dom", () => ({
+	...(jest.requireActual("react-router-dom") as any),
+	__esModule: true,
+	useNavigate: jest.fn(),
+	useLocation: jest.fn(),
+}));
 /* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserSettings from "./UserSettings";
 import { mockStoreApiKeys, mockStoreEmpty } from "../../testData/testMockData";
 import { deleteUserKey } from "features/keys/keysSlice";
@@ -20,6 +27,13 @@ let mockAppState: any;
 const mockUseSelector = useSelector as jest.Mock;
 const mockUseDispatch = useDispatch as jest.Mock;
 const mockDispatch = jest.fn();
+
+const mockUseLocation = useLocation as jest.Mock;
+const mockUseNavigate = useNavigate as jest.Mock;
+const mockNavigate = jest.fn();
+let mockHistory: any[] = [];
+let globalWindow: any;
+let mockLocation: any;
 
 let origHideWelcome: string | null;
 let localStorageSetItemSpy: any;
@@ -46,6 +60,21 @@ describe("UserSettings component", () => {
 			return callback(mockAppState);
 		});
 		mockUseDispatch.mockImplementation(() => mockDispatch);
+		mockUseNavigate.mockImplementation(() => mockNavigate);
+		mockUseLocation.mockImplementation(() => {
+			return mockLocation;
+		});
+		globalWindow = global.window;
+		global.window = Object.create(window);
+		Object.defineProperty(window, "history", {
+			get() {
+				return mockHistory;
+			},
+		});
+		mockLocation = {
+			pathname: "/settings",
+			search: "",
+		};
 	});
 	afterEach(() => {
 		mockUseSelector.mockClear();
@@ -53,6 +82,10 @@ describe("UserSettings component", () => {
 		// clear mockDispatch too or mock call counts will be inaccurate
 		// will (bleed-over from prior tests)
 		mockDispatch.mockClear();
+		mockUseLocation.mockClear();
+		mockUseNavigate.mockClear();
+		mockNavigate.mockClear();
+		global.window = globalWindow;
 	});
 
 	it("page title should include 'user settings'", async () => {
@@ -70,12 +103,53 @@ describe("UserSettings component", () => {
 		global.window = globalWindow;
 	});
 
-	// back button functionality tested more thoroughly in BackButton.test.tsx
-	// this just checks for existence on this page
-	it("page should have a back button", async () => {
+	it("page updates location to remove search params", async () => {
 		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+		const pathname = "/settings";
+		mockLocation = {
+			pathname: pathname,
+		};
 		render(<UserSettings />);
-		expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+		expect(mockNavigate).toHaveBeenCalledWith(pathname, { replace: true });
+	});
+
+	// back button functionality tested more thoroughly in BackButton.test.tsx
+	// this just checks for existence on this page and expected behavior wrt account linking
+	describe("back button", () => {
+		it("page should have a back button", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			render(<UserSettings />);
+			expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+		});
+
+		it("back button should not call fromRedirect if an auth code wasn't passed in the page URL", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			const { user } = render(<UserSettings />);
+			const button = screen.getByRole("button", { name: "Back" });
+			expect(button).toBeInTheDocument();
+
+			await user.click(button);
+			expect(mockNavigate).toBeCalledWith("/");
+		});
+
+		it("back button should call fromRedirect if an auth code is passed in the page URL", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			const pathname = "/settings";
+			mockLocation = {
+				pathname: pathname,
+				search: `?code=abcdef1023456789abcd`,
+			};
+			const { user } = render(<UserSettings />);
+			const button = screen.getByRole("button", { name: "Back" });
+			expect(button).toBeInTheDocument();
+
+			await user.click(button);
+			expect(mockNavigate).toHaveBeenCalledTimes(2);
+			expect(mockNavigate).toHaveBeenNthCalledWith(1, pathname, {
+				replace: true,
+			});
+			expect(mockNavigate).toHaveBeenNthCalledWith(2, -2);
+		});
 	});
 
 	describe("user information", () => {
@@ -522,7 +596,7 @@ describe("UserSettings component", () => {
 						).not.toBeInTheDocument();
 					});
 
-					it("Snyk true displays API key Snyk feature option", async () => {
+					it("Snyk true displays API key Snyk feature option if Snyk enabled", async () => {
 						mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 						mockAppState.currentUser.entities["self"].features = { snyk: true }; // snyk on
 						const { user } = render(<UserSettings />);
@@ -543,10 +617,21 @@ describe("UserSettings component", () => {
 							name: "Add New API Key",
 						});
 
-						expect(within(dialog).getByText("Features")).toBeInTheDocument();
-						expect(
-							within(dialog).getByLabelText("Snyk Vulnerability Plugin")
-						).toBeInTheDocument();
+						if (process.env.REACT_APP_AQUA_ENABLED === "true") {
+							console.log("Snyk feature enabled, testing it is enabled...");
+							expect(within(dialog).getByText("Features")).toBeInTheDocument();
+							expect(
+								within(dialog).getByLabelText("Snyk Vulnerability Plugin")
+							).toBeInTheDocument();
+						} else {
+							console.log("Snyk feature disabled, testing it is disabled...");
+							expect(
+								within(dialog).queryByText("Features")
+							).not.toBeInTheDocument();
+							expect(
+								within(dialog).queryByLabelText("Snyk Vulnerability Plugin")
+							).not.toBeInTheDocument();
+						}
 					});
 				});
 			});
