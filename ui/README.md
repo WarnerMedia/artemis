@@ -251,7 +251,6 @@ The following settings should have defaults we want (no changes required):
 Project layout is based on Create React App standards for a React project.
 
 - Images, manifest, and index files live in the `public` directory
-- Any internal customizations or additions to the public files should be made in the `publicCustom` directory, which is copied into `public` via an npm postinstall script
 - All code lives in the `src` directory
   - Within `src`, API calls (business logic) reside in `api` folder
   - `app` contains "global app things" like the root store, root reducer, root saga, Navbar that is on every page, etc.

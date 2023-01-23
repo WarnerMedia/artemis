@@ -4,8 +4,7 @@ Artemis is an extensible source code scanning tool developed by the Warner Bros.
 
 ## 📖 Contents
 
-- [🔗 Links](#-links)
-- [🏠 Overview](#-overview)
+- [Overview](#overview)
 - [License](#license)
 
 ## Overview
