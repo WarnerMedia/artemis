@@ -22,6 +22,7 @@ WARN="  ${TIME}[${YELLOW} \!\! ${CNone}] "
 ###############################################################################
 
 DOCKER = docker
+NODE = node
 NPM = npm
 SERVE = serve
 HADOLINT = $(shell which hadolint)
@@ -128,6 +129,8 @@ ci-deploy: dist  ## Deploy app to S3
 .PHONY: install
 install: package.json package-lock.json  ## Install all NPM dependency packages
 	@echo "${INFO}Installing all NPM dependency packages"
+	@echo "node version is: "
+	$(NODE) -v
 	@echo "npm version is: "
 	$(NPM) -v
 	$(NPM) ci

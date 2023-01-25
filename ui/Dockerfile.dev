@@ -35,6 +35,5 @@ RUN npm install -g npm@^9.2.0 && \
 	npm ls -a
 
 COPY . .
-COPY publicCustom ./public/
 
 CMD ["npm", "run", "start"]
