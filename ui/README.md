@@ -354,7 +354,7 @@ For a complete reference, refer to the [Web Content Accessability Guidelines (WC
 - Features should be tested (AND include automated tests where possible)
   - Create mocks in `src/api/server.ts` for local dev testing
   - Also test against real Artemis APIs/data
-- Ensure the application version is updated with each change
+- Ensure the application version is updated with each change (in [package.json](package.json) and [package-lock.json](./package-lock.json)). Use semver.
 - PR pushes should not fail automated checks
 - All new and existing tests should PASS
 
