@@ -17,9 +17,17 @@ def main():
         "errors": [],
     }
 
-    # TODO confirm that this is how the repo is passed
-    owner, repo = _destructure_repo(args.engine_vars["repo"])
+    # TODO confirm that this is how the service, owner, repo are passed
+    service, owner = _destructure_service(args.engine_vars["service"])
+    repo = args.engine_vars["repo"]
+    # TODO confirm and wire up org config. This assumes an arbitrary json object is passed
+    #      with properties equal to the GitHub org name and values as valid repo-health configs
     org_config = args.config[owner]
+
+    if service != "github":
+        # Repo health check only supports Github. Otherwise return true
+        output["success"] = True
+        return print_and_exit(output)
 
     if org_config == None:
         output["errors"].append(f"No repo-health config found for organization, '{owner}'")
@@ -52,12 +60,12 @@ def main():
     print_and_exit(output)
 
 
-def _destructure_repo(full_repo):
+def _destructure_service(full_service):
     try:
-        owner, repo = full_repo.split("/", 1)
-        return (owner, repo)
+        source_service, owner = full_service.split("/", 1)
+        return (source_service, owner)
     except ValueError as err:
-        raise Exception(f'Invalid repo, "{full_repo}". Expected format is <owner>/<repo>') from err
+        raise Exception(f'Invalid service, "{full_service}". Expected format is <service>/<owner>') from err
 
 
 def are_results_passing(results):
