@@ -667,6 +667,7 @@ docker: dist/docker/engine \
 		dist/docker/java17 \
 		dist/docker/ruby \
 		dist/docker/db_maintenance \
+		dist/docker/veracode \
 		dist/docker/swift
 .PHONY: docker _docker
 
