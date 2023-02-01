@@ -8,6 +8,11 @@ jsonschema = "*"
 octokitpy = "*"
 
 [dev-packages]
+black = "*"
+build = "*"
+isort = "*"
+pytest = "*"
+setuptools = "*"
 
 [requires]
 python_version = "3.9"
