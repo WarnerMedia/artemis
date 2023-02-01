@@ -1,9 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from utilities import Github
-
-from rules import RepoActions
+from ...src.rules import RepoActions
+from ...src.utilities import Github
 
 OWNER = "owner"
 REPO = "repo"
