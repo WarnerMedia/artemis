@@ -6,13 +6,13 @@ from datetime import datetime, timezone
 from fnmatch import fnmatch
 from typing import Tuple
 from urllib.parse import quote_plus
+from botocore.exceptions import ClientError
+from django.db.models import Q
 
 import boto3
 from artemisdb.artemisdb.models import PluginConfig
 from artemislib.logging import Logger
 from artemislib.util import dict_eq
-from botocore.exceptions import ClientError
-from django.db.models import Q
 from env import (
     ECR,
     ENGINE_DIR,
