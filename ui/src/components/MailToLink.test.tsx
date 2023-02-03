@@ -194,4 +194,59 @@ describe("MailToLink component", () => {
 			)}&body=${encodeURIComponent(body)}`
 		);
 	});
+
+	test("disabled", () => {
+		const recipient = "test@example.com";
+		const text = "Test Me";
+		const body = "words";
+		render(
+			<MailToLink
+				text={text}
+				recipient={recipient}
+				subject={body}
+				body={body}
+				disabled
+			/>
+		);
+		expect(screen.getByRole("link", { name: text })).toHaveAttribute(
+			"aria-disabled",
+			"true"
+		);
+	});
+
+	test("iconButton with label", () => {
+		const recipient = "test@example.com";
+		const text = "Test Me";
+		const body = "words";
+		render(
+			<MailToLink
+				iconButton
+				text={text}
+				recipient={recipient}
+				subject={body}
+				body={body}
+			/>
+		);
+		expect(screen.getByRole("link", { name: text })).toBeInTheDocument();
+	});
+
+	test("iconButton disabled", () => {
+		const recipient = "test@example.com";
+		const text = "Test Me";
+		const body = "words";
+		render(
+			<MailToLink
+				iconButton
+				text={text}
+				recipient={recipient}
+				subject={body}
+				body={body}
+				disabled
+			/>
+		);
+		expect(screen.getByRole("link", { name: text })).toHaveAttribute(
+			"aria-disabled",
+			"true"
+		);
+	});
 });
