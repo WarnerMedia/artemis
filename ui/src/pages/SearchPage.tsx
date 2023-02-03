@@ -1750,7 +1750,7 @@ const VulnRepoDialog = (props: {
 			repo: data.repo,
 			risk: data.risk ?? "",
 			qualified_scan: scanUrl,
-			application_metadata: exportMetaData(data.application_metadata),
+			...exportMetaData(data.application_metadata),
 		};
 	};
 
@@ -3620,7 +3620,7 @@ const SearchPage = () => {
 			repo: data.repo,
 			risk: data.risk ?? "",
 			qualified_scan: scanUrl,
-			application_metadata: exportMetaData(data.application_metadata),
+			...exportMetaData(data.application_metadata),
 		};
 	};
 

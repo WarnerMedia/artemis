@@ -1,4 +1,4 @@
-import { Button, Tooltip } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { Email as EmailIcon } from "@mui/icons-material";
 import { Trans, t } from "@lingui/macro";
@@ -12,6 +12,8 @@ interface MailToLinkProps {
 	body?: string;
 	text: string;
 	tooltip?: boolean;
+	iconButton?: boolean;
+	disabled?: boolean;
 }
 
 const useStyles = makeStyles()(() => ({
@@ -29,7 +31,7 @@ const EMAIL_REGEX = new RegExp(
 const MailToLink = (props: MailToLinkProps) => {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
-	const { subject, body, text, tooltip } = props;
+	const { subject, body, text, tooltip, iconButton, disabled = false } = props;
 	let { recipient } = props;
 	let elt = <>{text}</>;
 	let tooltipTitle = text;
@@ -78,20 +80,39 @@ const MailToLink = (props: MailToLinkProps) => {
 		href += "body=" + encodeURIComponent(body);
 	}
 
-	elt = (
-		<span>
-			<Button
-				className={classes.emailButton}
-				startIcon={<EmailIcon />}
-				href={href}
-				target="_blank"
-				rel="noopener noreferrer nofollow"
-				size="small"
-			>
-				{text}
-			</Button>
-		</span>
-	);
+	if (iconButton) {
+		elt = (
+			<span>
+				<IconButton
+					aria-label={text}
+					className={classes.emailButton}
+					href={href}
+					target="_blank"
+					rel="noopener noreferrer nofollow"
+					size="small"
+					disabled={disabled}
+				>
+					<EmailIcon fontSize="small" />
+				</IconButton>
+			</span>
+		);
+	} else {
+		elt = (
+			<span>
+				<Button
+					className={classes.emailButton}
+					startIcon={<EmailIcon />}
+					href={href}
+					target="_blank"
+					rel="noopener noreferrer nofollow"
+					size="small"
+					disabled={disabled}
+				>
+					{text}
+				</Button>
+			</span>
+		);
+	}
 	if (tooltip) {
 		return (
 			<Tooltip describeChild title={tooltipTitle}>

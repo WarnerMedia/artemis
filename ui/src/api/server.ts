@@ -1804,7 +1804,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1814,7 +1814,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1824,7 +1824,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1838,7 +1838,7 @@ export function makeServer() {
 						scan_id: generateId(),
 					},
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1848,7 +1848,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{

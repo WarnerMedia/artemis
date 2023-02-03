@@ -118,8 +118,11 @@ const SearchMetaField = (props: { data: RowDef | null }) => {
 };
 export default SearchMetaField;
 
-export const exportMetaData = (meta: AppMeta | null) => {
-	return `${meta?.sample_metadata?.field1 ?? "Unknown"}, ${
-		meta?.sample_metadata?.field2 ?? "Unknown"
-	}, ${meta?.sample_metadata?.field3 ?? "Unknown"}`;
+type ExportMetaDataT = (meta: AppMeta | null) => { [field: string]: string };
+export const exportMetaData: ExportMetaDataT = (meta) => {
+	return {
+		application_metadata: `${meta?.sample_metadata?.field1 ?? "Unknown"}, ${
+			meta?.sample_metadata?.field2 ?? "Unknown"
+		}, ${meta?.sample_metadata?.field3 ?? "Unknown"}`,
+	};
 };
