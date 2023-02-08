@@ -6,6 +6,7 @@
 * [pizen](https://github.com/pizen) 
 * [davakos](https://github.com/davakos)
 * [jdempsey77](https://github.com/jdempsey77)
+* [tgayvert](https://github.com/tgayvert)
 * [Tigenzero](https://github.com/Tigenzero)
 * [jlegarreta](https://github.com/jlegarreta)
 * [nlapierre-isp](https://github.com/nlapierre-isp)
