@@ -15,7 +15,7 @@
 * [joeyleake](https://github.com/joeyleake)
 * [ZoogieZork](https://github.com/ZoogieZork)
 * [g-marconet](https://github.com/g-marconet)
-* [c-rkuhlke](https://github.com/c-rkuhlke)
+* [rkuhlke](https://github.com/rkuhlke)
 * [dexterinbk](https://github.com/dexterinbk)
 * [dtamez](https://github.com/dtamez)
 
