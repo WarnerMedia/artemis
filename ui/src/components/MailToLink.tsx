@@ -5,9 +5,13 @@ import { Trans, t } from "@lingui/macro";
 import { useLingui } from "@lingui/react";
 import { APP_EMAIL_AUTHOR } from "app/globals";
 import { DELETED_REGEX } from "utils/formatters";
+import { DateTime } from "luxon";
+
+// maximum email recipients to allow
+const MAX_RECIPIENTS = 5;
 
 interface MailToLinkProps {
-	recipient?: string;
+	recipient?: string; // single email address or multiple email addresses (maximum MAX_RECIPIENTS), separated by commas or semicolons
 	subject?: string;
 	body?: string;
 	text: string;
@@ -35,23 +39,41 @@ const MailToLink = (props: MailToLinkProps) => {
 	let { recipient } = props;
 	let elt = <>{text}</>;
 	let tooltipTitle = text;
-
-	if (!recipient) {
-		recipient = APP_EMAIL_AUTHOR;
+	const recipients = recipient
+		? recipient.split(/[,;]\s*/).filter((r) => EMAIL_REGEX.test(r))
+		: [APP_EMAIL_AUTHOR];
+	if (recipients.length > MAX_RECIPIENTS) {
+		console.debug(
+			`maximum ${MAX_RECIPIENTS} email recipients allowed, truncating`
+		);
 	}
-	// recipient isn't an email address
+
+	// no valid recipient email addresses found
 	// return the text description without an email link
-	if (!EMAIL_REGEX.test(recipient)) {
+	if (recipients.length === 0) {
 		if (DELETED_REGEX.test(text)) {
 			// reformat internal deleted user names
-			// from <name>_DELETED_<timestamp> => <name> (Deleted)
-			const user = text.replace(DELETED_REGEX, "");
-			tooltipTitle = i18n._(t`${user} (Deleted)`);
+			// from <name>_DELETED_<utc_epoch_seconds> => <name> (Deleted <date_local>)
+			const [user, timestamp] = text.split("_DELETED_");
+			const dt = DateTime.fromSeconds(parseInt(timestamp, 10)); // fromSeconds uses utc epoch seconds
+			if (dt.isValid) {
+				tooltipTitle = i18n._(
+					t`${user} (Deleted ${dt.toFormat("yyyy-LL-dd")})`
+				);
+			} else {
+				tooltipTitle = i18n._(t`${user} (Deleted)`);
+			}
 
 			elt = (
 				<>
 					<i>
-						<Trans>{user} (Deleted)</Trans>
+						{dt.isValid ? (
+							<Trans>
+								{user} (Deleted {dt.toFormat("yyyy-LL-dd")})
+							</Trans>
+						) : (
+							<Trans>{user} (Deleted)</Trans>
+						)}
 					</i>
 				</>
 			);
@@ -66,7 +88,12 @@ const MailToLink = (props: MailToLinkProps) => {
 		}
 		return elt;
 	}
-	let href = "mailto:" + encodeURI(recipient);
+	let href =
+		"mailto:" +
+		recipients
+			.slice(0, MAX_RECIPIENTS)
+			.map((r) => encodeURI(r))
+			.join(",");
 	if (subject || body) {
 		href += "?";
 	}
