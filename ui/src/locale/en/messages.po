@@ -170,10 +170,6 @@ msgstr "Any Qualified Scan"
 msgid "Aqua CLI Scanner (Docker)"
 msgstr "Aqua CLI Scanner (Docker)"
 
-#: src/pages/MainPage.tsx:260
-#~ msgid "Artemis"
-#~ msgstr "Artemis"
-
 #: src/pages/ResultsPage.tsx:5921
 msgid "Artemis - Scan Results"
 msgstr "Artemis - Scan Results"
@@ -198,21 +194,9 @@ msgstr "Artemis - User Management"
 msgid "Artemis - User Settings"
 msgstr "Artemis - User Settings"
 
-#: src/pages/MainPage.tsx:272
-#~ msgid "Artemis: {0}"
-#~ msgstr "Artemis: {0}"
-
-#: src/pages/MainPage.tsx:267
-#~ msgid "Artemis: {0}/{1}"
-#~ msgstr "Artemis: {0}/{1}"
-
 #: src/pages/UserSettings.tsx:1599
 msgid "At least 1 scope is required"
 msgstr "At least 1 scope is required"
-
-#: src/pages/MainPage.tsx:237
-#~ msgid "At least one feature must be enabled"
-#~ msgstr "At least one feature must be enabled"
 
 #: src/features/scans/scansSchemas.ts:503
 #: src/features/scans/scansSchemas.ts:537
@@ -530,11 +514,6 @@ msgstr "Copy link to these scan results"
 msgid "Copy link to these search results"
 msgstr "Copy link to these search results"
 
-#: src/components/ActivityTable.tsx:328
-#: src/components/ActivityTable.tsx:334
-#~ msgid "Copy link to this report"
-#~ msgstr "Copy link to this report"
-
 #: src/components/CustomCopyToClipboard.tsx:37
 msgid "Copy to clipboard"
 msgstr "Copy to clipboard"
@@ -754,10 +733,6 @@ msgstr "Fetching API keys..."
 msgid "Fetching inventory results..."
 msgstr "Fetching inventory results..."
 
-#: src/components/ActivityTable.tsx:318
-#~ msgid "Fetching report status..."
-#~ msgstr "Fetching report status..."
-
 #: src/pages/SearchPage.tsx:1619
 msgid "Fetching repositories..."
 msgstr "Fetching repositories..."
@@ -829,11 +804,6 @@ msgstr "Finding Details"
 #: src/pages/ResultsPage.tsx:3793
 msgid "Found in Source File"
 msgstr "Found in Source File"
-
-#: src/pages/ResultsPage.tsx:3107
-#: src/pages/ResultsPage.tsx:3378
-#~ msgid "Found in Source File:"
-#~ msgstr "Found in Source File:"
 
 #: src/pages/ResultsPage.tsx:2963
 msgid "Found in Source Files"
@@ -1922,10 +1892,6 @@ msgstr "Return to login"
 msgid "Risk"
 msgstr "Risk"
 
-#: src/components/StatusCell.tsx:636
-#~ msgid "Running plugin {current} of {total}: {0}"
-#~ msgstr "Running plugin {current} of {total}: {0}"
-
 #: src/components/StatusCell.tsx:703
 msgid "Running plugin {current} of {total}: {pluginName}"
 msgstr "Running plugin {current} of {total}: {pluginName}"
@@ -2083,10 +2049,6 @@ msgstr "Secrets (Raw)"
 #: src/pages/MainPage.tsx:790
 msgid "Select Version Control System or type to autocomplete"
 msgstr "Select Version Control System or type to autocomplete"
-
-#: src/pages/SearchPage.tsx:2503
-#~ msgid "Select a plugin"
-#~ msgstr "Select a plugin"
 
 #: src/pages/SearchPage.tsx:2536
 #: src/pages/SearchPage.tsx:2629
@@ -2316,10 +2278,6 @@ msgstr "This scan ran against a subset of source code due to include/exclude pat
 msgid "This scan ran with a subset of plugins."
 msgstr "This scan ran with a subset of plugins."
 
-#: src/components/StatusCell.tsx:199
-#~ msgid "This scan ran with a subset of plugins. View scan results for additional details"
-#~ msgstr "This scan ran with a subset of plugins. View scan results for additional details"
-
 #: src/pages/ResultsPage.tsx:1804
 msgid "This secret ANYWHERE in this repository"
 msgstr "This secret ANYWHERE in this repository"
@@ -2534,11 +2492,6 @@ msgstr "Updating..."
 
 #: src/features/keys/keysSaga.ts:64
 #: src/features/keys/keysSaga.ts:64
-#~ msgid "User API key count exceeds 200. Currently users can only manage 200 keys at a time. Please remove some expired or unused keys"
-#~ msgstr "User API key count exceeds 200. Currently users can only manage 200 keys at a time. Please remove some expired or unused keys"
-
-#: src/features/keys/keysSaga.ts:64
-#: src/features/keys/keysSaga.ts:64
 msgid "User API key count exceeds {maxCount}. Currently users can only manage {maxCount} keys at a time. Please remove some expired or unused keys"
 msgstr "User API key count exceeds {maxCount}. Currently users can only manage {maxCount} keys at a time. Please remove some expired or unused keys"
 
@@ -2611,14 +2564,6 @@ msgstr "View Scans"
 msgid "View errors"
 msgstr "View errors"
 
-#: src/components/ActivityTable.tsx:332
-#~ msgid "View failed report"
-#~ msgstr "View failed report"
-
-#: src/components/ActivityTable.tsx:333
-#~ msgid "View failed report in new tab"
-#~ msgstr "View failed report in new tab"
-
 #: src/components/ActivityTable.tsx:203
 msgid "View failed results"
 msgstr "View failed results"
@@ -2654,14 +2599,6 @@ msgstr "View results"
 #: src/components/ActivityTable.tsx:174
 msgid "View results in new tab"
 msgstr "View results in new tab"
-
-#: src/components/ActivityTable.tsx:326
-#~ msgid "View successful report"
-#~ msgstr "View successful report"
-
-#: src/components/ActivityTable.tsx:327
-#~ msgid "View successful report in new tab"
-#~ msgstr "View successful report in new tab"
 
 #: src/components/ActivityTable.tsx:198
 msgid "View successful results"
@@ -2771,17 +2708,9 @@ msgstr "Yes"
 msgid "You are about to download Artemis scan data. REPLACE ME: ADD ANY ADDITIONAL INFORMATION HERE."
 msgstr "You are about to download Artemis scan data. REPLACE ME: ADD ANY ADDITIONAL INFORMATION HERE."
 
-#: src/custom/ExportDialogContent.tsx:7
-#~ msgid "You are about to download Artemis scan data. REPLACEME: ADD ANY ADDITIONAL INFORMATION HERE."
-#~ msgstr "You are about to download Artemis scan data. REPLACEME: ADD ANY ADDITIONAL INFORMATION HERE."
-
 #: src/app/NavBar.tsx:151
 msgid "[Hunt for security issues in source code]"
 msgstr "[Hunt for security issues in source code]"
-
-#: src/pages/ResultsPage.tsx:2172
-#~ msgid "critical"
-#~ msgstr "critical"
 
 #: src/features/notifications/Notifications.tsx:18
 #: src/pages/ResultsPage.tsx:1161
@@ -2790,30 +2719,9 @@ msgstr "[Hunt for security issues in source code]"
 msgid "error"
 msgstr "error"
 
-#: src/pages/ResultsPage.tsx:2173
-#~ msgid "high"
-#~ msgstr "high"
-
 #: src/features/notifications/Notifications.tsx:19
 msgid "info"
 msgstr "info"
-
-#: src/pages/ResultsPage.tsx:2175
-#~ msgid "low"
-#~ msgstr "low"
-
-#: src/pages/ResultsPage.tsx:2174
-#~ msgid "medium"
-#~ msgstr "medium"
-
-#: src/pages/ResultsPage.tsx:2176
-#~ msgid "negligible"
-#~ msgstr "negligible"
-
-#: src/pages/ResultsPage.tsx:2181
-#: src/pages/ResultsPage.tsx:2187
-#~ msgid "not specified"
-#~ msgstr "not specified"
 
 #: src/features/notifications/Notifications.tsx:20
 msgid "success"
@@ -2931,11 +2839,12 @@ msgstr "{hfCount, plural, one {{hfCount} hidden finding} other {{hfCount} hidden
 msgid "{label}"
 msgstr "{label}"
 
-#: src/pages/ResultsPage.tsx:4163
-#~ msgid "{pluginName}"
-#~ msgstr "{pluginName}"
+#: src/components/MailToLink.tsx:61
+#: src/components/MailToLink.tsx:71
+msgid "{user} (Deleted {0})"
+msgstr "{user} (Deleted {0})"
 
-#: src/components/MailToLink.tsx:49
-#: src/components/MailToLink.tsx:54
+#: src/components/MailToLink.tsx:64
+#: src/components/MailToLink.tsx:75
 msgid "{user} (Deleted)"
 msgstr "{user} (Deleted)"

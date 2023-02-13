@@ -168,7 +168,11 @@ export function makeServer() {
 				}
 				// random items are deleted
 				if (email && Math.random() < 0.3) {
-					email += "_DELETED_" + Math.floor(Date.now() / 1000);
+					email +=
+						"_DELETED_" +
+						DateTime.utc()
+							.minus({ days: Math.floor(Math.random() * 365) })
+							.toUnixInteger();
 				}
 				return [user, email];
 			};
