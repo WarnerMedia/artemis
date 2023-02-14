@@ -11,7 +11,6 @@ def get_configuration(scan: Scan) -> PLUGIN_RESULTS:
     plugin = _empty = object()
     for plugin in scan.pluginresult_set.filter(plugin_type=PluginType.CONFIGURATION.value):
         errors.update(plugin)
-        # TODO add errors
 
         if not plugin.details:
             continue
