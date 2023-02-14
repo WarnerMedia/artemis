@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime, timezone
 
 from artemisdb.artemisdb.models import PluginResult, Scan
+from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
 from json_report.results.static_analysis import get_static_analysis
@@ -225,6 +226,27 @@ TEST_BASE_IMAGES = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
+TEST_REPO_HEALTH = PluginResult(
+    plugin_name="Repo Health",
+    plugin_type="configuration",
+    success=True,
+    details={
+        "repo_health": [
+            {
+                "type": "branch_commit_signing",
+                "name": "Branch - Require Commit Signing",
+                "description": "Branch protection rule is enabled to enforce code signing",
+                "pass": True,
+            }
+        ]
+    },
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
 
 class TestGenerateReport(unittest.TestCase):
     def test_get_static_analysis_report_for_brakeman(self):
@@ -409,6 +431,28 @@ class TestGenerateReport(unittest.TestCase):
         mock_scan.pluginresult_set.filter.return_value = [TEST_TECH_DISC, TEST_BASE_IMAGES]
         inventory = get_inventory(mock_scan)
         self.assertEqual(expected_inventory, inventory)
+
+    def test_get_configuration_report_for_repo_health(self):
+        expected_configuration = PLUGIN_RESULTS(
+            {
+                "repo_health": [
+                    {
+                        "type": "branch_commit_signing",
+                        "name": "Branch - Require Commit Signing",
+                        "description": "Branch protection rule is enabled to enforce code signing",
+                        "pass": True,
+                    }
+                ]
+            },
+            PluginErrors(),
+            True,
+            {"repo_health": 1},
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.pluginresult_set.filter.return_value = [TEST_REPO_HEALTH]
+        configuration = get_configuration(mock_scan)
+        self.assertEqual(expected_configuration, configuration)
 
     def test_get_static_analysis_report_diff(self):
         expected_report = PLUGIN_RESULTS(

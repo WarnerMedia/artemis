@@ -46,6 +46,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "checkov": None,
     },
     "inventory": {"technology_discovery": None, "base_images": None},
+    "configuration": {"repo_health": None},
     "sbom": {},
 }
 
@@ -75,6 +76,9 @@ QUALIFIED_PLUGINS = {
         [k] for k in set(PLUGIN_LIST_BY_CATEGORY["static_analysis"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)
     ],
     "inventory": [[k] for k in set(PLUGIN_LIST_BY_CATEGORY["inventory"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)],
+    "configuration": [
+        [k] for k in set(PLUGIN_LIST_BY_CATEGORY["configuration"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)
+    ],
     "sbom": [[k] for k in set(PLUGIN_LIST_BY_CATEGORY["sbom"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)],
 }
 
@@ -134,7 +138,7 @@ FORMAT_SBOM = "sbom"
 
 HISTORY_QUERY_PARAMS = ["limit", "offset", "initiated_by", "include_batch", "include_diff", "qualified"]
 QUERY_PARAMS = ["results", "severity", "secret", "type", "format", "filter_diff"]
-RESULTS = ["vulnerabilities", "secrets", "static_analysis", "inventory"]
+RESULTS = ["vulnerabilities", "secrets", "static_analysis", "inventory", "configuration"]
 SEVERITY = ["critical", "high", "medium", "low", "negligible", ""]
 SECRET = ["aws", "ssh", "mongo", "postgres", "redis", "urlauth", "google", "slack", "other"]
 FORMAT = [FORMAT_FULL, FORMAT_SUMMARY, FORMAT_SBOM]

@@ -1,5 +1,5 @@
 {
     "name": "Repo Health Check",
-    "type": "TODOCHANGETHIS",
+    "type": "configuration",
     "image": "$ECR/artemis/python:3-latest"
 }

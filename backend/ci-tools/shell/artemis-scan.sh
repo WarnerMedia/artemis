@@ -19,7 +19,7 @@ usage() {
   echo "  -b  Perform a baseline-qualified scan"
   echo "  -c  Fail-closed when Artemis is in maintenance mode (default is to fail-open)"
   echo "  -C  Specify one or more categories of plugins to run (preface each with - to exclude)"
-  echo "      Categories are: inventory, sbom, secret, static_analysis, and vulnerability"
+  echo "      Categories are: configuration, inventory, sbom, secret, static_analysis, and vulnerability"
   echo "  -P  Specify one or more plugins to include/exclude (preface each with - to exclude)"
   echo "  -i  Specify a path within the repo to include in the scan"
   echo "  -e  Specify a path within the repo to exclude from the scan"
@@ -97,7 +97,7 @@ SEVERITY=$4
 
 if [ $BASELINE -eq 1 ]; then
   # Baseline scan config
-  CATEGORIES="[\"vulnerability\", \"secret\", \"static_analysis\", \"sbom\", \"inventory\"]"
+  CATEGORIES="[\"vulnerability\", \"secret\", \"static_analysis\", \"sbom\", \"inventory\", \"configuration\"]"
   PLUGINS="[\"-truffle_hog\", \"-aqua_cli_scanner\", \"-nodejsscan\"]"
 else
   # Use user-specified categories, if any
