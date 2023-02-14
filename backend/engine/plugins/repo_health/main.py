@@ -4,7 +4,9 @@ from artemislib.github.app import GithubApp
 from engine.plugins.lib import utils
 from engine.plugins.repo_health.cli.src.utilities import Checker, Config, Github
 
-log = utils.setup_logging("repo_health")
+plugin_name = "repo_health"
+
+log = utils.setup_logging(plugin_name)
 
 
 def main():
@@ -53,7 +55,7 @@ def main():
 
     results = checker.run(owner, repo, branch)
 
-    output["details"]["repo_health"] = results
+    output["details"][plugin_name] = results
     output["success"] = are_results_passing(results)
 
     print_and_exit(output)
