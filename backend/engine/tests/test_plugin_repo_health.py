@@ -9,7 +9,7 @@ ORG = "example-org"
 REPO = "example-repo"
 
 CONFIG = {
-    "name": "artemis_default",
+    "name": "test_default",
     "version": "1.0.0",
     "rules": [
         {
@@ -130,6 +130,7 @@ class TestRepoHealth(unittest.TestCase):
         result = main.run_repo_health(ARGS_VALID)
 
         self.assertEqual(expected_result, result)
+        mock_checker.assert_called_once_with(ANY, CONFIG)
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
@@ -273,7 +274,7 @@ class TestRepoHealth(unittest.TestCase):
         mock_checker.return_value.run.return_value = CHECK_RESULT_ALL_SUCCEED
 
         expected_result = {
-            "success": False,
+            "success": True,
             "truncated": False,
             "details": {"repo_health": CHECK_RESULT_ALL_SUCCEED},
             "errors": [],
@@ -283,4 +284,4 @@ class TestRepoHealth(unittest.TestCase):
         result = main.run_repo_health(ARGS_NO_CONFIG)
 
         self.assertEqual(expected_result, result)
-        mock_checker.assert_called_once_with(ANY, CONFIG)
+        mock_checker.assert_called_once_with(ANY, main.DEFAULT_CONFIG)
