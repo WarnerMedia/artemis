@@ -6,8 +6,8 @@ from engine.plugins.repo_health.cli.src.utilities import Checker, Config, Github
 
 PLUGIN_NAME = "repo_health"
 
-# Will be used if service is Github, but no matching PluginConfig is found
-default_config = {
+# Will be used if service is "github", but no matching PluginConfig is found
+DEFAULT_CONFIG = {
     "name": "artemis_default",
     "version": "1.0.0",
     "rules": [
@@ -112,7 +112,7 @@ def get_config(args, output, service, owner, repo):
         return args.config
     else:
         output["alerts"].append(f"No config found for '{service}/{owner}/{repo}'. Using default config")
-        return default_config
+        return DEFAULT_CONFIG
 
 
 if __name__ == "__main__":
