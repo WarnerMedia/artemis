@@ -32,7 +32,6 @@ CONFIG = {
                 "strict": True,
             },
         },
-        # Refer to engine/plugins/repo_health/cli/src/rules for other rules
     ],
 }
 
