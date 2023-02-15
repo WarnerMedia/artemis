@@ -31,6 +31,9 @@ DEFAULT_CONFIG = {
                 "strict": True,
             },
         },
+        {
+            "type": "repo_security_alerts",
+        },
         # Refer to engine/plugins/repo_health/cli/src/rules for other rules
     ],
 }
