@@ -446,7 +446,7 @@ class TestGenerateReport(unittest.TestCase):
             },
             PluginErrors(),
             True,
-            {"repo_health": 1},
+            {"repo_health": 0},
         )
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())

@@ -4,40 +4,74 @@ from artemislib.github.app import GithubApp
 from engine.plugins.lib import utils
 from engine.plugins.repo_health.cli.src.utilities import Checker, Config, Github
 
-plugin_name = "repo_health"
+PLUGIN_NAME = "repo_health"
 
-log = utils.setup_logging(plugin_name)
+# Will be used if service is Github, but no matching PluginConfig is found
+default_config = {
+    "name": "artemis_default",
+    "version": "1.0.0",
+    "rules": [
+        {
+            "type": "branch_commit_signing",
+        },
+        {
+            "type": "branch_enforce_admins",
+        },
+        {
+            "type": "branch_pull_requests",
+            "expect": {
+                "dismiss_stale_reviews": True,
+                "require_code_owner_reviews": True,
+            },
+            "min_approvals": 1,
+        },
+        {
+            "type": "branch_status_checks",
+            "expect": {
+                "strict": True,
+            },
+        },
+        # Refer to engine/plugins/repo_health/cli/src/rules for other rules
+    ],
+}
+
+log = utils.setup_logging(PLUGIN_NAME)
 
 
 def main():
     args = utils.parse_args()
 
+    result = run_repo_health(args)
+
+    print(json.dumps(result))
+
+
+def run_repo_health(args):
     output = {
         "success": False,
         "truncated": False,
         "details": {},
         "errors": [],
+        "alerts": [],
+        "debug": [],
     }
 
     service = args.engine_vars.get("service")
     owner, repo = destructure_repo(args.engine_vars.get("repo"))
-    config = args.config
+
+    config = get_config(args, output, service, owner, repo)
 
     if service != "github":
         # Repo health check only supports Github, but that's not our user's
         # fault, so let's return true
         output["success"] = True
-        return print_and_exit(output)
-
-    if not config:
-        output["errors"].append(f"No config found for '{service}/{owner}'")
-        return print_and_exit(output)
+        return output
 
     try:
         Config.validate(config)
     except Exception as err:
         output["errors"].append(str(err))
-        return print_and_exit(output)
+        return output
 
     log.info(f"Using config '{config.get('name')}@{config.get('version')}'")
 
@@ -46,7 +80,7 @@ def main():
 
     if github_token == None:
         output["errors"].append("Failed to authenticate to Github")
-        return print_and_exit(output)
+        return output
 
     github = Github.get_client_from_token(github_token)
     checker = Checker(github, config)
@@ -55,10 +89,10 @@ def main():
 
     results = checker.run(owner, repo, branch)
 
-    output["details"][plugin_name] = results
+    output["details"][PLUGIN_NAME] = results
     output["success"] = are_results_passing(results)
 
-    print_and_exit(output)
+    return output
 
 
 def destructure_repo(full_repo):
@@ -73,11 +107,12 @@ def are_results_passing(results):
     return all(map(lambda check: check["pass"], results))
 
 
-def print_and_exit(output, exit_code=0):
-    print(json.dumps(output))
-    # TODO remove log
-    log.info(json.dumps(output))
-    exit(exit_code)
+def get_config(args, output, service, owner, repo):
+    if args.config:
+        return args.config
+    else:
+        output["alerts"].append(f"No config found for '{service}/{owner}/{repo}'. Using default config")
+        return default_config
 
 
 if __name__ == "__main__":
