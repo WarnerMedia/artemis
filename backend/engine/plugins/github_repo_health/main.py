@@ -62,13 +62,13 @@ def run_repo_health(args):
     service = args.engine_vars.get("service")
     owner, repo = destructure_repo(args.engine_vars.get("repo"))
 
-    config = get_config_from_args(args, output, service, owner, repo)
-
     if service != "github":
         # Repo health check only supports Github, but that's not our user's
         # fault, so let's return true
         output["success"] = True
         return output
+
+    config = get_config_from_args(args, output, service, owner, repo)
 
     try:
         Config.validate(config)
