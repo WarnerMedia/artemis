@@ -60,7 +60,6 @@ def run_repo_health(args):
     }
 
     service = args.engine_vars.get("service")
-    owner, repo = destructure_repo(args.engine_vars.get("repo"))
 
     if service != "github":
         # Repo health check only supports Github, but that's not our user's
@@ -68,6 +67,7 @@ def run_repo_health(args):
         output["success"] = True
         return output
 
+    owner, repo = destructure_repo(args.engine_vars.get("repo"))
     config = get_config_from_args(args, output, service, owner, repo)
 
     try:
