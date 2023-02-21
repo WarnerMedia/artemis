@@ -226,12 +226,12 @@ TEST_BASE_IMAGES = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
-TEST_REPO_HEALTH = PluginResult(
-    plugin_name="Repo Health",
+TEST_GITHUB_REPO_HEALTH = PluginResult(
+    plugin_name="Github Repo Health",
     plugin_type="configuration",
     success=True,
     details={
-        "repo_health": [
+        "github_repo_health": [
             {
                 "type": "branch_commit_signing",
                 "name": "Branch - Require Commit Signing",
@@ -432,10 +432,10 @@ class TestGenerateReport(unittest.TestCase):
         inventory = get_inventory(mock_scan)
         self.assertEqual(expected_inventory, inventory)
 
-    def test_get_configuration_report_for_repo_health(self):
+    def test_get_configuration_report_for_github_repo_health(self):
         expected_configuration = PLUGIN_RESULTS(
             {
-                "repo_health": [
+                "github_repo_health": [
                     {
                         "type": "branch_commit_signing",
                         "name": "Branch - Require Commit Signing",
@@ -446,11 +446,11 @@ class TestGenerateReport(unittest.TestCase):
             },
             PluginErrors(),
             True,
-            {"repo_health": 0},
+            {"github_repo_health": 0},
         )
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
-        mock_scan.pluginresult_set.filter.return_value = [TEST_REPO_HEALTH]
+        mock_scan.pluginresult_set.filter.return_value = [TEST_GITHUB_REPO_HEALTH]
         configuration = get_configuration(mock_scan)
         self.assertEqual(expected_configuration, configuration)
 

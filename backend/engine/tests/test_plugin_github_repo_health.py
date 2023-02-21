@@ -2,7 +2,7 @@ import copy
 import unittest
 from unittest.mock import ANY, patch
 
-from engine.plugins.repo_health import main
+from engine.plugins.github_repo_health import main
 
 GH_TOKEN = "example"
 ORG = "example-org"
@@ -107,8 +107,8 @@ CHECK_RESULT_ONE_FAIL[0]["pass"] = False
 class TestRepoHealth(unittest.TestCase):
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_everything_works(
         self,
         mock_github_app,
@@ -122,7 +122,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {"repo_health": CHECK_RESULT_ALL_SUCCEED},
+            "details": {"github_repo_health": CHECK_RESULT_ALL_SUCCEED},
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -134,8 +134,8 @@ class TestRepoHealth(unittest.TestCase):
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_service_is_not_github_and_it_returns_success_true(
         self,
         mock_github_app,
@@ -157,8 +157,8 @@ class TestRepoHealth(unittest.TestCase):
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_results_all_pass_and_it_returns_success_true(
         self,
         mock_github_app,
@@ -172,7 +172,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {"repo_health": CHECK_RESULT_ALL_SUCCEED},
+            "details": {"github_repo_health": CHECK_RESULT_ALL_SUCCEED},
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -183,8 +183,8 @@ class TestRepoHealth(unittest.TestCase):
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_results_one_fail_it_returns_success_false(
         self,
         mock_github_app,
@@ -198,7 +198,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": False,
             "truncated": False,
-            "details": {"repo_health": CHECK_RESULT_ONE_FAIL},
+            "details": {"github_repo_health": CHECK_RESULT_ONE_FAIL},
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -209,8 +209,8 @@ class TestRepoHealth(unittest.TestCase):
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_results_all_fail_it_returns_success_false(
         self,
         mock_github_app,
@@ -224,7 +224,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": False,
             "truncated": False,
-            "details": {"repo_health": CHECK_RESULT_ALL_FAIL},
+            "details": {"github_repo_health": CHECK_RESULT_ALL_FAIL},
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -235,8 +235,8 @@ class TestRepoHealth(unittest.TestCase):
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_github_token_fail_it_returns_with_error_message(
         self,
         mock_github_app,
@@ -261,8 +261,8 @@ class TestRepoHealth(unittest.TestCase):
 
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
-    @patch("engine.plugins.repo_health.main.Checker")
-    @patch("engine.plugins.repo_health.main.GithubApp")
+    @patch("engine.plugins.github_repo_health.main.Checker")
+    @patch("engine.plugins.github_repo_health.main.GithubApp")
     def test_config_not_provided_it_uses_default_config(
         self,
         mock_github_app,
@@ -276,7 +276,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {"repo_health": CHECK_RESULT_ALL_SUCCEED},
+            "details": {"github_repo_health": CHECK_RESULT_ALL_SUCCEED},
             "errors": [],
             "alerts": [f"No config found for 'github/{ORG}/{REPO}'. Using default config"],
             "debug": [],

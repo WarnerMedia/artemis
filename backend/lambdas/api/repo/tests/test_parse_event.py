@@ -229,7 +229,7 @@ EXPECTED_EVENT_RESULT_1 = {
         "-truffle_hog",
         "-bundler_audit",
         "-php_sensio_security_checker",
-        "-repo_health",
+        "-github_repo_health",
     ],
 }
 

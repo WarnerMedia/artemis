@@ -1,10 +1,10 @@
 import json
 
 from artemislib.github.app import GithubApp
+from engine.plugins.github_repo_health.cli.src.utilities import Checker, Config, Github
 from engine.plugins.lib import utils
-from engine.plugins.repo_health.cli.src.utilities import Checker, Config, Github
 
-PLUGIN_NAME = "repo_health"
+PLUGIN_NAME = "github_repo_health"
 
 # Will be used if service is "github", but no matching PluginConfig is found
 DEFAULT_CONFIG = {
@@ -34,7 +34,7 @@ DEFAULT_CONFIG = {
         {
             "type": "repo_security_alerts",
         },
-        # Refer to engine/plugins/repo_health/cli/src/rules for other rules
+        # Refer to engine/plugins/github_repo_health/cli/src/rules for other rules
     ],
 }
 
@@ -62,7 +62,7 @@ def run_repo_health(args):
     service = args.engine_vars.get("service")
     owner, repo = destructure_repo(args.engine_vars.get("repo"))
 
-    config = get_config(args, output, service, owner, repo)
+    config = get_config_from_args(args, output, service, owner, repo)
 
     if service != "github":
         # Repo health check only supports Github, but that's not our user's
@@ -110,7 +110,7 @@ def are_results_passing(results):
     return all(map(lambda check: check["pass"], results))
 
 
-def get_config(args, output, service, owner, repo):
+def get_config_from_args(args, output, service, owner, repo):
     if args.config:
         return args.config
     else:

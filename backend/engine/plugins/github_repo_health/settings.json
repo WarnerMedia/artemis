@@ -1,5 +1,5 @@
 {
-    "name": "Repo Health Check",
+    "name": "Github Repo Health Check",
     "type": "configuration",
     "image": "$ECR/artemis/python:3-latest"
 }

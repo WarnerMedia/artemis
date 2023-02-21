@@ -46,7 +46,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "checkov": None,
     },
     "inventory": {"technology_discovery": None, "base_images": None},
-    "configuration": {"repo_health": None},
+    "configuration": {"github_repo_health": None},
     "sbom": {},
 }
 
