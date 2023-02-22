@@ -27,9 +27,10 @@ def evaluate_array_config(config, eval_fn):
 def add_metadata(passing, check, config={}, error_message=None):
     name = config.get("name") or check.name
     description = config.get("description") or check.description
+    id = config.get("id") or check.identifier
 
     result = {
-        "type": check.identifier,
+        "id": id,
         "name": name,
         "description": description,
         "pass": passing,

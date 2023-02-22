@@ -19,7 +19,7 @@ class TestRepoSecurityAlerts(unittest.TestCase):
         mock_github.check_vulnerability_alerts = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecurityAlerts.identifier,
+            "id": RepoSecurityAlerts.identifier,
             "name": RepoSecurityAlerts.name,
             "description": RepoSecurityAlerts.description,
             "pass": False,
@@ -35,7 +35,7 @@ class TestRepoSecurityAlerts(unittest.TestCase):
         mock_github.check_vulnerability_alerts = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecurityAlerts.identifier,
+            "id": RepoSecurityAlerts.identifier,
             "name": RepoSecurityAlerts.name,
             "description": RepoSecurityAlerts.description,
             "pass": True,

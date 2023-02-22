@@ -14,12 +14,15 @@ CONFIG = {
     "rules": [
         {
             "type": "branch_commit_signing",
+            "id": "github_branch_commit_signing",
         },
         {
             "type": "branch_enforce_admins",
+            "id": "github_branch_enforce_admins",
         },
         {
             "type": "branch_pull_requests",
+            "id": "github_branch_pull_requests",
             "expect": {
                 "dismiss_stale_reviews": True,
                 "require_code_owner_reviews": True,
@@ -28,6 +31,7 @@ CONFIG = {
         },
         {
             "type": "branch_status_checks",
+            "id": "github_branch_status_checks",
             "expect": {
                 "strict": True,
             },
@@ -71,25 +75,25 @@ ARGS_NO_CONFIG = Args(
 
 CHECK_RESULT_ALL_SUCCEED = [
     {
-        "type": "branch_commit_signing",
+        "id": "github_branch_commit_signing",
         "name": "Branch - Require Commit Signing",
         "description": "Branch protection rule is enabled to enforce code signing",
         "pass": True,
     },
     {
-        "type": "branch_enforce_admins",
+        "id": "github_branch_enforce_admins",
         "name": "Branch - Enforce Protection for Admins",
         "description": 'Branch protection rule, "Do not allow bypassing the above settings" is enabled. This enforces branch protection for admins',
         "pass": True,
     },
     {
-        "type": "branch_pull_requests",
+        "id": "github_branch_pull_requests",
         "name": "Branch - Require Pull Requests",
         "description": "Branch protection rule is enabled that requires pull requests",
         "pass": True,
     },
     {
-        "type": "branch_status_checks",
+        "id": "github_branch_status_checks",
         "name": "Branch - Require Status Checks",
         "description": "Branch protection rule is enabled that requires status checks on pull requests",
         "pass": True,
@@ -104,7 +108,7 @@ CHECK_RESULT_ONE_FAIL = copy.deepcopy(CHECK_RESULT_ALL_SUCCEED)
 CHECK_RESULT_ONE_FAIL[0]["pass"] = False
 
 
-class TestRepoHealth(unittest.TestCase):
+class TestGithubRepoHealth(unittest.TestCase):
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
     @patch("engine.plugins.github_repo_health.main.Checker")
@@ -122,7 +126,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {"github_repo_health": CHECK_RESULT_ALL_SUCCEED},
+            "details": CHECK_RESULT_ALL_SUCCEED,
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -146,7 +150,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {},
+            "details": [],
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -172,7 +176,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {"github_repo_health": CHECK_RESULT_ALL_SUCCEED},
+            "details": CHECK_RESULT_ALL_SUCCEED,
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -198,7 +202,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": False,
             "truncated": False,
-            "details": {"github_repo_health": CHECK_RESULT_ONE_FAIL},
+            "details": CHECK_RESULT_ONE_FAIL,
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -224,7 +228,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": False,
             "truncated": False,
-            "details": {"github_repo_health": CHECK_RESULT_ALL_FAIL},
+            "details": CHECK_RESULT_ALL_FAIL,
             "errors": [],
             "alerts": [],
             "debug": [],
@@ -250,7 +254,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": False,
             "truncated": False,
-            "details": {},
+            "details": [],
             "errors": ["Failed to authenticate to Github"],
             "alerts": [],
             "debug": [],
@@ -276,7 +280,7 @@ class TestRepoHealth(unittest.TestCase):
         expected_result = {
             "success": True,
             "truncated": False,
-            "details": {"github_repo_health": CHECK_RESULT_ALL_SUCCEED},
+            "details": CHECK_RESULT_ALL_SUCCEED,
             "errors": [],
             "alerts": [f"No config found for 'github/{ORG}/{REPO}'. Using default config"],
             "debug": [],

@@ -19,7 +19,7 @@ class TestBranchPullRequests(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": False,
@@ -33,7 +33,7 @@ class TestBranchPullRequests(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": True,
@@ -49,7 +49,7 @@ class TestBranchPullRequests(unittest.TestCase):
         config = {"min_approvals": NUM_APPROVALS}
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": True,
@@ -65,7 +65,7 @@ class TestBranchPullRequests(unittest.TestCase):
         config = {"min_approvals": NUM_APPROVALS + 1}
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": False,
@@ -81,7 +81,7 @@ class TestBranchPullRequests(unittest.TestCase):
         config = {"min_approvals": NUM_APPROVALS - 1}
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": True,
@@ -97,7 +97,7 @@ class TestBranchPullRequests(unittest.TestCase):
         config = {"expect": {"exists": "this-should-be-the-same"}}
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": True,
@@ -113,7 +113,7 @@ class TestBranchPullRequests(unittest.TestCase):
         config = {"expect": {"exists": "this-is-different"}}
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": False,
@@ -129,7 +129,7 @@ class TestBranchPullRequests(unittest.TestCase):
         config = {"expect": {"not-exists": True}}
 
         expected = {
-            "type": BranchPullRequests.identifier,
+            "id": BranchPullRequests.identifier,
             "name": BranchPullRequests.name,
             "description": BranchPullRequests.description,
             "pass": False,

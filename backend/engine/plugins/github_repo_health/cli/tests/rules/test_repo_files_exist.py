@@ -73,7 +73,7 @@ class TestRepoFilesExist(unittest.TestCase):
         config = {"name": override_name}
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": override_name,
             "description": RepoFiles.description,
             "pass": True,
@@ -89,7 +89,7 @@ class TestRepoFilesExist(unittest.TestCase):
         config = {"description": override_description}
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": override_description,
             "pass": True,
@@ -104,7 +104,7 @@ class TestRepoFilesExist(unittest.TestCase):
         config = {"files": {"any_of": ["exists.py"]}}
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": True,
@@ -126,7 +126,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": True,
@@ -148,7 +148,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": True,
@@ -170,7 +170,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
@@ -185,7 +185,7 @@ class TestRepoFilesExist(unittest.TestCase):
         config = {"files": {"all_of": ["exists.py"]}}
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": True,
@@ -207,7 +207,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": True,
@@ -229,7 +229,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
@@ -251,7 +251,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
@@ -275,7 +275,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": True,
@@ -299,7 +299,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
@@ -323,7 +323,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
@@ -347,7 +347,7 @@ class TestRepoFilesExist(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoFiles.identifier,
+            "id": RepoFiles.identifier,
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,

@@ -13,12 +13,15 @@ DEFAULT_CONFIG = {
     "rules": [
         {
             "type": "branch_commit_signing",
+            "id": "github_branch_commit_signing",
         },
         {
             "type": "branch_enforce_admins",
+            "id": "github_branch_enforce_admins",
         },
         {
             "type": "branch_pull_requests",
+            "id": "github_branch_pull_requests",
             "expect": {
                 "dismiss_stale_reviews": True,
                 "require_code_owner_reviews": True,
@@ -27,12 +30,14 @@ DEFAULT_CONFIG = {
         },
         {
             "type": "branch_status_checks",
+            "id": "github_branch_status_checks",
             "expect": {
                 "strict": True,
             },
         },
         {
             "type": "repo_security_alerts",
+            "id": "github_repo_security_alerts",
         },
         # Refer to engine/plugins/github_repo_health/cli/src/rules for other rules
     ],
@@ -53,7 +58,7 @@ def run_repo_health(args):
     output = {
         "success": False,
         "truncated": False,
-        "details": {},
+        "details": [],
         "errors": [],
         "alerts": [],
         "debug": [],
@@ -92,7 +97,7 @@ def run_repo_health(args):
 
     results = checker.run(owner, repo, branch)
 
-    output["details"][PLUGIN_NAME] = results
+    output["details"].extend(results)
     output["success"] = are_results_passing(results)
 
     return output

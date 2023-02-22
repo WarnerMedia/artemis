@@ -126,15 +126,15 @@ def _pretty_print(full_result, verbose=False):
     for check in full_result.get("results"):
         passing = check.get("pass")
         check_name = check.get("name")
-        check_type = check.get("type")
+        check_id = check.get("id")
         check_description = check.get("description")
         error_message = check.get("error_message")
 
         if verbose:
             print(f"  {check_name}:")
+            print(f"    ID:          {check_id}")
             print(f"    Pass:        {passing}")
             print(f"    Description: {check_description}")
-            print(f"    Type:        {check_type}")
 
             if error_message:
                 print(f"    Error:       {error_message}")

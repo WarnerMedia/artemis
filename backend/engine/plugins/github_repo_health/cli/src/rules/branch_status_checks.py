@@ -16,6 +16,7 @@ class BranchStatusChecks:
         "additionalProperties": False,
         "properties": {
             "type": {"const": identifier},
+            "id": {"type": "string"},
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},

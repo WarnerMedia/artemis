@@ -16,13 +16,11 @@ def get_configuration(scan: Scan) -> PLUGIN_RESULTS:
             continue
 
         details = plugin.details
-        for key in details:
-            configuration[key] = details[key]
+        for finding in details:
+            configuration[finding.get("id")] = finding
 
-        for key in configuration:
-            # Only count  the failing items towards the summary
-            passing_items = filter(lambda item: item.get("pass") != True, configuration[key])
-            summary[key] = len(list(passing_items))
+        failing_items = filter(lambda item: item.get("pass") != True, configuration.values())
+        summary = len(list(failing_items))
 
     if plugin is _empty:
         # Loop of configuration plugins never ran so there were no configuration plugin results. In this case the summary

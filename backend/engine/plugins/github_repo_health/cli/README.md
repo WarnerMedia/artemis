@@ -220,6 +220,16 @@ Configurations are of the following format:
         {
             "type": "branch_status_checks",
 
+            # 'id', 'name', and 'description' are optional and will override the
+            # defaults.
+            # They can be useful for adding additional context to rules
+            #
+            # In some cases, it might make sense to run multiple checks with the same type. In those cases,
+            # overriding the id, name, and description is strongly encouraged
+            "id": "branch_ci_required",
+            "name": "Branch - Continuous Integration Required",
+            "description": "Require that the CI jobs pass before pull requests can be merged",
+
             # 'required_checks' is a rule-specific configuration. Many rules have these.
             # You can examine the config schema for rules with `repo-health --list-available-rules`
             "checks": {
@@ -227,15 +237,7 @@ Configurations are of the following format:
                     "ci/build",
                     "ci/test"
                 ]
-            },
-
-            # 'name' and 'description' are optional and will override the defaults
-            # They can be useful for adding additional context to rules
-            #
-            # In some cases, it might make sense to run multiple checks with the same rule. In those cases,
-            # overriding the name and description is strongly encouraged
-            "name": "branch_ci_required",
-            "description": "Require that the CI jobs pass before pull requests can be merged"
+            }
         },
         {
             "type": "branch_pull_requests",

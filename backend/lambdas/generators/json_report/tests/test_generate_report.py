@@ -230,16 +230,14 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
     plugin_name="Github Repo Health",
     plugin_type="configuration",
     success=True,
-    details={
-        "github_repo_health": [
-            {
-                "type": "branch_commit_signing",
-                "name": "Branch - Require Commit Signing",
-                "description": "Branch protection rule is enabled to enforce code signing",
-                "pass": True,
-            }
-        ]
-    },
+    details=[
+        {
+            "id": "branch_commit_signing",
+            "name": "Branch - Require Commit Signing",
+            "description": "Branch protection rule is enabled to enforce code signing",
+            "pass": True,
+        }
+    ],
     errors=[],
     alerts=[],
     debug=[],
@@ -435,18 +433,16 @@ class TestGenerateReport(unittest.TestCase):
     def test_get_configuration_report_for_github_repo_health(self):
         expected_configuration = PLUGIN_RESULTS(
             {
-                "github_repo_health": [
-                    {
-                        "type": "branch_commit_signing",
-                        "name": "Branch - Require Commit Signing",
-                        "description": "Branch protection rule is enabled to enforce code signing",
-                        "pass": True,
-                    }
-                ]
+                "branch_commit_signing": {
+                    "id": "branch_commit_signing",
+                    "name": "Branch - Require Commit Signing",
+                    "description": "Branch protection rule is enabled to enforce code signing",
+                    "pass": True,
+                }
             },
             PluginErrors(),
             True,
-            {"github_repo_health": 0},
+            0,
         )
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
