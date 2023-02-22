@@ -1,12 +1,16 @@
 from artemisdb.artemisdb.consts import PluginType
 from artemisdb.artemisdb.models import Scan
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
+from json_report.util.const import SEVERITY
 
 
 def get_configuration(scan: Scan) -> PLUGIN_RESULTS:
     configuration = {}
     errors = PluginErrors()
     summary = {}
+
+    for sev in SEVERITY:
+        summary[sev] = 0
 
     plugin = _empty = object()
     for plugin in scan.pluginresult_set.filter(plugin_type=PluginType.CONFIGURATION.value):
@@ -19,8 +23,9 @@ def get_configuration(scan: Scan) -> PLUGIN_RESULTS:
         for finding in details:
             configuration[finding.get("id")] = finding
 
-        failing_items = filter(lambda item: item.get("pass") != True, configuration.values())
-        summary = len(list(failing_items))
+        for key in configuration:
+            if configuration[key].get("pass") != True:
+                summary[key] += 1
 
     if plugin is _empty:
         # Loop of configuration plugins never ran so there were no configuration plugin results. In this case the summary
