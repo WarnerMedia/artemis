@@ -1,6 +1,7 @@
 import json
 
 from artemislib.github.app import GithubApp
+from artemislib.logging import Logger
 from engine.plugins.github_repo_health.cli.src.utilities import Checker, Config, Github
 from engine.plugins.lib import utils
 
@@ -43,7 +44,7 @@ DEFAULT_CONFIG = {
     ],
 }
 
-log = utils.setup_logging(PLUGIN_NAME)
+log = Logger(PLUGIN_NAME)
 
 
 def main():

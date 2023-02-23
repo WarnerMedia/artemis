@@ -49,8 +49,8 @@ def add_metadata(passing, check, config={}, error_message=None):
         "pass": passing,
     }
 
-    if severity:
-        # Add severity as an optional configuration
+    if severity is not None:
+        # Severity is optional and should only show up if explicitly set
         result["severity"] = severity
 
     if error_message:
