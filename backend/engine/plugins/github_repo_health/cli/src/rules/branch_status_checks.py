@@ -3,6 +3,7 @@ from .helpers import (
     array_config_schema,
     evaluate_array_config,
     is_subdict_of,
+    severity_schema,
 )
 
 
@@ -16,9 +17,11 @@ class BranchStatusChecks:
         "additionalProperties": False,
         "properties": {
             "type": {"const": identifier},
+            "id": {"type": "string"},
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "severity": severity_schema,
             "expect": {"type": "object"},
             "checks": {
                 "type": "object",

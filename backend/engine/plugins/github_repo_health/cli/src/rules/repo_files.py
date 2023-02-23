@@ -1,4 +1,4 @@
-from .helpers import add_metadata, array_config_schema, evaluate_array_config
+from .helpers import add_metadata, array_config_schema, evaluate_array_config, severity_schema
 
 
 class RepoFiles:
@@ -11,9 +11,11 @@ class RepoFiles:
         "additionalProperties": False,
         "properties": {
             "type": {"const": identifier},
+            "id": {"type": "string"},
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "severity": severity_schema,
             "files": {
                 "type": "object",
                 "additionalProperties": False,

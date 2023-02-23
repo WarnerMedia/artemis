@@ -294,7 +294,7 @@ get-trivy:
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
-	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/repo_health/cli/generated_requirements.txt
+	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/github_repo_health/cli/generated_requirements.txt
 
 
 unit-test: venv get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests

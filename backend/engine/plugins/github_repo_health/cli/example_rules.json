@@ -25,6 +25,7 @@
         {
             "type": "branch_status_checks",
             "enabled": true,
+            "id": "branch_build_required",
             "name": "Branch - Build Required",
             "description": "Branch protection rules are enabled to enforce that the 'build' status check passes",
             "checks": {
@@ -39,6 +40,7 @@
         {
             "type": "repo_files",
             "enabled": false,
+            "id": "repo_metadata_files_exist",
             "name": "Repository - Metadata Files Exist",
             "description": "Repository has a hypothetical 'metadata.yaml' file and a '.github/CODEOWNERS' file",
             "files": {

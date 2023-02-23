@@ -26,7 +26,7 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_actions_permissions_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": False,
@@ -51,7 +51,7 @@ class TestRepoActions(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": True,
@@ -75,7 +75,7 @@ class TestRepoActions(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": True,
@@ -98,7 +98,7 @@ class TestRepoActions(unittest.TestCase):
         }
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": True,
@@ -115,7 +115,7 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_actions_permissions_repository = MagicMock(return_value=mock_action_response)
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": True,
@@ -133,7 +133,7 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_actions_permissions_repository = MagicMock(return_value=mock_action_response)
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": False,
@@ -151,7 +151,7 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_actions_permissions_repository = MagicMock(return_value=mock_action_response)
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": True,
@@ -175,7 +175,7 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_selected_actions_repository = MagicMock(return_value=mock_selected_action_response)
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": False,
@@ -199,7 +199,7 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_selected_actions_repository = MagicMock(return_value=mock_selected_action_response)
 
         expected = {
-            "type": RepoActions.identifier,
+            "id": RepoActions.identifier,
             "name": RepoActions.name,
             "description": RepoActions.description,
             "pass": True,

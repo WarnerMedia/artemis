@@ -18,7 +18,7 @@ class TestRepoCodeScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoCodeScanning.identifier,
+            "id": RepoCodeScanning.identifier,
             "name": RepoCodeScanning.name,
             "description": RepoCodeScanning.description,
             "pass": False,
@@ -33,7 +33,7 @@ class TestRepoCodeScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoCodeScanning.identifier,
+            "id": RepoCodeScanning.identifier,
             "name": RepoCodeScanning.name,
             "description": RepoCodeScanning.description,
             "pass": False,
@@ -47,7 +47,7 @@ class TestRepoCodeScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoCodeScanning.identifier,
+            "id": RepoCodeScanning.identifier,
             "name": RepoCodeScanning.name,
             "description": RepoCodeScanning.description,
             "pass": True,

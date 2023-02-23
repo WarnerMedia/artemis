@@ -25,7 +25,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": False,
@@ -39,7 +39,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": True,
@@ -66,7 +66,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         config = {"name": override_name}
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": override_name,
             "description": BranchStatusChecks.description,
             "pass": False,
@@ -82,7 +82,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         config = {"description": override_description}
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": override_description,
             "pass": False,
@@ -95,7 +95,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=NO_STATUS_CHECKS_RESPONSE)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": False,
@@ -112,7 +112,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": True,
@@ -129,7 +129,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": False,
@@ -154,7 +154,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": True,
@@ -171,7 +171,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": False,
@@ -188,7 +188,7 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchStatusChecks.identifier,
+            "id": BranchStatusChecks.identifier,
             "name": BranchStatusChecks.name,
             "description": BranchStatusChecks.description,
             "pass": False,

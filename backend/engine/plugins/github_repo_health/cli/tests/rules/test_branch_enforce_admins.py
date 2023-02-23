@@ -18,7 +18,7 @@ class TestBranchEnforceAdmins(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchEnforceAdmins.identifier,
+            "id": BranchEnforceAdmins.identifier,
             "name": BranchEnforceAdmins.name,
             "description": BranchEnforceAdmins.description,
             "pass": False,
@@ -32,7 +32,7 @@ class TestBranchEnforceAdmins(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchEnforceAdmins.identifier,
+            "id": BranchEnforceAdmins.identifier,
             "name": BranchEnforceAdmins.name,
             "description": BranchEnforceAdmins.description,
             "pass": True,

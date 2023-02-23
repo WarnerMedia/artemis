@@ -20,7 +20,7 @@ class TestRepoSecretScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecretScanning.identifier,
+            "id": RepoSecretScanning.identifier,
             "name": RepoSecretScanning.name,
             "description": RepoSecretScanning.description,
             "pass": False,
@@ -40,7 +40,7 @@ class TestRepoSecretScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecretScanning.identifier,
+            "id": RepoSecretScanning.identifier,
             "name": RepoSecretScanning.name,
             "description": RepoSecretScanning.description,
             "pass": True,
@@ -59,7 +59,7 @@ class TestRepoSecretScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecretScanning.identifier,
+            "id": RepoSecretScanning.identifier,
             "name": RepoSecretScanning.name,
             "description": RepoSecretScanning.description,
             "pass": False,
@@ -78,7 +78,7 @@ class TestRepoSecretScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecretScanning.identifier,
+            "id": RepoSecretScanning.identifier,
             "name": RepoSecretScanning.name,
             "description": RepoSecretScanning.description,
             "pass": True,
@@ -100,7 +100,7 @@ class TestRepoSecretScanning(unittest.TestCase):
         mock_github.get_repository = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": RepoSecretScanning.identifier,
+            "id": RepoSecretScanning.identifier,
             "name": RepoSecretScanning.name,
             "description": RepoSecretScanning.description,
             "pass": False,

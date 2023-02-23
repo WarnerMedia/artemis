@@ -1,4 +1,4 @@
-from .helpers import add_metadata
+from .helpers import add_metadata, severity_schema
 
 
 class RepoSecurityAlerts:
@@ -11,9 +11,11 @@ class RepoSecurityAlerts:
         "additionalProperties": False,
         "properties": {
             "type": {"const": identifier},
+            "id": {"type": "string"},
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "severity": severity_schema,
         },
     }
 

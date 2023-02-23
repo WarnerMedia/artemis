@@ -18,7 +18,7 @@ class TestBranchCommitSigning(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchCommitSigning.identifier,
+            "id": BranchCommitSigning.identifier,
             "name": BranchCommitSigning.name,
             "description": BranchCommitSigning.description,
             "pass": False,
@@ -32,7 +32,7 @@ class TestBranchCommitSigning(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "type": BranchCommitSigning.identifier,
+            "id": BranchCommitSigning.identifier,
             "name": BranchCommitSigning.name,
             "description": BranchCommitSigning.description,
             "pass": True,

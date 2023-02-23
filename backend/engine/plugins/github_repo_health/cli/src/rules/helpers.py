@@ -4,6 +4,18 @@ array_config_schema = {
     "none_of": {"type": "array", "items": {"type": "string"}},
 }
 
+severity_schema = {
+    "type": "string",
+    "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "negligible",
+        "",
+    ],
+}
+
 
 def evaluate_array_config(config, eval_fn):
     """
@@ -25,15 +37,21 @@ def evaluate_array_config(config, eval_fn):
 
 
 def add_metadata(passing, check, config={}, error_message=None):
+    id = config.get("id") or check.identifier
     name = config.get("name") or check.name
     description = config.get("description") or check.description
+    severity = config.get("severity")
 
     result = {
-        "type": check.identifier,
+        "id": id,
         "name": name,
         "description": description,
         "pass": passing,
     }
+
+    if severity is not None:
+        # Severity is optional and should only show up if explicitly set
+        result["severity"] = severity
 
     if error_message:
         result["error_message"] = error_message

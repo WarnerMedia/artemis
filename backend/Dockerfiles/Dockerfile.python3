@@ -61,9 +61,9 @@ RUN echo "$TFLINT_SHA  tflint_linux_amd64.zip" > tflint_checksum.txt && \
     install -b -c -v tflint /usr/bin/ && \
     rm tflint_linux_amd64.zip tflint tflint_checksum.txt
 
-# Install dependencies for repo-health
-COPY engine/plugins/repo_health/cli/generated_requirements.txt repo_health_requirements.txt
+# Install dependencies for github_repo_health
+COPY engine/plugins/github_repo_health/cli/generated_requirements.txt github_repo_health_requirements.txt
 # Cryptography is needed to auth using Github app creds from within container
 # Also install CLI dependencies
 RUN pip install cryptography && \
-    pip install -r repo_health_requirements.txt && rm -rf repo_health_requirements.txt
+    pip install -r github_repo_health_requirements.txt && rm -rf github_repo_health_requirements.txt

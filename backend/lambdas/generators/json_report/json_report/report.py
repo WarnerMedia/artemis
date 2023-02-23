@@ -1,4 +1,5 @@
 from artemisdb.artemisdb.models import Scan
+from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
 from json_report.results.secret import get_secrets
@@ -17,6 +18,7 @@ def get_report(scan_id, params=None):
     secret_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
     sa_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
     inv_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
+    config_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
 
     # Initialize the errors
     errors = PluginErrors()
@@ -39,12 +41,22 @@ def get_report(scan_id, params=None):
     if "results" not in params or "inventory" in params["results"]:
         inv_results = get_inventory(scan)
 
+    if "results" not in params or "configuration" in params["results"]:
+        config_results = get_configuration(scan)
+
     errors.update(vuln_results.errors)
     errors.update(secret_results.errors)
     errors.update(sa_results.errors)
     errors.update(inv_results.errors)
+    errors.update(config_results.errors)
 
-    success = vuln_results.success and secret_results.success and sa_results.success and inv_results.success
+    success = (
+        vuln_results.success
+        and secret_results.success
+        and sa_results.success
+        and inv_results.success
+        and config_results.success
+    )
 
     report = scan.to_dict()
     report["application_metadata"] = scan.formatted_application_metadata()
@@ -58,6 +70,7 @@ def get_report(scan_id, params=None):
         "secrets": secret_results.summary,
         "static_analysis": sa_results.summary,
         "inventory": inv_results.summary,
+        "configuration": config_results.summary,
     }
 
     if params["format"] == FORMAT_FULL:
@@ -66,6 +79,7 @@ def get_report(scan_id, params=None):
             "secrets": secret_results.findings,
             "static_analysis": sa_results.findings,
             "inventory": inv_results.findings,
+            "configuration": config_results.findings,
         }
     else:
         report["results"] = {}

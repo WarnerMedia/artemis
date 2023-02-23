@@ -11,6 +11,7 @@ class ScanStatus(Enum):
 
 
 class PluginType(Enum):
+    CONFIGURATION = "configuration"
     INVENTORY = "inventory"
     VULN = "vulnerability"
     SECRETS = "secrets"
