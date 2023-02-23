@@ -1,4 +1,4 @@
-from .helpers import add_metadata, is_subdict_of
+from .helpers import add_metadata, is_subdict_of, severity_schema
 
 
 class BranchPullRequests:
@@ -15,6 +15,7 @@ class BranchPullRequests:
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "severity": severity_schema,
             "expect": {"type": "object"},
             "min_approvals": {"type": "number"},
         },

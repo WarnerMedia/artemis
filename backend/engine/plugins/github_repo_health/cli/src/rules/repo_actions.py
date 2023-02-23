@@ -1,4 +1,9 @@
-from .helpers import add_metadata, array_config_schema, evaluate_array_config
+from .helpers import (
+    add_metadata,
+    array_config_schema,
+    evaluate_array_config,
+    severity_schema,
+)
 
 
 class RepoActions:
@@ -15,6 +20,7 @@ class RepoActions:
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "severity": severity_schema,
             "expect_any_of": {
                 "type": "array",
                 "items": {

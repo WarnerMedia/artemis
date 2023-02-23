@@ -1,4 +1,4 @@
-from .helpers import add_metadata
+from .helpers import add_metadata, severity_schema
 
 
 class BranchEnforceAdmins:
@@ -15,6 +15,7 @@ class BranchEnforceAdmins:
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "severity": severity_schema,
         },
     }
 

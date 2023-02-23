@@ -215,7 +215,10 @@ Configurations are of the following format:
 
             # You can temporarily stop running a rule by setting 'enabled' to false.
             # You can also omit the rule altogether to achieve the same effect
-            "enabled": false
+            "enabled": false,
+
+            # You can add a severity by specifying it here
+            "severity": "critical"
         },
         {
             "type": "branch_status_checks",
