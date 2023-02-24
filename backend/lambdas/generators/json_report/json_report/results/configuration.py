@@ -26,7 +26,7 @@ def get_configuration(scan: Scan) -> PLUGIN_RESULTS:
             configuration[id] = finding
 
             if passing != True:
-                severity = finding.get("severity")
+                severity = finding.get("severity", "")
                 summary[severity] += 1
 
     if plugin is _empty:
