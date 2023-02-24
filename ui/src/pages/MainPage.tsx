@@ -579,7 +579,7 @@ const MainPage = () => {
 			batch_id: data.batch_id,
 			batch_description: data.batch_description,
 			engine_id: data.engine_id,
-			application_metadata: exportMetaData(data.application_metadata ?? null),
+			...exportMetaData(data.application_metadata ?? null),
 			success: data.success,
 			truncated: data.truncated,
 			errors: data.errors,

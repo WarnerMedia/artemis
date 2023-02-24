@@ -4870,7 +4870,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 				<Grid container spacing={3}>
 					<Grid item xs={6}>
 						<List dense={true}>
-							<ListItem key="scan-options-categories">
+							<ListItem key="scan-options-categories" alignItems="flex-start">
 								<ListItemIcon>
 									<CategoryIcon />
 								</ListItemIcon>
@@ -4881,7 +4881,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 									/>
 								</Tooltip>
 							</ListItem>
-							<ListItem key="scan-options-plugins">
+							<ListItem key="scan-options-plugins" alignItems="flex-start">
 								<ListItemIcon>
 									<ExtensionIcon />
 								</ListItemIcon>
@@ -4894,7 +4894,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 									/>
 								</Tooltip>
 							</ListItem>
-							<ListItem key="scan-options-depth">
+							<ListItem key="scan-options-depth" alignItems="flex-start">
 								<ListItemIcon>
 									<HistoryIcon />
 								</ListItemIcon>
@@ -4909,7 +4909,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 					</Grid>
 					<Grid item xs={6}>
 						<List dense={true}>
-							<ListItem key="scan-options-include-dev">
+							<ListItem key="scan-options-include-dev" alignItems="flex-start">
 								<ListItemIcon>
 									<CodeIcon />
 								</ListItemIcon>
@@ -4932,7 +4932,10 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 									/>
 								</Tooltip>
 							</ListItem>
-							<ListItem key="scan-options-batch-priority">
+							<ListItem
+								key="scan-options-batch-priority"
+								alignItems="flex-start"
+							>
 								<ListItemIcon>
 									<QueueIcon />
 								</ListItemIcon>
@@ -4956,7 +4959,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 								</Tooltip>
 							</ListItem>
 							{scan?.batch_description && (
-								<ListItem key="batch-description">
+								<ListItem key="batch-description" alignItems="flex-start">
 									<ListItemIcon>
 										<LowPriorityIcon />
 									</ListItemIcon>
@@ -4969,7 +4972,10 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 									</Tooltip>
 								</ListItem>
 							)}
-							<ListItem key="scan_options-include-paths">
+							<ListItem
+								key="scan_options-include-paths"
+								alignItems="flex-start"
+							>
 								<ListItemIcon>
 									<CreateNewFolderIcon />
 								</ListItemIcon>
@@ -5008,7 +5014,10 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 									/>
 								</Tooltip>
 							</ListItem>
-							<ListItem key="scan_options-exclude-paths">
+							<ListItem
+								key="scan_options-exclude-paths"
+								alignItems="flex-start"
+							>
 								<ListItemIcon>
 									<FolderOffIcon />
 								</ListItemIcon>
@@ -5124,7 +5133,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				{/* left column */}
 				<Grid item xs={4}>
 					<List dense={true}>
-						<ListItem key="scan-repo">
+						<ListItem key="scan-repo" alignItems="flex-start">
 							<ListItemIcon>
 								<FolderIcon />
 							</ListItemIcon>
@@ -5138,7 +5147,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 						</ListItem>
 						<ListItemMetaMultiField data={scan} includeIcon={true} />
 						<ResultsMetaField data={scan} />
-						<ListItem key="scan-service">
+						<ListItem key="scan-service" alignItems="flex-start">
 							<ListItemIcon>
 								<CloudIcon />
 							</ListItemIcon>
@@ -5150,7 +5159,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								/>
 							</Tooltip>
 						</ListItem>
-						<ListItem key="scan-branch">
+						<ListItem key="scan-branch" alignItems="flex-start">
 							<ListItemIcon>
 								<AccountTreeIcon />
 							</ListItemIcon>
@@ -5174,7 +5183,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				{/* middle column */}
 				<Grid item xs={4}>
 					<List dense={true}>
-						<ListItem key="scan-initiated-by">
+						<ListItem key="scan-initiated-by" alignItems="flex-start">
 							<ListItemIcon>
 								<PersonIcon />
 							</ListItemIcon>
@@ -5198,7 +5207,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								/>
 							</Box>
 						</ListItem>
-						<ListItem key="scan-status">
+						<ListItem key="scan-status" alignItems="flex-start">
 							<ListItemIcon>
 								<InfoIcon />
 							</ListItemIcon>
@@ -5211,7 +5220,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 							</Tooltip>
 						</ListItem>
 
-						<ListItem key="scan-success">
+						<ListItem key="scan-success" alignItems="flex-start">
 							<ListItemIcon>{resultsIcon}</ListItemIcon>
 							<Tooltip
 								describeChild
@@ -5228,7 +5237,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 							</Tooltip>
 						</ListItem>
 
-						<ListItem key="scan-id">
+						<ListItem key="scan-id" alignItems="flex-start">
 							<ListItemIcon>
 								<SecurityIcon />
 							</ListItemIcon>
@@ -5246,7 +5255,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				{/* right column */}
 				<Grid item xs={4}>
 					<List dense={true}>
-						<ListItem key="scan-time-queued">
+						<ListItem key="scan-time-queued" alignItems="flex-start">
 							<ListItemIcon>
 								<WatchLaterIcon />
 							</ListItemIcon>
@@ -5267,7 +5276,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								/>
 							</Tooltip>
 						</ListItem>
-						<ListItem key="scan-time-start">
+						<ListItem key="scan-time-start" alignItems="flex-start">
 							<ListItemIcon>
 								<WatchLaterIcon />
 							</ListItemIcon>
@@ -5282,7 +5291,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								/>
 							</Tooltip>
 						</ListItem>
-						<ListItem key="scan-time-end">
+						<ListItem key="scan-time-end" alignItems="flex-start">
 							<ListItemIcon>
 								<WatchLaterIcon />
 							</ListItemIcon>

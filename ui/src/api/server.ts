@@ -168,7 +168,11 @@ export function makeServer() {
 				}
 				// random items are deleted
 				if (email && Math.random() < 0.3) {
-					email += "_DELETED_" + Math.floor(Date.now() / 1000);
+					email +=
+						"_DELETED_" +
+						DateTime.utc()
+							.minus({ days: Math.floor(Math.random() * 365) })
+							.toUnixInteger();
 				}
 				return [user, email];
 			};
@@ -1804,7 +1808,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1814,7 +1818,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1824,7 +1828,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1838,7 +1842,7 @@ export function makeServer() {
 						scan_id: generateId(),
 					},
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
@@ -1848,7 +1852,7 @@ export function makeServer() {
 					risk: null,
 					qualified_scan: null,
 					application_metadata: {
-						...sampleMetaData6,
+						...sampleMetaData1,
 					},
 				},
 				{
