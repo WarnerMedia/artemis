@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import pytest
 
 from artemisapi.response import response
+from repo.util.const import PLUGIN_LIST_BY_CATEGORY
+from repo.util.env import VERACODE_ENABLED
 from repo.util.utils import GetProxySecret, get_api_key, get_ttl_expiration, is_qualified, is_sbom
 
 TEST_STATIC_ANALYSIS_AL_ITEM = {"type": "static_analysis", "value": {"line": 1, "type": "test_type"}}
@@ -45,6 +47,10 @@ class TestUtils(unittest.TestCase):
         self.assertDictEqual(expected, actual)
 
     def test_is_sbom(self):
+        if not VERACODE_ENABLED:
+            # Veracode is not enabled by default but is needed for this test.
+            PLUGIN_LIST_BY_CATEGORY["sbom"]["veracode_sbom"] = None
+
         test_cases = [
             (["veracode_sbom"], True),
             (["-veracode_sbom"], False),
@@ -52,6 +58,10 @@ class TestUtils(unittest.TestCase):
         for test_case in test_cases:
             with self.subTest(test_case=test_case):
                 self.assertEqual(is_sbom(test_case[0]), test_case[1])
+
+        if not VERACODE_ENABLED:
+            # Test over. Clean up from before.
+            del PLUGIN_LIST_BY_CATEGORY["sbom"]["veracode_sbom"]
 
     def test_is_qualified(self):
         qualified_plugins = {

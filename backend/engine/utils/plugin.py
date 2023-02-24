@@ -78,7 +78,7 @@ def get_engine_vars(scan, depth=None, include_dev=False, services=None):
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
             "service_type": services[scan.repo.service]["type"],
             "service_hostname": services[scan.repo.service]["hostname"],
-            "service_secret_loc": services[scan.repo.service]["secret_loc"]
+            "service_secret_loc": services[scan.repo.service]["secret_loc"],
         }
     )
 
