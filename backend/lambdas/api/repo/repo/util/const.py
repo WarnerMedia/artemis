@@ -6,7 +6,7 @@ todo : search plugin settings.json to obtain a dynamic list of plugins and categ
 import os
 from collections import namedtuple
 
-from repo.util.env import AQUA_ENABLED, SNYK_ENABLED, VERACODE_ENABLED
+from repo.util.env import AQUA_ENABLED, SNYK_ENABLED, VERACODE_ENABLED, GHAS_ENABLED
 
 DB_TTL_DAYS = 60
 DEFAULT_PAGE_SIZE = 50
@@ -120,6 +120,12 @@ if VERACODE_ENABLED:
 else:
     DISABLED_PLUGINS.append("veracode_sca")
     DISABLED_PLUGINS.append("veracode_sbom")
+
+if GHAS_ENABLED:
+    # Add the GitHub Advanced Security plugin if it enabled
+    PLUGIN_LIST_BY_CATEGORY["secret"]["ghas_secrets"] = None
+else:
+    DISABLED_PLUGINS.append("ghas_secrets")
 
 PLUGINS = []
 for plugin_cat in PLUGIN_LIST_BY_CATEGORY:

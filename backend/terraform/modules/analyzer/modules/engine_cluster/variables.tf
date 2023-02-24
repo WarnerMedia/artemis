@@ -159,6 +159,8 @@ variable "veracode_enabled" {}
 
 variable "snyk_enabled" {}
 
+variable "ghas_enabled" {}
+
 variable "private_docker_repos_key" {
   description = "Secrets Manger key for Private Docker Repo information"
   default     = "private_docker_repos_key"

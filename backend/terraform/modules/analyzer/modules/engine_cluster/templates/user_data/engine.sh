@@ -18,6 +18,7 @@ export "type"
 export "ver"
 export "veracode_enabled"
 export "snyk_enabled"
+export "ghas_enabled"
 export "revproxy_domain_substring"
 
 # Format and mount data volume
@@ -69,6 +70,7 @@ cat >>/home/ec2-user/.env <<EOF
 ARTEMIS_FEATURE_AQUA_ENABLED=${aqua_enabled}
 ARTEMIS_FEATURE_VERACODE_ENABLED=${veracode_enabled}
 ARTEMIS_FEATURE_SNYK_ENABLED=${snyk_enabled}
+ARTEMIS_FEATURE_GHAS_ENABLED=${ghas_enabled}
 ARTEMIS_GITHUB_APP_ID=${github_app_id}
 ARTEMIS_PLUGIN_JAVA_HEAP_SIZE=${plugin_java_heap_size}
 ARTEMIS_PRIVATE_DOCKER_REPOS_KEY=${private_docker_repos_key}

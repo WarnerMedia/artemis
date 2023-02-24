@@ -112,7 +112,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
                         debug.append(message)
                         log.warning(message)
                 # Run analysis tasks here
-                engine_processor.process_plugins(images)
+                engine_processor.process_plugins(images, services)
             else:
                 log.error("Repo %s/%s could not be pulled. Plugins will not be processed.", service, repo)
                 errors.append("Repository was unable to be scanned. Please contact support with the scan id.")

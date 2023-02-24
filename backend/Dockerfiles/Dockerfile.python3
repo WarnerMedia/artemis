@@ -20,7 +20,7 @@ COPY ./libs/ /src/
 RUN apk add -q --no-cache gcc musl-dev git make bash grep xz libffi-dev && \
     pip install -q --upgrade pip && \
     pip install -q --no-cache-dir awscli pylint trufflehog boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
-    pip install /src/artemislib && \
+    pip install /src/artemislib cryptography && \
     pip install /src/artemisdb && \
     rm -r /src
 

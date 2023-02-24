@@ -31,6 +31,7 @@ data "template_file" "engine-script" {
     aqua_enabled              = var.aqua_enabled ? 1 : 0
     veracode_enabled          = var.veracode_enabled ? 1 : 0
     snyk_enabled              = var.snyk_enabled ? 1 : 0
+    ghas_enabled              = var.ghas_enabled ? 1 : 0
     github_app_id             = var.github_app_id
     private_docker_repos_key  = var.private_docker_repos_key
     plugin_java_heap_size     = var.plugin_java_heap_size
