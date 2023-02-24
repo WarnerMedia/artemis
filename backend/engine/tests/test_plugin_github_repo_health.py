@@ -48,7 +48,7 @@ class Args:
 
 ARGS_VALID = Args(
     {
-        "service": "github",
+        "service_name": "github",
         "repo": f"{ORG}/{REPO}",
         "ref": "main",
     },
@@ -57,7 +57,7 @@ ARGS_VALID = Args(
 
 ARGS_NOT_GITHUB = Args(
     {
-        "service": "this-is-not-gh",
+        "service_name": "this-is-not-gh",
         "repo": f"{ORG}/{REPO}",
         "ref": "main",
     },
@@ -66,7 +66,7 @@ ARGS_NOT_GITHUB = Args(
 
 ARGS_NO_CONFIG = Args(
     {
-        "service": "github",
+        "service_name": "github",
         "repo": f"{ORG}/{REPO}",
         "ref": "main",
     },
