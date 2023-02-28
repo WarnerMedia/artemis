@@ -55,11 +55,13 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                     "severity": severity,
                 }
 
-                if severity in filtered_severities and not allowlisted_configuration(item, allow_list):
+                if (
+                    (not passing)
+                    and severity in filtered_severities
+                    and not allowlisted_configuration(item, allow_list)
+                ):
                     configuration[id] = item
-
-                    if passing != True:
-                        summary[severity] += 1
+                    summary[severity] += 1
 
     if plugin is _empty:
         # Loop of configuration plugins never ran so there were no configuration plugin results. In this case the summary
