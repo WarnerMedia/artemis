@@ -439,7 +439,6 @@ class TestGenerateReport(unittest.TestCase):
                     "name": "Branch - Require Commit Signing",
                     "description": "Branch protection rule is enabled to enforce code signing",
                     "severity": "high",
-                    "pass": False,
                 }
             },
             PluginErrors(),
