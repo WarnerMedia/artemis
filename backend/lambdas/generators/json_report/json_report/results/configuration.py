@@ -44,14 +44,14 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                 id = finding.get("id")
                 name = finding.get("name", "")
                 description = finding.get("description", "")
-                passing = finding.get("pass", False)
                 severity = finding.get("severity", "")
+
+                passing = finding.get("pass", False)
 
                 item = {
                     "id": id,
                     "name": name,
                     "description": description,
-                    "pass": passing,
                     "severity": severity,
                 }
 
