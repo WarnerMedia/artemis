@@ -29,6 +29,8 @@ from repo.util.const import (
     SECRET,
     SEVERITY,
     WL_ALL_KEYS,
+    WL_CONFIGURATION_KEYS,
+    WL_CONFIGURATION_OPT_KEYS,
     WL_REQUIRED_KEYS,
     WL_SECRET_KEYS,
     WL_SECRET_OPT_KEYS,
@@ -332,6 +334,9 @@ class Validator:
         elif req["type"] == "static_analysis":
             keys = WL_STATIC_ANALYSIS_KEYS
             opt_keys = WL_STATIC_ANALYSIS_OPT_KEYS
+        elif req["type"] == "configuration":
+            keys = WL_CONFIGURATION_KEYS
+            opt_keys = WL_CONFIGURATION_OPT_KEYS
         else:
             keys = {}
             opt_keys = {}

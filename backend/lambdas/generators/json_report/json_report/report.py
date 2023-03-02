@@ -42,7 +42,7 @@ def get_report(scan_id, params=None):
         inv_results = get_inventory(scan)
 
     if "results" not in params or "configuration" in params["results"]:
-        config_results = get_configuration(scan)
+        config_results = get_configuration(scan, params)
 
     errors.update(vuln_results.errors)
     errors.update(secret_results.errors)

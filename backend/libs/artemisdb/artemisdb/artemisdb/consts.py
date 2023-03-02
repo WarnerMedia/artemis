@@ -19,6 +19,7 @@ class PluginType(Enum):
 
 
 class AllowListType(Enum):
+    CONFIGURATION = "configuration"
     SECRET = "secret"
     SECRET_RAW = "secret_raw"
     VULN = "vulnerability"
