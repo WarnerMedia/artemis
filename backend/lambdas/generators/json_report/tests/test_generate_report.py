@@ -439,7 +439,6 @@ class TestGenerateReport(unittest.TestCase):
                     "name": "Branch - Require Commit Signing",
                     "description": "Branch protection rule is enabled to enforce code signing",
                     "severity": "high",
-                    "pass": False,
                 }
             },
             PluginErrors(),
@@ -449,7 +448,7 @@ class TestGenerateReport(unittest.TestCase):
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
         mock_scan.pluginresult_set.filter.return_value = [TEST_GITHUB_REPO_HEALTH]
-        configuration = get_configuration(mock_scan)
+        configuration = get_configuration(mock_scan, DEFAULT_SCAN_QUERY_PARAMS)
         self.assertEqual(expected_configuration, configuration)
 
     def test_get_static_analysis_report_diff(self):
