@@ -1,25 +1,13 @@
 import json
 import subprocess
 import uuid
-from collections import namedtuple
 from typing import Tuple
 
-import requests
-
-from artemislib.github.app import GithubApp
+from artemislib.github.api import GitHubAPI
 from artemislib.logging import Logger
 from engine.plugins.lib import utils
-from engine.plugins.lib.env import (
-    APPLICATION,
-    REV_PROXY_SECRET_HEADER,
-    REV_PROXY_SECRET,
-    REV_PROXY_SECRET_REGION,
-    REV_PROXY_DOMAIN_SUBSTRING,
-)
 
 LOG = Logger("ghas_secrets")
-
-GITHUB_INFO = namedtuple("github_info", ["auth", "api_url", "repo"])
 
 
 def main():
@@ -39,10 +27,9 @@ def main():
         print(json.dumps(results))
         return
 
-    org = args.engine_vars["repo"].split("/", 1)[0]
-    auth = _get_authorization(org, args.engine_vars["service_secret_loc"])
+    org, repo = args.engine_vars["repo"].split("/", 1)
 
-    gh = GITHUB_INFO(auth, _api_url(args.engine_vars["service_hostname"]), args.engine_vars["repo"])
+    gh = GitHubAPI(org, args.engine_vars["service_secret_loc"], args.engine_vars["service_hostname"], repo)
 
     if not _ghas_secrets_enabled(gh):
         LOG.info("Repository does not have GitHub Advanced Security Secret Scanning enabled")
@@ -59,15 +46,15 @@ def main():
     print(json.dumps(results))
 
 
-def _ghas_secrets_enabled(gh: GITHUB_INFO) -> bool:
-    resp = _github_api_get(gh)
+def _ghas_secrets_enabled(gh: GitHubAPI) -> bool:
+    resp = gh.get_repo()
     return (
         resp.get("security_and_analysis", {}).get("advanced_security", {}).get("status") == "enabled"
         and resp.get("security_and_analysis", {}).get("secret_scanning", {}).get("status") == "enabled"
     )
 
 
-def _ghas_secrets(gh: GITHUB_INFO, path: str) -> Tuple[list[dict], dict]:
+def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
     results = []
     event_info = {}
 
@@ -111,14 +98,14 @@ def _normalize_secret_type(secret_type: str) -> str:
     return secret_type  # Keep the original type as a fallthrough
 
 
-def _get_alerts(gh: GITHUB_INFO) -> list[dict]:
-    alerts = _github_api_get(gh, "secret-scanning/alerts", query={"state": "open"}, paged=True)
+def _get_alerts(gh: GitHubAPI) -> list[dict]:
+    alerts = gh.get_repo("secret-scanning/alerts", query={"state": "open"}, paged=True)
     LOG.info("Retrieved %s alerts", len(alerts))
     return alerts
 
 
-def _get_locations(gh: GITHUB_INFO, alert_id: str) -> list[dict]:
-    locations = _github_api_get(gh, f"secret-scanning/alerts/{alert_id}/locations", paged=True)
+def _get_locations(gh: GitHubAPI, alert_id: str) -> list[dict]:
+    locations = gh.get_repo(f"secret-scanning/alerts/{alert_id}/locations", paged=True)
     LOG.debug("Retrieved %s location(s) for alert %s", len(locations), alert_id)
     return locations
 
@@ -149,81 +136,6 @@ def _validate_location(location: dict, path: str) -> Tuple[bool, str, str]:
             author, author_timestamp = r.stdout.decode("utf-8").strip().split("\n")
 
     return valid, author, author_timestamp
-
-
-def _get_authorization(org: str, github_secret: str) -> str:
-    # Attempt to get an app installation token for the organization
-    github_app = GithubApp()
-    token = github_app.get_installation_token(org)
-    if token is not None:
-        return f"token {token}"
-
-    # Fall back to getting the PAT
-    key = _get_api_key(github_secret)
-    return f"bearer {key}"
-
-
-def _get_api_key(service_secret):
-    from artemislib.aws import AWSConnect  # pylint: disable=import-outside-toplevel
-
-    aws_connect = AWSConnect()
-    secret = aws_connect.get_secret(f"{APPLICATION}/{service_secret}")
-    if secret:
-        return secret.get("key")
-    return None
-
-
-def _github_api_get(gh: GITHUB_INFO, path: str = None, query: dict = None, paged=False):
-    # Query the GitHub API
-    headers = {"Authorization": gh.auth, "Content-Type": "application/json"}
-    if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in gh.api_url:
-        headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
-
-    if query is None:
-        query = {}
-
-    # Build the API path
-    url = f"{gh.api_url}/{gh.repo}"
-    if path is not None:
-        url += f"/{path}"
-
-    if paged:
-        query["page"] = 1
-        ret = []
-        while paged:
-            r = requests.get(url=url, headers=headers, params=query)
-            if r.status_code == 200 and r.json():
-                ret += r.json()
-                query["page"] += 1
-            else:
-                # Either the status code was not 200 or the JSON response was empty.
-                # When paging is exhaused the API returns 200 with an empty list ("[]") in the body
-                paged = False
-        return ret
-    else:
-        r = requests.get(url=url, headers=headers, params=query)
-        if r.status_code != 200:
-            return {}
-        return r.json()
-
-
-def _api_url(service_hostname: str) -> str:
-    if service_hostname is None:
-        return "https://api.github.com/repos"
-    else:
-        return f"https://{service_hostname}/api/v3/repos"
-
-
-class GetProxySecret:
-    _secret = None
-
-    def __new__(cls):
-        if not cls._secret:
-            from repo.util.aws import AWSConnect  # pylint: disable=import-outside-toplevel
-
-            aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
-            cls._secret = aws_connect.get_key(REV_PROXY_SECRET)["SecretString"]
-        return cls._secret
 
 
 if __name__ == "__main__":
