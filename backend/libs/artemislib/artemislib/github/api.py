@@ -27,8 +27,8 @@ class GitHubAPI:
             cls._instance._repo = repo
 
             # Set the auth header
-            key = _get_authorization(org, github_secret_loc)
-            cls._instance._headers = {"Authorization": f"bearer {key}", "Accept": "application/vnd.github+json"}
+            auth = _get_authorization(org, github_secret_loc)
+            cls._instance._headers = {"Authorization": auth, "Accept": "application/vnd.github+json"}
 
             # Set the revproxy auth header, if needed
             if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_hostname:
