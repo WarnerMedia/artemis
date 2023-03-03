@@ -101,7 +101,7 @@ class EngineProcessor:
                 self.details.client_id,
             )
 
-    def process_plugins(self, images: dict) -> None:
+    def process_plugins(self, images: dict, services: dict) -> None:
         """
         Executes plugins to scan the repository, updating the DB of the progress.
         :param images: dict of image build results and how many dockerfiles were found and built
@@ -134,6 +134,7 @@ class EngineProcessor:
                     depth=self.action_details.depth,
                     include_dev=self.action_details.include_dev,
                     features=self.details.features,
+                    services=services,
                 )
 
                 if results.disabled:

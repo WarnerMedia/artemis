@@ -16,9 +16,10 @@ PRIORITY_TASK_QUEUE_NAT = os.environ.get("PRIORITY_TASK_QUEUE_NAT", None)
 JSON_REPORT_LAMBDA = os.environ.get("JSON_REPORT_LAMBDA", None)
 SBOM_REPORT_LAMBDA = os.environ.get("SBOM_REPORT_LAMBDA", None)
 REPORT_QUEUE = os.environ.get("REPORT_QUEUE", None)
-AQUA_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_AQUA_ENABLED", "1")))
-VERACODE_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_VERACODE_ENABLED", "1")))
-SNYK_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_SNYK_ENABLED", "1")))
+AQUA_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_AQUA_ENABLED", "0")))
+VERACODE_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_VERACODE_ENABLED", "0")))
+SNYK_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_SNYK_ENABLED", "0")))
+GHAS_ENABLED = bool(int(os.environ.get("ARTEMIS_FEATURE_GHAS_ENABLED", "0")))
 
 # This should be used in a dev/testing system to force use of the local services.json
 LOCAL_SERVICES_OVERRIDE = bool(int(os.environ.get("ARTEMIS_LOCAL_SERVICES_OVERRIDE", "0")))

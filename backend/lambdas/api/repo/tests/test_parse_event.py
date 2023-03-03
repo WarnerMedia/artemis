@@ -219,7 +219,6 @@ EXPECTED_EVENT_RESULT_1 = {
         "gosec",
         "swiftlint",
         "checkov",
-        "-snyk",
         "-trivy",
         "-technology_discovery",
         "-gitsecrets",
