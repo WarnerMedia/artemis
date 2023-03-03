@@ -65,7 +65,7 @@ def run_repo_health(args):
         "debug": [],
     }
 
-    service = args.engine_vars.get("service")
+    service = args.engine_vars.get("service_name")
 
     if service != "github":
         # Repo health check only supports Github, but that's not our user's

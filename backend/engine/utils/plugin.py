@@ -70,11 +70,13 @@ def get_engine_vars(scan, depth=None, include_dev=False, services=None):
     return json.dumps(
         {
             "repo": scan.repo.repo,
+            "ref": scan.ref,
             "ecr_url": ECR,
             "depth": depth,
             "include_dev": include_dev,
             "engine_id": ENGINE_ID,
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
+            "service_name": scan.repo.service,
             "service_type": services[scan.repo.service]["type"],
             "service_hostname": services[scan.repo.service]["hostname"],
             "service_secret_loc": services[scan.repo.service]["secret_loc"],
