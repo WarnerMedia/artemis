@@ -8,14 +8,14 @@ from typing import Tuple
 from urllib.parse import quote_plus
 
 import boto3
-from artemisdb.artemisdb.models import PluginConfig
-from artemislib.github.app import GITHUB_APP_ID
-from artemislib.logging import LOG_LEVEL, Logger
-from artemislib.util import dict_eq
 from botocore.exceptions import ClientError
 from django.db.models import Q
+
+from artemisdb.artemisdb.models import PluginConfig
+from artemislib.github.app import GITHUB_APP_ID
+from artemislib.logging import Logger, LOG_LEVEL
+from artemislib.util import dict_eq
 from env import (
-    APPLICATION,
     ECR,
     ENGINE_DIR,
     ENGINE_ID,
@@ -23,11 +23,12 @@ from env import (
     PLUGIN_JAVA_HEAP_SIZE,
     PROCESS_SECRETS_WITH_PATH_EXCLUSIONS,
     REGION,
+    SQS_ENDPOINT,
+    APPLICATION,
     REV_PROXY_DOMAIN_SUBSTRING,
     REV_PROXY_SECRET,
-    REV_PROXY_SECRET_HEADER,
     REV_PROXY_SECRET_REGION,
-    SQS_ENDPOINT,
+    REV_PROXY_SECRET_HEADER,
 )
 
 log = Logger(__name__)
