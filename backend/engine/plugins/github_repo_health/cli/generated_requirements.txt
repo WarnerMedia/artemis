@@ -1,0 +1,15 @@
+attrs==22.2.0
+certifi==2022.12.7
+chardet==4.0.0
+ecdsa==0.14.1
+idna==2.10
+jsonschema==4.17.3
+octokitpy==0.15.0
+octokitpy-routes==2.5.0
+pyasn1==0.4.8
+pyrsistent==0.19.3
+python-jose==3.2.0
+requests==2.25.1
+rsa==4.9
+six==1.16.0
+urllib3==1.26.14

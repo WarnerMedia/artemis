@@ -71,11 +71,13 @@ def get_engine_vars(scan, depth=None, include_dev=False, services=None):
     return json.dumps(
         {
             "repo": scan.repo.repo,
+            "ref": scan.ref,
             "ecr_url": ECR,
             "depth": depth,
             "include_dev": include_dev,
             "engine_id": ENGINE_ID,
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
+            "service_name": scan.repo.service,
             "service_type": services[scan.repo.service]["type"],
             "service_hostname": services[scan.repo.service]["hostname"],
             "service_secret_loc": services[scan.repo.service]["secret_loc"],
@@ -391,7 +393,9 @@ def queue_event(repo, plugin_type, payload):
 
 def get_secret_raw_wl(scan):
     # Get the non-expired secret_raw whitelist for the repo and convert it into a list of the whitelisted strings
-    from artemisdb.artemisdb.consts import AllowListType  # pylint: disable=import-outside-toplevel
+    from artemisdb.artemisdb.consts import (
+        AllowListType,  # pylint: disable=import-outside-toplevel
+    )
 
     wl = []
     for item in scan.repo.allowlistitem_set.filter(
@@ -404,7 +408,9 @@ def get_secret_raw_wl(scan):
 
 def get_secret_al(scan):
     # Get the non-expired secret whitelist for the repo and convert it into a list
-    from artemisdb.artemisdb.consts import AllowListType  # pylint: disable=import-outside-toplevel
+    from artemisdb.artemisdb.consts import (
+        AllowListType,  # pylint: disable=import-outside-toplevel
+    )
 
     return scan.repo.allowlistitem_set.filter(
         Q(item_type=AllowListType.SECRET.value),

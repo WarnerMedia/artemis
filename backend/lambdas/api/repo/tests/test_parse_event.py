@@ -202,7 +202,7 @@ EXPECTED_REQUEST_RESULT_10 = {
 
 TEST_EVENT_1 = {"body": json.dumps({"categories": ["static_analysis"]}), "service_id": "test_id"}
 EXPECTED_EVENT_RESULT_1 = {
-    "categories": ["static_analysis", "-secret", "-vulnerability", "-inventory", "-sbom"],
+    "categories": ["static_analysis", "-secret", "-vulnerability", "-inventory", "-sbom", "-configuration"],
     "plugins": [
         "brakeman",
         "cfn_python_lint",
@@ -228,6 +228,7 @@ EXPECTED_EVENT_RESULT_1 = {
         "-truffle_hog",
         "-bundler_audit",
         "-php_sensio_security_checker",
+        "-github_repo_health",
     ],
 }
 
