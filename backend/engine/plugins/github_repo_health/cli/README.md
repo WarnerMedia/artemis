@@ -213,23 +213,28 @@ Configurations are of the following format:
         {
             "type": "<rule id>",
 
+            # You can manually set the output `id` that will bubble up to
+            # Artemis. If omitted, the output `id` will just be `type`, so this
+            # is required if multiple rules of the same `type` are run
+            "id": "branch_ci_required",
+
+            # You can explicitly set a severity by specifying it here. This will
+            # bubble up to Artemis
+            "severity": "critical"
+
             # You can temporarily stop running a rule by setting 'enabled' to false.
             # You can also omit the rule altogether to achieve the same effect
             "enabled": false,
-
-            # You can add a severity by specifying it here
-            "severity": "critical"
         },
         {
             "type": "branch_status_checks",
+            "id": "branch_ci_required",
 
-            # 'id', 'name', and 'description' are optional and will override the
-            # defaults.
+            # 'name' and 'description' are optional and will override the defaults.
             # They can be useful for adding additional context to rules
             #
             # In some cases, it might make sense to run multiple checks with the same type. In those cases,
             # overriding the id, name, and description is strongly encouraged
-            "id": "branch_ci_required",
             "name": "Branch - Continuous Integration Required",
             "description": "Require that the CI jobs pass before pull requests can be merged",
 
@@ -467,8 +472,8 @@ Array of paths. Passes if none of the files exist on the default branch
 {
     "type": "repo_files",
     "any_of": [
-        "WM-METADATA.json",
-        "now.yaml"
+        "package.json",
+        "Pipfile"
     ],
     "all_of": [
         ".github/CODEOWNERS"
