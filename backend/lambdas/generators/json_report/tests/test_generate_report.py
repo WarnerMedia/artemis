@@ -435,7 +435,6 @@ class TestGenerateReport(unittest.TestCase):
         expected_configuration = PLUGIN_RESULTS(
             {
                 "branch_commit_signing": {
-                    "id": "branch_commit_signing",
                     "name": "Branch - Require Commit Signing",
                     "description": "Branch protection rule is enabled to enforce code signing",
                     "severity": "high",
