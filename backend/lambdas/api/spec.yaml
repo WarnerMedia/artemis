@@ -2434,9 +2434,6 @@ components:
                 type: object
                 description: The ID of the vulnerability
                 properties:
-                  id:
-                    description: The identifier for the check
-                    type: string
                   name:
                     description: Human-readable name for the check
                     type: string

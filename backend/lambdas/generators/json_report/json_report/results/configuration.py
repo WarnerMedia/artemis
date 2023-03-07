@@ -49,7 +49,6 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                 passing = finding.get("pass", False)
 
                 item = {
-                    "id": id,
                     "name": name,
                     "description": description,
                     "severity": severity,
