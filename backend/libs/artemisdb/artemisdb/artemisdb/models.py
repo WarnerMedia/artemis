@@ -1218,3 +1218,12 @@ class VulnerabilityScanPlugin(models.Model):
 
     def to_dict(self):
         return self.vulnerability.to_dict()
+
+
+class SecretType(models.Model):
+    """
+    This is a lookup table of secret types supported by secrets plugins
+    """
+
+    # Secret type name
+    name = models.CharField(max_length=256, unique=True)

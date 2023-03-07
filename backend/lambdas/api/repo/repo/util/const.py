@@ -146,7 +146,6 @@ HISTORY_QUERY_PARAMS = ["limit", "offset", "initiated_by", "include_batch", "inc
 QUERY_PARAMS = ["results", "severity", "secret", "type", "format", "filter_diff"]
 RESULTS = ["vulnerabilities", "secrets", "static_analysis", "inventory", "configuration"]
 SEVERITY = ["critical", "high", "medium", "low", "negligible", ""]
-SECRET = ["aws", "ssh", "mongo", "postgres", "redis", "urlauth", "google", "slack", "other"]
 FORMAT = [FORMAT_FULL, FORMAT_SUMMARY, FORMAT_SBOM]
 RESOURCES = ["whitelist", "history", "report"]
 WL_TYPES = ["vulnerability", "vulnerability_raw", "secret", "secret_raw", "static_analysis", "configuration"]

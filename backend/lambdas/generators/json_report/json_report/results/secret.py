@@ -1,12 +1,11 @@
 from datetime import datetime, timezone
 
 from artemisdb.artemisdb.consts import PluginType
-from artemisdb.artemisdb.models import AllowListType
+from artemisdb.artemisdb.models import AllowListType, SecretType
 from django.db.models import Q
 
 from json_report.results.diff import diff_includes
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
-from json_report.util.const import SECRET
 from json_report.util.util import dict_eq
 
 
@@ -14,24 +13,9 @@ def get_secrets(scan, params):
     # Unify the output of secrets plugins
 
     if "secret" not in params:
-        secret = SECRET
-        # TODO: Fix this stopgap measure so that the list of secret types is dynamic based on plugin results
-        #
-        # The ghas_secrets plugin introduced a large number of new secret types. The list of types will expand
-        # as GitHub adds additional detections:
-        # https://docs.github.com/en/code-security/secret-scanning/secret-scanning-patterns
-        #
-        # Secret filtering via the API assumes the type is one of a small number of static types. This was causing
-        # the new secrets from the ghas_secrets plugin to get filtered out of the results because they didn't
-        # match the expected types. As a workaround, this boolean is used to bypass the type filtering when no
-        # types are specified.
-        #
-        # A better solution would be to store a list of secret types in the database and update it based on the
-        # results of plugins so that when new detections are added the list is updated automatically.
-        all_secrets = True
+        secret = SecretType.objects.all().values_list("name", flat=True)
     else:
         secret = params["secret"]
-        all_secrets = False
 
     success = True
     secrets = {}
@@ -58,9 +42,7 @@ def get_secrets(scan, params):
 
         for s in plugin.details:
             if (
-                (
-                    not all_secrets and s.get("type") not in secret
-                )  # TODO: Fix this stopgap measure so that the list of secret types is dynamic base on plugin results
+                s.get("type") not in secret
                 or allowlisted_secret(s, allow_list)
                 or not diff_includes(s.get("filename"), s.get("line"), diff_summary)
             ):

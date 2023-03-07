@@ -10,8 +10,9 @@ from urllib.parse import quote_plus
 import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
+from django.db import transaction
 
-from artemisdb.artemisdb.models import PluginConfig
+from artemisdb.artemisdb.models import PluginConfig, SecretType
 from artemislib.github.app import GITHUB_APP_ID
 from artemislib.logging import Logger, LOG_LEVEL
 from artemislib.util import dict_eq
@@ -309,6 +310,10 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
                 process_event_info(scan, filtered_plugin_output, settings.plugin_type)
             else:
                 process_event_info(scan, plugin_output, settings.plugin_type)
+
+        if settings.plugin_type == "secrets":
+            _process_secret_types(plugin_output.get("details", []))
+
         return Result(
             name=plugin_output.get("name", settings.name),
             type=settings.plugin_type,
@@ -587,3 +592,23 @@ def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plu
 
 def get_plugin_list():
     return sorted([e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if e.name != "lib" and e.is_dir()])
+
+
+def _process_secret_types(details: list) -> None:
+    if not details:
+        # Plugin didn't find anything. Bail without doing anything.
+        return
+
+    # Set of types found by this plugin
+    new_types = set([item["type"].lower() for item in details])
+
+    # Doing this in a transaction so that we avoid issues when multiple secrets plugins are running
+    # simultaneously on different engines since we want the SecretTypes to be unique.
+    with transaction.atomic():
+        # Get the current secret types as a list
+        current_types = set(SecretType.objects.all().values_list("name", flat=True))
+
+        # Add the list of types found by this plugin, excluding the already known types
+        for name in new_types - current_types:
+            SecretType.objects.create(name=name)
+            log.info("Added secret type '%s' to database", name)
