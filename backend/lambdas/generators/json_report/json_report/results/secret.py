@@ -1,12 +1,11 @@
 from datetime import datetime, timezone
 
 from artemisdb.artemisdb.consts import PluginType
-from artemisdb.artemisdb.models import AllowListType
+from artemisdb.artemisdb.models import AllowListType, SecretType
 from django.db.models import Q
 
 from json_report.results.diff import diff_includes
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
-from json_report.util.const import SECRET
 from json_report.util.util import dict_eq
 
 
@@ -14,7 +13,7 @@ def get_secrets(scan, params):
     # Unify the output of secrets plugins
 
     if "secret" not in params:
-        secret = SECRET
+        secret = SecretType.objects.all().values_list("name", flat=True)
     else:
         secret = params["secret"]
 

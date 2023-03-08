@@ -232,6 +232,7 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_keys
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_members
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/engine/plugins/repo_health/cli
 
 # Artemis scan configuration
 ARTEMIS_SCAN_ARGS :=
@@ -291,7 +292,12 @@ get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 get-trivy:
 	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | sh -s -- -b /usr/local/bin ${TRIVY_VER};
 
-unit-test: venv get-shell-check get-detekt get-mock-swiftlint ## Run unit tests
+install-plugin-dependencies:
+	@echo "${INFO}Installing plugin dependencies..."
+	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/github_repo_health/cli/generated_requirements.txt
+
+
+unit-test: venv get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
 	@echo "${INFO}Running Unit tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report'; \
 	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \

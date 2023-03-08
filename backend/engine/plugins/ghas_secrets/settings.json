@@ -1,0 +1,6 @@
+{
+    "name": "GitHub Advanced Security Secrets",
+    "type": "secrets",
+    "image": "$ECR/artemis/python:3-latest",
+    "enabled": "$ARTEMIS_FEATURE_GHAS_ENABLED"
+}

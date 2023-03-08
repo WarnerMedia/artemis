@@ -34,7 +34,7 @@ main.py
 This file contains the plugin's settings. The settings are:
 
 - name: The name of the plugin
-- type: The type of the plugin: `vulnerability`, `secrets`, `static_analysis`, `inventory`, `sbom`
+- type: The type of the plugin: `vulnerability`, `secrets`, `static_analysis`, `inventory`, `configuration`, `sbom`
 - image: The Docker image the plugin runs in. If using a non-public image prefix with `$ECR`. During local development `$ECR` is ignored. When running in AWS, the `$ECR` environment variable is populated with the current account's ECR URL.
 - disabled: Boolean. If true the plugin is skipped. This can also be a string containing the name of an environment variable containing the boolean value, for example "$ARTEMIS_FEATURE_XYZ_ENABLED".
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
 ## Plugin Types
 
-There are five types of plugins: vulnerability, secrets, static analysis, sbom, and inventory. Each type of plugin has a defined output format so that the results can be easily consolidated.
+There are five types of plugins: vulnerability, secrets, static analysis, sbom, inventory, and configuration. Each type of plugin has a defined output format so that the results can be easily consolidated.
 
 ### Vulnerability
 
@@ -170,6 +170,10 @@ Example:
 TODO: Add documentation here
 
 ### Inventory
+
+TODO: Add documentation here
+
+### Configuration
 
 TODO: Add documentation here
 

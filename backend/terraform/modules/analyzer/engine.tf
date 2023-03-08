@@ -26,6 +26,7 @@ module "public_engine_cluster" {
   aqua_enabled     = var.aqua_enabled
   veracode_enabled = var.veracode_enabled
   snyk_enabled     = var.snyk_enabled
+  ghas_enabled     = var.ghas_enabled
 
   github_app_id = var.github_app_id
 
@@ -80,6 +81,7 @@ module "nat_engine_cluster" {
   aqua_enabled     = var.aqua_enabled
   veracode_enabled = var.veracode_enabled
   snyk_enabled     = var.snyk_enabled
+  ghas_enabled     = var.ghas_enabled
 
   github_app_id = var.github_app_id
 

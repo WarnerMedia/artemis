@@ -10,9 +10,11 @@ from urllib.parse import quote_plus
 import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
+from django.db import transaction
 
-from artemisdb.artemisdb.models import PluginConfig
-from artemislib.logging import Logger
+from artemisdb.artemisdb.models import PluginConfig, SecretType
+from artemislib.github.app import GITHUB_APP_ID
+from artemislib.logging import Logger, LOG_LEVEL
 from artemislib.util import dict_eq
 from env import (
     ECR,
@@ -23,6 +25,11 @@ from env import (
     PROCESS_SECRETS_WITH_PATH_EXCLUSIONS,
     REGION,
     SQS_ENDPOINT,
+    APPLICATION,
+    REV_PROXY_DOMAIN_SUBSTRING,
+    REV_PROXY_SECRET,
+    REV_PROXY_SECRET_REGION,
+    REV_PROXY_SECRET_HEADER,
 )
 
 log = Logger(__name__)
@@ -52,7 +59,7 @@ class PluginSettings:
     feature: str
 
 
-def get_engine_vars(repo, depth=None, include_dev=False):
+def get_engine_vars(scan, depth=None, include_dev=False, services=None):
     """
     Returns a json str that can be converted back to a dict by the plugin.
     The object will container information known to the engine
@@ -64,12 +71,17 @@ def get_engine_vars(repo, depth=None, include_dev=False):
     """
     return json.dumps(
         {
-            "repo": repo,
+            "repo": scan.repo.repo,
+            "ref": scan.ref,
             "ecr_url": ECR,
             "depth": depth,
             "include_dev": include_dev,
             "engine_id": ENGINE_ID,
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
+            "service_name": scan.repo.service,
+            "service_type": services[scan.repo.service]["type"],
+            "service_hostname": services[scan.repo.service]["hostname"],
+            "service_secret_loc": services[scan.repo.service]["secret_loc"],
         }
     )
 
@@ -221,7 +233,7 @@ def is_plugin_disabled(settings: dict) -> bool:
     return True
 
 
-def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, features=None) -> Result:
+def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, features=None, services=None) -> Result:
     if features is None:
         features = {}
 
@@ -273,7 +285,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
     plugin_config = _get_plugin_config(plugin, full_repo)
 
     plugin_command = get_plugin_command(
-        scan.scan_id, scan.repo.repo, settings.image, plugin, depth, include_dev, scan_images, plugin_config
+        scan, settings.image, plugin, depth, include_dev, scan_images, plugin_config, services
     )
 
     # Run the plugin inside the settings.image
@@ -298,6 +310,10 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
                 process_event_info(scan, filtered_plugin_output, settings.plugin_type)
             else:
                 process_event_info(scan, plugin_output, settings.plugin_type)
+
+        if settings.plugin_type == "secrets":
+            _process_secret_types(plugin_output.get("details", []))
+
         return Result(
             name=plugin_output.get("name", settings.name),
             type=settings.plugin_type,
@@ -382,7 +398,9 @@ def queue_event(repo, plugin_type, payload):
 
 def get_secret_raw_wl(scan):
     # Get the non-expired secret_raw whitelist for the repo and convert it into a list of the whitelisted strings
-    from artemisdb.artemisdb.consts import AllowListType  # pylint: disable=import-outside-toplevel
+    from artemisdb.artemisdb.consts import (
+        AllowListType,  # pylint: disable=import-outside-toplevel
+    )
 
     wl = []
     for item in scan.repo.allowlistitem_set.filter(
@@ -395,7 +413,9 @@ def get_secret_raw_wl(scan):
 
 def get_secret_al(scan):
     # Get the non-expired secret whitelist for the repo and convert it into a list
-    from artemisdb.artemisdb.consts import AllowListType  # pylint: disable=import-outside-toplevel
+    from artemisdb.artemisdb.consts import (
+        AllowListType,  # pylint: disable=import-outside-toplevel
+    )
 
     return scan.repo.allowlistitem_set.filter(
         Q(item_type=AllowListType.SECRET.value),
@@ -490,7 +510,7 @@ def get_iso_timestamp():
     return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
 
 
-def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_images, plugin_config):
+def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plugin_config, services):
     profile = os.environ.get("AWS_PROFILE")
     cmd = [
         "docker",
@@ -501,7 +521,7 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
         "--volumes-from",
         ENGINE_ID,
         "-v",
-        "%s:/work" % os.path.join(HOST_WORKING_DIR, str(scan_id)),
+        "%s:/work" % os.path.join(HOST_WORKING_DIR, str(scan.scan_id)),
     ]
 
     if profile:
@@ -525,6 +545,16 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
                 f"ANALYZER_DB_HOST={os.environ.get('ANALYZER_DB_HOST', '')}",
                 "-e",
                 f"ANALYZER_DB_PORT={os.environ.get('ANALYZER_DB_PORT', '')}",
+                "-e",
+                f"APPLICATION={APPLICATION}",
+                "-e",
+                f"ARTEMIS_REV_PROXY_DOMAIN_SUBSTRING={REV_PROXY_DOMAIN_SUBSTRING}",
+                "-e",
+                f"ARTEMIS_REV_PROXY_SECRET={REV_PROXY_SECRET}",
+                "-e",
+                f"ARTEMIS_REV_PROXY_SECRET_REGION={REV_PROXY_SECRET_REGION}",
+                "-e",
+                f"ARTEMIS_REV_PROXY_AUTH_HEADER={REV_PROXY_SECRET_HEADER}",
                 "--network",
                 os.environ.get("ARTEMIS_NETWORK", "default"),
             ]
@@ -544,10 +574,14 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
         [
             "-e",
             "PYTHONPATH=/srv",
+            "-e",
+            f"ARTEMIS_GITHUB_APP_ID={GITHUB_APP_ID}",
+            "-e",
+            f"ARTEMIS_LOG_LEVEL={LOG_LEVEL}",
             image,
             "python",
             "/srv/engine/plugins/%s/main.py" % plugin,
-            get_engine_vars(repo, depth=depth, include_dev=include_dev),
+            get_engine_vars(scan, depth=depth, include_dev=include_dev, services=services),
             json.dumps(scan_images),
             json.dumps(plugin_config),
         ]
@@ -558,3 +592,23 @@ def get_plugin_command(scan_id, repo, image, plugin, depth, include_dev, scan_im
 
 def get_plugin_list():
     return sorted([e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if e.name != "lib" and e.is_dir()])
+
+
+def _process_secret_types(details: list) -> None:
+    if not details:
+        # Plugin didn't find anything. Bail without doing anything.
+        return
+
+    # Set of types found by this plugin
+    new_types = set([item["type"].lower() for item in details])
+
+    # Doing this in a transaction so that we avoid issues when multiple secrets plugins are running
+    # simultaneously on different engines since we want the SecretTypes to be unique.
+    with transaction.atomic():
+        # Get the current secret types as a list
+        current_types = set(SecretType.objects.all().values_list("name", flat=True))
+
+        # Add the list of types found by this plugin, excluding the already known types
+        for name in new_types - current_types:
+            SecretType.objects.create(name=name)
+            log.info("Added secret type '%s' to database", name)

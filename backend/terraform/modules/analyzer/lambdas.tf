@@ -191,6 +191,7 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_FEATURE_AQUA_ENABLED      = var.aqua_enabled ? 1 : 0
       ARTEMIS_FEATURE_VERACODE_ENABLED  = var.veracode_enabled ? 1 : 0
       ARTEMIS_FEATURE_SNYK_ENABLED      = var.snyk_enabled ? 1 : 0
+      ARTEMIS_FEATURE_GHAS_ENABLED      = var.ghas_enabled ? 1 : 0
       ARTEMIS_GITHUB_APP_ID             = var.github_app_id
       ARTEMIS_AUDIT_QUEUE               = var.event_queue.id
       ARTEMIS_ENVIRONMENT               = var.environment

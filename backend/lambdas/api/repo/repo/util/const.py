@@ -6,7 +6,7 @@ todo : search plugin settings.json to obtain a dynamic list of plugins and categ
 import os
 from collections import namedtuple
 
-from repo.util.env import AQUA_ENABLED, SNYK_ENABLED, VERACODE_ENABLED
+from repo.util.env import AQUA_ENABLED, SNYK_ENABLED, VERACODE_ENABLED, GHAS_ENABLED
 
 DB_TTL_DAYS = 60
 DEFAULT_PAGE_SIZE = 50
@@ -46,6 +46,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "checkov": None,
     },
     "inventory": {"technology_discovery": None, "base_images": None},
+    "configuration": {"github_repo_health": None},
     "sbom": {},
 }
 
@@ -75,6 +76,9 @@ QUALIFIED_PLUGINS = {
         [k] for k in set(PLUGIN_LIST_BY_CATEGORY["static_analysis"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)
     ],
     "inventory": [[k] for k in set(PLUGIN_LIST_BY_CATEGORY["inventory"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)],
+    "configuration": [
+        [k] for k in set(PLUGIN_LIST_BY_CATEGORY["configuration"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)
+    ],
     "sbom": [[k] for k in set(PLUGIN_LIST_BY_CATEGORY["sbom"].keys()).difference(QUALIFIED_OPTIONAL_PLUGINS)],
 }
 
@@ -121,6 +125,12 @@ else:
     DISABLED_PLUGINS.append("veracode_sca")
     DISABLED_PLUGINS.append("veracode_sbom")
 
+if GHAS_ENABLED:
+    # Add the GitHub Advanced Security plugin if it enabled
+    PLUGIN_LIST_BY_CATEGORY["secret"]["ghas_secrets"] = None
+else:
+    DISABLED_PLUGINS.append("ghas_secrets")
+
 PLUGINS = []
 for plugin_cat in PLUGIN_LIST_BY_CATEGORY:
     PLUGINS.extend(PLUGIN_LIST_BY_CATEGORY.get(plugin_cat).keys())
@@ -134,12 +144,11 @@ FORMAT_SBOM = "sbom"
 
 HISTORY_QUERY_PARAMS = ["limit", "offset", "initiated_by", "include_batch", "include_diff", "qualified"]
 QUERY_PARAMS = ["results", "severity", "secret", "type", "format", "filter_diff"]
-RESULTS = ["vulnerabilities", "secrets", "static_analysis", "inventory"]
+RESULTS = ["vulnerabilities", "secrets", "static_analysis", "inventory", "configuration"]
 SEVERITY = ["critical", "high", "medium", "low", "negligible", ""]
-SECRET = ["aws", "ssh", "mongo", "postgres", "redis", "urlauth", "google", "slack", "other"]
 FORMAT = [FORMAT_FULL, FORMAT_SUMMARY, FORMAT_SBOM]
 RESOURCES = ["whitelist", "history", "report"]
-WL_TYPES = ["vulnerability", "vulnerability_raw", "secret", "secret_raw", "static_analysis"]
+WL_TYPES = ["vulnerability", "vulnerability_raw", "secret", "secret_raw", "static_analysis", "configuration"]
 WL_REQUIRED_KEYS = ["type", "value", "reason"]
 WL_IGNORED_KEYS = ["created", "updated", "updated_by"]
 WL_ALL_KEYS = WL_REQUIRED_KEYS + WL_IGNORED_KEYS + ["expires"]
@@ -153,6 +162,8 @@ WL_SECRET_RAW_KEYS = {"value": str}
 WL_SECRET_RAW_OPT_KEYS = {}
 WL_STATIC_ANALYSIS_KEYS = {"filename": str, "line": int, "type": str}
 WL_STATIC_ANALYSIS_OPT_KEYS = {"severity": str}
+WL_CONFIGURATION_KEYS = {"id": str}
+WL_CONFIGURATION_OPT_KEYS = {"severity": str}
 REPORT_REQUIRED_KEYS = []
 REPORT_ALL_KEYS = REPORT_REQUIRED_KEYS + ["type", "filters"]
 DEFAULT_REPORT_TYPE = "pdf"
