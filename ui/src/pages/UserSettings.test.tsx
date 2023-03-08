@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from "test-utils";
+import {
+	getDefaultNormalizer,
+	render,
+	screen,
+	waitFor,
+	within,
+} from "test-utils";
 import { DateTime, Settings } from "luxon";
 import { formatDate } from "utils/formatters";
 jest.mock("react-redux", () => ({
@@ -208,12 +214,18 @@ describe("UserSettings component", () => {
 			const loginField = screen.getByText("Last Login");
 			expect(loginField).toBeInTheDocument();
 			if (loginField.parentElement) {
+				// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+				// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+				// using: replace(/\s+/g, ' ')
+				// causing the match to break
+				// so don't collapseWhitespace in the normalizer for comparing dates here
 				expect(
 					within(loginField.parentElement).getByText(
 						formatDate(
 							mockAppState.currentUser.entities.self.last_login,
 							"long"
-						)
+						),
+						{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
 					)
 				).toBeInTheDocument();
 			}

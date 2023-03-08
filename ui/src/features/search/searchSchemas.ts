@@ -91,20 +91,22 @@ export const matchStringSchema = (message: string) => {
 	return Yup.string().trim().oneOf(["icontains", "exact"], message);
 };
 
-const componentLicenseSchema: Yup.SchemaOf<ComponentLicense> = Yup.object()
+const componentLicenseSchema: Yup.ObjectSchema<ComponentLicense> = Yup.object()
 	.shape({
 		id: Yup.string().defined(),
 		name: Yup.string().defined(),
 	})
 	.defined();
 
-const searchComponentSchema: Yup.SchemaOf<SearchComponent> = Yup.object()
-	.shape({
-		name: Yup.string().defined(),
-		version: Yup.string().defined(),
-		licenses: Yup.array().defined().of(componentLicenseSchema),
-	})
-	.defined();
+// type to SearchComponent but omit _id field, which is internal, not from API
+const searchComponentSchema: Yup.ObjectSchema<Omit<SearchComponent, "_id">> =
+	Yup.object()
+		.shape({
+			name: Yup.string().defined(),
+			version: Yup.string().defined(),
+			licenses: Yup.array().defined().of(componentLicenseSchema),
+		})
+		.defined();
 
 export const searchComponentResponseSchema = Yup.object().shape({
 	data: Yup.object()
@@ -117,7 +119,7 @@ export const searchComponentResponseSchema = Yup.object().shape({
 		.defined(),
 });
 
-const qualifiedScanSchema: Yup.SchemaOf<QualifiedScan> = Yup.object()
+const qualifiedScanSchema: Yup.ObjectSchema<QualifiedScan> = Yup.object()
 	.shape({
 		created: Yup.string().defined(),
 		scan_id: scanIdSchema.defined(),
@@ -147,16 +149,14 @@ export const serviceSchema = () => {
 		);
 };
 
-export const riskSchema = Yup.string().oneOf([
-	null,
-	"priority",
-	"critical",
-	"high",
-	"moderate",
-	"low",
-]);
+export const riskSchema = Yup.string()
+	.oneOf(["priority", "critical", "high", "moderate", "low"])
+	.nullable();
 
-export const searchRepoSchema: Yup.SchemaOf<SearchRepo> = Yup.object()
+// type to SearchRepo but omit _id, last_qualified_scan fields, which are internal, not from API
+export const searchRepoSchema: Yup.ObjectSchema<
+	Omit<SearchRepo, "_id" | "last_qualified_scan">
+> = Yup.object()
 	.shape({
 		service: serviceSchema().defined(),
 		repo: repoSchema().defined(),
@@ -178,14 +178,16 @@ export const searchRepoResponseSchema = Yup.object().shape({
 });
 
 // subset of repo fields
-export const searchComponentRepoSchema: Yup.SchemaOf<SearchComponentRepo> =
-	Yup.object()
-		.shape({
-			service: serviceSchema().defined(),
-			repo: repoSchema().defined(),
-			risk: riskSchema.defined().nullable(),
-		})
-		.defined();
+// type to SearchComponentRepo but omit _id field, which is internal, not from API
+export const searchComponentRepoSchema: Yup.ObjectSchema<
+	Omit<SearchComponentRepo, "_id">
+> = Yup.object()
+	.shape({
+		service: serviceSchema().defined(),
+		repo: repoSchema().defined(),
+		risk: riskSchema.defined().nullable(),
+	})
+	.defined();
 
 export const searchComponentRepoResponseSchema = Yup.object().shape({
 	data: Yup.object()
@@ -207,22 +209,24 @@ export const severitySchema = Yup.string().oneOf([
 	"",
 ]);
 
-const searchVulnerabilitySchema: Yup.SchemaOf<SearchVulnerability> =
-	Yup.object()
-		.shape({
-			id: Yup.string().defined(),
-			advisory_ids: Yup.array().defined().of(Yup.string().defined()),
-			description: Yup.string().defined(),
-			severity: severitySchema.defined(),
-			remediation: Yup.string().defined(),
-			components: Yup.object().defined(),
-			// source_plugins assumptions:
-			// - field can't be null
-			// - field is an array of strings, not a check for exact plugin names
-			//   this is intentional so UI won't break when new plugins are added
-			source_plugins: Yup.array().defined().of(Yup.string().defined()),
-		})
-		.defined();
+// type to SearchVulnerability but omit vuln_id, plugin fields, which are internal, not from API
+const searchVulnerabilitySchema: Yup.ObjectSchema<
+	Omit<SearchVulnerability, "vuln_id" | "plugin">
+> = Yup.object()
+	.shape({
+		id: Yup.string().defined(),
+		advisory_ids: Yup.array().defined().of(Yup.string().defined()),
+		description: Yup.string().defined(),
+		severity: severitySchema.defined(),
+		remediation: Yup.string().defined(),
+		components: Yup.object().defined(),
+		// source_plugins assumptions:
+		// - field can't be null
+		// - field is an array of strings, not a check for exact plugin names
+		//   this is intentional so UI won't break when new plugins are added
+		source_plugins: Yup.array().defined().of(Yup.string().defined()),
+	})
+	.defined();
 
 export const searchVulnsResponseSchema = Yup.object().shape({
 	data: Yup.object()

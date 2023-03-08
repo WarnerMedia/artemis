@@ -29,9 +29,9 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 # hadolint ignore=DL3059
-RUN npm install -g npm@^9.2.0 && \
+RUN npm install -g npm@^9.6.0 && \
 	npm ci && \
-	npm install -g serve@^14.1.2 && \
+	npm install -g serve@^14.2.0 && \
 	npm ls -a
 
 COPY . .

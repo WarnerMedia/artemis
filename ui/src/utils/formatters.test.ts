@@ -22,8 +22,9 @@ describe("formatters", () => {
 		});
 
 		it("valid date, short (default) format", () => {
-			expect(formatters.formatDate("2021-08-11T22:46:24.518Z")).toEqual(
-				"2021-08-11 6:46 PM EDT"
+			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+			expect(formatters.formatDate("2021-08-11T22:46:24.518Z")).toMatch(
+				/2021-08-11 6:46[ \u202f]PM EDT/
 			);
 		});
 
@@ -32,8 +33,9 @@ describe("formatters", () => {
 			// depending on browser ICU version support,
 			// dates/times may be combined with either ", " (comma) or " at "
 			// allow either
+			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
 			expect(formatters.formatDate("2021-08-11T22:46:24.518Z", "long")).toMatch(
-				/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/
+				/Wednesday, August 11, 2021(,| at) 6:46:24[ \u202f]PM EDT/
 			);
 		});
 	});

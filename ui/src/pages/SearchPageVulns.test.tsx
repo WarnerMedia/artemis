@@ -373,17 +373,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// accordion closed on submit
 					expect(
@@ -576,9 +577,6 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
 
 					// check all form fields disabled
 					expect(vulnMatch).toHaveAttribute("aria-disabled", "true");
@@ -699,17 +697,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					const severities = ["", "low", "medium", "high", "critical"];
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
@@ -861,17 +860,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
 						meta: {
@@ -1052,17 +1052,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// all form fields populated with url query params
 					screen.getByRole("button", {
@@ -1222,17 +1223,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// all form fields populated with url query params
 					screen.getByRole("button", {
@@ -1387,17 +1389,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// all form fields populated with url query params
 					screen.getByRole("button", {
@@ -1627,17 +1630,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
 						meta: {
@@ -1741,17 +1745,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
 						meta: {

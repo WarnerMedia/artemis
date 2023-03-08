@@ -227,7 +227,7 @@ const scanQueueFailedSchema = Yup.object()
 	})
 	.defined();
 
-const scanQueueSchema: Yup.SchemaOf<ScanQueue> = Yup.object()
+const scanQueueSchema: Yup.ObjectSchema<ScanQueue> = Yup.object()
 	.shape({
 		queued: Yup.array().defined().of(Yup.string().defined()),
 		failed: Yup.array().defined().of(scanQueueFailedSchema),
@@ -256,7 +256,7 @@ const scanOptionsSchema = Yup.object()
 	})
 	.defined();
 
-const scanStatusDetailSchema: Yup.SchemaOf<ScanStatusDetail> = Yup.object()
+const scanStatusDetailSchema: Yup.ObjectSchema<ScanStatusDetail> = Yup.object()
 	.shape({
 		plugin_name: Yup.string().defined().nullable(),
 		plugin_start_time: Yup.string().defined().nullable(),
@@ -265,7 +265,7 @@ const scanStatusDetailSchema: Yup.SchemaOf<ScanStatusDetail> = Yup.object()
 	})
 	.defined();
 
-const scanTimestampsSchema: Yup.SchemaOf<ScanTimestamps> = Yup.object()
+const scanTimestampsSchema: Yup.ObjectSchema<ScanTimestamps> = Yup.object()
 	.shape({
 		queued: Yup.string().defined().nullable(),
 		start: Yup.string().defined().nullable(),
@@ -273,7 +273,7 @@ const scanTimestampsSchema: Yup.SchemaOf<ScanTimestamps> = Yup.object()
 	})
 	.defined();
 
-const severityLevelsSchema: Yup.SchemaOf<SeverityLevels> = Yup.object()
+const severityLevelsSchema: Yup.ObjectSchema<SeverityLevels> = Yup.object()
 	.shape({
 		critical: Yup.number().defined(),
 		high: Yup.number().defined(),
@@ -284,23 +284,24 @@ const severityLevelsSchema: Yup.SchemaOf<SeverityLevels> = Yup.object()
 	})
 	.defined();
 
-const summaryInventorySchema: Yup.SchemaOf<SummaryInventory> = Yup.object()
+const summaryInventorySchema: Yup.ObjectSchema<SummaryInventory> = Yup.object()
 	.shape({
 		technology_discovery: Yup.number(),
 		base_images: Yup.number(),
 	})
 	.defined();
 
-const scanResultsSummarySchema: Yup.SchemaOf<ScanResultsSummary> = Yup.object()
-	.shape({
-		vulnerabilities: severityLevelsSchema.nullable(),
-		secrets: Yup.number().defined().nullable(),
-		static_analysis: severityLevelsSchema.nullable(),
-		inventory: summaryInventorySchema.nullable(),
-	})
-	.defined();
+const scanResultsSummarySchema: Yup.ObjectSchema<ScanResultsSummary> =
+	Yup.object()
+		.shape({
+			vulnerabilities: severityLevelsSchema.nullable(),
+			secrets: Yup.number().defined().nullable(),
+			static_analysis: severityLevelsSchema.nullable(),
+			inventory: summaryInventorySchema.nullable(),
+		})
+		.defined();
 
-const scanInventorySchema: Yup.SchemaOf<ScanInventory> = Yup.object()
+const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	.shape({
 		base_images: Yup.object(), // object with varying keys based on images detected
 		technology_discovery: Yup.object(), // object with varying keys based on languages detected
@@ -321,7 +322,7 @@ export const scanIdSchema = Yup.string()
 	.length(36)
 	.matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID
 
-export const analysisReportSchema: Yup.SchemaOf<any> = Yup.object()
+export const analysisReportSchema: Yup.ObjectSchema<any> = Yup.object()
 	.shape({
 		repo: Yup.string().defined(),
 		scan_id: scanIdSchema.defined(),
@@ -351,7 +352,7 @@ export const analysisReportResponseSchema = Yup.object().shape({
 	data: analysisReportSchema,
 });
 
-export const scanHistorySchema: Yup.SchemaOf<any> = Yup.object()
+export const scanHistorySchema: Yup.ObjectSchema<any> = Yup.object()
 	.shape({
 		repo: Yup.string().defined(),
 		service: Yup.string().defined(),
@@ -410,7 +411,7 @@ const validScanPaths = (paths?: string): number => {
 
 export const scanOptionsFormSchema = (
 	currentUser?: User
-): Yup.SchemaOf<ScanOptionsForm> => {
+): Yup.ObjectSchema<ScanOptionsForm> => {
 	return Yup.object({
 		vcsOrg: Yup.string()
 			.trim()
@@ -428,10 +429,8 @@ export const scanOptionsFormSchema = (
 			.when("vcsOrg", {
 				// if VCS does not contain /Org suffix, then repo must contain Org/ Prefix
 				is: (vcsOrg: string) => vcsOrg && !vcsOrg.includes("/"),
-				then: Yup.string().matches(
-					/\//,
-					i18n._(t`Missing "Organization/" Prefix`)
-				),
+				then: (schema) =>
+					schema.matches(/\//, i18n._(t`Missing "Organization/" Prefix`)),
 			}),
 		branch: Yup.string()
 			// doesn't match all sequences in the git-check-ref-format spec, but prevents most

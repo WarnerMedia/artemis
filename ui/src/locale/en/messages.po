@@ -170,15 +170,15 @@ msgstr "Any Qualified Scan"
 msgid "Aqua CLI Scanner (Docker)"
 msgstr "Aqua CLI Scanner (Docker)"
 
-#: src/pages/ResultsPage.tsx:5921
+#: src/pages/ResultsPage.tsx:5923
 msgid "Artemis - Scan Results"
 msgstr "Artemis - Scan Results"
 
-#: src/pages/ResultsPage.tsx:5987
+#: src/pages/ResultsPage.tsx:5989
 msgid "Artemis - Scan Results: {0} (default)"
 msgstr "Artemis - Scan Results: {0} (default)"
 
-#: src/pages/ResultsPage.tsx:5986
+#: src/pages/ResultsPage.tsx:5988
 msgid "Artemis - Scan Results: {0} ({1})"
 msgstr "Artemis - Scan Results: {0} ({1})"
 
@@ -198,8 +198,8 @@ msgstr "Artemis - User Settings"
 msgid "At least 1 scope is required"
 msgstr "At least 1 scope is required"
 
-#: src/features/scans/scansSchemas.ts:503
-#: src/features/scans/scansSchemas.ts:537
+#: src/features/scans/scansSchemas.ts:502
+#: src/features/scans/scansSchemas.ts:536
 msgid "At least one scan feature or plugin must be enabled"
 msgstr "At least one scan feature or plugin must be enabled"
 
@@ -213,7 +213,7 @@ msgstr "Auto Refresh"
 msgid "Back"
 msgstr "Back"
 
-#: src/pages/ResultsPage.tsx:6102
+#: src/pages/ResultsPage.tsx:6104
 msgid "Back to Scans"
 msgstr "Back to Scans"
 
@@ -275,8 +275,8 @@ msgstr "Bundler Audit (Ruby)"
 #: src/components/WelcomeDialog.tsx:95
 #: src/pages/ResultsPage.tsx:1658
 #: src/pages/ResultsPage.tsx:1932
-#: src/pages/ResultsPage.tsx:6231
-#: src/pages/ResultsPage.tsx:6237
+#: src/pages/ResultsPage.tsx:6233
+#: src/pages/ResultsPage.tsx:6239
 #: src/pages/UserSettings.tsx:1065
 #: src/pages/UserSettings.tsx:1072
 #: src/pages/UserSettings.tsx:1852
@@ -488,7 +488,7 @@ msgstr "Confirm Download"
 msgid "Contains"
 msgstr "Contains"
 
-#: src/features/scans/scansSchemas.ts:444
+#: src/features/scans/scansSchemas.ts:443
 msgid "Contains one of more of the following invalid characters: space, \\, ~, ^, :, ?, *, ["
 msgstr "Contains one of more of the following invalid characters: space, \\, ~, ^, :, ?, *, ["
 
@@ -675,7 +675,7 @@ msgid "Enry Technology Discovery"
 msgstr "Enry Technology Discovery"
 
 #: src/components/StatusCell.tsx:629
-#: src/pages/ResultsPage.tsx:6059
+#: src/pages/ResultsPage.tsx:6061
 msgid "Error"
 msgstr "Error"
 
@@ -742,7 +742,7 @@ msgstr "Fetching repositories..."
 msgid "Fetching results..."
 msgstr "Fetching results..."
 
-#: src/pages/ResultsPage.tsx:6072
+#: src/pages/ResultsPage.tsx:6074
 msgid "Fetching scan results..."
 msgstr "Fetching scan results..."
 
@@ -1051,13 +1051,13 @@ msgstr "Invalid meta data field2 matcher"
 msgid "Invalid notification type"
 msgstr "Invalid notification type"
 
-#: src/features/scans/scansSchemas.ts:475
-#: src/features/scans/scansSchemas.ts:493
+#: src/features/scans/scansSchemas.ts:474
+#: src/features/scans/scansSchemas.ts:492
 msgid "Invalid path, longer than {MAX_PATH_LENGTH} characters"
 msgstr "Invalid path, longer than {MAX_PATH_LENGTH} characters"
 
-#: src/features/scans/scansSchemas.ts:474
-#: src/features/scans/scansSchemas.ts:492
+#: src/features/scans/scansSchemas.ts:473
+#: src/features/scans/scansSchemas.ts:491
 msgid "Invalid path, must be relative to repository base directory and contain valid characters"
 msgstr "Invalid path, must be relative to repository base directory and contain valid characters"
 
@@ -1075,7 +1075,7 @@ msgstr "Invalid remediation matcher"
 msgid "Invalid repository matcher"
 msgstr "Invalid repository matcher"
 
-#: src/features/search/searchSchemas.ts:131
+#: src/features/search/searchSchemas.ts:133
 msgid "Invalid repository name"
 msgstr "Invalid repository name"
 
@@ -1106,8 +1106,8 @@ msgstr "Invalid severity"
 msgid "Invalid theme value"
 msgstr "Invalid theme value"
 
-#: src/features/scans/scansSchemas.ts:420
-#: src/pages/ResultsPage.tsx:5826
+#: src/features/scans/scansSchemas.ts:421
+#: src/pages/ResultsPage.tsx:5827
 msgid "Invalid value"
 msgstr "Invalid value"
 
@@ -1244,7 +1244,7 @@ msgstr "Manage User Settings"
 msgid "Manage Users"
 msgstr "Manage Users"
 
-#: src/features/scans/scansSchemas.ts:426
+#: src/features/scans/scansSchemas.ts:427
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 
@@ -1368,7 +1368,7 @@ msgstr "Must be a future date"
 msgid "Must be a past date"
 msgstr "Must be a past date"
 
-#: src/features/search/searchSchemas.ts:143
+#: src/features/search/searchSchemas.ts:145
 msgid "Must be a valid service name [azure|bitbucket|github] or hostname"
 msgstr "Must be a valid service name [azure|bitbucket|github] or hostname"
 
@@ -1416,7 +1416,7 @@ msgid "Never"
 msgstr "Never"
 
 #: src/components/ActivityTable.tsx:735
-#: src/pages/ResultsPage.tsx:6200
+#: src/pages/ResultsPage.tsx:6202
 msgid "New Scan"
 msgstr "New Scan"
 
@@ -1425,7 +1425,7 @@ msgid "New Scan Options..."
 msgstr "New Scan Options..."
 
 #: src/components/ActivityTable.tsx:306
-#: src/pages/ResultsPage.tsx:6247
+#: src/pages/ResultsPage.tsx:6249
 msgid "New scan with these options"
 msgstr "New scan with these options"
 
@@ -1651,7 +1651,7 @@ msgstr "Organization/Repository Path"
 msgid "Overview"
 msgstr "Overview"
 
-#: src/pages/ResultsPage.tsx:6070
+#: src/pages/ResultsPage.tsx:6072
 msgid "Please wait"
 msgstr "Please wait"
 
@@ -1659,8 +1659,8 @@ msgstr "Please wait"
 msgid "Plugins"
 msgstr "Plugins"
 
+#: src/features/scans/scansSchemas.ts:452
 #: src/features/scans/scansSchemas.ts:453
-#: src/features/scans/scansSchemas.ts:454
 msgid "Positive integer"
 msgstr "Positive integer"
 
@@ -1721,7 +1721,7 @@ msgstr "Reason"
 msgid "Red"
 msgstr "Red"
 
-#: src/pages/ResultsPage.tsx:6195
+#: src/pages/ResultsPage.tsx:6197
 msgid "Refresh Scan Results"
 msgstr "Refresh Scan Results"
 
@@ -1833,8 +1833,8 @@ msgstr "Repository Match"
 msgid "Repository Path"
 msgstr "Repository Path"
 
-#: src/features/scans/scansSchemas.ts:419
-#: src/features/scans/scansSchemas.ts:423
+#: src/features/scans/scansSchemas.ts:420
+#: src/features/scans/scansSchemas.ts:424
 #: src/pages/ResultsPage.tsx:897
 #: src/pages/ResultsPage.tsx:910
 #: src/pages/SearchPage.tsx:3420
@@ -1873,7 +1873,7 @@ msgstr "Restrict user to only these repositories. Must be a subset of scopes fro
 msgid "Results"
 msgstr "Results"
 
-#: src/pages/ResultsPage.tsx:6061
+#: src/pages/ResultsPage.tsx:6063
 msgid "Results for the specified scan can not be found."
 msgstr "Results for the specified scan can not be found."
 
@@ -1937,7 +1937,7 @@ msgstr "Scan Time Match"
 msgid "Scan Warnings"
 msgstr "Scan Warnings"
 
-#: src/pages/ResultsPage.tsx:6014
+#: src/pages/ResultsPage.tsx:6016
 msgid "Scan in progress, results subject to change"
 msgstr "Scan in progress, results subject to change"
 
@@ -2088,8 +2088,8 @@ msgstr "Service account linked"
 msgid "Service account unlinked"
 msgstr "Service account unlinked"
 
-#: src/pages/ResultsPage.tsx:5824
-#: src/pages/ResultsPage.tsx:5832
+#: src/pages/ResultsPage.tsx:5825
+#: src/pages/ResultsPage.tsx:5834
 msgid "Service or org required"
 msgstr "Service or org required"
 
@@ -2170,12 +2170,12 @@ msgstr "Start Date"
 #: src/components/ActivityTable.tsx:749
 #: src/components/ActivityTable.tsx:762
 #: src/pages/MainPage.tsx:1076
-#: src/pages/ResultsPage.tsx:6214
-#: src/pages/ResultsPage.tsx:6227
+#: src/pages/ResultsPage.tsx:6216
+#: src/pages/ResultsPage.tsx:6229
 msgid "Start Scan"
 msgstr "Start Scan"
 
-#: src/pages/ResultsPage.tsx:6204
+#: src/pages/ResultsPage.tsx:6206
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
@@ -2512,7 +2512,7 @@ msgstr "User added"
 msgid "User administrator keys can manage other users"
 msgstr "User administrator keys can manage other users"
 
-#: src/pages/ResultsPage.tsx:5836
+#: src/pages/ResultsPage.tsx:5838
 msgid "User does not have access to this service"
 msgstr "User does not have access to this service"
 

@@ -10,7 +10,7 @@ export interface SystemStatus {
 }
 
 // validation schemas...
-const systemStatusSchema: Yup.SchemaOf<SystemStatus> = Yup.object()
+const systemStatusSchema: Yup.ObjectSchema<SystemStatus> = Yup.object()
 	.shape({
 		maintenance: Yup.object()
 			.shape({
