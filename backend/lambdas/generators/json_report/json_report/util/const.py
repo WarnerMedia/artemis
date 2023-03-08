@@ -3,7 +3,6 @@ Constants file
 """
 
 FORMAT_FULL = "full"
-SECRET = ["aws", "ssh", "mongo", "postgres", "redis", "urlauth", "google", "slack", "other"]
 SEVERITY = ["critical", "high", "medium", "low", "negligible", ""]
 WL_STATIC_ANALYSIS_KEYS = {"filename": str, "line": int, "type": str}
 WL_CONFIGURATION_KEYS = {"id": str}

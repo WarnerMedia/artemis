@@ -5,7 +5,7 @@ from uuid import UUID
 
 from artemisapi.validators import ValidationError
 from artemisdb.artemisdb.consts import MAX_REASON_LENGTH
-from artemisdb.artemisdb.models import ScanBatch, ScanScheduleRun
+from artemisdb.artemisdb.models import ScanBatch, ScanScheduleRun, SecretType
 from repo.util.const import (
     DEFAULT_REPORT_TYPE,
     DEFAULT_SCAN_QUERY_PARAMS,
@@ -26,7 +26,6 @@ from repo.util.const import (
     RESOURCES,
     RESULTS,
     SCAN_PARAMS,
-    SECRET,
     SEVERITY,
     WL_ALL_KEYS,
     WL_CONFIGURATION_KEYS,
@@ -172,7 +171,11 @@ class Validator:
             self._validate_params(params["severity"], SEVERITY, "Invalid severity type in query")
 
         if "secret" in params:
-            self._validate_params(params["secret"], SECRET, "Invalid secret type in query")
+            self._validate_params(
+                params["secret"],
+                SecretType.objects.all().values_list("name", flat=True),
+                "Invalid secret type in query",
+            )
 
         if "format" in params:
             self._validate_params(params["format"], FORMAT, "Invalid format type in query")
