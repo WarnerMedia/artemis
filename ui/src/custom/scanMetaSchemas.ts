@@ -15,7 +15,6 @@ export interface AppMeta {
 // validation schemas...
 const scanMetaSchema: Yup.ObjectSchema<ScanMeta> = Yup.object()
 	.shape({
-		// these can't be required (.defined()) because entire schema object is optional (see interface)
 		field1: Yup.string().nullable().defined(),
 		field2: Yup.string().nullable().defined(),
 		field3: Yup.string().nullable().defined(),
