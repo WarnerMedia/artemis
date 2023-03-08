@@ -22,7 +22,7 @@ export interface UsersResponse extends Response {
 }
 
 // validation schemas...
-const userSchema: Yup.SchemaOf<User> = Yup.object()
+const userSchema: Yup.ObjectSchema<User> = Yup.object()
 	.shape({
 		id: Yup.string(), // note: not required for schema validation b/c we add this field after validation
 		// scan_orgs field is available when fetching a single user but not a list of users

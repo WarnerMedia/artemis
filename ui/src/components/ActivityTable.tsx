@@ -122,7 +122,7 @@ interface TableState {
 	itemsPerPage: number;
 }
 
-const tableStateSchema: Yup.SchemaOf<TableState> = Yup.object()
+const tableStateSchema: Yup.ObjectSchema<TableState> = Yup.object()
 	.shape({
 		autoReload: Yup.boolean().defined(),
 		showMyScans: Yup.boolean().defined(),

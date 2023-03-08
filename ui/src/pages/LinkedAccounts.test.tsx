@@ -1,4 +1,4 @@
-import { render, screen, within } from "test-utils";
+import { getDefaultNormalizer, render, screen, within } from "test-utils";
 import { LinkedAccounts } from "./UserSettings";
 jest.mock("react-redux", () => ({
 	...(jest.requireActual("react-redux") as any),
@@ -113,7 +113,16 @@ describe("LinkedAccounts component", () => {
 
 		const linkedLabel = screen.getByText(/Linked:/);
 		const linkedRe = new RegExp(formatDate(linkDate, "long"));
-		expect(within(linkedLabel).getByText(linkedRe)).toBeInTheDocument();
+		// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+		// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+		// using: replace(/\s+/g, ' ')
+		// causing the match to break
+		// so don't collapseWhitespace in the normalizer for comparing dates here
+		expect(
+			within(linkedLabel).getByText(linkedRe, {
+				normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+			})
+		).toBeInTheDocument();
 	});
 
 	it("shows a disabled unlinking button while account unlinking", () => {

@@ -99,7 +99,7 @@ export interface RequestMeta {
 export interface Client extends AxiosRequestConfig {
 	data?: any;
 	meta?: RequestMeta;
-	schema?: Yup.SchemaOf<any>;
+	schema?: Yup.ObjectSchema<any>;
 	customConfig?: AxiosRequestConfig;
 }
 

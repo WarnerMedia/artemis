@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from "test-utils";
+import {
+	getDefaultNormalizer,
+	render,
+	screen,
+	waitFor,
+	within,
+} from "test-utils";
 import { Settings } from "luxon";
 import { formatDate } from "utils/formatters";
 jest.mock("react-redux", () => ({
@@ -278,17 +284,30 @@ describe("ResultsPage component", () => {
 			expect(queudDateElapsed).toBeInTheDocument();
 			if (queudDateElapsed.parentElement) {
 				const queued = new RegExp(formatDate(scan.timestamps.queued, "long"));
+				// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+				// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+				// using: replace(/\s+/g, ' ')
+				// causing the match to break
+				// so don't collapseWhitespace in the normalizer for comparing dates here
 				expect(
-					within(queudDateElapsed.parentElement).getByText(queued)
+					within(queudDateElapsed.parentElement).getByText(queued, {
+						normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+					})
 				).toBeInTheDocument();
 			}
 
 			const startDate = await screen.findByText(/^Start Date$/);
 			expect(startDate).toBeInTheDocument();
 			if (startDate.parentElement) {
+				// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+				// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+				// using: replace(/\s+/g, ' ')
+				// causing the match to break
+				// so don't collapseWhitespace in the normalizer for comparing dates here
 				expect(
 					within(startDate.parentElement).getByText(
-						formatDate(scan.timestamps.start, "long")
+						formatDate(scan.timestamps.start, "long"),
+						{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
 					)
 				).toBeInTheDocument();
 			}
@@ -299,8 +318,15 @@ describe("ResultsPage component", () => {
 			expect(endDateElapsed).toBeInTheDocument();
 			if (endDateElapsed.parentElement) {
 				const end = new RegExp(formatDate(scan.timestamps.end, "long"));
+				// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+				// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+				// using: replace(/\s+/g, ' ')
+				// causing the match to break
+				// so don't collapseWhitespace in the normalizer for comparing dates here
 				expect(
-					within(endDateElapsed.parentElement).getByText(end)
+					within(endDateElapsed.parentElement).getByText(end, {
+						normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+					})
 				).toBeInTheDocument();
 			}
 		});

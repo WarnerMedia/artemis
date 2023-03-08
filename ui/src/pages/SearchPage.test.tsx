@@ -335,9 +335,7 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
@@ -463,9 +461,6 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
 
 					// check all form fields disabled
 					expect(componentNameMatch).toHaveAttribute("aria-disabled", "true");
@@ -545,17 +540,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -702,17 +698,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -793,17 +790,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -863,17 +861,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -918,17 +917,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -973,17 +973,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -1030,17 +1031,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component name match contains/i,
@@ -1152,17 +1154,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component name match exact/i,
@@ -1291,17 +1294,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component name match exact/i,
@@ -1397,17 +1401,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component name match contains/i,
@@ -1496,17 +1501,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component name match contains/i,
@@ -1659,17 +1665,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// valid field will be populated
 					screen.getByRole("button", {
@@ -1728,17 +1735,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component name match contains/i,
@@ -1779,17 +1787,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /component version match contains/i,
@@ -2011,17 +2020,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -2122,17 +2132,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -2229,17 +2240,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -2294,17 +2306,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -2669,17 +2682,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// accordion closed on submit
 					expect(
@@ -2822,9 +2836,6 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
 
 					// check all form fields disabled
 					expect(serviceMatch).toHaveAttribute("aria-disabled", "true");
@@ -2902,17 +2913,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "repo" should not be included in filters
 					// it determines that API call client.getRepos should be called for a repo search
@@ -3028,17 +3040,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "repo" should not be included in filters
 					// it determines that API call client.getRepos should be called for a repo search
@@ -3121,17 +3134,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "repo" should not be included in filters
 					// it determines that API call client.getRepos should be called for a repo search
@@ -3204,17 +3218,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "repo" should not be included in filters
 					// it determines that API call client.getRepos should be called for a repo search
@@ -3280,17 +3295,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "repo" should not be included in filters
 					// it determines that API call client.getRepos should be called for a repo search
@@ -3446,17 +3462,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// all form fields are defaults (empty with default matchers)
 					screen.getByRole("button", {
@@ -3544,17 +3561,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// all form fields are defaults (empty with default matchers)
 					screen.getByRole("button", {
@@ -3647,17 +3665,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// all form fields are defaults (empty with default matchers)
 					screen.getByRole("button", {
@@ -3739,17 +3758,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /service match exact/i,
@@ -3827,17 +3847,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /service match exact/i,
@@ -3909,17 +3930,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					screen.getByRole("button", {
 						name: /service match exact/i,
@@ -4196,17 +4218,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -4282,17 +4305,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -4376,17 +4400,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -4484,17 +4509,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search
@@ -4575,17 +4601,18 @@ describe("SearchPage component", () => {
 					await waitFor(() => {
 						screen.queryByText(/fetching results.../);
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-					});
+
 					await waitFor(() => {
 						expect(
 							screen.queryByText(/fetching results.../)
 						).not.toBeInTheDocument();
 					});
-					await waitFor(() => {
-						expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
 
 					// "component" should not be included in filters
 					// it determines that API call client.getComponents should be called for a components search

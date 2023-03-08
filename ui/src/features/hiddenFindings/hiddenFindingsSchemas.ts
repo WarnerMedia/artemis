@@ -128,11 +128,13 @@ const hiddenFindingValueVulnRawSchema = Yup.object()
 	})
 	.defined();
 
-export const hiddenFindingSchema: Yup.SchemaOf<HiddenFinding> = Yup.object()
+// not setting this schema as ObjectSchema<HiddenFinding> as type checking doesn't seem to be able to handle
+// multiple type variants for 'value' field
+export const hiddenFindingSchema = Yup.object()
 	.shape({
 		id: Yup.string(), // note: not required for schema validation b/c we add this field after validation
 		type: Yup.string().oneOf(HiddenFindingTypeValues),
-		value: Yup.object().when("type", (type: HiddenFindingType) => {
+		value: Yup.object().when("type", ([type], schema) => {
 			switch (type) {
 				case "static_analysis":
 					return hiddenFindingValueAnalysisSchema;
@@ -144,6 +146,9 @@ export const hiddenFindingSchema: Yup.SchemaOf<HiddenFinding> = Yup.object()
 					return hiddenFindingValueVulnSchema;
 				case "vulnerability_raw":
 					return hiddenFindingValueVulnRawSchema;
+				default:
+					// we shouldn't reach this case because type is verified above
+					return schema.oneOf(HiddenFindingTypeValues);
 			}
 		}),
 		expires: Yup.string().nullable(),

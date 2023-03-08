@@ -19,7 +19,7 @@ export interface KeysResponse extends Response {
 }
 
 // validation schemas...
-const keysSchema: Yup.SchemaOf<Key> = Yup.object()
+const keysSchema: Yup.ObjectSchema<Key> = Yup.object()
 	.shape({
 		id: Yup.string(), // note: not required for schema validation b/c we add this field after validation
 		name: Yup.string().defined(),

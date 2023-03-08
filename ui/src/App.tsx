@@ -234,8 +234,58 @@ const ThemedApp = () => {
 						lg: 1280, // lg breakpoint was 1280 in MUIv4 and is 1200 in MUIv5, reset back to 1280 so items in Container don't start wrapping
 					},
 				},
+				components: {
+					MuiCssBaseline: {
+						styleOverrides: {
+							body: {
+								// thumb track
+								scrollbarColor: prefersDarkMode
+									? `${theme.palette.grey[600]} ${theme.palette.grey[900]}`
+									: `${theme.palette.grey[400]} ${theme.palette.grey[50]}`,
+								"&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+									backgroundColor: prefersDarkMode
+										? theme.palette.grey[900]
+										: theme.palette.grey[50],
+								},
+								"&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+									borderRadius: 8,
+									backgroundColor: prefersDarkMode
+										? theme.palette.grey[600]
+										: theme.palette.grey[400],
+									minHeight: 24,
+									border: prefersDarkMode
+										? `3px solid ${theme.palette.grey[900]}`
+										: `3px solid ${theme.palette.grey[50]}`,
+								},
+								"&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus":
+									{
+										backgroundColor: prefersDarkMode
+											? theme.palette.grey[500]
+											: theme.palette.grey[600],
+									},
+								"&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active":
+									{
+										backgroundColor: prefersDarkMode
+											? theme.palette.grey[500]
+											: theme.palette.grey[600],
+									},
+								"&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
+									{
+										backgroundColor: prefersDarkMode
+											? theme.palette.grey[500]
+											: theme.palette.grey[600],
+									},
+								"&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
+									backgroundColor: prefersDarkMode
+										? theme.palette.grey[900]
+										: theme.palette.grey[50],
+								},
+							},
+						},
+					},
+				},
 			}),
-		[theme]
+		[theme, prefersDarkMode]
 	);
 
 	// TODO i18n: Date/Time pickers have changed the way they handle i18n

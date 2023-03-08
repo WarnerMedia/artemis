@@ -562,7 +562,7 @@ const useStyles = makeStyles()((theme) => ({
 // @prefix - prefix to differentiate hash parameters for various result types, e.g., "vn" for vulnerability. Each parameter in the schema should begin with this prefix
 // @filters - FilterDef object to populate with validated data
 export const getResultFilters = (
-	schema: Yup.SchemaOf<any>,
+	schema: Yup.ObjectSchema<any>,
 	prefix: string = "",
 	filters: FilterDef
 ) => {
@@ -891,13 +891,13 @@ export const HiddenFindingDialog = (props: {
 		type: Yup.string(),
 		secretString: Yup.string().when(
 			["type", "hideFor"],
-			(type: any, hideFor: any) => {
+			([type, hideFor], schema) => {
 				if ((type === "secret" || type === "secret_raw") && hideFor === "all") {
-					return Yup.string()
+					return schema
 						.required(i18n._(t`Required`))
 						.min(4, i18n._(t`Must be 4 or more characters`));
 				}
-				return Yup.string();
+				return schema;
 			}
 		),
 		expires: Yup.date()
@@ -5820,16 +5820,18 @@ const ResultsPage = () => {
 				.trim()
 				.when("service", {
 					is: (service: string) => service && service.length > 0,
-					then: Yup.string(),
-					otherwise: Yup.string().required(i18n._(t`Service or org required`)),
+					then: (schema) => schema,
+					otherwise: (schema) =>
+						schema.required(i18n._(t`Service or org required`)),
 				})
 				.oneOf(currentUser?.scan_orgs ?? [], i18n._(t`Invalid value`)),
 			service: Yup.string()
 				.trim()
 				.when("org", {
 					is: (org: string) => org && org.length > 0,
-					then: Yup.string(),
-					otherwise: Yup.string().required(i18n._(t`Service or org required`)),
+					then: (schema) => schema,
+					otherwise: (schema) =>
+						schema.required(i18n._(t`Service or org required`)),
 				})
 				.test(
 					"userScanOrg",
@@ -5855,7 +5857,7 @@ const ResultsPage = () => {
 				.when("org", {
 					// if org does not contain /Org suffix, then repo must contain Org/ Prefix
 					is: (org: string) => org && !org.includes("/"),
-					then: Yup.string().matches(/\//),
+					then: (schema) => schema.matches(/\//),
 				}),
 			id: Yup.string()
 				.defined()

@@ -1,5 +1,11 @@
 import { DateTime, Settings } from "luxon";
-import { render, screen, waitFor, within } from "test-utils";
+import {
+	getDefaultNormalizer,
+	render,
+	screen,
+	waitFor,
+	within,
+} from "test-utils";
 import { HiddenFindingDialog } from "./ResultsPage";
 import {
 	analysisRow,
@@ -1152,9 +1158,15 @@ describe("HiddenFindingDialog component", () => {
 				name: findingLabelHiddenDate,
 			});
 			expect(createdDate).toBeInTheDocument();
+			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+			// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+			// using: replace(/\s+/g, ' ')
+			// causing the match to break
+			// so don't collapseWhitespace in the normalizer for comparing dates here
 			expect(
 				within(createdDate).getByText(
-					formatDate(findingSecretRawRow.hiddenFindings[0].created, "long")
+					formatDate(findingSecretRawRow.hiddenFindings[0].created, "long"),
+					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
 				)
 			).toBeInTheDocument();
 
@@ -1278,9 +1290,15 @@ describe("HiddenFindingDialog component", () => {
 				name: findingLabelHiddenDate,
 			});
 			expect(createdDate).toBeInTheDocument();
+			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+			// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+			// using: replace(/\s+/g, ' ')
+			// causing the match to break
+			// so don't collapseWhitespace in the normalizer for comparing dates here
 			expect(
 				within(createdDate).getByText(
-					formatDate(findingAnalysisRow.hiddenFindings[0].created, "long")
+					formatDate(findingAnalysisRow.hiddenFindings[0].created, "long"),
+					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
 				)
 			).toBeInTheDocument();
 
@@ -1298,9 +1316,15 @@ describe("HiddenFindingDialog component", () => {
 				name: findingLabelUpdatedDate,
 			});
 			expect(updatedDate).toBeInTheDocument();
+			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+			// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+			// using: replace(/\s+/g, ' ')
+			// causing the match to break
+			// so don't collapseWhitespace in the normalizer for comparing dates here
 			expect(
 				within(updatedDate).getByText(
-					formatDate(findingAnalysisRow.hiddenFindings[0].updated, "long")
+					formatDate(findingAnalysisRow.hiddenFindings[0].updated, "long"),
+					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
 				)
 			).toBeInTheDocument();
 

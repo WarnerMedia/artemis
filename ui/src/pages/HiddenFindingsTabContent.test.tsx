@@ -1,5 +1,11 @@
 import queryString from "query-string";
-import { render, screen, waitFor, within } from "test-utils";
+import {
+	getDefaultNormalizer,
+	render,
+	screen,
+	waitFor,
+	within,
+} from "test-utils";
 import { FILTER_PREFIX_HIDDEN, HiddenFindingsTabContent } from "./ResultsPage";
 import {
 	mockHFRows003,
@@ -258,8 +264,16 @@ describe("HiddenFindingsTabContent component", () => {
 				// don't try to find blank severities
 				if (finding[0].expires) {
 					const dt = formatDate(finding[0].expires);
+					// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+					// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+					// using: replace(/\s+/g, ' ')
+					// causing the match to break
+					// so don't collapseWhitespace in the normalizer for comparing dates here
 					expect(
-						within(cols[4]).getByText(dt, { exact: false })
+						within(cols[4]).getByText(dt, {
+							exact: false,
+							normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+						})
 					).toBeInTheDocument(); // col 5 = expires
 				}
 				r += 1;
@@ -281,8 +295,16 @@ describe("HiddenFindingsTabContent component", () => {
 				// don't try to find blank severities
 				if (finding[0].expires) {
 					const dt = formatDate(finding[0].expires);
+					// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
+					// the collapseWhitespace option in the text normalizer was converting this to ' ' (space)
+					// using: replace(/\s+/g, ' ')
+					// causing the match to break
+					// so don't collapseWhitespace in the normalizer for comparing dates here
 					expect(
-						within(cols[4]).getByText(dt, { exact: false })
+						within(cols[4]).getByText(dt, {
+							exact: false,
+							normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+						})
 					).toBeInTheDocument(); // col 5 = expires
 				}
 				r += 1;
