@@ -1,0 +1,36 @@
+name: UI Unit Tests
+
+on:
+  pull_request:
+    paths:
+      - "ui/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      UI_PATH: ./ui
+      HADOLINT_URL: https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
+      NPM_VERSION: 9
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # actions/checkout@v3.3.0
+
+      - name: Setup node from node version file
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # actions/setup-node@v3.6.0
+        with:
+          node-version-file: "${{ env.UI_PATH }}/.nvmrc"
+
+      - name: Set up the npm version
+        run: npm install --global npm@$NPM_VERSION
+
+      - name: Install npm packages
+        run: make -C $UI_PATH install
+
+      - name: Install hadolinter and check sha
+        run: wget --quiet -O ./hadolint $HADOLINT_URL && sha512sum -c hadolint.sha512 && chmod 0766 ./hadolint
+        working-directory: ${{ env.UI_PATH }}
+
+      - name: Run precommit checks (linting & testing etc)
+        run: make -C $UI_PATH precommit
