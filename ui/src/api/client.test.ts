@@ -286,7 +286,7 @@ describe("api client", () => {
 				expect.objectContaining({
 					data: expect.objectContaining({
 						categories: categories,
-						plugins: ["-truffle_hog"],
+						plugins: ["-ghas_secrets", "-truffle_hog"],
 					}),
 					url: `${data.vcsOrg}/${data.repo}`,
 				})

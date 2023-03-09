@@ -60,7 +60,7 @@ msgstr "API keys can not be modified after creation, they can only be removed an
 msgid "ARTEMIS"
 msgstr "ARTEMIS"
 
-#: src/app/scanPlugins.ts:42
+#: src/app/scanPlugins.ts:48
 msgid "AWS CloudFormation Linter"
 msgstr "AWS CloudFormation Linter"
 
@@ -166,7 +166,7 @@ msgstr "Any Meta Data Field"
 msgid "Any Qualified Scan"
 msgstr "Any Qualified Scan"
 
-#: src/app/scanPlugins.ts:133
+#: src/app/scanPlugins.ts:139
 msgid "Aqua CLI Scanner (Docker)"
 msgstr "Aqua CLI Scanner (Docker)"
 
@@ -217,7 +217,7 @@ msgstr "Back"
 msgid "Back to Scans"
 msgstr "Back to Scans"
 
-#: src/app/scanPlugins.ts:47
+#: src/app/scanPlugins.ts:53
 msgid "Bandit (Python)"
 msgstr "Bandit (Python)"
 
@@ -225,7 +225,7 @@ msgstr "Bandit (Python)"
 msgid "Base Images"
 msgstr "Base Images"
 
-#: src/app/scanPlugins.ts:120
+#: src/app/scanPlugins.ts:126
 msgid "Base Images (Docker)"
 msgstr "Base Images (Docker)"
 
@@ -253,7 +253,7 @@ msgstr "Before"
 msgid "Blue"
 msgstr "Blue"
 
-#: src/app/scanPlugins.ts:52
+#: src/app/scanPlugins.ts:58
 msgid "Brakeman (Ruby)"
 msgstr "Brakeman (Ruby)"
 
@@ -266,7 +266,7 @@ msgstr "Branch"
 msgid "Branch Name (optional)"
 msgstr "Branch Name (optional)"
 
-#: src/app/scanPlugins.ts:138
+#: src/app/scanPlugins.ts:144
 msgid "Bundler Audit (Ruby)"
 msgstr "Bundler Audit (Ruby)"
 
@@ -299,7 +299,7 @@ msgstr "Category"
 msgid "Category:"
 msgstr "Category:"
 
-#: src/app/scanPlugins.ts:57
+#: src/app/scanPlugins.ts:63
 msgid "Checkov (IaC)"
 msgstr "Checkov (IaC)"
 
@@ -605,7 +605,7 @@ msgstr "Description must be less than {DESCRIPTION_LENGTH} characters"
 msgid "Details"
 msgstr "Details"
 
-#: src/app/scanPlugins.ts:62
+#: src/app/scanPlugins.ts:68
 msgid "Detekt (Kotlin)"
 msgstr "Detekt (Kotlin)"
 
@@ -641,7 +641,7 @@ msgstr "Download as JSON"
 msgid "Duplicate scope"
 msgstr "Duplicate scope"
 
-#: src/app/scanPlugins.ts:67
+#: src/app/scanPlugins.ts:73
 msgid "ESlint (JavaScript)"
 msgstr "ESlint (JavaScript)"
 
@@ -670,7 +670,7 @@ msgstr "End"
 msgid "End Date / Scan Time Elapsed"
 msgstr "End Date / Scan Time Elapsed"
 
-#: src/app/scanPlugins.ts:125
+#: src/app/scanPlugins.ts:131
 msgid "Enry Technology Discovery"
 msgstr "Enry Technology Discovery"
 
@@ -784,15 +784,15 @@ msgstr "File path must be less than {FILEPATH_LENGTH} characters"
 msgid "Filter Results"
 msgstr "Filter Results"
 
-#: src/app/scanPlugins.ts:82
+#: src/app/scanPlugins.ts:88
 msgid "FindSecBugs (Java 13)"
 msgstr "FindSecBugs (Java 13)"
 
-#: src/app/scanPlugins.ts:72
+#: src/app/scanPlugins.ts:78
 msgid "FindSecBugs (Java 7)"
 msgstr "FindSecBugs (Java 7)"
 
-#: src/app/scanPlugins.ts:77
+#: src/app/scanPlugins.ts:83
 msgid "FindSecBugs (Java 8)"
 msgstr "FindSecBugs (Java 8)"
 
@@ -840,11 +840,15 @@ msgstr "Generating JSON File"
 msgid "Generating JSON File..."
 msgstr "Generating JSON File..."
 
-#: src/app/scanPlugins.ts:29
+#: src/app/scanPlugins.ts:35
 msgid "Git Secrets"
 msgstr "Git Secrets"
 
-#: src/app/scanPlugins.ts:87
+#: src/app/scanPlugins.ts:30
+msgid "GitHub Advanced Security Secrets"
+msgstr "GitHub Advanced Security Secrets"
+
+#: src/app/scanPlugins.ts:93
 msgid "GoSec (Golang)"
 msgstr "GoSec (Golang)"
 
@@ -1391,7 +1395,7 @@ msgstr "Must be between 1-512 characters"
 msgid "Must have at least 1 item"
 msgstr "Must have at least 1 item"
 
-#: src/app/scanPlugins.ts:143
+#: src/app/scanPlugins.ts:149
 msgid "NPM Audit (NodeJS)"
 msgstr "NPM Audit (NodeJS)"
 
@@ -1538,7 +1542,7 @@ msgstr "No vulnerabilities detected"
 msgid "No vulnerabilities found"
 msgstr "No vulnerabilities found"
 
-#: src/app/scanPlugins.ts:92
+#: src/app/scanPlugins.ts:98
 msgid "NodeJS Scan (NodeJS)"
 msgstr "NodeJS Scan (NodeJS)"
 
@@ -1600,7 +1604,7 @@ msgstr "Not specified"
 msgid "OK"
 msgstr "OK"
 
-#: src/app/scanPlugins.ts:148
+#: src/app/scanPlugins.ts:154
 msgid "OWASP Check (Java)"
 msgstr "OWASP Check (Java)"
 
@@ -1685,7 +1689,7 @@ msgstr "Prism"
 msgid "Purple"
 msgstr "Purple"
 
-#: src/app/scanPlugins.ts:97
+#: src/app/scanPlugins.ts:103
 msgid "Pylint (Python)"
 msgstr "Pylint (Python)"
 
@@ -2020,7 +2024,7 @@ msgstr "Search for Components, Licenses, and Repositories"
 msgid "Secret"
 msgstr "Secret"
 
-#: src/app/scanPlugins.ts:19
+#: src/app/scanPlugins.ts:20
 msgid "Secret Detection"
 msgstr "Secret Detection"
 
@@ -2059,7 +2063,7 @@ msgstr "Select a service or enter a value to search for"
 msgid "Select date"
 msgstr "Select date"
 
-#: src/app/scanPlugins.ts:153
+#: src/app/scanPlugins.ts:159
 msgid "Sensio Security Check (PHP)"
 msgstr "Sensio Security Check (PHP)"
 
@@ -2112,7 +2116,7 @@ msgstr "Severity"
 msgid "Severity:"
 msgstr "Severity:"
 
-#: src/app/scanPlugins.ts:102
+#: src/app/scanPlugins.ts:108
 msgid "Shell Check (Shell)"
 msgstr "Shell Check (Shell)"
 
@@ -2132,7 +2136,7 @@ msgstr "Show only my scans"
 msgid "Show {label} plugins"
 msgstr "Show {label} plugins"
 
-#: src/app/scanPlugins.ts:157
+#: src/app/scanPlugins.ts:163
 msgid "Snyk"
 msgstr "Snyk"
 
@@ -2140,7 +2144,7 @@ msgstr "Snyk"
 msgid "Snyk Vulnerability Plugin"
 msgstr "Snyk Vulnerability Plugin"
 
-#: src/app/scanPlugins.ts:23
+#: src/app/scanPlugins.ts:24
 msgid "Software Bill of Materials"
 msgstr "Software Bill of Materials"
 
@@ -2183,7 +2187,7 @@ msgstr "Start a new scan using the same options used in this scan?<0/>Initiating
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will reload this page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will reload this page to display scan progress."
 
-#: src/app/scanPlugins.ts:20
+#: src/app/scanPlugins.ts:21
 #: src/pages/ResultsPage.tsx:724
 #: src/pages/ResultsPage.tsx:2366
 #: src/pages/ResultsPage.tsx:2458
@@ -2208,11 +2212,11 @@ msgstr "String to exclude from secret findings (future scans only)"
 msgid "Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 msgstr "Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 
-#: src/app/scanPlugins.ts:107
+#: src/app/scanPlugins.ts:113
 msgid "SwiftLint (Swift)"
 msgstr "SwiftLint (Swift)"
 
-#: src/app/scanPlugins.ts:112
+#: src/app/scanPlugins.ts:118
 msgid "TFLint (Terraform)"
 msgstr "TFLint (Terraform)"
 
@@ -2232,7 +2236,7 @@ msgstr "Teal"
 msgid "Technology"
 msgstr "Technology"
 
-#: src/app/scanPlugins.ts:22
+#: src/app/scanPlugins.ts:23
 msgid "Technology Inventory"
 msgstr "Technology Inventory"
 
@@ -2324,11 +2328,11 @@ msgstr "To proceed, click “I Acknowledge\" below."
 msgid "Top"
 msgstr "Top"
 
-#: src/app/scanPlugins.ts:159
+#: src/app/scanPlugins.ts:165
 msgid "Trivy (Container Images)"
 msgstr "Trivy (Container Images)"
 
-#: src/app/scanPlugins.ts:34
+#: src/app/scanPlugins.ts:40
 msgid "Truffle Hog"
 msgstr "Truffle Hog"
 
@@ -2539,11 +2543,11 @@ msgstr "Users"
 msgid "VCS/Org required"
 msgstr "VCS/Org required"
 
-#: src/app/scanPlugins.ts:172
+#: src/app/scanPlugins.ts:178
 msgid "Veracode SBOM"
 msgstr "Veracode SBOM"
 
-#: src/app/scanPlugins.ts:164
+#: src/app/scanPlugins.ts:170
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 
@@ -2629,7 +2633,7 @@ msgstr "Vulnerabilities (Raw)"
 msgid "Vulnerability"
 msgstr "Vulnerability"
 
-#: src/app/scanPlugins.ts:21
+#: src/app/scanPlugins.ts:22
 msgid "Vulnerability Detection"
 msgstr "Vulnerability Detection"
 
