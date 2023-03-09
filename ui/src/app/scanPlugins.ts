@@ -2,6 +2,7 @@ import { t } from "@lingui/macro";
 import { capitalize } from "utils/formatters";
 import {
 	APP_AQUA_ENABLED,
+	APP_GHAS_ENABLED,
 	APP_SNYK_ENABLED,
 	APP_VERACODE_ENABLED,
 } from "app/globals";
@@ -25,6 +26,11 @@ export const GROUP_SBOM = t`Software Bill of Materials`;
 // all plugin information (enabled & disabled)
 // keys should match apiName
 export const secretPluginsKeys: ScanPluginKeys = {
+	ghas_secrets: {
+		displayName: t`GitHub Advanced Security Secrets`,
+		apiName: "ghas_secrets",
+		group: GROUP_SECRETS,
+	},
 	gitsecrets: {
 		displayName: t`Git Secrets`,
 		apiName: "gitsecrets",
@@ -185,6 +191,10 @@ export const pluginsDisabled: { [name: string]: boolean } = {};
 
 if (!APP_AQUA_ENABLED) {
 	pluginsDisabled["aqua_cli_scanner"] = true;
+}
+
+if (!APP_GHAS_ENABLED) {
+	pluginsDisabled["ghas_secrets"] = true;
 }
 
 if (APP_SNYK_ENABLED) {

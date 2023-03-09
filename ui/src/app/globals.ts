@@ -69,8 +69,13 @@ export const APP_EXPORT_CLASSIFICATION: string =
 
 export const APP_AQUA_ENABLED: boolean =
 	process.env.REACT_APP_AQUA_ENABLED === "true";
+
+export const APP_GHAS_ENABLED: boolean =
+	process.env.REACT_APP_GHAS_ENABLED === "true";
+
 export const APP_SNYK_ENABLED: boolean =
 	process.env.REACT_APP_SNYK_ENABLED === "true";
+
 export const APP_VERACODE_ENABLED: boolean =
 	process.env.REACT_APP_VERACODE_ENABLED === "true";
 
@@ -116,6 +121,7 @@ const AppGlobals = {
 	PREFIX_GHSA,
 	PREFIX_NVD,
 	APP_AQUA_ENABLED,
+	APP_GHAS_ENABLED,
 	APP_SNYK_ENABLED,
 	APP_VERACODE_ENABLED,
 	APP_DEV_REQUEST_DELAY,
