@@ -49,6 +49,7 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                 passing = finding.get("pass", False)
 
                 item = {
+                    "id": id,  # Needed for checking against the allow list
                     "name": name,
                     "description": description,
                     "severity": severity,
@@ -59,13 +60,14 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                     and severity in filtered_severities
                     and not allowlisted_configuration(item, allow_list)
                 ):
+                    del item["id"]  # Not needed anymore and is redundant to include
                     configuration[id] = item
                     summary[severity] += 1
 
     if plugin is _empty:
-        # Loop of configuration plugins never ran so there were no configuration plugin results. In this case the summary
-        # should be None to indicate that there were no configuration results instead of that there were configuration results
-        # that found no configuration items.
+        # Loop of configuration plugins never ran so there were no configuration plugin results. In this case the
+        # summary should be None to indicate that there were no configuration results instead of that there were
+        # configuration results that found no configuration items.
         summary = None
 
     return PLUGIN_RESULTS(configuration, errors, True, summary)
