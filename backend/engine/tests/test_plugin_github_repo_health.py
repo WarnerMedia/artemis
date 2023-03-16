@@ -107,6 +107,18 @@ for check in CHECK_RESULT_ALL_FAIL:
 CHECK_RESULT_ONE_FAIL = copy.deepcopy(CHECK_RESULT_ALL_SUCCEED)
 CHECK_RESULT_ONE_FAIL[0]["pass"] = False
 
+EVENT_INFO_ALL_SUCCEED = {}
+for check in CHECK_RESULT_ALL_SUCCEED:
+    EVENT_INFO_ALL_SUCCEED[check["id"]] = copy.deepcopy(check)
+    EVENT_INFO_ALL_SUCCEED[check["id"]]["hash"] = "abc123"
+
+EVENT_INFO_ALL_FAIL = copy.deepcopy(EVENT_INFO_ALL_SUCCEED)
+for id in EVENT_INFO_ALL_FAIL:
+    EVENT_INFO_ALL_FAIL[id]["pass"] = False
+
+EVENT_INFO_ONE_FAIL = copy.deepcopy(EVENT_INFO_ALL_SUCCEED)
+EVENT_INFO_ONE_FAIL["github_branch_commit_signing"]["pass"] = False
+
 
 class TestGithubRepoHealth(unittest.TestCase):
     @patch.object(main.Github, "get_client_from_token")
@@ -122,6 +134,7 @@ class TestGithubRepoHealth(unittest.TestCase):
     ):
         mock_github_app.return_value.get_installation_token.return_value = GH_TOKEN
         mock_checker.return_value.run.return_value = CHECK_RESULT_ALL_SUCCEED
+        mock_get_client_from_token.return_value.get_branch_hash.return_value = "abc123"
 
         expected_result = {
             "success": True,
@@ -130,6 +143,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": [],
             "alerts": [],
             "debug": [],
+            "event_info": EVENT_INFO_ALL_SUCCEED,
         }
         result = main.run_repo_health(ARGS_VALID)
 
@@ -154,6 +168,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": [],
             "alerts": [],
             "debug": [],
+            "event_info": {},
         }
         result = main.run_repo_health(ARGS_NOT_GITHUB)
 
@@ -172,6 +187,7 @@ class TestGithubRepoHealth(unittest.TestCase):
     ):
         mock_github_app.return_value.get_installation_token.return_value = GH_TOKEN
         mock_checker.return_value.run.return_value = CHECK_RESULT_ALL_SUCCEED
+        mock_get_client_from_token.return_value.get_branch_hash.return_value = "abc123"
 
         expected_result = {
             "success": True,
@@ -180,6 +196,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": [],
             "alerts": [],
             "debug": [],
+            "event_info": EVENT_INFO_ALL_SUCCEED,
         }
         result = main.run_repo_health(ARGS_VALID)
 
@@ -198,6 +215,7 @@ class TestGithubRepoHealth(unittest.TestCase):
     ):
         mock_github_app.return_value.get_installation_token.return_value = GH_TOKEN
         mock_checker.return_value.run.return_value = CHECK_RESULT_ONE_FAIL
+        mock_get_client_from_token.return_value.get_branch_hash.return_value = "abc123"
 
         expected_result = {
             "success": False,
@@ -206,6 +224,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": [],
             "alerts": [],
             "debug": [],
+            "event_info": EVENT_INFO_ONE_FAIL,
         }
         result = main.run_repo_health(ARGS_VALID)
 
@@ -224,6 +243,7 @@ class TestGithubRepoHealth(unittest.TestCase):
     ):
         mock_github_app.return_value.get_installation_token.return_value = GH_TOKEN
         mock_checker.return_value.run.return_value = CHECK_RESULT_ALL_FAIL
+        mock_get_client_from_token.return_value.get_branch_hash.return_value = "abc123"
 
         expected_result = {
             "success": False,
@@ -232,6 +252,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": [],
             "alerts": [],
             "debug": [],
+            "event_info": EVENT_INFO_ALL_FAIL,
         }
         result = main.run_repo_health(ARGS_VALID)
 
@@ -258,6 +279,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": ["Failed to authenticate to Github"],
             "alerts": [],
             "debug": [],
+            "event_info": {},
         }
         result = main.run_repo_health(ARGS_VALID)
 
@@ -276,6 +298,7 @@ class TestGithubRepoHealth(unittest.TestCase):
     ):
         mock_github_app.return_value.get_installation_token.return_value = GH_TOKEN
         mock_checker.return_value.run.return_value = CHECK_RESULT_ALL_SUCCEED
+        mock_get_client_from_token.return_value.get_branch_hash.return_value = "abc123"
 
         expected_result = {
             "success": True,
@@ -284,6 +307,7 @@ class TestGithubRepoHealth(unittest.TestCase):
             "errors": [],
             "alerts": [f"No config found for 'github/{ORG}/{REPO}'. Using default config"],
             "debug": [],
+            "event_info": EVENT_INFO_ALL_SUCCEED,
         }
         result = main.run_repo_health(ARGS_NO_CONFIG)
 
