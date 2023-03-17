@@ -1555,6 +1555,8 @@ describe("SearchPage component", () => {
 
 					// validate all vuln plugins unchecked
 					expect(categoryCheckbox).not.toBeChecked();
+					// expand accordion to check individual plugins
+					await user.click(pluginAccordion);
 
 					// ensure all plugins unchecked
 					pluginCatalog[category].plugins.forEach((plugin) => {

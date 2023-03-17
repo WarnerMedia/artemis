@@ -20,6 +20,7 @@ describe("OverviewTabContent", () => {
 			isDisabledSecrets: false,
 			isDisabledInventory: false,
 			isDisabledHFs: false,
+			isDisabledConfig: false,
 		};
 
 		render(
@@ -58,6 +59,7 @@ describe("OverviewTabContent", () => {
 			isDisabledSecrets: true,
 			isDisabledInventory: true,
 			isDisabledHFs: false,
+			isDisabledConfig: false,
 		};
 
 		render(

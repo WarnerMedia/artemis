@@ -1,36 +1,41 @@
 import { RootState } from "app/rootReducer";
+import { RowDef } from "components/EnhancedTable";
 import { sampleMetaData2, sampleMetaData3, sampleMetaData4, sampleMetaData5, sampleMetaData6 } from "custom/sampleMetaData";
+import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
+import { AnalysisReport } from "features/scans/scansSchemas";
+import { User } from "features/users/usersSchemas";
 
+// Palette
 export const mockColors = [
-	{background: "#9C27B0", text: "#fff"},
-	{background: "#9E9E9E", text: "#fff"},
-	{background: "#F44336", text: "#fff"},
-	{background: "#66BB6A", text: "#fff"},
-	{background: "#E91E63", text: "#fff"},
-	{background: "#FFEB3B", text: "#fff"},
-	{background: "#FF7043", text: "#fff"},
-	{background: "#9CCC65", text: "#fff"},
-	{background: "#607D8B", text: "#fff"},
-	{background: "#EC407A", text: "#fff"},
-	{background: "#5C6BC0", text: "#fff"},
-	{background: "#EF5350", text: "#fff"},
-	{background: "#FFEE58", text: "#fff"},
-	{background: "#4CAF50", text: "#fff"},
-	{background: "#FFA726", text: "#fff"},
-	{background: "#009688", text: "#fff"},
-	{background: "#CDDC39", text: "#fff"},
-	{background: "#2196F3", text: "#fff"},
-	{background: "#FFCA28", text: "#fff"},
-	{background: "#673AB7", text: "#fff"},
-	{background: "#26C6DA", text: "#fff"},
-	{background: "#AB47BC", text: "#fff"},
-	{background: "#03A9F4", text: "#fff"},
-	{background: "#FF5722", text: "#fff"},
-	{background: "#FF9800", text: "#fff"},
+	{ background: "#9C27B0", text: "#fff" },
+	{ background: "#9E9E9E", text: "#fff" },
+	{ background: "#F44336", text: "#fff" },
+	{ background: "#66BB6A", text: "#fff" },
+	{ background: "#E91E63", text: "#fff" },
+	{ background: "#FFEB3B", text: "#fff" },
+	{ background: "#FF7043", text: "#fff" },
+	{ background: "#9CCC65", text: "#fff" },
+	{ background: "#607D8B", text: "#fff" },
+	{ background: "#EC407A", text: "#fff" },
+	{ background: "#5C6BC0", text: "#fff" },
+	{ background: "#EF5350", text: "#fff" },
+	{ background: "#FFEE58", text: "#fff" },
+	{ background: "#4CAF50", text: "#fff" },
+	{ background: "#FFA726", text: "#fff" },
+	{ background: "#009688", text: "#fff" },
+	{ background: "#CDDC39", text: "#fff" },
+	{ background: "#2196F3", text: "#fff" },
+	{ background: "#FFCA28", text: "#fff" },
+	{ background: "#673AB7", text: "#fff" },
+	{ background: "#26C6DA", text: "#fff" },
+	{ background: "#AB47BC", text: "#fff" },
+	{ background: "#03A9F4", text: "#fff" },
+	{ background: "#FF5722", text: "#fff" },
+	{ background: "#FF9800", text: "#fff" },
 ];
 
 // from the mirage API
-export const scanMockData = {
+export const scanMockData:AnalysisReport = {
 	repo: "goodOrg/repo",
 	initiated_by: "Bronn@example.com",
 	service: "goodVcs",
@@ -45,6 +50,8 @@ export const scanMockData = {
 			client_id: null,
 		},
 		batch_priority: false,
+		include_paths: [],
+		exclude_paths: [],
 	},
 	status: "completed",
 	status_detail: {
@@ -70,6 +77,7 @@ export const scanMockData = {
 		inventory: {
 			technology_discovery: 12,
 		},
+		configuration: null,
 	},
 	results: {
 		vulnerabilities: {},
@@ -127,7 +135,7 @@ export const mockScan001 = {
 	branch: null,
 	engine_id: "i-123456789-e987654321",
 	scan_options: {
-		categories: ["secret", "inventory", "vulnerability", "-static_analysis"],
+		categories: ["secret", "inventory", "vulnerability", "-static_analysis", "configuration"],
 		plugins: [
 			"pluginname01",
 			"pluginname02",
@@ -178,6 +186,14 @@ export const mockScan001 = {
 		inventory: {
 			base_images: 3,
 			technology_discovery: 9,
+		},
+		configuration: {
+			critical: 3,
+			high: 3,
+			medium: 1,
+			low: 0,
+			negligible: 1,
+			"": 2,
 		},
 	},
 	results: {
@@ -310,6 +326,58 @@ export const mockScan001 = {
 				TypeScript: 0.89,
 			},
 		},
+		configuration: {
+			"github_branch_check1": {
+				"name": "Branch - Check 1",
+				"description": "Lorem ipsum sit amet justo donec enim diam vulputate ut pharetra sit",
+				"severity": "medium"
+			},
+			"github_branch_check2": {
+				"name": "Branch - Check 2",
+				"description": "Lorem ipsum ligula ullamcorper malesuada proin libero nunc consequat interdum varius sit",
+				"severity": "critical"
+			},
+			"github_branch_check3": {
+				"name": "Branch - Check 3",
+				"description": "Lorem ipsum felis bibendum ut tristique et egestas quis ipsum suspendisse ultrices",
+				"severity": ""
+			},
+			"github_branch_check4": {
+				"name": "Branch - Check 4",
+				"description": "Lorem ipsum purus semper eget duis at tellus at urna condimentum mattis",
+				"severity": "negligible"
+			},
+			"github_branch_check5": {
+				"name": "Branch - Check 5",
+				"description": "Lorem ipsum ac habitasse platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper",
+				"severity": "high"
+			},
+			"github_repo_check1": {
+				"name": "Repository - Check 1",
+				"description": "Lorem ipsum aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc sed",
+				"severity": ""
+			},
+			"github_repo_check2": {
+				"name": "Repository - Check 2",
+				"description": "Lorem ipsum ullamcorper morbi tincidunt ornare massa eget egestas purus viverra accumsan",
+				"severity": "high"
+			},
+			"github_repo_check3": {
+				"name": "Repository - Check 3",
+				"description": "Lorem ipsum purus ut faucibus pulvinar elementum integer enim neque volutpat ac",
+				"severity": "high"
+			},
+			"github_repo_check4": {
+				"name": "Repository - Check 4",
+				"description": "Lorem ipsum non consectetur a erat nam at lectus urna duis convallis",
+				"severity": "critical"
+			},
+			"github_repo_check5": {
+				"name": "Repository - Check 5",
+				"description": "Lorem ipsum risus quis varius quam quisque id diam vel quam elementum",
+				"severity": "critical"
+			},
+		},
 	},
 };
 
@@ -321,7 +389,7 @@ export const mockScan002 = {
 	branch: null,
 	engine_id: "i-0d311engineid-3ead79238510",
 	scan_options: {
-		categories: ["static_analysis", "vulnerability", "-secret", "-inventory"],
+		categories: ["static_analysis", "vulnerability", "-secret", "-inventory", "-configuration"],
 		plugins: [
 			"plugin01",
 			"plugin02",
@@ -377,6 +445,7 @@ export const mockScan002 = {
 			"": 13,
 		},
 		inventory: null,
+		configuration: null,
 	},
 	results: {
 		vulnerabilities: {},
@@ -617,7 +686,7 @@ export const mockScan002 = {
 	},
 };
 
-export const mockHiddenFindings001 = [
+export const mockHiddenFindings001:HiddenFinding[] = [
 	{
 		id: "0694bbvulnerabilitye-b63b08cea490",
 		type: "vulnerability",
@@ -644,169 +713,169 @@ export const mockHiddenFindings001 = [
 	},
 ];
 
-export const mockHiddenFindings002 = [];
+export const mockHiddenFindings002:HiddenFinding[] = [];
 
-export const mockHiddenFindings003 = [
+export const mockHiddenFindings003:HiddenFinding[] = [
 	{
-			"id": "cec197de-7e6c-6945-f3e6-030e56d7571c",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2020-0000",
-					"component": "",
-					"source": "docker/Dockerfile",
-					"severity": "critical"
-			},
-			"expires": null,
-			"reason": "test existing hidden finding",
-			"created_by": "Jon.Snow@example.com"
+		"id": "cec197de-7e6c-6945-f3e6-030e56d7571c",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2020-0000",
+			"component": "",
+			"source": "docker/Dockerfile",
+			"severity": "critical"
+		},
+		"expires": null,
+		"reason": "test existing hidden finding",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "b48d9034-3eb0-2257-3a5c-37552451c508",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2020-0000",
-					"component": "",
-					"source": "docker/Dockerfile.dev",
-					"severity": "critical"
-			},
-			"expires": null,
-			"reason": "test existing hidden finding",
-			"created_by": "Jon.Snow@example.com"
+		"id": "b48d9034-3eb0-2257-3a5c-37552451c508",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2020-0000",
+			"component": "",
+			"source": "docker/Dockerfile.dev",
+			"severity": "critical"
+		},
+		"expires": null,
+		"reason": "test existing hidden finding",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "a09657d1-3837-3c9d-918a-1e0f708a7f40",
-			"type": "secret",
-			"value": {
-					"filename": "folder/badfile",
-					"line": 17,
-					"commit": "q3498tlsdf9834tkjsdfg98u34t"
-			},
-			"expires": null,
-			"reason": "test existing hidden finding, secret",
-			"created_by": "Jon.Snow@example.com"
+		"id": "a09657d1-3837-3c9d-918a-1e0f708a7f40",
+		"type": "secret",
+		"value": {
+			"filename": "folder/badfile",
+			"line": 17,
+			"commit": "q3498tlsdf9834tkjsdfg98u34t"
+		},
+		"expires": null,
+		"reason": "test existing hidden finding, secret",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "b3ad1e09-3f4e-6b3e-55ad-97e60712ebc1",
-			"type": "secret",
-			"value": {
-					"filename": "folder/badfile2",
-					"line": 177,
-					"commit": "q3498tlsdf9834tkjsdfg98u34t"
-			},
-			"expires": null,
-			"reason": "test existing hidden finding, secret",
-			"created_by": "Jon.Snow@example.com"
+		"id": "b3ad1e09-3f4e-6b3e-55ad-97e60712ebc1",
+		"type": "secret",
+		"value": {
+			"filename": "folder/badfile2",
+			"line": 177,
+			"commit": "q3498tlsdf9834tkjsdfg98u34t"
+		},
+		"expires": null,
+		"reason": "test existing hidden finding, secret",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "d24d0a7b-691f-06de-3db8-3e5af9322c1b",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2018-00000",
-					"severity": "medium",
-					"component": "",
-					"source": "docker/Dockerfile.multistage"
-			},
-			"expires": "2021-09-15T20:14:46.495Z",
-			"reason": "expired hidden finding",
-			"created_by": "Jon.Snow@example.com"
+		"id": "d24d0a7b-691f-06de-3db8-3e5af9322c1b",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2018-00000",
+			"severity": "medium",
+			"component": "",
+			"source": "docker/Dockerfile.multistage"
+		},
+		"expires": "2021-09-15T20:14:46.495Z",
+		"reason": "expired hidden finding",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "8f1677e7-0df9-c6b6-fedc-36bdc1b46cfe",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1"
-			},
-			"expires": "2021-09-20T20:14:46.499Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (1)",
-			"created_by": "Jon.Snow@example.com"
+		"id": "8f1677e7-0df9-c6b6-fedc-36bdc1b46cfe",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2019-00000",
+			"component": "component1",
+			"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1"
+		},
+		"expires": "2021-09-20T20:14:46.499Z",
+		"reason": "expiring test hiding a subset of files with vuln finding (1)",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "8a3477c0-357d-7522-22a5-b035bac17360",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2"
-			},
-			"expires": "2021-09-20T20:14:46.499Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (2)",
-			"created_by": "Jon.Snow@example.com"
+		"id": "8a3477c0-357d-7522-22a5-b035bac17360",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2019-00000",
+			"component": "component1",
+			"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2"
+		},
+		"expires": "2021-09-20T20:14:46.499Z",
+		"reason": "expiring test hiding a subset of files with vuln finding (2)",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "c5fb558a-db99-2f77-1e37-9f1879a3c130",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "docker/Dockerfile.platform7"
-			},
-			"expires": "2021-09-20T20:14:46.500Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (3)",
-			"created_by": "Jon.Snow@example.com"
+		"id": "c5fb558a-db99-2f77-1e37-9f1879a3c130",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2019-00000",
+			"component": "component1",
+			"source": "docker/Dockerfile.platform7"
+		},
+		"expires": "2021-09-20T20:14:46.500Z",
+		"reason": "expiring test hiding a subset of files with vuln finding (3)",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "062264b3-8278-60eb-c05d-2cdfb6aeb3d0",
-			"type": "vulnerability",
-			"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "docker/Dockerfile.platform27"
-			},
-			"expires": "2021-09-20T20:14:46.500Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (4)",
-			"created_by": "Jon.Snow@example.com"
+		"id": "062264b3-8278-60eb-c05d-2cdfb6aeb3d0",
+		"type": "vulnerability",
+		"value": {
+			"id": "CVE-2019-00000",
+			"component": "component1",
+			"source": "docker/Dockerfile.platform27"
+		},
+		"expires": "2021-09-20T20:14:46.500Z",
+		"reason": "expiring test hiding a subset of files with vuln finding (4)",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "e084e54d-23b0-103f-6f7d-ceffff32eb6c",
-			"type": "secret_raw",
-			"value": {
-					"value": "test.me"
-			},
-			"expires": null,
-			"reason": "test secret_raw type",
-			"created_by": "Jon.Snow@example.com"
+		"id": "e084e54d-23b0-103f-6f7d-ceffff32eb6c",
+		"type": "secret_raw",
+		"value": {
+			"value": "test.me"
+		},
+		"expires": null,
+		"reason": "test secret_raw type",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "a6f41593-c3ef-6380-8721-d275175f91f1",
-			"type": "vulnerability_raw",
-			"value": {
-					"id": "CVE-2021-0101",
-					"severity": "critical"
-			},
-			"expires": "2021-09-20T20:14:46.500Z",
-			"reason": "test expired vulnerability_raw type",
-			"created_by": "Jon.Snow@example.com"
+		"id": "a6f41593-c3ef-6380-8721-d275175f91f1",
+		"type": "vulnerability_raw",
+		"value": {
+			"id": "CVE-2021-0101",
+			"severity": "critical"
+		},
+		"expires": "2021-09-20T20:14:46.500Z",
+		"reason": "test expired vulnerability_raw type",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "76300da2-d5d4-af3d-0f65-f4d8d4b0ad9f",
-			"type": "static_analysis",
-			"value": {
-					"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-					"line": 14,
-					"type": "Potential template injection"
-			},
-			"expires": null,
-			"reason": "test static_analysis type",
-			"created_by": "Jon.Snow@example.com"
+		"id": "76300da2-d5d4-af3d-0f65-f4d8d4b0ad9f",
+		"type": "static_analysis",
+		"value": {
+			"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+			"line": 14,
+			"type": "Potential template injection"
+		},
+		"expires": null,
+		"reason": "test static_analysis type",
+		"created_by": "Jon.Snow@example.com"
 	},
 	{
-			"id": "eb8abd85-b153-6fbb-5288-9b2dc4d854c5",
-			"type": "static_analysis",
-			"value": {
-					"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-					"line": 33,
-					"type": "XSS"
-			},
-			"expires": "2021-09-23T20:14:46.500Z",
-			"reason": "test expired static_analysis type",
-			"created_by": "Jon.Snow@example.com"
+		"id": "eb8abd85-b153-6fbb-5288-9b2dc4d854c5",
+		"type": "static_analysis",
+		"value": {
+			"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+			"line": 33,
+			"type": "XSS"
+		},
+		"expires": "2021-09-23T20:14:46.500Z",
+		"reason": "test expired static_analysis type",
+		"created_by": "Jon.Snow@example.com"
 	}
 ];
 
 // note these are consolidated rows, not the raw hidden findings from the api
-export const mockHFRows001 = [
+export const mockHFRows001:RowDef[] = [
 	{
 		keyId: "hiddenFinding-b16c564b-0875-4f8c-b706-59250eecf658",
 		url: "goodVcs/goodOrg/repo",
@@ -929,7 +998,7 @@ export const mockHFRows001 = [
 	},
 ];
 
-export const mockHFRows002 = [];
+export const mockHFRows002:RowDef[] = [];
 
 export const mockHiddenFindingsSummaryNone = {
 	critical: 0,
@@ -943,339 +1012,340 @@ export const mockHiddenFindingsSummaryNone = {
 	static_analysis: 0,
 	vulnerability: 0,
 	vulnerability_raw: 0,
+	configuration: 0,
 };
 
 // consolidated hidden finding rows with each finding type, expirations, and unhidden files
 // generated by server.ts mocks
-export const mockHFRows003 = [
+export const mockHFRows003:RowDef[] = [
 	{
-			"keyId": "hiddenFinding-2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "vulnerability",
-			"expires": "Never",
-			"source": [
-					"docker/Dockerfile",
-					"docker/Dockerfile.dev"
-			],
-			"location": "CVE-2020-0000",
-			"component": "",
-			"severity": "critical",
-			"hiddenFindings": [
-					{
-							"id": "2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2020-0000",
-									"component": "",
-									"source": "docker/Dockerfile",
-									"severity": "critical"
-							},
-							"expires": null,
-							"reason": "test existing hidden finding",
-							"created_by": "Davos.Seaworth@example.com"
-					},
-					{
-							"id": "6951e173-0f39-5bdb-5e01-585ccdc95a0c",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2020-0000",
-									"component": "",
-									"source": "docker/Dockerfile.dev",
-									"severity": "critical"
-							},
-							"expires": null,
-							"reason": "test existing hidden finding",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "vulnerability",
+		"expires": "Never",
+		"source": [
+			"docker/Dockerfile",
+			"docker/Dockerfile.dev"
+		],
+		"location": "CVE-2020-0000",
+		"component": "",
+		"severity": "critical",
+		"hiddenFindings": [
+			{
+				"id": "2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2020-0000",
+					"component": "",
+					"source": "docker/Dockerfile",
+					"severity": "critical"
+				},
+				"expires": null,
+				"reason": "test existing hidden finding",
+				"created_by": "Davos.Seaworth@example.com"
+			},
+			{
+				"id": "6951e173-0f39-5bdb-5e01-585ccdc95a0c",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2020-0000",
+					"component": "",
+					"source": "docker/Dockerfile.dev",
+					"severity": "critical"
+				},
+				"expires": null,
+				"reason": "test existing hidden finding",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-7ec683a2-d3f7-734f-a948-eb88d1cc8788",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "secret",
-			"expires": "Never",
-			"source": "folder/badfile",
-			"location": 17,
-			"component": "q3498tlsdf9834tkjsdfg98u34t",
-			"severity": "",
-			"hiddenFindings": [
-					{
-							"id": "7ec683a2-d3f7-734f-a948-eb88d1cc8788",
-							"type": "secret",
-							"value": {
-									"filename": "folder/badfile",
-									"line": 17,
-									"commit": "q3498tlsdf9834tkjsdfg98u34t"
-							},
-							"expires": null,
-							"reason": "test existing hidden finding, secret",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-7ec683a2-d3f7-734f-a948-eb88d1cc8788",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "secret",
+		"expires": "Never",
+		"source": "folder/badfile",
+		"location": 17,
+		"component": "q3498tlsdf9834tkjsdfg98u34t",
+		"severity": "",
+		"hiddenFindings": [
+			{
+				"id": "7ec683a2-d3f7-734f-a948-eb88d1cc8788",
+				"type": "secret",
+				"value": {
+					"filename": "folder/badfile",
+					"line": 17,
+					"commit": "q3498tlsdf9834tkjsdfg98u34t"
+				},
+				"expires": null,
+				"reason": "test existing hidden finding, secret",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-bc8b709f-8f47-773b-28b9-0838633e04f3",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "secret",
-			"expires": "Never",
-			"source": "folder/badfile2",
-			"location": 177,
-			"component": "q3498tlsdf9834tkjsdfg98u34t",
-			"severity": "",
-			"hiddenFindings": [
-					{
-							"id": "bc8b709f-8f47-773b-28b9-0838633e04f3",
-							"type": "secret",
-							"value": {
-									"filename": "folder/badfile2",
-									"line": 177,
-									"commit": "q3498tlsdf9834tkjsdfg98u34t"
-							},
-							"expires": null,
-							"reason": "test existing hidden finding, secret",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-bc8b709f-8f47-773b-28b9-0838633e04f3",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "secret",
+		"expires": "Never",
+		"source": "folder/badfile2",
+		"location": 177,
+		"component": "q3498tlsdf9834tkjsdfg98u34t",
+		"severity": "",
+		"hiddenFindings": [
+			{
+				"id": "bc8b709f-8f47-773b-28b9-0838633e04f3",
+				"type": "secret",
+				"value": {
+					"filename": "folder/badfile2",
+					"line": 177,
+					"commit": "q3498tlsdf9834tkjsdfg98u34t"
+				},
+				"expires": null,
+				"reason": "test existing hidden finding, secret",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-158f10a4-cc4e-dc61-29f9-6d1fa262e842",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "vulnerability",
-			"expires": "2021-08-04T20:48:21.467Z",
-			"source": [
-					"docker/Dockerfile.multistage"
-			],
-			"location": "CVE-2018-00000",
-			"component": "",
-			"severity": "medium",
-			"hiddenFindings": [
-					{
-							"id": "158f10a4-cc4e-dc61-29f9-6d1fa262e842",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2018-00000",
-									"severity": "medium",
-									"component": "",
-									"source": "docker/Dockerfile.multistage"
-							},
-							"expires": "2021-08-04T20:48:21.467Z",
-							"reason": "expired hidden finding",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-158f10a4-cc4e-dc61-29f9-6d1fa262e842",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "vulnerability",
+		"expires": "2021-08-04T20:48:21.467Z",
+		"source": [
+			"docker/Dockerfile.multistage"
+		],
+		"location": "CVE-2018-00000",
+		"component": "",
+		"severity": "medium",
+		"hiddenFindings": [
+			{
+				"id": "158f10a4-cc4e-dc61-29f9-6d1fa262e842",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2018-00000",
+					"severity": "medium",
+					"component": "",
+					"source": "docker/Dockerfile.multistage"
+				},
+				"expires": "2021-08-04T20:48:21.467Z",
+				"reason": "expired hidden finding",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "vulnerability",
-			"expires": "2021-08-09T20:48:21.479Z",
-			"source": [
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
-					"docker/Dockerfile.platform7",
-					"docker/Dockerfile.platform27"
-			],
-			"location": "CVE-2019-00000",
-			"component": "component1",
-			"severity": "high",
-			"hiddenFindings": [
-					{
-							"id": "2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2019-00000",
-									"component": "component1",
-									"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
-									"severity": "high"
-							},
-							"expires": "2021-08-09T20:48:21.479Z",
-							"reason": "expiring test hiding a subset of files with vuln finding (1)",
-							"created_by": "Davos.Seaworth@example.com"
-					},
-					{
-							"id": "becb22ea-6127-c0e3-bc7a-f111319cef15",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2019-00000",
-									"component": "component1",
-									"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
-									"severity": "high"
-							},
-							"expires": "2021-08-09T20:48:21.480Z",
-							"reason": "expiring test hiding a subset of files with vuln finding (2)",
-							"created_by": "Davos.Seaworth@example.com"
-					},
-					{
-							"id": "04112a84-efe8-1893-5eb8-08f4ee34c151",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2019-00000",
-									"component": "component1",
-									"source": "docker/Dockerfile.platform7",
-									"severity": "high"
-							},
-							"expires": "2021-08-09T20:48:21.480Z",
-							"reason": "expiring test hiding a subset of files with vuln finding (3)",
-							"created_by": "Davos.Seaworth@example.com"
-					},
-					{
-							"id": "68b78d55-74c1-7724-3107-710f638777ef",
-							"type": "vulnerability",
-							"value": {
-									"id": "CVE-2019-00000",
-									"component": "component1",
-									"source": "docker/Dockerfile.platform27",
-									"severity": "high"
-							},
-							"expires": "2021-08-09T20:48:21.480Z",
-							"reason": "expiring test hiding a subset of files with vuln finding (4)",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": [
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component",
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component1",
-					"node/a_very_long_directory_name_tests_and_samples/package.json: component2",
-					"docker/Dockerfile.platform2",
-					"docker/Dockerfile.platform3",
-					"docker/Dockerfile.platform4",
-					"docker/Dockerfile.platform5",
-					"docker/Dockerfile.platform6",
-					"docker/Dockerfile.platform8",
-					"docker/Dockerfile.platform9",
-					"docker/Dockerfile.platform0",
-					"docker/Dockerfile.platform10",
-					"docker/Dockerfile.platform11",
-					"docker/Dockerfile.platform12",
-					"docker/Dockerfile.platform13",
-					"docker/Dockerfile.platform14",
-					"docker/Dockerfile.platform15",
-					"docker/Dockerfile.platform16",
-					"docker/Dockerfile.platform17",
-					"docker/Dockerfile.platform18",
-					"docker/Dockerfile.platform19",
-					"docker/Dockerfile.platform20",
-					"docker/Dockerfile.platform21",
-					"docker/Dockerfile.platform22",
-					"docker/Dockerfile.platform23",
-					"docker/Dockerfile.platform24",
-					"docker/Dockerfile.platform25",
-					"docker/Dockerfile.platform26"
-			]
+		"keyId": "hiddenFinding-2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "vulnerability",
+		"expires": "2021-08-09T20:48:21.479Z",
+		"source": [
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
+			"docker/Dockerfile.platform7",
+			"docker/Dockerfile.platform27"
+		],
+		"location": "CVE-2019-00000",
+		"component": "component1",
+		"severity": "high",
+		"hiddenFindings": [
+			{
+				"id": "2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2019-00000",
+					"component": "component1",
+					"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
+					"severity": "high"
+				},
+				"expires": "2021-08-09T20:48:21.479Z",
+				"reason": "expiring test hiding a subset of files with vuln finding (1)",
+				"created_by": "Davos.Seaworth@example.com"
+			},
+			{
+				"id": "becb22ea-6127-c0e3-bc7a-f111319cef15",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2019-00000",
+					"component": "component1",
+					"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
+					"severity": "high"
+				},
+				"expires": "2021-08-09T20:48:21.480Z",
+				"reason": "expiring test hiding a subset of files with vuln finding (2)",
+				"created_by": "Davos.Seaworth@example.com"
+			},
+			{
+				"id": "04112a84-efe8-1893-5eb8-08f4ee34c151",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2019-00000",
+					"component": "component1",
+					"source": "docker/Dockerfile.platform7",
+					"severity": "high"
+				},
+				"expires": "2021-08-09T20:48:21.480Z",
+				"reason": "expiring test hiding a subset of files with vuln finding (3)",
+				"created_by": "Davos.Seaworth@example.com"
+			},
+			{
+				"id": "68b78d55-74c1-7724-3107-710f638777ef",
+				"type": "vulnerability",
+				"value": {
+					"id": "CVE-2019-00000",
+					"component": "component1",
+					"source": "docker/Dockerfile.platform27",
+					"severity": "high"
+				},
+				"expires": "2021-08-09T20:48:21.480Z",
+				"reason": "expiring test hiding a subset of files with vuln finding (4)",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": [
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component",
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component1",
+			"node/a_very_long_directory_name_tests_and_samples/package.json: component2",
+			"docker/Dockerfile.platform2",
+			"docker/Dockerfile.platform3",
+			"docker/Dockerfile.platform4",
+			"docker/Dockerfile.platform5",
+			"docker/Dockerfile.platform6",
+			"docker/Dockerfile.platform8",
+			"docker/Dockerfile.platform9",
+			"docker/Dockerfile.platform0",
+			"docker/Dockerfile.platform10",
+			"docker/Dockerfile.platform11",
+			"docker/Dockerfile.platform12",
+			"docker/Dockerfile.platform13",
+			"docker/Dockerfile.platform14",
+			"docker/Dockerfile.platform15",
+			"docker/Dockerfile.platform16",
+			"docker/Dockerfile.platform17",
+			"docker/Dockerfile.platform18",
+			"docker/Dockerfile.platform19",
+			"docker/Dockerfile.platform20",
+			"docker/Dockerfile.platform21",
+			"docker/Dockerfile.platform22",
+			"docker/Dockerfile.platform23",
+			"docker/Dockerfile.platform24",
+			"docker/Dockerfile.platform25",
+			"docker/Dockerfile.platform26"
+		]
 	},
 	{
-			"keyId": "hiddenFinding-1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "secret_raw",
-			"expires": "Never",
-			"source": "Any",
-			"location": "test.me",
-			"component": "Any",
-			"severity": "",
-			"hiddenFindings": [
-					{
-							"id": "1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
-							"type": "secret_raw",
-							"value": {
-									"value": "test.me"
-							},
-							"expires": null,
-							"reason": "test secret_raw type",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "secret_raw",
+		"expires": "Never",
+		"source": "Any",
+		"location": "test.me",
+		"component": "Any",
+		"severity": "",
+		"hiddenFindings": [
+			{
+				"id": "1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
+				"type": "secret_raw",
+				"value": {
+					"value": "test.me"
+				},
+				"expires": null,
+				"reason": "test secret_raw type",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-0515b3d2-c04c-cde3-6082-44b60047e627",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "vulnerability_raw",
-			"expires": "2021-08-09T20:48:21.480Z",
-			"source": "Any",
-			"location": "CVE-2021-0101",
-			"component": "Any",
-			"severity": "critical",
-			"hiddenFindings": [
-					{
-							"id": "0515b3d2-c04c-cde3-6082-44b60047e627",
-							"type": "vulnerability_raw",
-							"value": {
-									"id": "CVE-2021-0101",
-									"severity": "critical"
-							},
-							"expires": "2021-08-09T20:48:21.480Z",
-							"reason": "test expired vulnerability_raw type",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-0515b3d2-c04c-cde3-6082-44b60047e627",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "vulnerability_raw",
+		"expires": "2021-08-09T20:48:21.480Z",
+		"source": "Any",
+		"location": "CVE-2021-0101",
+		"component": "Any",
+		"severity": "critical",
+		"hiddenFindings": [
+			{
+				"id": "0515b3d2-c04c-cde3-6082-44b60047e627",
+				"type": "vulnerability_raw",
+				"value": {
+					"id": "CVE-2021-0101",
+					"severity": "critical"
+				},
+				"expires": "2021-08-09T20:48:21.480Z",
+				"reason": "test expired vulnerability_raw type",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "static_analysis",
-			"expires": "Never",
-			"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-			"location": 14,
-			"component": "Potential template injection",
-			"severity": "medium",
-			"hiddenFindings": [
-					{
-							"id": "aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
-							"type": "static_analysis",
-							"value": {
-									"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-									"line": 14,
-									"type": "Potential template injection",
-									"severity": "medium"
-							},
-							"expires": null,
-							"reason": "test static_analysis type",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "static_analysis",
+		"expires": "Never",
+		"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+		"location": 14,
+		"component": "Potential template injection",
+		"severity": "medium",
+		"hiddenFindings": [
+			{
+				"id": "aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
+				"type": "static_analysis",
+				"value": {
+					"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+					"line": 14,
+					"type": "Potential template injection",
+					"severity": "medium"
+				},
+				"expires": null,
+				"reason": "test static_analysis type",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	},
 	{
-			"keyId": "hiddenFinding-12771a01-02a3-f353-3ff3-14deddea2eb8",
-			"url": "goodVcs/goodOrg/repo",
-			"createdBy": "Davos.Seaworth@example.com",
-			"type": "static_analysis",
-			"expires": "2021-08-12T20:48:21.480Z",
-			"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-			"location": 33,
-			"component": "XSS",
-			"severity": "critical",
-			"hiddenFindings": [
-					{
-							"id": "12771a01-02a3-f353-3ff3-14deddea2eb8",
-							"type": "static_analysis",
-							"value": {
-									"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-									"line": 33,
-									"type": "XSS",
-									"severity": "critical"
-							},
-							"expires": "2021-08-12T20:48:21.480Z",
-							"reason": "test expired static_analysis type",
-							"created_by": "Davos.Seaworth@example.com"
-					}
-			],
-			"unhiddenFindings": []
+		"keyId": "hiddenFinding-12771a01-02a3-f353-3ff3-14deddea2eb8",
+		"url": "goodVcs/goodOrg/repo",
+		"createdBy": "Davos.Seaworth@example.com",
+		"type": "static_analysis",
+		"expires": "2021-08-12T20:48:21.480Z",
+		"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+		"location": 33,
+		"component": "XSS",
+		"severity": "critical",
+		"hiddenFindings": [
+			{
+				"id": "12771a01-02a3-f353-3ff3-14deddea2eb8",
+				"type": "static_analysis",
+				"value": {
+					"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+					"line": 33,
+					"type": "XSS",
+					"severity": "critical"
+				},
+				"expires": "2021-08-12T20:48:21.480Z",
+				"reason": "test expired static_analysis type",
+				"created_by": "Davos.Seaworth@example.com"
+			}
+		],
+		"unhiddenFindings": []
 	}
 ];
 
@@ -1292,9 +1362,10 @@ export const mockHFSummary003 = {
 	static_analysis: 2,
 	vulnerability: 3,
 	vulnerability_raw: 1,
+	configuration: 3,
 };
 
-export const mockCurrentUser = {
+export const mockCurrentUser:User = {
 	scan_orgs: [
 		"badVcs/badOrg",
 		"goodVcs.goodOrg.com",
@@ -1312,7 +1383,7 @@ export const mockCurrentUser = {
 		"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
 		"goodVcs.goodOrg.com/interpret[?]",
 	],
-	features: {feature1: true, feature2: false},
+	features: { feature1: true, feature2: false },
 	id: "self",
 };
 
@@ -1419,7 +1490,7 @@ mockStoreSingleScan.scans.entities[mockStoreScanId] = {
 	initiated_by: "Brienne.of.Tarth@example.com",
 	service: "goodVcs",
 	scan_options: {
-		categories: ["inventory", "secret", "static_analysis", "vulnerability"],
+		categories: ["inventory", "secret", "static_analysis", "vulnerability", "configuration"],
 		plugins: [],
 		depth: 500,
 		include_dev: false,
@@ -1435,7 +1506,7 @@ mockStoreSingleScan.scans.entities[mockStoreScanId] = {
 		plugin_name: "inventory scan",
 		plugin_start_time: "2021-03-28T19:25:31+00:00",
 		current_plugin: 4,
-		total_plugins: 4,
+		total_plugins: 5,
 	},
 	engine_id: "i-da8859650fd47f1ac",
 	application_metadata: {},
@@ -1472,6 +1543,14 @@ mockStoreSingleScan.scans.entities[mockStoreScanId] = {
 		inventory: {
 			base_images: 3,
 			technology_discovery: 12,
+		},
+		configuration: {
+			critical: 3,
+			high: 3,
+			medium: 1,
+			low: 0,
+			negligible: 1,
+			"": 2,
 		},
 	}
 };
@@ -1542,13 +1621,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					depth: 55,
 					include_dev: true,
@@ -1564,8 +1645,8 @@ export const mockStore50Scans: RootState = {
 				status_detail: {
 					plugin_name: 'static_analysis scan',
 					plugin_start_time: '2021-11-22T16:10:50+00:00',
-					current_plugin: 3,
-					total_plugins: 3
+					current_plugin: 4,
+					total_plugins: 4
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -1593,7 +1674,15 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				errors: {
 					'Some Scanner': [
@@ -1621,13 +1710,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'configuration',
 					],
 					depth: 260,
 					include_dev: false,
@@ -1643,8 +1734,8 @@ export const mockStore50Scans: RootState = {
 				status_detail: {
 					plugin_name: 'inventory scan',
 					plugin_start_time: '2021-11-22T16:10:50+00:00',
-					current_plugin: 2,
-					total_plugins: 2
+					current_plugin: 3,
+					total_plugins: 3
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -1668,7 +1759,15 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				errors: {
 					'Some Scanner': [
@@ -1696,13 +1795,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 347,
 					include_dev: false,
@@ -1743,7 +1844,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -1771,13 +1873,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					depth: 258,
 					include_dev: true,
@@ -1793,8 +1897,8 @@ export const mockStore50Scans: RootState = {
 				status_detail: {
 					plugin_name: 'inventory scan',
 					plugin_start_time: '2021-11-22T16:10:50+00:00',
-					current_plugin: 3,
-					total_plugins: 3
+					current_plugin: 4,
+					total_plugins: 4
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -1825,7 +1929,15 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				errors: {
 					'Some Scanner': [
@@ -1853,13 +1965,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 166,
 					include_dev: true,
@@ -1900,7 +2014,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -1928,13 +2043,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 163,
 					include_dev: false,
@@ -1972,7 +2089,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2000,13 +2118,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 9,
 					include_dev: false,
@@ -2080,7 +2200,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -2135,7 +2256,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2163,13 +2285,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 199,
 					include_dev: false,
@@ -2207,7 +2331,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2279,7 +2404,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2307,13 +2433,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 228,
 					include_dev: false,
@@ -2354,7 +2482,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2382,13 +2511,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 28,
 					include_dev: true,
@@ -2422,7 +2553,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2450,13 +2582,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					depth: 370,
 					include_dev: true,
@@ -2473,7 +2607,7 @@ export const mockStore50Scans: RootState = {
 					plugin_name: 'static_analysis scan',
 					plugin_start_time: '2021-11-22T17:44:57+00:00',
 					current_plugin: 3,
-					total_plugins: 4
+					total_plugins: 5
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -2535,7 +2669,15 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				results: {}
 			},
@@ -2549,13 +2691,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 446,
 					include_dev: false,
@@ -2593,7 +2737,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: 4,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2622,13 +2767,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 160,
 					include_dev: false,
@@ -2699,7 +2846,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: 4,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -2714,13 +2862,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 450,
 					include_dev: false,
@@ -2798,7 +2948,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -2813,13 +2964,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 330,
 					include_dev: false,
@@ -2850,7 +3003,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: null,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -2879,13 +3033,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 332,
 					include_dev: true,
@@ -2964,7 +3120,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -2978,13 +3135,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 342,
 					include_dev: true,
@@ -3018,7 +3177,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				errors: {
 					'Some Scanner': [
@@ -3046,13 +3206,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 70,
 					include_dev: false,
@@ -3124,7 +3286,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: null,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -3138,13 +3301,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 407,
 					include_dev: false,
@@ -3222,7 +3387,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -3237,13 +3403,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 5,
 					include_dev: false,
@@ -3307,7 +3475,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: 4,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -3322,13 +3491,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 103,
 					include_dev: false,
@@ -3401,7 +3572,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: 4,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -3415,13 +3587,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					depth: 400,
 					include_dev: true,
@@ -3437,8 +3611,8 @@ export const mockStore50Scans: RootState = {
 				status_detail: {
 					plugin_name: 'inventory scan',
 					plugin_start_time: '2021-11-22T16:10:50+00:00',
-					current_plugin: 3,
-					total_plugins: 3
+					current_plugin: 4,
+					total_plugins: 4
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -3503,7 +3677,15 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				results: {}
 			},
@@ -3517,13 +3699,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 485,
 					include_dev: true,
@@ -3588,7 +3772,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: 4,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -3602,13 +3787,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 123,
 					include_dev: false,
@@ -3679,7 +3866,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: null,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -3694,13 +3882,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 123,
 					include_dev: true,
@@ -3771,7 +3961,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -3786,13 +3977,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 83,
 					include_dev: true,
@@ -3857,7 +4050,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: null,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -3871,13 +4065,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 446,
 					include_dev: true,
@@ -3949,7 +4145,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -3964,13 +4161,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 309,
 					include_dev: false,
@@ -4044,7 +4243,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -4059,13 +4259,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 478,
 					include_dev: true,
@@ -4130,7 +4332,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: 0,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -4144,13 +4347,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'configuration',
 					],
 					depth: 422,
 					include_dev: false,
@@ -4167,7 +4372,7 @@ export const mockStore50Scans: RootState = {
 					plugin_name: 'secret scan',
 					plugin_start_time: '2021-11-22T17:44:57+00:00',
 					current_plugin: 1,
-					total_plugins: 3
+					total_plugins: 4
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -4221,7 +4426,15 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				results: {},
 				application_metadata: {}
@@ -4236,13 +4449,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 27,
 					include_dev: true,
@@ -4307,7 +4522,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: null,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -4322,13 +4538,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 427,
 					include_dev: false,
@@ -4400,7 +4618,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -4414,13 +4633,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 98,
 					include_dev: true,
@@ -4487,7 +4708,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -4502,13 +4724,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 216,
 					include_dev: true,
@@ -4582,7 +4806,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -4597,13 +4822,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 161,
 					include_dev: true,
@@ -4669,7 +4896,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: 4,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -4683,13 +4911,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 238,
 					include_dev: false,
@@ -4760,7 +4990,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: 0,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -4775,13 +5006,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 477,
 					include_dev: true,
@@ -4846,7 +5079,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: 0,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -4860,13 +5094,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration',
 					],
 					depth: 479,
 					include_dev: true,
@@ -4882,8 +5118,8 @@ export const mockStore50Scans: RootState = {
 				status_detail: {
 					plugin_name: 'inventory scan',
 					plugin_start_time: '2021-11-22T16:10:50+00:00',
-					current_plugin: 3,
-					total_plugins: 3
+					current_plugin: 4,
+					total_plugins: 4
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -4942,7 +5178,15 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				results: {}
 			},
@@ -4956,13 +5200,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 120,
 					include_dev: false,
@@ -5034,7 +5280,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -5048,13 +5295,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 4,
 					include_dev: false,
@@ -5125,7 +5374,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -5140,13 +5390,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 154,
 					include_dev: true,
@@ -5217,7 +5469,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -5232,13 +5485,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 165,
 					include_dev: false,
@@ -5316,7 +5571,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -5331,13 +5587,15 @@ export const mockStore50Scans: RootState = {
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'-inventory',
 						'-secret',
 						'static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 301,
 					include_dev: false,
@@ -5416,7 +5674,8 @@ export const mockStore50Scans: RootState = {
 						negligible: 0,
 						'': 0
 					},
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -5430,13 +5689,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 291,
 					include_dev: true,
@@ -5504,7 +5765,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				results: {}
 			},
@@ -5518,13 +5780,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 0,
 					include_dev: false,
@@ -5599,7 +5863,8 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: null,
 				},
 				results: {},
 				application_metadata: {}
@@ -5614,13 +5879,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration'
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'configuration'
 					],
 					depth: 170,
 					include_dev: true,
@@ -5636,8 +5903,8 @@ export const mockStore50Scans: RootState = {
 				status_detail: {
 					plugin_name: 'inventory scan',
 					plugin_start_time: '2021-11-22T16:10:50+00:00',
-					current_plugin: 3,
-					total_plugins: 3
+					current_plugin: 4,
+					total_plugins: 4
 				},
 				timestamps: {
 					queued: '2021-11-22T16:10:50+00:00',
@@ -5694,7 +5961,15 @@ export const mockStore50Scans: RootState = {
 					inventory: {
 						base_images: 3,
 						technology_discovery: 12
-					}
+					},
+					configuration: {
+						critical: 3,
+						high: 3,
+						medium: 1,
+						low: 0,
+						negligible: 1,
+						"": 2,
+					},
 				},
 				results: {},
 				application_metadata: {}
@@ -5709,13 +5984,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'-secret',
 						'-static_analysis',
-						'vulnerability'
+						'vulnerability',
+						'-configuration',
 					],
 					depth: 186,
 					include_dev: true,
@@ -5787,7 +6064,8 @@ export const mockStore50Scans: RootState = {
 					},
 					secrets: null,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			},
@@ -5801,13 +6079,15 @@ export const mockStore50Scans: RootState = {
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					plugins: [
 						'inventory',
 						'secret',
 						'-static_analysis',
-						'-vulnerability'
+						'-vulnerability',
+						'-configuration',
 					],
 					depth: 211,
 					include_dev: true,
@@ -5871,7 +6151,8 @@ export const mockStore50Scans: RootState = {
 					vulnerabilities: null,
 					secrets: 0,
 					static_analysis: null,
-					inventory: null
+					inventory: null,
+					configuration: null,
 				},
 				results: {}
 			}
@@ -5884,950 +6165,950 @@ export const mockStore50Scans: RootState = {
 
 export const mockUsers: RootState = {
 	...mockStoreEmpty,
-  users: {
-    ids: [
-      'Arya.Stark@example.com',
-      'Brandon.Stark@example.com',
-      'Brienne.of.Tarth@example.com',
-      'Bronn@example.com',
-      'Catelyn.Stark@example.com',
-      'Cersei.Lannister@example.com',
-      'Daario.Naharis@example.com',
-      'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
-      'Davos.Seaworth@example.com',
-      'Eddard.Stark@example.com',
-      'Ellaria.Sand@example.com',
-      'Gendry@example.com',
-      'Gilly@example.com',
-      'Grey.Worm@example.com',
-      'Jaime.Lannister@example.com',
-      'Jaqen.H\'ghar@example.com',
-      'Jeor.Mormont@example.com',
-      'Joffrey.Baratheon@example.com',
-      'Jon.Snow@example.com',
-      'Jorah.Mormont@example.com',
-      'Margaery.Tyrell@example.com',
-      'Melisandre@example.com',
-      'Missandei@example.com',
-      'Petyr.Baelish@example.com',
-      'Ramsay.Bolton@example.com',
-      'Robb.Stark@example.com',
-      'Robert.Baratheon@example.com',
-      'Roose.Bolton@example.com',
-      'Samwell.Tarly@example.com',
-      'Sandor.Clegane@example.com',
-      'Sansa.Stark@example.com',
-      'Shae@example.com',
-      'Stannis.Baratheon@example.com',
-      'Talisa.Maegyr@example.com',
-      'Theon.Greyjoy@example.com',
-      'This.\'Is\'My.Name?&#<testme>@example.com',
-      'Tommen.Baratheon@example.com',
-      'Tormund.Giantsbane@example.com',
-      'Tyrion.Lannister@example.com',
-      'Tywin.Lannister@example.com',
-      'Varys@example.com',
-      'Viserys.Targaryen@example.com',
-      'Ygritte@example.com'
-    ],
-    entities: {
-      'Arya.Stark@example.com': {
-        email: 'Arya.Stark@example.com',
-        admin: true,
-        last_login: '2020-12-30T16:00:05.019Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Brandon.Stark@example.com': {
-        email: 'Brandon.Stark@example.com',
-        admin: false,
-        last_login: '2021-10-11T16:00:05.019Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Brienne.of.Tarth@example.com': {
-        email: 'Brienne.of.Tarth@example.com',
-        admin: false,
-        last_login: '2021-08-07T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Bronn@example.com': {
-        email: 'Bronn@example.com',
-        admin: false,
-        last_login: '2020-11-25T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Catelyn.Stark@example.com': {
-        email: 'Catelyn.Stark@example.com',
-        admin: false,
-        last_login: '2021-05-21T16:00:05.018Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Cersei.Lannister@example.com': {
-        email: 'Cersei.Lannister@example.com',
-        admin: false,
-        last_login: '2021-08-29T16:00:05.018Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Daario.Naharis@example.com': {
-        email: 'Daario.Naharis@example.com',
-        admin: true,
-        last_login: '2020-12-15T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com': {
-        email: 'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
-        admin: false,
-        last_login: '2021-06-12T16:00:05.018Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Davos.Seaworth@example.com': {
-        email: 'Davos.Seaworth@example.com',
-        admin: false,
-        last_login: '2021-07-06T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Eddard.Stark@example.com': {
-        email: 'Eddard.Stark@example.com',
-        admin: false,
-        last_login: '2021-02-06T16:00:05.018Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Ellaria.Sand@example.com': {
-        email: 'Ellaria.Sand@example.com',
-        admin: false,
-        last_login: '2021-08-06T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Gendry@example.com': {
-        email: 'Gendry@example.com',
-        admin: false,
-        last_login: '2021-07-31T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Gilly@example.com': {
-        email: 'Gilly@example.com',
-        admin: true,
-        last_login: '2021-06-05T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Grey.Worm@example.com': {
-        email: 'Grey.Worm@example.com',
-        admin: false,
-        last_login: '2021-05-26T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Jaime.Lannister@example.com': {
-        email: 'Jaime.Lannister@example.com',
-        admin: false,
-        last_login: '2021-11-02T16:00:05.018Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Jaqen.H\'ghar@example.com': {
-        email: 'Jaqen.H\'ghar@example.com',
-        admin: false,
-        last_login: '2021-10-08T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Jeor.Mormont@example.com': {
-        email: 'Jeor.Mormont@example.com',
-        admin: false,
-        last_login: '2021-04-18T16:00:05.019Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Joffrey.Baratheon@example.com': {
-        email: 'Joffrey.Baratheon@example.com',
-        admin: false,
-        last_login: '2020-12-02T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Jon.Snow@example.com': {
-        email: 'Jon.Snow@example.com',
-        admin: true,
-        last_login: '2021-05-20T16:00:05.018Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Jorah.Mormont@example.com': {
-        email: 'Jorah.Mormont@example.com',
-        admin: false,
-        last_login: '2020-11-29T16:00:05.018Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Margaery.Tyrell@example.com': {
-        email: 'Margaery.Tyrell@example.com',
-        admin: false,
-        last_login: '2021-11-14T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Melisandre@example.com': {
-        email: 'Melisandre@example.com',
-        admin: false,
-        last_login: '2021-11-09T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Missandei@example.com': {
-        email: 'Missandei@example.com',
-        admin: true,
-        last_login: '2021-05-19T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Petyr.Baelish@example.com': {
-        email: 'Petyr.Baelish@example.com',
-        admin: true,
-        last_login: '2021-08-03T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Ramsay.Bolton@example.com': {
-        email: 'Ramsay.Bolton@example.com',
-        admin: false,
-        last_login: '2021-03-12T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Robb.Stark@example.com': {
-        email: 'Robb.Stark@example.com',
-        admin: false,
-        last_login: '2020-12-02T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Robert.Baratheon@example.com': {
-        email: 'Robert.Baratheon@example.com',
-        admin: true,
-        last_login: '2021-02-05T16:00:05.018Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Roose.Bolton@example.com': {
-        email: 'Roose.Bolton@example.com',
-        admin: true,
-        last_login: '2020-12-10T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Samwell.Tarly@example.com': {
-        email: 'Samwell.Tarly@example.com',
-        admin: false,
-        last_login: '2021-02-24T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Sandor.Clegane@example.com': {
-        email: 'Sandor.Clegane@example.com',
-        admin: false,
-        last_login: '2021-04-26T16:00:05.019Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Sansa.Stark@example.com': {
-        email: 'Sansa.Stark@example.com',
-        admin: false,
-        last_login: '2021-07-12T16:00:05.019Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Shae@example.com': {
-        email: 'Shae@example.com',
-        admin: false,
-        last_login: '2021-01-03T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Stannis.Baratheon@example.com': {
-        email: 'Stannis.Baratheon@example.com',
-        admin: true,
-        last_login: '2021-08-01T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Talisa.Maegyr@example.com': {
-        email: 'Talisa.Maegyr@example.com',
-        admin: true,
-        last_login: '2021-04-08T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Theon.Greyjoy@example.com': {
-        email: 'Theon.Greyjoy@example.com',
-        admin: false,
-        last_login: '2021-09-21T16:00:05.019Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'This.\'Is\'My.Name?&#<testme>@example.com': {
-        email: 'This.\'Is\'My.Name?&#<testme>@example.com',
-        admin: false,
-        last_login: '2021-05-12T16:00:05.017Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Tommen.Baratheon@example.com': {
-        email: 'Tommen.Baratheon@example.com',
-        admin: true,
-        last_login: '2021-11-11T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Tormund.Giantsbane@example.com': {
-        email: 'Tormund.Giantsbane@example.com',
-        admin: false,
-        last_login: '2021-03-05T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Tyrion.Lannister@example.com': {
-        email: 'Tyrion.Lannister@example.com',
-        admin: false,
-        last_login: '2021-07-20T16:00:05.019Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      },
-      'Tywin.Lannister@example.com': {
-        email: 'Tywin.Lannister@example.com',
-        admin: false,
-        last_login: '2021-03-20T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Varys@example.com': {
-        email: 'Varys@example.com',
-        admin: false,
-        last_login: '2021-10-24T16:00:05.020Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Viserys.Targaryen@example.com': {
-        email: 'Viserys.Targaryen@example.com',
-        admin: false,
-        last_login: '2021-09-30T16:00:05.018Z',
-        scope: [
-          'goodVcs/goodOrg/regex-[0-9]',
-          'goodVcs/goodOrg/org/path/not/[!0-9]',
-          'goodVcs/goodOrg/org/path/?',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-          'goodVcs.goodOrg.com/interpret[?]'
-        ],
-        features: {
-          snyk: false
-        },
-        scan_orgs: [
-          'goodVcs.goodOrg.com]',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-        ]
-      },
-      'Ygritte@example.com': {
-        email: 'Ygritte@example.com',
-        admin: false,
-        last_login: '2021-07-18T16:00:05.020Z',
-        scope: [
-          '*'
-        ],
-        features: {
-          snyk: true
-        },
-        scan_orgs: [
-          'badVcs/badOrg',
-          'goodVcs.goodOrg.com',
-          'goodVcs/goodOrg',
-          'goodVcs/goodOrg/org/path',
-          'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-          'session/timeout'
-        ]
-      }
-    },
-    status: 'succeeded',
-    action: null,
-    error: null,
-    totalRecords: 43
-  },
+	users: {
+		ids: [
+			'Arya.Stark@example.com',
+			'Brandon.Stark@example.com',
+			'Brienne.of.Tarth@example.com',
+			'Bronn@example.com',
+			'Catelyn.Stark@example.com',
+			'Cersei.Lannister@example.com',
+			'Daario.Naharis@example.com',
+			'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
+			'Davos.Seaworth@example.com',
+			'Eddard.Stark@example.com',
+			'Ellaria.Sand@example.com',
+			'Gendry@example.com',
+			'Gilly@example.com',
+			'Grey.Worm@example.com',
+			'Jaime.Lannister@example.com',
+			'Jaqen.H\'ghar@example.com',
+			'Jeor.Mormont@example.com',
+			'Joffrey.Baratheon@example.com',
+			'Jon.Snow@example.com',
+			'Jorah.Mormont@example.com',
+			'Margaery.Tyrell@example.com',
+			'Melisandre@example.com',
+			'Missandei@example.com',
+			'Petyr.Baelish@example.com',
+			'Ramsay.Bolton@example.com',
+			'Robb.Stark@example.com',
+			'Robert.Baratheon@example.com',
+			'Roose.Bolton@example.com',
+			'Samwell.Tarly@example.com',
+			'Sandor.Clegane@example.com',
+			'Sansa.Stark@example.com',
+			'Shae@example.com',
+			'Stannis.Baratheon@example.com',
+			'Talisa.Maegyr@example.com',
+			'Theon.Greyjoy@example.com',
+			'This.\'Is\'My.Name?&#<testme>@example.com',
+			'Tommen.Baratheon@example.com',
+			'Tormund.Giantsbane@example.com',
+			'Tyrion.Lannister@example.com',
+			'Tywin.Lannister@example.com',
+			'Varys@example.com',
+			'Viserys.Targaryen@example.com',
+			'Ygritte@example.com'
+		],
+		entities: {
+			'Arya.Stark@example.com': {
+				email: 'Arya.Stark@example.com',
+				admin: true,
+				last_login: '2020-12-30T16:00:05.019Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Brandon.Stark@example.com': {
+				email: 'Brandon.Stark@example.com',
+				admin: false,
+				last_login: '2021-10-11T16:00:05.019Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Brienne.of.Tarth@example.com': {
+				email: 'Brienne.of.Tarth@example.com',
+				admin: false,
+				last_login: '2021-08-07T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Bronn@example.com': {
+				email: 'Bronn@example.com',
+				admin: false,
+				last_login: '2020-11-25T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Catelyn.Stark@example.com': {
+				email: 'Catelyn.Stark@example.com',
+				admin: false,
+				last_login: '2021-05-21T16:00:05.018Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Cersei.Lannister@example.com': {
+				email: 'Cersei.Lannister@example.com',
+				admin: false,
+				last_login: '2021-08-29T16:00:05.018Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Daario.Naharis@example.com': {
+				email: 'Daario.Naharis@example.com',
+				admin: true,
+				last_login: '2020-12-15T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com': {
+				email: 'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
+				admin: false,
+				last_login: '2021-06-12T16:00:05.018Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Davos.Seaworth@example.com': {
+				email: 'Davos.Seaworth@example.com',
+				admin: false,
+				last_login: '2021-07-06T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Eddard.Stark@example.com': {
+				email: 'Eddard.Stark@example.com',
+				admin: false,
+				last_login: '2021-02-06T16:00:05.018Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Ellaria.Sand@example.com': {
+				email: 'Ellaria.Sand@example.com',
+				admin: false,
+				last_login: '2021-08-06T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Gendry@example.com': {
+				email: 'Gendry@example.com',
+				admin: false,
+				last_login: '2021-07-31T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Gilly@example.com': {
+				email: 'Gilly@example.com',
+				admin: true,
+				last_login: '2021-06-05T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Grey.Worm@example.com': {
+				email: 'Grey.Worm@example.com',
+				admin: false,
+				last_login: '2021-05-26T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Jaime.Lannister@example.com': {
+				email: 'Jaime.Lannister@example.com',
+				admin: false,
+				last_login: '2021-11-02T16:00:05.018Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Jaqen.H\'ghar@example.com': {
+				email: 'Jaqen.H\'ghar@example.com',
+				admin: false,
+				last_login: '2021-10-08T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Jeor.Mormont@example.com': {
+				email: 'Jeor.Mormont@example.com',
+				admin: false,
+				last_login: '2021-04-18T16:00:05.019Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Joffrey.Baratheon@example.com': {
+				email: 'Joffrey.Baratheon@example.com',
+				admin: false,
+				last_login: '2020-12-02T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Jon.Snow@example.com': {
+				email: 'Jon.Snow@example.com',
+				admin: true,
+				last_login: '2021-05-20T16:00:05.018Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Jorah.Mormont@example.com': {
+				email: 'Jorah.Mormont@example.com',
+				admin: false,
+				last_login: '2020-11-29T16:00:05.018Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Margaery.Tyrell@example.com': {
+				email: 'Margaery.Tyrell@example.com',
+				admin: false,
+				last_login: '2021-11-14T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Melisandre@example.com': {
+				email: 'Melisandre@example.com',
+				admin: false,
+				last_login: '2021-11-09T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Missandei@example.com': {
+				email: 'Missandei@example.com',
+				admin: true,
+				last_login: '2021-05-19T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Petyr.Baelish@example.com': {
+				email: 'Petyr.Baelish@example.com',
+				admin: true,
+				last_login: '2021-08-03T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Ramsay.Bolton@example.com': {
+				email: 'Ramsay.Bolton@example.com',
+				admin: false,
+				last_login: '2021-03-12T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Robb.Stark@example.com': {
+				email: 'Robb.Stark@example.com',
+				admin: false,
+				last_login: '2020-12-02T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Robert.Baratheon@example.com': {
+				email: 'Robert.Baratheon@example.com',
+				admin: true,
+				last_login: '2021-02-05T16:00:05.018Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Roose.Bolton@example.com': {
+				email: 'Roose.Bolton@example.com',
+				admin: true,
+				last_login: '2020-12-10T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Samwell.Tarly@example.com': {
+				email: 'Samwell.Tarly@example.com',
+				admin: false,
+				last_login: '2021-02-24T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Sandor.Clegane@example.com': {
+				email: 'Sandor.Clegane@example.com',
+				admin: false,
+				last_login: '2021-04-26T16:00:05.019Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Sansa.Stark@example.com': {
+				email: 'Sansa.Stark@example.com',
+				admin: false,
+				last_login: '2021-07-12T16:00:05.019Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Shae@example.com': {
+				email: 'Shae@example.com',
+				admin: false,
+				last_login: '2021-01-03T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Stannis.Baratheon@example.com': {
+				email: 'Stannis.Baratheon@example.com',
+				admin: true,
+				last_login: '2021-08-01T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Talisa.Maegyr@example.com': {
+				email: 'Talisa.Maegyr@example.com',
+				admin: true,
+				last_login: '2021-04-08T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Theon.Greyjoy@example.com': {
+				email: 'Theon.Greyjoy@example.com',
+				admin: false,
+				last_login: '2021-09-21T16:00:05.019Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'This.\'Is\'My.Name?&#<testme>@example.com': {
+				email: 'This.\'Is\'My.Name?&#<testme>@example.com',
+				admin: false,
+				last_login: '2021-05-12T16:00:05.017Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Tommen.Baratheon@example.com': {
+				email: 'Tommen.Baratheon@example.com',
+				admin: true,
+				last_login: '2021-11-11T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Tormund.Giantsbane@example.com': {
+				email: 'Tormund.Giantsbane@example.com',
+				admin: false,
+				last_login: '2021-03-05T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Tyrion.Lannister@example.com': {
+				email: 'Tyrion.Lannister@example.com',
+				admin: false,
+				last_login: '2021-07-20T16:00:05.019Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			},
+			'Tywin.Lannister@example.com': {
+				email: 'Tywin.Lannister@example.com',
+				admin: false,
+				last_login: '2021-03-20T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Varys@example.com': {
+				email: 'Varys@example.com',
+				admin: false,
+				last_login: '2021-10-24T16:00:05.020Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Viserys.Targaryen@example.com': {
+				email: 'Viserys.Targaryen@example.com',
+				admin: false,
+				last_login: '2021-09-30T16:00:05.018Z',
+				scope: [
+					'goodVcs/goodOrg/regex-[0-9]',
+					'goodVcs/goodOrg/org/path/not/[!0-9]',
+					'goodVcs/goodOrg/org/path/?',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
+					'goodVcs.goodOrg.com/interpret[?]'
+				],
+				features: {
+					snyk: false
+				},
+				scan_orgs: [
+					'goodVcs.goodOrg.com]',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
+				]
+			},
+			'Ygritte@example.com': {
+				email: 'Ygritte@example.com',
+				admin: false,
+				last_login: '2021-07-18T16:00:05.020Z',
+				scope: [
+					'*'
+				],
+				features: {
+					snyk: true
+				},
+				scan_orgs: [
+					'badVcs/badOrg',
+					'goodVcs.goodOrg.com',
+					'goodVcs/goodOrg',
+					'goodVcs/goodOrg/org/path',
+					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
+					'session/timeout'
+				]
+			}
+		},
+		status: 'succeeded',
+		action: null,
+		error: null,
+		totalRecords: 43
+	},
 };
 
 export const mockStoreApiKeys: RootState = {
 	...mockStoreEmpty,
-  keys: {
-    ids: [
-      'c5365468-3e07-31f9-a613-dae804c84efb'
-    ],
-    entities: {
-      'c5365468-3e07-31f9-a613-dae804c84efb': {
-        id: 'c5365468-3e07-31f9-a613-dae804c84efb',
-        name: 'test.me',
-        created: '2021-11-24T19:08:28+00:00',
-        last_used: null,
-        expires: null,
-        scope: [
-          '*'
-        ],
-        admin: false,
-        features: {
-          snyk: false
-        }
-      }
-    },
-    status: 'succeeded',
-    error: null,
-    totalRecords: 1
-  },
+	keys: {
+		ids: [
+			'c5365468-3e07-31f9-a613-dae804c84efb'
+		],
+		entities: {
+			'c5365468-3e07-31f9-a613-dae804c84efb': {
+				id: 'c5365468-3e07-31f9-a613-dae804c84efb',
+				name: 'test.me',
+				created: '2021-11-24T19:08:28+00:00',
+				last_used: null,
+				expires: null,
+				scope: [
+					'*'
+				],
+				admin: false,
+				features: {
+					snyk: false
+				}
+			}
+		},
+		status: 'succeeded',
+		error: null,
+		totalRecords: 1
+	},
 };
 
 export const mockStoreNotification: RootState = {
@@ -7056,129 +7337,129 @@ export const vulnRow = {
 	"createdBy": "Ellaria.Sand@example.com",
 	"hasHiddenFindings": true,
 	"hiddenFindings": [
-			{
-					"id": "596ee47d-65de-8c12-98c3-ca9eff3b4224",
-					"type": "vulnerability",
-					"value": {
-							"id": "CVE-2019-00000",
-							"component": "component1",
-							"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
-							"severity": "high"
-					},
-					"expires": "2021-08-11T02:00:47.269Z",
-					"reason": "expiring test hiding a subset of files with vuln finding (1)",
-					"created_by": "Ellaria.Sand@example.com"
+		{
+			"id": "596ee47d-65de-8c12-98c3-ca9eff3b4224",
+			"type": "vulnerability",
+			"value": {
+				"id": "CVE-2019-00000",
+				"component": "component1",
+				"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
+				"severity": "high"
 			},
-			{
-					"id": "69438fcb-13da-8b50-fe71-dfd0ccd91be1",
-					"type": "vulnerability",
-					"value": {
-							"id": "CVE-2019-00000",
-							"component": "component1",
-							"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
-							"severity": "high"
-					},
-					"expires": "2021-08-11T02:00:47.269Z",
-					"reason": "expiring test hiding a subset of files with vuln finding (2)",
-					"created_by": "Ellaria.Sand@example.com"
+			"expires": "2021-08-11T02:00:47.269Z",
+			"reason": "expiring test hiding a subset of files with vuln finding (1)",
+			"created_by": "Ellaria.Sand@example.com"
+		},
+		{
+			"id": "69438fcb-13da-8b50-fe71-dfd0ccd91be1",
+			"type": "vulnerability",
+			"value": {
+				"id": "CVE-2019-00000",
+				"component": "component1",
+				"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
+				"severity": "high"
 			},
-			{
-					"id": "ed1edfd8-4056-a73a-77bb-d117a4b31f23",
-					"type": "vulnerability",
-					"value": {
-							"id": "CVE-2019-00000",
-							"component": "component1",
-							"source": "docker/Dockerfile.platform7",
-							"severity": "high"
-					},
-					"expires": "2021-08-11T02:00:47.270Z",
-					"reason": "expiring test hiding a subset of files with vuln finding (3)",
-					"created_by": "Ellaria.Sand@example.com"
+			"expires": "2021-08-11T02:00:47.269Z",
+			"reason": "expiring test hiding a subset of files with vuln finding (2)",
+			"created_by": "Ellaria.Sand@example.com"
+		},
+		{
+			"id": "ed1edfd8-4056-a73a-77bb-d117a4b31f23",
+			"type": "vulnerability",
+			"value": {
+				"id": "CVE-2019-00000",
+				"component": "component1",
+				"source": "docker/Dockerfile.platform7",
+				"severity": "high"
 			},
-			{
-					"id": "9a016aed-40f7-7a26-3477-b399337db20f",
-					"type": "vulnerability",
-					"value": {
-							"id": "CVE-2019-00000",
-							"component": "component1",
-							"source": "docker/Dockerfile.platform27",
-							"severity": "high"
-					},
-					"expires": "2021-08-11T02:00:47.270Z",
-					"reason": "expiring test hiding a subset of files with vuln finding (4)",
-					"created_by": "Ellaria.Sand@example.com"
-			}
+			"expires": "2021-08-11T02:00:47.270Z",
+			"reason": "expiring test hiding a subset of files with vuln finding (3)",
+			"created_by": "Ellaria.Sand@example.com"
+		},
+		{
+			"id": "9a016aed-40f7-7a26-3477-b399337db20f",
+			"type": "vulnerability",
+			"value": {
+				"id": "CVE-2019-00000",
+				"component": "component1",
+				"source": "docker/Dockerfile.platform27",
+				"severity": "high"
+			},
+			"expires": "2021-08-11T02:00:47.270Z",
+			"reason": "expiring test hiding a subset of files with vuln finding (4)",
+			"created_by": "Ellaria.Sand@example.com"
+		}
 	],
 	"unhiddenFindings": [
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component1",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component2",
-			"docker/Dockerfile.platform2",
-			"docker/Dockerfile.platform3",
-			"docker/Dockerfile.platform4",
-			"docker/Dockerfile.platform5",
-			"docker/Dockerfile.platform6",
-			"docker/Dockerfile.platform8",
-			"docker/Dockerfile.platform9",
-			"docker/Dockerfile.platform0",
-			"docker/Dockerfile.platform10",
-			"docker/Dockerfile.platform11",
-			"docker/Dockerfile.platform12",
-			"docker/Dockerfile.platform13",
-			"docker/Dockerfile.platform14",
-			"docker/Dockerfile.platform15",
-			"docker/Dockerfile.platform16",
-			"docker/Dockerfile.platform17",
-			"docker/Dockerfile.platform18",
-			"docker/Dockerfile.platform19",
-			"docker/Dockerfile.platform20",
-			"docker/Dockerfile.platform21",
-			"docker/Dockerfile.platform22",
-			"docker/Dockerfile.platform23",
-			"docker/Dockerfile.platform24",
-			"docker/Dockerfile.platform25",
-			"docker/Dockerfile.platform26"
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component1",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component2",
+		"docker/Dockerfile.platform2",
+		"docker/Dockerfile.platform3",
+		"docker/Dockerfile.platform4",
+		"docker/Dockerfile.platform5",
+		"docker/Dockerfile.platform6",
+		"docker/Dockerfile.platform8",
+		"docker/Dockerfile.platform9",
+		"docker/Dockerfile.platform0",
+		"docker/Dockerfile.platform10",
+		"docker/Dockerfile.platform11",
+		"docker/Dockerfile.platform12",
+		"docker/Dockerfile.platform13",
+		"docker/Dockerfile.platform14",
+		"docker/Dockerfile.platform15",
+		"docker/Dockerfile.platform16",
+		"docker/Dockerfile.platform17",
+		"docker/Dockerfile.platform18",
+		"docker/Dockerfile.platform19",
+		"docker/Dockerfile.platform20",
+		"docker/Dockerfile.platform21",
+		"docker/Dockerfile.platform22",
+		"docker/Dockerfile.platform23",
+		"docker/Dockerfile.platform24",
+		"docker/Dockerfile.platform25",
+		"docker/Dockerfile.platform26"
 	],
 	"component": "component1",
 	"id": "CVE-2019-00000",
 	"severity": "high",
 	"source": [
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component1",
-			"node/a_very_long_directory_name_tests_and_samples/package.json: component2",
-			"docker/Dockerfile.platform2",
-			"docker/Dockerfile.platform3",
-			"docker/Dockerfile.platform4",
-			"docker/Dockerfile.platform5",
-			"docker/Dockerfile.platform6",
-			"docker/Dockerfile.platform7",
-			"docker/Dockerfile.platform8",
-			"docker/Dockerfile.platform9",
-			"docker/Dockerfile.platform0",
-			"docker/Dockerfile.platform10",
-			"docker/Dockerfile.platform11",
-			"docker/Dockerfile.platform12",
-			"docker/Dockerfile.platform13",
-			"docker/Dockerfile.platform14",
-			"docker/Dockerfile.platform15",
-			"docker/Dockerfile.platform16",
-			"docker/Dockerfile.platform17",
-			"docker/Dockerfile.platform18",
-			"docker/Dockerfile.platform19",
-			"docker/Dockerfile.platform20",
-			"docker/Dockerfile.platform21",
-			"docker/Dockerfile.platform22",
-			"docker/Dockerfile.platform23",
-			"docker/Dockerfile.platform24",
-			"docker/Dockerfile.platform25",
-			"docker/Dockerfile.platform26",
-			"docker/Dockerfile.platform27"
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component1",
+		"node/a_very_long_directory_name_tests_and_samples/package.json: component2",
+		"docker/Dockerfile.platform2",
+		"docker/Dockerfile.platform3",
+		"docker/Dockerfile.platform4",
+		"docker/Dockerfile.platform5",
+		"docker/Dockerfile.platform6",
+		"docker/Dockerfile.platform7",
+		"docker/Dockerfile.platform8",
+		"docker/Dockerfile.platform9",
+		"docker/Dockerfile.platform0",
+		"docker/Dockerfile.platform10",
+		"docker/Dockerfile.platform11",
+		"docker/Dockerfile.platform12",
+		"docker/Dockerfile.platform13",
+		"docker/Dockerfile.platform14",
+		"docker/Dockerfile.platform15",
+		"docker/Dockerfile.platform16",
+		"docker/Dockerfile.platform17",
+		"docker/Dockerfile.platform18",
+		"docker/Dockerfile.platform19",
+		"docker/Dockerfile.platform20",
+		"docker/Dockerfile.platform21",
+		"docker/Dockerfile.platform22",
+		"docker/Dockerfile.platform23",
+		"docker/Dockerfile.platform24",
+		"docker/Dockerfile.platform25",
+		"docker/Dockerfile.platform26",
+		"docker/Dockerfile.platform27"
 	],
 	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 	"remediation": "imagine a remediation here"
@@ -7236,22 +7517,22 @@ export const findingAnalysisRow = {
 	"component": "Potential template injection",
 	"severity": "medium",
 	"hiddenFindings": [
-			{
-					"id": "4afb7b09-1aa9-2d4d-60df-de796de080d6",
-					"type": "static_analysis",
-					"value": {
-							"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-							"line": 14,
-							"type": "Potential template injection",
-							"severity": "medium"
-					},
-					"expires": null,
-					"reason": "test static_analysis type",
-					"created_by": "Arya.Stark@example.com",
-					"created": "2021-01-01T13:01:01Z",
-					"updated_by": "Bron@example.com",
-					"updated": "2021-02-02T14:02:02Z",
-			}
+		{
+			"id": "4afb7b09-1aa9-2d4d-60df-de796de080d6",
+			"type": "static_analysis",
+			"value": {
+				"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+				"line": 14,
+				"type": "Potential template injection",
+				"severity": "medium"
+			},
+			"expires": null,
+			"reason": "test static_analysis type",
+			"created_by": "Arya.Stark@example.com",
+			"created": "2021-01-01T13:01:01Z",
+			"updated_by": "Bron@example.com",
+			"updated": "2021-02-02T14:02:02Z",
+		}
 	],
 	"unhiddenFindings": []
 };
@@ -7535,213 +7816,213 @@ export const mockSearchComponentRepos = {
 	next: null,
 	previous: null,
 	results: [
-		{service: 'azure', repo: 'tv/dev', risk: 'priority'},
-		{service: 'azure', repo: 'tv/qa', risk: 'priority'},
-		{service: 'azure', repo: 'tv/test', risk: 'critical'},
-		{service: 'azure', repo: 'tv/new-show', risk: 'high'},
-		{service: 'azure', repo: 'tv/game-of-chairs', risk: null},
-		{service: 'azure', repo: 'tv/dragon-house', risk: null},
-		{service: 'azure', repo: 'tv/peasmaker/season2', risk: null},
-		{service: 'bigrepo.example.com', repo: 'cartoons-we-love', risk: null},
-		{service: 'bitbucket', repo: 'movies/2quick2angry', risk: null},
-		{service: 'bitbucket', repo: 'movies/another_superhero_movie', risk: null},
+		{ service: 'azure', repo: 'tv/dev', risk: 'priority' },
+		{ service: 'azure', repo: 'tv/qa', risk: 'priority' },
+		{ service: 'azure', repo: 'tv/test', risk: 'critical' },
+		{ service: 'azure', repo: 'tv/new-show', risk: 'high' },
+		{ service: 'azure', repo: 'tv/game-of-chairs', risk: null },
+		{ service: 'azure', repo: 'tv/dragon-house', risk: null },
+		{ service: 'azure', repo: 'tv/peasmaker/season2', risk: null },
+		{ service: 'bigrepo.example.com', repo: 'cartoons-we-love', risk: null },
+		{ service: 'bitbucket', repo: 'movies/2quick2angry', risk: null },
+		{ service: 'bitbucket', repo: 'movies/another_superhero_movie', risk: null },
 	],
 };
 
 export const mockSearchRepos = {
 	results: [
-			{
-					service: "azure",
-					repo: "tv/dev",
-					risk: "priority",
-					qualified_scan: {
-							created: "2022-02-02T14:00:00Z",
-							scan_id: "9cb02b99-fdcb-4234-5127-4e418d600f46"
-					},
-					application_metadata: {
-						...sampleMetaData2,
-					}
+		{
+			service: "azure",
+			repo: "tv/dev",
+			risk: "priority",
+			qualified_scan: {
+				created: "2022-02-02T14:00:00Z",
+				scan_id: "9cb02b99-fdcb-4234-5127-4e418d600f46"
 			},
-			{
-					service: "azure",
-					repo: "tv/qa",
-					risk: "priority",
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData3,
-					}
-			},
-			{
-					service: "azure",
-					repo: "tv/test",
-					risk: "critical",
-					qualified_scan: {
-							created: "2022-03-02T12:00:00Z",
-							scan_id: "a4d915a7-2ce0-c42e-9ab6-d6e95843160e"
-					},
-					application_metadata: {
-						...sampleMetaData4,
-					}
-			},
-			{
-					service: "azure",
-					repo: "tv/new-show",
-					risk: "high",
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData5,
-					}
-			},
-			{
-					service: "azure",
-					repo: "tv/game-of-chairs",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "azure",
-					repo: "tv/dragon-house",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "azure",
-					repo: "tv/peasmaker/season2",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "bigrepo.example.com",
-					repo: "cartoons-we-love",
-					risk: null,
-					qualified_scan: {
-							created: "2022-02-22T14:22:22Z",
-							scan_id: "3446feae-1480-d43f-680e-7087bff49d38"
-					},
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "bitbucket",
-					repo: "movies/2quick2angry",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "bitbucket",
-					repo: "movies/another_superhero_movie",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "bitbucket",
-					repo: "movies/thriller",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "bitbucket",
-					repo: "movies/action",
-					risk: null,
-					qualified_scan: {
-							created: "2021-12-12T12:12:12Z",
-							scan_id: "32bc93b8-c337-f25d-aa33-9fb961b520b5"
-					},
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "allthecodes.example.com",
-					repo: "documentation",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: null
-			},
-			{
-					service: "github",
-					repo: "games/roleplayer",
-					risk: null,
-					qualified_scan: {
-							created: "2022-01-01T11:01:01Z",
-							scan_id: "f4fa42b2-0640-d16e-e387-7e54e37ead88"
-					},
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "github",
-					repo: "games/strategy",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "github",
-					repo: "games/sports",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "gitlab.com",
-					repo: "gravity",
-					risk: null,
-					qualified_scan: {
-							created: "2021-01-11T11:11:11Z",
-							scan_id: "0ddda3a0-09c7-62df-9141-5db71833f439"
-					},
-					application_metadata: null
-			},
-			{
-					service: "gitlab.com",
-					repo: "feeds",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: null
-			},
-			{
-					service: "our-source.example.com",
-					repo: "our-source-code",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
-			},
-			{
-					service: "teamstar.example.com",
-					repo: "nothin-but-codes",
-					risk: null,
-					qualified_scan: null,
-					application_metadata: {
-						...sampleMetaData6,
-					}
+			application_metadata: {
+				...sampleMetaData2,
 			}
+		},
+		{
+			service: "azure",
+			repo: "tv/qa",
+			risk: "priority",
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData3,
+			}
+		},
+		{
+			service: "azure",
+			repo: "tv/test",
+			risk: "critical",
+			qualified_scan: {
+				created: "2022-03-02T12:00:00Z",
+				scan_id: "a4d915a7-2ce0-c42e-9ab6-d6e95843160e"
+			},
+			application_metadata: {
+				...sampleMetaData4,
+			}
+		},
+		{
+			service: "azure",
+			repo: "tv/new-show",
+			risk: "high",
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData5,
+			}
+		},
+		{
+			service: "azure",
+			repo: "tv/game-of-chairs",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "azure",
+			repo: "tv/dragon-house",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "azure",
+			repo: "tv/peasmaker/season2",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "bigrepo.example.com",
+			repo: "cartoons-we-love",
+			risk: null,
+			qualified_scan: {
+				created: "2022-02-22T14:22:22Z",
+				scan_id: "3446feae-1480-d43f-680e-7087bff49d38"
+			},
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "bitbucket",
+			repo: "movies/2quick2angry",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "bitbucket",
+			repo: "movies/another_superhero_movie",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "bitbucket",
+			repo: "movies/thriller",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "bitbucket",
+			repo: "movies/action",
+			risk: null,
+			qualified_scan: {
+				created: "2021-12-12T12:12:12Z",
+				scan_id: "32bc93b8-c337-f25d-aa33-9fb961b520b5"
+			},
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "allthecodes.example.com",
+			repo: "documentation",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: null
+		},
+		{
+			service: "github",
+			repo: "games/roleplayer",
+			risk: null,
+			qualified_scan: {
+				created: "2022-01-01T11:01:01Z",
+				scan_id: "f4fa42b2-0640-d16e-e387-7e54e37ead88"
+			},
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "github",
+			repo: "games/strategy",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "github",
+			repo: "games/sports",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "gitlab.com",
+			repo: "gravity",
+			risk: null,
+			qualified_scan: {
+				created: "2021-01-11T11:11:11Z",
+				scan_id: "0ddda3a0-09c7-62df-9141-5db71833f439"
+			},
+			application_metadata: null
+		},
+		{
+			service: "gitlab.com",
+			repo: "feeds",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: null
+		},
+		{
+			service: "our-source.example.com",
+			repo: "our-source-code",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		},
+		{
+			service: "teamstar.example.com",
+			repo: "nothin-but-codes",
+			risk: null,
+			qualified_scan: null,
+			application_metadata: {
+				...sampleMetaData6,
+			}
+		}
 	],
 	count: 20,
 	next: null,

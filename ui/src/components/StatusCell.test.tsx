@@ -2,6 +2,7 @@ import { getByText, render, screen } from "test-utils";
 import { AnalysisReport } from "features/scans/scansSchemas";
 import StatusCell from "./StatusCell";
 import {
+	configPlugins,
 	sbomPlugins,
 	secretPlugins,
 	staticPlugins,
@@ -17,7 +18,13 @@ const row: AnalysisReport = {
 	service: "vcs1",
 	branch: null,
 	scan_options: {
-		categories: ["vulnerability", "static_analysis", "secret", "inventory"],
+		categories: [
+			"vulnerability",
+			"static_analysis",
+			"secret",
+			"inventory",
+			"configuration",
+		],
 		plugins: ["plugin"],
 		depth: 500,
 		include_dev: false,
@@ -61,6 +68,14 @@ const row: AnalysisReport = {
 		inventory: {
 			base_images: 0,
 			technology_discovery: 0,
+		},
+		configuration: {
+			critical: 0,
+			high: 0,
+			medium: 0,
+			low: 0,
+			negligible: 0,
+			"": 0,
 		},
 	},
 	results: {
@@ -254,6 +269,14 @@ describe("field displays 'complete' status", () => {
 					base_images: 3,
 					technology_discovery: 8,
 				},
+				configuration: {
+					critical: 2,
+					high: 2,
+					medium: 1,
+					low: 1,
+					negligible: 1,
+					"": 0,
+				},
 			};
 		});
 
@@ -353,6 +376,37 @@ describe("field displays 'complete' status", () => {
 			expect(elt).toBeInTheDocument();
 			expect(getByText(elt, count)).toBeInTheDocument();
 		});
+
+		it("displays a count of critical configuration results", () => {
+			render(<StatusCell row={row} />);
+			const count = (
+				row?.results_summary?.configuration?.critical || 0
+			).toString();
+			const reg = new RegExp(`${count} critical configuration`, "i");
+			const elt = screen.getByTitle(reg);
+			expect(elt).toBeInTheDocument();
+			expect(getByText(elt, count)).toBeInTheDocument();
+		});
+
+		it("displays a count of high configuration results", () => {
+			render(<StatusCell row={row} />);
+			const count = (row?.results_summary?.configuration?.high || 0).toString();
+			const reg = new RegExp(`${count} high configuration`, "i");
+			const elt = screen.getByTitle(reg);
+			expect(elt).toBeInTheDocument();
+			expect(getByText(elt, count)).toBeInTheDocument();
+		});
+
+		it("displays a count of medium configuration results", () => {
+			render(<StatusCell row={row} />);
+			const count = (
+				row?.results_summary?.configuration?.medium || 0
+			).toString();
+			const reg = new RegExp(`${count} medium configuration`, "i");
+			const elt = screen.getByTitle(reg);
+			expect(elt).toBeInTheDocument();
+			expect(getByText(elt, count)).toBeInTheDocument();
+		});
 	});
 
 	describe("displays scan category ran if category enabled in scan options", () => {
@@ -364,6 +418,7 @@ describe("field displays 'complete' status", () => {
 				"inventory",
 				"static_analysis",
 				"sbom",
+				"configuration",
 			];
 			// exclude plugins and results_summary so we are testing only categories
 			row.scan_options.plugins = [];
@@ -373,6 +428,7 @@ describe("field displays 'complete' status", () => {
 				secrets: null,
 				static_analysis: null,
 				inventory: null,
+				configuration: null,
 			};
 		});
 
@@ -493,6 +549,7 @@ describe("field displays 'complete' status", () => {
 				techPlugins[0],
 				staticPlugins[0],
 				sbomPlugins[0],
+				configPlugins[0],
 			];
 			// exclude categories and results_summary so we are testing only plugins
 			row.scan_options.categories = [];
@@ -502,6 +559,7 @@ describe("field displays 'complete' status", () => {
 				secrets: null,
 				static_analysis: null,
 				inventory: null,
+				configuration: null,
 			};
 		});
 
@@ -602,6 +660,37 @@ describe("field displays 'complete' status", () => {
 			expect(getByText(elt, count)).toBeInTheDocument();
 		});
 
+		it("displays a count of critical configuration results", () => {
+			render(<StatusCell row={row} />);
+			const count = (
+				row?.results_summary?.configuration?.critical || 0
+			).toString();
+			const reg = new RegExp(`${count} critical configuration`, "i");
+			const elt = screen.getByTitle(reg);
+			expect(elt).toBeInTheDocument();
+			expect(getByText(elt, count)).toBeInTheDocument();
+		});
+
+		it("displays a count of high configuration results", () => {
+			render(<StatusCell row={row} />);
+			const count = (row?.results_summary?.configuration?.high || 0).toString();
+			const reg = new RegExp(`${count} high configuration`, "i");
+			const elt = screen.getByTitle(reg);
+			expect(elt).toBeInTheDocument();
+			expect(getByText(elt, count)).toBeInTheDocument();
+		});
+
+		it("displays a count of medium configuration results", () => {
+			render(<StatusCell row={row} />);
+			const count = (
+				row?.results_summary?.configuration?.medium || 0
+			).toString();
+			const reg = new RegExp(`${count} medium configuration`, "i");
+			const elt = screen.getByTitle(reg);
+			expect(elt).toBeInTheDocument();
+			expect(getByText(elt, count)).toBeInTheDocument();
+		});
+
 		if (sbomPlugins.length > 0) {
 			it("displays sbom category run indicator without a count", () => {
 				render(<StatusCell row={row} />);
@@ -680,6 +769,14 @@ describe("field displays 'complete' status", () => {
 					base_images: 3,
 					technology_discovery: 8,
 				},
+				configuration: {
+					critical: 2,
+					high: 2,
+					medium: 1,
+					low: 1,
+					negligible: 1,
+					"": 0,
+				},
 			};
 		});
 
@@ -733,6 +830,16 @@ describe("field displays 'complete' status", () => {
 		it("displays scan subset help indicator if inventory scan category missing in summary results", () => {
 			const rowNoVuls = JSON.parse(JSON.stringify(row));
 			rowNoVuls.results_summary.inventory = null;
+			render(<StatusCell row={rowNoVuls} />);
+			const subsetIndicator = screen.getByRole("button", {
+				name: /view info/i,
+			});
+			expect(subsetIndicator).toBeInTheDocument();
+		});
+
+		it("displays scan subset help indicator if configuration scan category missing in summary results", () => {
+			const rowNoVuls = JSON.parse(JSON.stringify(row));
+			rowNoVuls.results_summary.configuration = null;
 			render(<StatusCell row={rowNoVuls} />);
 			const subsetIndicator = screen.getByRole("button", {
 				name: /view info/i,

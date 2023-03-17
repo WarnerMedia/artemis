@@ -18,6 +18,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
+	Grid,
 	InputAdornment,
 	LinearProgress,
 	Paper,
@@ -28,6 +29,7 @@ import {
 	BugReport as BugReportIcon,
 	CreateNewFolder as CreateNewFolderIcon,
 	ExpandMore as ExpandMoreIcon,
+	FactCheck as FactCheckIcon,
 	Folder as FolderIcon,
 	FolderOff as FolderOffIcon,
 	History as HistoryIcon,
@@ -42,6 +44,7 @@ import {
 	VpnKey as VpnKeyIcon,
 } from "@mui/icons-material";
 import { makeStyles } from "tss-react/mui";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { useTheme } from "@mui/material/styles";
 import { Checkbox, TextField } from "formik-mui";
 import { useLingui } from "@lingui/react";
@@ -74,6 +77,17 @@ import AutoCompleteField from "components/AutoCompleteField";
 
 import client, { handleException, RequestMeta } from "api/client";
 import {
+	excludePlugins,
+	GROUP_ANALYSIS,
+	GROUP_CONFIG,
+	GROUP_INVENTORY,
+	GROUP_SBOM,
+	GROUP_SECRETS,
+	GROUP_VULN,
+	pluginCatalog,
+	configPlugins,
+	configPluginsObjects,
+	sbomPluginsObjects,
 	ScanPlugin,
 	secretPlugins,
 	secretPluginsObjects,
@@ -83,19 +97,12 @@ import {
 	techPluginsObjects,
 	vulnPlugins,
 	vulnPluginsObjects,
-	sbomPluginsObjects,
-	GROUP_SECRETS,
-	GROUP_ANALYSIS,
-	GROUP_INVENTORY,
-	GROUP_VULN,
-	GROUP_SBOM,
-	excludePlugins,
+	configPluginsKeys,
+	sbomPluginsKeys,
 	secretPluginsKeys,
 	staticPluginsKeys,
 	techPluginsKeys,
 	vulnPluginsKeys,
-	sbomPluginsKeys,
-	pluginCatalog,
 } from "../app/scanPlugins";
 import WelcomeDialog from "components/WelcomeDialog";
 import WelcomeDialogContent from "custom/WelcomeDialogContent";
@@ -157,14 +164,24 @@ const useStyles = makeStyles()((theme) => ({
 	paperHeader: {
 		marginBottom: theme.spacing(2),
 	},
+	pluginsSelectorAccordionSummary: {
+		"& .MuiAccordionSummary-content": {
+			margin: `${theme.spacing(1)} 0`,
+		},
+	},
 	pluginSelectorPlugins: {
 		display: "block",
+		position: "absolute",
+		zIndex: "500",
 		maxHeight: "17.5rem",
 		height: "auto",
 		overflowY: "auto",
-	},
-	scanCategory: {
-		flex: 1,
+		backgroundColor: theme.palette.background.default,
+		width: "100%",
+		borderTop: `0 solid ${theme.palette.primary.main}`,
+		borderRight: `1px solid ${theme.palette.primary.main}`,
+		borderLeft: `1px solid ${theme.palette.primary.main}`,
+		borderBottom: `2px solid ${theme.palette.primary.main}`,
 	},
 	scanCategoryContainer: {
 		width: "100%",
@@ -272,6 +289,7 @@ const MainPage = () => {
 		staticAnalysis: true,
 		inventory: true,
 		vulnerability: true,
+		configuration: true,
 		sbom: false,
 		// numeric field but init to "", as using null/undefined won't clear field in formik form reset
 		depth: "",
@@ -282,6 +300,7 @@ const MainPage = () => {
 		staticPlugins: staticPlugins.filter((p) => !excludePlugins.includes(p)),
 		techPlugins,
 		vulnPlugins,
+		configPlugins,
 		sbomPlugins: [], // no sbom plugins selected by default
 		includePaths: "",
 		excludePaths: "",
@@ -293,6 +312,7 @@ const MainPage = () => {
 	const [initialValues, setInitialValues] =
 		useState<ScanOptionsForm>(emptyValues);
 	const [hideWelcome, setHideWelcome] = useState(true);
+	const [pluginAccordionExpanded, setPluginAccordionExpanded] = useState("");
 
 	// get any prior form values passed-in URL query params and validate matches schema
 	// returns null if no query params or validation fails
@@ -514,11 +534,12 @@ const MainPage = () => {
 
 	const toCsv = (data: AnalysisReport) => {
 		const allPlugins = {
+			...configPluginsKeys,
+			...sbomPluginsKeys,
 			...secretPluginsKeys,
 			...staticPluginsKeys,
 			...techPluginsKeys,
 			...vulnPluginsKeys,
-			...sbomPluginsKeys,
 		};
 
 		const plugins = data.scan_options.plugins
@@ -618,6 +639,20 @@ const MainPage = () => {
 				data.results_summary?.inventory?.technology_discovery,
 			"results_summary.inventory.base_images":
 				data.results_summary?.inventory?.base_images,
+			"results_summary.configuration.critical":
+				data.results_summary?.configuration?.critical,
+			"results_summary.configuration.high":
+				data.results_summary?.configuration?.high,
+			"results_summary.configuration.medium":
+				data.results_summary?.configuration?.medium,
+			"results_summary.configuration.low":
+				data.results_summary?.configuration?.low,
+			"results_summary.configuration.negligible":
+				data.results_summary?.configuration?.negligible,
+			"results_summary.configuration.not_specified": data.results_summary
+				?.configuration
+				? data.results_summary.configuration[""]
+				: null,
 		};
 	};
 
@@ -639,6 +674,11 @@ const MainPage = () => {
 		localStorage.setItem(STORAGE_LOCAL_WELCOME, hideWelcome ? "1" : "0");
 		setHideWelcome(true);
 		focusFirstField();
+	};
+
+	const onPluginAccordionExpanded = (name: string) => {
+		// if same name received as is currently expanded then clear the currently expanded accordion
+		setPluginAccordionExpanded(pluginAccordionExpanded === name ? "" : name);
 	};
 
 	useEffect(() => {
@@ -881,75 +921,118 @@ const MainPage = () => {
 															</FormHelperText>
 														)}
 
-														<FormGroup row>
-															<PluginsSelector
-																name="secrets"
-																group="secretPlugins"
-																plugins={secretPluginsObjects}
-																label={i18n._(GROUP_SECRETS)}
-																icon={
-																	<VpnKeyIcon
-																		className={classes.scanFeaturesIcon}
-																	/>
-																}
-																disabled={usersStatus === "loading"}
-																className={classes.scanCategory}
-															/>
-															<PluginsSelector
-																name="staticAnalysis"
-																group="staticPlugins"
-																plugins={staticPluginsObjects}
-																label={i18n._(GROUP_ANALYSIS)}
-																icon={
-																	<BugReportIcon
-																		className={classes.scanFeaturesIcon}
-																	/>
-																}
-																disabled={usersStatus === "loading"}
-																className={classes.scanCategory}
-															/>
-															<PluginsSelector
-																name="inventory"
-																group="techPlugins"
-																plugins={techPluginsObjects}
-																label={i18n._(GROUP_INVENTORY)}
-																icon={
-																	<LayersIcon
-																		className={classes.scanFeaturesIcon}
-																	/>
-																}
-																disabled={usersStatus === "loading"}
-																className={classes.scanCategory}
-															/>
-															<PluginsSelector
-																name="vulnerability"
-																group="vulnPlugins"
-																plugins={vulnPluginsObjects}
-																label={i18n._(GROUP_VULN)}
-																icon={
-																	<SecurityIcon
-																		className={classes.scanFeaturesIcon}
-																	/>
-																}
-																disabled={usersStatus === "loading"}
-																className={classes.scanCategory}
-															/>
-															{sbomPluginsObjects.length > 0 && (
+														<Grid container>
+															<Grid item xs={4}>
 																<PluginsSelector
-																	name="sbom"
-																	group="sbomPlugins"
-																	plugins={sbomPluginsObjects}
-																	label={i18n._(GROUP_SBOM)}
+																	name="vulnerability"
+																	group="vulnPlugins"
+																	plugins={vulnPluginsObjects}
+																	label={i18n._(GROUP_VULN)}
 																	icon={
-																		<InventoryIcon
+																		<SecurityIcon
 																			className={classes.scanFeaturesIcon}
 																		/>
 																	}
 																	disabled={usersStatus === "loading"}
-																	className={classes.scanCategory}
+																	expanded={
+																		pluginAccordionExpanded === "vulnerability"
+																	}
+																	onExpandedChange={onPluginAccordionExpanded}
 																/>
+															</Grid>
+															<Grid item xs={4}>
+																<PluginsSelector
+																	name="staticAnalysis"
+																	group="staticPlugins"
+																	plugins={staticPluginsObjects}
+																	label={i18n._(GROUP_ANALYSIS)}
+																	icon={
+																		<BugReportIcon
+																			className={classes.scanFeaturesIcon}
+																		/>
+																	}
+																	disabled={usersStatus === "loading"}
+																	expanded={
+																		pluginAccordionExpanded === "staticAnalysis"
+																	}
+																	onExpandedChange={onPluginAccordionExpanded}
+																/>
+															</Grid>
+															<Grid item xs={4}>
+																<PluginsSelector
+																	name="secrets"
+																	group="secretPlugins"
+																	plugins={secretPluginsObjects}
+																	label={i18n._(GROUP_SECRETS)}
+																	icon={
+																		<VpnKeyIcon
+																			className={classes.scanFeaturesIcon}
+																		/>
+																	}
+																	disabled={usersStatus === "loading"}
+																	expanded={
+																		pluginAccordionExpanded === "secrets"
+																	}
+																	onExpandedChange={onPluginAccordionExpanded}
+																/>
+															</Grid>
+															<Grid item xs={4}>
+																<PluginsSelector
+																	name="configuration"
+																	group="configPlugins"
+																	plugins={configPluginsObjects}
+																	label={i18n._(GROUP_CONFIG)}
+																	icon={
+																		<FactCheckIcon
+																			className={classes.scanFeaturesIcon}
+																		/>
+																	}
+																	disabled={usersStatus === "loading"}
+																	expanded={
+																		pluginAccordionExpanded === "configuration"
+																	}
+																	onExpandedChange={onPluginAccordionExpanded}
+																/>
+															</Grid>
+															<Grid item xs={4}>
+																<PluginsSelector
+																	name="inventory"
+																	group="techPlugins"
+																	plugins={techPluginsObjects}
+																	label={i18n._(GROUP_INVENTORY)}
+																	icon={
+																		<LayersIcon
+																			className={classes.scanFeaturesIcon}
+																		/>
+																	}
+																	disabled={usersStatus === "loading"}
+																	expanded={
+																		pluginAccordionExpanded === "inventory"
+																	}
+																	onExpandedChange={onPluginAccordionExpanded}
+																/>
+															</Grid>
+															{sbomPluginsObjects.length > 0 && (
+																<Grid item xs={4}>
+																	<PluginsSelector
+																		name="sbom"
+																		group="sbomPlugins"
+																		plugins={sbomPluginsObjects}
+																		label={i18n._(GROUP_SBOM)}
+																		icon={
+																			<InventoryIcon
+																				className={classes.scanFeaturesIcon}
+																			/>
+																		}
+																		disabled={usersStatus === "loading"}
+																		expanded={
+																			pluginAccordionExpanded === "sbom"
+																		}
+																		onExpandedChange={onPluginAccordionExpanded}
+																	/>
+																</Grid>
 															)}
-														</FormGroup>
+														</Grid>
 													</FormControl>
 												</Box>
 												<Box marginBottom={2}>
@@ -1144,6 +1227,10 @@ export interface PSProps {
 	icon: React.ReactNode;
 	disabled?: boolean;
 	className?: string;
+	// for controlled component, such as if you have multiple PluginsSelector components on a page
+	// and want expanding one to close the others
+	onExpandedChange?: (name: string) => void;
+	expanded?: boolean;
 }
 
 export const PluginsSelector = ({
@@ -1154,12 +1241,24 @@ export const PluginsSelector = ({
 	icon,
 	disabled = false,
 	className,
+	onExpandedChange,
+	expanded,
 }: PSProps) => {
 	const [accordionExpanded, setAccordionExpanded] = useState(false);
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
 	const { values, setFieldValue } = useFormikContext<any>();
+	const theme = useTheme();
 	const pluginNames = plugins.map((p: ScanPlugin) => p.apiName);
+	const isExpanded = expanded ?? accordionExpanded;
+
+	const handleAccordionChange = (id: string) => {
+		if (onExpandedChange) {
+			onExpandedChange(id);
+		} else {
+			setAccordionExpanded(Boolean(id));
+		}
+	};
 
 	const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.stopPropagation();
@@ -1187,87 +1286,108 @@ export const PluginsSelector = ({
 		}
 	};
 
+	const handleClickAway = () => {
+		if (isExpanded) {
+			handleAccordionChange(onExpandedChange ? name : "");
+		}
+	};
+
 	return (
 		<div className={className}>
-			<Accordion
-				expanded={accordionExpanded}
-				onChange={() => {
-					setAccordionExpanded(!accordionExpanded);
-				}}
-			>
-				<AccordionSummary
-					expandIcon={<ExpandMoreIcon />}
-					aria-label={
-						accordionExpanded
-							? i18n._(t`Hide ${label} plugins`)
-							: i18n._(t`Show ${label} plugins`)
+			<ClickAwayListener onClickAway={handleClickAway}>
+				<Accordion
+					expanded={isExpanded}
+					onChange={(_event, expanded) =>
+						handleAccordionChange(expanded ? name : "")
 					}
-					aria-controls={`scan-features-${name}-content`}
-					id={`scan-features-${name}-header`}
+					disableGutters
+					variant="outlined"
+					sx={{
+						"&.MuiAccordion-root:focus-within": {
+							borderTop: `1px solid ${theme.palette.primary.main}`,
+							borderLeft: `1px solid ${theme.palette.primary.main}`,
+							borderRight: `1px solid ${theme.palette.primary.main}`,
+							borderBottom: `1px solid ${
+								isExpanded ? theme.palette.divider : theme.palette.primary.main
+							}`,
+						},
+					}}
 				>
-					<Typography className={classes.heading}>
-						<>
-							<FormControlLabel
-								className={className}
-								control={
-									<>
-										<Field
-											id={name}
-											component={Checkbox}
-											type="checkbox"
-											name={name}
-											disabled={disabled}
-											indeterminate={isCategoryIndeterminate(
-												Array(values[group]) ? values[group].length : 0,
-												pluginNames.length
-											)}
-											onChange={handleCategoryChange}
-										/>
-										{icon}
-									</>
-								}
-								label={label}
-								onFocus={(event) => event.stopPropagation()}
-								onClick={(event) => event.stopPropagation()}
-							/>
-							<Box style={{ textAlign: "center" }}>
-								<Typography
-									variant="caption"
-									className={classes.categoryHelpText}
-								>
-									{getCategoryHelpText(
-										Array(values[group]) ? values[group].length : 0,
-										pluginNames.length
-									)}
-								</Typography>
-							</Box>
-						</>
-					</Typography>
-				</AccordionSummary>
-				<Divider />
-				<AccordionDetails className={classes.pluginSelectorPlugins}>
-					{plugins.map((plugin) => {
-						return (
-							<Box key={plugin.apiName}>
+					<AccordionSummary
+						expandIcon={<ExpandMoreIcon />}
+						aria-label={
+							isExpanded
+								? i18n._(t`Hide ${label} plugins`)
+								: i18n._(t`Show ${label} plugins`)
+						}
+						aria-controls={`scan-features-${name}-content`}
+						id={`scan-features-${name}-header`}
+						className={classes.pluginsSelectorAccordionSummary}
+					>
+						<Typography className={classes.heading}>
+							<>
 								<FormControlLabel
+									className={className}
 									control={
-										<Field
-											id={plugin.apiName}
-											component={Checkbox}
-											type="checkbox"
-											name={group}
-											value={plugin.apiName}
-											disabled={disabled}
-											onChange={handlePluginChange}
-										/>
+										<>
+											<Field
+												id={name}
+												component={Checkbox}
+												type="checkbox"
+												name={name}
+												disabled={disabled}
+												indeterminate={isCategoryIndeterminate(
+													Array(values[group]) ? values[group].length : 0,
+													pluginNames.length
+												)}
+												onChange={handleCategoryChange}
+											/>
+											{icon}
+										</>
 									}
-									label={i18n._(plugin.displayName)}
+									label={label}
+									onFocus={(event) => event.stopPropagation()}
+									onClick={(event) => event.stopPropagation()}
 								/>
-							</Box>
-						);
-					})}
-				</AccordionDetails>
-			</Accordion>
+								<Box style={{ textAlign: "center" }}>
+									<Typography
+										variant="caption"
+										className={classes.categoryHelpText}
+									>
+										{getCategoryHelpText(
+											Array(values[group]) ? values[group].length : 0,
+											pluginNames.length
+										)}
+									</Typography>
+								</Box>
+							</>
+						</Typography>
+					</AccordionSummary>
+					<Divider />
+					<AccordionDetails className={classes.pluginSelectorPlugins}>
+						{plugins.map((plugin) => {
+							return (
+								<Box key={plugin.apiName}>
+									<FormControlLabel
+										control={
+											<Field
+												id={plugin.apiName}
+												component={Checkbox}
+												type="checkbox"
+												name={group}
+												value={plugin.apiName}
+												disabled={disabled}
+												onChange={handlePluginChange}
+											/>
+										}
+										label={i18n._(plugin.displayName)}
+									/>
+								</Box>
+							);
+						})}
+					</AccordionDetails>
+				</Accordion>
+			</ClickAwayListener>
 		</div>
 	);
 };

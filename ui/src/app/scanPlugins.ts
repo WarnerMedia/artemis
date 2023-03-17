@@ -17,14 +17,31 @@ interface ScanPluginKeys {
 	[name: string]: ScanPlugin;
 }
 
-export const GROUP_SECRETS = t`Secret Detection`;
 export const GROUP_ANALYSIS = t`Static Analysis`;
-export const GROUP_VULN = t`Vulnerability Detection`;
+export const GROUP_CONFIG = t`Configuration`;
 export const GROUP_INVENTORY = t`Technology Inventory`;
 export const GROUP_SBOM = t`Software Bill of Materials`;
+export const GROUP_SECRETS = t`Secret Detection`;
+export const GROUP_VULN = t`Vulnerability Detection`;
 
 // all plugin information (enabled & disabled)
 // keys should match apiName
+export const configPluginsKeys: ScanPluginKeys = {
+	github_repo_health: {
+		displayName: t`GitHub Repo Health Check`,
+		apiName: "github_repo_health",
+		group: GROUP_CONFIG,
+	},
+};
+
+export const sbomPluginsKeys: ScanPluginKeys = {
+	veracode_sbom: {
+		displayName: t`Veracode SBOM`,
+		apiName: "veracode_sbom",
+		group: GROUP_SBOM,
+	},
+};
+
 export const secretPluginsKeys: ScanPluginKeys = {
 	ghas_secrets: {
 		displayName: t`GitHub Advanced Security Secrets`,
@@ -173,14 +190,6 @@ export const vulnPluginsKeys: ScanPluginKeys = {
 	},
 };
 
-export const sbomPluginsKeys: ScanPluginKeys = {
-	veracode_sbom: {
-		displayName: t`Veracode SBOM`,
-		apiName: "veracode_sbom",
-		group: GROUP_SBOM,
-	},
-};
-
 // feature-flagged plugins, dev/experimental plugins or plugins that are not enabled for all users by default
 export const nonDefaultPlugins: string[] = [];
 
@@ -209,6 +218,12 @@ if (!APP_VERACODE_ENABLED) {
 }
 
 // enabled plugins
+export const configPlugins = Object.keys(configPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
+export const sbomPlugins = Object.keys(sbomPluginsKeys)
+	.filter((p) => !(p in pluginsDisabled))
+	.sort();
 export const secretPlugins = Object.keys(secretPluginsKeys)
 	.filter((p) => !(p in pluginsDisabled))
 	.sort();
@@ -221,10 +236,11 @@ export const techPlugins = Object.keys(techPluginsKeys)
 export const vulnPlugins = Object.keys(vulnPluginsKeys)
 	.filter((p) => !(p in pluginsDisabled))
 	.sort();
-export const sbomPlugins = Object.keys(sbomPluginsKeys)
-	.filter((p) => !(p in pluginsDisabled))
-	.sort();
 
+export const configPluginsObjects = configPlugins.map(
+	(k) => configPluginsKeys[k]
+);
+export const sbomPluginsObjects = sbomPlugins.map((k) => sbomPluginsKeys[k]);
 export const secretPluginsObjects = secretPlugins.map(
 	(k) => secretPluginsKeys[k]
 );
@@ -233,7 +249,6 @@ export const staticPluginsObjects = staticPlugins.map(
 );
 export const techPluginsObjects = techPlugins.map((k) => techPluginsKeys[k]);
 export const vulnPluginsObjects = vulnPlugins.map((k) => vulnPluginsKeys[k]);
-export const sbomPluginsObjects = sbomPlugins.map((k) => sbomPluginsKeys[k]);
 
 // display names for different plugin categories
 export interface IPluginCatalog {
@@ -244,6 +259,8 @@ export interface IPluginCatalog {
 }
 
 export const pluginCatalog: IPluginCatalog = {
+	configuration: { displayName: GROUP_CONFIG, plugins: configPluginsObjects },
+	sbom: { displayName: GROUP_SBOM, plugins: sbomPluginsObjects },
 	secret: { displayName: GROUP_SECRETS, plugins: secretPluginsObjects },
 	static_analysis: {
 		displayName: GROUP_ANALYSIS,
@@ -251,18 +268,18 @@ export const pluginCatalog: IPluginCatalog = {
 	},
 	inventory: { displayName: GROUP_INVENTORY, plugins: techPluginsObjects },
 	vulnerability: { displayName: GROUP_VULN, plugins: vulnPluginsObjects },
-	sbom: { displayName: GROUP_SBOM, plugins: sbomPluginsObjects },
 };
 
 export interface IPluginKeys {
 	[x: string]: ScanPlugin;
 }
 export const pluginKeys = {
+	...configPluginsKeys,
+	...sbomPluginsKeys,
 	...secretPluginsKeys,
 	...staticPluginsKeys,
 	...techPluginsKeys,
 	...vulnPluginsKeys,
-	...sbomPluginsKeys,
 };
 
 export const isFeatureDisabled = (apiName: string) => apiName.startsWith("-");

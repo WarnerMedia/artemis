@@ -13,16 +13,18 @@ export interface ScanFormLocationState {
 }
 
 export type ScanCategories =
-	| "vulnerability"
-	| "-vulnerability"
+	| "configuration"
+	| "-configuration"
+	| "inventory"
+	| "-inventory"
+	| "sbom"
+	| "-sbom"
 	| "secret"
 	| "-secret"
 	| "static_analysis"
 	| "-static_analysis"
-	| "inventory"
-	| "-inventory"
-	| "sbom"
-	| "-sbom";
+	| "vulnerability"
+	| "-vulnerability";
 
 interface ScanCallback {
 	url?: string | null;
@@ -101,6 +103,7 @@ export interface ScanResultsSummary {
 	secrets: number | null;
 	static_analysis: SeverityLevels | null;
 	inventory: SummaryInventory | null;
+	configuration: SeverityLevels | null;
 }
 
 interface VulnDetails {
@@ -147,11 +150,22 @@ export interface SecretFindingResult {
 	[key: string]: SecretFinding[];
 }
 
+export interface ConfigurationDetails {
+	name: string;
+	description: string;
+	severity: Severities;
+}
+
+export interface ResultsConfiguration {
+	[key: string]: ConfigurationDetails;
+}
+
 interface ScanResults {
 	vulnerabilities?: ResultsVulnComponents;
 	secrets?: SecretFindingResult;
 	static_analysis?: ResultsAnalysis;
 	inventory?: ScanInventory;
+	configuration?: ResultsConfiguration;
 }
 
 export interface ScanHistory {
@@ -196,6 +210,7 @@ export interface ScanOptionsForm {
 	staticAnalysis?: boolean;
 	inventory?: boolean;
 	vulnerability?: boolean;
+	configuration?: boolean;
 	sbom?: boolean;
 	depth?: number | "";
 	includeDev?: boolean;
@@ -204,6 +219,7 @@ export interface ScanOptionsForm {
 	staticPlugins?: string[];
 	techPlugins?: string[];
 	vulnPlugins?: string[];
+	configPlugins?: string[];
 	sbomPlugins?: string[];
 	includePaths?: string;
 	excludePaths?: string;
@@ -298,6 +314,7 @@ const scanResultsSummarySchema: Yup.ObjectSchema<ScanResultsSummary> =
 			secrets: Yup.number().defined().nullable(),
 			static_analysis: severityLevelsSchema.nullable(),
 			inventory: summaryInventorySchema.nullable(),
+			configuration: severityLevelsSchema.nullable(),
 		})
 		.defined();
 
@@ -314,6 +331,7 @@ const scanResultsSchema = Yup.object()
 		secrets: Yup.object(),
 		static_analysis: Yup.object(),
 		inventory: scanInventorySchema,
+		configuration: Yup.object(),
 	})
 	.defined();
 
@@ -447,6 +465,7 @@ export const scanOptionsFormSchema = (
 		staticAnalysis: Yup.boolean(),
 		inventory: Yup.boolean(),
 		vulnerability: Yup.boolean(),
+		configuration: Yup.boolean(),
 		sbom: Yup.boolean(),
 		depth: Yup.number()
 			.positive(i18n._(t`Positive integer`))
@@ -461,6 +480,7 @@ export const scanOptionsFormSchema = (
 		staticPlugins: Yup.array(),
 		techPlugins: Yup.array(),
 		vulnPlugins: Yup.array(),
+		configPlugins: Yup.array(),
 		sbomPlugins: Yup.array(),
 		includePaths: Yup.string().test({
 			name: "is-include-path",
@@ -506,11 +526,13 @@ export const scanOptionsFormSchema = (
 					staticAnalysis,
 					inventory,
 					vulnerability,
+					configuration,
 					sbom,
 					secretPlugins,
 					staticPlugins,
 					techPlugins,
 					vulnPlugins,
+					configPlugins,
 					sbomPlugins,
 				},
 				testContext
@@ -523,11 +545,13 @@ export const scanOptionsFormSchema = (
 					staticAnalysis === false &&
 					inventory === false &&
 					vulnerability === false &&
+					configuration === false &&
 					sbom === false &&
 					(!secretPlugins || secretPlugins.length === 0) &&
 					(!staticPlugins || staticPlugins.length === 0) &&
 					(!techPlugins || techPlugins.length === 0) &&
 					(!vulnPlugins || vulnPlugins.length === 0) &&
+					(!configPlugins || configPlugins.length === 0) &&
 					(!sbomPlugins || sbomPlugins.length === 0)
 				) {
 					return testContext.createError({

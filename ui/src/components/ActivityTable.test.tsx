@@ -694,6 +694,8 @@ describe("ActivityTable component", () => {
 						vulnerability:
 							scan.scan_options.categories?.includes("vulnerability") ?? true,
 						sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+						configuration:
+							scan.scan_options.categories?.includes("configuration") ?? true,
 						depth: scan.scan_options?.depth ?? "",
 						includeDev: scan.scan_options?.include_dev ?? false,
 						secretPlugins: [],
@@ -701,6 +703,7 @@ describe("ActivityTable component", () => {
 						techPlugins: [],
 						vulnPlugins: [],
 						sbomPlugins: [],
+						configPlugins: [],
 						includePaths: scan.scan_options?.include_paths
 							? scan.scan_options?.include_paths.join(", ")
 							: "",
