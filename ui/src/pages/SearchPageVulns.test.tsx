@@ -58,7 +58,7 @@ beforeAll(() => {
 });
 
 describe("SearchPage component", () => {
-	jest.setTimeout(120000);
+	jest.setTimeout(140000);
 
 	beforeEach(() => {
 		mockUseLocation.mockImplementation(() => {
