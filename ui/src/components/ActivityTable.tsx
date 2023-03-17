@@ -64,6 +64,7 @@ import StatusCell from "components/StatusCell";
 import { RequestMeta } from "api/client";
 import { startScan } from "pages/MainPage";
 import {
+	configPlugins,
 	sbomPlugins,
 	secretPlugins,
 	staticPlugins,
@@ -555,6 +556,8 @@ const ActivityTable = (props: ActivityTableProps) => {
 				vulnerability:
 					scan.scan_options.categories?.includes("vulnerability") ?? true,
 				sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+				configuration:
+					scan.scan_options.categories?.includes("configuration") ?? true,
 				depth: scan.scan_options?.depth ?? "",
 				includeDev: scan.scan_options?.include_dev ?? false,
 				// removes any disabled plugins from new scan
@@ -582,6 +585,11 @@ const ActivityTable = (props: ActivityTableProps) => {
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
 						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`)
+					),
+				configPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => configPlugins.includes(p) || configPlugins.includes(`-${p}`)
 					),
 				includePaths: scan.scan_options?.include_paths
 					? scan.scan_options?.include_paths.join(", ")

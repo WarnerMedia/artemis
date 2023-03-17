@@ -492,6 +492,8 @@ describe("ResultsPage component", () => {
 					vulnerability:
 						scan.scan_options.categories?.includes("vulnerability") ?? true,
 					sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+					configuration:
+						scan.scan_options.categories?.includes("configuration") ?? true,
 					depth: scan.scan_options?.depth ?? "",
 					includeDev: scan.scan_options?.include_dev ?? false,
 					secretPlugins: [],
@@ -499,6 +501,7 @@ describe("ResultsPage component", () => {
 					techPlugins: [],
 					vulnPlugins: [],
 					sbomPlugins: [],
+					configPlugins: [],
 					includePaths: scan.scan_options?.include_paths
 						? scan.scan_options?.include_paths.join(", ")
 						: "",
@@ -610,11 +613,13 @@ describe("ResultsPage component", () => {
 				totalRecords: 0,
 			};
 			mockHiddenFindings003.forEach((finding) => {
-				mockAppState.hiddenFindings.ids.push(finding.id);
-				mockAppState.hiddenFindings.entities[finding.id] = JSON.parse(
-					JSON.stringify(finding)
-				);
-				mockAppState.hiddenFindings.totalRecords += 1;
+				if (finding.id) {
+					mockAppState.hiddenFindings.ids.push(finding.id);
+					mockAppState.hiddenFindings.entities[finding.id] = JSON.parse(
+						JSON.stringify(finding)
+					);
+					mockAppState.hiddenFindings.totalRecords += 1;
+				}
 			});
 
 			document.execCommand = jest.fn((commandId, showUI, value) => true);

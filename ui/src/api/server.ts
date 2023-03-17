@@ -7,6 +7,7 @@ import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
 import {
 	AnalysisReport,
 	ResultsAnalysis,
+	ResultsConfiguration,
 	ResultsVulnComponents,
 	ScanCategories,
 	ScanHistory,
@@ -20,6 +21,7 @@ import {
 import { formatDate } from "utils/formatters";
 import AppGlobals from "app/globals";
 import {
+	configPlugins,
 	sbomPlugins,
 	secretPlugins,
 	staticPlugins,
@@ -240,6 +242,7 @@ export function makeServer() {
 					"secret",
 					"static_analysis",
 					"vulnerability",
+					"configuration",
 					"sbom",
 				] as ScanCategories[],
 				plugins: [
@@ -248,6 +251,7 @@ export function makeServer() {
 					...staticPlugins,
 					...vulnPlugins,
 					...sbomPlugins,
+					...configPlugins,
 				],
 				depth: 500,
 				includeDev: false,
@@ -524,6 +528,68 @@ export function makeServer() {
 						},
 					],
 			};
+			const scanConfigResults: ResultsConfiguration = {
+				github_branch_check1: {
+					name: "Branch - Check 1",
+					description:
+						"Lorem ipsum sit amet justo donec enim diam vulputate ut pharetra sit",
+					severity: "medium",
+				},
+				github_branch_check2: {
+					name: "Branch - Check 2",
+					description:
+						"Lorem ipsum ligula ullamcorper malesuada proin libero nunc consequat interdum varius sit",
+					severity: "critical",
+				},
+				github_branch_check3: {
+					name: "Branch - Check 3",
+					description:
+						"Lorem ipsum felis bibendum ut tristique et egestas quis ipsum suspendisse ultrices",
+					severity: "",
+				},
+				github_branch_check4: {
+					name: "Branch - Check 4",
+					description:
+						"Lorem ipsum purus semper eget duis at tellus at urna condimentum mattis",
+					severity: "negligible",
+				},
+				github_branch_check5: {
+					name: "Branch - Check 5",
+					description:
+						"Lorem ipsum ac habitasse platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper",
+					severity: "high",
+				},
+				github_repo_check1: {
+					name: "Repository - Check 1",
+					description:
+						"Lorem ipsum aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc sed",
+					severity: "",
+				},
+				github_repo_check2: {
+					name: "Repository - Check 2",
+					description:
+						"Lorem ipsum ullamcorper morbi tincidunt ornare massa eget egestas purus viverra accumsan",
+					severity: "high",
+				},
+				github_repo_check3: {
+					name: "Repository - Check 3",
+					description:
+						"Lorem ipsum purus ut faucibus pulvinar elementum integer enim neque volutpat ac",
+					severity: "high",
+				},
+				github_repo_check4: {
+					name: "Repository - Check 4",
+					description:
+						"Lorem ipsum non consectetur a erat nam at lectus urna duis convallis",
+					severity: "critical",
+				},
+				github_repo_check5: {
+					name: "Repository - Check 5",
+					description:
+						"Lorem ipsum risus quis varius quam quisque id diam vel quam elementum",
+					severity: "critical",
+				},
+			};
 			// add some existing hidden findings
 			let hiddenFindings: HiddenFinding[] = [
 				{
@@ -695,7 +761,7 @@ export function makeServer() {
 					updated_by: defaultEmail,
 					updated: "2021-02-02T14:02:02Z",
 				},
-				// static analysis
+				// static analysis type
 				{
 					id: generateId(),
 					type: "static_analysis",
@@ -723,6 +789,33 @@ export function makeServer() {
 					},
 					expires: DateTime.utc().minus({ days: 2 }).toJSON(),
 					reason: "test expired static_analysis type",
+					created_by: defaultEmail,
+					created: "2021-01-01T13:01:01Z",
+					updated_by: defaultEmail,
+					updated: "2021-02-02T14:02:02Z",
+				},
+				// configurationn type
+				{
+					id: generateId(),
+					type: "configuration",
+					value: {
+						id: "github_branch_check4",
+					},
+					expires: DateTime.utc().minus({ days: 2 }).toJSON(),
+					reason: "test expired configuration type",
+					created_by: defaultEmail,
+					created: "2021-01-01T13:01:01Z",
+					updated_by: defaultEmail,
+					updated: "2021-02-02T14:02:02Z",
+				},
+				{
+					id: generateId(),
+					type: "configuration",
+					value: {
+						id: "github_repo_check2",
+					},
+					expires: null,
+					reason: "test expired configuration type",
 					created_by: defaultEmail,
 					created: "2021-01-01T13:01:01Z",
 					updated_by: defaultEmail,
@@ -1005,7 +1098,7 @@ export function makeServer() {
 				scan!.results_summary!.secrets = genSecretsSummary(scan);
 			};
 
-			// remove hidden findings from secrets object
+			// remove hidden findings from static analysis object
 			const filterAnalysis = (analysis: ResultsAnalysis): ResultsAnalysis => {
 				// deep-copy analysis input
 				const ar: ResultsAnalysis = JSON.parse(JSON.stringify(analysis));
@@ -1073,6 +1166,65 @@ export function makeServer() {
 					JSON.stringify(scanAnalysisResults)
 				);
 				scan!.results_summary!.static_analysis = genAnalysisSummary(scan);
+			};
+
+			// remove hidden findings from configuration object
+			const filterConfig = (
+				config: ResultsConfiguration
+			): ResultsConfiguration => {
+				// deep-copy config input
+				const cg: ResultsConfiguration = JSON.parse(JSON.stringify(config));
+
+				// filter out (remove) any matching hidden findings
+				hiddenFindings.forEach((f) => {
+					if (f.type === "configuration" && f.value.id in cg) {
+						// don't remove expired hidden findings from results
+						let dateOk = true;
+						if (f.expires) {
+							const expires = new Date(f.expires);
+							dateOk = expires > new Date();
+						}
+						// update hidden finding, add severity from the corresponding configuration item
+						f.value.severity = cg[f.value.id].severity;
+						if (dateOk) {
+							delete cg[f.value.id];
+						}
+					}
+				});
+				return cg;
+			};
+
+			// calculate configuration summary report
+			const genConfigSummary = (scan: AnalysisReport) => {
+				const summary = {
+					critical: 0,
+					high: 0,
+					medium: 0,
+					low: 0,
+					negligible: 0,
+					"": 0,
+				};
+				if (
+					(scan.scan_options.categories &&
+						scan.scan_options.categories.includes("configuration")) ||
+					(scan.scan_options.plugins &&
+						isPluginInCategory(scan.scan_options.plugins || [], configPlugins))
+				) {
+					for (const [, cg] of Object.entries(
+						scan?.results?.configuration ?? {}
+					)) {
+						summary[cg.severity] += 1;
+					}
+					return summary;
+				}
+				return null;
+			};
+
+			const generateConfigResults = (scan: AnalysisReport) => {
+				scan!.results!.configuration = JSON.parse(
+					JSON.stringify(scanConfigResults)
+				);
+				scan!.results_summary!.configuration = genConfigSummary(scan);
 			};
 
 			const generateInventoryResults = (scan: AnalysisReport) => {
@@ -1205,6 +1357,15 @@ export function makeServer() {
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
+							configPlugins
+						) &&
+						!enabledCats.includes("configuration")
+					) {
+						enabledCats.push("configuration");
+					}
+					if (
+						isPluginInCategory(
+							entity.scan_options.plugins || [],
 							sbomPlugins
 						) &&
 						!enabledCats.includes("sbom")
@@ -1246,12 +1407,14 @@ export function makeServer() {
 						secrets: null,
 						static_analysis: null,
 						inventory: null,
+						configuration: null,
 					},
 					results: {
 						vulnerabilities: {},
 						secrets: {},
 						static_analysis: {},
 						inventory: {},
+						configuration: {},
 					},
 				};
 				// overwrite repo from entity to remove scanId field
@@ -1349,6 +1512,26 @@ export function makeServer() {
 					};
 					yield scan;
 					generateInventoryResults(scan);
+				}
+
+				category = "configuration";
+				plugin_name = `${category} scan`;
+				if (
+					(entity.scan_options.categories &&
+						entity.scan_options.categories.includes(category)) ||
+					isPluginInCategory(entity.scan_options.plugins || [], configPlugins)
+				) {
+					scan.status = `running plugin ${plugin_name}`;
+					currentPlugin += 1;
+					scan.status_detail = {
+						plugin_name: plugin_name,
+						plugin_start_time: formatNewDate(),
+						current_plugin: currentPlugin,
+						total_plugins: totalPlugins,
+					};
+					yield scan;
+					generateConfigResults(scan);
+					scan.success = false;
 				}
 
 				category = "sbom";
@@ -2756,6 +2939,9 @@ export function makeServer() {
 						results.results.static_analysis = filterAnalysis(
 							results.results.static_analysis
 						);
+						results.results.configuration = filterConfig(
+							results.results.configuration
+						);
 
 						// and calculate new summary totals after filtering
 						results.results_summary.vulnerabilities = genVulnSummary(
@@ -2765,6 +2951,9 @@ export function makeServer() {
 							results as AnalysisReport
 						);
 						results.results_summary.static_analysis = genAnalysisSummary(
+							results as AnalysisReport
+						);
+						results.results_summary.configuration = genConfigSummary(
 							results as AnalysisReport
 						);
 
@@ -2910,6 +3099,16 @@ export function makeServer() {
 				// if disabled, disable all plugins in that category
 				defaults.categories.forEach((cat: ScanCategories) => {
 					switch (cat) {
+						case "configuration":
+							if (catsToRun.includes(cat)) {
+								plugins = [...plugins, ...configPlugins];
+							} else {
+								plugins = [
+									...plugins,
+									...configPlugins.map((plugin) => `-${plugin}`),
+								];
+							}
+							break;
 						case "inventory":
 							if (catsToRun.includes(cat)) {
 								plugins = [...plugins, ...techPlugins];
@@ -3628,6 +3827,21 @@ export function makeServer() {
 				let value = {};
 				let severity = undefined;
 				switch (attrs.type) {
+					case "configuration":
+						if (!("id" in attrs.value)) {
+							return createResponse(400, 'Missing value key: "id"');
+						}
+						if (
+							attrs.value.id in scanConfigResults &&
+							"severity" in scanConfigResults[attrs.value.id]
+						) {
+							severity = scanConfigResults[attrs.value.id].severity;
+						}
+						value = {
+							id: attrs.value.id,
+							severity,
+						};
+						break;
 					case "secret":
 						if (!("filename" in attrs.value)) {
 							return createResponse(400, 'Missing value key: "filename"');
@@ -3811,6 +4025,14 @@ export function makeServer() {
 
 				let value = {};
 				switch (attrs.type) {
+					case "configuration":
+						if (!("id" in attrs.value)) {
+							return createResponse(400, 'Missing value key: "id"');
+						}
+						value = {
+							id: attrs.value.id,
+						};
+						break;
 					case "secret":
 						if (!("filename" in attrs.value)) {
 							return createResponse(400, 'Missing value key: "filename"');

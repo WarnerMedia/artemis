@@ -9,9 +9,11 @@ export const HiddenFindingTypeValues = [
 	"secret",
 	"secret_raw",
 	"static_analysis",
+	"configuration",
 ];
 
 export type HiddenFindingType =
+	| "configuration"
 	| "static_analysis"
 	| "secret"
 	| "secret_raw"
@@ -34,6 +36,14 @@ type HiddenFindingAnalysis = HiddenFindingBase & {
 		filename: string;
 		line: number;
 		type: string;
+		severity?: Severities;
+	};
+};
+
+type HiddenFindingConfig = HiddenFindingBase & {
+	type: "configuration";
+	value: {
+		id: string;
 		severity?: Severities;
 	};
 };
@@ -74,6 +84,7 @@ type HiddenFindingVulnRaw = HiddenFindingBase & {
 
 export type HiddenFinding =
 	| HiddenFindingAnalysis
+	| HiddenFindingConfig
 	| HiddenFindingSecret
 	| HiddenFindingSecretRaw
 	| HiddenFindingVuln
@@ -95,6 +106,12 @@ const hiddenFindingValueAnalysisSchema = Yup.object()
 		line: Yup.number().defined().positive().integer(),
 		type: Yup.string().defined(),
 		severity: SeveritySchema,
+	})
+	.defined();
+
+const hiddenFindingValueConfigSchema = Yup.object()
+	.shape({
+		id: Yup.string().defined(),
 	})
 	.defined();
 
@@ -136,6 +153,8 @@ export const hiddenFindingSchema = Yup.object()
 		type: Yup.string().oneOf(HiddenFindingTypeValues),
 		value: Yup.object().when("type", ([type], schema) => {
 			switch (type) {
+				case "configuration":
+					return hiddenFindingValueConfigSchema;
 				case "static_analysis":
 					return hiddenFindingValueAnalysisSchema;
 				case "secret":

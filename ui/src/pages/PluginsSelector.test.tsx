@@ -14,9 +14,9 @@ const psMock = {
 	icon: <></>,
 };
 
-describe("ScanOptionsSummary component", () => {
+describe("PluginsSelector component", () => {
 	let user: any;
-	beforeEach(() => {
+	const renderPS = (options: any) => {
 		const renderArgs = render(
 			<Formik
 				initialValues={{
@@ -27,15 +27,17 @@ describe("ScanOptionsSummary component", () => {
 			>
 				{() => (
 					<Form>
-						<PluginsSelector {...psMock} />
+						<PluginsSelector {...options} />
 					</Form>
 				)}
 			</Formik>
 		);
 		user = renderArgs.user;
-	});
+	};
 
 	it("all plugins checked then category checked; all plugins unchecked then category unchecked; otherwise, indeterminate set", async () => {
+		renderPS(psMock);
+
 		// category has a title and is checked (since form category: true)
 		const categoryCheck = screen.getByRole("checkbox", { name: "Category" });
 		expect(categoryCheck).toBeChecked();
@@ -101,5 +103,61 @@ describe("ScanOptionsSummary component", () => {
 		expect(categoryCheck).toHaveAttribute("data-indeterminate", "false");
 		screen.getByText("2 of 2 plugins selected");
 		expect(categoryCheck).toBeChecked();
+	});
+
+	describe("Controlled usage", () => {
+		it("expanded=true renders open component", async () => {
+			const mockExpandedChange = jest.fn();
+			renderPS({
+				...psMock,
+				expanded: true,
+				onExpandedChange: mockExpandedChange,
+			});
+
+			const expandButton = screen.getByRole("button", {
+				name: `Hide ${psMock.label} plugins`,
+			});
+
+			// check a plugin is visible
+			screen.getByRole("checkbox", {
+				name: psMock.plugins[0].displayName,
+			});
+
+			expect(mockExpandedChange).not.toHaveBeenCalled();
+
+			// closing component should trigger onExpandedChange callback
+			// with no name
+			await user.click(expandButton);
+
+			expect(mockExpandedChange).toHaveBeenCalledWith("");
+		});
+
+		it("expanded=false renders closed component", async () => {
+			const mockExpandedChange = jest.fn();
+			renderPS({
+				...psMock,
+				expanded: false,
+				onExpandedChange: mockExpandedChange,
+			});
+
+			const expandButton = screen.getByRole("button", {
+				name: `Show ${psMock.label} plugins`,
+			});
+
+			// check a plugin is not visible
+			expect(
+				screen.queryByRole("checkbox", {
+					name: psMock.plugins[0].displayName,
+				})
+			).not.toBeInTheDocument();
+
+			expect(mockExpandedChange).not.toHaveBeenCalled();
+
+			// opening component should trigger onExpandedChange callback
+			// with name of component opened
+			await user.click(expandButton);
+
+			expect(mockExpandedChange).toHaveBeenCalledWith(psMock.name);
+		});
 	});
 });

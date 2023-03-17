@@ -10,6 +10,7 @@ import { setGlobalException } from "features/globalException/globalExceptionSlic
 import { APP_NOTIFICATION_DELAY } from "app/globals";
 import { ScanOptionsForm } from "features/scans/scansSchemas";
 import {
+	configPlugins,
 	pluginCatalog,
 	sbomPlugins,
 	secretPlugins,
@@ -237,6 +238,7 @@ describe("api client", () => {
 				inventory: true,
 				vulnerability: true,
 				sbom: true,
+				configuration: true,
 				// all individual plugins disabled
 			};
 
@@ -247,6 +249,7 @@ describe("api client", () => {
 				...techPlugins,
 				...vulnPlugins,
 				...sbomPlugins,
+				...configPlugins,
 			]
 				.map((plugin) => `-${plugin}`)
 				.sort();

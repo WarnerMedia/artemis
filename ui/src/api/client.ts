@@ -33,6 +33,7 @@ import {
 } from "features/users/usersSchemas";
 import { DateTime } from "luxon";
 import {
+	configPlugins,
 	sbomPlugins,
 	secretPlugins,
 	staticPlugins,
@@ -870,18 +871,27 @@ client.addScan = async ({
 	}
 
 	scanOpts.categories = [
+		data.configuration ? "configuration" : "-configuration",
 		data.inventory ? "inventory" : "-inventory",
 		data.secrets ? "secret" : "-secret",
 		data.staticAnalysis ? "static_analysis" : "-static_analysis",
 		data.vulnerability ? "vulnerability" : "-vulnerability",
 		data.sbom ? "sbom" : "-sbom",
 	];
+	if (data.configuration) {
+		scanOpts.plugins = [
+			...getRemovedPlugins(configPlugins, data.configPlugins || []),
+		];
+	} else {
+		scanOpts.plugins = [...(data.configPlugins ?? [])];
+	}
 	if (data.inventory) {
 		scanOpts.plugins = [
+			...scanOpts.plugins,
 			...getRemovedPlugins(techPlugins, data.techPlugins || []),
 		];
 	} else {
-		scanOpts.plugins = [...(data.techPlugins ?? [])];
+		scanOpts.plugins = [...scanOpts.plugins, ...(data.techPlugins ?? [])];
 	}
 	if (data.secrets) {
 		scanOpts.plugins = [

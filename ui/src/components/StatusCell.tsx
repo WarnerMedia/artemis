@@ -12,6 +12,7 @@ import {
 	BugReport as BugReportIcon,
 	Cancel as CancelIcon,
 	Error as ErrorIcon,
+	FactCheck as FactCheckIcon,
 	HourglassFull as HourglassFullIcon,
 	Info as InfoIcon,
 	Inventory as InventoryIcon,
@@ -36,6 +37,7 @@ import {
 } from "app/colors";
 import { AnalysisReport, ScanErrors } from "features/scans/scansSchemas";
 import {
+	configPlugins,
 	getFeatureName,
 	pluginKeys,
 	sbomPlugins,
@@ -190,6 +192,12 @@ const StatusCell = (props: StatusCellProps) => {
 		case "completed": {
 			// try to determine ahead of results_summary fetch what results will be displayed
 			// so we can display a preview while loading
+			const hasConfigResults =
+				row?.results_summary?.configuration ||
+				row.scan_options.categories?.includes("configuration") ||
+				row.scan_options.plugins?.some((plugin) => {
+					return configPlugins.includes(plugin);
+				});
 			const hasVulnResults =
 				row?.results_summary?.vulnerabilities ||
 				row.scan_options.categories?.includes("vulnerability") ||
@@ -225,6 +233,7 @@ const StatusCell = (props: StatusCellProps) => {
 			// sbom category not default, so not running sbom not considered a subset
 			let info: { [key: string]: string } = {};
 			if (
+				row?.results_summary?.configuration === null ||
 				row?.results_summary?.vulnerabilities === null ||
 				row?.results_summary?.static_analysis === null ||
 				row?.results_summary?.secrets === null ||
@@ -364,7 +373,7 @@ const StatusCell = (props: StatusCellProps) => {
 												row?.results_summary?.static_analysis?.critical || 0,
 												{
 													one: "# Critical static analysis result",
-													other: "# Critical static analysis result",
+													other: "# Critical static analysis results",
 												}
 											)}
 										>
@@ -385,7 +394,7 @@ const StatusCell = (props: StatusCellProps) => {
 												row?.results_summary?.static_analysis?.high || 0,
 												{
 													one: "# High static analysis result",
-													other: "# High static analysis result",
+													other: "# High static analysis results",
 												}
 											)}
 										>
@@ -481,6 +490,102 @@ const StatusCell = (props: StatusCellProps) => {
 											<Chip
 												size="small"
 												className={classes.chipSecrets}
+												disabled={true}
+											/>
+										</span>
+									</Tooltip>
+								)
+							}
+						/>
+					)}
+					{hasConfigResults && (
+						<Chip
+							style={{ marginRight: "5px" }}
+							icon={<FactCheckIcon />}
+							onClick={() => openResults(7)}
+							label={
+								row.results_summary ? (
+									<>
+										<Tooltip
+											describeChild
+											id="tooltip-critical-config"
+											arrow={true}
+											title={plural(
+												row?.results_summary?.configuration?.critical || 0,
+												{
+													one: "# Critical configuration result",
+													other: "# Critical configuration results",
+												}
+											)}
+										>
+											<Chip
+												label={
+													row?.results_summary?.configuration?.critical || 0
+												}
+												size="small"
+												className={classes.chipCritical}
+												aria-describedby="tooltip-critical-config"
+											/>
+										</Tooltip>
+										<Tooltip
+											describeChild
+											id="tooltip-high-config"
+											arrow={true}
+											title={plural(
+												row?.results_summary?.configuration?.high || 0,
+												{
+													one: "# High configuration result",
+													other: "# High configuration results",
+												}
+											)}
+										>
+											<Chip
+												label={row?.results_summary?.configuration?.high || 0}
+												size="small"
+												className={classes.chipHigh}
+												aria-describedby="tooltip-high-config"
+											/>
+										</Tooltip>
+										<Tooltip
+											describeChild
+											id="tooltip-medium-config"
+											arrow={true}
+											title={plural(
+												row?.results_summary?.configuration?.medium || 0,
+												{
+													one: "# Medium configuration result",
+													other: "# Medium configuration results",
+												}
+											)}
+										>
+											<Chip
+												label={row?.results_summary?.configuration?.medium || 0}
+												size="small"
+												className={classes.chipMedium}
+												aria-describedby="tooltip-medium-config"
+											/>
+										</Tooltip>
+									</>
+								) : (
+									<Tooltip
+										id="tooltip-config-loading"
+										arrow={true}
+										title={i18n._(t`Fetching configuration results...`)}
+									>
+										<span>
+											<Chip
+												size="small"
+												className={classes.chipCritical}
+												disabled={true}
+											/>
+											<Chip
+												size="small"
+												className={classes.chipHigh}
+												disabled={true}
+											/>
+											<Chip
+												size="small"
+												className={classes.chipMedium}
 												disabled={true}
 											/>
 										</span>

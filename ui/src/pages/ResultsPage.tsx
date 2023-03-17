@@ -83,6 +83,7 @@ import {
 	ErrorOutlineOutlined as ErrorOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 	Extension as ExtensionIcon,
+	FactCheck as FactCheckIcon,
 	FilterList as FilterListIcon,
 	Folder as FolderIcon,
 	FolderOff as FolderOffIcon,
@@ -212,6 +213,7 @@ import {
 	techPlugins,
 	sbomPlugins,
 	vulnPlugins,
+	configPlugins,
 } from "app/scanPlugins";
 import { PREFIX_NVD, STORAGE_LOCAL_EXPORT_ACKNOWLEDGE } from "app/globals";
 import { startScan } from "pages/MainPage";
@@ -229,19 +231,25 @@ const TAB_SECRET = 3;
 const TAB_INVENTORY = 4;
 const TAB_RAW = 5;
 const TAB_HIDDEN = 6;
+const TAB_CONFIG = 7;
+const TAB_MIN = TAB_OVERVIEW; // lowest tab
+const TAB_MAX = TAB_CONFIG; // highest tab
 
+const COMMIT_LENGTH = 40;
 const COMPONENT_LENGTH = 120;
-const VULN_ID_LENGTH = 120;
+const DESCRIPTION_LENGTH = 500;
 const FILEPATH_LENGTH = 120;
 const LINE_MAX = 9999999999;
 const LINE_LENGTH = 10;
+const NAME_LENGTH = 128;
 const RESOURCE_LENGTH = 40;
-const COMMIT_LENGTH = 40;
+const VULN_ID_LENGTH = 120;
 
-export const FILTER_PREFIX_VULN = "vn_";
 export const FILTER_PREFIX_ANALYSIS = "sa_";
-export const FILTER_PREFIX_SECRET = "st_";
+export const FILTER_PREFIX_CONFIG = "cg_";
 export const FILTER_PREFIX_HIDDEN = "hf_";
+export const FILTER_PREFIX_SECRET = "st_";
+export const FILTER_PREFIX_VULN = "vn_";
 
 const severitySchema = (message: string) =>
 	Yup.string()
@@ -684,6 +692,21 @@ export const FindingTypeChip = (props: {
 
 	let chip = <></>;
 	switch (value) {
+		case "configuration": {
+			chip = (
+				<Chip
+					icon={<FactCheckIcon />}
+					label={
+						count !== undefined
+							? i18n._(t`Configuration: ${count}`)
+							: i18n._(t`Configuration`)
+					}
+					size="small"
+					variant="outlined"
+				/>
+			);
+			break;
+		}
 		case "secret": {
 			chip = (
 				<Chip
@@ -831,6 +854,18 @@ export const SourceCell = (props: { row?: RowDef | null }) => {
 		}
 	}
 	return files;
+};
+
+const ConfigNameCell = (props: { row?: RowDef | null }) => {
+	const { row } = props;
+	if (row?.name && row?.description) {
+		return (
+			<Tooltip describeChild title={row.description}>
+				<span>{row.name}</span>
+			</Tooltip>
+		);
+	}
+	return <></>;
 };
 
 interface HiddenFindingForm {
@@ -1055,6 +1090,20 @@ export const HiddenFindingDialog = (props: {
 				reason: reason,
 			};
 			switch (type) {
+				case "configuration": {
+					request = {
+						url,
+						data: {
+							...data,
+							type: "configuration",
+							value: {
+								id: row?.rule ?? "",
+							},
+						},
+					};
+					dispatch(addHiddenFinding(request));
+					break;
+				}
 				case "secret": {
 					request = {
 						url,
@@ -1264,6 +1313,38 @@ export const HiddenFindingDialog = (props: {
 		}
 
 		switch (type) {
+			case "configuration": {
+				if (item?.severity) {
+					details.push(
+						<FindingListItem
+							key="finding-details-severity"
+							id="finding-details-severity"
+							label={<Trans>Severity:</Trans>}
+							value={<SeverityChip value={row?.severity} />}
+						/>
+					);
+				}
+				details.push(
+					<FindingListItem
+						key="finding-details-name"
+						id="finding-details-name"
+						label={<Trans>Name:</Trans>}
+						value={item?.name ?? item?.id}
+					/>
+				);
+				if (item?.description) {
+					details.push(
+						<FindingListItem
+							key="finding-details-description"
+							id="finding-details-description"
+							label={<Trans>Description:</Trans>}
+							value={item.description}
+						/>
+					);
+				}
+				break;
+			}
+
 			case "secret": {
 				if (item?.resource) {
 					details.push(
@@ -1699,7 +1780,7 @@ export const HiddenFindingDialog = (props: {
 														<li key="finding-rules-2">
 															Findings can be hidden on the applicable finding
 															type scan results tab ("Vulnerability", "Static
-															Analysis", "Secrets")
+															Analysis", "Secrets", "Configuration")
 														</li>
 														<li key="finding-rules-3">
 															Once a finding is hidden, it can be viewed or
@@ -2324,6 +2405,7 @@ export const OverviewTabContent = (props: {
 		isDisabledSecrets: boolean;
 		isDisabledInventory: boolean;
 		isDisabledHFs: boolean;
+		isDisabledConfig: boolean;
 	};
 }) => {
 	const { i18n } = useLingui();
@@ -2341,6 +2423,7 @@ export const OverviewTabContent = (props: {
 
 	const defaultSecretFindingResult: SecretFindingResult = {};
 
+	const config = results_summary?.configuration ?? defaultSevLevObject;
 	const vulns = results_summary?.vulnerabilities ?? defaultSevLevObject;
 	const statAnalysis = results_summary?.static_analysis ?? defaultSevLevObject;
 	const secrets = scan.results?.secrets ?? defaultSecretFindingResult;
@@ -2359,6 +2442,7 @@ export const OverviewTabContent = (props: {
 	};
 
 	const hfTrans: NameTransType = {
+		configuration: t`Configuration`,
 		vulnerability: t`Vulnerabilities`,
 		vulnerability_raw: t`Vulnerabilities (Raw)`,
 		secret: t`Secrets`,
@@ -2367,16 +2451,22 @@ export const OverviewTabContent = (props: {
 	};
 
 	// chart data selecting and formatting
+	const configChartData = Object.entries(config).map((c) => ({
+		name: c[0] in nameTrans ? nameTrans[c[0]] : i18n._(t`Not Specified`),
+		value: c[1],
+		palette: getSeverityColor(c[0]),
+	}));
+
 	const vulnsChartData = Object.entries(vulns).map((v) => ({
 		name: v[0] in nameTrans ? nameTrans[v[0]] : i18n._(t`Not Specified`),
 		value: v[1],
-		palette: getVulnColor(v[0]),
+		palette: getSeverityColor(v[0]),
 	}));
 
 	const statAnalysisChartData = Object.entries(statAnalysis).map((sa) => ({
 		name: sa[0] in nameTrans ? nameTrans[sa[0]] : i18n._(t`Not Specified`),
 		value: sa[1],
-		palette: getVulnColor(sa[0]),
+		palette: getSeverityColor(sa[0]),
 	}));
 
 	const dictSecrets: { [type: string]: number } = {};
@@ -2473,6 +2563,15 @@ export const OverviewTabContent = (props: {
 					isTabDisabled={tabsStatus.isDisabledSecrets}
 				/>
 				<OverviewCard
+					titleText={i18n._(t`Configuration`)}
+					titleIcon={<FactCheckIcon />}
+					scanOptionWasNotRun={results_summary?.configuration === null}
+					chartData={configChartData}
+					nothingFoundText={i18n._(t`No configuration findings detected`)}
+					tabChanger={tabChanger && (() => tabChanger(TAB_CONFIG))}
+					isTabDisabled={tabsStatus.isDisabledConfig}
+				/>
+				<OverviewCard
 					titleText={i18n._(t`Inventory`)}
 					titleIcon={<LayersIcon />}
 					scanOptionWasNotRun={results_summary?.inventory === null}
@@ -2499,10 +2598,10 @@ export const OverviewTabContent = (props: {
 	);
 };
 
-function getVulnColor(vulnSeverity: string) {
+function getSeverityColor(severity: string) {
 	const colorBlack = "rgba(0, 0, 0, 0.87)";
 	const colorWhite = "#fff";
-	switch (vulnSeverity) {
+	switch (severity) {
 		case "critical":
 			return { background: colorCritical, text: colorWhite };
 		case "high":
@@ -2516,7 +2615,7 @@ function getVulnColor(vulnSeverity: string) {
 		case "":
 			return { background: colorNegligible, text: colorBlack };
 		default:
-			console.warn(`Unexpected vulnerability severity found: ${vulnSeverity}`);
+			console.warn(`Unexpected severity found: ${severity}`);
 			return { background: colorNegligible, text: colorBlack };
 	}
 }
@@ -4016,6 +4115,296 @@ export const SecretsTabContent = (props: {
 	);
 };
 
+export const ConfigTabContent = (props: {
+	scan: AnalysisReport;
+	hiddenFindings: HiddenFinding[];
+	currentUser: User;
+	saveFilters: SaveFiltersT;
+}) => {
+	const { classes, cx } = useStyles();
+	const { i18n } = useLingui();
+	const { scan, hiddenFindings, currentUser, saveFilters } = props;
+	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
+	const [selectedRowNum, setSelectedRowNum] = useState<number | null>(null);
+	const [hideRowNum, setHideRowNum] = useState<number | null>(null);
+	const hashPrefix = FILTER_PREFIX_CONFIG;
+	// validates url hash params, so must begin with hashPrefix
+	const schema = Yup.object().shape({
+		cg_name: Yup.string()
+			.trim()
+			.max(
+				NAME_LENGTH,
+				i18n._(t`Name must be less than ${NAME_LENGTH} characters`)
+			),
+		cg_description: Yup.string()
+			.trim()
+			.max(
+				DESCRIPTION_LENGTH,
+				i18n._(
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
+				)
+			),
+		cg_severity: severitySchema(i18n._(t`Invalid severity`)),
+	});
+	const [filters, setFilters] = useState<FilterDef>(
+		getResultFilters(schema, hashPrefix, {
+			name: {
+				filter: "",
+			},
+			description: {
+				filter: "",
+			},
+			severity: {
+				filter: "",
+			},
+		})
+	);
+
+	const columns: ColDef[] = [
+		{ field: "name", headerName: i18n._(t`Name`), children: ConfigNameCell },
+		{
+			field: "severity",
+			headerName: i18n._(t`Severity`),
+			children: SeverityChip,
+			orderMap: severityOrderMap,
+		},
+		{
+			field: "hasHiddenFindings",
+			headerName: i18n._(t`Actions`),
+			children: HiddenFindingCell,
+			disableRowClick: true,
+			bodyStyle: {
+				maxWidth: "5rem",
+				width: "5rem",
+			},
+		},
+	];
+
+	const rows: RowDef[] = [];
+
+	for (const [rule, info] of Object.entries(
+		scan.results?.configuration ?? {}
+	)) {
+		// single matching hidden finding
+		const findings = hiddenFindings.find((hf) => {
+			return hf.type === "configuration" && hf.value.id === rule;
+		});
+		// note: only data passed in the row object will be accessible in the cell's render function ("children" ColDef field)
+		// this is why fields such as url and createdBy are added here
+		rows.push({
+			keyId: ["configuration", rule].join("-"),
+			type: "configuration",
+			url: scan.service + "/" + scan.repo,
+			createdBy: currentUser.email,
+			// hidden finding data stored in "hiddenFindings" field
+			// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
+			hasHiddenFindings: Boolean(findings),
+			hiddenFindings: findings ? [findings] : undefined,
+			rule,
+			name: info.name,
+			description: info.description,
+			severity: info.severity,
+			repo: scan.repo,
+			service: scan.service,
+			branch: scan.branch,
+		});
+	}
+
+	const configDialogContent = () => {
+		return (
+			<>
+				<DialogContent dividers={true}>
+					<span>
+						<SeverityChip value={selectedRow?.severity} />
+					</span>
+					<Grid container spacing={3}>
+						{/* single large column */}
+						<Grid item xs={12} className={classes.tabDialogGrid}>
+							<List>
+								<ListItem key="config-description">
+									<ListItemText
+										primary={
+											<>
+												{i18n._(t`Description`)}
+												{selectedRow?.description && (
+													<CustomCopyToClipboard
+														copyTarget={selectedRow?.description}
+													/>
+												)}
+											</>
+										}
+										secondary={selectedRow?.description ?? ""}
+									/>
+								</ListItem>
+							</List>
+						</Grid>
+					</Grid>
+				</DialogContent>
+				<FindingDialogActions
+					row={selectedRow}
+					onClose={() => onRowSelect(null)}
+					onFindingHidden={() => {
+						setHideRowNum(selectedRowNum);
+					}}
+				/>
+			</>
+		);
+	};
+
+	const exportData = () => {
+		const data: RowDef[] = [];
+		for (const [rule, info] of Object.entries(
+			scan.results?.configuration ?? {}
+		)) {
+			data.push({
+				id: rule,
+				name: info.name,
+				description: info.description,
+				severity: info.severity,
+			});
+		}
+		return data;
+	};
+
+	const onRowSelect = (row: RowDef | null) => {
+		setSelectedRow(row);
+		setSelectedRowNum(null);
+		if (row) {
+			const rowId = rows.findIndex((r) => {
+				return r?.keyId === row?.keyId;
+			});
+			if (rowId !== -1) {
+				setSelectedRowNum(rowId);
+			}
+		}
+	};
+
+	const handleOnClear = (field: string) => {
+		const newFilters = { ...filters };
+		newFilters[field].filter = "";
+		setFilters(newFilters);
+		saveFilters(hashPrefix, newFilters);
+	};
+
+	const clearAllFilters = () => {
+		setFilters((prevState: FilterDef) => {
+			const newFilters = { ...prevState };
+			for (const field in prevState) {
+				newFilters[field].filter = "";
+			}
+			saveFilters(hashPrefix, newFilters);
+			return newFilters;
+		});
+	};
+
+	const handleOnChange = (
+		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => {
+		setFilters((prevState: FilterDef) => {
+			const newFilters = { ...prevState };
+			newFilters[field].filter = value;
+			saveFilters(hashPrefix, newFilters);
+			return newFilters;
+		});
+	};
+
+	return (
+		<>
+			{rows.length ? (
+				<>
+					<FormControl
+						component="fieldset"
+						className={cx(classes.tableDescription, classes.showFilters)}
+					>
+						<FormLabel component="legend">
+							<Trans>Filter Results</Trans>
+						</FormLabel>
+
+						<FormGroup row className={classes.filterGroup}>
+							<FilterField
+								field="name"
+								autoFocus={true}
+								label={i18n._(t`Name`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["name"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: NAME_LENGTH }}
+							/>
+							<FilterField
+								field="description"
+								label={i18n._(t`Description`)}
+								placeholder={i18n._(t`Contains`)}
+								value={filters["description"].filter}
+								onClear={handleOnClear}
+								onChange={handleOnChange}
+								inputProps={{ maxLength: DESCRIPTION_LENGTH }}
+							/>
+							<SeverityFilterField
+								value={filters["severity"].filter}
+								onChange={handleOnChange}
+								summary={scan?.results_summary?.configuration}
+							/>
+							<Zoom
+								in={Object.values(filters).some((value) => value.filter)}
+								unmountOnExit
+							>
+								<Fab
+									aria-label={i18n._(t`Clear all filters`)}
+									color="primary"
+									size="small"
+									onClick={clearAllFilters}
+								>
+									<ClearIcon fontSize="small" />
+								</Fab>
+							</Zoom>
+						</FormGroup>
+					</FormControl>
+
+					<EnhancedTable
+						columns={columns}
+						rows={rows}
+						defaultOrderBy="severity"
+						onRowSelect={onRowSelect}
+						selectedRow={selectedRow}
+						filters={filters}
+						menuOptions={{
+							exportFile: "scan_configuration",
+							exportFormats: ["csv", "json"],
+							exportData: exportData,
+						}}
+					/>
+					<DraggableDialog
+						open={!!selectedRow}
+						onClose={() => onRowSelect(null)}
+						title={
+							selectedRow?.name && typeof selectedRow.name === "string"
+								? capitalize(selectedRow.name)
+								: i18n._(t`No Name`)
+						}
+						copyTitle={true}
+						maxWidth={"md"}
+						fullWidth={true}
+					>
+						{configDialogContent()}
+					</DraggableDialog>
+					<HiddenFindingDialog
+						row={hideRowNum !== null ? rows[hideRowNum] : null}
+						open={hideRowNum !== null}
+						onClose={() => {
+							setHideRowNum(null);
+						}}
+					/>
+				</>
+			) : (
+				<NoResults title={i18n._(t`No configuration findings`)} />
+			)}
+		</>
+	);
+};
+
 const InventoryTabContent = (props: {
 	scan: AnalysisReport;
 	sharedColors: Palette[];
@@ -4428,6 +4817,7 @@ interface HiddenFindingsSummary extends SeverityLevels {
 	static_analysis: number;
 	vulnerability: number;
 	vulnerability_raw: number;
+	configuration: number;
 }
 
 export const HiddenFindingsTabContent = (props: {
@@ -4669,6 +5059,12 @@ export const HiddenFindingsTabContent = (props: {
 										<Trans>None</Trans>
 									</i>
 								</MenuItem>
+								<MenuItem value="configuration">
+									<FindingTypeChip
+										value="configuration"
+										count={hiddenFindingsSummary.configuration}
+									/>
+								</MenuItem>
 								<MenuItem value="secret">
 									<FindingTypeChip
 										value="secret"
@@ -4800,6 +5196,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 			"-vulnerability",
 			"-secret",
 			"-static_analysis",
+			"-configuration",
 			"-inventory",
 			"-sbom",
 		] as ScanCategories[]);
@@ -5412,6 +5809,11 @@ export const TabContent = (props: {
 						(a, b) => a + b
 				  )
 				: 0,
+			config: scan?.results_summary?.configuration
+				? Object.values(scan.results_summary.configuration).reduce(
+						(a, b) => a + b
+				  )
+				: 0,
 		};
 	}, [scan?.results_summary]);
 
@@ -5431,6 +5833,7 @@ export const TabContent = (props: {
 			static_analysis: 0,
 			vulnerability: 0,
 			vulnerability_raw: 0,
+			configuration: 0,
 		});
 
 	// calculate hiddenFinding count
@@ -5450,6 +5853,7 @@ export const TabContent = (props: {
 			static_analysis: 0,
 			vulnerability: 0,
 			vulnerability_raw: 0,
+			configuration: 0,
 		};
 
 		hiddenFindings.forEach((item: HiddenFinding) => {
@@ -5469,6 +5873,25 @@ export const TabContent = (props: {
 			let unhiddenFindings: string[] = [];
 
 			switch (item.type) {
+				case "configuration": {
+					row = {
+						...row,
+						source: "",
+						filename: "",
+						location: item.value.id,
+						component: "",
+						severity: item.value?.severity ?? "",
+						hiddenFindings: [{ ...item }],
+						unhiddenFindings,
+					};
+					rows.push(row);
+					summary.configuration += 1;
+					if (item.value?.severity && item.value.severity in summary) {
+						summary[item.value.severity] += 1;
+					}
+					break;
+				}
+
 				case "static_analysis": {
 					row = {
 						...row,
@@ -5609,6 +6032,7 @@ export const TabContent = (props: {
 	const tabChanger = (n: number) => onTabChange(n);
 
 	// When tabs are disabled, then OverviewCards should not be clickable links to those tabs
+	const isDisabledConfig = !scan?.results_summary?.configuration;
 	const isDisabledVulns = !scan?.results_summary?.vulnerabilities;
 	const isDisabledStat = !scan?.results_summary?.static_analysis;
 	const isDisabledSecrets = typeof scan?.results_summary?.secrets !== "number";
@@ -5627,12 +6051,14 @@ export const TabContent = (props: {
 					variant="fullWidth"
 				>
 					<Tab
+						value={TAB_OVERVIEW}
 						className={classes.tab}
 						label={i18n._(t`Overview`)}
 						icon={<AssessmentIcon />}
 						{...a11yProps(TAB_OVERVIEW)}
 					/>
 					<Tab
+						value={TAB_VULN}
 						className={classes.tab}
 						label={i18n._(t`Vulnerabilities`)}
 						icon={
@@ -5648,6 +6074,7 @@ export const TabContent = (props: {
 						disabled={isDisabledVulns}
 					/>
 					<Tab
+						value={TAB_ANALYSIS}
 						className={classes.tab}
 						label={i18n._(t`Static Analysis`)}
 						icon={
@@ -5663,6 +6090,7 @@ export const TabContent = (props: {
 						disabled={isDisabledStat}
 					/>
 					<Tab
+						value={TAB_SECRET}
 						className={classes.tab}
 						label={i18n._(t`Secrets`)}
 						icon={
@@ -5678,6 +6106,23 @@ export const TabContent = (props: {
 						disabled={isDisabledSecrets}
 					/>
 					<Tab
+						value={TAB_CONFIG}
+						className={classes.tab}
+						label={i18n._(t`Configuration`)}
+						icon={
+							<StyledBadge
+								badgeContent={counts.config}
+								max={999}
+								color="primary"
+							>
+								<FactCheckIcon />
+							</StyledBadge>
+						}
+						{...a11yProps(TAB_CONFIG)}
+						disabled={isDisabledConfig}
+					/>
+					<Tab
+						value={TAB_INVENTORY}
 						className={classes.tab}
 						label={i18n._(t`Inventory`)}
 						icon={
@@ -5693,12 +6138,14 @@ export const TabContent = (props: {
 						disabled={isDisabledInventory}
 					/>
 					<Tab
+						value={TAB_RAW}
 						className={classes.tab}
 						label={i18n._(t`Raw`)}
 						icon={<CodeIcon />}
 						{...a11yProps(TAB_RAW)}
 					/>
 					<Tab
+						value={TAB_HIDDEN}
 						className={classes.tab}
 						label={i18n._(t`Hidden Findings`)}
 						icon={
@@ -5727,6 +6174,7 @@ export const TabContent = (props: {
 						isDisabledSecrets,
 						isDisabledInventory,
 						isDisabledHFs,
+						isDisabledConfig,
 					}}
 				/>
 			</TabPanel>
@@ -5752,6 +6200,16 @@ export const TabContent = (props: {
 			</TabPanel>
 			<TabPanel value={activeTab} index={TAB_SECRET}>
 				<SecretsTabContent
+					scan={scan}
+					hiddenFindings={hiddenFindings}
+					currentUser={currentUser}
+					saveFilters={(prefix, filters) =>
+						setResultFilters(prefix, filters, location, navigate)
+					}
+				/>
+			</TabPanel>
+			<TabPanel value={activeTab} index={TAB_CONFIG}>
+				<ConfigTabContent
 					scan={scan}
 					hiddenFindings={hiddenFindings}
 					currentUser={currentUser}
@@ -5865,7 +6323,7 @@ const ResultsPage = () => {
 				.matches(
 					/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 				), // UUID
-			tab: Yup.number().min(TAB_OVERVIEW).max(TAB_HIDDEN).integer(),
+			tab: Yup.number().min(TAB_MIN).max(TAB_MAX).integer(),
 		},
 		[["org", "service"]]
 	);
@@ -5996,6 +6454,7 @@ const ResultsPage = () => {
 				if (
 					(tab === TAB_VULN && !scan?.results_summary?.vulnerabilities) ||
 					(tab === TAB_ANALYSIS && !scan?.results_summary?.static_analysis) ||
+					(tab === TAB_CONFIG && !scan?.results_summary?.configuration) ||
 					(tab === TAB_SECRET &&
 						typeof scan?.results_summary?.secrets !== "number") ||
 					(tab === TAB_INVENTORY && !scan?.results_summary?.inventory)
@@ -6130,6 +6589,8 @@ const ResultsPage = () => {
 				vulnerability:
 					scan.scan_options.categories?.includes("vulnerability") ?? true,
 				sbom: scan.scan_options.categories?.includes("sbom") ?? true,
+				configuration:
+					scan.scan_options.categories?.includes("configuration") ?? true,
 				depth: scan.scan_options?.depth ?? "",
 				includeDev: scan.scan_options?.include_dev ?? false,
 				// removes any disabled plugins from new scan
@@ -6157,6 +6618,11 @@ const ResultsPage = () => {
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
 						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`)
+					),
+				configPlugins:
+					scan.scan_options?.plugins &&
+					scan.scan_options?.plugins.filter(
+						(p) => configPlugins.includes(p) || configPlugins.includes(`-${p}`)
 					),
 				includePaths: scan.scan_options?.include_paths
 					? scan.scan_options?.include_paths.join(", ")
