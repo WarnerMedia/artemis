@@ -15,3 +15,8 @@ class CodedException(Exception):
 class GetRepositoryException(CodedException):
     def __init__(self, message):
         super().__init__(message, ErrorCode.NOT_FOUND)
+
+
+class GetBranchException(CodedException):
+    def __init__(self, message):
+        super().__init__(message, ErrorCode.NOT_FOUND)

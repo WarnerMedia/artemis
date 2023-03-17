@@ -83,7 +83,7 @@ module "event-dispatch-queue-send" {
   actions        = ["sqs:SendMessage"]
   iam_role_names = [aws_iam_role.event-role.name]
   name           = "${var.app}-event-dispatch-queue-send"
-  resources      = [var.secrets_queue.arn, var.audit_event_queue.arn]
+  resources      = concat([var.secrets_queue.arn, var.audit_event_queue.arn], var.extra_event_dispatch_queues)
 }
 
 module "event-services-json" {
