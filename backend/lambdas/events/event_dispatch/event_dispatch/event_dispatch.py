@@ -19,6 +19,12 @@ SECRETS_ENABLED = os.environ.get("SECRETS_ENABLED", "false").lower() == "true"
 # }
 ADDITIONAL_ROUTING = json.loads(os.environ.get("ARTEMIS_ADDITIONAL_EVENT_ROUTING", "{}"))
 
+# Set the routing for configuration events. Can be set directly or overridden in the additional routing config.
+CONFIGURATION_EVENTS_ENABLED = os.environ.get("ARTEMIS_CONFIGURATION_EVENTS_ENABLED", "false").lower() == "true"
+CONFIGURATION_EVENTS_QUEUE = os.environ.get("ARTEMIS_CONFIGURATION_EVENTS_QUEUE")
+if CONFIGURATION_EVENTS_ENABLED and CONFIGURATION_EVENTS_QUEUE and "configuration" not in ADDITIONAL_ROUTING:
+    ADDITIONAL_ROUTING["configuration"] = CONFIGURATION_EVENTS_QUEUE
+
 if SECRETS_QUEUE and AUDIT_QUEUE:
     # This is in a conditional so it doesn't run when this file is loaded during unit testing
     SQS = boto3.client("sqs")
@@ -59,18 +65,18 @@ def process(event):
             try:
                 # Forward the event along by putting it in the queue consumed by this secrets management process
                 SQS.send_message(QueueUrl=SECRETS_MANAGEMENT[process], MessageBody=json.dumps(event))
-            except ClientError:
-                print("Unable to queue event")
+            except ClientError as e:
+                print(f"Unable to queue secrets event to {SECRETS_MANAGEMENT[process]}: {e}")
     elif event["type"] == "audit":
         try:
             SQS.send_message(QueueUrl=AUDIT_QUEUE, MessageBody=json.dumps(event["event"]))
-        except ClientError:
-            print("Unable to queue event")
+        except ClientError as e:
+            print(f"Unable to queue audit event to {AUDIT_QUEUE}: {e}")
     elif event["type"] in ADDITIONAL_ROUTING:
         try:
             SQS.send_message(QueueUrl=ADDITIONAL_ROUTING[event["type"]], MessageBody=json.dumps(event))
-        except ClientError:
-            print("Unable to queue event")
+        except ClientError as e:
+            print(f"Unable to queue {event['type']} event to {ADDITIONAL_ROUTING[event['type']]}: {e}")
     else:
         print(f"Unknown event type: {str(event.get('type'))}")
 

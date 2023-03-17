@@ -12,7 +12,7 @@ from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
 
-from artemisdb.artemisdb.models import PluginConfig, SecretType
+from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType
 from artemislib.github.app import GITHUB_APP_ID
 from artemislib.logging import Logger, LOG_LEVEL
 from artemislib.util import dict_eq
@@ -300,18 +300,18 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         if "event_info" in plugin_output:
             # Process event info by sending them to a locked down SQS queue so that the results can be
             # sent to other systems that need details we otherwise don't want to store.
-            if settings.plugin_type == "secrets":
+            if settings.plugin_type == PluginType.SECRETS.value:
                 # Remove the ALed raw secrets from the plugin results. This has to be done now because
                 # it can't be done at report time due to the raw secrets not being stored in the DB.
                 plugin_output = filter_raw_secrets(scan, plugin_output)
                 # Remove the other secrets from what gets sent to the event stream. They don't get
                 # removed from the plugin output because they still get stored in the DB.
                 filtered_plugin_output = filter_secrets(scan, plugin_output)
-                process_event_info(scan, filtered_plugin_output, settings.plugin_type)
+                process_event_info(scan, filtered_plugin_output, settings.plugin_type, settings.name)
             else:
-                process_event_info(scan, plugin_output, settings.plugin_type)
+                process_event_info(scan, plugin_output, settings.plugin_type, settings.name)
 
-        if settings.plugin_type == "secrets":
+        if settings.plugin_type == PluginType.SECRETS.value:
             _process_secret_types(plugin_output.get("details", []))
 
         return Result(
@@ -345,10 +345,10 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
     )
 
 
-def process_event_info(scan, results, plugin_type):
+def process_event_info(scan, results, plugin_type, plugin_name):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
-    if plugin_type == "secrets":
+    if plugin_type == PluginType.SECRETS.value:
         if not PROCESS_SECRETS_WITH_PATH_EXCLUSIONS and (scan.include_paths or scan.exclude_paths):
             log.info("Skipping secrets event processing of scan with path inclusions/exclusions")
             return
@@ -375,7 +375,7 @@ def process_event_info(scan, results, plugin_type):
                 ),
             }
             queue_event(scan.repo.repo, plugin_type, payload)
-    elif plugin_type == "inventory":
+    elif plugin_type in PluginType.INVENTORY.value:
         payload = {
             "timestamp": timestamp,
             "type": plugin_type,
@@ -385,6 +385,22 @@ def process_event_info(scan, results, plugin_type):
             "details": results["event_info"],
         }
         queue_event(scan.repo.repo, plugin_type, payload)
+    elif plugin_type == PluginType.CONFIGURATION.value:
+        for item in results.get("details", []):
+            if item["pass"]:  # Skip results that didn't fail
+                continue
+            payload = {
+                "timestamp": timestamp,
+                "type": plugin_type,
+                "service": scan.repo.service,
+                "repo": scan.repo.repo,
+                "branch": scan.ref,
+                "last-commit-timestamp": scan.branch_last_commit_timestamp,
+                "details": results["event_info"][item["id"]],
+                "report_url": scan.report_url,
+                "plugin_name": plugin_name,
+            }
+            queue_event(scan.repo.repo, plugin_type, payload)
 
 
 def queue_event(repo, plugin_type, payload):

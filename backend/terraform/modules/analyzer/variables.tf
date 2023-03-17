@@ -437,6 +437,12 @@ variable "extra_env_vars_event_dispatch" {
   default     = {}
 }
 
+variable "extra_event_dispatch_queues" {
+  description = "Extra SQS queues the event dispatch lambda needs write permissions on"
+  type        = list(string)
+  default     = []
+}
+
 ################################################
 # Public Engine Cluster Customization
 ################################################

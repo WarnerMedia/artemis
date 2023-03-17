@@ -9,7 +9,7 @@ module "aurora" {
   name = "${var.app}-${var.environment}"
 
   engine                          = "aurora-postgresql"
-  engine_version                  = "11.13"
+  engine_version                  = "11.17"
   auto_minor_version_upgrade      = true
   apply_immediately               = true
   db_parameter_group_name         = aws_db_parameter_group.db_parameter_group.name

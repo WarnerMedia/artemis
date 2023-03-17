@@ -4,7 +4,7 @@ from urllib.parse import quote
 import requests
 from octokit import Octokit
 
-from . import GetRepositoryException, environment
+from . import GetBranchException, GetRepositoryException, environment
 
 API_BASE_URL = "https://api.github.com"
 SCOPES_HEADER_NAME = "X-OAuth-Scopes"
@@ -93,6 +93,15 @@ class Github:
             raise GetRepositoryException(f'Problem getting repository "{owner}/{repo}": {err_message}')
 
         return repository.get("default_branch")
+
+    def get_branch_hash(self, owner, repo, branch):
+        b = self._github.repos.get_branch(owner=owner, repo=repo, branch=branch).json
+
+        err_message = b.get("message")
+        if err_message:
+            raise GetBranchException(f'Problem getting branch "{owner}/{repo}/{branch}": {err_message}')
+
+        return b.get("commit", {}).get("sha")
 
     @staticmethod
     def get_authenticated_client(verbose=False):

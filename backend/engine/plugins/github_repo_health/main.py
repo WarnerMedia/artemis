@@ -63,6 +63,7 @@ def run_repo_health(args):
         "errors": [],
         "alerts": [],
         "debug": [],
+        "event_info": {},
     }
 
     service = args.engine_vars.get("service_name")
@@ -87,7 +88,7 @@ def run_repo_health(args):
     github_app = GithubApp()
     github_token = github_app.get_installation_token(owner)
 
-    if github_token == None:
+    if github_token is None:
         output["errors"].append("Failed to authenticate to Github")
         return output
 
@@ -95,11 +96,17 @@ def run_repo_health(args):
     checker = Checker(github, config)
 
     branch = args.engine_vars["ref"] or github.get_default_branch(owner, repo)
+    hash = github.get_branch_hash(owner, repo, branch)  # Get latest hash of default branch for event info
 
     results = checker.run(owner, repo, branch)
 
     output["details"].extend(results)
     output["success"] = are_results_passing(results)
+
+    # Set the event info so that the engine will process configuration events from this plugin
+    for result in results:
+        output["event_info"][result["id"]] = result
+        output["event_info"][result["id"]]["hash"] = hash
 
     return output
 
