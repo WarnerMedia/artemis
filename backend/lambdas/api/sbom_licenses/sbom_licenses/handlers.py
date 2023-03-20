@@ -2,9 +2,9 @@ from http import HTTPStatus
 
 from artemisapi.authorizer import get_authorizer_info
 from artemisapi.response import response
+from artemisapi.validators import ValidationError
 from sbom_licenses.get import get
-from sbom_licenses.util.parsers import parse_event
-from sbom_licenses.util.validators import ValidationError
+from sbom_licenses.util.events import ParsedEvent
 
 
 def handler(event, _):
@@ -14,12 +14,12 @@ def handler(event, _):
         return response(code=HTTPStatus.FORBIDDEN)
 
     try:
-        parsed_event = parse_event(event)
+        parsed_event = ParsedEvent(event)
     except ValidationError as e:
         return response({"message": e.message}, code=e.code)
 
     if event.get("httpMethod") == "GET":
-        resp = get(parsed_event, scope=auth["authz"])
+        resp = get(parsed_event, admin=auth["admin"], scope=auth["authz"])
     else:
         return response(code=HTTPStatus.METHOD_NOT_ALLOWED)
 
