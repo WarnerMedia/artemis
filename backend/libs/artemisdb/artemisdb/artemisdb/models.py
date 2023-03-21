@@ -1000,7 +1000,7 @@ class RepoComponentScan(models.Model):
         unique_together = ["repo", "component"]
 
     def __str__(self):
-        return f"<RepoComponent: {self.repo}, {self.ref}, {self.scan}>"
+        return f"<RepoComponent: {self.repo}, {self.component}, {self.scan}>"
 
     def to_dict(self):
         return self.component.to_dict()
