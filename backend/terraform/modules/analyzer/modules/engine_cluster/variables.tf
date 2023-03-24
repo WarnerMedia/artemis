@@ -181,6 +181,21 @@ variable "mandatory_include_paths" {
   default     = []
 }
 
+variable "secrets_events_enabled" {
+  description = "Whether to send secrets events to the event queue"
+  default     = false
+}
+
+variable "inventory_events_enabled" {
+  description = "Whether to send inventory events to the event queue"
+  default     = false
+}
+
+variable "configuration_events_enabled" {
+  description = "Whether to send configuration events to the event queue"
+  default     = false
+}
+
 ################################################
 # GitHub App
 ################################################

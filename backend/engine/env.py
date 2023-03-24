@@ -65,3 +65,7 @@ PROCESS_SECRETS_WITH_PATH_EXCLUSIONS = (
 )
 # ARTEMIS_METADATA_SCHEME_MODULES is a CSV list of metadata processing plugin modules
 METADATA_SCHEME_MODULES = list(filter(None, os.environ.get("ARTEMIS_METADATA_SCHEME_MODULES", "").split(",")))
+
+SECRETS_EVENTS_ENABLED = os.environ.get("ARTEMIS_SECRETS_EVENTS_ENABLED", "false").lower() == "true"
+INVENTORY_EVENTS_ENABLED = os.environ.get("ARTEMIS_INVENTORY_EVENTS_ENABLED", "false").lower() == "true"
+CONFIGURATION_EVENTS_ENABLED = os.environ.get("ARTEMIS_CONFIGURATION_EVENTS_ENABLED", "false").lower() == "true"
