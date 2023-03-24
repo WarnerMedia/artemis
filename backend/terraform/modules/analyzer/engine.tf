@@ -50,6 +50,10 @@ module "public_engine_cluster" {
   revproxy_domain_substring = var.revproxy_domain_substring
   revproxy_secret           = var.revproxy_secret
   revproxy_secret_region    = var.revproxy_secret_region
+
+  secrets_events_enabled       = var.secrets_events_enabled
+  inventory_events_enabled     = var.inventory_events_enabled
+  configuration_events_enabled = var.configuration_events_enabled
 }
 
 module "nat_engine_cluster" {
@@ -105,4 +109,8 @@ module "nat_engine_cluster" {
   revproxy_domain_substring = var.revproxy_domain_substring
   revproxy_secret           = var.revproxy_secret
   revproxy_secret_region    = var.revproxy_secret_region
+
+  secrets_events_enabled       = var.secrets_events_enabled
+  inventory_events_enabled     = var.inventory_events_enabled
+  configuration_events_enabled = var.configuration_events_enabled
 }

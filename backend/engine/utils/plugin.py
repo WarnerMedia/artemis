@@ -30,6 +30,9 @@ from env import (
     REV_PROXY_SECRET,
     REV_PROXY_SECRET_REGION,
     REV_PROXY_SECRET_HEADER,
+    SECRETS_EVENTS_ENABLED,
+    INVENTORY_EVENTS_ENABLED,
+    CONFIGURATION_EVENTS_ENABLED,
 )
 
 log = Logger(__name__)
@@ -348,7 +351,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
 def process_event_info(scan, results, plugin_type, plugin_name):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
-    if plugin_type == PluginType.SECRETS.value:
+    if plugin_type == PluginType.SECRETS.value and SECRETS_EVENTS_ENABLED:
         if not PROCESS_SECRETS_WITH_PATH_EXCLUSIONS and (scan.include_paths or scan.exclude_paths):
             log.info("Skipping secrets event processing of scan with path inclusions/exclusions")
             return
@@ -375,7 +378,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 ),
             }
             queue_event(scan.repo.repo, plugin_type, payload)
-    elif plugin_type in PluginType.INVENTORY.value:
+    elif plugin_type in PluginType.INVENTORY.value and INVENTORY_EVENTS_ENABLED:
         payload = {
             "timestamp": timestamp,
             "type": plugin_type,
@@ -385,7 +388,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
             "details": results["event_info"],
         }
         queue_event(scan.repo.repo, plugin_type, payload)
-    elif plugin_type == PluginType.CONFIGURATION.value:
+    elif plugin_type == PluginType.CONFIGURATION.value and CONFIGURATION_EVENTS_ENABLED:
         for item in results.get("details", []):
             if item["pass"]:  # Skip results that didn't fail
                 continue

@@ -84,6 +84,9 @@ ARTEMIS_METADATA_SCHEME_MODULES=${metadata_scheme_modules}
 ARTEMIS_REVPROXY_DOMAIN_SUBSTRING=${revproxy_domain_substring}
 ARTEMIS_REVPROXY_SECRET=${revproxy_secret}
 ARTEMIS_REVPROXY_SECRET_REGION=${revproxy_secret_region}
+ARTEMIS_SECRETS_EVENTS_ENABLED=${secrets_events_enabled}
+ARTEMIS_INVENTORY_EVENTS_ENABLED=${inventory_events_enabled}
+ARTEMIS_CONFIGURATION_EVENTS_ENABLED=${configuration_events_enabled}
 EOF
 
 # Fix ownership of files for ec2-user
