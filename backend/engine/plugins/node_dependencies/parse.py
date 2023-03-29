@@ -43,7 +43,7 @@ def parse_advisory(adv: dict, package_file: str, lockfile: dict, resolver: LineN
                         "filename": str(ver["filename"] or "").replace(f"{path}", ""),
                         "line": ver["line"],
                         "inventory": {
-                            "component": {"name": adv["name"], "version": ver["version"]},
+                            "component": {"name": adv["name"], "version": ver["version"], "type": "npm"},
                             "advisory_ids": sorted(list(set(filter(None, advisory_ids)))),
                         },
                     }

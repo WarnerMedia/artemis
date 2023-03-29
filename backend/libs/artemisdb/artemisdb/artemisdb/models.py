@@ -11,6 +11,7 @@ from django.utils.functional import cached_property
 from artemisdb.artemisdb.consts import (
     MAX_REASON_LENGTH,
     AllowListType,
+    ComponentType,
     EngineState,
     PluginType,
     ReportStatus,
@@ -956,6 +957,10 @@ class Component(models.Model):
     # for any component within the dependency trees so we need to record the canonical
     # label for each component.
     label = models.CharField(max_length=256, unique=True)
+
+    # This is the type of component, if we can determine it. This is used to help in looking up
+    # missing license information. Knowing the package type narrows down the search.
+    component_type = models.CharField(max_length=32, choices=[(r, r.value) for r in ComponentType], null=True)
 
     def __str__(self):
         return f"{self.name}@{self.version}"

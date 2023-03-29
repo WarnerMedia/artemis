@@ -90,7 +90,12 @@ def process_vulns(result: Result, scan: Scan, plugin_name: str) -> None:
 
         # Update component mapping for this vuln, if needed
         if "component" in v.get("inventory", {}):
-            component = get_component(v["inventory"]["component"]["name"], v["inventory"]["component"]["version"], scan)
+            component = get_component(
+                name=v["inventory"]["component"]["name"],
+                version=v["inventory"]["component"]["version"],
+                scan=scan,
+                component_type=v["inventory"]["component"].get("type"),
+            )
             if not vuln.components.filter(pk=component.pk).exists():
                 vuln.components.add(component)
 

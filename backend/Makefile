@@ -103,6 +103,7 @@ DB_CLEANUP_LAMBDA := ${PREFIX}-db-cleanup
 SYSTEM_ALLOWLIST_LAMBDA := ${PREFIX}-system-allowlist-handler
 SEARCH_SCANS_LAMBDA := ${PREFIX}-search-scans-handler
 SEARCH_VULNERABILITIES_LAMBDA := ${PREFIX}-search-vulnerabilities-handler
+LICENSE_RETRIEVER_LAMBDA := ${PREFIX}-license-retriever
 
 # Lambda layers
 ARTEMISLIB_LAMBDA_LAYER := ${PREFIX}-artemislib
@@ -400,6 +401,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/generators/pdf_report.zip \
 		 dist/lambdas/generators/sbom_report.zip \
 		 dist/lambdas/maintenance/db_cleanup.zip \
+		 dist/lambdas/maintenance/license_retriever.zip \
 		 dist/lambdas/maintenance/report_cleanup.zip \
 		 dist/lambdas/scans/callback.zip \
 		 dist/lambdas/scans/scale_down.zip \
@@ -849,6 +851,7 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-generators-pdf_report \
 				upload_lambda_lambdas-generators-sbom_report \
 				upload_lambda_lambdas-maintenance-db_cleanup \
+				upload_lambda_lambdas-maintenance-license_retriever \
 				upload_lambda_lambdas-maintenance-report_cleanup \
 				upload_lambda_lambdas-scans-callback \
 				upload_lambda_lambdas-scans-scale_down \
@@ -922,7 +925,8 @@ move_lambda_bundles: move_lambda_bundle_artemislib \
 					 move_lambda_bundle_scan_scheduler \
 					 move_lambda_bundle_scheduled_scan_handler \
 					 move_lambda_bundle_scans_batch \
-					 move_lambda_bundle_db_cleanup
+					 move_lambda_bundle_db_cleanup \
+					 move_lambda_bundle_license_retriever
 .PHONY: move_lambda_bundles
 
 ###############################################################################
@@ -1386,6 +1390,21 @@ deploy_db_cleanup: move_lambda_bundle_db_cleanup
 	@echo "${OK}"
 .PHONY: deploy_db_cleanup
 
+deploy_license_retriever: move_lambda_bundle_license_retriever
+	@echo "${INFO}Deploying ${LICENSE_RETRIEVER_LAMBDA} lambda"
+	aws lambda update-function-code \
+		--function-name ${LICENSE_RETRIEVER_LAMBDA} \
+		--region ${REGION} \
+		--s3-bucket ${S3_BUCKET} \
+		--s3-key lambdas/license_retriever/v${VERSION}/license_retriever.zip
+	@echo "${INFO}Waiting for ${LICENSE_RETRIEVER_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${LICENSE_RETRIEVER_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${LICENSE_RETRIEVER_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${LICENSE_RETRIEVER_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+.PHONY: deploy_license_retriever
+
 ###############################################################################
 # Lambda Layer Deployment
 ###############################################################################
@@ -1457,7 +1476,8 @@ deploy_lambdas: deploy_repo \
 				deploy_scheduled_scan_handler \
 				deploy_ci_tools \
 				deploy_scans_batch \
-				deploy_db_cleanup
+				deploy_db_cleanup \
+				deploy_license_retriever
 .PHONY: deploy_lambdas
 
 deploy_scripts:  ## Deploy scripts to S3

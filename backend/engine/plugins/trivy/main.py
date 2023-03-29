@@ -18,6 +18,7 @@ def parse_output(output: list) -> list:
     results = []
     for item in output:
         source = item["Target"]
+        component_type = convert_type(item["Type"])
         if item.get("Vulnerabilities") is None:
             continue
         cve_set = set()
@@ -40,7 +41,11 @@ def parse_output(output: list) -> list:
                     "severity": vuln.get("Severity", "").lower(),
                     "remediation": description_result.remediation,
                     "inventory": {
-                        "component": {"name": vuln.get("PkgName"), "version": vuln.get("InstalledVersion")},
+                        "component": {
+                            "name": vuln.get("PkgName"),
+                            "version": vuln.get("InstalledVersion"),
+                            "type": component_type,
+                        },
                         "advisory_ids": sorted(
                             list(set(filter(None, [vuln_id, vuln.get("PrimaryURL")] + vuln.get("References", []))))
                         ),
@@ -48,6 +53,12 @@ def parse_output(output: list) -> list:
                 }
             )
     return results
+
+
+def convert_type(component_type: str) -> str:
+    if component_type == "bundler":
+        return "gem"
+    return component_type.lower()
 
 
 def get_description_and_remediation(description, fixed_version) -> NamedTuple:

@@ -125,7 +125,7 @@ def build_results(output: str, composer_dir: str) -> list:
                     "severity": nvd_utils.get_cve_severity(cve, log) or "",
                     "remediation": "",
                     "inventory": {
-                        "component": {"name": pkg, "version": output_json[pkg]["version"]},
+                        "component": {"name": pkg, "version": output_json[pkg]["version"], "type": "php"},
                         "advisory_ids": list(set(filter(None, [adv["cve"], adv["link"]]))),
                     },
                 }
