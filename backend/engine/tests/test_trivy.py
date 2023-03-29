@@ -30,7 +30,7 @@ TEST_CHECK_OUTPUT_GEMLOCK_FILE = {
     "severity": "critical",
     "remediation": "Fixed Version: 1.8.0.",
     "inventory": {
-        "component": {"name": "rest-client", "version": "1.7.3"},
+        "component": {"name": "rest-client", "version": "1.7.3", "type": "gem"},
         "advisory_ids": [
             "CVE-2015-1820",
             "http://www.openwall.com/lists/oss-security/2015/03/24/3",
@@ -55,7 +55,7 @@ TEST_CHECK_OUTPUT_PACKAGE_LOCK = {
     "severity": "low",
     "remediation": "Fixed Version: 2.3.1. Upgrade to version 2.3.1 or higher.",
     "inventory": {
-        "component": {"name": "braces", "version": "1.8.5"},
+        "component": {"name": "braces", "version": "1.8.5", "type": "npm"},
         "advisory_ids": [
             "GHSA-g95f-p29q-9xw4",
             "https://github.com/advisories/GHSA-g95f-p29q-9xw4",
@@ -134,7 +134,7 @@ TEST_IMAGE_VULN_RESULT = [
         "severity": "high",
         "source": "test-docker-dcff6ea60ec3cbae155abaed414c033b-t-1000 (alpine " "3.12.3)",
         "inventory": {
-            "component": {"name": "libcrypto1.1", "version": "1.1.1i-r0"},
+            "component": {"name": "libcrypto1.1", "version": "1.1.1i-r0", "type": "alpine"},
             "advisory_ids": [
                 "CVE-2021-23839",
                 "https://avd.aquasec.com/nvd/cve-2021-23839",

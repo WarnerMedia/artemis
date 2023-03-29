@@ -241,7 +241,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V1_RELATIVE,
                 "line": 27,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.0"},
+                    "component": {"name": "pkg3", "version": "1.0.0", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/1",
@@ -258,7 +258,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V1_RELATIVE,
                 "line": 20,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.1"},
+                    "component": {"name": "pkg3", "version": "1.0.1", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/1",
@@ -275,7 +275,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V1_RELATIVE,
                 "line": 27,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.0"},
+                    "component": {"name": "pkg3", "version": "1.0.0", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/2",
@@ -292,7 +292,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V1_RELATIVE,
                 "line": 20,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.1"},
+                    "component": {"name": "pkg3", "version": "1.0.1", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/2",
@@ -325,7 +325,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V2_RELATIVE,
                 "line": 20,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.0"},
+                    "component": {"name": "pkg3", "version": "1.0.0", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/1",
@@ -342,7 +342,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V2_RELATIVE,
                 "line": 26,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.1"},
+                    "component": {"name": "pkg3", "version": "1.0.1", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/1",
@@ -359,7 +359,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V2_RELATIVE,
                 "line": 20,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.0"},
+                    "component": {"name": "pkg3", "version": "1.0.0", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/2",
@@ -376,7 +376,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_LOCKFILE_V2_RELATIVE,
                 "line": 26,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.1"},
+                    "component": {"name": "pkg3", "version": "1.0.1", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/2",
@@ -407,7 +407,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_PACKAGE_FILE_RELATIVE,
                 "line": 16,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.0"},
+                    "component": {"name": "pkg3", "version": "1.0.0", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/1",
@@ -424,7 +424,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_PACKAGE_FILE_RELATIVE,
                 "line": 9,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.1"},
+                    "component": {"name": "pkg3", "version": "1.0.1", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/1",
@@ -441,7 +441,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_PACKAGE_FILE_RELATIVE,
                 "line": 16,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.0"},
+                    "component": {"name": "pkg3", "version": "1.0.0", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/2",
@@ -458,7 +458,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
                 "filename": TEST_PACKAGE_FILE_RELATIVE,
                 "line": 9,
                 "inventory": {
-                    "component": {"name": "pkg3", "version": "1.0.1"},
+                    "component": {"name": "pkg3", "version": "1.0.1", "type": "npm"},
                     "advisory_ids": [
                         "CVE-0000-0000",
                         "https://npmjs.com/advisories/2",
