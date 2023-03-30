@@ -90,6 +90,7 @@ import {
 	Help as HelpIcon,
 	History as HistoryIcon,
 	Info as InfoIcon,
+	Inventory as InventoryIcon,
 	Layers as LayersIcon,
 	LowPriority as LowPriorityIcon,
 	OpenInNew as OpenInNewIcon,
@@ -137,7 +138,11 @@ import {
 	vs,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-import { FilterDef, handleException, HiddenFindingsRequest } from "api/client";
+import client, {
+	FilterDef,
+	handleException,
+	HiddenFindingsRequest,
+} from "api/client";
 import { AppDispatch } from "app/store";
 import {
 	colorCritical,
@@ -185,6 +190,7 @@ import {
 import {
 	AnalysisFinding,
 	AnalysisReport,
+	SbomReport,
 	ScanCategories,
 	ScanErrors,
 	SecretFinding,
@@ -4615,6 +4621,8 @@ interface AllStylesT {
 	[key: string]: { [key: string]: React.CSSProperties };
 }
 
+type DownloadType = "sbom" | "scan";
+
 const CodeTabContent = (props: {
 	scan: AnalysisReport;
 	state: CodeTabState;
@@ -4627,6 +4635,7 @@ const CodeTabContent = (props: {
 	const [creatingJson, setCreatingJson] = useState(false);
 	const [skipDialog, setSkipDialog] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [downloadType, setDownloadType] = useState<DownloadType>("scan");
 	const allStyles: AllStylesT = {
 		a11yDark: { ...a11yDark },
 		atomDark: { ...atomDark },
@@ -4641,6 +4650,11 @@ const CodeTabContent = (props: {
 		solarizedlight: { ...solarizedlight },
 		vs: { ...vs },
 	};
+	const hasSbomResults =
+		scan.scan_options.categories?.includes("sbom") ||
+		scan.scan_options.plugins?.some((plugin) => {
+			return sbomPlugins.includes(plugin);
+		});
 
 	const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setState({
@@ -4651,10 +4665,28 @@ const CodeTabContent = (props: {
 	};
 
 	const handleJsonDownload = async () => {
+		let data: AnalysisReport | SbomReport["sbom"] = scan;
 		dispatch(addNotification(i18n._(t`Generating JSON File`), "info"));
 		setCreatingJson(true);
+
+		if (downloadType === "sbom") {
+			data = [];
+			const url = [scan.service, scan.repo, scan.scan_id].join("/");
+			try {
+				// call getSbomScanById directly instead of dispatching an action
+				// not storing results in redux state b/c SBOM results aren't displayed in the UI, only fetched for download
+				const results: SbomReport = await client.getSbomScanById(url, {});
+				// only download the sbom portion of the results, not the additional scan information (repo, branch, etc.)
+				data = results.sbom;
+			} catch (e) {
+				handleException(e);
+				setCreatingJson(false);
+				return;
+			}
+		}
+
 		try {
-			exportToJson("scan", scan);
+			exportToJson(downloadType, data);
 		} catch (e) {
 			handleException(e);
 		} finally {
@@ -4775,11 +4807,12 @@ const CodeTabContent = (props: {
 
 				<CustomCopyToClipboard size="medium" copyTarget={scan} />
 
-				<Tooltip title={i18n._(t`Download`)}>
+				<Tooltip title={i18n._(t`Download scan results`)}>
 					<span>
 						<IconButton
-							aria-label={i18n._(t`Download`)}
+							aria-label={i18n._(t`Download scan results`)}
 							onClick={() => {
+								setDownloadType("scan");
 								if (skipDialog) {
 									handleJsonDownload();
 								} else {
@@ -4789,7 +4822,7 @@ const CodeTabContent = (props: {
 							size="medium"
 							disabled={creatingJson}
 						>
-							{creatingJson ? (
+							{creatingJson && downloadType === "scan" ? (
 								<CircularProgress color="inherit" size={24} />
 							) : (
 								<SaveAltIcon fontSize="medium" />
@@ -4797,6 +4830,32 @@ const CodeTabContent = (props: {
 						</IconButton>
 					</span>
 				</Tooltip>
+
+				{hasSbomResults && (
+					<Tooltip title={i18n._(t`Download SBOM results`)}>
+						<span>
+							<IconButton
+								aria-label={i18n._(t`Download SBOM results`)}
+								onClick={() => {
+									setDownloadType("sbom");
+									if (skipDialog) {
+										handleJsonDownload();
+									} else {
+										setDialogOpen(true);
+									}
+								}}
+								size="medium"
+								disabled={creatingJson}
+							>
+								{creatingJson && downloadType === "sbom" ? (
+									<CircularProgress color="inherit" size={24} />
+								) : (
+									<InventoryIcon fontSize="medium" />
+								)}
+							</IconButton>
+						</span>
+					</Tooltip>
+				)}
 			</FormGroup>
 
 			<SyntaxHighlighter

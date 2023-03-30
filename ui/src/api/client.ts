@@ -8,6 +8,8 @@ import { setGlobalException } from "features/globalException/globalExceptionSlic
 import {
 	AnalysisReport,
 	analysisReportResponseSchema,
+	SbomReport,
+	sbomReportResponseSchema,
 	ScanHistory,
 	ScanHistoryResponse,
 	scanHistoryResponseSchema,
@@ -80,13 +82,6 @@ export interface FilterDef {
 		match?: "exact" | "gt" | "bt" | "lt" | "icontains" | "contains" | "null"; // default: icontains
 		filter: string | string[];
 	};
-}
-
-export interface Response {
-	results: any;
-	count: number;
-	next: string | null;
-	previous: string | null;
 }
 
 export interface RequestMeta {
@@ -508,7 +503,6 @@ const adjustVuln = (response: SearchVulnerability) => {
 	}
 };
 
-// API not implemented, results format subject to change
 client.getVulnerabilities = async ({
 	meta,
 	customConfig = {},
@@ -533,7 +527,6 @@ client.getVulnerabilities = async ({
 	}
 };
 
-// API not implemented, results format subject to change
 client.getVulnerabilityRepos = async (
 	id: SearchVulnerability["id"],
 	{ meta, customConfig = {} }: Client
@@ -764,11 +757,41 @@ const adjustScanHistory = (response: ScanHistory) => {
 	}
 };
 
-const adjustScan = (response: AnalysisReport) => {
-	if (response?.application_metadata) {
+const adjustScan = (response: AnalysisReport | SbomReport) => {
+	if ("application_metadata" in response && response?.application_metadata) {
 		adjustMetadata(response?.application_metadata);
 	}
 	adjustScanHistory(response);
+};
+
+// same as getScanById but returning SbomReport
+// fetches scan with format=sbom filter
+client.getSbomScanById = async (
+	url: string,
+	{ meta, customConfig = {} }: Client
+): Promise<SbomReport> => {
+	try {
+		const response: SbomReport = await client(url, {
+			...customConfig,
+			meta: {
+				...meta,
+				filters: {
+					...meta?.filters,
+					format: {
+						match: "exact",
+						filter: "sbom",
+					},
+				},
+			},
+			schema: sbomReportResponseSchema,
+			method: "GET",
+		});
+		adjustScan(response);
+		return response;
+	} catch (err: any) {
+		_formatError(err, i18n._(t`Unable to get scan by id`));
+		return err;
+	}
 };
 
 client.getScanById = async (

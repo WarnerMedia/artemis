@@ -2,7 +2,7 @@ import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import * as Yup from "yup";
 
-import { Response } from "api/client";
+import { PagedResponse, Response, responseSchema } from "api/apiSchemas";
 import { Risks, scanIdSchema, Severities } from "features/scans/scansSchemas";
 import { AppMeta, appMetaSchema } from "custom/scanMetaSchemas";
 
@@ -108,16 +108,15 @@ const searchComponentSchema: Yup.ObjectSchema<Omit<SearchComponent, "_id">> =
 		})
 		.defined();
 
-export const searchComponentResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().defined().of(searchComponentSchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
-});
+export const searchComponentResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().defined().of(searchComponentSchema).defined(),
+			})
+			.defined(),
+	});
 
 const qualifiedScanSchema: Yup.ObjectSchema<QualifiedScan> = Yup.object()
 	.shape({
@@ -166,16 +165,15 @@ export const searchRepoSchema: Yup.ObjectSchema<
 	})
 	.defined();
 
-export const searchRepoResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().defined().of(searchRepoSchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
-});
+export const searchRepoResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().defined().of(searchRepoSchema).defined(),
+			})
+			.defined(),
+	});
 
 // subset of repo fields
 // type to SearchComponentRepo but omit _id field, which is internal, not from API
@@ -189,16 +187,15 @@ export const searchComponentRepoSchema: Yup.ObjectSchema<
 	})
 	.defined();
 
-export const searchComponentRepoResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().defined().of(searchComponentRepoSchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
-});
+export const searchComponentRepoResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().defined().of(searchComponentRepoSchema).defined(),
+			})
+			.defined(),
+	});
 
 export const severitySchema = Yup.string().oneOf([
 	"critical",
@@ -228,13 +225,12 @@ const searchVulnerabilitySchema: Yup.ObjectSchema<
 	})
 	.defined();
 
-export const searchVulnsResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().defined().of(searchVulnerabilitySchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
-});
+export const searchVulnsResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().defined().of(searchVulnerabilitySchema).defined(),
+			})
+			.defined(),
+	});

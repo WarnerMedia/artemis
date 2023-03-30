@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import { ScanFeatures } from "features/users/usersSchemas";
-import { Response } from "api/client";
+import { PagedResponse, Response, responseSchema } from "api/apiSchemas";
 
 // interfaces
 export interface Key {
@@ -32,16 +32,15 @@ const keysSchema: Yup.ObjectSchema<Key> = Yup.object()
 	})
 	.defined();
 
-export const keysResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().of(keysSchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
-});
+export const keysResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().of(keysSchema).defined(),
+			})
+			.defined(),
+	});
 
 export const addKeyResponseSchema = Yup.object().shape({
 	data: Yup.object()
