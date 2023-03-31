@@ -2,62 +2,54 @@ from http import HTTPStatus
 
 from artemisapi.response import response
 from artemisdb.artemisdb.models import License, Repo
-from artemisdb.artemisdb.paging import page
+from artemisdb.artemisdb.paging import FilterMap, PageInfo, apply_filters, page
 
 
-def get(parsed_event: dict, scope: list[list[list[str]]]):
+def get(parsed_event, admin: bool = False, scope: list[list[list[str]]] = None, **kwargs):
     """GET request handler
 
     API Endpoints handled:
         /sbom/licenses                     -- All licenses
         /sbom/licenses/NAME                -- Specific licenses
     """
-    license_id = parsed_event.get("license_id")
-
-    if license_id:
+    if parsed_event.license_id:
         # Endpoint:
         #   /sbom/license/NAME
         # Return the repsonse for a single license
-        return _single_license(license_id=license_id, scope=scope)
+        return _single_license(license_id=parsed_event.license_id, admin=admin, scope=scope)
     else:
         # Endpoint:
         #   /sbom/licenses
         # Return the paged list of licenses
-        return _license_list(
-            offset=parsed_event.get("offset"),
-            limit=parsed_event.get("limit"),
-            filters=parsed_event.get("filters", []),
-            order_by=parsed_event.get("order_by"),
-            scope=scope,
+        return _license_list(parsed_event.paging, admin=admin, scope=scope)
+
+
+def _single_license(license_id: str, admin: bool = False, scope: list[list[list[str]]] = None):
+    if admin:
+        license = License.objects.filter(license_id=license_id).first()
+    else:
+        license = (
+            License.objects.filter(license_id=license_id, component__repocomponentscan__repo__in=Repo.in_scope(scope))
+            .distinct()
+            .first()
         )
-
-
-def _single_license(license_id: str, scope: list[list[list[str]]]):
-    license = (
-        License.objects.filter(license_id=license_id, component__dependency__scan__repo__in=Repo.in_scope(scope))
-        .distinct()
-        .first()
-    )
     if not license:
         return response(code=HTTPStatus.NOT_FOUND)
     return response(license.to_dict())
 
 
-def _license_list(offset, limit, filters, order_by, scope: list[list[list[str]]]):
-    licenses = License.objects.filter(component__dependency__scan__repo__in=Repo.in_scope(scope)).distinct()
+def _license_list(paging: PageInfo, admin: bool = False, scope: list[list[list[str]]] = None):
+    map = FilterMap()
+    map.add_string("name")
 
-    # Apply filters
-    for filter in filters:
-        if filter["field"] == "name":
-            if filter["type"] == "exact":
-                licenses = licenses.filter(name=filter["value"])
-            elif filter["type"] == "contains":
-                licenses = licenses.filter(name__contains=filter["value"])
-            elif filter["type"] == "icontains":
-                licenses = licenses.filter(name__icontains=filter["value"])
+    if admin:
+        # Admin can get all licenses
+        qs = License.objects.all()
+    else:
+        # Non-admin can get all licenses within their scope
+        qs = License.objects.filter(component__repocomponentscan__repo__in=Repo.in_scope(scope))
 
-    # Apply ordering
-    for ob in order_by:
-        licenses = licenses.order_by(ob)
+    qs = apply_filters(qs, filter_map=map, page_info=paging, default_order=["name"], distinct=True)
 
-    return page(licenses, offset, limit, "sbom/licenses")
+    # Mimic DRF limit-offset paging
+    return page(qs, paging.offset, paging.limit, "sbom/licenses", query_str=paging.query_str)

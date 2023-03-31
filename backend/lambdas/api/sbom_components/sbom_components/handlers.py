@@ -2,9 +2,9 @@ from http import HTTPStatus
 
 from artemisapi.authorizer import get_authorizer_info
 from artemisapi.response import response
+from artemisapi.validators import ValidationError
 from sbom_components.get import get
-from sbom_components.util.parsers import parse_event
-from sbom_components.util.validators import ValidationError
+from sbom_components.util.events import ParsedEvent
 
 
 def handler(event, _):
@@ -14,7 +14,7 @@ def handler(event, _):
         return response(code=HTTPStatus.FORBIDDEN)
 
     try:
-        parsed_event = parse_event(event)
+        parsed_event = ParsedEvent(event)
     except ValidationError as e:
         return response({"message": e.message}, code=e.code)
 

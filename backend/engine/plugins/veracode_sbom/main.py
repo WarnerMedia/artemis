@@ -139,6 +139,7 @@ def process_dep(dep: dict, libs: list, matched: set) -> dict:
         ),
         "source": dep["filename"],
         "deps": [],
+        "type": lookup_type(dep["coords"]["coordinate1"], dep["coords"]["coordinate2"] or "", libs),
     }
 
     matched.add((ret["name"], ret["version"]))
@@ -162,6 +163,13 @@ def lookup_licenses(coord1: str, coord2: str, version: str, libs: list) -> list:
                     licenses.append({"license_id": license["name"], "name": license["license"]})
 
     return licenses
+
+
+def lookup_type(coord1: str, coord2: str, libs: list) -> str:
+    for lib in libs:
+        if lib["coordinate1"] == coord1 and lib["coordinate2"] == coord2:
+            return lib["coordinateType"].lower()
+    return None
 
 
 def process_unmatched_libraries(libs: list, matched: set) -> list:
@@ -200,6 +208,7 @@ def process_unmatched_libraries(libs: list, matched: set) -> list:
                         # Use coordinate type  instead of a filename so it's marginally helpful in tracking it down
                         "source": lib["coordinateType"],
                         "deps": [],  # Obviously, otherwise it would be in the dependency graph
+                        "type": lib["coordinateType"].lower() if lib["coordinateType"] != "MANUAL" else None,
                     }
                 )
     return ret
