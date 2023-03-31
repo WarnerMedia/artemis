@@ -4632,10 +4632,9 @@ const CodeTabContent = (props: {
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
 	const { scan, state, setState } = props;
-	const [creatingJson, setCreatingJson] = useState(false);
+	const [creatingJson, setCreatingJson] = useState<DownloadType | null>(null);
 	const [skipDialog, setSkipDialog] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const [downloadType, setDownloadType] = useState<DownloadType>("scan");
 	const allStyles: AllStylesT = {
 		a11yDark: { ...a11yDark },
 		atomDark: { ...atomDark },
@@ -4664,12 +4663,11 @@ const CodeTabContent = (props: {
 		});
 	};
 
-	const handleJsonDownload = async () => {
+	const handleJsonDownload = async (type: DownloadType) => {
 		let data: AnalysisReport | SbomReport["sbom"] = scan;
 		dispatch(addNotification(i18n._(t`Generating JSON File`), "info"));
-		setCreatingJson(true);
 
-		if (downloadType === "sbom") {
+		if (type === "sbom") {
 			data = [];
 			const url = [scan.service, scan.repo, scan.scan_id].join("/");
 			try {
@@ -4680,23 +4678,23 @@ const CodeTabContent = (props: {
 				data = results.sbom;
 			} catch (e) {
 				handleException(e);
-				setCreatingJson(false);
+				setCreatingJson(null);
 				return;
 			}
 		}
 
 		try {
-			exportToJson(downloadType, data);
+			exportToJson(type, data);
 		} catch (e) {
 			handleException(e);
 		} finally {
-			setCreatingJson(false);
+			setCreatingJson(null);
 		}
 	};
 
 	const onDialogOk = (disable: boolean) => {
 		localStorage.setItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE, disable ? "1" : "0");
-		handleJsonDownload();
+		handleJsonDownload(creatingJson ?? "scan");
 		setDialogOpen(false);
 		setSkipDialog(disable);
 	};
@@ -4713,7 +4711,10 @@ const CodeTabContent = (props: {
 			<WelcomeDialog
 				open={dialogOpen}
 				onOk={onDialogOk}
-				onCancel={() => setDialogOpen(false)}
+				onCancel={() => {
+					setCreatingJson(null);
+					setDialogOpen(false);
+				}}
 				title={i18n._(t`Confirm Download`)}
 				okText={<Trans>I Acknowledge</Trans>}
 			>
@@ -4812,17 +4813,17 @@ const CodeTabContent = (props: {
 						<IconButton
 							aria-label={i18n._(t`Download scan results`)}
 							onClick={() => {
-								setDownloadType("scan");
+								setCreatingJson("scan");
 								if (skipDialog) {
-									handleJsonDownload();
+									handleJsonDownload("scan");
 								} else {
 									setDialogOpen(true);
 								}
 							}}
 							size="medium"
-							disabled={creatingJson}
+							disabled={Boolean(creatingJson)}
 						>
-							{creatingJson && downloadType === "scan" ? (
+							{creatingJson === "scan" ? (
 								<CircularProgress color="inherit" size={24} />
 							) : (
 								<SaveAltIcon fontSize="medium" />
@@ -4837,17 +4838,17 @@ const CodeTabContent = (props: {
 							<IconButton
 								aria-label={i18n._(t`Download SBOM results`)}
 								onClick={() => {
-									setDownloadType("sbom");
+									setCreatingJson("sbom");
 									if (skipDialog) {
-										handleJsonDownload();
+										handleJsonDownload("sbom");
 									} else {
 										setDialogOpen(true);
 									}
 								}}
 								size="medium"
-								disabled={creatingJson}
+								disabled={Boolean(creatingJson)}
 							>
-								{creatingJson && downloadType === "sbom" ? (
+								{creatingJson === "sbom" ? (
 									<CircularProgress color="inherit" size={24} />
 								) : (
 									<InventoryIcon fontSize="medium" />
