@@ -7,8 +7,8 @@ from artemislib.logging import Logger
 LOG = Logger(__name__)
 
 
-def retrieve_npm_licenses(name: str, _version: str) -> list:
-    package_info = get_package_info(name)
+def retrieve_npm_licenses(name: str, version: str) -> list:
+    package_info = get_package_info(name, version)
     if not package_info:
         return []
 
@@ -17,8 +17,8 @@ def retrieve_npm_licenses(name: str, _version: str) -> list:
     return []
 
 
-def get_package_info(name: str) -> dict:
-    url = f"https://registry.npmjs.org/{name}"
+def get_package_info(name: str, version: str) -> dict:
+    url = f"https://registry.npmjs.org/{name}/{version}"
 
     while True:
         r = requests.get(url)

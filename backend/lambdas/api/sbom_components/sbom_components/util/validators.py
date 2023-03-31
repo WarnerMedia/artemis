@@ -14,5 +14,8 @@ def validate_component_version(component_version):
 
 
 def validate_no_paging(query: dict):
+    # Validate that no paging-related parameters are in the query. This is used when
+    # the request does not support paging (like when retrieving a specific resource
+    # by ID). These parameters are generally valid but not in this instance.
     if "offset" in query or "limit" in query or "end" in query:
         raise ValidationError("Request is not compatible with paging")

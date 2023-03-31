@@ -1,3 +1,4 @@
+import re
 from typing import Tuple
 
 import requests
@@ -92,10 +93,19 @@ def license_lookup(license, spdx_licenses) -> Tuple[str, str]:
         return license, spdx_licenses[license]
     elif license in PYPI_LICENSE_MAP:
         return license, PYPI_LICENSE_MAP[license]
-    return license, license
+    if re.match("^[a-zA-Z0-9_.-]+$", license):
+        # License contains all valid characters
+        return license, license
+    LOG.info("Unexpected license ID: %s", license)
+    # Prevent the storing of bad data
+    return None, None
 
 
 def download_spdx_licenses() -> dict:
+    # The Software Package Data Exchange (SPDX) standard is an open standard hosted by the Linux Foundation.
+    # The SPDX Licenses List is part of the standard and is a list of common licenses for the purpose of
+    # reliable identification of licenses in software projects. The machine-readable versions of the
+    # license list is stored in GitHub. https://spdx.org/licenses/
     LOG.info("Downloading latest SPDX license data")
     r = requests.get("https://raw.githubusercontent.com/spdx/license-list-data/main/json/licenses.json")
     if r.status_code == 200:
