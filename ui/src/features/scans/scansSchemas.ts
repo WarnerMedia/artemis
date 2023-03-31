@@ -381,7 +381,6 @@ const scanResultsSchema: Yup.ObjectSchema<ScanResults> = Yup.object()
 	.defined();
 
 export const scanIdSchema = Yup.string()
-	.defined()
 	.length(36)
 	.matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID
 

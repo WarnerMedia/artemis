@@ -151,11 +151,10 @@ import {
 	colorLow,
 	colorNegligible,
 } from "app/colors";
-import {
+import formatters, {
 	capitalize,
 	compareButIgnoreLeadingDashes,
 	DELETED_REGEX,
-	exportToJson,
 	formatDate,
 	vcsHotLink,
 } from "utils/formatters";
@@ -4623,7 +4622,7 @@ interface AllStylesT {
 
 type DownloadType = "sbom" | "scan";
 
-const CodeTabContent = (props: {
+export const CodeTabContent = (props: {
 	scan: AnalysisReport;
 	state: CodeTabState;
 	setState: SetCodeTabState;
@@ -4684,7 +4683,7 @@ const CodeTabContent = (props: {
 		}
 
 		try {
-			exportToJson(type, data);
+			formatters.exportToJson(type, data);
 		} catch (e) {
 			handleException(e);
 		} finally {

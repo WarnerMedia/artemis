@@ -99,7 +99,7 @@ describe("TableMenu component", () => {
 			"1"
 		);
 
-		return expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
+		expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
 			addNotification("Generating CSV File", "info")
@@ -158,7 +158,7 @@ describe("TableMenu component", () => {
 			"0"
 		);
 
-		return expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
+		expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
 			addNotification("Generating CSV File", "info")
@@ -215,7 +215,7 @@ describe("TableMenu component", () => {
 		await user.click(cancelButton);
 
 		expect(localStorageSetItemSpy).not.toHaveBeenCalled();
-		return expect(spy).not.toHaveBeenCalled();
+		expect(spy).not.toHaveBeenCalled();
 		expect(mockDispatch).not.toHaveBeenCalled();
 	});
 

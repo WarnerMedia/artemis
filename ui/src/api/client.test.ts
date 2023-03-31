@@ -18,6 +18,7 @@ import {
 	techPlugins,
 	vulnPlugins,
 } from "app/scanPlugins";
+import { mockScan001 } from "../../testData/testMockData";
 
 jest.useFakeTimers();
 
@@ -294,6 +295,53 @@ describe("api client", () => {
 					url: `${data.vcsOrg}/${data.repo}`,
 				})
 			);
+		});
+	});
+
+	describe("getScan tests", () => {
+		let mockRequest: jest.SpyInstance<
+			Promise<unknown>,
+			[config: AxiosRequestConfig<unknown>]
+		>;
+		const mockScan = JSON.parse(JSON.stringify(mockScan001));
+		mockScan.sbom = [];
+
+		beforeEach(() => {
+			mockRequest = jest.spyOn(axios, "request");
+			mockRequest.mockImplementation(() => {
+				return Promise.resolve({
+					data: {
+						...mockScan,
+					},
+				});
+			});
+		});
+
+		afterEach(() => {
+			mockRequest.mockRestore();
+		});
+
+		it("getSbomScanById should GET a scan by id with format=sbom", async () => {
+			await client.getSbomScanById(
+				`/${mockScan.service}/${mockScan.repo}/${mockScan.scan_id}`,
+				{}
+			);
+			for (const [
+				key,
+				value,
+			] of mockRequest.mock.calls[0][0].params.entries()) {
+				console.log(`key: ${key} ; value: ${value} `);
+			}
+
+			expect(mockRequest).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: `/${mockScan.service}/${mockScan.repo}/${mockScan.scan_id}`,
+					// don't check headers, baseUrl
+				})
+			);
+			// ensure search parameter format=sbom passed
+			expect(mockRequest.mock.calls[0][0].params.has("format")).toBeTruthy();
+			expect(mockRequest.mock.calls[0][0].params.get("format")).toEqual("sbom");
 		});
 	});
 });
