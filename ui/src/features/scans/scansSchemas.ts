@@ -281,11 +281,11 @@ const scanCallbackSchema: Yup.ObjectSchema<ScanCallback> = Yup.object().shape({
 });
 
 // allow categories to match string instead of only known categories so new categories can be added on backend without breaking validation
-const scanOptionsSchema: Yup.ObjectSchema<Omit<AnalysisScanOptions, "categories">> = Yup.object()
+const scanOptionsSchema: Yup.ObjectSchema<
+	Omit<AnalysisScanOptions, "categories">
+> = Yup.object()
 	.shape({
-		categories: Yup.array()
-			.defined()
-			.of(Yup.string()).defined(),
+		categories: Yup.array().defined().of(Yup.string()).defined(),
 		plugins: Yup.array().defined().of(Yup.string().defined()),
 		depth: Yup.number().defined().nullable(),
 		include_dev: Yup.boolean().defined(),

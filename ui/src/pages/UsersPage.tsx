@@ -329,7 +329,8 @@ interface AddUserForm {
 
 // generate a Yup schema to validate all fields in an object against a supplied rule
 // used for validating an object with index signature keys ([key:string]: rule)
-const mapRules = (map:any, rule:any) => Object.keys(map).reduce((newMap, key) => ({...newMap, [key]: rule}), {});
+const mapRules = (map: any, rule: any) =>
+	Object.keys(map).reduce((newMap, key) => ({ ...newMap, [key]: rule }), {});
 
 export default function UsersPage() {
 	const navigate = useNavigate();
@@ -623,9 +624,9 @@ export default function UsersPage() {
 	);
 
 	// ensure each feature key has a boolean value
-	const featuresSchema = Yup.lazy(map => Yup.object(
-		mapRules(map, Yup.boolean())
-	).nullable());
+	const featuresSchema = Yup.lazy((map) =>
+		Yup.object(mapRules(map, Yup.boolean())).nullable()
+	);
 
 	const addUserForm = () => {
 		const addUserFormSchema = Yup.object({
