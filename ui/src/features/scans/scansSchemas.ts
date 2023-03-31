@@ -26,21 +26,6 @@ export type ScanCategories =
 	| "vulnerability"
 	| "-vulnerability";
 
-const scanCategories: ScanCategories[] = [
-	"configuration",
-	"-configuration",
-	"inventory",
-	"-inventory",
-	"sbom",
-	"-sbom",
-	"secret",
-	"-secret",
-	"static_analysis",
-	"-static_analysis",
-	"vulnerability",
-	"-vulnerability",
-];
-
 interface ScanCallback {
 	url?: string | null;
 	client_id?: string | null;
@@ -216,7 +201,7 @@ export interface ScanHistory {
 
 export interface AnalysisReport extends ScanHistory {
 	scan_id: string;
-	engine_id?: string;
+	engine_id?: string | null;
 	application_metadata?: AppMeta | null;
 	success?: boolean;
 	truncated?: boolean;
@@ -228,7 +213,7 @@ export interface AnalysisReport extends ScanHistory {
 }
 
 export interface SbomReport extends ScanHistory {
-	engine_id?: string;
+	engine_id?: string | null;
 	sbom: SbomComponent[];
 }
 
@@ -295,11 +280,12 @@ const scanCallbackSchema: Yup.ObjectSchema<ScanCallback> = Yup.object().shape({
 	client_id: Yup.string().nullable(),
 });
 
-const scanOptionsSchema: Yup.ObjectSchema<AnalysisScanOptions> = Yup.object()
+// allow categories to match string instead of only known categories so new categories can be added on backend without breaking validation
+const scanOptionsSchema: Yup.ObjectSchema<Omit<AnalysisScanOptions, "categories">> = Yup.object()
 	.shape({
 		categories: Yup.array()
 			.defined()
-			.of(Yup.string().oneOf(scanCategories).defined()),
+			.of(Yup.string()).defined(),
 		plugins: Yup.array().defined().of(Yup.string().defined()),
 		depth: Yup.number().defined().nullable(),
 		include_dev: Yup.boolean().defined(),
@@ -420,7 +406,7 @@ export const analysisReportSchema: Yup.ObjectSchema<AnalysisReport> =
 	Yup.object()
 		.shape({
 			scan_id: scanIdSchema.defined(),
-			engine_id: Yup.string(),
+			engine_id: Yup.string().nullable(),
 			application_metadata: appMetaSchema.nullable(),
 			success: Yup.boolean().defined(),
 			truncated: Yup.boolean().defined(),
@@ -440,7 +426,7 @@ export const analysisReportResponseSchema = Yup.object().shape({
 export const sbomReportSchema: Yup.ObjectSchema<SbomReport> = Yup.object()
 	.shape({
 		scan_id: scanIdSchema.defined(),
-		engine_id: Yup.string(),
+		engine_id: Yup.string().nullable(),
 		sbom: Yup.array().defined().of(sbomComponentSchema),
 	})
 	.concat(scanHistorySchema)

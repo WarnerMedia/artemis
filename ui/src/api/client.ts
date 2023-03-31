@@ -789,7 +789,7 @@ client.getSbomScanById = async (
 		adjustScan(response);
 		return response;
 	} catch (err: any) {
-		_formatError(err, i18n._(t`Unable to get scan by id`));
+		_formatError(err, i18n._(t`Unable to get SBOM scan by id`));
 		return err;
 	}
 };
