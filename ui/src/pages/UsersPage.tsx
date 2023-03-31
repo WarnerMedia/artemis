@@ -327,6 +327,11 @@ interface AddUserForm {
 	features: ScanFeatures;
 }
 
+// generate a Yup schema to validate all fields in an object against a supplied rule
+// used for validating an object with index signature keys ([key:string]: rule)
+const mapRules = (map: any, rule: any) =>
+	Object.keys(map).reduce((newMap, key) => ({ ...newMap, [key]: rule }), {});
+
 export default function UsersPage() {
 	const navigate = useNavigate();
 	const { i18n } = useLingui();
@@ -618,6 +623,11 @@ export default function UsersPage() {
 		</Toolbar>
 	);
 
+	// ensure each feature key has a boolean value
+	const featuresSchema = Yup.lazy((map) =>
+		Yup.object(mapRules(map, Yup.boolean())).nullable()
+	);
+
 	const addUserForm = () => {
 		const addUserFormSchema = Yup.object({
 			email: Yup.string()
@@ -632,12 +642,12 @@ export default function UsersPage() {
 				),
 			scope: Yup.array().of(Yup.string()),
 			admin: Yup.boolean(),
-			features: Yup.array().of(Yup.object()).nullable(),
+			features: featuresSchema,
 		});
 		const editUserFormSchema = Yup.object({
 			scope: Yup.array().of(Yup.string()),
 			admin: Yup.boolean(),
-			features: Yup.array().of(Yup.object()).nullable(),
+			features: featuresSchema,
 		});
 
 		const defaultFeatures: { [key: string]: boolean } = {};

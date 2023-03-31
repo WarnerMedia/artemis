@@ -2905,15 +2905,14 @@ export function makeServer() {
 				return createResponse(401, "Session timeout");
 			});
 
-			// return = any b/c this is an AnalysisReport with extra mock fields
-			// and may also not contain a scan_id because it's returning a scan history result
+			// return type is "any" because this is an Analysis or SBOM Report with additional mock fields
+			// may not contain "scan_id" field when used for returning a scan history result
 			const getScanResultsById = (scanId: string, format: string): any => {
 				if (scanId && scanId in scans.entities) {
 					const entity = scans.entities[scanId];
 					if (entity.gen) {
 						// return the next "phase" from the generator function
 						// this will be the current scan state
-						// note above why this is any type
 						let results: any;
 						if (format === "summary" || format === "full") {
 							if (entity.priorResults) {
@@ -2923,6 +2922,7 @@ export function makeServer() {
 								results = JSON.parse(JSON.stringify(entity.gen.next().value));
 							}
 						} else {
+							// scan history
 							results = JSON.parse(JSON.stringify(entity.gen.next().value));
 							entity.priorResults = JSON.parse(JSON.stringify(results));
 						}
@@ -2931,37 +2931,115 @@ export function makeServer() {
 						entity.status_detail = results.status_detail;
 						entity.timestamps = results.timestamps;
 
-						// filter results by hiddenFindings
-						results.results.vulnerabilities = filterVulns(
-							results.results.vulnerabilities
-						);
-						results.results.secrets = filterSecrets(results.results.secrets);
-						results.results.static_analysis = filterAnalysis(
-							results.results.static_analysis
-						);
-						results.results.configuration = filterConfig(
-							results.results.configuration
-						);
+						if (format === "sbom") {
+							results.sbom = [
+								{
+									name: "component5",
+									version: "4.3.2",
+									licenses: [{ id: "mit", name: "MIT license (MIT)" }],
+									source: "Gemfile.lock",
+									deps: [],
+								},
+								{
+									name: "component1",
+									version: "0.1.0",
+									licenses: [{ id: "apache", name: "Apache" }],
+									source: "node/module/package.json",
+									deps: [
+										{
+											name: "component7",
+											version: "0.8.4",
+											licenses: [{ id: "mit", name: "MIT license (MIT)" }],
+											source: "node/module/package.json",
+											deps: [
+												{
+													name: "component9",
+													version: "0.1.10",
+													licenses: [],
+													source: "node/module/package.json",
+													deps: [],
+												},
+												{
+													name: "component10",
+													version: "0.4.2",
+													licenses: [{ id: "mit", name: "MIT license (MIT)" }],
+													source: "node/module/package.json",
+													deps: [],
+												},
+												{
+													name: "component11",
+													version: "1.2.3",
+													licenses: [{ id: "unlicensed", name: "Unlicensed" }],
+													source: "node/module/package.json",
+													deps: [],
+												},
+												{
+													name: "component12",
+													version: "1.0.1",
+													licenses: [{ id: "unknown", name: "UNKNOWN" }],
+													source: "node/module/package.json",
+													deps: [],
+												},
+												{
+													name: "component13",
+													version: "0.3.2",
+													licenses: [{ id: "bsd", name: "BSD 3-Clause" }],
+													source: "node/module/package.json",
+													deps: [],
+												},
+												{
+													name: "component14",
+													version: "0.0.1",
+													licenses: [{ id: "bsd", name: "BSD 3-Clause" }],
+													source: "node/module/package.json",
+													deps: [],
+												},
+												{
+													name: "component15",
+													version: "10.1.10",
+													licenses: [],
+													source: "node/module/package.json",
+													deps: [],
+												},
+											],
+										},
+									],
+								},
+							];
+						} else {
+							// non-SBOM scans
+							// filter results by hiddenFindings
+							results.results.vulnerabilities = filterVulns(
+								results.results.vulnerabilities
+							);
+							results.results.secrets = filterSecrets(results.results.secrets);
+							results.results.static_analysis = filterAnalysis(
+								results.results.static_analysis
+							);
+							results.results.configuration = filterConfig(
+								results.results.configuration
+							);
 
-						// and calculate new summary totals after filtering
-						results.results_summary.vulnerabilities = genVulnSummary(
-							results as AnalysisReport
-						);
-						results.results_summary.secrets = genSecretsSummary(
-							results as AnalysisReport
-						);
-						results.results_summary.static_analysis = genAnalysisSummary(
-							results as AnalysisReport
-						);
-						results.results_summary.configuration = genConfigSummary(
-							results as AnalysisReport
-						);
+							// and calculate new summary totals after filtering
+							results.results_summary.vulnerabilities = genVulnSummary(
+								results as AnalysisReport
+							);
+							results.results_summary.secrets = genSecretsSummary(
+								results as AnalysisReport
+							);
+							results.results_summary.static_analysis = genAnalysisSummary(
+								results as AnalysisReport
+							);
+							results.results_summary.configuration = genConfigSummary(
+								results as AnalysisReport
+							);
+						}
 
 						if (format === "summary") {
 							// summary format only returns results_summary, not full results
 							results.results = {};
-						} else if (format === "history") {
-							// scan history omits several fields
+						} else if (format === "history" || format === "sbom") {
+							// scan history & sbom results omit fields
 							delete results.results;
 							delete results.results_summary;
 							delete results.success;
@@ -2970,8 +3048,12 @@ export function makeServer() {
 							delete results.debug;
 							delete results.truncated;
 							delete results.application_metadata;
-							results.repo += "/" + results.scan_id;
-							delete results.scan_id;
+
+							// scan history doesn't have separate scan_id field, id is included in repo path
+							if (format === "history") {
+								results.repo += "/" + results.scan_id;
+								delete results.scan_id;
+							}
 						}
 
 						// remove mock internals

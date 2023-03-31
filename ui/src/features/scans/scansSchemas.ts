@@ -2,7 +2,7 @@ import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import * as Yup from "yup";
 
-import { Response } from "api/client";
+import { PagedResponse, Response, responseSchema } from "api/apiSchemas";
 import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
 import { User } from "features/users/usersSchemas";
 import { AppMeta, appMetaSchema } from "custom/scanMetaSchemas";
@@ -160,6 +160,22 @@ export interface ResultsConfiguration {
 	[key: string]: ConfigurationDetails;
 }
 
+interface SbomLicense {
+	id: string;
+	name: string;
+}
+
+interface SbomComponentBase<T> {
+	name: string;
+	version: string;
+	licenses: SbomLicense[];
+	source: string;
+	deps?: T[];
+}
+
+// use SbomComponent as recursive deps array field
+interface SbomComponent extends SbomComponentBase<SbomComponent> {}
+
 interface ScanResults {
 	vulnerabilities?: ResultsVulnComponents;
 	secrets?: SecretFindingResult;
@@ -185,7 +201,7 @@ export interface ScanHistory {
 
 export interface AnalysisReport extends ScanHistory {
 	scan_id: string;
-	engine_id?: string;
+	engine_id?: string | null;
 	application_metadata?: AppMeta | null;
 	success?: boolean;
 	truncated?: boolean;
@@ -194,6 +210,11 @@ export interface AnalysisReport extends ScanHistory {
 	debug?: ScanErrors;
 	results_summary?: ScanResultsSummary;
 	results?: ScanResults;
+}
+
+export interface SbomReport extends ScanHistory {
+	engine_id?: string | null;
+	sbom: SbomComponent[];
 }
 
 export interface ScanHistoryResponse extends Response {
@@ -236,7 +257,7 @@ export interface ScanOptions {
 }
 
 // validation schemas...
-const scanQueueFailedSchema = Yup.object()
+const scanQueueFailedSchema: Yup.ObjectSchema<ScanQueueFailed> = Yup.object()
 	.shape({
 		repo: Yup.string().defined(),
 		error: Yup.string().defined(),
@@ -254,14 +275,17 @@ export const scanQueueResponseSchema = Yup.object().shape({
 	data: scanQueueSchema,
 });
 
-const scanCallbackSchema = Yup.object().shape({
+const scanCallbackSchema: Yup.ObjectSchema<ScanCallback> = Yup.object().shape({
 	url: Yup.string().nullable(),
 	client_id: Yup.string().nullable(),
 });
 
-const scanOptionsSchema = Yup.object()
+// allow categories to match string instead of only known categories so new categories can be added on backend without breaking validation
+const scanOptionsSchema: Yup.ObjectSchema<
+	Omit<AnalysisScanOptions, "categories">
+> = Yup.object()
 	.shape({
-		categories: Yup.array().defined().of(Yup.string().defined()),
+		categories: Yup.array().defined().of(Yup.string()).defined(),
 		plugins: Yup.array().defined().of(Yup.string().defined()),
 		depth: Yup.number().defined().nullable(),
 		include_dev: Yup.boolean().defined(),
@@ -325,7 +349,28 @@ const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	})
 	.defined();
 
-const scanResultsSchema = Yup.object()
+const sbomLicenseSchema: Yup.ObjectSchema<SbomLicense> = Yup.object()
+	.shape({
+		id: Yup.string().defined(),
+		name: Yup.string().defined(),
+	})
+	.defined();
+
+const sbomComponentSchema: Yup.ObjectSchema<SbomComponent> = Yup.object()
+	.shape({
+		name: Yup.string().defined(),
+		version: Yup.string().defined(),
+		licenses: Yup.array().of(sbomLicenseSchema.defined()).defined(),
+		source: Yup.string().defined(),
+		deps: Yup.array().of(
+			// lazy evaluate at validation/cast time to enable creation of recursive schemas
+			// default(undefined) prevents infinite recursion when cast
+			Yup.lazy(() => sbomComponentSchema.default(undefined))
+		),
+	})
+	.defined();
+
+const scanResultsSchema: Yup.ObjectSchema<ScanResults> = Yup.object()
 	.shape({
 		vulnerabilities: Yup.object(), // shallow check since keys can vary
 		secrets: Yup.object(),
@@ -336,66 +381,69 @@ const scanResultsSchema = Yup.object()
 	.defined();
 
 export const scanIdSchema = Yup.string()
-	.defined()
 	.length(36)
 	.matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID
 
-export const analysisReportSchema: Yup.ObjectSchema<any> = Yup.object()
-	.shape({
-		repo: Yup.string().defined(),
-		scan_id: scanIdSchema.defined(),
-		engine_id: Yup.string().nullable(),
-		initiated_by: Yup.string().defined().nullable(),
-		service: Yup.string().defined(),
-		branch: Yup.string().defined().nullable(),
-		scan_options: scanOptionsSchema,
-		status: Yup.string().defined(),
-		application_metadata: appMetaSchema.nullable(),
-		status_detail: scanStatusDetailSchema,
-		success: Yup.boolean().defined(),
-		truncated: Yup.boolean().defined(),
-		timestamps: scanTimestampsSchema,
-		errors: Yup.object().defined().nullable(),
-		alerts: Yup.object().nullable(),
-		debug: Yup.object().nullable(),
-		results_summary: scanResultsSummarySchema,
-		results: scanResultsSchema,
-		qualified: Yup.boolean().nullable(),
-		batch_id: scanIdSchema.nullable(),
-		batch_description: Yup.string().nullable(),
-	})
-	.defined();
+export const scanHistorySchema: Yup.ObjectSchema<Omit<ScanHistory, "scan_id">> =
+	Yup.object()
+		.shape({
+			repo: Yup.string().defined(),
+			service: Yup.string().defined(),
+			branch: Yup.string().defined().nullable(),
+			timestamps: scanTimestampsSchema,
+			initiated_by: Yup.string().defined().nullable(),
+			status: Yup.string().defined(),
+			status_detail: scanStatusDetailSchema,
+			scan_options: scanOptionsSchema,
+			qualified: Yup.boolean(),
+			batch_id: scanIdSchema.nullable(),
+			batch_description: Yup.string().nullable(),
+		})
+		.defined();
+
+export const analysisReportSchema: Yup.ObjectSchema<AnalysisReport> =
+	Yup.object()
+		.shape({
+			scan_id: scanIdSchema.defined(),
+			engine_id: Yup.string().nullable(),
+			application_metadata: appMetaSchema.nullable(),
+			success: Yup.boolean().defined(),
+			truncated: Yup.boolean().defined(),
+			errors: Yup.object().defined(),
+			alerts: Yup.object(),
+			debug: Yup.object(),
+			results_summary: scanResultsSummarySchema,
+			results: scanResultsSchema,
+		})
+		.concat(scanHistorySchema)
+		.defined();
 
 export const analysisReportResponseSchema = Yup.object().shape({
 	data: analysisReportSchema,
 });
 
-export const scanHistorySchema: Yup.ObjectSchema<any> = Yup.object()
+export const sbomReportSchema: Yup.ObjectSchema<SbomReport> = Yup.object()
 	.shape({
-		repo: Yup.string().defined(),
-		service: Yup.string().defined(),
-		branch: Yup.string().defined().nullable(),
-		timestamps: scanTimestampsSchema,
-		initiated_by: Yup.string().defined().nullable(),
-		status: Yup.string().defined(),
-		status_detail: scanStatusDetailSchema,
-		scan_options: scanOptionsSchema,
-		qualified: Yup.boolean().nullable(),
-		batch_id: scanIdSchema.nullable(),
-		batch_description: Yup.string().nullable(),
+		scan_id: scanIdSchema.defined(),
+		engine_id: Yup.string().nullable(),
+		sbom: Yup.array().defined().of(sbomComponentSchema),
 	})
+	.concat(scanHistorySchema)
 	.defined();
 
-export const scanHistoryResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().of(scanHistorySchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
+export const sbomReportResponseSchema = Yup.object().shape({
+	data: sbomReportSchema,
 });
+
+export const scanHistoryResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().of(scanHistorySchema).defined(),
+			})
+			.defined(),
+	});
 
 export const SCAN_DEPTH = 500;
 export const MAX_PATH_LENGTH = 4096;

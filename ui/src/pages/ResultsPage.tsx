@@ -90,6 +90,7 @@ import {
 	Help as HelpIcon,
 	History as HistoryIcon,
 	Info as InfoIcon,
+	Inventory as InventoryIcon,
 	Layers as LayersIcon,
 	LowPriority as LowPriorityIcon,
 	OpenInNew as OpenInNewIcon,
@@ -137,7 +138,11 @@ import {
 	vs,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-import { FilterDef, handleException, HiddenFindingsRequest } from "api/client";
+import client, {
+	FilterDef,
+	handleException,
+	HiddenFindingsRequest,
+} from "api/client";
 import { AppDispatch } from "app/store";
 import {
 	colorCritical,
@@ -146,11 +151,10 @@ import {
 	colorLow,
 	colorNegligible,
 } from "app/colors";
-import {
+import formatters, {
 	capitalize,
 	compareButIgnoreLeadingDashes,
 	DELETED_REGEX,
-	exportToJson,
 	formatDate,
 	vcsHotLink,
 } from "utils/formatters";
@@ -185,6 +189,7 @@ import {
 import {
 	AnalysisFinding,
 	AnalysisReport,
+	SbomReport,
 	ScanCategories,
 	ScanErrors,
 	SecretFinding,
@@ -4615,7 +4620,9 @@ interface AllStylesT {
 	[key: string]: { [key: string]: React.CSSProperties };
 }
 
-const CodeTabContent = (props: {
+type DownloadType = "sbom" | "scan";
+
+export const CodeTabContent = (props: {
 	scan: AnalysisReport;
 	state: CodeTabState;
 	setState: SetCodeTabState;
@@ -4624,7 +4631,7 @@ const CodeTabContent = (props: {
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
 	const { scan, state, setState } = props;
-	const [creatingJson, setCreatingJson] = useState(false);
+	const [creatingJson, setCreatingJson] = useState<DownloadType | null>(null);
 	const [skipDialog, setSkipDialog] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const allStyles: AllStylesT = {
@@ -4641,6 +4648,11 @@ const CodeTabContent = (props: {
 		solarizedlight: { ...solarizedlight },
 		vs: { ...vs },
 	};
+	const hasSbomResults =
+		scan.scan_options.categories?.includes("sbom") ||
+		scan.scan_options.plugins?.some((plugin) => {
+			return sbomPlugins.includes(plugin);
+		});
 
 	const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setState({
@@ -4650,21 +4662,38 @@ const CodeTabContent = (props: {
 		});
 	};
 
-	const handleJsonDownload = async () => {
+	const handleJsonDownload = async (type: DownloadType) => {
+		let data: AnalysisReport | SbomReport["sbom"] = scan;
 		dispatch(addNotification(i18n._(t`Generating JSON File`), "info"));
-		setCreatingJson(true);
+
+		if (type === "sbom") {
+			data = [];
+			const url = [scan.service, scan.repo, scan.scan_id].join("/");
+			try {
+				// call getSbomScanById directly instead of dispatching an action
+				// not storing results in redux state b/c SBOM results aren't displayed in the UI, only fetched for download
+				const results: SbomReport = await client.getSbomScanById(url, {});
+				// only download the sbom portion of the results, not the additional scan information (repo, branch, etc.)
+				data = results.sbom;
+			} catch (e) {
+				handleException(e);
+				setCreatingJson(null);
+				return;
+			}
+		}
+
 		try {
-			exportToJson("scan", scan);
+			formatters.exportToJson(type, data);
 		} catch (e) {
 			handleException(e);
 		} finally {
-			setCreatingJson(false);
+			setCreatingJson(null);
 		}
 	};
 
 	const onDialogOk = (disable: boolean) => {
 		localStorage.setItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE, disable ? "1" : "0");
-		handleJsonDownload();
+		handleJsonDownload(creatingJson ?? "scan");
 		setDialogOpen(false);
 		setSkipDialog(disable);
 	};
@@ -4681,7 +4710,10 @@ const CodeTabContent = (props: {
 			<WelcomeDialog
 				open={dialogOpen}
 				onOk={onDialogOk}
-				onCancel={() => setDialogOpen(false)}
+				onCancel={() => {
+					setCreatingJson(null);
+					setDialogOpen(false);
+				}}
 				title={i18n._(t`Confirm Download`)}
 				okText={<Trans>I Acknowledge</Trans>}
 			>
@@ -4775,21 +4807,22 @@ const CodeTabContent = (props: {
 
 				<CustomCopyToClipboard size="medium" copyTarget={scan} />
 
-				<Tooltip title={i18n._(t`Download`)}>
+				<Tooltip title={i18n._(t`Download scan results`)}>
 					<span>
 						<IconButton
-							aria-label={i18n._(t`Download`)}
+							aria-label={i18n._(t`Download scan results`)}
 							onClick={() => {
+								setCreatingJson("scan");
 								if (skipDialog) {
-									handleJsonDownload();
+									handleJsonDownload("scan");
 								} else {
 									setDialogOpen(true);
 								}
 							}}
 							size="medium"
-							disabled={creatingJson}
+							disabled={Boolean(creatingJson)}
 						>
-							{creatingJson ? (
+							{creatingJson === "scan" ? (
 								<CircularProgress color="inherit" size={24} />
 							) : (
 								<SaveAltIcon fontSize="medium" />
@@ -4797,6 +4830,32 @@ const CodeTabContent = (props: {
 						</IconButton>
 					</span>
 				</Tooltip>
+
+				{hasSbomResults && (
+					<Tooltip title={i18n._(t`Download SBOM results`)}>
+						<span>
+							<IconButton
+								aria-label={i18n._(t`Download SBOM results`)}
+								onClick={() => {
+									setCreatingJson("sbom");
+									if (skipDialog) {
+										handleJsonDownload("sbom");
+									} else {
+										setDialogOpen(true);
+									}
+								}}
+								size="medium"
+								disabled={Boolean(creatingJson)}
+							>
+								{creatingJson === "sbom" ? (
+									<CircularProgress color="inherit" size={24} />
+								) : (
+									<InventoryIcon fontSize="medium" />
+								)}
+							</IconButton>
+						</span>
+					</Tooltip>
+				)}
 			</FormGroup>
 
 			<SyntaxHighlighter

@@ -1,5 +1,5 @@
-import { Response } from "api/client";
 import * as Yup from "yup";
+import { PagedResponse, Response, responseSchema } from "api/apiSchemas";
 
 export interface ScanFeatures {
 	[key: string]: boolean;
@@ -39,13 +39,12 @@ export const userResponseSchema = Yup.object().shape({
 	data: userSchema,
 });
 
-export const usersResponseSchema = Yup.object().shape({
-	data: Yup.object()
-		.shape({
-			results: Yup.array().of(userSchema),
-			count: Yup.number().defined(),
-			next: Yup.string().defined().nullable(),
-			previous: Yup.string().defined().nullable(),
-		})
-		.defined(),
-});
+export const usersResponseSchema: Yup.ObjectSchema<PagedResponse> =
+	Yup.object().shape({
+		data: Yup.object()
+			.concat(responseSchema)
+			.shape({
+				results: Yup.array().of(userSchema).defined(),
+			})
+			.defined(),
+	});
