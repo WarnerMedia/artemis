@@ -238,17 +238,17 @@ variable "default_scope" {
 
 variable "secrets_events_enabled" {
   description = "Whether to send secrets events to the event queue"
-  default = false
+  default     = false
 }
 
 variable "inventory_events_enabled" {
   description = "Whether to send inventory events to the event queue"
-  default = false
+  default     = false
 }
 
 variable "configuration_events_enabled" {
   description = "Whether to send configuration events to the event queue"
-  default = false
+  default     = false
 }
 
 ################################################
@@ -442,6 +442,12 @@ variable "extra_lambda_layers_signin_handler" {
 
 variable "extra_lambda_layers_scans_batch_handler" {
   description = "Extra layers that should be applied to the scans batch handler lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "extra_lambda_layers_license_retriever" {
+  description = "Extra layers that should be applied to the license retriever lambda"
   type        = list(string)
   default     = []
 }

@@ -78,3 +78,13 @@ NOT_RUNNING_STATUSES = [
 
 class SystemAllowListType(Enum):
     SECRET = "secret"
+
+
+class ComponentType(Enum):
+    UNKNOWN = "unknown"
+    NPM = "npm"
+    PYPI = "pypi"
+    GEM = "gem"
+    GO = "go"
+    PHP = "php"
+    MAVEN = "maven"

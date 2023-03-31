@@ -385,6 +385,7 @@ def apply_filters(
     distinct: bool = True,
     default_order: list[str] = None,
     api_id: str = None,
+    apply_ordering: bool = True,
 ) -> QuerySet:
     # Get any custom filters
     load_custom_filtering()
@@ -394,11 +395,12 @@ def apply_filters(
     qs = filter_map.apply(qs, page_info.filters, custom_filter_map)
 
     # Apply ordering
-    if page_info.order_by:
-        qs = qs.order_by(*page_info.order_by)
-    elif default_order is not None:
-        # Default ordering
-        qs = qs.order_by(*default_order)
+    if apply_ordering:
+        if page_info.order_by:
+            qs = qs.order_by(*page_info.order_by)
+        elif default_order is not None:
+            # Default ordering
+            qs = qs.order_by(*default_order)
 
     if distinct:
         qs = qs.distinct()

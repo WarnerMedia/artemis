@@ -85,7 +85,7 @@ class TestBundlerAudit(unittest.TestCase):
                     "severity": "",
                     "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, " "~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
                     "inventory": {
-                        "component": {"name": "actionpack", "version": "4.2.0"},
+                        "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
                             "CVE-2016-2098",
                             "https://groups.google.com/forum/#!topic/rubyonrails-security/ly-IH-fxr_Q",
@@ -138,7 +138,7 @@ class TestBundlerAudit(unittest.TestCase):
                     "severity": "",
                     "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, " "~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
                     "inventory": {
-                        "component": {"name": "actionpack", "version": "4.2.0"},
+                        "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
                             "CVE-2016-2098",
                             "https://groups.google.com/forum/#!topic/rubyonrails-security/ly-IH-fxr_Q",
@@ -155,7 +155,7 @@ class TestBundlerAudit(unittest.TestCase):
                     " ~> 4.2.5, >= 4.1.14.1, ~> 4.1.14, "
                     "~> 3.2.22.1",
                     "inventory": {
-                        "component": {"name": "actionpack", "version": "4.2.0"},
+                        "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
                             "CVE-2015-7576",
                             "https://groups.google.com/forum/#!topic/rubyonrails-security/ANv0HDHEC3k",
@@ -220,7 +220,7 @@ class TestBundlerAudit(unittest.TestCase):
                     "severity": "",
                     "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, " "~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
                     "inventory": {
-                        "component": {"name": "actionpack", "version": "4.2.0"},
+                        "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
                             "GHSA-8727-m6gj-mc37",
                             "https://groups.google.com/forum/#!topic/rubyonrails-security/ly-IH-fxr_Q",
@@ -237,7 +237,7 @@ class TestBundlerAudit(unittest.TestCase):
                     " ~> 4.2.5, >= 4.1.14.1, ~> 4.1.14, "
                     "~> 3.2.22.1",
                     "inventory": {
-                        "component": {"name": "actionpack", "version": "4.2.0"},
+                        "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": ["https://groups.google.com/forum/#!topic/rubyonrails-security/ANv0HDHEC3k"],
                     },
                 },

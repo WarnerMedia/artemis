@@ -134,7 +134,10 @@ def process_vulns(vulns: list, libs: list) -> list:
                     "filename": None,
                     "line": None,
                     "sha1": sha,
-                    "inventory": {"component": {"name": name, "version": version}, "advisory_ids": advisory_ids},
+                    "inventory": {
+                        "component": {"name": name, "version": version, "type": coord_type.lower()},
+                        "advisory_ids": advisory_ids,
+                    },
                 }
             )
 

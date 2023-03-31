@@ -102,7 +102,7 @@ def convert_dict(my_list: list) -> dict:
             "severity": normalize_severity(new_dict["criticality"]),
             "remediation": new_dict["solution"],
             "inventory": {
-                "component": {"name": new_dict["name"], "version": new_dict["version"]},
+                "component": {"name": new_dict["name"], "version": new_dict["version"], "type": "gem"},
                 "advisory_ids": sorted(
                     list(set(filter(None, [vuln_id, new_dict.get("cve"), new_dict.get("ghsa"), new_dict.get("url")])))
                 ),
