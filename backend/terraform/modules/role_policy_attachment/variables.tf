@@ -22,3 +22,8 @@ variable "iam_role_names" {
   description = "name of the role to assign the policy"
   type = list(string)
 }
+
+variable "conditions" {
+  description = "conditions to apply to the policy"
+  default = []
+}

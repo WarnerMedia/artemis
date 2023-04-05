@@ -102,14 +102,24 @@ module "s3-policy" {
   ]
 }
 
-module "lifecycle-policy" {
-  source         = "../../../role_policy_attachment"
-  actions        = ["autoscaling:CompleteLifecycleAction"]
-  iam_role_names = [aws_iam_role.engine-role.name]
-  name           = "${var.app}-engine-lifecycle-${var.name}"
-  resources = [
-    aws_autoscaling_group.engine-asg.arn
+module "autoscaling-policy" {
+  source = "../../../role_policy_attachment"
+  actions = [
+    "autoscaling:CompleteLifecycleAction",
+    "autoscaling:SetInstanceHealth",
+    "ec2:TerminateInstances"
   ]
+  iam_role_names = [aws_iam_role.engine-role.name]
+  name           = "${var.app}-engine-autoscaling-policy-${var.name}"
+  resources = [
+    aws_autoscaling_group.engine-asg.arn,
+    "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/*"
+  ]
+  conditions = [{
+    test     = "StringEquals"
+    variable = "aws:ResourceTag/application"
+    values   = [var.app]
+  }]
 }
 
 resource "aws_iam_role_policy" "engine-ec2-ecr-policy" {

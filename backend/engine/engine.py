@@ -143,6 +143,11 @@ def main():
     from manager.manager import EngineManager  # pylint: disable=import-outside-toplevel
 
     manager = EngineManager(INSTANCE_ID, ENGINE_ID)
+    if manager._engine is None:
+        # Failed to initialize
+        manager.set_instance_health()
+        manager.terminate_instance()
+        return
 
     while True:
         try:
@@ -179,6 +184,9 @@ def main():
             # but log the exception with stack trace so it can be
             # investigated.
             log.exception("Error: %s", e)
+
+    manager.set_instance_health()
+    manager.terminate_instance()
 
 
 if __name__ == "__main__":
