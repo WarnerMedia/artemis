@@ -3,6 +3,15 @@ data "aws_iam_policy_document" "policy-document" {
     effect    = var.effect
     actions   = var.actions
     resources = var.resources
+
+    dynamic "condition" {
+      for_each = var.conditions
+      content {
+        test     = condition.value["test"]
+        variable = condition.value["variable"]
+        values   = condition.value["values"]
+      }
+    }
   }
 }
 
