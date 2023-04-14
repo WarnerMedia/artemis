@@ -59,11 +59,11 @@ variable "engine_ami" {
   description = "The AMI that the engine instances use"
   default = {
     # AMI IDs are region-specific
-    # These are the IDs for amzn2-ami-kernel-5.10-hvm-2.0.20220426.0-x86_64-gp2
-    "us-east-1" = "ami-0022f774911c1d690",
-    "us-east-2" = "ami-0fa49cc9dc8d62c84",
-    "us-west-1" = "ami-02541b8af977f6cdd",
-    "us-west-2" = "ami-0ca285d4c2cda3300"
+    # These are the IDs for amzn2-ami-kernel-5.10-hvm-2.0.20230404.0-x86_64-gp2
+    "us-east-1" = "ami-0fa1de1d60de6a97e",
+    "us-east-2" = "ami-0d80c4e4338722fc6",
+    "us-west-1" = "ami-0e5e4bbcbd7349cac",
+    "us-west-2" = "ami-0c252bb9e6b71848e"
   }
 }
 
