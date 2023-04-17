@@ -29,7 +29,10 @@ import { useLocation } from "react-router-dom";
 import { startScan } from "pages/MainPage";
 import * as Yup from "yup";
 import { getScanById } from "features/scans/scansSlice";
-import ResultsPage, { getResultFilters, setResultFilters } from "pages/ResultsPage";
+import ResultsPage, {
+	getResultFilters,
+	setResultFilters,
+} from "pages/ResultsPage";
 import {
 	mockHiddenFindings003,
 	mockScan001,

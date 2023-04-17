@@ -1,6 +1,8 @@
 import { render, screen } from "test-utils";
 import { Formik, Form } from "formik";
-import AutoCompleteField, { AutoCompleteFieldProps } from "components/AutoCompleteField";
+import AutoCompleteField, {
+	AutoCompleteFieldProps,
+} from "components/AutoCompleteField";
 import { InputAdornment } from "@mui/material";
 
 describe("AutoCompleteField component", () => {

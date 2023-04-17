@@ -7,7 +7,10 @@ jest.mock("react-redux", () => ({
 }));
 /* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-import { clearAllNotifications, clearNotification } from "features/notifications/notificationsSlice";
+import {
+	clearAllNotifications,
+	clearNotification,
+} from "features/notifications/notificationsSlice";
 import Notifications from "features/notifications/Notifications";
 import { APP_NOTIFICATION_DELAY } from "app/globals";
 

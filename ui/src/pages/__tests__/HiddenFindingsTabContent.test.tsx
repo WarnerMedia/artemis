@@ -6,7 +6,10 @@ import {
 	waitFor,
 	within,
 } from "test-utils";
-import { FILTER_PREFIX_HIDDEN, HiddenFindingsTabContent } from "pages/ResultsPage";
+import {
+	FILTER_PREFIX_HIDDEN,
+	HiddenFindingsTabContent,
+} from "pages/ResultsPage";
 import {
 	mockHFRows003,
 	mockHFSummary003,
