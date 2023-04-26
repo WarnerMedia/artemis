@@ -18,7 +18,11 @@ def get(event, admin: bool = False, authz: dict = None, **kwargs):
 def _get_scan_list(paging: PageInfo, admin: bool = False, scope: dict = False):
     map = FilterMap()
     map.add_string("batch__batch_id", "batch_id")
+    map.add_string("repo__service", "service")
+    map.add_string("repo__repo", "repo")
+    map.add_string("ref", "branch", null=True)
     map.add_timestamp("created")
+    map.add_boolean("sbom")
 
     if admin:
         # Admin can get all scans

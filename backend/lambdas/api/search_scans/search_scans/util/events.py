@@ -19,7 +19,9 @@ class ParsedEvent:
 
         self.paging = parse_paging_event(
             event,
-            exact_filters=["batch_id"],
+            exact_filters=["batch_id", "service", "repo", "branch"],
+            nullable_filters=["branch"],
             timestamp_filters=["created"],
+            boolean_filters=["sbom"],
             ordering_fields=["created"],
         )
