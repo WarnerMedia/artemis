@@ -2,6 +2,8 @@ openapi: 3.0.2
 info:
   title: Artemis REST API
   version: 1.0.0
+  contact:
+    email: "cso_appsec@warnermedia.com"
 tags:
   - name: groups
     description: Group actions
@@ -1564,6 +1566,46 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/PagedSearchRepositories"
+  /search/scans:
+    parameters:
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/batch_id"
+      - $ref: "#/components/parameters/created"
+      - $ref: "#/components/parameters/created__lt"
+      - $ref: "#/components/parameters/created__gt"
+      - $ref: "#/components/parameters/service"
+      - $ref: "#/components/parameters/service__contains"
+      - $ref: "#/components/parameters/service__icontains"
+      - $ref: "#/components/parameters/repo"
+      - $ref: "#/components/parameters/repo__contains"
+      - $ref: "#/components/parameters/repo__icontains"
+      - $ref: "#/components/parameters/branch"
+      - $ref: "#/components/parameters/branch__contains"
+      - $ref: "#/components/parameters/branch__icontains"
+      - $ref: "#/components/parameters/branch__isnull"
+      - $ref: "#/components/parameters/sbom"
+      - name: order_by
+        in: query
+        description: Order the list by the fields listed
+        required: false
+        schema:
+          type: string
+          enum:
+            - created
+            - -created
+    get:
+      summary: Return a list of scans
+      tags:
+        - search
+      operationId: search_scans
+      responses:
+        "200":
+          description: List of scans
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/PagedScanHistory"
 
   # System paths
   /system/status:
@@ -3476,6 +3518,91 @@ components:
       required: true
       schema:
         type: string
+    batch_id:
+      name: batch_id
+      in: query
+      description: Filter on the batch ID (exact match)
+      required: false
+      schema:
+        type: string
+        format: uuid
+    service:
+      name: service
+      in: query
+      description: Filter on the service (exact match)
+      required: false
+      schema:
+        type: string
+    service__contains:
+      name: service__contains
+      in: query
+      description: Filter on the service (case-sensitive substring match)
+      required: false
+      schema:
+        type: string
+    service__icontains:
+      name: service__icontains
+      in: query
+      description: Filter on the service (case-insensitive substring match)
+      required: false
+      schema:
+        type: string
+    repo:
+      name: repo
+      in: query
+      description: Filter on the repo (exact match)
+      required: false
+      schema:
+        type: string
+    repo__contains:
+      name: repo__contains
+      in: query
+      description: Filter on the repo (case-sensitive substring match)
+      required: false
+      schema:
+        type: string
+    repo__icontains:
+      name: repo__icontains
+      in: query
+      description: Filter on the repo (case-insensitive substring match)
+      required: false
+      schema:
+        type: string
+    branch:
+      name: branch
+      in: query
+      description: Filter on the branch (exact match)
+      required: false
+      schema:
+        type: string
+    branch__contains:
+      name: branch__contains
+      in: query
+      description: Filter on the branch (case-sensitive substring match)
+      required: false
+      schema:
+        type: string
+    branch__icontains:
+      name: branch__icontains
+      in: query
+      description: Filter on the branch (case-insensitive substring match)
+      required: false
+      schema:
+        type: string
+    branch__isnull:
+      name: branch__isnull
+      in: query
+      description: Filter on the branch being null
+      required: false
+      schema:
+        type: boolean
+    sbom:
+      name: sbom
+      in: query
+      description: Filter on the scan being an SBOM scan
+      required: false
+      schema:
+        type: boolean
 
   securitySchemes:
     x-api-key:
