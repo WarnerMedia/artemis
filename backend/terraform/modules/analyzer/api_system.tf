@@ -1,7 +1,9 @@
 ###############################################################################
 # API Sub-structure contained in THIS FILE
-# /api/v1/system/allowlist/{id} => Lambda proxy to system_allowlist Lambda
-# /api/v1/system/status         => Lambda proxy to system_status Lambda
+# /api/v1/system/allowlist/{id}      => Lambda proxy to system_allowlist Lambda
+# /api/v1/system/services/{id}       => Lambda proxy to system_services Lambda
+# /api/v1/system/services/{id}/stats => Lambda proxy to system_services_stats Lambda
+# /api/v1/system/status              => Lambda proxy to system_status Lambda
 ###############################################################################
 
 ###############################################################################
@@ -33,6 +35,27 @@ resource "aws_api_gateway_resource" "api_v1_system_allowlist_id" {
   path_part   = "{id}"
 }
 
+# /api/v1/system/services
+resource "aws_api_gateway_resource" "api_v1_system_services" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api_v1_system.id
+  path_part   = "services"
+}
+
+# /api/v1/system/services/{id}
+resource "aws_api_gateway_resource" "api_v1_system_services_id" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api_v1_system_services.id
+  path_part   = "{id}"
+}
+
+# /api/v1/system/services/{id}/stats
+resource "aws_api_gateway_resource" "api_v1_system_services_id_stats" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api_v1_system_services_id.id
+  path_part   = "stats"
+}
+
 # /api/v1/system/status
 resource "aws_api_gateway_resource" "api_v1_system_status" {
   rest_api_id = aws_api_gateway_rest_api.api.id
@@ -58,6 +81,36 @@ resource "aws_api_gateway_method" "api_v1_system_allowlist" {
 resource "aws_api_gateway_method" "api_v1_system_allowlist_id" {
   rest_api_id      = aws_api_gateway_rest_api.api.id
   resource_id      = aws_api_gateway_resource.api_v1_system_allowlist_id.id
+  http_method      = "ANY"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.authorizer.id
+  api_key_required = false
+}
+
+# ANY /api/v1/system/services
+resource "aws_api_gateway_method" "api_v1_system_services" {
+  rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource.api_v1_system_services.id
+  http_method      = "ANY"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.authorizer.id
+  api_key_required = false
+}
+
+# ANY /api/v1/system/services/{id}
+resource "aws_api_gateway_method" "api_v1_system_services_id" {
+  rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource.api_v1_system_services_id.id
+  http_method      = "ANY"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.authorizer.id
+  api_key_required = false
+}
+
+# ANY /api/v1/system/services/{id}/stats
+resource "aws_api_gateway_method" "api_v1_system_services_id_stats" {
+  rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource.api_v1_system_services_id_stats.id
   http_method      = "ANY"
   authorization    = "CUSTOM"
   authorizer_id    = aws_api_gateway_authorizer.authorizer.id
@@ -95,6 +148,36 @@ resource "aws_api_gateway_integration" "api_v1_system_allowlist_id" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.system_allowlist.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "api_v1_system_services" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_method.api_v1_system_services.resource_id
+  http_method = aws_api_gateway_method.api_v1_system_services.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.system_services.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "api_v1_system_services_id" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_method.api_v1_system_services_id.resource_id
+  http_method = aws_api_gateway_method.api_v1_system_services_id.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.system_services.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "api_v1_system_services_id_stats" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_method.api_v1_system_services_id_stats.resource_id
+  http_method = aws_api_gateway_method.api_v1_system_services_id_stats.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.system_services_stats.invoke_arn
 }
 
 resource "aws_api_gateway_integration" "api_v1_system_status" {
@@ -158,6 +241,108 @@ resource "aws_lambda_function" "system_allowlist" {
     var.tags,
     {
       Name = "Artemis System Allowlist Handler Lambda"
+    }
+  )
+}
+
+resource "aws_lambda_function" "system_services" {
+  function_name = "${var.app}-system-services-handler"
+
+  s3_bucket = var.s3_analyzer_files_id
+  s3_key    = "lambdas/system_services/v${var.ver}/system_services.zip"
+
+  layers = concat([
+    aws_lambda_layer_version.artemislib.arn,
+    aws_lambda_layer_version.artemisdb.arn,
+    aws_lambda_layer_version.artemisapi.arn
+  ], var.extra_lambda_layers_system_services_handler)
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
+
+  handler       = "handlers.handler"
+  runtime       = var.lambda_runtime
+  architectures = [var.lambda_architecture]
+  memory_size   = 1024
+  timeout       = 30
+
+  role = aws_iam_role.lambda-assume-role.arn
+
+  vpc_config {
+    subnet_ids = [
+      aws_subnet.lambdas.id,
+    ]
+
+    security_group_ids = [aws_security_group.lambda-sg.id]
+  }
+
+  environment {
+    variables = {
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "Artemis System Services Handler Lambda"
+    }
+  )
+}
+
+resource "aws_lambda_function" "system_services_stats" {
+  function_name = "${var.app}-system-services-stats-handler"
+
+  s3_bucket = var.s3_analyzer_files_id
+  s3_key    = "lambdas/system_services_stats/v${var.ver}/system_services_stats.zip"
+
+  layers = concat([
+    aws_lambda_layer_version.artemislib.arn,
+    aws_lambda_layer_version.artemisdb.arn,
+    aws_lambda_layer_version.artemisapi.arn
+  ], var.extra_lambda_layers_system_services_stats_handler)
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
+
+  handler       = "handlers.handler"
+  runtime       = var.lambda_runtime
+  architectures = [var.lambda_architecture]
+  memory_size   = 1024
+  timeout       = 30
+
+  role = aws_iam_role.lambda-assume-role.arn
+
+  vpc_config {
+    subnet_ids = [
+      aws_subnet.lambdas.id,
+    ]
+
+    security_group_ids = [aws_security_group.lambda-sg.id]
+  }
+
+  environment {
+    variables = {
+      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "Artemis System Services Stats Handler Lambda"
     }
   )
 }
