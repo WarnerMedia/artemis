@@ -20,9 +20,9 @@ def get_report(scan_id, skip_s3: bool = False):
 
     report = scan.to_dict()
 
-    # Get the SBOM JSON file from S3, if it exists
     sbom = None
-    if not skip_s3:  # Bypass the S3 version to pull directly from the database
+    if not skip_s3:
+        # Get the SBOM JSON file from S3, if it exists.
         sbom = get_sbom_json(scan.scan_id)
 
     if sbom:
@@ -30,7 +30,7 @@ def get_report(scan_id, skip_s3: bool = False):
         report["sbom"] = sbom
     else:
         # File doesn't exist, fall back to pulling the dependencies from the DB
-        LOG.info("SBOM file not retrieved from S3, falling back to database")
+        LOG.info("SBOM file not retrieved from S3 (skip_s3 = %s), falling back to database", skip_s3)
 
         report["sbom"] = []
 
