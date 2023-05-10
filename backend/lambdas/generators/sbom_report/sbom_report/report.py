@@ -60,7 +60,11 @@ def get_sbom_json(scan_id: str) -> Union[list, None]:
     aws = AWSConnect()
     sbom_file = aws.get_s3_file(filename, SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT)
     if sbom_file:
-        return json.loads(sbom_file)
+        try:
+            return json.loads(sbom_file)
+        except json.JSONDecodeError:
+            LOG.error("Unable to load JSON file")
+            return None
 
     LOG.error("Unable to retrieve file from S3")
     return None
