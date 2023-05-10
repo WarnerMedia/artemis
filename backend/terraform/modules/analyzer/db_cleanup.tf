@@ -42,6 +42,7 @@ resource "aws_lambda_function" "db-cleanup" {
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       APPLICATION_TAG             = var.app
       ARTEMIS_LOG_LEVEL           = var.log_level
+      S3_BUCKET                   = var.s3_analyzer_files_id
     }
   }
 
@@ -79,6 +80,23 @@ module "ec2-policy" {
   ]
   name      = "${var.app}-ec2-policy"
   resources = ["*"]
+}
+
+module "s3-cleanup-policy" {
+  source = "../role_policy_attachment"
+  actions = [
+    "s3:ListBucket",
+    "s3:ListObjects",
+    "s3:DeleteObject"
+  ]
+  iam_role_names = [
+    aws_iam_role.db-cleanup-lambda-role.name
+  ]
+  name = "${var.app}-s3-cleanup-policy"
+  resources = [
+    var.s3_analyzer_files_arn,
+    "${var.s3_analyzer_files_arn}/scans/*"
+  ]
 }
 
 ###############################################################################

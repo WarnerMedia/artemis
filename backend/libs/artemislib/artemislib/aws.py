@@ -1,19 +1,18 @@
 import json
-import os
+from typing import Union
 
 import boto3
 from botocore.exceptions import ClientError
 
+from artemislib.env import (
+    APPLICATION_TAG,
+    AWS_DEFAULT_REGION,
+    DEFAULT_S3_ENDPOINT,
+    S3_BUCKET,
+    SCAN_DATA_S3_ENDPOINT,
+    SQS_ENDPOINT,
+)
 from artemislib.logging import Logger
-
-# https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html#envvars-list
-#
-# If AWS_DEFAULT_REGION is already set use that. If not default to us-east-2.
-AWS_DEFAULT_REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-2")
-S3_BUCKET = os.environ.get("S3_BUCKET", None)
-SQS_ENDPOINT = os.environ.get("SQS_ENDPOINT", None)
-APPLICATION = os.environ.get("APPLICATION", "artemis")
-APPLICATION_TAG = os.environ.get("APPLICATION_TAG", APPLICATION)
 
 
 class LambdaError(Exception):
@@ -31,7 +30,11 @@ class AWSConnect:
             cls._instance = super(AWSConnect, cls).__new__(cls)
             cls._instance.log = Logger("AWSConnect")
             cls._instance._LAMBDA = boto3.client("lambda", region_name=region)
-            cls._instance._S3 = boto3.resource("s3", region_name=region)
+            cls._instance._S3 = {DEFAULT_S3_ENDPOINT: boto3.resource("s3", region_name=region)}
+            if SCAN_DATA_S3_ENDPOINT != DEFAULT_S3_ENDPOINT:
+                cls._instance._S3[SCAN_DATA_S3_ENDPOINT] = boto3.resource(
+                    "s3", region_name=region, endpoint_url=SCAN_DATA_S3_ENDPOINT
+                )
             cls._instance._SECRETS_MANAGER = boto3.client("secretsmanager", region_name=region)
             cls._instance._SQS = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=region)
             cls._instance._EC2 = boto3.resource("ec2", region_name=region)
@@ -64,13 +67,16 @@ class AWSConnect:
                 return get_secret_value_response["SecretString"]
         return None
 
-    def get_s3_object(self, s3_key, s3_bucket=S3_BUCKET):
+    def get_s3_object(self, s3_key, s3_bucket=S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT):
+        self.log.debug("[get_s3_object] key=%s, bucket=%s, endpoint=%s", s3_key, s3_bucket, endpoint_url)
         if s3_bucket:
-            return self._S3.Object(s3_bucket, s3_key)
+            return self._S3[endpoint_url].Object(s3_bucket, s3_key)
 
-    def copy_s3_object(self, s3_key, new_s3_key, s3_bucket=S3_BUCKET, new_s3_bucket=S3_BUCKET):
+    def copy_s3_object(
+        self, s3_key, new_s3_key, s3_bucket=S3_BUCKET, new_s3_bucket=S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT
+    ):
         copy_source = {"Bucket": s3_bucket, "Key": s3_key}
-        new_obj = self._S3.Bucket(new_s3_bucket).Object(new_s3_key)
+        new_obj = self._S3[endpoint_url].Bucket(new_s3_bucket).Object(new_s3_key)
         new_obj.copy(copy_source)
 
     def invoke_lambda(self, name: str, payload: dict) -> dict:
@@ -92,3 +98,38 @@ class AWSConnect:
     def get_instance_ids(self) -> list[str]:
         instances = self._EC2.instances.filter(Filters=[{"Name": "tag:application", "Values": [APPLICATION_TAG]}])
         return [instance.id for instance in instances]
+
+    def get_s3_file(
+        self, path: str, s3_bucket: str = S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT
+    ) -> Union[str, None]:
+        obj = self.get_s3_object(path, s3_bucket, endpoint_url)
+        if obj:
+            try:
+                return obj.get()["Body"].read().decode("utf-8")
+            except ClientError as e:
+                self.log.error("Unable to get S3 file: %s", e.response["Error"]["Message"])
+                return None
+        self.log.error("Unable to get S3 object")
+        return None
+
+    def write_s3_file(
+        self, path: str, body: str, s3_bucket: str = S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT
+    ) -> None:
+        obj = self.get_s3_object(path, s3_bucket, endpoint_url)
+        if obj:
+            obj.put(Body=body)
+
+    def delete_s3_files(self, prefix: str, s3_bucket: str = S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT) -> int:
+        count = 0
+        bucket = self._S3[endpoint_url].Bucket(s3_bucket)
+        resp = bucket.objects.filter(Prefix=prefix).delete()
+        for item in resp:
+            count += len(item.get("Deleted", []))
+        return count
+
+    def get_s3_file_list(
+        self, prefix: str, s3_bucket: str = S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT
+    ) -> list:
+        self.log.debug("[get_s3_file_list] prefix=%s, bucket=%s, endpoint=%s", prefix, s3_bucket, endpoint_url)
+        bucket = self._S3[endpoint_url].Bucket(s3_bucket)
+        return bucket.objects.filter(Prefix=prefix)

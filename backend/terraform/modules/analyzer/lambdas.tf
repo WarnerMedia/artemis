@@ -480,6 +480,7 @@ module "s3-lambda-policy" {
   iam_role_names = [aws_iam_role.lambda-assume-role.name]
   name           = "${var.app}-lambda-s3"
   resources = [
+    "${var.s3_analyzer_files_arn}/scans/*",
     "${var.s3_analyzer_files_arn}/scan_data/*",
     "${var.s3_analyzer_files_arn}/services.json",
     "${var.s3_analyzer_files_arn}/ci-tools/*",
