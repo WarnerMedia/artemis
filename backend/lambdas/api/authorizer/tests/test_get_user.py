@@ -11,6 +11,11 @@ EMAIL_DOMAIN_ALIASES = [
         "old_domains": ["company1.com"],
         "email_transformation": {"new_email_regex": "[.]", "old_email_expr": "_"},
     },
+    {
+        "new_domain": "company2.com",
+        "old_domains": ["company2.com"],
+        "email_transformation": {"new_email_regex": "([a-z]+)\.([a-z]+)", "old_email_expr": "\\2.\\1"},
+    },
     {"new_domain": "newcompany.com", "old_domains": ["company.com"]},
 ]
 
@@ -31,6 +36,12 @@ USERS = [
         "id": 3,
         "email": "first.last.1@company.com",
         "deleted": True,
+        "last_login": "2023-01-01 00:00:00.000000+00:00",
+    },
+    {
+        "id": 4,
+        "email": "last.first@company2.com",
+        "deleted": False,
         "last_login": "2023-01-01 00:00:00.000000+00:00",
     },
 ]
@@ -96,7 +107,7 @@ class TestGetUser(unittest.TestCase):
         mock_create_self_group.return_value = True
         email = "first.last@doesnotexist.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") >= 4 and user.__dict__.get("email") == email)
+        self.assertTrue(user.__dict__.get("id") >= 5 and user.__dict__.get("email") == email)
 
     def test_get_user_with_new_email(self):
         """
@@ -116,6 +127,15 @@ class TestGetUser(unittest.TestCase):
         user = _get_update_or_create_user(email=email)
         self.assertTrue(user.__dict__.get("id") == 2 and user.__dict__.get("email") == email)
 
+    def test_get_user_with_new_email_with_transformation2(self):
+        """
+        User logs in with email "first.last@company2.com" and has an existing account with email "last.first@company2.com"
+        Existing account is found, and email is updated to the new email "first.last@company2.com"
+        """
+        email = "first.last@company2.com"
+        user = _get_update_or_create_user(email=email)
+        self.assertTrue(user.__dict__.get("id") == 4 and user.__dict__.get("email") == email)
+
     @patch("authorizer.handlers.Group.create_self_group")
     def test_get_user_with_new_email_and_deleted_old_user(self, mock_create_self_group):
         """
@@ -125,4 +145,4 @@ class TestGetUser(unittest.TestCase):
         mock_create_self_group.return_value = True
         email = "first.last.1@newcompany.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") >= 4 and user.__dict__.get("email") == email)
+        self.assertTrue(user.__dict__.get("id") >= 5 and user.__dict__.get("email") == email)
