@@ -4,29 +4,26 @@ from setuptools import find_packages, setup
 # available inside the package for use at runtime.
 __version__ = None  # Will get set in next line
 # pylint: disable=exec-used
-exec(open("license_retriever/__version__.py").read())
+exec(open("sbom_dependency_migration/__version__.py").read())
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
 setup(
-    name="license_retriever",
+    name="sbom_dependency_migration",
     version=__version__,
     author="WMCSO AppSec",
     author_email="cso_appsec@warnermedia.com",
-    description="License Retrieval Lambda",
+    description="SBOM Dependency Migration",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url=("https://github.com/warnermedia/artemis/backend/lambdas/maintenance/license_retriever"),
+    url=("https://github.com/warnermedia/artemis/backend/utilities/sbom_dependency_migration"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=[
-        "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
-    ],
+    install_requires=[],
     tests_require=["pytest"],
-    entry_points={"console_scripts": ["artemis_license_retriever=license_retriever.handlers:handler"]},
+    entry_points={"console_scripts": ["sbom_dependency_migration=sbom_dependency_migration.main:main"]},
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",

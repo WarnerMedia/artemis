@@ -1,9 +1,12 @@
 import uuid
 
-from django.db.utils import IntegrityError
+import simplejson as json
 
 from artemisdb.artemisdb.consts import ComponentType
-from artemisdb.artemisdb.models import Component, Dependency, License, RepoComponentScan, Scan
+from artemisdb.artemisdb.models import Component, License, RepoComponentScan, Scan
+from artemislib.aws import AWSConnect
+from artemislib.consts import SBOM_JSON_S3_KEY
+from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
 
@@ -11,12 +14,22 @@ logger = Logger(__name__)
 
 
 def process_sbom(result: Result, scan: Scan):
+    # The graphs are all moved into one list instead of lists of lists so that all of the tree roots are in this list.
+    # The "source" field identifies the different graphs from each other.
+    flattened = []
+
+    # Go through the graphs
     for graph in result.details:
+        # Process all the direct dependencies of this graph
         for direct in graph:
-            process_dependency(direct, scan, None)
+            process_dependency(direct, scan)
+            flattened.append(direct)  # Add the direct to the flattened list
+
+    # Write the dependency information to S3
+    write_sbom_json(scan.scan_id, flattened)
 
 
-def process_dependency(dep: dict, scan: Scan, parent: Dependency):
+def process_dependency(dep: dict, scan: Scan):
     component = get_component(dep["name"], dep["version"], scan, dep.get("type"))
 
     # Keep a copy of the license objects so they only have to be retrieved from the DB once
@@ -38,17 +51,8 @@ def process_dependency(dep: dict, scan: Scan, parent: Dependency):
     if licenses:
         component.licenses.set(licenses)
 
-    try:
-        dependency = Dependency(
-            label=component.label, component=component, scan=scan, source=dep["source"], parent=parent
-        )
-        dependency.save()
-    except IntegrityError as e:
-        logger.error("Unable to create dependency record %s (error: %s)", dependency, str(e))
-        return
-
     for child in dep["deps"]:
-        process_dependency(dep=child, scan=scan, parent=dependency)
+        process_dependency(dep=child, scan=scan)
 
 
 def get_component(name: str, version: str, scan: Scan, component_type: str = None) -> Component:
@@ -76,3 +80,13 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
         component_repo.save()
 
     return component
+
+
+def write_sbom_json(scan_id: str, sbom: str) -> None:
+    aws = AWSConnect()
+    aws.write_s3_file(
+        path=(SBOM_JSON_S3_KEY % scan_id),
+        body=json.dumps(sbom),
+        s3_bucket=SCAN_DATA_S3_BUCKET,
+        endpoint_url=SCAN_DATA_S3_ENDPOINT,
+    )

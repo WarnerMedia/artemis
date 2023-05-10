@@ -86,20 +86,37 @@ module "log-policy" {
   ]
 }
 
-module "s3-policy" {
-  source = "../../../role_policy_attachment"
-  actions = [
-    "s3:GetObject",
-    "s3:ListBucket"
-  ]
-  iam_role_names = [aws_iam_role.engine-role.name]
-  name           = "${var.app}-engine-s3-${var.name}"
-  resources = [
-    var.s3_analyzer_files_arn,
-    "${var.s3_analyzer_files_arn}/scripts/*",
-    "${var.s3_analyzer_files_arn}/services.json",
-    "${var.s3_analyzer_files_arn}/plugins/*",
-  ]
+data "aws_iam_policy_document" "s3-policy" {
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket"
+    ]
+    resources = [
+      var.s3_analyzer_files_arn,
+      "${var.s3_analyzer_files_arn}/scripts/*",
+      "${var.s3_analyzer_files_arn}/services.json",
+      "${var.s3_analyzer_files_arn}/plugins/*",
+    ]
+  }
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = [
+      "${var.s3_analyzer_files_arn}/scans/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "s3-policy" {
+  name   = "${var.app}-engine-s3-${var.name}"
+  policy = data.aws_iam_policy_document.s3-policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3-policy" {
+  role       = aws_iam_role.engine-role.name
+  policy_arn = aws_iam_policy.s3-policy.arn
 }
 
 module "autoscaling-policy" {

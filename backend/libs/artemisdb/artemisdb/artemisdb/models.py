@@ -25,8 +25,11 @@ from artemisdb.artemisdb.env import DOMAIN_NAME, METADATA_FORMATTER_MODULE
 from artemisdb.artemisdb.fields.ltree import LtreeField
 from artemisdb.artemisdb.util.auth import group_chain_filter
 from artemisdb.artemisdb.util.severity import ComparableSeverity
+from artemislib.aws import AWSConnect
+from artemislib.consts import SCAN_DATA_S3_KEY
 from artemislib.datetime import format_timestamp
 from artemislib.db_cache import DBLookupCache
+from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from artemislib.services import get_services_and_orgs_for_scope
 
@@ -585,7 +588,7 @@ class Scan(models.Model):
     def __str__(self):
         return str(self.scan_id)
 
-    def delete(self):
+    def delete_dependency_set(self):
         # A scan can potentially have hundreds of thousands or even millions of associated rows in the
         # dependency table. The dependency table contains a tree structure where the rows have foreign
         # key relationships to other rows. The result is that when Django performs the cascade deletion
@@ -595,11 +598,23 @@ class Scan(models.Model):
         # This is a performance enhancement to bypass the cascade deletion of dependencies by instead
         # having the database delete the rows associated with the scan being deleted directly instead of
         # having Django do it.
-        LOG.debug("Deleting %s", self.scan_id)
         start = datetime.utcnow()
         with connection.cursor() as cursor:
             cursor.execute(f"DELETE FROM {Dependency._meta.db_table} WHERE scan_id = %s", [self.pk])
         LOG.debug("Bulk dependency deletion of scan %s completed in %s", self.scan_id, str(datetime.utcnow() - start))
+
+    def delete(self):
+        LOG.debug("Deleting %s", self.scan_id)
+
+        self.delete_dependency_set()
+
+        # A scan may have data stored in S3 that needs to be deleted
+        aws = AWSConnect()
+        deleted = aws.delete_s3_files(
+            prefix=(SCAN_DATA_S3_KEY % self.scan_id), s3_bucket=SCAN_DATA_S3_BUCKET, endpoint_url=SCAN_DATA_S3_ENDPOINT
+        )
+        LOG.debug("Deleted %s scan items from S3", deleted)
+
         return super(Scan, self).delete()
 
     def to_dict(self, history_format: bool = False):
