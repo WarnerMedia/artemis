@@ -3,7 +3,9 @@ import os
 import re
 import time
 import urllib.request
+
 from datetime import datetime, timezone
+from django.db import transaction
 from typing import Tuple
 
 from jose import jwk, jwt
@@ -170,6 +172,7 @@ def _verify_claims(claims: dict):
         raise Exception("Unauthorized")
 
 
+@transaction.atomic
 def _get_update_or_create_user(email: str) -> User:
     """
     Attempt to get a user based on email.
@@ -216,6 +219,7 @@ def _get_update_or_create_user(email: str) -> User:
     return _create_user(email)
 
 
+@transaction.atomic
 def _update_login_timestamp(user: User) -> None:
     """
     Set the last login timestamp
@@ -224,6 +228,7 @@ def _update_login_timestamp(user: User) -> None:
     user.save()
 
 
+@transaction.atomic
 def _create_user(email: str) -> User:
     """
     Create a new user
