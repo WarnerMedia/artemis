@@ -29,7 +29,7 @@ MAINTENANCE_MODE_RETRY_AFTER = os.environ.get("ARTEMIS_MAINTENANCE_MODE_RETRY_AF
 # By default give new users access to scan the demo repo
 DEFAULT_SCOPE = json.loads(os.environ.get("ARTEMIS_DEFAULT_SCOPE", "[]"))
 
-EMAIL_DOMAIN_ALIASES = os.environ.get("EMAIL_DOMAIN_ALIASES", "[]")
+EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 
 # instead of re-downloading the public keys every time
 # we download them only on cold start
@@ -187,12 +187,11 @@ def _get_update_or_create_user(email: str) -> User:
             return user
 
     if EMAIL_DOMAIN_ALIASES:
-        email_domain_aliases = json.loads(EMAIL_DOMAIN_ALIASES)
         email_local_part = email.split("@")[0]
         email_domain = email.split("@")[1]
 
         # Check if any aliases exist for domain, and attempt to find a match
-        for alias in email_domain_aliases:
+        for alias in EMAIL_DOMAIN_ALIASES:
             if alias["new_domain"] == email_domain:
                 for old_domain in alias["old_domains"]:
                     if alias.get("email_transformation"):
