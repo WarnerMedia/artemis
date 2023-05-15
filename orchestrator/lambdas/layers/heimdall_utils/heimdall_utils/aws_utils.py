@@ -7,6 +7,7 @@ import requests
 from botocore.exceptions import ClientError
 from requests import Response
 
+from heimdall_utils.env import DEFAULT_API_TIMEOUT
 from heimdall_utils.utils import Logger
 from heimdall_utils.variables import REGION, REV_PROXY_SECRET
 
@@ -73,7 +74,9 @@ def get_key(secret_name):
         return None
 
 
-def queue_service_and_org(queue, service, org_name, page, default_branch_only, plugins, batch_id: str):
+def queue_service_and_org(
+    queue, service, org_name, page, default_branch_only, plugins, batch_id: str, redundant_scan_query: dict
+):
     try:
         sqs = get_sqs_connection(REGION)
         sqs.send_message(
@@ -86,6 +89,7 @@ def queue_service_and_org(queue, service, org_name, page, default_branch_only, p
                     "default_branch_only": default_branch_only,
                     "plugins": plugins,
                     "batch_id": batch_id,
+                    "redundant_scan_query": redundant_scan_query,
                 }
             ),
         )
@@ -123,4 +127,5 @@ def send_analyzer_request(url: str, api_key: str, request_json: dict) -> Respons
         url=url,
         headers={"x-api-key": api_key, "Content-Type": "application/json"},
         json=request_json,
+        timeout=DEFAULT_API_TIMEOUT,
     )

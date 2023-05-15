@@ -92,7 +92,7 @@ integration-test: venv ## Run integration tests
 	export PYTHONPATH=${PYTHONPATH}:${TEST_DIRS}; \
 	${PYTHON} -m pipenv check; \
 	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" --no-pylint;
+	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" --no-pylint ${PYTEST_EXTRA_ARGS};
 
 test: unit-test \
 	  integration-test

@@ -118,14 +118,14 @@ def requeue_rate_limit_repos(service, repo_lookup, failed_repos):
         repos_to_queue.append({"Id": str(index), "MessageBody": json.dumps(repo_info)})
         index += 1
         if index >= 10:
-            log.info("Re-queueing %d repos" % index)
+            log.info("Re-queueing %d repos", index)
             if not send_sqs_message(REPO_QUEUE, repos_to_queue):
                 log.error("There was an error re-queueing the repos, aborting.")
                 return
             index = 0
             repos_to_queue = []
     if index > 0:
-        log.info("Re-queueing %d repos" % index)
+        log.info("Re-queueing %d repos", index)
         send_sqs_message(REPO_QUEUE, repos_to_queue)
 
 

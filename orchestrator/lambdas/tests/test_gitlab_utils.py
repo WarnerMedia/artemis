@@ -176,7 +176,7 @@ class TestGitlabUtils(unittest.TestCase):
         get_project_branches.return_value = ""
         expected_response = []
 
-        response = self.process_gitlab_repos._get_ref_names("foo")
+        response, _ = self.process_gitlab_repos._get_ref_names("foo")
 
         self.assertEqual(expected_response, response)
 
@@ -186,21 +186,24 @@ class TestGitlabUtils(unittest.TestCase):
         get_project_branches.return_value = json.dumps(TEST_BRANCH_RESPONSE)
         expected_response = ["rollback", "master", "production"]
 
-        response = self.process_gitlab_repos._get_ref_names("foo")
+        response, _ = self.process_gitlab_repos._get_ref_names("foo")
 
         self.assertEqual(sorted(expected_response), sorted(response))
 
     def test_process_refs_success(self):
-        test_resp = [{"name": "bar"}, {"name": "foo"}]
+        test_resp = [
+            {"name": "bar", "commit": {"committed_date": "1970-01-01T00:00:00Z"}},
+            {"name": "foo", "commit": {"committed_date": "1970-01-01T00:00:00Z"}},
+        ]
         expected_response = ["bar", "foo"]
 
-        response = self.process_gitlab_repos._process_refs(test_resp)
+        response, _ = self.process_gitlab_repos._process_refs(test_resp)
 
         self.assertEqual(sorted(expected_response), sorted(response))
 
     def test_process_refs_no_resp(self):
         test_resp = {}
-        expected_response = []
+        expected_response = ([], {})
 
         response = self.process_gitlab_repos._process_refs(test_resp)
 

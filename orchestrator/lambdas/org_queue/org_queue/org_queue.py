@@ -47,6 +47,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
     plugins = data.get("plugins", DEFAULT_PLUGINS)
     default_branch_only = data.get("default_branch_only", False)
     batch_label = data.get("batch_label")
+    redundant_scan_query = data.get("redundant_scan_query")
 
     batch_id = generate_batch_id(batch_label)
 
@@ -81,6 +82,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
                 default_branch_only,
                 plugins,
                 batch_id,
+                redundant_scan_query,
             ):
                 queued.append(org_result_str)
             else:
