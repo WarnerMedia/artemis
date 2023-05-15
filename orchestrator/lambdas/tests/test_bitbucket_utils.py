@@ -34,12 +34,12 @@ TEST_REPO_RESPONSE = [
     {"slug": "has-no-default-branch", "is_private": False},
 ]
 
-TEST_REF_NAMES_RESPONSE = ["main"]
+TEST_REF_NAMES_RESPONSE = (["main"], {"main": "1970-01-01T00:00:00Z"})
 
 EXPECTED_RESULT_PROCESS_NODES = [
-    {"branch": "main", "org": "zeus", "repo": "actual-repo-name-1", "service": "bitbucket"},
-    {"branch": "main", "org": "zeus", "repo": "actual-repo-name-2", "service": "bitbucket"},
-    {"branch": "main", "org": "zeus", "repo": "has-no-default-branch", "service": "bitbucket"},
+    {"branch": "main", "org": "zeus", "repo": "actual-repo-name-1", "service": "bitbucket", "plugins": ["eslint"]},
+    {"branch": "main", "org": "zeus", "repo": "actual-repo-name-2", "service": "bitbucket", "plugins": ["eslint"]},
+    {"branch": "main", "org": "zeus", "repo": "has-no-default-branch", "service": "bitbucket", "plugins": ["eslint"]},
 ]
 
 TEST_CLOUD_BRANCH_RESPONSE_FILE = os.path.abspath(
@@ -113,7 +113,7 @@ class TestBitbucketUtils(unittest.TestCase):
         self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         query_bitbucket_api.return_value = None
 
-        expected_result = ["main"]
+        expected_result = (["main"], {"main": "1970-01-01T00:00:00Z"})
         result = self.process_bitbucket_cloud._get_ref_names(TEST_REPO, "main")
 
         self.assertEqual(expected_result, result)
@@ -123,7 +123,7 @@ class TestBitbucketUtils(unittest.TestCase):
         self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         query_bitbucket_api.return_value = json.dumps({"error": "something went wrong!"})
 
-        expected_result = ["main"]
+        expected_result = (["main"], {"main": "1970-01-01T00:00:00Z"})
 
         result = self.process_bitbucket_cloud._get_ref_names(TEST_REPO, "main")
 
@@ -137,7 +137,7 @@ class TestBitbucketUtils(unittest.TestCase):
         query_bitbucket_api.side_effect = [json.dumps(altered_response), json.dumps(self.cloud_branch_response)]
 
         expected_result = ["development", "main", "origin/testbranch"]
-        result = self.process_bitbucket_cloud._get_ref_names(TEST_REPO, "main")
+        result, _ = self.process_bitbucket_cloud._get_ref_names(TEST_REPO, "main")
 
         self.assertEqual(expected_result, sorted(result))
 
@@ -147,7 +147,7 @@ class TestBitbucketUtils(unittest.TestCase):
         query_bitbucket_api.return_value = json.dumps(self.cloud_branch_response)
 
         expected_result = ["development", "main", "origin/testbranch"]
-        result = self.process_bitbucket_cloud._get_ref_names(TEST_REPO, "main")
+        result, _ = self.process_bitbucket_cloud._get_ref_names(TEST_REPO, "main")
 
         self.assertEqual(expected_result, sorted(result))
 

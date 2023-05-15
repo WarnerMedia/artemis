@@ -1,10 +1,23 @@
 # pylint: disable=no-member
 import json
 import logging
+import os
 import sys
 from collections import namedtuple
 from datetime import datetime, timedelta
 from json import JSONDecodeError
+
+DEFAULT_LOG_LEVEL = "INFO"
+LOG_LEVEL = os.environ.get("HEIMDALL_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
+
+LEVEL_MAP = {
+    "CRITICAL": logging.CRITICAL,
+    "ERROR": logging.ERROR,
+    "WARNING": logging.WARNING,
+    "INFO": logging.INFO,
+    "DEBUG": logging.DEBUG,
+    "NOTSET": logging.NOTSET,
+}
 
 DYNAMODB_TTL_DAYS = 60
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -12,20 +25,22 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 class Logger:
-    _instance = None
-
-    def __new__(cls, name: str):
-        if cls._instance is None:
-            cls._instance = logging.getLogger(name.strip())
-            console = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
-                fmt="%(asctime)s %(levelname)-8s [%(name)-12s] %(message)s", datefmt="[%Y-%m-%d %H:%M:%S]"
-            )
-            console.setFormatter(formatter)
-            cls._instance.addHandler(console)
-            cls._instance.setLevel(logging.INFO)
-            cls._instance.propagate = False
-        return cls._instance
+    def __new__(cls, name: str, level=LOG_LEVEL):
+        log = logging.getLogger(name.strip())
+        if log.hasHandlers():
+            # The AWS Lambda environment starts with a handler already configured so remove it
+            # to replace it with our own.
+            for handler in log.handlers:
+                log.removeHandler(handler)
+        console = logging.StreamHandler(sys.stderr)
+        formatter = logging.Formatter(
+            fmt="%(asctime)s %(levelname)-8s [%(name)-12s] %(message)s", datefmt="[%Y-%m-%d %H:%M:%S%z]"
+        )
+        console.setFormatter(formatter)
+        log.addHandler(console)
+        log.setLevel(LEVEL_MAP.get(level, DEFAULT_LOG_LEVEL))
+        log.propagate = False
+        return log
 
 
 class ServiceInfo:

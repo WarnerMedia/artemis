@@ -24,6 +24,10 @@ variable "aws_region" {
   description = "The region in which to deploy"
 }
 
+variable "artemis_region" {
+  description = "The region that the Artemis S3 bucket resides in"
+}
+
 variable "tags" {
   type = map(string)
 }
@@ -70,6 +74,11 @@ variable "lambda_availability_zone" {
 variable "scanning_enabled" {
   description = "Whether Heimdall actually initiates Artemis scans"
   default     = true
+}
+
+variable "log_level" {
+  description = "Logging level"
+  default     = "INFO"
 }
 
 ###############################################################################

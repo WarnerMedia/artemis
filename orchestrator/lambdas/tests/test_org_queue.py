@@ -147,7 +147,14 @@ class TestOrgQueue(unittest.TestCase):
         }
         self.assertDictEqual(queued, expected)
         mock_queue.assert_called_with(
-            "queue_service_and_org", "git.example.com", "foo_org", {"cursor": "null"}, True, ["secrets"], TEST_BATCH_ID
+            "queue_service_and_org",
+            "git.example.com",
+            "foo_org",
+            {"cursor": "null"},
+            True,
+            ["secrets"],
+            TEST_BATCH_ID,
+            None,
         )
 
     @patch.object(org_queue, "generate_batch_id")

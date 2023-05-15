@@ -1,7 +1,9 @@
 # pylint: disable=no-name-in-module,no-member
 import requests
 
+from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import queue_service_and_org
+from heimdall_utils.env import DEFAULT_API_TIMEOUT
 from heimdall_utils.utils import JSONUtils, Logger, ScanOptions, ServiceInfo
 
 API_VERSION = "6.0"
@@ -28,12 +30,16 @@ class ADORepoProcessor:
         plugins: list = None,
         external_orgs: list = None,
         batch_id: str = None,
+        artemis_api_key: str = None,
+        redundant_scan_query: dict = None,
     ):
         self.queue = queue
         self.service_info = ServiceInfo(service, service_dict, org, api_key)
         self.scan_options = ScanOptions(default_branch_only, plugins, batch_id)
         self.external_orgs = external_orgs
         self.log = Logger("ADORepoProcessor")
+        self.artemis_api_key = artemis_api_key
+        self.redundant_scan_query = redundant_scan_query
 
         self._setup(cursor)
         self.json_utils = JSONUtils(self.log)
@@ -53,6 +59,8 @@ class ADORepoProcessor:
         """
         self.log.info("Querying for repos in %s", self.service_info.service_org)
 
+        repos = []
+
         projects = self._get_projects(self.service_info.cursor)
         for project in projects["projects"]:
             repos = self._get_repos(project)
@@ -68,6 +76,7 @@ class ADORepoProcessor:
                 self.scan_options.default_branch_only,
                 self.scan_options.plugins,
                 self.scan_options.batch_id,
+                self.redundant_scan_query,
             )
 
         return repos
@@ -81,22 +90,62 @@ class ADORepoProcessor:
 
         return {"projects": projects, "cursor": cursor}
 
-    def _get_repos(self, project: str) -> dict:
+    def _get_repos(self, project: str) -> list:
         """Get the repos+refs for this ADO project"""
         resp = self._query_api(query=f"{project}/_apis/git/repositories")
 
         repos = []
         for repo in resp.get("value", []):
-            refs = self._get_refs(project, repo["name"])
-            for ref in refs:
+            if self.scan_options.default_branch_only:
+                if self.redundant_scan_query:
+                    # Only make the additional queries to get the default branch commit and timestamp if it will
+                    # actually be used. If there is no redundant scan query we can skip making these API calls.
+                    commit_id = self._get_ref_commit_id(project, repo["name"], repo["defaultBranch"])
+                    timestamp = self._get_commit_timestamp(project, repo["name"], commit_id)
+                    if redundant_scan_exists(
+                        api_key=self.artemis_api_key,
+                        service=self.service_info.service,
+                        org=self.service_info.org,
+                        repo=f"{project}/{repo['name']}",
+                        branch=None,
+                        timestamp=timestamp,
+                        query=self.redundant_scan_query,
+                    ):
+                        continue
                 repos.append(
                     {
                         "service": self.service_info.service,
                         "repo": f"{project}/{repo['name']}",
                         "org": self.service_info.org,
-                        "branch": ref,
+                        "plugins": self.scan_options.plugins,
                     }
                 )
+            else:
+                refs = self._get_refs(project, repo["name"])
+                for ref, commit_id in refs:
+                    if self.redundant_scan_query:
+                        # Only make the additional query to get the default branch timestamp if it will actually be
+                        # used. If there is no redundant scan query we can skip making this API call.
+                        timestamp = self._get_commit_timestamp(project, repo["name"], commit_id)
+                        if redundant_scan_exists(
+                            api_key=self.artemis_api_key,
+                            service=self.service_info.service,
+                            org=self.service_info.org,
+                            repo=f"{project}/{repo['name']}",
+                            branch=ref,
+                            timestamp=timestamp,
+                            query=self.redundant_scan_query,
+                        ):
+                            continue
+                    repos.append(
+                        {
+                            "service": self.service_info.service,
+                            "repo": f"{project}/{repo['name']}",
+                            "org": self.service_info.org,
+                            "plugins": self.scan_options.plugins,
+                            "branch": ref,
+                        }
+                    )
 
         return repos
 
@@ -113,15 +162,27 @@ class ADORepoProcessor:
                 query=f"{project}/_apis/git/repositories/{repo}/refs",
                 params={"$top": page_size, "continuationToken": cursor, "filter": "heads"},
             )
-            refs += [r["name"].replace("refs/heads/", "") for r in resp.get("value", [])]
+            refs += [(r["name"].replace("refs/heads/", ""), r["objectId"]) for r in resp.get("value", [])]
             cursor = resp.get(CONTINUATION_HEADER)  # If the continuation header is missing it will break the loop
 
         return refs
 
+    def _get_ref_commit_id(self, project: str, repo: str, ref: str) -> str:
+        """Get the timestamp for a commit"""
+        resp = self._query_api(query=f"{project}/_apis/git/repositories/{repo}/{ref}")
+        if resp["value"]:
+            return resp["value"][0]["objectId"]
+        return None
+
+    def _get_commit_timestamp(self, project: str, repo: str, commit_id: str) -> str:
+        """Get the timestamp for a commit"""
+        resp = self._query_api(query=f"{project}/_apis/git/repositories/{repo}/commits/{commit_id}")
+        return resp.get("committer", {}).get("date", "1970-01-01T00:00:00Z")
+
     def _query_api(self, query: str, params: dict = None) -> dict:
         """Generic Azure API query method"""
         headers = {
-            "Authorization": "Basic %s" % self.service_info.api_key,
+            "Authorization": f"Basic {self.service_info.api_key}",
             "Accept": "application/json",
         }
         if not params:
@@ -132,6 +193,7 @@ class ADORepoProcessor:
             url=f"{self.service_info.url}/{self.service_info.org}/{query}",
             params=params,
             headers=headers,
+            timeout=DEFAULT_API_TIMEOUT,
         )
         if resp.status_code != 200:
             self.log.error("Error retrieving ADO query: %s", resp.text)
