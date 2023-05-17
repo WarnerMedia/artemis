@@ -87,16 +87,14 @@ class MockUser(object):
             raise MockUser.DoesNotExist
 
 
-# We need to remove the "transaction.atomic" decorator in order for functions to work in these tests
-# This is why several functions following are unwraped
+# We need to remove the "transaction.atomic" decorator in order for this function to work in the following tests
+# Unwrapping the function accomplishes this
 _get_update_or_create_user = authorizer.handlers._get_update_or_create_user.__wrapped__
 
 
 @patch("authorizer.handlers.EMAIL_DOMAIN_ALIASES", EMAIL_DOMAIN_ALIASES)
 @patch("authorizer.handlers.Group.create_self_group", lambda *x, **y: None)
 @patch("authorizer.handlers.User", MockUser)
-@patch("authorizer.handlers._create_user", authorizer.handlers._create_user.__wrapped__)
-@patch("authorizer.handlers._update_login_timestamp", authorizer.handlers._update_login_timestamp.__wrapped__)
 class TestGetUser(unittest.TestCase):
     def test_get_existing_user(self):
         """
