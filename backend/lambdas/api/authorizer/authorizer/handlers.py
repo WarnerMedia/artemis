@@ -219,7 +219,6 @@ def _get_update_or_create_user(email: str) -> User:
     return _create_user(email)
 
 
-@transaction.atomic
 def _update_login_timestamp(user: User) -> None:
     """
     Set the last login timestamp
@@ -228,7 +227,6 @@ def _update_login_timestamp(user: User) -> None:
     user.save()
 
 
-@transaction.atomic
 def _create_user(email: str) -> User:
     """
     Create a new user
