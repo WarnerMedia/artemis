@@ -96,6 +96,7 @@ _get_update_or_create_user = authorizer.handlers._get_update_or_create_user.__wr
 @patch("authorizer.handlers.User", MockUser)
 @patch("authorizer.handlers._create_user", authorizer.handlers._create_user.__wrapped__)
 @patch("authorizer.handlers._update_login_timestamp", authorizer.handlers._update_login_timestamp.__wrapped__)
+@patch("authorizer.handlers.Group.create_self_group", lambda *x, **y: None)
 class TestGetUser(unittest.TestCase):
     def test_get_existing_user(self):
         """
@@ -115,13 +116,11 @@ class TestGetUser(unittest.TestCase):
         user = _get_update_or_create_user(email=email)
         self.assertTrue(user == None)
 
-    @patch("authorizer.handlers.Group.create_self_group")
-    def test_get_nonexistent_user(self, mock_create_self_group):
+    def test_get_nonexistent_user(self):
         """
         Attempt to get a user that does not exist, and create an account for that user with the given email
         """
         MockUser.users = copy.deepcopy(USERS)
-        mock_create_self_group.return_value = True
         email = "first.last@doesnotexist.com"
         user = _get_update_or_create_user(email=email)
         self.assertTrue(user.__dict__.get("id") == 5 and user.__dict__.get("email") == email)
@@ -166,14 +165,12 @@ class TestGetUser(unittest.TestCase):
         user = _get_update_or_create_user(email=email)
         self.assertTrue(user.__dict__.get("id") == 1 and user.__dict__.get("email") == email)
 
-    @patch("authorizer.handlers.Group.create_self_group")
-    def test_get_user_with_new_email_and_deleted_old_user(self, mock_create_self_group):
+    def test_get_user_with_new_email_and_deleted_old_user(self):
         """
         User logs in with email "first.last.1@newcompany.com" and has an existing account with email "first.last.1@company.com"
         Existing account is found, but was deleted, so create a new account with the new email
         """
         MockUser.users = copy.deepcopy(USERS)
-        mock_create_self_group.return_value = True
         email = "first.last.1@newcompany.com"
         user = _get_update_or_create_user(email=email)
         self.assertTrue(user.__dict__.get("id") == 5 and user.__dict__.get("email") == email)
