@@ -1,8 +1,8 @@
 ###############################################################################
 # API Sub-structure contained in THIS FILE
-# /api/v1/system/allowlist/{id}      => Lambda proxy to system_allowlist Lambda
-# /api/v1/system/services/{id+}       => Lambda proxy to system_services Lambda
-# /api/v1/system/status              => Lambda proxy to system_status Lambda
+# /api/v1/system/allowlist/{id} => Lambda proxy to system_allowlist Lambda
+# /api/v1/system/services/{id+} => Lambda proxy to system_services Lambda
+# /api/v1/system/status         => Lambda proxy to system_status Lambda
 ###############################################################################
 
 ###############################################################################
