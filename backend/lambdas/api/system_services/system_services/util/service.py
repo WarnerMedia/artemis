@@ -1,5 +1,6 @@
 import requests
-from artemisdb.artemisdb.models import User
+from artemisdb.artemisdb.models import User, Repo, Scan
+from artemislib.datetime import format_timestamp
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
 from system_services.util.const import AuthType
@@ -19,10 +20,10 @@ class Service:
         self.name = scan_org.lower()
         self._org = None
         if "/" in self.name:
-            _service_name, self._org = self.name.split("/", 1)
+            self._service_name, self._org = self.name.split("/", 1)
         else:
-            _service_name = self.name
-        self._service = services_dict["services"][_service_name]
+            self._service_name = self.name
+        self._service = services_dict["services"][self._service_name]
         self._reachable = False
         self._auth_successful = False
         self._auth_type = AuthType.SVC
@@ -32,12 +33,39 @@ class Service:
         self._test_auth()
         return {
             "service": self.name,
-            "type": self._service["type"],
             "reachable": self._reachable,
             "auth_successful": self._auth_successful,
             "auth_type": self._auth_type.value,
             "error": self._error,
         }
+
+    def stats_to_dict(self, scope: list[list[list[str]]]):
+        self._get_service_stats(scope)
+        return {
+            "service": self.name,
+            "repo_count": self._repo_count,
+            "total_scans": self._total_scan_count,
+            "successful_scans": self._successful_scan_count,
+            "failed_scans": self._failed_scan_count,
+            "first_scan": self._first_scan_timestamp,
+            "most_recent_scan": self._most_recent_scan_timestamp,
+        }
+
+    def _get_service_stats(self, scope: list[list[list[str]]]):
+        repos = Repo.in_scope(scope).filter(service=self._service_name).order_by("repo")
+        if self._org:
+            repos = repos.filter(repo__startswith=f"{self._org}/")
+
+        self._repo_count = repos.count()
+
+        scans = Scan.objects.filter(repo__in=repos).order_by("created")
+
+        self._total_scan_count = scans.count()
+        self._successful_scan_count = scans.filter(status="completed").count()
+        self._failed_scan_count = scans.filter(status="error").count()
+
+        self._first_scan_timestamp = format_timestamp(scans.first().created)
+        self._most_recent_scan_timestamp = format_timestamp(scans.last().created)
 
     @classmethod
     def get_services(cls, email: str, services_dict: dict):
