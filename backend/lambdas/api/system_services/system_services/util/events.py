@@ -1,7 +1,7 @@
+from typing import Tuple
+
 from artemisapi.validators import ValidationError
 from artemisdb.artemisdb.paging import parse_paging_event
-
-from typing import Tuple
 
 
 class ParsedEvent:

@@ -1,5 +1,5 @@
 import requests
-from artemisdb.artemisdb.models import User, Repo, Scan
+from artemisdb.artemisdb.models import Repo, Scan, User
 from artemislib.datetime import format_timestamp
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
