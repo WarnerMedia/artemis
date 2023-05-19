@@ -235,6 +235,7 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_members
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/engine/plugins/repo_health/cli
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/system_services
 
 # Artemis scan configuration
 ARTEMIS_SCAN_ARGS :=
