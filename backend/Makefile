@@ -105,7 +105,6 @@ SEARCH_SCANS_LAMBDA := ${PREFIX}-search-scans-handler
 SEARCH_VULNERABILITIES_LAMBDA := ${PREFIX}-search-vulnerabilities-handler
 LICENSE_RETRIEVER_LAMBDA := ${PREFIX}-license-retriever
 SYSTEM_SERVICES_LAMBDA := ${PREFIX}-system-services-handler
-SYSTEM_SERVICES_STATS_LAMBDA := ${PREFIX}-system-services-stats-handler
 
 # Lambda layers
 ARTEMISLIB_LAMBDA_LAYER := ${PREFIX}-artemislib
@@ -394,7 +393,6 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/api/signin.zip \
 		 dist/lambdas/api/system_allowlist.zip \
 		 dist/lambdas/api/system_services.zip \
-		 dist/lambdas/api/system_services_stats.zip \
 		 dist/lambdas/api/system_status.zip \
 		 dist/lambdas/api/users.zip \
 		 dist/lambdas/api/users_keys.zip \
@@ -846,7 +844,6 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-api-signin \
 				upload_lambda_lambdas-api-system_allowlist \
 				upload_lambda_lambdas-api-system_services \
-				upload_lambda_lambdas-api-system_services_stats \
 				upload_lambda_lambdas-api-system_status \
 				upload_lambda_lambdas-api-users \
 				upload_lambda_lambdas-api-users_keys \
@@ -915,7 +912,6 @@ move_lambda_bundles: move_lambda_bundle_artemislib \
 					 move_lambda_bundle_search_vulnerabilities \
 					 move_lambda_bundle_system_allowlist \
 					 move_lambda_bundle_system_services \
-					 move_lambda_bundle_system_services_stats \
 					 move_lambda_bundle_system_status \
 					 move_lambda_bundle_ci_tools \
 					 move_lambda_bundle_task_queue_metrics \
@@ -1150,21 +1146,6 @@ deploy_system_services: move_lambda_bundle_system_services
 	@build_scripts/update_lambda_layers.py --function-name ${SYSTEM_SERVICES_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_system_services
-
-deploy_system_services_stats: move_lambda_bundle_system_services_stats
-	@echo "${INFO}Deploying ${SYSTEM_SERVICES_STATS_LAMBDA} lambda"
-	aws lambda update-function-code \
-		--function-name ${SYSTEM_SERVICES_STATS_LAMBDA} \
-		--region ${REGION} \
-		--s3-bucket ${S3_BUCKET} \
-		--s3-key lambdas/system_services_stats/v${VERSION}/system_services_stats.zip
-	@echo "${INFO}Waiting for ${SYSTEM_SERVICES_STATS_LAMBDA} update to complete"
-	aws lambda wait function-updated --function-name ${SYSTEM_SERVICES_STATS_LAMBDA} --region ${REGION}
-	@echo "${OK}"
-	@echo "${INFO}Updating ${SYSTEM_SERVICES_STATS_LAMBDA} layer configuration"
-	@build_scripts/update_lambda_layers.py --function-name ${SYSTEM_SERVICES_STATS_LAMBDA} --region ${REGION}
-	@echo "${OK}"
-.PHONY: deploy_system_services_stats
 
 deploy_system_status: move_lambda_bundle_system_status
 	@echo "${INFO}Deploying ${SYSTEM_STATUS_LAMBDA} lambda"
@@ -1498,7 +1479,6 @@ deploy_lambdas: deploy_repo \
 				deploy_search_vulnerabilities \
 				deploy_system_allowlist \
 				deploy_system_services \
-				deploy_system_services_stats \
 				deploy_system_status \
 				deploy_task_queue_metrics \
 				deploy_scale_down \

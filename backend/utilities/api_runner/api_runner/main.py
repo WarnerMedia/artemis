@@ -18,7 +18,6 @@ from search_scans.handlers import handler as search_scans_handler
 from search_vulnerabilities.handlers import handler as search_vulnerabilities_handler
 from system_allowlist.handlers import handler as system_allowlist_handler
 from system_services.handlers import handler as system_services_handler
-from system_services_stats.handlers import handler as system_services_stats_handler
 from system_status.handlers import handler as system_status_handler
 from users.handlers import handler as users_handler
 from users_keys.handlers import handler as users_keys_handler
@@ -34,7 +33,6 @@ APIS = {
     "search_vulnerabilities": {"handler": search_vulnerabilities_handler, "kwargs": {}},
     "system_allowlist": {"handler": system_allowlist_handler, "kwargs": {}},
     "system_services": {"handler": system_services_handler, "kwargs": {}},
-    "system_services_stats": {"handler": system_services_stats_handler, "kwargs": {}},
     "system_status": {"handler": system_status_handler, "kwargs": {"check_maintenance": False}},
     "users": {"handler": users_handler, "kwargs": {}},
     "users_keys": {"handler": users_keys_handler, "kwargs": {}},
