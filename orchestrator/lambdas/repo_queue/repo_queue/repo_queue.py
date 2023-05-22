@@ -8,11 +8,13 @@ from heimdall_repos.ado import ADORepoProcessor
 from heimdall_repos.bitbucket_utils import ProcessBitbucketRepos
 from heimdall_repos.github_utils import ProcessGithubRepos
 from heimdall_repos.gitlab_utils import ProcessGitlabRepos
-from heimdall_utils.aws_utils import get_heimdall_secret, get_sqs_connection
+from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection
+from heimdall_utils.env import API_KEY_LOC
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import Logger
 from heimdall_utils.variables import REGION
 from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE
+
 
 log = Logger(__name__)
 
@@ -20,6 +22,7 @@ log = Logger(__name__)
 def run(event=None, _context=None, services_file=None) -> None:
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
+    artemis_api_key = get_analyzer_api_key(API_KEY_LOC)
     for item in event["Records"]:
         data = json.loads(item["body"])
         plugins = data.get("plugins")
@@ -33,6 +36,8 @@ def run(event=None, _context=None, services_file=None) -> None:
             plugins,
             full_services_dict["external_orgs"],
             data.get("batch_id"),
+            artemis_api_key,
+            data.get("redundant_scan_query"),
         )
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
@@ -51,7 +56,18 @@ def group(iterable, n, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 
-def query(service, org, service_dict, page, default_branch_only, plugins, external_orgs, batch_id: str) -> list:
+def query(
+    service,
+    org,
+    service_dict,
+    page,
+    default_branch_only,
+    plugins,
+    external_orgs,
+    batch_id: str,
+    artemis_api_key: str,
+    redundant_scan_query: dict,
+) -> list:
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
         return []
@@ -74,6 +90,8 @@ def query(service, org, service_dict, page, default_branch_only, plugins, extern
             plugins=plugins,
             external_orgs=external_orgs,
             batch_id=batch_id,
+            artemis_api_key=artemis_api_key,
+            redundant_scan_query=redundant_scan_query,
         )
         ret = github_class.query_github()
     elif service_dict.get("type") in ["gitlab"]:
@@ -88,6 +106,8 @@ def query(service, org, service_dict, page, default_branch_only, plugins, extern
             plugins=plugins,
             external_orgs=external_orgs,
             batch_id=batch_id,
+            artemis_api_key=artemis_api_key,
+            redundant_scan_query=redundant_scan_query,
         )
         if not gitlab_class.validate_input():
             log.error("Validation failed for %s", service)
@@ -105,6 +125,8 @@ def query(service, org, service_dict, page, default_branch_only, plugins, extern
             plugins=plugins,
             external_orgs=external_orgs,
             batch_id=batch_id,
+            artemis_api_key=artemis_api_key,
+            redundant_scan_query=redundant_scan_query,
         )
         ret = bitbucket_class.query_bitbucket()
     elif service_dict.get("type") == "ado":
@@ -119,6 +141,8 @@ def query(service, org, service_dict, page, default_branch_only, plugins, extern
             plugins=plugins,
             external_orgs=external_orgs,
             batch_id=batch_id,
+            artemis_api_key=artemis_api_key,
+            redundant_scan_query=redundant_scan_query,
         )
         ret = ado.query()
     return ret

@@ -4,3 +4,4 @@ awslocal sqs create-queue --queue-name artemis-callback-queue
 awslocal sqs create-queue --queue-name artemis-event-queue
 awslocal sqs create-queue --queue-name artemis-report-queue
 awslocal sqs create-queue --queue-name artemis-scheduled-scan-queue
+awslocal s3 mb s3://artemis-localstack

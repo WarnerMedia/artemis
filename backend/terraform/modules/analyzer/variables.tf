@@ -108,6 +108,21 @@ variable "maintenance_mode_retry_after" {
   description = "ISO 8601 timestamp of when maintenance mode is estimated to end"
 }
 
+variable "email_domain_aliases" {
+  description = "Map old email domain(s) to a new domain, with optional transformation that applies to local part of email"
+  type = list(object({
+    new_domain  = string
+    old_domains = list(string)
+    email_transformation = optional(
+      object({
+        new_email_regex = string
+        old_email_expr  = string
+      })
+    )
+  }))
+  default = []
+}
+
 ###############################################################################
 # Environment-agnostic variables
 #
@@ -169,6 +184,7 @@ variable "revproxy_secret_region" {
 ###############################################
 # SQS Variables
 ################################################
+
 variable "callback_queue_arn" {}
 
 variable "secrets_queue" {}
@@ -184,6 +200,7 @@ variable "scheduled_scan_queue" {}
 ################################################
 # Feature Control
 ################################################
+
 variable "aqua_enabled" {}
 
 variable "veracode_enabled" {}
@@ -254,11 +271,13 @@ variable "configuration_events_enabled" {
 ################################################
 # GitHub App
 ################################################
+
 variable "github_app_id" {}
 
 ################################################
 # Heimdall Scan Schedules
 ################################################
+
 variable "heimdall_scans_cron" {
   description = "List of cron schedules for Heimdall scans to enable pre-scaling of engine clusters"
   type        = list(string)

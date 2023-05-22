@@ -3,7 +3,9 @@ import os
 import re
 import time
 import urllib.request
+
 from datetime import datetime, timezone
+from django.db import transaction
 from typing import Tuple
 
 from jose import jwk, jwt
@@ -28,6 +30,8 @@ MAINTENANCE_MODE_RETRY_AFTER = os.environ.get("ARTEMIS_MAINTENANCE_MODE_RETRY_AF
 
 # By default give new users access to scan the demo repo
 DEFAULT_SCOPE = json.loads(os.environ.get("ARTEMIS_DEFAULT_SCOPE", "[]"))
+
+EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 
 # instead of re-downloading the public keys every time
 # we download them only on cold start
@@ -109,10 +113,13 @@ def process_user_auth(event):
     _verify_claims(claims)
 
     # Get the user
-    user = _get_user(email=claims["email"].lower())
+    user = _get_update_or_create_user(email=claims["email"].lower())
 
     if not user:
         raise Exception("Unauthorized")
+
+    # Update the user login timestamp since login was successful
+    _update_login_timestamp(user)
 
     audit_log = AuditLogger(principal=user.email, source_ip=event["requestContext"]["identity"]["sourceIp"])
     audit_log.user_login()
@@ -165,23 +172,81 @@ def _verify_claims(claims: dict):
         raise Exception("Unauthorized")
 
 
-def _get_user(email: str) -> User:
-    # Create the user, if necessary
-    user, created = User.objects.get_or_create(email=email, defaults={"scope": DEFAULT_SCOPE})
-    if created:
-        # User was created so create their self group as well
-        Group.create_self_group(user)
+@transaction.atomic
+def _get_update_or_create_user(email: str) -> User:
+    """
+    Attempt to get a user based on email.
+    If user does not exist, try to match based on EMAIL_DOMAIN_ALIASES, and update email if successful.
+    If a user is still not found, create a new one.
+    """
+    user = _get_user(email)
 
-    if user.deleted:
-        # User record is soft deleted, return None so that auth fails
-        return None
+    # If user is found, return the user (unless the user is soft-deleted)
+    if user:
+        # If user is soft-deleted, return None so that auth fails
+        if user.deleted:
+            return None
+        else:
+            return user
 
-    # Set the last login timestamp
+    if EMAIL_DOMAIN_ALIASES:
+        email_local_part = email.split("@")[0]
+        email_domain = email.split("@")[1]
+
+        # Check if any aliases exist for domain, and attempt to find a match
+        for alias in EMAIL_DOMAIN_ALIASES:
+            if alias["new_domain"] == email_domain:
+                for old_domain in alias["old_domains"]:
+                    if alias.get("email_transformation"):
+                        transformed_email_local_part = re.sub(
+                            alias["email_transformation"]["new_email_regex"],
+                            alias["email_transformation"]["old_email_expr"],
+                            email_local_part,
+                        )
+                        old_email = f"{transformed_email_local_part}@{old_domain}"
+                    else:
+                        old_email = f"{email_local_part}@{old_domain}"
+
+                    user = _get_user(old_email)
+
+                    # If a user is found with an old email (and was not soft-deleted), update the email and return user
+                    if user and not user.deleted:
+                        user.email = email
+                        user.save()
+                        return user
+
+    # Create the user since no match has been found at this point
+    return _create_user(email)
+
+
+def _update_login_timestamp(user: User) -> None:
+    """
+    Set the last login timestamp
+    """
     user.last_login = datetime.utcnow().replace(tzinfo=timezone.utc)
     user.save()
 
-    # Return the user
+
+def _create_user(email: str) -> User:
+    """
+    Create a new user
+    """
+    user = User.objects.create(email=email, scope=DEFAULT_SCOPE)
+
+    # User was created so create their self group as well
+    Group.create_self_group(user)
+
     return user
+
+
+def _get_user(email: str) -> User:
+    """
+    Attempt to get a user based on email. Return None if no match found.
+    """
+    try:
+        return User.objects.get(email=email)
+    except User.DoesNotExist:
+        return None
 
 
 def _get_group_permissions(user: User) -> Tuple[dict, list, dict, list]:

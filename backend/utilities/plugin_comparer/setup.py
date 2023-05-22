@@ -21,7 +21,10 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/utilities/plugin_comparer"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=["requests"],
+    install_requires=[
+        "requests",
+        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+    ],
     tests_require=["pytest"],
     entry_points={"console_scripts": ["artemis_plugin_comparer=plugin_comparer.main:main"]},
     classifiers=[

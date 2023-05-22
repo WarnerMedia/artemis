@@ -13,3 +13,9 @@ REGION :=
 
 # The S3 bucket that Artemis uses to store services.json
 ARTEMIS_S3_BUCKET :=
+
+# API URL of the Artemis instance to use for integration testing
+ARTEMIS_API :=
+
+# GitHub App ID for integration testing
+GITHUB_APP_ID :=

@@ -1,6 +1,5 @@
 # pylint: disable=no-name-in-module, no-member
 import json
-import os
 from fnmatch import fnmatch
 from http import HTTPStatus
 from typing import Union
@@ -13,6 +12,7 @@ from heimdall_utils.aws_utils import (
     send_analyzer_request,
 )
 from heimdall_utils.datetime import format_timestamp, get_utc_datetime
+from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
 from heimdall_utils.utils import Logger
@@ -22,9 +22,6 @@ log = Logger(__name__)
 FAILED = {}
 
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
-
-ARTEMIS_API = os.environ.get("ARTEMIS_API")
-API_KEY_LOC = os.environ.get("ARTEMIS_API_KEY")
 
 
 def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
@@ -47,6 +44,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
     plugins = data.get("plugins", DEFAULT_PLUGINS)
     default_branch_only = data.get("default_branch_only", False)
     batch_label = data.get("batch_label")
+    redundant_scan_query = data.get("redundant_scan_query")
 
     batch_id = generate_batch_id(batch_label)
 
@@ -81,6 +79,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
                 default_branch_only,
                 plugins,
                 batch_id,
+                redundant_scan_query,
             ):
                 queued.append(org_result_str)
             else:

@@ -1,18 +1,16 @@
 # pylint: disable=no-name-in-module, no-member
 import json
-import os
 
 import boto3
 import requests
 from botocore.exceptions import ClientError
 from requests import Response
 
+from heimdall_utils.env import APPLICATION, DEFAULT_API_TIMEOUT
 from heimdall_utils.utils import Logger
-from heimdall_utils.variables import REGION, REV_PROXY_SECRET
+from heimdall_utils.variables import REGION, REV_PROXY_SECRET, REV_PROXY_SECRET_REGION
 
 log = Logger(__name__)
-
-APPLICATION = os.environ.get("APPLICATION")
 
 
 def get_sqs_connection(region):
@@ -50,13 +48,13 @@ def get_secret(secret_name: str):
     return None
 
 
-def get_key(secret_name):
+def get_key(secret_name, region=REGION):
     """
     Gets secret key from AWS Secrets Manager
     """
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=REGION)
+    client = session.client(service_name="secretsmanager", region_name=region)
 
     try:
         return client.get_secret_value(SecretId=secret_name)
@@ -73,7 +71,9 @@ def get_key(secret_name):
         return None
 
 
-def queue_service_and_org(queue, service, org_name, page, default_branch_only, plugins, batch_id: str):
+def queue_service_and_org(
+    queue, service, org_name, page, default_branch_only, plugins, batch_id: str, redundant_scan_query: dict
+):
     try:
         sqs = get_sqs_connection(REGION)
         sqs.send_message(
@@ -86,6 +86,7 @@ def queue_service_and_org(queue, service, org_name, page, default_branch_only, p
                     "default_branch_only": default_branch_only,
                     "plugins": plugins,
                     "batch_id": batch_id,
+                    "redundant_scan_query": redundant_scan_query,
                 }
             ),
         )
@@ -101,7 +102,7 @@ class GetProxySecret:
 
     def __new__(cls):
         if not cls._secret:
-            cls._secret = get_key(REV_PROXY_SECRET)["SecretString"]
+            cls._secret = get_key(REV_PROXY_SECRET, REV_PROXY_SECRET_REGION)["SecretString"]
         return cls._secret
 
 
@@ -109,7 +110,7 @@ def get_analyzer_api_key(api_key_loc) -> str or None:
     """
     Connect to AWS to retrieve the Analyzer API key out of secrets manager
     """
-    secret = get_heimdall_secret(api_key_loc)
+    secret = get_secret(api_key_loc)
     if secret:
         return secret.get("key")
     return None
@@ -123,4 +124,5 @@ def send_analyzer_request(url: str, api_key: str, request_json: dict) -> Respons
         url=url,
         headers={"x-api-key": api_key, "Content-Type": "application/json"},
         json=request_json,
+        timeout=DEFAULT_API_TIMEOUT,
     )

@@ -26,8 +26,15 @@ resource "aws_s3_bucket" "heimdall_files" {
   }
 }
 
+provider "aws" {
+  alias   = "artemis"
+  region  = var.artemis_region
+  profile = var.profile
+}
+
 data "aws_s3_bucket" "artemis_s3_bucket" {
-  bucket = var.artemis_s3_bucket
+  provider = aws.artemis
+  bucket   = var.artemis_s3_bucket
 }
 
 ###############################################################################

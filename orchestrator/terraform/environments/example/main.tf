@@ -19,9 +19,11 @@ locals {
     environment = "DEPLOYMENT_NAME"
   }
   app                 = "heimdall"
-  region              = "REGION_NAME"
   environment         = "DEPLOYMENT_NAME"
   version             = "1.0.0"
+  region              = "REGION_NAME"
+  artemis_region      = "REGION_NAME"
+  profile             = "AWS_PROFILE_NAME"
   domain_name         = "ROUTE53_DOMAIN_NAME"
   domain_zone_id      = "ROUTE53_ZONE_ID"
   lambda_architecture = "arm64"

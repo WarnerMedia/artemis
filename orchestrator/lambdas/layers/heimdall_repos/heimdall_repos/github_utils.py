@@ -1,4 +1,6 @@
-# pylint: disable=no-name-in-module, no-member
+# pylint: disable=no-member
+from typing import Tuple
+
 import requests
 
 from heimdall_repos.repo_layer_env import (
@@ -7,7 +9,9 @@ from heimdall_repos.repo_layer_env import (
     GITHUB_REPO_QUERY,
     GITHUB_REPO_REF_QUERY,
 )
+from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org
+from heimdall_utils.env import DEFAULT_API_TIMEOUT
 from heimdall_utils.github.app import GithubApp
 from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
@@ -27,6 +31,8 @@ class ProcessGithubRepos:
         plugins,
         external_orgs,
         batch_id: str,
+        artemis_api_key: str = None,
+        redundant_scan_query: dict = None,
     ):
         self.queue = queue
         self.service_info = ServiceInfo(service, service_dict, org, api_key, cursor)
@@ -36,6 +42,8 @@ class ProcessGithubRepos:
         self.log = Logger("ProcessGithubRepos")
         self.json_utils = JSONUtils(self.log)
         self.batch_id = batch_id
+        self.artemis_api_key = artemis_api_key
+        self.redundant_scan_query = redundant_scan_query or {}
 
     def _query_github_api(self, query: str) -> str:
         # Query the GitHub API
@@ -50,6 +58,7 @@ class ProcessGithubRepos:
             url=self.service_info.url,
             headers=headers,
             json={"query": query},
+            timeout=DEFAULT_API_TIMEOUT,
         )
         if response.status_code != 200:
             error_response = self._analyze_error_response(response)
@@ -102,6 +111,7 @@ class ProcessGithubRepos:
                 self.default_branch_only,
                 self.plugins,
                 self.batch_id,
+                self.redundant_scan_query,
             )
             return []
         resp = self.json_utils.get_json_from_response(response_text)
@@ -122,7 +132,7 @@ class ProcessGithubRepos:
             self.log.error("Key pageInfo not found for %s. Returning repos found.", self.service_info.org)
             return repos
         if page_info.get("hasNextPage"):
-            cursor = '"%s"' % page_info.get("endCursor")
+            cursor = f"\"{page_info.get('endCursor')}\""
 
             # Re-queue this org, setting the cursor for the next page of the query
             self.log.info("Queueing %s to re-start at cursor %s", self.service_info.org, cursor)
@@ -134,6 +144,7 @@ class ProcessGithubRepos:
                 self.default_branch_only,
                 self.plugins,
                 self.batch_id,
+                self.redundant_scan_query,
             )
 
         return repos
@@ -149,27 +160,53 @@ class ProcessGithubRepos:
                 # shared with us any not that org's public repos
                 self.log.info("Skipping public repo %s in external org", name)
                 continue
-            default_branch_name = repo.get("defaultBranchRef")
+            default_branch = repo.get("defaultBranchRef")
             if not self._is_repo_valid(repo):
                 continue
-            if not default_branch_name:
+            if not default_branch:
                 default_branch_name = "HEAD"
             else:
-                default_branch_name = default_branch_name.get("name")
+                default_branch_name = default_branch.get("name", "HEAD")
+                timestamp = default_branch.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
             if self.default_branch_only:
-                repos.append({"service": self.service_info.service, "repo": name, "org": self.service_info.org})
-            else:
-                refs = self._get_ref_names(name, default_branch_name, repo.get("refs"))
-                for ref in refs:
+                if not redundant_scan_exists(
+                    api_key=self.artemis_api_key,
+                    service=self.service_info.service,
+                    org=self.service_info.org,
+                    repo=name,
+                    branch=None,
+                    timestamp=timestamp,
+                    query=self.redundant_scan_query,
+                ):
                     repos.append(
                         {
                             "service": self.service_info.service,
                             "repo": name,
                             "org": self.service_info.org,
-                            "branch": ref,
                             "plugins": self.plugins,
                         }
                     )
+            else:
+                refs, timestamps = self._get_ref_names(name, default_branch_name, repo.get("refs"))
+                for ref in refs:
+                    if not redundant_scan_exists(
+                        api_key=self.artemis_api_key,
+                        service=self.service_info.service,
+                        org=self.service_info.org,
+                        repo=name,
+                        branch=ref,
+                        timestamp=timestamps[ref],
+                        query=self.redundant_scan_query,
+                    ):
+                        repos.append(
+                            {
+                                "service": self.service_info.service,
+                                "repo": name,
+                                "org": self.service_info.org,
+                                "branch": ref,
+                                "plugins": self.plugins,
+                            }
+                        )
         return repos
 
     def _is_repo_valid(self, repo: dict):
@@ -182,20 +219,23 @@ class ProcessGithubRepos:
         self.log.info(f"repo {repo.get('name')} has no branches. Skipping")
         return False
 
-    def _get_ref_names(self, repo: str, default: str, refs: dict) -> list:
+    def _get_ref_names(self, repo: str, default: str, refs: dict) -> Tuple[list, dict]:
         ref_names = set()
         ref_names.add(default)
 
+        timestamps = {default: "1970-01-01T00:00:00Z"}  # This will be set to the correct value later
+
         if not refs:
-            return list(ref_names)
+            return list(ref_names), timestamps
 
         for node in refs["nodes"]:
             ref_names.add(node.get("name"))
+            timestamps[node.get("name")] = node.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
 
         page_info = refs.get("pageInfo")
         if not page_info:
             self.log.error("Key pageInfo not found for %s. Returning ref names found.", self.service_info.org)
-            return list(ref_names)
+            return list(ref_names), timestamps
         next_page = page_info.get("hasNextPage")
         cursor = page_info.get("endCursor")
 
@@ -214,6 +254,7 @@ class ProcessGithubRepos:
                 break
             for ref in repo_refs.get("nodes"):
                 ref_names.add(ref.get("name"))
+                timestamps[ref.get("name")] = ref.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
 
             page_info = repo_refs.get("pageInfo")
             if not page_info:
@@ -222,7 +263,7 @@ class ProcessGithubRepos:
             next_page = page_info.get("hasNextPage")
             cursor = page_info.get("endCursor")
 
-        return list(ref_names)
+        return list(ref_names), timestamps
 
     def _get_authorization(self) -> str:
         if self.service_info.app_integration:

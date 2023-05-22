@@ -10,6 +10,10 @@ BITBUCKET_PUBLIC_BRANCH_QUERY = "$service_url/repositories/$org/$repo/refs/branc
 
 BITBUCKET_PRIVATE_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?start=$cursor"
 
+BITBUCKET_PUBLIC_SPECIFIC_BRANCH_QUERY = "$service_url/repositories/$org/$repo/refs/branches?page=$cursor&name=$branch"
+
+BITBUCKET_PRIVATE_SPECIFIC_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?start=$cursor&name=$branch"
+
 GITLAB_REPO_QUERY = """
 {
     group(fullPath: "%s") {
@@ -43,11 +47,21 @@ GITHUB_REPO_QUERY = """
                 name
                 defaultBranchRef {
                     name
+                    target {
+                        ... on Commit {
+                            committedDate
+                        }
+                    }
                 }
                 isPrivate
                 refs(first: 100, refPrefix:"refs/heads/", direction: ASC) {
                     nodes {
                         name
+                        target {
+                            ... on Commit {
+                                committedDate
+                            }
+                        }
                     }
                     pageInfo {
                         endCursor
@@ -71,6 +85,11 @@ GITHUB_REPO_REF_QUERY = """
             refs(first: 100, refPrefix:"refs/heads/", direction: ASC, after: "%s") {
                 nodes {
                     name
+                    target {
+                        ... on Commit {
+                            committedDate
+                        }
+                    }
                 }
                 pageInfo {
                     endCursor

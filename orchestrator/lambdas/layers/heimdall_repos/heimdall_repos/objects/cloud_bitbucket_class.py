@@ -3,6 +3,7 @@ from heimdall_repos.repo_layer_env import (
     BITBUCKET_PUBLIC_BRANCH_QUERY,
     BITBUCKET_PUBLIC_ORG_QUERY,
     BITBUCKET_PUBLIC_REPO_QUERY,
+    BITBUCKET_PUBLIC_SPECIFIC_BRANCH_QUERY,
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
 
@@ -39,7 +40,11 @@ class CloudBitbucket(AbstractBitbucket):
     def construct_bitbucket_repo_url(self, url: str, org: str, repo: str, cursor: str) -> str:
         return Template(BITBUCKET_PUBLIC_REPO_QUERY).substitute(service_url=url, org=org, repo=repo, cursor=cursor)
 
-    def construct_bitbucket_branch_url(self, url: str, org: str, repo: str, cursor: str):
+    def construct_bitbucket_branch_url(self, url: str, org: str, repo: str, cursor: str, branch: str = None):
+        if branch is not None:
+            return Template(BITBUCKET_PUBLIC_SPECIFIC_BRANCH_QUERY).substitute(
+                service_url=url, org=org, repo=repo, cursor=cursor, branch=branch
+            )
         return Template(BITBUCKET_PUBLIC_BRANCH_QUERY).substitute(service_url=url, org=org, repo=repo, cursor=cursor)
 
     def get_default_cursor(self):

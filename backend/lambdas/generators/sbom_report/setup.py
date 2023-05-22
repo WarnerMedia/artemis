@@ -21,7 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/lambdas/generators/sbom_report"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=[],
+    install_requires=["simplejson"],
     tests_require=["pytest"],
     classifiers=[
         "Programming Language :: Python :: 3.9",

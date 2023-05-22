@@ -2,7 +2,7 @@ from artemislib.logging import Logger
 from db_cleanup.tasks.component import obsolete_components
 from db_cleanup.tasks.engine import old_engines, unterminated_engines
 from db_cleanup.tasks.repo import orphan_repos
-from db_cleanup.tasks.scan import old_scans, sbom_scans, secrets_scans
+from db_cleanup.tasks.scan import old_scans, sbom_scans, secrets_scans, orphaned_s3_scan_data
 
 LOG = Logger("db_cleanup")
 
@@ -14,6 +14,7 @@ TASKS = [
     orphan_repos,
     sbom_scans,
     obsolete_components,
+    orphaned_s3_scan_data,
 ]
 
 

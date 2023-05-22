@@ -171,7 +171,7 @@ API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 ENGINE_BASE := 3.9-slim-bullseye
 
 # Django version
-DJANGO_VER = 3.2.16
+DJANGO_VER = 3.2.19
 
 # Enry Info
 ENRYVER := 1.1.0
@@ -423,7 +423,7 @@ dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
 	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests "urllib3<2"
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} cryptography
 	mkdir -p ${DIST_DIR}/lambdas/layers/artemislib/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/artemislib; zip -r ${DIST_DIR}/lambdas/layers/artemislib.zip *
