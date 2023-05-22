@@ -28,6 +28,10 @@ variable "artemis_region" {
   description = "The region that the Artemis S3 bucket resides in"
 }
 
+variable "profile" {
+  description = "AWS profile"
+}
+
 variable "tags" {
   type = map(string)
 }
@@ -135,11 +139,21 @@ variable "lambda_architecture" {
   default = "arm64"
 }
 
-
-variable "revproxy_api_key" {
-  description = "API key if Artemis uses an authenticated revproxy to access private VCS instances"
-  default     = "artemis/revproxy_api_key"
+variable "revproxy_domain_substring" {
+  description = "Base domain for the reverse proxy to access VCS, if used"
+  default     = ""
 }
+
+variable "revproxy_secret" {
+  description = "Secrets Manager item that contains the revproxy key"
+  default     = "artemis/revproxy-api-key"
+}
+
+variable "revproxy_secret_region" {
+  description = "AWS region containing the Secrets Manager item that contains the revproxy key"
+  default     = "us-east-2"
+}
+
 
 ################################################
 # GitHub App
@@ -148,5 +162,5 @@ variable "github_app_id" {}
 
 variable "github_private_key" {
   description = "Secrets Manager key name containing the GitHub app private key"
-  default     = "artemis/github-app-private-key"
+  default     = "heimdall/github-app-private-key"
 }

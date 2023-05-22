@@ -21,7 +21,13 @@ setup(
     url=("https://github.com/warnermedia/artemis/orchestrator/lambdas/layers/heimdall_utils"),
     packages=find_packages(),
     setup_requires=[],
-    install_requires=["requests", "awscli", "boto3", "pyjwt"],
+    install_requires=[
+        "requests",
+        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+        "awscli",
+        "boto3",
+        "pyjwt",
+    ],
     tests_require=[],
     classifiers=[
         "Programming Language :: Python :: 3.9",

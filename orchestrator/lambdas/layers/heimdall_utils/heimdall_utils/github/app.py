@@ -9,7 +9,7 @@ from heimdall_utils.datetime import get_utc_datetime
 from heimdall_utils.utils import Logger
 
 GITHUB_APP_ID = os.environ.get("HEIMDALL_GITHUB_APP_ID")
-GITHUB_PRIVATE_KEY = os.environ.get("HEIMDALL_GITHUB_PRIVATE_KEY")
+GITHUB_PRIVATE_KEY = os.environ.get("HEIMDALL_GITHUB_PRIVATE_KEY", "heimdall/github-app-private-key")
 
 
 class GithubAppException(Exception):

@@ -15,6 +15,20 @@ WARN="  ${TIME}[${YELLOW} \!\! ${CNone}] "
 
 .DEFAULT_GOAL := help
 
+###############################################################################
+# Variables
+###############################################################################
+
+# Pathing
+ROOT_DIR := $(shell pwd)
+WORKING_DIR := ${ROOT_DIR}
+BUILD_DIR := ${ROOT_DIR}/build
+LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
+DIST_DIR := ${ROOT_DIR}/dist
+STAGE_DIR := ${ROOT_DIR}/stage
+TERRAFORM := ${WORKING_DIR}/terraform
+BACKEND := ${ROOT_DIR}/../backend
+
 PYTHON := python3
 PIP := pip3
 
@@ -24,10 +38,10 @@ VERSION := 1.0.0
 ENV := nonprod
 
 # Load the environment-specific config
-include $(ENV).mk
+include ${WORKING_DIR}/$(ENV).mk
 
 # Application name extracted from Terraform
-PREFIX := $(shell egrep "application\s+=\s+\".+\"" terraform/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
+PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
 
 S3_BUCKET := ${PREFIX}-${ACCOUNT_ID}
 ECR_URL := ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/
@@ -48,11 +62,6 @@ HEIMDALL_ORGS_SRC = $(shell find ${HEIMDALL_ORGS_DIR} -type f -name '*.py' -o -n
 HEIMDALL_UTILS_SRC = $(shell find ${HEIMDALL_UTILS_DIR} -type f -name '*.py' -o -name '*.cfg')
 HEIMDALL_REPOS_SRC = $(shell find ${HEIMDALL_REPOS_DIR} -type f -name '*.py' -o -name '*.cfg')
 
-ROOT_DIR := $(shell pwd)
-BUILD_DIR := ${ROOT_DIR}/build
-LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
-DIST_DIR := ${ROOT_DIR}/dist
-
 TEST_DIRS := ${ROOT_DIR}/lambdas/org_queue
 TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/repo_queue
 TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/repo_scan
@@ -60,7 +69,7 @@ TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/layers/heimdall_orgs
 TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/layers/heimdall_repos
 TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/layers/heimdall_utils
 
-LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <terraform/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
+LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 
@@ -88,7 +97,7 @@ unit-test: venv ## Run unit tests
 
 integration-test: venv ## Run integration tests
 	export ARTEMIS_S3_BUCKET=${ARTEMIS_S3_BUCKET};\
-	export SCAN_TABLE=$(shell cd terraform/${ENV} && terraform output repo-scan-table-name); \
+	export SCAN_TABLE=$(shell terraform -chdir=${TERRAFORM}/environments/${ENV} output repo-scan-table-name); \
 	export PYTHONPATH=${PYTHONPATH}:${TEST_DIRS}; \
 	${PYTHON} -m pipenv check; \
 	${PYTHON} -m pipenv install --dev; \
@@ -115,34 +124,6 @@ dist/lambdas/%.zip: $$(shell find lambdas/$$* -type f)
 	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip *
 	@echo "${OK}"
 
-dist/org_queue.zip: batch/org_queue/*
-	mkdir -p ${BUILD_DIR}/org_queue
-	cp -r batch/org_queue/* ${BUILD_DIR}/org_queue
-	${PIP} install -r ${BUILD_DIR}/org_queue/requirements.txt -t ${BUILD_DIR}/org_queue --upgrade
-	mkdir -p ${DIST_DIR}
-	cd ${BUILD_DIR}/org_queue; zip -r ${DIST_DIR}/org_queue.zip *
-
-dist/repo_queue.zip: batch/repo_queue/*
-	mkdir -p ${BUILD_DIR}/repo_queue
-	cp -r batch/repo_queue/* ${BUILD_DIR}/repo_queue
-	${PIP} install -r ${BUILD_DIR}/repo_queue/requirements.txt -t ${BUILD_DIR}/repo_queue --upgrade
-	mkdir -p ${DIST_DIR}
-	cd ${BUILD_DIR}/repo_queue; zip -r ${DIST_DIR}/repo_queue.zip *
-
-dist/repo_scan.zip: batch/repo_scan/*
-	mkdir -p ${BUILD_DIR}/repo_scan
-	cp -r batch/repo_scan/* ${BUILD_DIR}/repo_scan
-	${PIP} install -r ${BUILD_DIR}/repo_scan/requirements.txt -t ${BUILD_DIR}/repo_scan --upgrade
-	mkdir -p ${DIST_DIR}
-	cd ${BUILD_DIR}/repo_scan; zip -r ${DIST_DIR}/repo_scan.zip *
-
-dist/repo_scan_loop.zip: batch/repo_scan_loop/*
-	mkdir -p ${BUILD_DIR}/repo_scan_loop
-	cp -r batch/repo_scan_loop/* ${BUILD_DIR}/repo_scan_loop
-	${PIP} install -r ${BUILD_DIR}/repo_scan_loop/requirements.txt -t ${BUILD_DIR}/repo_scan_loop --upgrade
-	mkdir -p ${DIST_DIR}
-	cd ${BUILD_DIR}/repo_scan_loop; zip -r ${DIST_DIR}/repo_scan_loop.zip *
-
 ###############################################################################
 # Lambda Layers
 ###############################################################################
@@ -151,7 +132,7 @@ dist/lambdas/layers/heimdall_orgs.zip: ${HEIMDALL_ORGS_SRC}
 	@echo "${INFO}Building $*"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_ORGS_DIR}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: requests
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: requests "urllib3<2"
 	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_orgs/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs; zip -r ${DIST_DIR}/lambdas/layers/heimdall_orgs.zip *
 	@echo "${OK}"
@@ -160,7 +141,7 @@ dist/lambdas/layers/heimdall_utils.zip: ${HEIMDALL_UTILS_SRC}
 	@echo "${INFO}Building $*"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_UTILS_DIR}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests "urllib3<2"
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} cryptography
 	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_utils/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils; zip -r ${DIST_DIR}/lambdas/layers/heimdall_utils.zip *
@@ -170,7 +151,7 @@ dist/lambdas/layers/heimdall_repos.zip: ${HEIMDALL_REPOS_SRC}
 	@echo "${INFO}Building $*"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_REPOS_DIR}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: requests
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: requests "urllib3<2"
 	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_repos/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos; zip -r ${DIST_DIR}/lambdas/layers/heimdall_repos.zip *
 	@echo "${OK}"
@@ -226,12 +207,7 @@ deploy_org_queue: upload_org_queue
 	aws lambda wait function-updated --function-name ${ORG_QUEUE_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${ORG_QUEUE_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${ORG_QUEUE_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${HEIMDALL_ORGS}:$(shell aws lambda list-layer-versions --layer-name ${HEIMDALL_ORGS} --region=us-east-1 | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${HEIMDALL_UTILS}:$(shell aws lambda list-layer-versions --layer-name ${HEIMDALL_UTILS} --region=us-east-1 | jq -r '.LayerVersions[0].Version')
+	@${BACKEND}/build_scripts/update_lambda_layers.py --function-name ${ORG_QUEUE_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_org_queue
 
@@ -246,12 +222,7 @@ deploy_repo_queue: upload_repo_queue
 	aws lambda wait function-updated --function-name ${REPO_QUEUE_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${REPO_QUEUE_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${REPO_QUEUE_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${HEIMDALL_REPOS}:$(shell aws lambda list-layer-versions --layer-name ${HEIMDALL_REPOS} --region=us-east-1 | jq -r '.LayerVersions[0].Version') \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${HEIMDALL_UTILS}:$(shell aws lambda list-layer-versions --layer-name ${HEIMDALL_UTILS} --region=us-east-1 | jq -r '.LayerVersions[0].Version')
+	@${BACKEND}/build_scripts/update_lambda_layers.py --function-name ${REPO_QUEUE_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_repo_queue
 
@@ -266,11 +237,7 @@ deploy_repo_scan: upload_repo_scan
 	aws lambda wait function-updated --function-name ${REPO_SCAN_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 	@echo "${INFO}Updating ${REPO_SCAN_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${REPO_SCAN_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${HEIMDALL_UTILS}:$(shell aws lambda list-layer-versions --layer-name ${HEIMDALL_UTILS} --region=us-east-1 | jq -r '.LayerVersions[0].Version')
+	@${BACKEND}/build_scripts/update_lambda_layers.py --function-name ${REPO_SCAN_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_repo_scan
 
@@ -284,12 +251,8 @@ deploy_repo_scan_loop: upload_repo_scan_loop
 	@echo "${INFO}Waiting for ${REPO_SCAN_LOOP_LAMBDA} update to complete"
 	aws lambda wait function-updated --function-name ${REPO_SCAN_LOOP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
-	@echo "${INFO}Updating ${REPO_SCAN_LOOP_LAMBDA} layer configuration"
-	aws lambda update-function-configuration \
-		--function-name ${REPO_SCAN_LOOP_LAMBDA} \
-		--region ${REGION} \
-		--layer \
-		  arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:${HEIMDALL_UTILS}:$(shell aws lambda list-layer-versions --layer-name ${HEIMDALL_UTILS} --region=us-east-1 | jq -r '.LayerVersions[0].Version')
+	@echo "${INFO}Updating ${SYSTEM_STATUS_LAMBDA} layer configuration"
+	@${BACKEND}/build_scripts/update_lambda_layers.py --function-name ${REPO_SCAN_LOOP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_repo_scan_loop
 

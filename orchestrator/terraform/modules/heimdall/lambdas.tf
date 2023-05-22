@@ -30,14 +30,17 @@ resource "aws_lambda_function" "org-queue" {
 
   environment {
     variables = {
-      APPLICATION                 = var.app
-      REGION                      = var.aws_region
-      ARTEMIS_S3_BUCKET           = data.aws_s3_bucket.artemis_s3_bucket.bucket
-      ORG_QUEUE                   = aws_sqs_queue.org-queue.id
-      HEIMDALL_GITHUB_APP_ID      = var.github_app_id
-      HEIMDALL_GITHUB_PRIVATE_KEY = var.github_private_key
-      ARTEMIS_API                 = var.artemis_api
-      HEIMDALL_LOG_LEVEL          = var.log_level
+      APPLICATION                       = var.app
+      REGION                            = var.aws_region
+      ARTEMIS_S3_BUCKET                 = data.aws_s3_bucket.artemis_s3_bucket.bucket
+      ORG_QUEUE                         = aws_sqs_queue.org-queue.id
+      HEIMDALL_GITHUB_APP_ID            = var.github_app_id
+      HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
+      ARTEMIS_API                       = var.artemis_api
+      HEIMDALL_LOG_LEVEL                = var.log_level
+      ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
+      ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
+      ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
     }
   }
 
@@ -81,15 +84,18 @@ resource "aws_lambda_function" "repo-queue" {
 
   environment {
     variables = {
-      APPLICATION                 = var.app
-      REGION                      = var.aws_region
-      ARTEMIS_S3_BUCKET           = data.aws_s3_bucket.artemis_s3_bucket.bucket
-      REPO_QUEUE                  = aws_sqs_queue.repo-queue.id
-      ORG_QUEUE                   = aws_sqs_queue.org-queue.id
-      HEIMDALL_GITHUB_APP_ID      = var.github_app_id
-      HEIMDALL_GITHUB_PRIVATE_KEY = var.github_private_key
-      ARTEMIS_API                 = var.artemis_api
-      HEIMDALL_LOG_LEVEL          = var.log_level
+      APPLICATION                       = var.app
+      REGION                            = var.aws_region
+      ARTEMIS_S3_BUCKET                 = data.aws_s3_bucket.artemis_s3_bucket.bucket
+      REPO_QUEUE                        = aws_sqs_queue.repo-queue.id
+      ORG_QUEUE                         = aws_sqs_queue.org-queue.id
+      HEIMDALL_GITHUB_APP_ID            = var.github_app_id
+      HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
+      ARTEMIS_API                       = var.artemis_api
+      HEIMDALL_LOG_LEVEL                = var.log_level
+      ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
+      ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
+      ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
     }
   }
 
@@ -260,9 +266,18 @@ resource "aws_iam_role" "vpc-lambda-assume-role" {
 }
 
 data "aws_caller_identity" "current" {}
-data "aws_secretsmanager_secret" "artemis_proxy_secret" {
-  name = var.revproxy_api_key
+
+provider "aws" {
+  alias   = "artemis_revproxy"
+  region  = var.revproxy_secret_region
+  profile = var.profile
 }
+
+data "aws_secretsmanager_secret" "artemis_proxy_secret" {
+  provider = aws.artemis_revproxy
+  name     = var.revproxy_secret
+}
+
 data "aws_secretsmanager_secret" "github_private_key" {
   name = var.github_private_key
 }
