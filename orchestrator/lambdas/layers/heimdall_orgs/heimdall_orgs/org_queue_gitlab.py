@@ -104,6 +104,7 @@ class GitlabOrgs:
         return response
 
     def _query_gitlab_api(self, url: str):
+        log.debug("GitLab API request: %s", url)
         headers = {"Authorization": "bearer %s" % self.api_key, "Content-Type": "application/json"}
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in url:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()

@@ -21,7 +21,10 @@ setup(
     url=("https://github.com/warnermedia/artemis/orchestrator/lambdas/repo_queue"),
     packages=find_packages(),
     setup_requires=[],
-    install_requires=["requests"],
+    install_requires=[
+        "requests",
+        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+    ],
     tests_require=[],
     classifiers=[
         "Programming Language :: Python :: 3.9",
