@@ -257,6 +257,8 @@ resource "aws_lambda_function" "system_services" {
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
+      ARTEMIS_GITHUB_APP_ID           = var.github_app_id
+      S3_BUCKET                       = var.s3_analyzer_files_id
     }
   }
 
@@ -341,6 +343,17 @@ resource "aws_lambda_permission" "system_status" {
   statement_id  = "apigw-allow-system-status-lambda"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.system_status.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/* portion grants access from any method on any resource
+  # within the API Gateway "REST API".
+  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "system_services" {
+  statement_id  = "apigw-allow-system-services-lambda"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.system_services.arn
   principal     = "apigateway.amazonaws.com"
 
   # The /*/* portion grants access from any method on any resource
