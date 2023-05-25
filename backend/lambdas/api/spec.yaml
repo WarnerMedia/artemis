@@ -3231,8 +3231,7 @@ components:
         - total_scans
         - successful_scans
         - failed_scans
-        - first_scan
-        - most_recent_scan
+        - timestamps
       properties:
         service:
           description: Service name
@@ -3253,14 +3252,18 @@ components:
           description: Count of failed scans run on repos in this service
           type: integer
           format: int32
-        first_scan:
-          description: Timestamp of earliest scan run on a repo in this service
-          type: string
-          format: date-time
-        most_recent_scan:
-          description: Timestamp of most recent scan run on a repo in this service
-          type: string
-          format: date-time
+        timestamps:
+          description: Oldest and latest retained scans run on this service
+          type: object
+          properties:
+            oldest_scan:
+              description: Timestamp of oldest retained scan run on a repo in this service
+              type: string
+              format: date-time
+            latest_scan:
+              description: Timestamp of most recent scan run on a repo in this service
+              type: string
+              format: date-time
 
     PagedSystemServices:
       type: object

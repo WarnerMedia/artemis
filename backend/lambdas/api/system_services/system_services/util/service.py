@@ -47,8 +47,10 @@ class Service:
             "total_scans": self._total_scan_count,
             "successful_scans": self._successful_scan_count,
             "failed_scans": self._failed_scan_count,
-            "first_scan": self._first_scan_timestamp,
-            "most_recent_scan": self._most_recent_scan_timestamp,
+            "timestamps": {
+                "oldest_scan": self._oldest_scan_timestamp,
+                "latest_scan": self._latest_scan_timestamp,
+            },
         }
 
     def _get_service_stats(self, scope: list[list[list[str]]]):
@@ -64,8 +66,8 @@ class Service:
         self._successful_scan_count = scans.filter(status="completed").count()
         self._failed_scan_count = scans.filter(status="error").count()
 
-        self._first_scan_timestamp = format_timestamp(scans.first().created)
-        self._most_recent_scan_timestamp = format_timestamp(scans.last().created)
+        self._oldest_scan_timestamp = format_timestamp(scans.first().created)
+        self._latest_scan_timestamp = format_timestamp(scans.last().created)
 
     @classmethod
     def get_services(cls, email: str, services_dict: dict):

@@ -6,11 +6,11 @@ from system_services.util.events import ParsedEvent
 class TestParseSystemServiceId(unittest.TestCase):
     def test_parse_service_id(self):
         test_cases = [
-            ("github/wmcso", {"item_id": "github/wmcso", "stats_request": False}),
-            ("github/wmcso/stats", {"item_id": "github/wmcso", "stats_request": True}),
+            ("github/warnermedia", {"item_id": "github/warnermedia", "stats_request": False}),
+            ("github/warnermedia/stats", {"item_id": "github/warnermedia", "stats_request": True}),
             ("github/stats", {"item_id": "github/stats", "stats_request": False}),
-            ("git.wmedia.tech", {"item_id": "git.wmedia.tech", "stats_request": False}),
-            ("git.wmedia.tech/stats", {"item_id": "git.wmedia.tech", "stats_request": True}),
+            ("example.com", {"item_id": "example.com", "stats_request": False}),
+            ("example.com/stats", {"item_id": "example.com", "stats_request": True}),
         ]
 
         for test_case in test_cases:
