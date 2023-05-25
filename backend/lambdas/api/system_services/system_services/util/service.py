@@ -3,7 +3,7 @@ from artemisdb.artemisdb.models import Repo, Scan, User
 from artemislib.datetime import format_timestamp
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
-from system_services.util.const import AuthType
+from system_services.util.const import AuthType, ServiceType
 from system_services.util.env import (
     APPLICATION,
     REV_PROXY_DOMAIN_SUBSTRING,
@@ -33,6 +33,7 @@ class Service:
         self._test_auth()
         return {
             "service": self.name,
+            "service_type": self._service["type"],
             "reachable": self._reachable,
             "auth_successful": self._auth_successful,
             "auth_type": self._auth_type.value,
@@ -84,14 +85,13 @@ class Service:
         key = get_api_key(self._service["secret_loc"])
         if key is None:
             self._error = "Unable to retrieve key"
-
-        if self._service["type"] == "github":
+        if self._service["type"] == ServiceType.GITHUB:
             self._test_github(key)
-        elif self._service["type"] == "gitlab":
+        elif self._service["type"] == ServiceType.GITLAB:
             self._test_gitlab(key)
-        elif self._service["type"] == "bitbucket":
+        elif self._service["type"] == ServiceType.BITBUCKET:
             self._test_bitbucket(key)
-        elif self._service["type"] == "ado":
+        elif self._service["type"] == ServiceType.ADO:
             self._test_ado(key)
 
     def _test_github(self, key: str):

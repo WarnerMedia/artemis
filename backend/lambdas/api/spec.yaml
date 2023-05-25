@@ -3201,6 +3201,7 @@ components:
       type: object
       required:
         - service
+        - service_type
         - reachable
         - auth_successful
         - auth_type
@@ -3208,6 +3209,9 @@ components:
       properties:
         service:
           description: Service name
+          type: string
+        service_type:
+          description: Type of VCS service
           type: string
         reachable:
           description: Whether the service is reachable
