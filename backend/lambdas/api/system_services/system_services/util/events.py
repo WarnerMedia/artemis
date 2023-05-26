@@ -19,7 +19,7 @@ class ParsedEvent:
         else:
             self.paging = parse_paging_event(event)
 
-    def _parse_id(self, raw_id) -> Tuple[str, bool]:
+    def _parse_id(self, raw_id) -> dict[str, str]:
         """
         Parsing raw system service ID to determine if there is a resource requested
         """
