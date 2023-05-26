@@ -1703,6 +1703,56 @@ paths:
         "404":
           description: Item not found
 
+  /system/services:
+    get:
+      summary: Return a list of connected VCS services
+      tags:
+        - system
+      operationId: system_services_get_all
+      responses:
+        "200":
+          description: List of system services 
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/PagedSystemServices"
+
+  "/system/services/{id}":
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Retrieve a specific system VCS service and its connectivity status
+      tags:
+        - system
+      operationId: system_services_get
+      responses:
+        "200":
+          description: System service item
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/SystemService"
+        "404":
+          description: Item not found
+
+  "/system/services/{id}/stats":
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Retrieve a specific system VCS service and its scanning stats
+      tags:
+        - system
+      operationId: system_services_stats_get
+      responses:
+        "200":
+          description: System service stats item
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/SystemServiceStats"
+        "404":
+          description: Item not found
+
   # Group paths
   /groups:
     parameters:
@@ -3144,6 +3194,105 @@ components:
               description: Number of online engines
               type: integer
               format: int32
+
+
+    #System Service
+    SystemService:
+      type: object
+      required:
+        - service
+        - service_type
+        - reachable
+        - auth_successful
+        - auth_type
+        - error
+      properties:
+        service:
+          description: Service name
+          type: string
+        service_type:
+          description: Type of VCS service
+          type: string
+        reachable:
+          description: Whether the service is reachable
+          type: boolean
+        auth_successful:
+          description: Whether Artemis can successfully authenticate to the service
+          type: boolean
+        auth_type:
+          description: Type of authentication Artemis uses to connect to the service
+          type: string
+        error:
+          description: Error encountered when testing connection from Artemis to service
+          type: string
+          nullable: true
+    
+    SystemServiceStats:
+      type: object
+      required:
+        - service
+        - repo_count
+        - total_scans
+        - successful_scans
+        - failed_scans
+        - timestamps
+      properties:
+        service:
+          description: Service name
+          type: string
+        repo_count:
+          description: Count of repos scanned in the service
+          type: integer
+          format: int32
+        total_scans:
+          description: Count of all scans run on repos in this service
+          type: integer
+          format: int32
+        successful_scans:
+          description: Count of successful scans run on repos in this service
+          type: integer
+          format: int32
+        failed_scans:
+          description: Count of failed scans run on repos in this service
+          type: integer
+          format: int32
+        timestamps:
+          description: Oldest and latest retained scans run on this service
+          type: object
+          properties:
+            oldest_scan:
+              description: Timestamp of oldest retained scan run on a repo in this service
+              type: string
+              format: date-time
+            latest_scan:
+              description: Timestamp of most recent scan run on a repo in this service
+              type: string
+              format: date-time
+
+    PagedSystemServices:
+      type: object
+      required:
+        - results
+        - count
+        - next
+        - previous
+      properties:
+        results:
+          description: One page of system services
+          type: array
+          items:
+            $ref: "#/components/schemas/SystemService"
+        count:
+          description: Number of items returned
+          type: integer
+          format: int32
+        next:
+          description: Link to next page of results
+          type: string
+        previous:
+          description: Link to the previous page of results
+          type: string
+
 
     # Groups
     GroupItem:
