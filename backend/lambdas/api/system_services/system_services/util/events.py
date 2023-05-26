@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from artemisapi.validators import ValidationError
 from artemisdb.artemisdb.paging import parse_paging_event
 from system_services.util.const import Resources
