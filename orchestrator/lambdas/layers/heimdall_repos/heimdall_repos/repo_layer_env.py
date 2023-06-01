@@ -40,7 +40,7 @@ GITLAB_REPO_QUERY = """
 GITHUB_REPO_QUERY = """
 {
     organization(login: "%s") {
-        repositories(first: 100,
+        repositories(first: 75,
                      after: %s,
                      orderBy: {field: NAME, direction: ASC}) {
             nodes {
@@ -54,7 +54,7 @@ GITHUB_REPO_QUERY = """
                     }
                 }
                 isPrivate
-                refs(first: 100, refPrefix:"refs/heads/", direction: ASC) {
+                refs(first: 75, refPrefix:"refs/heads/", direction: ASC) {
                     nodes {
                         name
                         target {
