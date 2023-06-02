@@ -2,12 +2,13 @@
 from typing import Tuple
 
 import requests
-
 from heimdall_repos.repo_layer_env import (
     GITHUB_RATE_ABUSE_FLAG,
     GITHUB_RATE_ABUSE_KEYWORDS,
     GITHUB_REPO_QUERY,
     GITHUB_REPO_REF_QUERY,
+    GITHUB_TIMEOUT_FLAG,
+    GITHUB_TIMEOUT_KEYWORDS,
 )
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org
@@ -74,9 +75,11 @@ class ProcessGithubRepos:
         resp = self.json_utils.get_json_from_response(response_text)
         if not resp:
             return response_text
-        # check if related to rate abuse
+        # check if related to rate abuse or timeout
         if str(response.status_code) == "403" and self._is_message_rate_abuse(resp.get("message")):
             return GITHUB_RATE_ABUSE_FLAG
+        if str(response.status_code) == "502" and self._is_message_timeout(resp.get("message")):
+            return GITHUB_TIMEOUT_FLAG
         return resp
 
     def _is_message_rate_abuse(self, message):
@@ -91,9 +94,24 @@ class ProcessGithubRepos:
                 return True
         return False
 
+    def _is_message_timeout(self, message):
+        """
+        Check if timeout message keywords are in the response message.
+        """
+        if message is None:
+            return False
+
+        for timeout_keyword in GITHUB_TIMEOUT_KEYWORDS:
+            if timeout_keyword in message:
+                return True
+        return False
+
     def _report_error_response(self, response, error_response):
         if error_response == GITHUB_RATE_ABUSE_FLAG:
             self.log.warning("Github abuse limit has been reached.")
+            return error_response
+        if error_response == GITHUB_TIMEOUT_FLAG:
+            self.log.warning("Github query timed out.")
             return error_response
         self.log.error("Code: %s - %s", response.status_code, error_response)
         return None
@@ -102,7 +120,7 @@ class ProcessGithubRepos:
         self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
         query = GITHUB_REPO_QUERY % (self.service_info.org, self.service_info.cursor)
         response_text = self._query_github_api(query)
-        if response_text == GITHUB_RATE_ABUSE_FLAG:
+        if response_text == GITHUB_RATE_ABUSE_FLAG or response_text == GITHUB_TIMEOUT_FLAG:
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
