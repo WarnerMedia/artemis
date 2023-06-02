@@ -120,7 +120,7 @@ class ProcessGithubRepos:
         self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
         query = GITHUB_REPO_QUERY % (self.service_info.org, self.service_info.cursor)
         response_text = self._query_github_api(query)
-        if response_text == GITHUB_RATE_ABUSE_FLAG or response_text == GITHUB_TIMEOUT_FLAG:
+        if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
@@ -260,7 +260,7 @@ class ProcessGithubRepos:
         while next_page:
             query = GITHUB_REPO_REF_QUERY % (self.service_info.org, repo, cursor)
             response_text = self._query_github_api(query)
-            if not response_text or response_text == GITHUB_RATE_ABUSE_FLAG:
+            if not response_text or response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
                 break
             response_dict = self.json_utils.get_json_from_response(response_text)
             if not response_dict:
