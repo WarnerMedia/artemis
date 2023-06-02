@@ -76,10 +76,14 @@ class ProcessGithubRepos:
         if not resp:
             return response_text
         # check if related to rate abuse or timeout
-        if str(response.status_code) == "403" and self._is_message_rate_abuse(resp.get("message")):
-            return GITHUB_RATE_ABUSE_FLAG
-        if str(response.status_code) == "502" and self._is_message_timeout(resp.get("errors")[0].get("message")):
-            return GITHUB_TIMEOUT_FLAG
+        try:
+            error_message = resp.get("errors")[0].get("message")
+            if str(response.status_code) == "403" and self._is_message_rate_abuse(error_message):
+                return GITHUB_RATE_ABUSE_FLAG
+            if str(response.status_code) == "502" and self._is_message_timeout(error_message):
+                return GITHUB_TIMEOUT_FLAG
+        except IndexError:
+            pass
         return resp
 
     def _is_message_rate_abuse(self, message):
