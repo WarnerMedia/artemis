@@ -1,29 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { Field, Form, Formik, useFormikContext } from "formik";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
-import { Formik, Form, Field, useFormikContext } from "formik";
-// note: using webpack > 2 so we can just import everything from @mui/material
-// instead of having to import each individual component to reduce bundle size
-// see: https://material-ui.com/guides/minimizing-bundle-size/#when-and-how-to-use-tree-shaking
-import {
-	Accordion,
-	AccordionDetails,
-	AccordionSummary,
-	Box,
-	Button,
-	Container, // horizontally center page content
-	Divider,
-	FormControl,
-	FormControlLabel,
-	FormGroup,
-	FormHelperText,
-	FormLabel,
-	Grid,
-	InputAdornment,
-	LinearProgress,
-	Paper,
-	Typography,
-} from "@mui/material";
+import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
+import { t, Trans } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
 import {
 	AccountTree as AccountTreeIcon,
 	BugReport as BugReportIcon,
@@ -43,16 +23,47 @@ import {
 	Tune as TuneIcon,
 	VpnKey as VpnKeyIcon,
 } from "@mui/icons-material";
-import { makeStyles } from "tss-react/mui";
+import {
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
+	Box,
+	Button,
+	Container,
+	Divider,
+	FormControl,
+	FormControlLabel,
+	FormGroup,
+	FormHelperText,
+	FormLabel,
+	Grid,
+	InputAdornment,
+	LinearProgress,
+	Paper,
+	Typography,
+} from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { useTheme } from "@mui/material/styles";
 import { Checkbox, TextField } from "formik-mui";
-import { useLingui } from "@lingui/react";
-import { Trans, t } from "@lingui/macro";
 import queryString from "query-string";
+import { makeStyles } from "tss-react/mui";
 
-import store, { AppDispatch } from "app/store";
 import { RootState } from "app/rootReducer";
+import store, { AppDispatch } from "app/store";
+import ActivityTable, {
+	ActivityDataLoadCallback,
+} from "components/ActivityTable";
+import AutoCompleteField from "components/AutoCompleteField";
+import { clearAllNotifications } from "features/notifications/notificationsSlice";
+import {
+	AnalysisReport,
+	SCAN_DEPTH,
+	ScanHistoryResponse,
+	ScanOptionsForm,
+	scanOptionsFormSchema,
+	ScanResultsSummary,
+	SubmitContext,
+} from "features/scans/scansSchemas";
 import {
 	addScan,
 	clearScans,
@@ -60,52 +71,8 @@ import {
 	getScanHistory,
 } from "features/scans/scansSlice";
 import { selectCurrentUser } from "features/users/currentUserSlice";
-import { clearAllNotifications } from "features/notifications/notificationsSlice";
-import {
-	AnalysisReport,
-	ScanHistoryResponse,
-	ScanOptionsForm,
-	scanOptionsFormSchema,
-	ScanResultsSummary,
-	SCAN_DEPTH,
-	SubmitContext,
-} from "features/scans/scansSchemas";
-import ActivityTable, {
-	ActivityDataLoadCallback,
-} from "components/ActivityTable";
-import AutoCompleteField from "components/AutoCompleteField";
 
 import client, { handleException, RequestMeta } from "api/client";
-import {
-	excludePlugins,
-	GROUP_ANALYSIS,
-	GROUP_CONFIG,
-	GROUP_INVENTORY,
-	GROUP_SBOM,
-	GROUP_SECRETS,
-	GROUP_VULN,
-	pluginCatalog,
-	configPlugins,
-	configPluginsObjects,
-	sbomPluginsObjects,
-	ScanPlugin,
-	secretPlugins,
-	secretPluginsObjects,
-	staticPlugins,
-	staticPluginsObjects,
-	techPlugins,
-	techPluginsObjects,
-	vulnPlugins,
-	vulnPluginsObjects,
-	configPluginsKeys,
-	sbomPluginsKeys,
-	secretPluginsKeys,
-	staticPluginsKeys,
-	techPluginsKeys,
-	vulnPluginsKeys,
-} from "../app/scanPlugins";
-import WelcomeDialog from "components/WelcomeDialog";
-import WelcomeDialogContent from "custom/WelcomeDialogContent";
 import {
 	APP_API_BATCH_SIZE,
 	APP_DEMO_USER_REPO,
@@ -114,10 +81,40 @@ import {
 	APP_URL_PROVISION,
 	STORAGE_LOCAL_WELCOME,
 } from "app/globals";
+import WelcomeDialog from "components/WelcomeDialog";
 import runMigrations from "custom/runMigrations";
-import { User } from "features/users/usersSchemas";
 import { exportMetaData } from "custom/SearchMetaField";
+import WelcomeDialogContent from "custom/WelcomeDialogContent";
+import { User } from "features/users/usersSchemas";
 import { DELETED_REGEX } from "utils/formatters";
+import {
+	configPlugins,
+	configPluginsKeys,
+	configPluginsObjects,
+	excludePlugins,
+	GROUP_ANALYSIS,
+	GROUP_CONFIG,
+	GROUP_INVENTORY,
+	GROUP_SBOM,
+	GROUP_SECRETS,
+	GROUP_VULN,
+	pluginCatalog,
+	sbomPluginsKeys,
+	sbomPluginsObjects,
+	ScanPlugin,
+	secretPlugins,
+	secretPluginsKeys,
+	secretPluginsObjects,
+	staticPlugins,
+	staticPluginsKeys,
+	staticPluginsObjects,
+	techPlugins,
+	techPluginsKeys,
+	techPluginsObjects,
+	vulnPlugins,
+	vulnPluginsKeys,
+	vulnPluginsObjects,
+} from "../app/scanPlugins";
 
 const useStyles = makeStyles()((theme) => ({
 	accordionDetails: {

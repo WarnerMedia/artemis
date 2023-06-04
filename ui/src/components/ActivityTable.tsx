@@ -1,6 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { t, Trans } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
+import {
+	Assignment as AssignmentIcon,
+	AssignmentLate as AssignmentLateIcon,
+	AssignmentTurnedIn as AssignmentTurnedInIcon,
+	Autorenew as AutorenewIcon,
+	Check as CheckIcon,
+	LowPriority as LowPriorityIcon,
+	MoreVert as MoreVertIcon,
+	OpenInNew as OpenInNewIcon,
+	PlayCircleOutline as PlayCircleOutlineIcon,
+	RuleFolder as RuleFolderIcon,
+	Share as ShareIcon,
+	TouchApp as TouchAppIcon,
+	Verified as VerifiedIcon,
+} from "@mui/icons-material";
 import {
 	Box,
 	Button,
@@ -27,42 +41,17 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import {
-	Assignment as AssignmentIcon,
-	AssignmentLate as AssignmentLateIcon,
-	AssignmentTurnedIn as AssignmentTurnedInIcon,
-	Autorenew as AutorenewIcon,
-	Check as CheckIcon,
-	LowPriority as LowPriorityIcon,
-	MoreVert as MoreVertIcon,
-	OpenInNew as OpenInNewIcon,
-	PlayCircleOutline as PlayCircleOutlineIcon,
-	RuleFolder as RuleFolderIcon,
-	Share as ShareIcon,
-	TouchApp as TouchAppIcon,
-	Verified as VerifiedIcon,
-} from "@mui/icons-material";
+import queryString from "query-string";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import { keyframes } from "tss-react";
 import { makeStyles } from "tss-react/mui";
-import { useLingui } from "@lingui/react";
-import { Trans, t } from "@lingui/macro";
 import * as Yup from "yup";
-import queryString from "query-string";
 
-import { formatDate, ToCsvFormat } from "utils/formatters";
+import { RequestMeta } from "api/client";
 import AppGlobals, { APP_NOTIFICATION_DELAY } from "app/globals";
 import { RootState } from "app/rootReducer";
-import { addNotification } from "features/notifications/notificationsSlice";
-import { selectAllScans, selectTotalScans } from "features/scans/scansSlice";
-import { selectCurrentUser } from "features/users/currentUserSlice";
-import {
-	AnalysisReport,
-	ScanFormLocationState,
-	ScanOptionsForm,
-} from "features/scans/scansSchemas";
-import StatusCell from "components/StatusCell";
-import { RequestMeta } from "api/client";
-import { startScan } from "pages/MainPage";
 import {
 	configPlugins,
 	sbomPlugins,
@@ -71,7 +60,18 @@ import {
 	techPlugins,
 	vulnPlugins,
 } from "app/scanPlugins";
+import StatusCell from "components/StatusCell";
+import { addNotification } from "features/notifications/notificationsSlice";
+import {
+	AnalysisReport,
+	ScanFormLocationState,
+	ScanOptionsForm,
+} from "features/scans/scansSchemas";
+import { selectAllScans, selectTotalScans } from "features/scans/scansSlice";
+import { selectCurrentUser } from "features/users/currentUserSlice";
+import { startScan } from "pages/MainPage";
 import CopyToClipboard from "react-copy-to-clipboard";
+import { formatDate, ToCsvFormat } from "utils/formatters";
 import DraggableDialog from "./DraggableDialog";
 import TableMenu, { FetchData } from "./TableMenu";
 

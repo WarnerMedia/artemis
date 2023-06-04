@@ -71,7 +71,9 @@ describe("ExpiringDateTimeCell component", () => {
 
 	it("future date displays no expiration warning", () => {
 		render(
-			<ExpiringDateTimeCell value={DateTime.utc().plus({ days: 1 }).toJSON()} />
+			<ExpiringDateTimeCell
+				value={DateTime.utc().plus({ days: 1 }).toJSON() ?? undefined}
+			/>
 		);
 		expect(
 			screen.queryByTitle(/this item has expired/i)
@@ -84,7 +86,7 @@ describe("ExpiringDateTimeCell component", () => {
 	it("past date displays expiration warning", () => {
 		render(
 			<ExpiringDateTimeCell
-				value={DateTime.utc().minus({ days: 1 }).toJSON()}
+				value={DateTime.utc().minus({ days: 1 }).toJSON() ?? undefined}
 			/>
 		);
 		expect(

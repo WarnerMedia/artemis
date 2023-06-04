@@ -71,7 +71,7 @@ describe("LinkedAccounts component", () => {
 
 	it("link button redirects to vcs auth", async () => {
 		const globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 		const url = "";
 		Object.defineProperty(window, "location", {
 			value: {
@@ -88,7 +88,7 @@ describe("LinkedAccounts component", () => {
 		await user.click(button);
 		expect(window.location.href).toEqual(APP_SERVICE_GITHUB_URL);
 
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 	});
 
 	it("if linked, shows an unlink button and account information", () => {

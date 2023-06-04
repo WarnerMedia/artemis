@@ -85,7 +85,7 @@ describe("MainPage component", () => {
 		};
 		mockUseNavigate.mockImplementation(() => mockNavigate);
 		globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 		Object.defineProperty(window, "history", {
 			get() {
 				return mockHistory;
@@ -102,7 +102,7 @@ describe("MainPage component", () => {
 		mockDispatch.mockClear();
 		mockUseNavigate.mockClear();
 		mockNavigate.mockClear();
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 		localStorageSetItemSpy.mockRestore();
 	});
 

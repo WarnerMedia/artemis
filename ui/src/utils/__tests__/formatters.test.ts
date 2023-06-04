@@ -1,9 +1,9 @@
 import { Settings } from "luxon";
 /* eslint-disable */
-import formatters from "utils/formatters";
-import { RowDef } from "components/EnhancedTable";
-import { analysisRow } from "../../../testData/testMockData";
 import { APP_EXPORT_CLASSIFICATION } from "app/globals";
+import { RowDef } from "components/EnhancedTable";
+import formatters from "utils/formatters";
+import { analysisRow } from "../../../testData/testMockData";
 
 beforeAll(() => {
 	// ensure consistent timezone for tests
@@ -215,7 +215,7 @@ describe("formatters", () => {
 				remove: jest.fn(),
 			};
 			const globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 			global.URL.createObjectURL = jest.fn(() => "http://localhost/blob");
 			global.URL.revokeObjectURL = jest.fn((href) => href);
 			// @ts-ignore
@@ -255,7 +255,7 @@ describe("formatters", () => {
 			// @ts-ignore
 			expect(global.URL.revokeObjectURL).toHaveBeenCalledWith(link.href);
 
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 		});
 
 		it("exportToJson formats JSON and sets mime type", () => {

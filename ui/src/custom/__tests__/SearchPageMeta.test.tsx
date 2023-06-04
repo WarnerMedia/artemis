@@ -86,7 +86,7 @@ describe("SearchPage component", () => {
 		});
 		mockUseNavigate.mockImplementation(() => mockNavigate);
 		globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 		Object.defineProperty(window, "history", {
 			get() {
 				return mockHistory;
@@ -108,7 +108,7 @@ describe("SearchPage component", () => {
 		mockDispatch.mockClear();
 		mockUseNavigate.mockClear();
 		mockNavigate.mockClear();
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 		mockGetComponents.mockRestore();
 		mockGetRepos.mockRestore();
 		mockRequest.mockRestore();

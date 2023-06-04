@@ -24,8 +24,8 @@ beforeAll(() => {
 	Settings.defaultZone = "America/New_York";
 });
 
-const formatDateForExpirationField = (dateIsoString: string) => {
-	return DateTime.fromISO(dateIsoString).toFormat("yyyy/LL/dd HH:mm");
+const formatDateForExpirationField = (dateIsoString: string | null) => {
+	return DateTime.fromISO(dateIsoString ?? "").toFormat("yyyy/LL/dd HH:mm");
 };
 
 const formatSourceLine = (filePath: string, fileLine: number) => {

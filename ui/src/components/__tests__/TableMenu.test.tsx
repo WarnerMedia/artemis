@@ -1,8 +1,8 @@
-import store from "app/store";
 import { STORAGE_LOCAL_EXPORT_ACKNOWLEDGE } from "app/globals";
+import store from "app/store";
+import TableMenu, { ExportFormats } from "components/TableMenu";
 import { render, screen, waitFor, within } from "test-utils";
 import formatters from "utils/formatters";
-import TableMenu, { ExportFormats } from "components/TableMenu";
 
 jest.mock("react-redux", () => ({
 	...(jest.requireActual("react-redux") as any),
@@ -10,8 +10,8 @@ jest.mock("react-redux", () => ({
 	useDispatch: jest.fn(),
 }));
 /* eslint-disable */
-import { useDispatch } from "react-redux";
 import { addNotification } from "features/notifications/notificationsSlice";
+import { useDispatch } from "react-redux";
 
 const mockUseDispatch = useDispatch as jest.Mock;
 const mockDispatch = jest.fn();

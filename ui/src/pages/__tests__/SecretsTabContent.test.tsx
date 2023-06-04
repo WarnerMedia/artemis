@@ -253,7 +253,7 @@ describe("SecretsTabContent component", () => {
 
 				// mock window.location.reload
 				const globalWindow = global.window;
-				global.window = Object.create(window);
+				global.window ??= Object.create(window);
 				Object.defineProperty(window, "location", {
 					value: {
 						hash,
@@ -294,7 +294,7 @@ describe("SecretsTabContent component", () => {
 					expect(commitFilter).toHaveDisplayValue(commitValue)
 				);
 
-				global.window = globalWindow;
+				global.window ??= globalWindow;
 			});
 		});
 	});

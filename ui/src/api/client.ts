@@ -1,39 +1,11 @@
-import axios, { RawAxiosRequestHeaders, AxiosRequestConfig } from "axios";
-import * as Yup from "yup";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
-import store from "app/store";
-import { addNotification } from "features/notifications/notificationsSlice";
-import { setGlobalException } from "features/globalException/globalExceptionSlice";
 import {
-	AnalysisReport,
-	analysisReportResponseSchema,
-	SbomReport,
-	sbomReportResponseSchema,
-	ScanHistory,
-	ScanHistoryResponse,
-	scanHistoryResponseSchema,
-	ScanOptions,
-	ScanOptionsForm,
-	scanQueueResponseSchema,
-} from "features/scans/scansSchemas";
-import {
-	HiddenFinding,
-	hiddenFindingsResponseSchema,
-} from "features/hiddenFindings/hiddenFindingsSchemas";
-import {
-	Key,
-	addKeyResponseSchema,
-	keysResponseSchema,
-	KeysResponse,
-} from "features/keys/keysSchemas";
-import {
-	User,
-	UsersResponse,
-	userResponseSchema,
-	usersResponseSchema,
-} from "features/users/usersSchemas";
-import { DateTime } from "luxon";
+	APP_NOTIFICATION_DELAY,
+	PREFIX_CVEID,
+	PREFIX_GHSA,
+	STORAGE_SESSION_SCAN,
+} from "app/globals";
 import {
 	configPlugins,
 	sbomPlugins,
@@ -42,39 +14,67 @@ import {
 	techPlugins,
 	vulnPlugins,
 } from "app/scanPlugins";
+import store from "app/store";
+import axios, { AxiosRequestConfig, RawAxiosRequestHeaders } from "axios";
+import adjustMetadata from "custom/clientCustom";
+import { setGlobalException } from "features/globalException/globalExceptionSlice";
 import {
-	APP_NOTIFICATION_DELAY,
-	PREFIX_CVEID,
-	PREFIX_GHSA,
-	STORAGE_SESSION_SCAN,
-} from "app/globals";
+	HiddenFinding,
+	hiddenFindingsResponseSchema,
+} from "features/hiddenFindings/hiddenFindingsSchemas";
 import {
-	VcsService,
-	VcsServiceRequest,
-	vcsServicesAddResponseSchema,
-	VcsServicesGetResponse,
-	vcsServicesGetResponseSchema,
-} from "features/vcsServices/vcsServicesSchemas";
+	Key,
+	KeysResponse,
+	addKeyResponseSchema,
+	keysResponseSchema,
+} from "features/keys/keysSchemas";
+import { addNotification } from "features/notifications/notificationsSlice";
+import {
+	AnalysisReport,
+	SbomReport,
+	ScanHistory,
+	ScanHistoryResponse,
+	ScanOptions,
+	ScanOptionsForm,
+	analysisReportResponseSchema,
+	sbomReportResponseSchema,
+	scanHistoryResponseSchema,
+	scanQueueResponseSchema,
+} from "features/scans/scansSchemas";
+import {
+	SearchComponent,
+	SearchComponentRepo,
+	SearchComponentReposResponse,
+	SearchComponentsResponse,
+	SearchRepo,
+	SearchReposResponse,
+	SearchVulnerability,
+	SearchVulnsResponse,
+	searchComponentRepoResponseSchema,
+	searchComponentResponseSchema,
+	searchRepoResponseSchema,
+	searchVulnsResponseSchema,
+} from "features/search/searchSchemas";
 import {
 	SystemStatus,
 	systemStatusResponseSchema,
 } from "features/systemStatus/systemStatusSchemas";
 import {
-	SearchComponent,
-	SearchComponentRepo,
-	searchComponentRepoResponseSchema,
-	SearchComponentReposResponse,
-	searchComponentResponseSchema,
-	SearchComponentsResponse,
-	SearchRepo,
-	searchRepoResponseSchema,
-	SearchReposResponse,
-	SearchVulnerability,
-	SearchVulnsResponse,
-	searchVulnsResponseSchema,
-} from "features/search/searchSchemas";
-import adjustMetadata from "custom/clientCustom";
+	User,
+	UsersResponse,
+	userResponseSchema,
+	usersResponseSchema,
+} from "features/users/usersSchemas";
+import {
+	VcsService,
+	VcsServiceRequest,
+	VcsServicesGetResponse,
+	vcsServicesAddResponseSchema,
+	vcsServicesGetResponseSchema,
+} from "features/vcsServices/vcsServicesSchemas";
+import { DateTime } from "luxon";
 import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
+import * as Yup from "yup";
 
 // only support filtering by string|string[] field values for now
 export interface FilterDef {
