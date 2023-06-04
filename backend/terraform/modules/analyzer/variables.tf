@@ -375,6 +375,12 @@ variable "extra_lambda_layers_system_allowlist_handler" {
   default     = []
 }
 
+variable "extra_lambda_layers_system_services_handler" {
+  description = "Extra layers that should be applied to the system services handler lambda"
+  type        = list(string)
+  default     = []
+}
+
 variable "extra_lambda_layers_system_status_handler" {
   description = "Extra layers that should be applied to the system status handler lambda"
   type        = list(string)

@@ -28,7 +28,7 @@ def _get_services_s3_object(s3_key) -> Any:
     return json.loads(s3_object.get()["Body"].read().decode("utf-8"))
 
 
-def get_services_dict(services_loc: str) -> Union[Any, None]:
+def get_services_dict(services_loc: str = SERVICES_S3_KEY) -> Union[Any, None]:
     if S3_BUCKET:
         return _get_services_s3_object(services_loc)
     log.warning("S3_BUCKET is None, please confirm this is a testing environment.")

@@ -86,8 +86,10 @@ class GithubApp:
 
         return token["token"]
 
-    def get_installation_token(self, org: str) -> str:
-        token = self._get_cached_installation_token(org)
+    def get_installation_token(self, org: str, bypass_cache: bool = False) -> str:
+        token = None
+        if not bypass_cache:
+            token = self._get_cached_installation_token(org)
         if token is not None:
             # Return the cached token because its still valid
             self.log.info("Using cached GitHub App installation token for %s organization", org)
