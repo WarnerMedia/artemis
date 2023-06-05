@@ -1,7 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field } from "formik";
-import { Checkbox, Switch, TextField } from "formik-mui";
+import { Trans, t } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
+import {
+	AddCircleOutline as AddCircleOutlineIcon,
+	Add as AddIcon,
+	ArrowBackIos as ArrowBackIosIcon,
+	Check as CheckIcon,
+	Clear as ClearIcon,
+	Delete as DeleteIcon,
+	FilterList as FilterListIcon,
+	KeyboardArrowUp as KeyboardArrowUpIcon,
+	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
+} from "@mui/icons-material";
 import {
 	Alert,
 	Box,
@@ -19,36 +28,22 @@ import {
 	IconButton,
 	InputAdornment,
 	LinearProgress,
-	Paper,
 	TextField as MuiTextField,
+	Paper,
 	Toolbar,
 	Tooltip,
 	Typography,
-	useScrollTrigger,
 	Zoom,
+	useScrollTrigger,
 } from "@mui/material";
+import { Field, Form, Formik } from "formik";
+import { Checkbox, Switch, TextField } from "formik-mui";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from "tss-react/mui";
-import {
-	Add as AddIcon,
-	AddCircleOutline as AddCircleOutlineIcon,
-	ArrowBackIos as ArrowBackIosIcon,
-	Check as CheckIcon,
-	Clear as ClearIcon,
-	Delete as DeleteIcon,
-	FilterList as FilterListIcon,
-	KeyboardArrowUp as KeyboardArrowUpIcon,
-	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
-} from "@mui/icons-material";
-import { useLingui } from "@lingui/react";
-import { Trans, t } from "@lingui/macro";
 import * as Yup from "yup";
 
 import client, { FilterDef, RequestMeta } from "api/client";
-import CustomCopyToClipboard from "components/CustomCopyToClipboard";
-import DraggableDialog from "components/DraggableDialog";
-import DateTimeCell from "components/DateTimeCell";
-import EnhancedTable, { ColDef, RowDef } from "components/EnhancedTable";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
 import {
 	nonDefaultPlugins,
@@ -56,7 +51,14 @@ import {
 	pluginsDisabled,
 } from "app/scanPlugins";
 import { AppDispatch } from "app/store";
+import CustomCopyToClipboard from "components/CustomCopyToClipboard";
+import DateTimeCell from "components/DateTimeCell";
+import DraggableDialog from "components/DraggableDialog";
+import EnhancedTable, { ColDef, RowDef } from "components/EnhancedTable";
+import ScopeCell from "components/ScopeCell";
+import TooltipCell from "components/TooltipCell";
 import { selectCurrentUser } from "features/users/currentUserSlice";
+import { ScanFeatures, User } from "features/users/usersSchemas";
 import {
 	addUser,
 	deleteUser,
@@ -65,13 +67,11 @@ import {
 	selectAllUsers,
 	updateUser,
 } from "features/users/usersSlice";
-import { User, ScanFeatures } from "features/users/usersSchemas";
-import TooltipCell from "components/TooltipCell";
-import ScopeCell from "components/ScopeCell";
+import { useDispatch, useSelector } from "react-redux";
 import {
-	capitalize,
 	DELETED_REGEX,
 	SPLIT_MULTILINE_CSN_REGEX,
+	capitalize,
 } from "utils/formatters";
 
 const useStyles = makeStyles()((theme) => ({

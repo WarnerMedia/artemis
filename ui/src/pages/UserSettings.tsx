@@ -1,8 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { DateTime } from "luxon";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Formik, Form, Field, FormikHelpers } from "formik";
-import { Checkbox, Switch, TextField } from "formik-mui";
+import { t, Trans } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
+import {
+	AddCircleOutline as AddCircleOutlineIcon,
+	Add as AddIcon,
+	ArrowBackIos as ArrowBackIosIcon,
+	Category as CategoryIcon,
+	Clear as ClearIcon,
+	Cloud as CloudIcon,
+	ContactMail as ContactMailIcon,
+	Delete as DeleteIcon,
+	FolderShared as FolderSharedIcon,
+	GitHub as GitHubIcon,
+	HelpOutline as HelpOutlineIcon,
+	Info as InfoIcon,
+	KeyboardArrowUp as KeyboardArrowUpIcon,
+	Link as LinkIcon,
+	LinkOff as LinkOffIcon,
+	Message as MessageIcon,
+	Palette as PaletteIcon,
+	RadioButtonChecked as RadioButtonCheckedIcon,
+	RadioButtonUnchecked as RadioButtonUncheckedIcon,
+	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
+	SupervisorAccount as SupervisorAccountIcon,
+	VpnKey as VpnKeyIcon,
+	WatchLater as WatchLaterIcon,
+} from "@mui/icons-material";
 import {
 	Alert,
 	Box,
@@ -30,10 +52,10 @@ import {
 	ListItem,
 	ListItemIcon,
 	ListItemText,
-	Paper,
-	Skeleton,
 	Switch as MuiSwitch,
 	TextField as MuiTextField,
+	Paper,
+	Skeleton,
 	Theme,
 	Toolbar,
 	Tooltip,
@@ -41,74 +63,52 @@ import {
 	useScrollTrigger,
 	Zoom,
 } from "@mui/material";
-import { makeStyles, withStyles } from "tss-react/mui";
-import {
-	Add as AddIcon,
-	AddCircleOutline as AddCircleOutlineIcon,
-	ArrowBackIos as ArrowBackIosIcon,
-	Category as CategoryIcon,
-	Clear as ClearIcon,
-	Cloud as CloudIcon,
-	ContactMail as ContactMailIcon,
-	Delete as DeleteIcon,
-	FolderShared as FolderSharedIcon,
-	GitHub as GitHubIcon,
-	HelpOutline as HelpOutlineIcon,
-	Info as InfoIcon,
-	KeyboardArrowUp as KeyboardArrowUpIcon,
-	Link as LinkIcon,
-	LinkOff as LinkOffIcon,
-	Message as MessageIcon,
-	Palette as PaletteIcon,
-	RadioButtonChecked as RadioButtonCheckedIcon,
-	RadioButtonUnchecked as RadioButtonUncheckedIcon,
-	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
-	SupervisorAccount as SupervisorAccountIcon,
-	VpnKey as VpnKeyIcon,
-	WatchLater as WatchLaterIcon,
-} from "@mui/icons-material";
-import { useLingui } from "@lingui/react";
-import { Trans, t } from "@lingui/macro";
+import { Field, Form, Formik, FormikHelpers } from "formik";
+import { Checkbox, Switch, TextField } from "formik-mui";
+import { DateTime } from "luxon";
 import queryString from "query-string";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { makeStyles, withStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
 import client from "api/client";
-import {
-	capitalize,
-	formatDate,
-	SPLIT_MULTILINE_CSN_REGEX,
-} from "utils/formatters";
+import { IThemeColors, themeColors } from "app/colors";
+import { APP_SERVICE_GITHUB_URL, STORAGE_LOCAL_WELCOME } from "app/globals";
+import { RootState } from "app/rootReducer";
+import { pluginsDisabled } from "app/scanPlugins";
+import { AppDispatch } from "app/store";
 import CustomCopyToClipboard from "components/CustomCopyToClipboard";
-import DraggableDialog from "components/DraggableDialog";
 import DateTimeCell, { ExpiringDateTimeCell } from "components/DateTimeCell";
+import DraggableDialog from "components/DraggableDialog";
 import EnhancedTable, { ColDef, RowDef } from "components/EnhancedTable";
 import DatePickerField from "components/FormikPickers";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "app/rootReducer";
+import MailToLink from "components/MailToLink";
+import ScopeCell from "components/ScopeCell";
+import TooltipCell from "components/TooltipCell";
+import { Key } from "features/keys/keysSchemas";
 import {
 	deleteUserKey,
 	getUserKeys,
 	selectAllKeys,
 } from "features/keys/keysSlice";
+import { addNotification } from "features/notifications/notificationsSlice";
+import { selectTheme, setTheme } from "features/theme/themeSlice";
+import { selectCurrentUser } from "features/users/currentUserSlice";
+import { User } from "features/users/usersSchemas";
+import { githubAuthRegex } from "features/vcsServices/vcsServicesSchemas";
 import {
 	getVcsServices,
 	linkVcsService,
 	selectServiceById,
 	unlinkVcsService,
 } from "features/vcsServices/vcsServicesSlice";
-import { AppDispatch } from "app/store";
-import { Key } from "features/keys/keysSchemas";
-import { selectCurrentUser } from "features/users/currentUserSlice";
-import MailToLink from "components/MailToLink";
-import { User } from "features/users/usersSchemas";
-import { APP_SERVICE_GITHUB_URL, STORAGE_LOCAL_WELCOME } from "app/globals";
-import { githubAuthRegex } from "features/vcsServices/vcsServicesSchemas";
-import { addNotification } from "features/notifications/notificationsSlice";
-import TooltipCell from "components/TooltipCell";
-import ScopeCell from "components/ScopeCell";
-import { IThemeColors, themeColors } from "app/colors";
-import { selectTheme, setTheme } from "features/theme/themeSlice";
-import { pluginsDisabled } from "app/scanPlugins";
+import { useDispatch, useSelector } from "react-redux";
+import {
+	capitalize,
+	formatDate,
+	SPLIT_MULTILINE_CSN_REGEX,
+} from "utils/formatters";
 
 const useStyles = makeStyles()((theme) => ({
 	addKeyFormField: {
@@ -1244,7 +1244,7 @@ export default function UserSettings() {
 					expires = values.expires;
 				} else {
 					// Luxon DateTime
-					expires = values?.expires.toUTC().toJSON();
+					expires = values?.expires.toUTC().toJSON() ?? undefined;
 				}
 			}
 

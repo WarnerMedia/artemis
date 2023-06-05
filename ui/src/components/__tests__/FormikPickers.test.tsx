@@ -19,9 +19,7 @@ test("displays input field without label", () => {
 	const props: any = {
 		id: "datetime-test-1",
 		name: "datetime-test-1",
-		onChange: () => {
-			console.log("here!");
-		},
+		onChange: () => {},
 	};
 	render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>

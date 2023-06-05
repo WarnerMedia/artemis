@@ -1,69 +1,5 @@
-import React, {
-	useState,
-	useEffect,
-	useRef,
-	ChangeEvent,
-	useCallback,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-	Location,
-	NavigateFunction,
-	useNavigate,
-	useLocation,
-} from "react-router-dom";
-import { DateTime } from "luxon";
-import { Formik, Form, Field, FormikHelpers } from "formik";
-import { Select, TextField } from "formik-mui";
-import {
-	Accordion,
-	AccordionDetails,
-	AccordionSummary,
-	Alert,
-	AlertTitle,
-	Badge,
-	Box,
-	Button,
-	Card,
-	CardContent,
-	Checkbox,
-	Chip,
-	// horizontally center page content
-	Container,
-	DialogActions,
-	DialogContent,
-	Divider,
-	Fab,
-	FormControl,
-	FormControlLabel,
-	FormGroup,
-	FormLabel,
-	Grid,
-	IconButton,
-	InputAdornment,
-	InputLabel,
-	LinearProgress,
-	List,
-	ListItem,
-	ListItemIcon,
-	ListItemText,
-	MenuItem,
-	Paper,
-	Tabs,
-	Tab,
-	TextField as MuiTextField,
-	Toolbar,
-	Tooltip,
-	Typography,
-	Theme,
-	Zoom,
-	InputBaseComponentProps,
-	CircularProgress,
-} from "@mui/material";
-import { keyframes } from "tss-react";
-import { makeStyles, withStyles } from "tss-react/mui";
-import { useTheme } from "@mui/material/styles";
-import createPalette from "@mui/material/styles/createPalette";
+import { plural, t, Trans } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
 import {
 	AccountTree as AccountTreeIcon,
 	AddCircleOutline as AddCircleOutlineIcon,
@@ -107,18 +43,82 @@ import {
 	WatchLater as WatchLaterIcon,
 } from "@mui/icons-material";
 import {
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
+	Alert,
+	AlertTitle,
+	Badge,
+	Box,
+	Button,
+	Card,
+	CardContent,
+	Checkbox,
+	Chip,
+	CircularProgress,
+	// horizontally center page content
+	Container,
+	DialogActions,
+	DialogContent,
+	Divider,
+	Fab,
+	FormControl,
+	FormControlLabel,
+	FormGroup,
+	FormLabel,
+	Grid,
+	IconButton,
+	InputAdornment,
+	InputBaseComponentProps,
+	InputLabel,
+	LinearProgress,
+	List,
+	ListItem,
+	ListItemIcon,
+	ListItemText,
+	MenuItem,
+	TextField as MuiTextField,
+	Paper,
+	Tab,
+	Tabs,
+	Theme,
+	Toolbar,
+	Tooltip,
+	Typography,
+	Zoom,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import createPalette from "@mui/material/styles/createPalette";
+import { Field, Form, Formik, FormikHelpers } from "formik";
+import { Select, TextField } from "formik-mui";
+import { DateTime } from "luxon";
+import queryString from "query-string";
+import React, {
+	ChangeEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+	Location,
+	NavigateFunction,
+	useLocation,
+	useNavigate,
+} from "react-router-dom";
+import {
 	Cell,
+	Tooltip as ChartTooltip,
 	Label,
 	Legend,
-	PieChart,
 	Pie,
+	PieChart,
 	ResponsiveContainer,
-	Tooltip as ChartTooltip,
 } from "recharts";
-import { useLingui } from "@lingui/react";
-import { Trans, t, plural } from "@lingui/macro";
+import { keyframes } from "tss-react";
+import { makeStyles, withStyles } from "tss-react/mui";
 import * as Yup from "yup";
-import queryString from "query-string";
 
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 // https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/221#issuecomment-566502780
@@ -143,27 +143,49 @@ import client, {
 	handleException,
 	HiddenFindingsRequest,
 } from "api/client";
-import { AppDispatch } from "app/store";
 import {
 	colorCritical,
 	colorHigh,
-	colorMedium,
 	colorLow,
+	colorMedium,
 	colorNegligible,
 } from "app/colors";
-import formatters, {
-	capitalize,
-	compareButIgnoreLeadingDashes,
-	DELETED_REGEX,
-	formatDate,
-	vcsHotLink,
-} from "utils/formatters";
+import { PREFIX_NVD, STORAGE_LOCAL_EXPORT_ACKNOWLEDGE } from "app/globals";
 import { RootState } from "app/rootReducer";
-import DraggableDialog from "components/DraggableDialog";
+import {
+	configPlugins,
+	getFeatureName,
+	isFeatureDisabled,
+	pluginCatalog,
+	pluginKeys,
+	sbomPlugins,
+	secretPlugins,
+	staticPlugins,
+	techPlugins,
+	vulnPlugins,
+} from "app/scanPlugins";
+import { AppDispatch } from "app/store";
+import { SeverityChip } from "components/ChipCell";
+import CustomCopyToClipboard from "components/CustomCopyToClipboard";
 import { ExpiringDateTimeCell } from "components/DateTimeCell";
+import DraggableDialog from "components/DraggableDialog";
+import EnhancedTable, {
+	ColDef,
+	OrderMap,
+	RowDef,
+} from "components/EnhancedTable";
 import DatePickerField from "components/FormikPickers";
+import MailToLink from "components/MailToLink";
+import TooltipCell from "components/TooltipCell";
 import WelcomeDialog from "components/WelcomeDialog";
 import ExportDialogContent from "custom/ExportDialogContent";
+import ListItemMetaMultiField from "custom/ListItemMetaMultiField";
+import ResultsMetaField from "custom/ResultsMetaField";
+import {
+	HiddenFinding,
+	HiddenFindingType,
+	HiddenFindingTypeValues,
+} from "features/hiddenFindings/hiddenFindingsSchemas";
 import {
 	addHiddenFinding,
 	clearHiddenFindings,
@@ -176,17 +198,6 @@ import {
 } from "features/hiddenFindings/hiddenFindingsSlice";
 import { addNotification } from "features/notifications/notificationsSlice";
 import {
-	getScanById,
-	clearScans,
-	selectScanById,
-} from "features/scans/scansSlice";
-import { selectCurrentUser } from "features/users/currentUserSlice";
-import {
-	HiddenFinding,
-	HiddenFindingType,
-	HiddenFindingTypeValues,
-} from "features/hiddenFindings/hiddenFindingsSchemas";
-import {
 	AnalysisFinding,
 	AnalysisReport,
 	SbomReport,
@@ -196,32 +207,21 @@ import {
 	SecretFindingResult,
 	SeverityLevels,
 } from "features/scans/scansSchemas";
-import EnhancedTable, {
-	ColDef,
-	OrderMap,
-	RowDef,
-} from "components/EnhancedTable";
-import CustomCopyToClipboard from "components/CustomCopyToClipboard";
-import ListItemMetaMultiField from "custom/ListItemMetaMultiField";
-import ResultsMetaField from "custom/ResultsMetaField";
-import MailToLink from "components/MailToLink";
-import { User } from "features/users/usersSchemas";
-import TooltipCell from "components/TooltipCell";
-import { SeverityChip } from "components/ChipCell";
 import {
-	pluginCatalog,
-	pluginKeys,
-	isFeatureDisabled,
-	getFeatureName,
-	secretPlugins,
-	staticPlugins,
-	techPlugins,
-	sbomPlugins,
-	vulnPlugins,
-	configPlugins,
-} from "app/scanPlugins";
-import { PREFIX_NVD, STORAGE_LOCAL_EXPORT_ACKNOWLEDGE } from "app/globals";
+	clearScans,
+	getScanById,
+	selectScanById,
+} from "features/scans/scansSlice";
+import { selectCurrentUser } from "features/users/currentUserSlice";
+import { User } from "features/users/usersSchemas";
 import { startScan } from "pages/MainPage";
+import formatters, {
+	capitalize,
+	compareButIgnoreLeadingDashes,
+	DELETED_REGEX,
+	formatDate,
+	vcsHotLink,
+} from "utils/formatters";
 
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
@@ -1025,7 +1025,7 @@ export const HiddenFindingDialog = (props: {
 				expires = values.expires;
 			} else {
 				// Luxon DateTime
-				expires = values?.expires.toUTC().toJSON();
+				expires = values?.expires.toUTC().toJSON() ?? undefined;
 			}
 		}
 

@@ -1,11 +1,11 @@
 import { t } from "@lingui/macro";
-import { capitalize } from "utils/formatters";
 import {
 	APP_AQUA_ENABLED,
 	APP_GHAS_ENABLED,
 	APP_SNYK_ENABLED,
 	APP_VERACODE_ENABLED,
 } from "app/globals";
+import { capitalize } from "utils/formatters";
 
 export interface ScanPlugin {
 	displayName: string;

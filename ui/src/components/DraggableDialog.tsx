@@ -52,7 +52,7 @@ function PaperComponent(props: PaperProps) {
 	);
 }
 
-interface DraggableDialogProps extends DialogProps {
+interface DraggableDialogProps extends Omit<DialogProps, "content"> {
 	actions?: React.ReactNode; // use custom actions, otherwise defaults to an OK button that closes dialog (do not need to include <DialogActions>)
 	content?: React.ReactNode; // dialog content (do not need to include <DialogContent>)
 	copyTitle?: boolean; // whether dialog title includes a CopyToClipboard option

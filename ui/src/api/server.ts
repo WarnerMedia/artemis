@@ -1,24 +1,5 @@
 /* istanbul ignore file */
 // ^ this is for testing-only and should be excluded from code coverage
-import { createServer, Request, Response } from "miragejs";
-import { DateTime } from "luxon";
-import { customAlphabet } from "nanoid";
-import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
-import {
-	AnalysisReport,
-	ResultsAnalysis,
-	ResultsConfiguration,
-	ResultsVulnComponents,
-	ScanCategories,
-	ScanHistory,
-	SecretFinding,
-} from "features/scans/scansSchemas";
-import { Key } from "features/keys/keysSchemas";
-import {
-	githubAuthRegex,
-	VcsService,
-} from "features/vcsServices/vcsServicesSchemas";
-import { formatDate } from "utils/formatters";
 import AppGlobals from "app/globals";
 import {
 	configPlugins,
@@ -28,7 +9,6 @@ import {
 	techPlugins,
 	vulnPlugins,
 } from "app/scanPlugins";
-import queryString from "query-string";
 import {
 	sampleMetaData1,
 	sampleMetaData2,
@@ -37,6 +17,26 @@ import {
 	sampleMetaData5,
 	sampleMetaData6,
 } from "custom/sampleMetaData";
+import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
+import { Key } from "features/keys/keysSchemas";
+import {
+	AnalysisReport,
+	ResultsAnalysis,
+	ResultsConfiguration,
+	ResultsVulnComponents,
+	ScanCategories,
+	ScanHistory,
+	SecretFinding,
+} from "features/scans/scansSchemas";
+import {
+	VcsService,
+	githubAuthRegex,
+} from "features/vcsServices/vcsServicesSchemas";
+import { DateTime } from "luxon";
+import { Request, Response, createServer } from "miragejs";
+import { customAlphabet } from "nanoid";
+import queryString from "query-string";
+import { formatDate } from "utils/formatters";
 
 // common elements to all requested scans
 interface Location {
@@ -826,9 +826,10 @@ export function makeServer() {
 				{
 					id: generateId(),
 					name: "admin api key",
-					created: DateTime.utc()
-						.minus({ days: Math.floor(Math.random() * 365) })
-						.toJSON(),
+					created:
+						DateTime.utc()
+							.minus({ days: Math.floor(Math.random() * 365) })
+							.toJSON() ?? undefined,
 					last_used: formatNewDate(),
 					expires: null,
 					scope: defaults.currentUserScope,
@@ -843,7 +844,7 @@ export function makeServer() {
 				{
 					id: generateId(),
 					name: "expired api key",
-					created: DateTime.utc().minus({ days: 256 }).toJSON(),
+					created: DateTime.utc().minus({ days: 256 }).toJSON() ?? undefined,
 					last_used: null,
 					expires: DateTime.utc().minus({ days: 1 }).toJSON(),
 					scope: defaults.currentUserScope,
@@ -853,9 +854,10 @@ export function makeServer() {
 				{
 					id: generateId(),
 					name: "standard api key",
-					created: DateTime.utc()
-						.minus({ days: Math.floor(Math.random() * 365) })
-						.toJSON(),
+					created:
+						DateTime.utc()
+							.minus({ days: Math.floor(Math.random() * 365) })
+							.toJSON() ?? undefined,
 					last_used: null,
 					expires: DateTime.utc()
 						.plus({ days: Math.floor(Math.random() * 365) })

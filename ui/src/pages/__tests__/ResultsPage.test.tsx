@@ -79,7 +79,7 @@ describe("ResultsPage component", () => {
 	describe("Page title", () => {
 		it("title should include 'scan results'", async () => {
 			const globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 			global.scrollTo = jest.fn();
 
 			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
@@ -110,12 +110,12 @@ describe("ResultsPage component", () => {
 			await user.click(shareButton);
 			expect(document.execCommand).toHaveBeenCalledWith("copy");
 
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 		});
 
 		it('title should include scan repo and "default" branch if no branch defined', async () => {
 			const globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 			global.scrollTo = jest.fn();
 
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -150,12 +150,12 @@ describe("ResultsPage component", () => {
 					`Artemis - Scan Results: ${repo} (default)`
 				)
 			);
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 		});
 
 		it("title should include scan repo and branch name if branch defined", async () => {
 			const globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 			global.scrollTo = jest.fn();
 
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -192,7 +192,7 @@ describe("ResultsPage component", () => {
 					`Artemis - Scan Results: ${repo} (${branch})`
 				)
 			);
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 		});
 	});
 
@@ -767,11 +767,11 @@ describe("ResultsPage component", () => {
 
 		beforeEach(() => {
 			globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 		});
 
 		afterEach(() => {
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 			mockNavigate.mockClear();
 		});
 
@@ -846,11 +846,11 @@ describe("ResultsPage component", () => {
 
 		beforeEach(() => {
 			globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 		});
 
 		afterEach(() => {
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 			mockNavigate.mockClear();
 		});
 

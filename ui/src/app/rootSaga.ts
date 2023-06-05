@@ -19,11 +19,11 @@ import { watchGetSystemStatus } from "features/systemStatus/systemStatusSaga";
 import { watchGetTheme, watchSetTheme } from "features/theme/themeSaga";
 import {
 	watchAddUser,
-	watchUpdateUser,
 	watchDeleteUser,
-	watchGetUserById,
 	watchGetCurrentUser,
+	watchGetUserById,
 	watchGetUsers,
+	watchUpdateUser,
 } from "features/users/usersSaga";
 import {
 	watchGetVcsServices,

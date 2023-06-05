@@ -13,7 +13,6 @@ import store, { AppDispatch } from "app/store";
 import { Provider } from "react-redux";
 import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
-import { en } from "make-plural/plurals";
 import { messages as enMessages } from "locale/en/messages";
 
 // apply material-ui cross-browser style normalizaion
@@ -55,11 +54,6 @@ export const browserLanguage = navigator.language || "en-US";
 
 // language hard-coded for now, can come from user profile in the future
 const locale = "en";
-// locales must be loaded AND loaded before load() to prevent the exception: "plurals is not a function"
-// see:
-// https://github.com/lingui/js-lingui/issues/683#issuecomment-620424893
-i18n.loadLocaleData(locale, { plurals: en });
-// @ts-ignore
 i18n.load(locale, enMessages);
 i18n.activate(locale);
 
