@@ -13,3 +13,11 @@ output "pub_engine_subnet" {
 output "nat_engine_subnet" {
   value = module.nat_engine_cluster.subnet
 }
+
+output "lambda_subnet" {
+  value = aws_subnet.lambdas
+}
+
+output "lambda_security_group" {
+  value = aws_security_group.lambda-sg
+}
