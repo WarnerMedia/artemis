@@ -65,7 +65,7 @@ class ProcessGithubRepos:
         response_text = self._get_response_text(response)
 
         # cannot depend on status code alone because rate limit errors have a 200 code
-        if response.status_code != 200 or self._check_for_errors_in_response(response_text):
+        if response.status_code != 200 or self._check_for_errors_in_response_body(response_text):
             error_response = self._analyze_error_response(response, response_text)
             return self._report_error_response(response, error_response)
         return response.text
@@ -81,11 +81,11 @@ class ProcessGithubRepos:
             return response_text
         return resp
 
-    def _check_for_errors_in_response(self, response_text) -> bool:
+    def _check_for_errors_in_response_body(self, response_text) -> bool:
         try:
             return len(response_text.get("errors", [])) > 0
         except AttributeError:
-            return "error" in response_text.lower()
+            return False
 
     def _analyze_error_response(self, response, response_text) -> str or None:
         if response is None or response_text is None:
@@ -93,6 +93,8 @@ class ProcessGithubRepos:
 
         # check if related to rate abuse or timeout
         try:
+            if str(response.headers.get("X-RateLimit-Remaining")) == "0":
+                return GITHUB_RATE_ABUSE_FLAG
             error_message = response_text.get("message") or response_text.get("errors", [])[0].get("message")
             if self._is_message_rate_abuse(error_message):
                 return GITHUB_RATE_ABUSE_FLAG

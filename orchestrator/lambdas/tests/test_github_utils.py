@@ -1,7 +1,7 @@
 import copy
 import json
 import unittest
-from collections import namedtuple
+from dataclasses import dataclass
 from unittest.mock import patch
 
 from heimdall_repos import github_utils
@@ -13,6 +13,10 @@ TEST_ABUSE_RESPONSE = {
 }
 
 TEST_RATE_LIMIT_RESPONSE = {"errors": [{"type": "RATE_LIMITED", "message": "API rate limit exceeded for user ID."}]}
+
+TEST_HEADERS_RATE_LIMIT_OK = {"X-RateLimit-Remaining": 1000}
+
+TEST_HEADERS_RATE_LIMIT_EXCEEDED = {"X-RateLimit-Remaining": 0}
 
 TEST_TIMEOUT_RESPONSE = {
     "data": None,
@@ -44,7 +48,12 @@ TEST_EXTERNAL_ORGS = [f"github/{TEST_ORG}"]
 
 TEST_BATCH_ID = "4886eea8-ebca-4bcf-bf22-063ca255067c"
 
-Response = namedtuple("Response", ["text", "status_code"])
+
+@dataclass
+class Response:
+    text: str
+    status_code: int
+    headers: dict
 
 
 class TestGithubUtils(unittest.TestCase):
@@ -63,22 +72,12 @@ class TestGithubUtils(unittest.TestCase):
         )
 
     def test_check_for_errors_in_response_dict_true(self):
-        result = self.process_github_repos._check_for_errors_in_response(TEST_RATE_LIMIT_RESPONSE)
+        result = self.process_github_repos._check_for_errors_in_response_body(TEST_RATE_LIMIT_RESPONSE)
 
         self.assertTrue(result)
 
     def test_check_for_errors_in_response_dict_false(self):
-        result = self.process_github_repos._check_for_errors_in_response(TEST_RESPONSE_NO_ERRORS)
-
-        self.assertFalse(result)
-
-    def test_check_for_errors_in_response_string_true(self):
-        result = self.process_github_repos._check_for_errors_in_response("This is an Error response")
-
-        self.assertTrue(result)
-
-    def test_check_for_errors_in_response_string_false(self):
-        result = self.process_github_repos._check_for_errors_in_response("This is a response")
+        result = self.process_github_repos._check_for_errors_in_response_body(TEST_RESPONSE_NO_ERRORS)
 
         self.assertFalse(result)
 
@@ -88,7 +87,7 @@ class TestGithubUtils(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_analyze_error_response_string(self):
-        response = Response("I am an error response.", 400)
+        response = Response("I am an error response.", 400, TEST_HEADERS_RATE_LIMIT_OK)
         response_text = self.process_github_repos._get_response_text(response)
 
         result = self.process_github_repos._analyze_error_response(response, response_text)
@@ -96,7 +95,7 @@ class TestGithubUtils(unittest.TestCase):
         self.assertEqual(response.text, result)
 
     def test_analyze_error_response_dict(self):
-        response = Response('{"message": "error!"}', 400)
+        response = Response('{"message": "error!"}', 400, TEST_HEADERS_RATE_LIMIT_OK)
         response_text = self.process_github_repos._get_response_text(response)
 
         expected_result = json.loads(response.text)
@@ -105,21 +104,28 @@ class TestGithubUtils(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     def test_analyze_error_response_rate_abuse_dict(self):
-        response = Response(json.dumps(TEST_ABUSE_RESPONSE), 403)
+        response = Response(json.dumps(TEST_ABUSE_RESPONSE), 403, TEST_HEADERS_RATE_LIMIT_OK)
         response_text = self.process_github_repos._get_response_text(response)
         result = self.process_github_repos._analyze_error_response(response, response_text)
 
         self.assertEqual(GITHUB_RATE_ABUSE_FLAG, result)
 
     def test_analyze_error_response_rate_limit_dict(self):
-        response = Response(json.dumps(TEST_RATE_LIMIT_RESPONSE), 200)
+        response = Response(json.dumps(TEST_RATE_LIMIT_RESPONSE), 200, TEST_HEADERS_RATE_LIMIT_OK)
+        response_text = self.process_github_repos._get_response_text(response)
+        result = self.process_github_repos._analyze_error_response(response, response_text)
+
+        self.assertEqual(GITHUB_RATE_ABUSE_FLAG, result)
+
+    def test_analyze_error_response_rate_limit_header(self):
+        response = Response(json.dumps(TEST_RESPONSE_NO_ERRORS), 200, TEST_HEADERS_RATE_LIMIT_EXCEEDED)
         response_text = self.process_github_repos._get_response_text(response)
         result = self.process_github_repos._analyze_error_response(response, response_text)
 
         self.assertEqual(GITHUB_RATE_ABUSE_FLAG, result)
 
     def test_analyze_error_response_timeout_dict(self):
-        response = Response(json.dumps(TEST_TIMEOUT_RESPONSE), 502)
+        response = Response(json.dumps(TEST_TIMEOUT_RESPONSE), 502, TEST_HEADERS_RATE_LIMIT_OK)
         response_text = self.process_github_repos._get_response_text(response)
         result = self.process_github_repos._analyze_error_response(response, response_text)
 
