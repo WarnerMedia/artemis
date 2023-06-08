@@ -64,7 +64,7 @@ class ProcessGithubRepos:
 
         response_text = self._get_response_text(response)
 
-        # cannot depend on status code alone because rate limit errors have a 200 code
+        # cannot depend on status code alone because some errors have a 200 code (e.g. rate limit)
         if response.status_code != 200 or self._check_for_errors_in_response_body(response_text):
             error_response = self._analyze_error_response(response, response_text)
             return self._report_error_response(response, error_response)
