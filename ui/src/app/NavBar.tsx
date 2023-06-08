@@ -1,6 +1,14 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Trans, t } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
+import {
+	AccountCircle as AccountCircleIcon,
+	Help as DocsLinkIcon,
+	Menu as MenuIcon,
+	MenuOpen as MenuOpenIcon,
+	Person as PersonIcon,
+	Policy as PolicyIcon,
+	Search as SearchIcon,
+} from "@mui/icons-material";
 import {
 	Alert,
 	AppBar,
@@ -16,28 +24,20 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import {
-	AccountCircle as AccountCircleIcon,
-	Help as DocsLinkIcon,
-	Menu as MenuIcon,
-	MenuOpen as MenuOpenIcon,
-	Person as PersonIcon,
-	Policy as PolicyIcon,
-	Search as SearchIcon,
-} from "@mui/icons-material";
+import { Theme, ThemeProvider, createTheme } from "@mui/material/styles";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { makeStyles } from "tss-react/mui";
-import { createTheme, ThemeProvider, Theme } from "@mui/material/styles";
-import { useLingui } from "@lingui/react";
-import { Trans, t } from "@lingui/macro";
 
-import { RootState } from "app/rootReducer";
-import { selectCurrentUser } from "features/users/currentUserSlice";
-import { selectSystemStatus } from "features/systemStatus/systemStatusSlice";
-import { formatDate } from "utils/formatters";
-import React from "react";
-import { selectTheme } from "features/theme/themeSlice";
 import { APP_CUSTOM_LOGO, APP_DOC_URL_USAGE } from "app/globals";
+import { RootState } from "app/rootReducer";
 import Logo from "custom/Logo";
+import { selectSystemStatus } from "features/systemStatus/systemStatusSlice";
+import { selectTheme } from "features/theme/themeSlice";
+import { selectCurrentUser } from "features/users/currentUserSlice";
+import React from "react";
+import { formatDate } from "utils/formatters";
 
 const useStyles = makeStyles()((theme) => ({
 	accountProgress: {

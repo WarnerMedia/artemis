@@ -1,5 +1,5 @@
-import { render, screen } from "test-utils";
 import WelcomeDialog from "components/WelcomeDialog";
+import { render, screen } from "test-utils";
 
 describe("WelcomeDialog component", () => {
 	it("!open, dialog isn't displayed", () => {

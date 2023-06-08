@@ -1,14 +1,9 @@
-import axios, { AxiosRequestConfig } from "axios";
 import client, {
 	AuthError,
 	exportsForTesting,
 	handleException,
 } from "api/client";
-import store from "app/store";
-import { addNotification } from "features/notifications/notificationsSlice";
-import { setGlobalException } from "features/globalException/globalExceptionSlice";
 import { APP_NOTIFICATION_DELAY } from "app/globals";
-import { ScanOptionsForm } from "features/scans/scansSchemas";
 import {
 	configPlugins,
 	pluginCatalog,
@@ -18,6 +13,11 @@ import {
 	techPlugins,
 	vulnPlugins,
 } from "app/scanPlugins";
+import store from "app/store";
+import axios, { AxiosRequestConfig } from "axios";
+import { setGlobalException } from "features/globalException/globalExceptionSlice";
+import { addNotification } from "features/notifications/notificationsSlice";
+import { ScanOptionsForm } from "features/scans/scansSchemas";
 import { mockScan001 } from "../../../testData/testMockData";
 
 jest.useFakeTimers();
@@ -133,7 +133,7 @@ describe("api client", () => {
 		it("should reload current page", () => {
 			// mock window.location.reload
 			const globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 			Object.defineProperty(window, "location", {
 				value: {
 					reload: jest.fn(),
@@ -142,7 +142,7 @@ describe("api client", () => {
 
 			exportsForTesting._redirect();
 			expect(window.location.reload).toHaveBeenCalled();
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 		});
 	});
 

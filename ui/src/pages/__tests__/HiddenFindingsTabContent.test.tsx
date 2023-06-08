@@ -455,7 +455,7 @@ describe("HiddenFindingsTabContent component", () => {
 
 			// mock window.location.reload
 			const globalWindow = global.window;
-			global.window = Object.create(window);
+			global.window ??= Object.create(window);
 			Object.defineProperty(window, "location", {
 				value: {
 					hash,
@@ -522,7 +522,7 @@ describe("HiddenFindingsTabContent component", () => {
 				user,
 			});
 
-			global.window = globalWindow;
+			global.window ??= globalWindow;
 		});
 	});
 });

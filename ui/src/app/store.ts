@@ -1,6 +1,6 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import createSagaMiddleware from "redux-saga";
+import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import logger from "redux-logger";
+import createSagaMiddleware from "redux-saga";
 
 import rootReducer, { RootState } from "app/rootReducer";
 import rootSaga from "app/rootSaga";

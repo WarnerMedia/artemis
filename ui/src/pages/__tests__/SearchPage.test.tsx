@@ -97,7 +97,7 @@ describe("SearchPage component", () => {
 		});
 		mockUseNavigate.mockImplementation(() => mockNavigate);
 		globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 		Object.defineProperty(window, "history", {
 			get() {
 				return mockHistory;
@@ -120,7 +120,7 @@ describe("SearchPage component", () => {
 		mockDispatch.mockClear();
 		mockUseNavigate.mockClear();
 		mockNavigate.mockClear();
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 		mockGetComponents.mockRestore();
 		mockGetComponentRepos.mockRestore();
 		mockGetRepos.mockRestore();
@@ -186,7 +186,7 @@ describe("SearchPage component", () => {
 					[
 						"License Match",
 						/license match/i,
-						["Contains", "Exact"],
+						["No License", "Any License", "Contains", "Exact"],
 						"Contains",
 						false,
 					],
@@ -590,7 +590,7 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=component&last_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}&license__icontains=${licenseValue}&name__icontains=${componentNameValue}&repo__icontains=${repoValue}&service=${serviceValue}&version__icontains=${componentVersionValue}`
 					);
 				});
@@ -634,7 +634,7 @@ describe("SearchPage component", () => {
 
 					await validateSelect({
 						label: /license match/i,
-						options: ["Contains", "Exact"],
+						options: ["No License", "Any License", "Contains", "Exact"],
 						defaultOption: "Contains",
 						disabled: false,
 						selectOption: "Exact",
@@ -754,6 +754,126 @@ describe("SearchPage component", () => {
 					);
 				});
 
+				it("Filters and URL search params match No License", async () => {
+					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+					const { user } = render(<SearchPage />);
+
+					// fill-out the license form field
+					await validateSelect({
+						label: /license match/i,
+						options: ["No License", "Any License", "Contains", "Exact"],
+						defaultOption: "Contains",
+						disabled: false,
+						selectOption: "No License",
+						user,
+					});
+					const licenseField = await screen.findByRole("textbox", {
+						name: /license/i,
+					});
+					expect(licenseField).toBeDisabled();
+
+					// submit form
+					const submitButton = await screen.findByRole("button", {
+						name: /^search$/i,
+					});
+					await user.click(submitButton);
+
+					await waitFor(() => {
+						screen.queryByText(/fetching results.../);
+					});
+
+					await waitFor(() => {
+						expect(
+							screen.queryByText(/fetching results.../)
+						).not.toBeInTheDocument();
+					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
+
+					// "component" should not be included in filters
+					// it determines that API call client.getComponents should be called for a components search
+					expect(mockGetComponents).toHaveBeenLastCalledWith({
+						meta: {
+							currentPage: 0,
+							filters: {
+								license: {
+									filter: "true",
+									match: "null",
+								},
+							},
+							itemsPerPage: 50,
+							orderBy: "name",
+						},
+					});
+					expect(mockNavigate).toHaveBeenLastCalledWith(
+						`/search?category=component&license__null=true`
+					);
+				});
+
+				it("Filters and URL search params match Any License", async () => {
+					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+					const { user } = render(<SearchPage />);
+
+					// fill-out the license form field
+					await validateSelect({
+						label: /license match/i,
+						options: ["No License", "Any License", "Contains", "Exact"],
+						defaultOption: "Contains",
+						disabled: false,
+						selectOption: "Any License",
+						user,
+					});
+					const licenseField = await screen.findByRole("textbox", {
+						name: /license/i,
+					});
+					expect(licenseField).toBeDisabled();
+
+					// submit form
+					const submitButton = await screen.findByRole("button", {
+						name: /^search$/i,
+					});
+					await user.click(submitButton);
+
+					await waitFor(() => {
+						screen.queryByText(/fetching results.../);
+					});
+
+					await waitFor(() => {
+						expect(
+							screen.queryByText(/fetching results.../)
+						).not.toBeInTheDocument();
+					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
+
+					// "component" should not be included in filters
+					// it determines that API call client.getComponents should be called for a components search
+					expect(mockGetComponents).toHaveBeenLastCalledWith({
+						meta: {
+							currentPage: 0,
+							filters: {
+								license: {
+									filter: "false",
+									match: "null",
+								},
+							},
+							itemsPerPage: 50,
+							orderBy: "name",
+						},
+					});
+					expect(mockNavigate).toHaveBeenLastCalledWith(
+						`/search?category=component&license__null=false`
+					);
+				});
+
 				it("Filters and URL search params with Scan Time Before match", async () => {
 					const dt = DateTime.now()
 						.minus({ days: 10 })
@@ -820,7 +940,7 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=component&last_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`
 					);
 				});
@@ -891,7 +1011,7 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=component&last_scan__gt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`
 					);
 				});
@@ -1022,7 +1142,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=component&last_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}&license__icontains=${licenseValue}&name__icontains=${componentNameValue}&repo__icontains=${repoValue}&service=${serviceValue}&version__icontains=${componentVersionValue}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1273,6 +1393,116 @@ describe("SearchPage component", () => {
 					expect(rows).toHaveLength(mockSearchComponents.results.length);
 				});
 
+				it("Valid No License matcher populates form", async () => {
+					mockLocation = {
+						search: `?category=component&license__null=true`,
+					};
+					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+					render(<SearchPage />);
+
+					await waitFor(() => {
+						screen.queryByText(/fetching results.../);
+					});
+
+					await waitFor(() => {
+						expect(
+							screen.queryByText(/fetching results.../)
+						).not.toBeInTheDocument();
+					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
+
+					screen.getByRole("button", { name: /license match no license/i });
+					const licenseField = screen.getByRole("textbox", {
+						name: /license/i,
+					});
+					expect(licenseField).toBeDisabled();
+
+					const submitButton = await screen.findByRole("button", {
+						name: /^search$/i,
+					});
+					expect(submitButton).toBeEnabled();
+
+					// form has been submitted
+					expect(mockGetComponents).toHaveBeenLastCalledWith({
+						meta: {
+							currentPage: 0,
+							filters: {
+								license: {
+									filter: "true",
+									match: "null",
+								},
+							},
+							itemsPerPage: 50,
+							orderBy: "name",
+						},
+					});
+
+					// table is populated with search results
+					const table = screen.getByRole("table", { name: "results table" });
+					const rows = within(table).getAllByRole("checkbox");
+					expect(rows).toHaveLength(mockSearchComponents.results.length);
+				});
+
+				it("Valid Any License matcher populates form", async () => {
+					mockLocation = {
+						search: `?category=component&license__null=false`,
+					};
+					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+					render(<SearchPage />);
+
+					await waitFor(() => {
+						screen.queryByText(/fetching results.../);
+					});
+
+					await waitFor(() => {
+						expect(
+							screen.queryByText(/fetching results.../)
+						).not.toBeInTheDocument();
+					});
+					await waitFor(
+						() => {
+							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+						},
+						{ timeout: 6000 }
+					);
+
+					screen.getByRole("button", { name: /license match any license/i });
+					const licenseField = screen.getByRole("textbox", {
+						name: /license/i,
+					});
+					expect(licenseField).toBeDisabled();
+
+					const submitButton = await screen.findByRole("button", {
+						name: /^search$/i,
+					});
+					expect(submitButton).toBeEnabled();
+
+					// form has been submitted
+					expect(mockGetComponents).toHaveBeenLastCalledWith({
+						meta: {
+							currentPage: 0,
+							filters: {
+								license: {
+									filter: "false",
+									match: "null",
+								},
+							},
+							itemsPerPage: 50,
+							orderBy: "name",
+						},
+					});
+
+					// table is populated with search results
+					const table = screen.getByRole("table", { name: "results table" });
+					const rows = within(table).getAllByRole("checkbox");
+					expect(rows).toHaveLength(mockSearchComponents.results.length);
+				});
+
 				it("Reset button resets form", async () => {
 					const componentNameValue = "component_name_value";
 					const componentVersionValue = "component_version_value";
@@ -1285,7 +1515,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=component&last_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}&license=${licenseValue}&name=${componentNameValue}&repo=${repoValue}&service__icontains=${serviceValue}&version=${componentVersionValue}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1392,7 +1622,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=component&last_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1492,7 +1722,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=component&last_scan__gt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -2955,7 +3185,7 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`
 					);
 				});
@@ -3164,7 +3394,7 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`
 					);
 				});
@@ -3248,7 +3478,7 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__gt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`
 					);
 				});
@@ -3453,7 +3683,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -3656,7 +3886,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}&repo=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service__icontains=${serviceValue}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -3749,7 +3979,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -3838,7 +4068,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__gt=${encodeURIComponent(
-							dt.toUTC().toISO()
+							dt.toUTC().toISO() ?? ""
 						)}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));

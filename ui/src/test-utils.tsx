@@ -14,7 +14,6 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
-import { en } from "make-plural/plurals";
 import { messages as enMessages } from "locale/en/messages";
 import { MemoryRouter } from "react-router-dom";
 import store from "app/store";
@@ -39,8 +38,6 @@ interface AllTheProvidersProps {
 
 const AllTheProviders = ({ children }: AllTheProvidersProps) => {
 	const locale = "en";
-	i18n.loadLocaleData(locale, { plurals: en });
-	// @ts-ignore
 	i18n.load(locale, enMessages);
 	i18n.activate(locale);
 

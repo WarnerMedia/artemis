@@ -74,7 +74,7 @@ describe("UserSettings component", () => {
 			return mockLocation;
 		});
 		globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 		Object.defineProperty(window, "history", {
 			get() {
 				return mockHistory;
@@ -94,12 +94,12 @@ describe("UserSettings component", () => {
 		mockUseLocation.mockClear();
 		mockUseNavigate.mockClear();
 		mockNavigate.mockClear();
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 	});
 
 	it("page title should include 'user settings'", async () => {
 		const globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 
 		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 		render(<UserSettings />);
@@ -109,7 +109,7 @@ describe("UserSettings component", () => {
 
 		// check the page title
 		expect(global.window.document.title).toMatch("User Settings");
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 	});
 
 	it("page updates location to remove search params", async () => {
@@ -1043,7 +1043,7 @@ describe("UserSettings component", () => {
 
 				it("Copy-to-clipboard should appear when there are scopes", async () => {
 					const globalWindow = global.window;
-					global.window = Object.create(window);
+					global.window ??= Object.create(window);
 					global.scrollTo = jest.fn();
 					document.execCommand = jest.fn((commandId, showUI, value) => true);
 
@@ -1108,7 +1108,7 @@ describe("UserSettings component", () => {
 					});
 					expect(copyButton).toBeInTheDocument();
 
-					global.window = globalWindow;
+					global.window ??= globalWindow;
 				});
 			});
 		});

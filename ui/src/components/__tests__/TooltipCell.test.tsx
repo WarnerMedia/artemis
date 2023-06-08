@@ -1,5 +1,5 @@
-import { render, screen } from "test-utils";
 import TooltipCell from "components/ScopeCell";
+import { render, screen } from "test-utils";
 
 describe("TooltipCell component", () => {
 	it("no args, empty results", () => {

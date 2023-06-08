@@ -33,7 +33,7 @@ describe("UsersPage component", () => {
 
 	it("page title should include 'user management'", async () => {
 		const globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 
 		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 		render(<UsersPage />);
@@ -43,7 +43,7 @@ describe("UsersPage component", () => {
 
 		// check the page title
 		expect(global.window.document.title).toMatch("User Management");
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 	});
 
 	it("page should have a back button", () => {
@@ -305,7 +305,7 @@ describe("UsersPage component", () => {
 
 			it("copy-to-clipboard should appear when there are scopes", async () => {
 				const globalWindow = global.window;
-				global.window = Object.create(window);
+				global.window ??= Object.create(window);
 				global.scrollTo = jest.fn();
 				document.execCommand = jest.fn((commandId, showUI, value) => true);
 
@@ -382,7 +382,7 @@ describe("UsersPage component", () => {
 				});
 				expect(copyButton).not.toBeInTheDocument();
 
-				global.window = globalWindow;
+				global.window ??= globalWindow;
 			});
 		});
 

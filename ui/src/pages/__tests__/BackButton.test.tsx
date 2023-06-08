@@ -18,7 +18,7 @@ describe("BackButton component", () => {
 	beforeEach(() => {
 		mockUseNavigate.mockImplementation(() => mockNavigate);
 		globalWindow = global.window;
-		global.window = Object.create(window);
+		global.window ??= Object.create(window);
 		Object.defineProperty(window, "history", {
 			get() {
 				return mockHistory;
@@ -28,7 +28,7 @@ describe("BackButton component", () => {
 	afterEach(() => {
 		mockUseNavigate.mockClear();
 		mockNavigate.mockClear();
-		global.window = globalWindow;
+		global.window ??= globalWindow;
 	});
 
 	it("direct navigation to page goes back to /", async () => {
