@@ -61,12 +61,16 @@ class ProcessGithubRepos:
             json={"query": query},
             timeout=DEFAULT_API_TIMEOUT,
         )
-        if response.status_code != 200:
-            error_response = self._analyze_error_response(response)
+
+        response_text = self._get_response_text(response)
+
+        # cannot depend on status code alone because rate limit errors have a 200 code
+        if response.status_code != 200 or self._check_for_errors_in_response(response_text):
+            error_response = self._analyze_error_response(response, response_text)
             return self._report_error_response(response, error_response)
         return response.text
 
-    def _analyze_error_response(self, response) -> str or None:
+    def _get_response_text(self, response):
         if response is None:
             return None
         response_text = response.text
@@ -75,16 +79,28 @@ class ProcessGithubRepos:
         resp = self.json_utils.get_json_from_response(response_text)
         if not resp:
             return response_text
+        return resp
+
+    def _check_for_errors_in_response(self, response_text) -> bool:
+        try:
+            return len(response_text.get("errors", [])) > 0
+        except AttributeError:
+            return "error" in response_text.lower()
+
+    def _analyze_error_response(self, response, response_text) -> str or None:
+        if response is None or response_text is None:
+            return None
+
         # check if related to rate abuse or timeout
         try:
-            error_message = resp.get("errors")[0].get("message")
-            if str(response.status_code) == "403" and self._is_message_rate_abuse(error_message):
+            error_message = response_text.get("message") or response_text.get("errors", [])[0].get("message")
+            if self._is_message_rate_abuse(error_message):
                 return GITHUB_RATE_ABUSE_FLAG
             if str(response.status_code) == "502" and self._is_message_timeout(error_message):
                 return GITHUB_TIMEOUT_FLAG
-        except IndexError:
+        except (IndexError, AttributeError):
             pass
-        return resp
+        return response_text
 
     def _is_message_rate_abuse(self, message):
         """
