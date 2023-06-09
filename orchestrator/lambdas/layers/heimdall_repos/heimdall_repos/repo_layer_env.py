@@ -40,7 +40,7 @@ GITLAB_REPO_QUERY = """
 GITHUB_REPO_QUERY = """
 {
     organization(login: "%s") {
-        repositories(first: 100,
+        repositories(first: 75,
                      after: %s,
                      orderBy: {field: NAME, direction: ASC}) {
             nodes {
@@ -54,7 +54,7 @@ GITHUB_REPO_QUERY = """
                     }
                 }
                 isPrivate
-                refs(first: 100, refPrefix:"refs/heads/", direction: ASC) {
+                refs(first: 75, refPrefix:"refs/heads/", direction: ASC) {
                     nodes {
                         name
                         target {
@@ -104,3 +104,6 @@ GITHUB_REPO_REF_QUERY = """
 GITHUB_RATE_ABUSE_FLAG = "rate_abuse"
 # Last key added in an attempt to catch future iterations of the rate limiting.
 GITHUB_RATE_ABUSE_KEYWORDS = ["abuse detection", "rate limit", "Please wait a few minutes before you try again."]
+
+GITHUB_TIMEOUT_FLAG = "timeout"
+GITHUB_TIMEOUT_KEYWORDS = ["timeout", "Something went wrong while executing your query."]

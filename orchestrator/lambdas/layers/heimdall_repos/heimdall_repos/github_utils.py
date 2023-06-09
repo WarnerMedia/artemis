@@ -2,12 +2,13 @@
 from typing import Tuple
 
 import requests
-
 from heimdall_repos.repo_layer_env import (
     GITHUB_RATE_ABUSE_FLAG,
     GITHUB_RATE_ABUSE_KEYWORDS,
     GITHUB_REPO_QUERY,
     GITHUB_REPO_REF_QUERY,
+    GITHUB_TIMEOUT_FLAG,
+    GITHUB_TIMEOUT_KEYWORDS,
 )
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org
@@ -60,12 +61,16 @@ class ProcessGithubRepos:
             json={"query": query},
             timeout=DEFAULT_API_TIMEOUT,
         )
-        if response.status_code != 200:
-            error_response = self._analyze_error_response(response)
+
+        response_text = self._get_response_text(response)
+
+        # cannot depend on status code alone because some errors have a 200 code (e.g. rate limit)
+        if response.status_code != 200 or self._check_for_errors_in_response_body(response_text):
+            error_response = self._analyze_error_response(response, response_text)
             return self._report_error_response(response, error_response)
         return response.text
 
-    def _analyze_error_response(self, response) -> str or None:
+    def _get_response_text(self, response):
         if response is None:
             return None
         response_text = response.text
@@ -74,10 +79,30 @@ class ProcessGithubRepos:
         resp = self.json_utils.get_json_from_response(response_text)
         if not resp:
             return response_text
-        # check if related to rate abuse
-        if str(response.status_code) == "403" and self._is_message_rate_abuse(resp.get("message")):
-            return GITHUB_RATE_ABUSE_FLAG
         return resp
+
+    def _check_for_errors_in_response_body(self, response_text) -> bool:
+        try:
+            return len(response_text.get("errors", [])) > 0
+        except AttributeError:
+            return False
+
+    def _analyze_error_response(self, response, response_text) -> str or None:
+        if response is None or response_text is None:
+            return None
+
+        # check if related to rate abuse or timeout
+        try:
+            if str(response.headers.get("X-RateLimit-Remaining")) == "0":
+                return GITHUB_RATE_ABUSE_FLAG
+            error_message = response_text.get("message") or response_text.get("errors", [])[0].get("message")
+            if self._is_message_rate_abuse(error_message):
+                return GITHUB_RATE_ABUSE_FLAG
+            if str(response.status_code) == "502" and self._is_message_timeout(error_message):
+                return GITHUB_TIMEOUT_FLAG
+        except (IndexError, AttributeError):
+            pass
+        return response_text
 
     def _is_message_rate_abuse(self, message):
         """
@@ -91,9 +116,24 @@ class ProcessGithubRepos:
                 return True
         return False
 
+    def _is_message_timeout(self, message):
+        """
+        Check if timeout message keywords are in the response message.
+        """
+        if message is None:
+            return False
+
+        for timeout_keyword in GITHUB_TIMEOUT_KEYWORDS:
+            if timeout_keyword in message:
+                return True
+        return False
+
     def _report_error_response(self, response, error_response):
         if error_response == GITHUB_RATE_ABUSE_FLAG:
             self.log.warning("Github abuse limit has been reached.")
+            return error_response
+        if error_response == GITHUB_TIMEOUT_FLAG:
+            self.log.warning("Github query timed out.")
             return error_response
         self.log.error("Code: %s - %s", response.status_code, error_response)
         return None
@@ -102,7 +142,7 @@ class ProcessGithubRepos:
         self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
         query = GITHUB_REPO_QUERY % (self.service_info.org, self.service_info.cursor)
         response_text = self._query_github_api(query)
-        if response_text == GITHUB_RATE_ABUSE_FLAG:
+        if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
@@ -242,7 +282,7 @@ class ProcessGithubRepos:
         while next_page:
             query = GITHUB_REPO_REF_QUERY % (self.service_info.org, repo, cursor)
             response_text = self._query_github_api(query)
-            if not response_text or response_text == GITHUB_RATE_ABUSE_FLAG:
+            if not response_text or response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
                 break
             response_dict = self.json_utils.get_json_from_response(response_text)
             if not response_dict:
