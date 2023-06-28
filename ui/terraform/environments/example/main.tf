@@ -32,10 +32,12 @@ provider "aws" {
 module "analyzer-ui" {
   source = "../../modules/analyzer-ui"
 
-  app         = local.app
-  environment = local.environment
-  tags        = local.tags
-  profile     = local.profile
+  app               = local.app
+  environment       = local.environment
+  tags              = local.tags
+  profile           = local.profile
+  cloudfront_domain = "artemis-ui.example.com"
+  zone_name         = "artemis.example.com"
 }
 
 output "cloudfront_url" {

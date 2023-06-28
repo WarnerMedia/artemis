@@ -12,6 +12,14 @@ variable "tags" {
   type = map(any)
 }
 
+variable "cloudfront_domain" {
+  description = "Domain name that will be used for Cloudfront distribution"
+}
+
+variable "zone_name" {
+  description = "Name of the zone in which the Cloudfront domain will be created"
+}
+
 variable "profile" {}
 
 ###############################################################################
