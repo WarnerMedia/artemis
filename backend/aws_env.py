@@ -17,7 +17,15 @@ def parse_args():
 
 args = parse_args()
 
-resp = requests.get("http://169.254.169.254/latest/dynamic/instance-identity/document")
+resp = requests.put("http://169.254.169.254/latest/api/token", headers={"X-aws-ec2-metadata-token-ttl-seconds": 21600})
+if resp.status_code != 200:
+    sys.exit(1)
+
+token = resp.text
+
+resp = requests.get(
+    "http://169.254.169.254/latest/dynamic/instance-identity/document", headers={"X-aws-ec2-metadata-token": token}
+)
 if resp.status_code != 200:
     sys.exit(1)
 
