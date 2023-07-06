@@ -85,7 +85,8 @@ resource "aws_launch_template" "engine-template" {
   }
 
   metadata_options {
-    http_tokens = "required"
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 
   tag_specifications {
