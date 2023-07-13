@@ -399,6 +399,12 @@ resource "aws_api_gateway_deployment" "api" {
 # Certificate and DNS
 ###############################################################################
 
+provider "aws" {
+  alias   = "us-east-1"
+  region  = "us-east-1"
+  profile = var.profile
+}
+
 resource "aws_acm_certificate" "api" {
   domain_name               = var.domain_name
   subject_alternative_names = var.alternative_names

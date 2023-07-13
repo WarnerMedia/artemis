@@ -120,7 +120,7 @@ module "analyzer" {
   database_availability_zones = ["${local.region}a", "${local.region}d"]
   db_instance_type            = "db.r6g.2xlarge"
   database_cidrs              = ["10.0.2.0/24", "10.0.3.0/24"]
-  ui_origin_url               = "https://CF_DISTRO_ID.cloudfront.net"
+  ui_origin_url               = "https://artemis-ui.example.com"
   cognito_domain              = "COGNITO_DOMAIN"
   cognito_app_id              = "COGNITO_APP_ID"
   cognito_pool_id             = "COGNITO_POOL_ID"
