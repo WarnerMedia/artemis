@@ -33,9 +33,9 @@ def handler(event, _):
         try:
             r = requests.post(hec_url, headers={"Authorization": f"Splunk {hec_token}"}, json=data)
             if r.status_code != 200:
-                print(f"Error: {r.text}")
+                print(f"Error [HTTP {r.status_code}]: {r.text}")
         except RequestException as e:
-            print(f"Error: {str(e)}")
+            print(f"Error with request: {str(e)}")
 
 
 def get_secret(secret_name, region=REGION):

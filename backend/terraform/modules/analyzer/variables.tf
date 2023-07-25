@@ -268,6 +268,11 @@ variable "configuration_events_enabled" {
   default     = false
 }
 
+variable "vulnerability_events_enabled" {
+  description = "Whether to send vulnerability events to the event queue"
+  default     = false
+}
+
 ################################################
 # GitHub App
 ################################################

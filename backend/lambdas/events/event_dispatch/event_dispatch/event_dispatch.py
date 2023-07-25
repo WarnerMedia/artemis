@@ -25,6 +25,12 @@ CONFIGURATION_EVENTS_QUEUE = os.environ.get("ARTEMIS_CONFIGURATION_EVENTS_QUEUE"
 if CONFIGURATION_EVENTS_ENABLED and CONFIGURATION_EVENTS_QUEUE and "configuration" not in ADDITIONAL_ROUTING:
     ADDITIONAL_ROUTING["configuration"] = CONFIGURATION_EVENTS_QUEUE
 
+# Set the routing for vulnerability events. Can be set directly or overridden in the additional routing config.
+VULNERABILITY_EVENTS_ENABLED = os.environ.get("ARTEMIS_VULNERABILITY_EVENTS_ENABLED", "false").lower() == "true"
+VULNERABILITY_EVENTS_QUEUE = os.environ.get("ARTEMIS_VULNERABILITY_EVENTS_QUEUE")
+if VULNERABILITY_EVENTS_ENABLED and VULNERABILITY_EVENTS_QUEUE and "vulnerability" not in ADDITIONAL_ROUTING:
+    ADDITIONAL_ROUTING["vulnerability"] = VULNERABILITY_EVENTS_QUEUE
+
 if SECRETS_QUEUE and AUDIT_QUEUE:
     # This is in a conditional so it doesn't run when this file is loaded during unit testing
     SQS = boto3.client("sqs")

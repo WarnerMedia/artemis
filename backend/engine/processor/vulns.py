@@ -238,9 +238,11 @@ def resolve_vulns(scan: Scan, error_plugins: list) -> None:
     ):
         plugins |= Q(vulnerability__plugins=plugin)
 
-    # Get the vuln instances for this repo+ref that have been found by these plugins previously
+    # Get the unresolved vuln instances for this repo+ref that have been found by these plugins previously
     # but that were not found by this scan
-    vuln_instances = RepoVulnerabilityScan.objects.filter(Q(repo=scan.repo, ref=scan.ref) & plugins).exclude(scan=scan)
+    vuln_instances = RepoVulnerabilityScan.objects.filter(
+        Q(repo=scan.repo, ref=scan.ref, resolved=False) & plugins
+    ).exclude(scan=scan)
 
     # Update the vuln instances to mark them resolved
     vuln_instances.update(resolved=True, resolved_by=scan)

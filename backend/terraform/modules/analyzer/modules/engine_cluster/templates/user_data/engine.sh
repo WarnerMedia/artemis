@@ -87,6 +87,8 @@ ARTEMIS_REVPROXY_SECRET_REGION=${revproxy_secret_region}
 ARTEMIS_SECRETS_EVENTS_ENABLED=${secrets_events_enabled}
 ARTEMIS_INVENTORY_EVENTS_ENABLED=${inventory_events_enabled}
 ARTEMIS_CONFIGURATION_EVENTS_ENABLED=${configuration_events_enabled}
+ARTEMIS_VULNERABILITY_EVENTS_ENABLED=${vulnerability_events_enabled}
+ARTEMIS_LOG_LEVEL=${log_level}
 EOF
 
 # Fix ownership of files for ec2-user

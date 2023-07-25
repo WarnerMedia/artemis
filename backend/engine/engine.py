@@ -18,6 +18,7 @@ from env import (
     SQS_ENDPOINT,
     TASK_QUEUE,
     WORKING_DIR,
+    log_environment,
 )
 from processor.processor import EngineProcessor
 from utils.engine import _build_docker_images, check_disk_space, cleanup_images
@@ -192,5 +193,6 @@ def main():
 if __name__ == "__main__":
     log.info("Starting DSO analysis engine")
     log.info("Host ID: %s, Engine ID: %s", INSTANCE_ID, ENGINE_ID)
+    log_environment()
     main()
     log.info("Stopping DSO analysis engine")

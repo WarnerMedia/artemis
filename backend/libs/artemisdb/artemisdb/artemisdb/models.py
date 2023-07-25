@@ -1209,8 +1209,29 @@ class RepoVulnerabilityScan(models.Model):
     def __str__(self):
         return f"<RepoVulnerabilityScan: {str(self.vuln_instance_id)} {self.repo}, {self.ref}>"
 
-    def to_dict(self):
-        return self.repo.to_dict()
+    def to_dict(self, include_resolved_by=True, include_repo=True):
+        ret = {
+            "id": str(self.vuln_instance_id),
+            "resolved": self.resolved,
+            "vulnerability": self.vulnerability.to_dict(),
+        }
+
+        ret["vulnerability"]["components"] = []
+        ret["vulnerability"]["sources"] = []
+        for vsp in self.vulnerabilityscanplugin_set.all():
+            for component in vsp.components.all():
+                c = f"{component.name}-{component.version}"
+            if c not in ret["vulnerability"]["components"]:
+                ret["vulnerability"]["components"].append(c)
+            for source in vsp.source:
+                ret["vulnerability"]["sources"] += source["source"]
+        ret["vulnerability"]["sources"] = list(set(ret["vulnerability"]["sources"]))  # dedup
+
+        if include_resolved_by:
+            ret["resolved_by"] = str(self.resolved_by.scan_id) if self.resolved_by else None
+        if include_repo:
+            ret["repo"] = self.repo.to_dict()
+        return ret
 
 
 class VulnerabilityScanPlugin(models.Model):
