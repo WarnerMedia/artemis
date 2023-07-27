@@ -51,6 +51,11 @@ variable "revproxy_secret_region" {
   default     = "us-east-2"
 }
 
+variable "log_level" {
+  description = "Logging level"
+  default     = "INFO"
+}
+
 ###############################################################################
 # Cluster configuration
 ###############################################################################
@@ -193,6 +198,11 @@ variable "inventory_events_enabled" {
 
 variable "configuration_events_enabled" {
   description = "Whether to send configuration events to the event queue"
+  default     = false
+}
+
+variable "vulnerability_events_enabled" {
+  description = "Whether to send vulnerability events to the event queue"
   default     = false
 }
 

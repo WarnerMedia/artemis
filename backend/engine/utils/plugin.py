@@ -33,6 +33,7 @@ from env import (
     SECRETS_EVENTS_ENABLED,
     INVENTORY_EVENTS_ENABLED,
     CONFIGURATION_EVENTS_ENABLED,
+    VULNERABILITY_EVENTS_ENABLED,
 )
 
 log = Logger(__name__)
@@ -402,6 +403,18 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "details": results["event_info"][item["id"]],
                 "report_url": scan.report_url,
                 "plugin_name": plugin_name,
+            }
+            queue_event(scan.repo.repo, plugin_type, payload)
+    elif plugin_type == PluginType.VULN.value and VULNERABILITY_EVENTS_ENABLED:
+        for item in results.get("details", []):
+            payload = {
+                "timestamp": timestamp,
+                "type": plugin_type,
+                "service": scan.repo.service,
+                "repo": scan.repo.repo,
+                "branch": scan.ref,
+                "details": results["event_info"][item["id"]],
+                "report_url": scan.report_url,
             }
             queue_event(scan.repo.repo, plugin_type, payload)
 

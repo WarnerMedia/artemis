@@ -23,6 +23,7 @@ resource "aws_lambda_function" "event-dispatch" {
       SECRETS_ENABLED                  = var.secrets_enabled
       ARTEMIS_AUDIT_QUEUE              = var.audit_event_queue.id
       ARTEMIS_ADDITIONAL_EVENT_ROUTING = var.additional_event_routing
+      ARTEMIS_LOG_LEVEL                = var.log_level
     }, var.extra_env_vars_event_dispatch)
   }
 

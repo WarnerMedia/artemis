@@ -50,6 +50,8 @@ data "template_file" "engine-script" {
     secrets_events_enabled       = var.secrets_events_enabled
     inventory_events_enabled     = var.inventory_events_enabled
     configuration_events_enabled = var.configuration_events_enabled
+    vulnerability_events_enabled = var.vulnerability_events_enabled
+    log_level                    = var.log_level
   }
 }
 

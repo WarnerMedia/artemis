@@ -1,17 +1,21 @@
 import json
 import os
 from base64 import b64decode
+from datetime import datetime, timezone
 from string import Template
 from typing import Tuple
 
 import boto3
 from botocore.exceptions import ClientError
+from django.db.models import Q, QuerySet
 
+from artemisdb.artemisdb.consts import AllowListType, PluginType
+from artemisdb.artemisdb.models import RepoVulnerabilityScan
 from artemislib.datetime import get_utc_datetime
 from artemislib.db_cache import DBLookupCache
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
-from env import APPLICATION, REGION, SQS_ENDPOINT
+from env import APPLICATION, REGION, SQS_ENDPOINT, VULNERABILITY_EVENTS_ENABLED
 from metadata.metadata import get_all_metadata
 from processor.details import Details
 from processor.sbom import process_sbom
@@ -20,7 +24,7 @@ from processor.vulns import process_vulns, resolve_vulns
 from utils.deploy_key import create_ssh_url, git_clone
 from utils.engine import get_key
 from utils.git import git_clean, git_pull, git_reset
-from utils.plugin import Result, is_plugin_disabled, run_plugin
+from utils.plugin import Result, is_plugin_disabled, run_plugin, process_event_info
 
 logger = Logger(__name__)
 
@@ -171,6 +175,9 @@ class EngineProcessor:
         # vulnerabilities are not accidentally resolved.
         resolve_vulns(self.scan.get_scan_object(), error_plugins)
 
+        if VULNERABILITY_EVENTS_ENABLED:
+            self._process_vuln_events()
+
     def pull_repo(self):
         logger.info("Pulling repo %s/%s:%s", self.details.service, self.details.repo, self.action_details.branch)
         url = use_hostname_or_url(self.details.service, self.action_details.url, self.service_dict)
@@ -307,6 +314,53 @@ class EngineProcessor:
 
         return most_severe
 
+    def _process_vuln_events(self) -> None:
+        logger.info("Processing vulnerability events")
+
+        # Get all of the vulnerability instances that were either created by this scan or resolved by this scan
+        qs = self.scan.get_scan_object().repovulnerabilityscan_set.all() | RepoVulnerabilityScan.objects.filter(
+            resolved=True, resolved_by=self.scan.get_scan_object()
+        )
+
+        # Pull the non-expired vulns AllowList
+        allow_list = list(
+            self.scan.get_scan_object().repo.allowlistitem_set.filter(
+                Q(item_type=AllowListType.VULN.value),
+                Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            )
+        )
+
+        # Pull the non-expired vulns_raw AllowList
+        raw_allow_object_list = self.scan.get_scan_object().repo.allowlistitem_set.filter(
+            Q(item_type=AllowListType.VULN_RAW.value),
+            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+        )
+
+        # Place all the raw CVEs values into a set for faster searching.
+        if raw_allow_object_list:
+            raw_allow_list = set(x.value["id"] for x in raw_allow_object_list)
+        else:
+            raw_allow_list = set()
+
+        # Build out a plugin result structure with event info that contains these
+        # vulns so that they can be processed as if they came from a plugin
+        results = {"details": [], "event_info": {}}
+        for vuln in qs:
+            if not vuln.resolved and allowlist_vuln(vuln, allow_list, raw_allow_list):
+                # Vuln is unresolved but allowlisted so skip it
+                logger.debug("Vuln %s matches allowlist, excluding", vuln)
+                continue
+            elif vuln.resolved:
+                logger.debug("Vuln %s is resolved, including", vuln)
+
+            results["details"].append({"id": str(vuln.vuln_instance_id)})
+            results["event_info"][str(vuln.vuln_instance_id)] = vuln.to_dict(
+                include_resolved_by=False, include_repo=False
+            )
+
+        # Send the results for processing into the event queue
+        process_event_info(self.scan.get_scan_object(), results, PluginType.VULN.value, None)
+
 
 def get_api_key(service_dict: dict, api_key=True, org=None):
     """gets service API key from AWS Secrets Manager
@@ -378,3 +432,33 @@ def handle_key(key, service_type, service_key) -> str or None:
         # base64 decoded first.
         return b64decode(key).decode("utf-8")
     return None
+
+
+def allowlist_vuln(vuln: RepoVulnerabilityScan, allow_list: QuerySet, raw_allow_list: list) -> bool:
+    """
+    Determine whether RepoVulnerabilityScan object should be filtered out by the allowlist
+    """
+    for adv_id in vuln.vulnerability.advisory_ids:
+        if adv_id in raw_allow_list:
+            # Advisory ID is in the list of raw IDs to filter out
+            logger.debug("Vuln matches %s in the raw allow list", adv_id)
+            return True
+    for vsp in vuln.vulnerabilityscanplugin_set.all():
+        components = []
+        for component in vsp.components.all():
+            components.append(f"{component.name}-{component.version}")
+        for item in allow_list:
+            if (
+                item.value["id"] in vuln.vulnerability.advisory_ids
+                and item.value["component"] in components
+                and item.value["source"] in vsp.source
+            ):
+                # This AL item matches a component and source of this vuln instance
+                logger.debug(
+                    "Vuln matches <%s, %s, %s> in the allow list",
+                    item.value["id"],
+                    item.value["component"],
+                    item.value["source"],
+                )
+                return True
+    return False

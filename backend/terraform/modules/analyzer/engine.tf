@@ -7,6 +7,8 @@ module "public_engine_cluster" {
   availability_zone = var.availability_zone
   tags              = var.tags
 
+  log_level = var.log_level
+
   vpc_id             = var.vpc_id
   vpc_route_table_id = var.vpc_route_table_id
   engine_cidr        = "10.0.4.0/24"
@@ -54,6 +56,7 @@ module "public_engine_cluster" {
   secrets_events_enabled       = var.secrets_events_enabled
   inventory_events_enabled     = var.inventory_events_enabled
   configuration_events_enabled = var.configuration_events_enabled
+  vulnerability_events_enabled = var.vulnerability_events_enabled
 }
 
 module "nat_engine_cluster" {
@@ -65,6 +68,8 @@ module "nat_engine_cluster" {
   aws_region        = var.aws_region
   availability_zone = var.availability_zone
   tags              = var.tags
+
+  log_level = var.log_level
 
   vpc_id             = var.vpc_id
   vpc_route_table_id = aws_route_table.lambda_routes.id
@@ -113,4 +118,5 @@ module "nat_engine_cluster" {
   secrets_events_enabled       = var.secrets_events_enabled
   inventory_events_enabled     = var.inventory_events_enabled
   configuration_events_enabled = var.configuration_events_enabled
+  vulnerability_events_enabled = var.vulnerability_events_enabled
 }
