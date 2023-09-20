@@ -398,7 +398,7 @@ resource "aws_lambda_function" "signin-handler" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 128
-  timeout       = 5
+  timeout       = 10
 
   role = aws_iam_role.lambda-assume-role.arn
 
