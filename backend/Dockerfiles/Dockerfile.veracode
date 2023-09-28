@@ -67,7 +67,7 @@ ARG MAVENSHA=400fc5b6d000c158d5ee7937543faa06b6bda8408caa2444a9c947c21472fde0f0b
 
 RUN mkdir -p /maven && \
     echo "$MAVENSHA /maven/maven.tar.gz" > /maven_checksum.txt && \
-    curl https://downloads.apache.org/maven/maven-3/$MAVENVER/binaries/apache-maven-$MAVENVER-bin.tar.gz -L -o /maven/maven.tar.gz && \
+    curl https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$MAVENVER/apache-maven-$MAVENVER-bin.tar.gz -L -o /maven/maven.tar.gz && \
     sha512sum -c /maven_checksum.txt && \
     tar -xzvf /maven/maven.tar.gz -C /maven && \
     mv /maven/apache-maven-$MAVENVER /maven/maven && \
