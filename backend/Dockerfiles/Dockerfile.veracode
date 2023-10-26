@@ -167,7 +167,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" \
 			"git=1:2.39.2-1.1" \
 			"libargon2-1=0~20171227-0.3+deb12u1" \
-			"libcurl4=7.88.1-10+deb12u1" \
+			"libcurl4=7.88.1-10+deb12u4" \
 			"libedit2=3.1-20221030-2" \
 			"libncurses6=6.4-4" \
 			"libonig5=6.9.8-1" \
@@ -177,7 +177,7 @@ RUN apt-get update && \
 			"libxml2=2.9.14+dfsg-1.3~deb12u1" \
 			"libyaml-0-2=0.2.5-1" \
 			"ruby=1:3.1" \
-			"srcclr=3.8.36" \
+			"srcclr=3.8.39" \
 			"zlib1g=1:1.2.13.dfsg-1" && \
 		apt-get -s dist-upgrade | { grep -E '^Inst ' | grep -F 'Debian-Security' || true; } | awk '{print $2}' | xargs apt-get -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" install && \
     npm install --global \
