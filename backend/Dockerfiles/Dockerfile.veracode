@@ -2,30 +2,27 @@
 # Build stages
 ###############################################################################
 
-# python:3.9.17-bookworm
-ARG PYTHON_IMG_VER=sha256:3d35a404db586d00a4ee5a65fd1496fe019ed4bdc068d436a67ce5b64b8b9659
+ARG PYTHON_IMG_VER=python:3.9-bookworm
 
-# python:3.9.17-slim-bookworm
-ARG PYTHON_SLIM_IMG_VER=sha256:2adc70122c1c77b4ce149129c27ae427e119578c28bc6fc9e8909866c582bd21
+ARG PYTHON_SLIM_IMG_VER=python:3.9-slim-bookworm
 
-# php:8.2.8-cli-bookworm
-ARG PHP_IMG_VER=sha256:5f1cbebbb6a873971786857b60a88f0f87f1959a4e29d93fd24afc11db351e09
+ARG PHP_IMG_VER=php:8.2-cli-bookworm
 
-FROM python@${PYTHON_IMG_VER} as srcclr-builder
+FROM ${PYTHON_IMG_VER} as srcclr-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Retrieve and install Veracode GPG signing key
 # Add srcclr to the apt repo list
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install software-properties-common="0.99.30-4" && \
+    apt-get -y --no-install-recommends install software-properties-common="0.99.*" && \
     curl -sSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xdf7dd7a50b746dd4' | gpg --dearmor -o /etc/apt/trusted.gpg.d/veracode-sca-archive.gpg && \
     echo 'deb https://download.sourceclear.com/ubuntu stable/' >/etc/apt/sources.list.d/veracode-sca.list
 
-FROM python@${PYTHON_IMG_VER} as golang-builder
+FROM ${PYTHON_IMG_VER} as golang-builder
 
-ARG GOLANGVER=1.20.6
-ARG GOLANGSHA=b945ae2bb5db01a0fb4786afde64e6fbab50b67f6fa0eb6cfa4924f16a7ff1eb
+ARG GOLANGVER=1.20.10
+ARG GOLANGSHA=80d34f1fd74e382d86c2d6102e0e60d4318461a7c2f457ec1efc4042752d4248
 
 RUN mkdir -p /golang/go && \
     echo "$GOLANGSHA /golang/golang.tar.gz" > /golang_checksum.txt && \
@@ -34,7 +31,7 @@ RUN mkdir -p /golang/go && \
     tar -xzvf /golang/golang.tar.gz -C /golang/go && \
     rm /golang/golang.tar.gz
 
-FROM python@${PYTHON_IMG_VER} as gradle-builder
+FROM ${PYTHON_IMG_VER} as gradle-builder
 
 ARG GRADLEVER=8.2.1
 ARG GRADLESHA=03ec176d388f2aa99defcadc3ac6adf8dd2bce5145a129659537c0874dea5ad1
@@ -47,10 +44,10 @@ RUN mkdir -p /gradle && \
     mv /gradle/gradle-$GRADLEVER /gradle/gradle && \
     rm /gradle/gradle.zip
 
-FROM python@${PYTHON_IMG_VER} as ant-builder
+FROM ${PYTHON_IMG_VER} as ant-builder
 
-ARG ANTVER=1.10.13
-ARG ANTSHA=de4ac604629e39a86a306f0541adb3775596909ad92feb8b7de759b1b286417db24f557228737c8b902d6abf722d2ce5bb0c3baa3640cbeec3481e15ab1958c9
+ARG ANTVER=1.10.14
+ARG ANTSHA=4e74b382dd8271f9eac9fef69ba94751fb8a8356dbd995c4d642f2dad33de77bd37d4001d6c8f4f0ef6789529754968f0c1b6376668033c8904c6ec84543332a
 
 RUN mkdir -p /ant && \
     echo "$ANTSHA /ant/ant.tar.gz" > /ant_checksum.txt && \
@@ -60,10 +57,10 @@ RUN mkdir -p /ant && \
     mv /ant/apache-ant-$ANTVER /ant/ant && \
     rm /ant/ant.tar.gz
 
-FROM python@${PYTHON_IMG_VER} as maven-builder
+FROM ${PYTHON_IMG_VER} as maven-builder
 
-ARG MAVENVER=3.9.3
-ARG MAVENSHA=400fc5b6d000c158d5ee7937543faa06b6bda8408caa2444a9c947c21472fde0f0b64ac452b8cec8855d528c0335522ed5b6c8f77085811c7e29e1bedbb5daa2
+ARG MAVENVER=3.9.5
+ARG MAVENSHA=4810523ba025104106567d8a15a8aa19db35068c8c8be19e30b219a1d7e83bcab96124bf86dc424b1cd3c5edba25d69ec0b31751c136f88975d15406cab3842b
 
 RUN mkdir -p /maven && \
     echo "$MAVENSHA /maven/maven.tar.gz" > /maven_checksum.txt && \
@@ -73,10 +70,10 @@ RUN mkdir -p /maven && \
     mv /maven/apache-maven-$MAVENVER /maven/maven && \
     rm /maven/maven.tar.gz
 
-FROM python@${PYTHON_IMG_VER} as node-builder
+FROM ${PYTHON_IMG_VER} as node-builder
 
-ARG NODEVER=18.17.0
-ARG NODESHA=5c4a7fd9262c0c47bafab3442de6c3fed1602be3d243cb8cf11309a201955e75
+ARG NODEVER=18.18.2
+ARG NODESHA=a44c3e7f8bf91e852c928e5d8bd67ca316b35e27eec1d8acbe3b9dbe03688dab
 
 RUN mkdir -p /node && \
     echo "$NODESHA /node/node.tar.gz" > /node_checksum.txt && \
@@ -86,18 +83,18 @@ RUN mkdir -p /node && \
     mv /node/node-v$NODEVER-linux-x64 /node/node && \
     rm /node/node.tar.gz
 
-FROM php@${PHP_IMG_VER} as php-builder
+FROM ${PHP_IMG_VER} as php-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-FROM python@${PYTHON_IMG_VER} as java-builder
+FROM ${PYTHON_IMG_VER} as java-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG JAVAVER=17.0.8
-ARG JAVASHA=74b528a33bb2dfa02b4d74a0d66c9aff52e4f52924ce23a62d7f9eb1a6744657
+ARG JAVAVER=17.0.9
+ARG JAVASHA=ad45ac97b3bc65497376f98ee276f84f4ab55ef2f62ab7f82ac0013e5b17744a
 
 RUN mkdir -p /java && \
     echo "$JAVASHA java.tar.gz" >java_checksum.txt && \
@@ -109,7 +106,7 @@ RUN mkdir -p /java && \
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python@${PYTHON_SLIM_IMG_VER} as app
+FROM ${PYTHON_SLIM_IMG_VER} as app
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG MAINTAINER
@@ -165,24 +162,24 @@ ENV PATH="$PATH:/usr/local/java/bin"
 # hadolint ignore=DL3005
 RUN apt-get update && \
     apt-get install -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" \
-			"git=1:2.39.2-1.1" \
-			"libargon2-1=0~20171227-0.3+deb12u1" \
-			"libcurl4=7.88.1-10+deb12u4" \
-			"libedit2=3.1-20221030-2" \
-			"libncurses6=6.4-4" \
-			"libonig5=6.9.8-1" \
-			"libsodium23=1.0.18-1" \
-			"libsqlite3-0=3.40.1-2" \
-			"libssl3=3.0.9-1" \
-			"libxml2=2.9.14+dfsg-1.3~deb12u1" \
-			"libyaml-0-2=0.2.5-1" \
-			"ruby=1:3.1" \
-			"srcclr=3.8.39" \
-			"zlib1g=1:1.2.13.dfsg-1" && \
+			"git=1:2.39.*" \
+			"libargon2-1=0~20171227-0.3*" \
+			"libcurl4=7.88.*" \
+			"libedit2=3.1-20221030-*" \
+			"libncurses6=6.4*" \
+			"libonig5=6.9.*" \
+			"libsodium23=1.0.*" \
+			"libsqlite3-0=3.40.*" \
+			"libssl3=3.0.*" \
+			"libxml2=2.9.*" \
+			"libyaml-0-2=0.2.*" \
+			"ruby=1:3.1*" \
+			"srcclr=3.8.*" \
+			"zlib1g=1:1.2.*" && \
 		apt-get -s dist-upgrade | { grep -E '^Inst ' | grep -F 'Debian-Security' || true; } | awk '{print $2}' | xargs apt-get -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" install && \
     npm install --global \
-			"bower@1.8.14" \
-			"yarn@1.22.19" && \
+			"bower@1.8.x" \
+			"yarn@1.22.x" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install -q --no-cache-dir "boto3==1.16.53"
+    pip install -q --no-cache-dir "boto3==1.26.*"
