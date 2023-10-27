@@ -1,4 +1,6 @@
-FROM python:3-alpine
+# Pinning to Python 3.11 because checkov requires aiohttp, and aiohttp is not yet functional with Python 3.12
+# This issue is tracked here: https://github.com/aio-libs/aiohttp/issues/7739
+FROM python:3.11-alpine
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
