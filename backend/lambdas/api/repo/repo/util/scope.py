@@ -1,7 +1,6 @@
 import json
 
 import requests
-
 from artemislib.datetime import get_utc_datetime
 from artemislib.db_cache import DBLookupCache
 from artemislib.logging import Logger
@@ -35,10 +34,14 @@ def validate_scope_with_github(repo_id: str, service_id: str, service_user: str)
 
     headers = {"accept": "application/vnd.github.v3+json", "authorization": authorization}
 
+    log.debug(f"Attempting to validate permissions for github user {service_user} to repo {repo_id}")
+
     r = requests.get(
         f"https://api.github.com/repos/{repo_id}/collaborators/{service_user}/permission",
         headers=headers,
     )
+
+    log.debug(f"Github request returned status code: {r.status_code}")
 
     permission = r.json().get("permission")
 
@@ -46,5 +49,7 @@ def validate_scope_with_github(repo_id: str, service_id: str, service_user: str)
         log.error(f"Error occurred attempting to validate permissions for github user {service_user} to repo {repo_id}")
         log.error(f"Status: {r.status_code}")
         log.error(f"Body: {r.text}")
+
+    log.debug(f"Permission returned for user {service_user} to {repo_id}: {permission}")
 
     return permission in ["admin", "write", "read"]

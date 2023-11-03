@@ -3,9 +3,12 @@ from http import HTTPStatus
 
 from artemisapi.response import response
 from artemisdb.artemisdb.models import UserService
+from artemislib.logging import Logger
 from repo.util.parse_event import EventParser
 from repo.util.scope import update_scope_cache, validate_scope_with_github
 from repo.util.utils import auth
+
+log = Logger(__name__)
 
 
 def authorize(event_parser: EventParser) -> dict:
@@ -24,17 +27,25 @@ def authorize(event_parser: EventParser) -> dict:
 
         if not allowed and service_id == "github" and identity.principal_type != "group_api_key":
             # If not allowed and not a group API key, check permission with GitHub
+            log.debug(
+                f"{identity.principal_id} does not have static or cached scope to {repo_id}, checking for Github access"
+            )
             try:
                 github_account = UserService.objects.get(
                     user__email=identity.principal_id, user__deleted=False, service="github"
                 )
                 github_username = github_account.username
             except UserService.DoesNotExist:
+                log.debug(f"Linked Github account not found for {identity.principal_id}")
                 return response({"message": f"Not authorized for {repo_id}"}, code=HTTPStatus.FORBIDDEN)
 
+            log.debug(f"Linked Github account found for {identity.principal_id}, validating Github access to {repo_id}")
             validated = validate_scope_with_github(repo_id, service_id, github_username)
 
             if validated:
+                log.debug(
+                    f"Linked Github account found for {identity.principal_id} has access to {repo_id}, updating scope cache"
+                )
                 scope_cache += [f"github/{repo_id}"]
                 update_scope_cache(github_username, scope_cache)
 
@@ -58,8 +69,14 @@ def authorize(event_parser: EventParser) -> dict:
                     # the scopes from the self group so that they are given equal consideration
                     # and the group scope does not limit what was verified with GitHub but is
                     # still restricted by the key's own scope.
+
+                    log.debug(f"Checking if {repo_id} in API key scope for {identity.principal_id}")
                     identity.scope[0][1] += [f"github/{repo_id}"]
                     allowed = auth(repo_id, service_id, identity.scope)
+                    if allowed:
+                        log.debug(f"Repo {repo_id} in key scope {identity.scope}")
+                    else:
+                        log.debug(f"Repo {repo_id} not in key scope {identity.scope}")
                 else:
                     # Users have this scope structure:
                     # [
@@ -87,6 +104,8 @@ def authorize(event_parser: EventParser) -> dict:
         # If still not allowed, user is unauthorized
         if not allowed:
             return response({"message": f"Not authorized for {repo_id}"}, code=HTTPStatus.FORBIDDEN)
+
+        log.debug(f"{identity.principal_id} authorized to {repo_id}")
 
 
 def allowlist_is_denied(method: str, resource: str, service: str, repo: str, allowlist_denied: list):
