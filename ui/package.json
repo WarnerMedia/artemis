@@ -52,7 +52,7 @@
 		"yup": "^1.2.0"
 	},
 	"devDependencies": {
-		"@babel/types": "^7.22.4",
+		"@babel/types": "^7.23.2",
 		"@lingui/cli": "^4.2.0",
 		"@lingui/macro": "^4.2.0",
 		"@testing-library/jest-dom": "^5.16.5",
