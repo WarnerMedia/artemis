@@ -70,13 +70,13 @@ def authorize(event_parser: EventParser) -> dict:
                     # and the group scope does not limit what was verified with GitHub but is
                     # still restricted by the key's own scope.
 
-                    log.debug(f"Checking if {repo_id} in API key scope for {identity.principal_id}")
+                    log.debug(f"Checking if {repo_id} in API key scope {identity.scope} for {identity.principal_id}")
                     identity.scope[0][1] += [f"github/{repo_id}"]
                     allowed = auth(repo_id, service_id, identity.scope)
                     if allowed:
-                        log.debug(f"Repo {repo_id} in key scope {identity.scope}")
+                        log.debug(f"Repo {repo_id} in key scope")
                     else:
-                        log.debug(f"Repo {repo_id} not in key scope {identity.scope}")
+                        log.debug(f"Repo {repo_id} not in key scope")
                 else:
                     # Users have this scope structure:
                     # [
