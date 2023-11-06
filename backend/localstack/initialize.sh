@@ -1,3 +1,5 @@
+#!/bin/bash
+
 awslocal sqs create-queue --queue-name artemis-task-queue
 awslocal sqs create-queue --queue-name artemis-priority-task-queue
 awslocal sqs create-queue --queue-name artemis-callback-queue
