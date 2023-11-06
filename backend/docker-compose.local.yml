@@ -13,7 +13,7 @@ services:
     image: "localstack/localstack:latest"
     container_name: "localstack"
     volumes:
-      - ${PWD}/localstack:/docker-entrypoint-initaws.d
+      - ${PWD}/localstack:/etc/localstack/init/ready.d
     ports:
       - "8080:8080"
       - "4566:4566"
