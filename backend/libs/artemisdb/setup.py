@@ -21,7 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/libs/artemisdb"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=["django==3.2.19", "psycopg2-binary", "simplejson"],
+    install_requires=["django==3.2.20", "psycopg2-binary", "simplejson"],
     tests_require=["pytest"],
     entry_points={"console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]},
     classifiers=[
