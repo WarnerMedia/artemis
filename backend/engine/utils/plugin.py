@@ -52,6 +52,7 @@ class Result:
     alerts: list
     debug: list
     disabled: bool = False
+    timedout: bool = False
 
 
 @dataclass
@@ -61,6 +62,7 @@ class PluginSettings:
     name: str
     plugin_type: str
     feature: str
+    timeout: int
 
 
 def get_engine_vars(scan, depth=None, include_dev=False, services=None):
@@ -175,6 +177,7 @@ def get_plugin_settings(plugin: str) -> PluginSettings:
             name=settings.get("name"),
             plugin_type=settings.get("type", "misc"),
             feature=settings.get("feature"),
+            timeout=settings.get("timeout"),
         )
 
 
@@ -292,8 +295,23 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         scan, settings.image, plugin, depth, include_dev, scan_images, plugin_config, services
     )
 
-    # Run the plugin inside the settings.image
-    r = subprocess.run(plugin_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    try:
+        # Run the plugin inside the settings.image
+        r = subprocess.run(
+            plugin_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=settings.timeout
+        )
+    except subprocess.TimeoutExpired:
+        return Result(
+            name=settings.name,
+            type=settings.plugin_type,
+            success=False,
+            truncated=False,
+            details=[],
+            errors=[],
+            alerts=[],
+            debug=[f"Plugin {settings.name} timed out"],
+            timedout=True,
+        )
 
     log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())  # Inject plugin logs
     log.info("--- Plugin log end ---")
@@ -330,13 +348,8 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         )
 
     except json.JSONDecodeError:
-        err_str = r.stdout.decode("utf-8") or "<empty>"
-        if "Traceback" in r.stderr.decode("utf-8"):
-            # If the plugin output contains a stack trace include the last line in the error
-            last_line = r.stderr.decode("utf-8").strip().split("\n")[-1]
-            err_str += f" [Error: {last_line}]"
-        err = f"Plugin returned invalid output: {err_str}"
-        log.error(err)
+        err_str = _get_error_str(r.stdout.decode("utf-8"))
+        log.error(f"Plugin returned invalid output: {err_str}")
     return Result(
         name=settings.name,
         type=settings.plugin_type,
@@ -347,6 +360,15 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         alerts=[],
         debug=[],
     )
+
+
+def _get_error_str(output):
+    err_str = output or "<empty>"
+    if "Traceback" in output:
+        # If the plugin output contains a stack trace include the last line in the error
+        last_line = output.strip().split("\n")[-1]
+        err_str += f" [Error: {last_line}]"
+    return err_str
 
 
 def process_event_info(scan, results, plugin_type, plugin_name):
