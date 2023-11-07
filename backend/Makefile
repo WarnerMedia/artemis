@@ -171,7 +171,7 @@ API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 ENGINE_BASE := 3.9-slim-bullseye
 
 # Django version
-DJANGO_VER = 3.2.19
+DJANGO_VER = 3.2.20
 
 # Enry Info
 ENRYVER := 1.1.0
