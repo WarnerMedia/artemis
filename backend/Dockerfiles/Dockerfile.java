@@ -44,12 +44,9 @@ RUN if [ "$OWASP_DC" != "" ] ; then \
     echo "$OWASP_DC_SHA  dependency-check-$OWASP_DC-release.zip" > owasp_checksum.txt && \
     wget https://github.com/jeremylong/DependencyCheck/releases/download/v$OWASP_DC/dependency-check-$OWASP_DC-release.zip && \
     sha256sum -c owasp_checksum.txt && \
-    unzip dependency-check-$OWASP_DC-release.zip -d /app/owasp_dependency-check; \
+    unzip dependency-check-$OWASP_DC-release.zip -d /app/owasp_dependency-check && \
+    /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --connectiontimeout 120000 --updateonly ; \
     fi
-    
-    # && \
-    # /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --connectiontimeout 120000 --updateonly ; \
-    # fi
 
 WORKDIR /app/findsecbugs
 
