@@ -52,7 +52,6 @@ class Result:
     alerts: list
     debug: list
     disabled: bool = False
-    timedout: bool = False
 
 
 @dataclass
@@ -307,10 +306,9 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
             success=False,
             truncated=False,
             details=[],
-            errors=[],
+            errors=[f"Plugin {settings.name} timed out. (>={settings.timeout} seconds)"],
             alerts=[],
-            debug=[f"Plugin {settings.name} timed out"],
-            timedout=True,
+            debug=[],
         )
 
     log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())  # Inject plugin logs
