@@ -37,7 +37,7 @@ This file contains the plugin's settings. The settings are:
 - type: The type of the plugin: `vulnerability`, `secrets`, `static_analysis`, `inventory`, `configuration`, `sbom`
 - image: The Docker image the plugin runs in. If using a non-public image prefix with `$ECR`. During local development `$ECR` is ignored. When running in AWS, the `$ECR` environment variable is populated with the current account's ECR URL.
 - disabled: Boolean. If true the plugin is skipped. This can also be a string containing the name of an environment variable containing the boolean value, for example "$ARTEMIS_FEATURE_XYZ_ENABLED".
-- timeout: Integer. The amount of time, in seconds, to allow the plugin to run before exiting early with an error.
+- timeout: Integer. If set, this is the amount of time, in seconds, to allow the plugin to run before exiting early with an error.
 
 ```json
 {
