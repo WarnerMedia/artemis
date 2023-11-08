@@ -306,7 +306,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
             success=False,
             truncated=False,
             details=[],
-            errors=[f"Plugin {settings.name} timed out. (>={settings.timeout} seconds)"],
+            errors=[f"Plugin {settings.name} exceeded maximum runtime ({settings.timeout} seconds)."],
             alerts=[],
             debug=[],
         )
