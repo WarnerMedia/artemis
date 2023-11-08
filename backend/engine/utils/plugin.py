@@ -346,8 +346,13 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         )
 
     except json.JSONDecodeError:
-        err_str = _get_error_str(r.stdout.decode("utf-8"))
-        log.error(f"Plugin returned invalid output: {err_str}")
+        err_str = r.stdout.decode("utf-8") or "<empty>"
+        if "Traceback" in r.stderr.decode("utf-8"):
+            # If the plugin output contains a stack trace include the last line in the error
+            last_line = r.stderr.decode("utf-8").strip().split("\n")[-1]
+            err_str += f" [Error: {last_line}]"
+        err = f"Plugin returned invalid output: {err_str}"
+        log.error(err)
     return Result(
         name=settings.name,
         type=settings.plugin_type,
@@ -358,15 +363,6 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         alerts=[],
         debug=[],
     )
-
-
-def _get_error_str(output):
-    err_str = output or "<empty>"
-    if "Traceback" in output:
-        # If the plugin output contains a stack trace include the last line in the error
-        last_line = output.strip().split("\n")[-1]
-        err_str += f" [Error: {last_line}]"
-    return err_str
 
 
 def process_event_info(scan, results, plugin_type, plugin_name):
