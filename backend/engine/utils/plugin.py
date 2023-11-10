@@ -61,6 +61,7 @@ class PluginSettings:
     name: str
     plugin_type: str
     feature: str
+    timeout: int
 
 
 def get_engine_vars(scan, depth=None, include_dev=False, services=None):
@@ -175,6 +176,7 @@ def get_plugin_settings(plugin: str) -> PluginSettings:
             name=settings.get("name"),
             plugin_type=settings.get("type", "misc"),
             feature=settings.get("feature"),
+            timeout=settings.get("timeout"),
         )
 
 
@@ -292,8 +294,22 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
         scan, settings.image, plugin, depth, include_dev, scan_images, plugin_config, services
     )
 
-    # Run the plugin inside the settings.image
-    r = subprocess.run(plugin_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    try:
+        # Run the plugin inside the settings.image
+        r = subprocess.run(
+            plugin_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=settings.timeout
+        )
+    except subprocess.TimeoutExpired:
+        return Result(
+            name=settings.name,
+            type=settings.plugin_type,
+            success=False,
+            truncated=False,
+            details=[],
+            errors=[f"Plugin {settings.name} exceeded maximum runtime ({settings.timeout} seconds)."],
+            alerts=[],
+            debug=[],
+        )
 
     log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())  # Inject plugin logs
     log.info("--- Plugin log end ---")
