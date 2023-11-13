@@ -20,7 +20,7 @@ services:
     environment:
       SERVICES: "sqs"
       HOSTNAME: "localstack"
-      DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
   engine:
     image: "${APPLICATION}/engine:latest"
     scale: 1
