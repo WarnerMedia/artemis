@@ -20,6 +20,7 @@
 * [dexterinbk](https://github.com/dexterinbk)
 * [dtamez](https://github.com/dtamez)
 * [breedenc](https://github.com/breedenc)
+* [faizan12123](https://github.com/faizan12123)
 
 
 **[Main](../README.md)**
