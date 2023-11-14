@@ -5,6 +5,7 @@ from artemisdb.artemisdb.models import PluginResult, Scan
 from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
+from json_report.results.sbom import get_sbom
 from json_report.results.static_analysis import get_static_analysis
 from json_report.util.const import DEFAULT_SCAN_QUERY_PARAMS
 
@@ -246,6 +247,18 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
+TEST_VERACODE_SBOM = PluginResult(
+    plugin_name="Veracode SBOM",
+    plugin_type="sbom",
+    success=True,
+    details=[],
+    errors=["test error"],
+    alerts=["test alert"],
+    debug=["test debug"],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
 
 class TestGenerateReport(unittest.TestCase):
     def test_get_static_analysis_report_for_brakeman(self):
@@ -449,6 +462,23 @@ class TestGenerateReport(unittest.TestCase):
         mock_scan.pluginresult_set.filter.return_value = [TEST_GITHUB_REPO_HEALTH]
         configuration = get_configuration(mock_scan, DEFAULT_SCAN_QUERY_PARAMS)
         self.assertEqual(expected_configuration, configuration)
+    
+    def test_get_sbom_report_for_veracode_sbom(self):
+        expected_sbom = PluginResult(
+            None,
+            PluginErrors(
+                errors=["test error"],
+                alerts=["test alert"],
+                debug=["test debug"],
+            ),
+            True,
+            None,
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.pluginresult_set.filter.return_value = [TEST_VERACODE_SBOM]
+        sbom = get_sbom(mock_scan)
+        self.assertEqual(expected_sbom, sbom)
 
     def test_get_static_analysis_report_diff(self):
         expected_report = PLUGIN_RESULTS(
