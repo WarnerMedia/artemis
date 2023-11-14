@@ -1,4 +1,4 @@
-t{
+{
     "name": "Veracode SBOM",
     "type": "sbom",
     "image": "$ECR/artemis/veracode:latest",
