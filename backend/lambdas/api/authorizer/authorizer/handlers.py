@@ -3,11 +3,10 @@ import os
 import re
 import time
 import urllib.request
-
 from datetime import datetime, timezone
-from django.db import transaction
 from typing import Tuple
 
+from django.db import transaction
 from jose import jwk, jwt
 from jose.utils import base64url_decode
 
@@ -181,15 +180,12 @@ def _get_update_or_create_user(email: str) -> User:
     """
     user = _get_user(email)
 
-    # If user is found, return the user (unless the user is soft-deleted)
-    if user:
-        # If user is soft-deleted, return None so that auth fails
-        if user.deleted:
-            return None
-        else:
-            return user
+    # If user is soft-deleted, return None so that auth fails
+    if user and user.deleted:
+        return None
 
-    if EMAIL_DOMAIN_ALIASES:
+    # if user is not found by email, check for aliases
+    if not user and EMAIL_DOMAIN_ALIASES:
         email_local_part = email.split("@")[0]
         email_domain = email.split("@")[1]
 
@@ -213,7 +209,14 @@ def _get_update_or_create_user(email: str) -> User:
                     if user and not user.deleted:
                         user.email = email
                         user.save()
-                        return user
+
+    # if user is found directly or via alias, ensure that user's self group is named correctly
+    if user:
+        self_group = user.self_group()
+        if self_group.name != user.email:
+            self_group.name = user.email
+            self_group.save()
+        return user
 
     # Create the user since no match has been found at this point
     return _create_user(email)
