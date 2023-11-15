@@ -464,7 +464,7 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(expected_configuration, configuration)
     
     def test_get_sbom_report_for_veracode_sbom(self):
-        expected_sbom = PluginResult(
+        expected_sbom = PLUGIN_RESULTS(
             None,
             PluginErrors(
                 ["test error"],
