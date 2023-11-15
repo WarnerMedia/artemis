@@ -13,14 +13,14 @@ services:
     image: "localstack/localstack:latest"
     container_name: "localstack"
     volumes:
-      - ${PWD}/localstack:/docker-entrypoint-initaws.d
+      - ${PWD}/localstack:/etc/localstack/init/ready.d
     ports:
       - "8080:8080"
       - "4566:4566"
     environment:
       SERVICES: "sqs"
       HOSTNAME: "localstack"
-      DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
   engine:
     image: "${APPLICATION}/engine:latest"
     scale: 1
