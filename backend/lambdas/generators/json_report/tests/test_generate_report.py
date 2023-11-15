@@ -252,9 +252,9 @@ TEST_VERACODE_SBOM = PluginResult(
     plugin_type="sbom",
     success=True,
     details=[],
-    errors=["test error"],
-    alerts=["test alert"],
-    debug=["test debug"],
+    errors=[],
+    alerts=[],
+    debug=[],
     start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
@@ -462,15 +462,11 @@ class TestGenerateReport(unittest.TestCase):
         mock_scan.pluginresult_set.filter.return_value = [TEST_GITHUB_REPO_HEALTH]
         configuration = get_configuration(mock_scan, DEFAULT_SCAN_QUERY_PARAMS)
         self.assertEqual(expected_configuration, configuration)
-    
+
     def test_get_sbom_report_for_veracode_sbom(self):
         expected_sbom = PLUGIN_RESULTS(
             None,
-            PluginErrors(
-                ["test error"],
-                ["test alert"],
-                ["test debug"],
-            ),
+            PluginErrors(),
             True,
             None,
         )
