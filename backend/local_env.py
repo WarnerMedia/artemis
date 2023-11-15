@@ -45,10 +45,10 @@ print("INTERNAL_ARTEMIS_SCAN_DATA_S3_ENDPOINT=https://s3.localhost.localstack.cl
 
 # These shouldn't need to be modified
 print("ECR=")
-print(f"ANALYZER_DJANGO_SECRET_KEY={DJANGO_SECRET_KEY}")
+print(f"ANALYZER_DJANGO_SECRET_KEY={DJANGO_SECRET_KEY.decode("utf-8")}")
 print("ANALYZER_DB_NAME=artemisdb")
 print("ANALYZER_DB_USERNAME=artemislocaldev")
-print(f"ANALYZER_DB_PASSWORD={DB_PASSWORD}")
+print(f"ANALYZER_DB_PASSWORD={DB_PASSWORD.decode("utf-8")}")
 print("ANALYZER_DB_HOST=127.0.0.1")
 print("INTERNAL_ANALYZER_DB_HOST=artemisdb")
 print("ANALYZER_DB_PORT=5432")
@@ -56,7 +56,7 @@ print("ARTEMIS_PRIVATE_DOCKER_REPOS_KEY=private_docker_repo_creds")
 print(f"DOCKER_SOCKET={DOCKER_SOCKET}")
 print("ARTEMIS_PLUGIN_JAVA_HEAP_SIZE=2g")
 print("ARTEMIS_LOG_LEVEL=DEBUG")
-print("ARTEMIS_NETWORK=artemis_default")
+print("ARTEMIS_NETWORK=default")
 
 # These values need to be updated for the environment Artemis is deployed in
 print("APPLICATION=artemis")  # Update if changing in the Terraform
@@ -82,3 +82,5 @@ print("ARTEMIS_CONFIGURATION_EVENTS_ENABLED=false")
 print("ARTEMIS_VULNERABILITY_EVENTS_ENABLED=false")
 
 print("ARTEMIS_SCAN_DATA_S3_BUCKET=artemis-localstack")
+
+print("ARTEMIS_LOCAL_SERVICES_OVERRIDE=0")
