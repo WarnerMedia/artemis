@@ -3,5 +3,5 @@
     "type": "sbom",
     "image": "$ECR/artemis/veracode:latest",
     "enabled": "$ARTEMIS_FEATURE_VERACODE_ENABLED",
-    "timeout": 28800
+    "timeout": 1
 }
