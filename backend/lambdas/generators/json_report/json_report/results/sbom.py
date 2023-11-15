@@ -1,8 +1,6 @@
 from artemisdb.artemisdb.consts import PluginType
 from artemisdb.artemisdb.models import Scan
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
-from json_report.util.const import WL_CONFIGURATION_KEYS
-from json_report.util.util import dict_eq
 
 
 def get_sbom(scan: Scan) -> PLUGIN_RESULTS:
@@ -22,11 +20,3 @@ def get_sbom(scan: Scan) -> PLUGIN_RESULTS:
         errors.update(plugin)
 
     return PLUGIN_RESULTS(None, errors, True, None)
-
-
-def allowlisted_configuration(item, allow_list):
-    for al_item in allow_list:
-        if dict_eq(al_item.value, item, WL_CONFIGURATION_KEYS):
-
-            return True
-    return False
