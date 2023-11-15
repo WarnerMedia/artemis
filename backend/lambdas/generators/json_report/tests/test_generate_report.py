@@ -467,9 +467,9 @@ class TestGenerateReport(unittest.TestCase):
         expected_sbom = PluginResult(
             None,
             PluginErrors(
-                errors=["test error"],
-                alerts=["test alert"],
-                debug=["test debug"],
+                ["test error"],
+                ["test alert"],
+                ["test debug"],
             ),
             True,
             None,
