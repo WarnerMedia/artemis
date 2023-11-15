@@ -41,7 +41,7 @@ print("ARTEMIS_SCHEDULED_SCANS_QUEUE=https://127.0.0.1:4566/000000000000/artemis
 print("INTERNAL_ARTEMIS_SCHEDULED_SCANS_QUEUE=https://localstack:4566/000000000000/artemis-scheduled-scan-queue")
 
 print("ARTEMIS_SCAN_DATA_S3_ENDPOINT=https://127.0.0.1:4566")
-print("INTERNAL_ARTEMIS_SCAN_DATA_S3_ENDPOINT=https://s3.localhost.localstack.cloud:4566")
+print("INTERNAL_ARTEMIS_SCAN_DATA_S3_ENDPOINT=http://localstack:4566")
 
 # These shouldn't need to be modified
 print("ECR=")
@@ -82,5 +82,4 @@ print("ARTEMIS_CONFIGURATION_EVENTS_ENABLED=false")
 print("ARTEMIS_VULNERABILITY_EVENTS_ENABLED=false")
 
 print("ARTEMIS_SCAN_DATA_S3_BUCKET=artemis-localstack")
-
 print("ARTEMIS_LOCAL_SERVICES_OVERRIDE=0")
