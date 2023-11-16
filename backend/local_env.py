@@ -45,10 +45,10 @@ print("INTERNAL_ARTEMIS_SCAN_DATA_S3_ENDPOINT=http://localstack:4566")
 
 # These shouldn't need to be modified
 print("ECR=")
-print(f"ANALYZER_DJANGO_SECRET_KEY={DJANGO_SECRET_KEY.decode("utf-8")}")
+print(f"ANALYZER_DJANGO_SECRET_KEY=b{DJANGO_SECRET_KEY.decode('utf-8')}")
 print("ANALYZER_DB_NAME=artemisdb")
 print("ANALYZER_DB_USERNAME=artemislocaldev")
-print(f"ANALYZER_DB_PASSWORD={DB_PASSWORD.decode("utf-8")}")
+print(f"ANALYZER_DB_PASSWORD=b{DB_PASSWORD.decode('utf-8')}")
 print("ANALYZER_DB_HOST=127.0.0.1")
 print("INTERNAL_ANALYZER_DB_HOST=artemisdb")
 print("ANALYZER_DB_PORT=5432")
