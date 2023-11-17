@@ -181,6 +181,7 @@ def _get_update_or_create_user(email: str) -> User:
     user = _get_user(email)
 
     # If user is soft-deleted, return None so that auth fails
+    # this should never occur in practice because user email is modified with a suffix of "_DELETED_{timestamp}" at deletion, but it is ok to retain this check
     if user and user.deleted:
         return None
 
