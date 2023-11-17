@@ -210,12 +210,12 @@ def _get_update_or_create_user(email: str) -> User:
                         user.email = email
                         user.save()
 
-    # if user is found directly or via alias, ensure that user's self group is named correctly
-    if user:
-        self_group = user.self_group()
-        if self_group.name != user.email:
-            self_group.name = user.email
-            self_group.save()
+    # if user is found directly or via alias (and was not soft-deleted), ensure that user's self group is named correctly before returning
+    if user and not user.deleted:
+        if user.self_group.name != user.email:
+            user.self_group.name = user.email
+            user.self_group.save()
+
         return user
 
     # Create the user since no match has been found at this point
