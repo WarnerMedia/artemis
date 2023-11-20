@@ -247,14 +247,18 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
+SBOM_ERROR_MSG = "test error"
+SBOM_ALERT_MSG = "test alert"
+SBOM_DEBUG_MSG = "test debug message"
+
 TEST_VERACODE_SBOM = PluginResult(
     plugin_name="Veracode SBOM",
     plugin_type="sbom",
     success=True,
     details=[],
-    errors=[],
-    alerts=[],
-    debug=[],
+    errors=[SBOM_ERROR_MSG],
+    alerts=[SBOM_ALERT_MSG],
+    debug=[SBOM_DEBUG_MSG],
     start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
@@ -466,7 +470,9 @@ class TestGenerateReport(unittest.TestCase):
     def test_get_sbom_report_for_veracode_sbom(self):
         expected_sbom = PLUGIN_RESULTS(
             None,
-            PluginErrors(),
+            get_plugin_errors(
+                TEST_VERACODE_SBOM.plugin_name, errors=[SBOM_ERROR_MSG], alerts=[SBOM_ALERT_MSG], debug=[SBOM_DEBUG_MSG]
+            ),
             True,
             None,
         )
@@ -474,6 +480,14 @@ class TestGenerateReport(unittest.TestCase):
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
         mock_scan.pluginresult_set.filter.return_value = [TEST_VERACODE_SBOM]
         sbom = get_sbom(mock_scan)
+        print("expected")
+        print(expected_sbom.errors.errors)
+        print(expected_sbom.errors.alerts)
+        print(expected_sbom.errors.debug)
+        print("real")
+        print(sbom.errors.errors)
+        print(sbom.errors.alerts)
+        print(sbom.errors.debug)
         self.assertEqual(expected_sbom, sbom)
 
     def test_get_static_analysis_report_diff(self):
@@ -517,6 +531,16 @@ class TestGenerateReport(unittest.TestCase):
     def run_static_analysis(self, scan, expected_report):
         report = get_static_analysis(scan, DEFAULT_SCAN_QUERY_PARAMS)
         self.assertEqual(expected_report, report)
+
+
+def get_plugin_errors(name, errors, alerts, debug):
+    plugin_errors = PluginErrors()
+
+    plugin_errors.errors[name] = errors
+    plugin_errors.alerts[name] = alerts
+    plugin_errors.debug[name] = debug
+
+    return plugin_errors
 
 
 if __name__ == "__main__":
