@@ -145,14 +145,19 @@ class EngineProcessor:
                     logger.info("Plugin %s is disabled", plugin)
                 else:
                     logger.info("Plugin %s completed, updating results", plugin)
-                    if results.type != "sbom":
-                        if results.type == "vulnerability":
-                            process_vulns(results, self.scan.get_scan_object(), plugin)
-                        self.scan.create_plugin_result_set(start_time, results)
-                        self._cache_results(results)
-                    else:
-                        # Process SBOM results
+
+                    if results.type == PluginType.SBOM.value:
                         process_sbom(results, self.scan.get_scan_object())
+
+                        # SBOM results should not be returned directly in the scan, so clear details
+                        results.details = []
+
+                    elif results.type == PluginType.VULN.value:
+                        process_vulns(results, self.scan.get_scan_object(), plugin)
+
+                    self.scan.create_plugin_result_set(start_time, results)
+                    self._cache_results(results)
+
                     logger.info("Plugin %s results updated", plugin)
 
                     # Clean and reset the repo in case the plugin wrote any files to disk. This way files created or
