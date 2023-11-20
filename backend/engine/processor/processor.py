@@ -146,13 +146,13 @@ class EngineProcessor:
                 else:
                     logger.info("Plugin %s completed, updating results", plugin)
 
-                    if results.type == "sbom":
+                    if results.type == PluginType.SBOM.value:
                         process_sbom(results, self.scan.get_scan_object())
 
                         # SBOM results should not be returned directly in the scan, so clear details
                         results.details = []
 
-                    elif results.type == "vulnerability":
+                    elif results.type == PluginType.VULN.value:
                         process_vulns(results, self.scan.get_scan_object(), plugin)
 
                     self.scan.create_plugin_result_set(start_time, results)
