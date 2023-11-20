@@ -13,7 +13,7 @@ from json_report.util.util import dict_eq
 def get_static_analysis(scan: Scan, params: dict) -> PLUGIN_RESULTS:
     """
     Unify the output of static analysis plugins
-    NOTE: unit tests are located at api/tests/test_generate_report.py
+    NOTE: unit tests are located at backend/lambdas/generators/json_report/tests/test_generate_report.py
     Inspect tests for expected output format.
     :param scan: django object of Artemis repo scan
     :param params: Only used for filtering severity
