@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import binascii
 import os
 import subprocess
+import secrets
 
-DJANGO_SECRET_KEY = binascii.b2a_hex(os.urandom(15))
-DB_PASSWORD = binascii.b2a_hex(os.urandom(15))
+DJANGO_SECRET_KEY = secrets.token_urlsafe(16)
+DB_PASSWORD = secrets.token_urlsafe(16)
 
 SQS_ENDPOINT = "http://%s:4566"
 
@@ -45,10 +45,10 @@ print("INTERNAL_ARTEMIS_SCAN_DATA_S3_ENDPOINT=http://localstack:4566")
 
 # These shouldn't need to be modified
 print("ECR=")
-print(f"ANALYZER_DJANGO_SECRET_KEY=b{DJANGO_SECRET_KEY.decode('utf-8')}")
+print(f"ANALYZER_DJANGO_SECRET_KEY={DJANGO_SECRET_KEY}")
 print("ANALYZER_DB_NAME=artemisdb")
 print("ANALYZER_DB_USERNAME=artemislocaldev")
-print(f"ANALYZER_DB_PASSWORD=b{DB_PASSWORD.decode('utf-8')}")
+print(f"ANALYZER_DB_PASSWORD={DB_PASSWORD}")
 print("ANALYZER_DB_HOST=127.0.0.1")
 print("INTERNAL_ANALYZER_DB_HOST=artemisdb")
 print("ANALYZER_DB_PORT=5432")
@@ -56,7 +56,7 @@ print("ARTEMIS_PRIVATE_DOCKER_REPOS_KEY=private_docker_repo_creds")
 print(f"DOCKER_SOCKET={DOCKER_SOCKET}")
 print("ARTEMIS_PLUGIN_JAVA_HEAP_SIZE=2g")
 print("ARTEMIS_LOG_LEVEL=DEBUG")
-print("ARTEMIS_NETWORK=default")
+print("ARTEMIS_NETWORK=backend_default")
 
 # These values need to be updated for the environment Artemis is deployed in
 print("APPLICATION=artemis")  # Update if changing in the Terraform
