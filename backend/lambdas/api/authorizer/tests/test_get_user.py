@@ -144,6 +144,20 @@ class TestGetUser(unittest.TestCase):
         user = _get_update_or_create_user(email=email)
         self.assertTrue(user == None)
 
+    def test_get_nonexistent_user(self):
+        """
+        Attempt to get a user that does not exist, and create an account for that user with the given email
+        """
+        MockUser.users = copy.deepcopy(USERS)
+        email = "first.last@doesnotexist.com"
+        expected_userid = MockUser.users[-1].get("id") + 1
+        user = _get_update_or_create_user(email=email)
+        self.assertTrue(
+            user.__dict__.get("id") == expected_userid
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
+
     def test_get_user_with_new_email(self):
         """
         User logs in with email "first.last@newcompany.com" and has an existing account with email "first.last@company.com"
@@ -214,22 +228,6 @@ class TestGetUser(unittest.TestCase):
             and user.__dict__.get("self_group").name == email
         )
 
-    # The following tests require creating a new user, so if additional pre-populated users are added to the USERS list defined at the top of this file,
-    #   the userid value that the following tests check for will need to be updated.
-    # E.g., if a pre-existing user with id=6 is added to USERS, the following tests would need to check for userid 7 instead of 6.
-    def test_get_nonexistent_user(self):
-        """
-        Attempt to get a user that does not exist, and create an account for that user with the given email
-        """
-        MockUser.users = copy.deepcopy(USERS)
-        email = "first.last@doesnotexist.com"
-        user = _get_update_or_create_user(email=email)
-        self.assertTrue(
-            user.__dict__.get("id") == 6
-            and user.__dict__.get("email") == email
-            and user.__dict__.get("self_group").name == email
-        )
-
     def test_get_user_with_new_email_and_deleted_old_user(self):
         """
         User logs in with email "first.last.1@newcompany.com" and has an existing account with email "first.last.1@company.com"
@@ -237,9 +235,10 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last.1@newcompany.com"
+        expected_userid = MockUser.users[-1].get("id") + 1
         user = _get_update_or_create_user(email=email)
         self.assertTrue(
-            user.__dict__.get("id") == 6
+            user.__dict__.get("id") == expected_userid
             and user.__dict__.get("email") == email
             and user.__dict__.get("self_group").name == email
         )
