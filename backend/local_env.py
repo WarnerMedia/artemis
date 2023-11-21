@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import binascii
 import os
 import subprocess
+import secrets
 
-DJANGO_SECRET_KEY = binascii.b2a_hex(os.urandom(15))
-DB_PASSWORD = binascii.b2a_hex(os.urandom(15))
+DJANGO_SECRET_KEY = secrets.token_urlsafe(16)
+DB_PASSWORD = secrets.token_urlsafe(16)
 
 SQS_ENDPOINT = "http://%s:4566"
 
@@ -56,7 +56,7 @@ print("ARTEMIS_PRIVATE_DOCKER_REPOS_KEY=private_docker_repo_creds")
 print(f"DOCKER_SOCKET={DOCKER_SOCKET}")
 print("ARTEMIS_PLUGIN_JAVA_HEAP_SIZE=2g")
 print("ARTEMIS_LOG_LEVEL=DEBUG")
-print("ARTEMIS_NETWORK=artemis_default")
+print("ARTEMIS_NETWORK=backend_default")
 
 # These values need to be updated for the environment Artemis is deployed in
 print("APPLICATION=artemis")  # Update if changing in the Terraform
@@ -82,4 +82,5 @@ print("ARTEMIS_CONFIGURATION_EVENTS_ENABLED=false")
 print("ARTEMIS_VULNERABILITY_EVENTS_ENABLED=false")
 
 print("ARTEMIS_SCAN_DATA_S3_BUCKET=artemis-localstack")
+
 print("ARTEMIS_LOCAL_SERVICES_OVERRIDE=0")
