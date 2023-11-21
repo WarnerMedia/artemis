@@ -214,6 +214,9 @@ class TestGetUser(unittest.TestCase):
             and user.__dict__.get("self_group").name == email
         )
 
+    # The following tests require creating a new user, so if additional pre-populated users are added to the USERS list defined at the top of this file,
+    #   the userid value that the following tests check for will need to be updated.
+    # E.g., if a pre-existing user with id=6 is added to USERS, the following tests would need to check for userid 7 instead of 6.
     def test_get_nonexistent_user(self):
         """
         Attempt to get a user that does not exist, and create an account for that user with the given email
