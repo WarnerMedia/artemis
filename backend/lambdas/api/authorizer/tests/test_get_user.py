@@ -1,8 +1,8 @@
-import authorizer.handlers
 import copy
 import unittest
-
 from unittest.mock import patch
+
+import authorizer.handlers
 
 EMAIL_DOMAIN_ALIASES = [
     {
@@ -30,26 +30,49 @@ USERS = [
         "email": "first.last@company.com",
         "deleted": False,
         "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first.last@company.com"},
     },
     {
         "id": 2,
         "email": "first_last@company1.com",
         "deleted": False,
         "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first_last@company1.com"},
     },
     {
         "id": 3,
         "email": "first.last.1@company.com",
         "deleted": True,
         "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first.last.1@company.com"},
     },
     {
         "id": 4,
         "email": "last.first@company2.com",
         "deleted": False,
         "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "last.first@company2.com"},
+    },
+    {
+        "id": 5,
+        "email": "first.last@company4.com",
+        "deleted": False,
+        "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first_last@company3.com"},
     },
 ]
+
+
+class MockGroup(object):
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name") or ""
+
+    def save(self):
+        pass
+
+    @classmethod
+    def create_self_group(cls, user):
+        user.self_group = MockGroup(name=user.email)
 
 
 class MockUser(object):
@@ -62,6 +85,9 @@ class MockUser(object):
         self.email = kwargs.get("email")
         self.deleted = kwargs.get("deleted") or False
         self.last_login = kwargs.get("last_login") or ""
+        self_group = kwargs.get("self_group") or None
+        if self_group:
+            self.self_group = MockGroup(name=self_group.get("name"))
 
     def save(self):
         for user in MockUser.users:
@@ -93,8 +119,8 @@ _get_update_or_create_user = authorizer.handlers._get_update_or_create_user.__wr
 
 
 @patch("authorizer.handlers.EMAIL_DOMAIN_ALIASES", EMAIL_DOMAIN_ALIASES)
-@patch("authorizer.handlers.Group.create_self_group", lambda *x, **y: None)
 @patch("authorizer.handlers.User", MockUser)
+@patch("authorizer.handlers.Group", MockGroup)
 class TestGetUser(unittest.TestCase):
     def test_get_existing_user(self):
         """
@@ -103,7 +129,11 @@ class TestGetUser(unittest.TestCase):
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 1 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == 1
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
 
     def test_get_deleted_user(self):
         """
@@ -120,48 +150,83 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@doesnotexist.com"
+        expected_userid = MockUser.users[-1].get("id") + 1
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 5 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == expected_userid
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
 
     def test_get_user_with_new_email(self):
         """
         User logs in with email "first.last@newcompany.com" and has an existing account with email "first.last@company.com"
-        Existing account is found, and email is updated to the new email "first.last@newcompany.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@newcompany.com"
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@newcompany.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 1 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == 1
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
 
     def test_get_user_with_new_email_with_transformation(self):
         """
         User logs in with email "first.last@company1.com" and has an existing account with email "first_last@company1.com"
-        Existing account is found, and email is updated to the new email "first.last@company1.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@company1.com"
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company1.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 2 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == 2
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
 
     def test_get_user_with_new_email_with_transformation2(self):
         """
         User logs in with email "first.last@company2.com" and has an existing account with email "last.first@company2.com"
-        Existing account is found, and email is updated to the new email "first.last@company2.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@company2.com"
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company2.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 4 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == 4
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
 
     def test_get_user_with_new_email_with_transformation3(self):
         """
         User logs in with email "first_last@company3.com" and has an existing account with email "first.last@company.com"
-        Existing account is found, and email is updated to the new email "first_last@company3.com"
+        Existing account is found, and email and self group name are updated to the new email "first_last@company3.com"
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first_last@company3.com"
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 1 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == 1
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
+
+    def test_get_user_with_email_and_self_group_mismatch(self):
+        """
+        User logs in with email "first.last@company4.com" and has an existing account with email "first.last@company4.com", but self-group name does not match
+        Existing account is found, and self group name is updated to the new email "first.last@company4.com"
+        """
+        MockUser.users = copy.deepcopy(USERS)
+        email = "first.last@company4.com"
+        user = _get_update_or_create_user(email=email)
+        self.assertTrue(
+            user.__dict__.get("id") == 5
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
 
     def test_get_user_with_new_email_and_deleted_old_user(self):
         """
@@ -170,5 +235,10 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last.1@newcompany.com"
+        expected_userid = MockUser.users[-1].get("id") + 1
         user = _get_update_or_create_user(email=email)
-        self.assertTrue(user.__dict__.get("id") == 5 and user.__dict__.get("email") == email)
+        self.assertTrue(
+            user.__dict__.get("id") == expected_userid
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
