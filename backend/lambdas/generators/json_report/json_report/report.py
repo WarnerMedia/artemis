@@ -2,6 +2,7 @@ from artemisdb.artemisdb.models import Scan
 from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
+from json_report.results.sbom import get_sbom
 from json_report.results.secret import get_secrets
 from json_report.results.static_analysis import get_static_analysis
 from json_report.results.vuln import get_vulns
@@ -16,6 +17,7 @@ def get_report(scan_id, params=None):
 
     vuln_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
     secret_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
+    sbom_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
     sa_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
     inv_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
     config_results = PLUGIN_RESULTS({}, PluginErrors(), True, None)
@@ -35,6 +37,9 @@ def get_report(scan_id, params=None):
     if "results" not in params or "secrets" in params["results"]:
         secret_results = get_secrets(scan, params)
 
+    if "results" not in params or "sbom" in params["results"]:
+        sbom_results = get_sbom(scan)
+
     if "results" not in params or "static_analysis" in params["results"]:
         sa_results = get_static_analysis(scan, params)
 
@@ -46,6 +51,7 @@ def get_report(scan_id, params=None):
 
     errors.update(vuln_results.errors)
     errors.update(secret_results.errors)
+    errors.update(sbom_results.errors)
     errors.update(sa_results.errors)
     errors.update(inv_results.errors)
     errors.update(config_results.errors)
@@ -53,6 +59,7 @@ def get_report(scan_id, params=None):
     success = (
         vuln_results.success
         and secret_results.success
+        and sbom_results.success
         and sa_results.success
         and inv_results.success
         and config_results.success

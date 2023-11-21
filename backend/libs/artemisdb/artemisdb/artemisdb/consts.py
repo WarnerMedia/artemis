@@ -14,6 +14,7 @@ class PluginType(Enum):
     CONFIGURATION = "configuration"
     INVENTORY = "inventory"
     VULN = "vulnerability"
+    SBOM = "sbom"
     SECRETS = "secrets"
     STATIC_ANALYSIS = "static_analysis"
 
