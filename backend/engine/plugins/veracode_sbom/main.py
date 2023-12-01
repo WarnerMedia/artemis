@@ -160,7 +160,7 @@ def lookup_licenses(coord1: str, coord2: str, version: str, libs: list) -> list:
                     continue
 
                 for license in v["licenses"]:
-                    licenses.append({"license_id": license["name"], "name": license["license"]})
+                    licenses.append({"id": license["name"], "name": license["license"]})
 
     return licenses
 
@@ -202,7 +202,7 @@ def process_unmatched_libraries(libs: list, matched: set) -> list:
                         "version": version["version"],
                         "licenses": [
                             # Don't need to lookup the libraries because they're right here
-                            {"license_id": license["name"], "name": license["license"]}
+                            {"id": license["name"], "name": license["license"]}
                             for license in version["licenses"]
                         ],
                         # Use coordinate type  instead of a filename so it's marginally helpful in tracking it down
