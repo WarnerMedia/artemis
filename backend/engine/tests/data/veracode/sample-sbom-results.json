@@ -1,0 +1,86 @@
+{
+  "metadata" : {
+    "requestDate" : "2021-01-01T00:00:00.000+00:00"
+  },
+  "records" : [ {
+    "metadata" : {
+      "recordType" : "SCAN",
+      "report" : null
+    },
+    "graphs" : [ {
+      "coords" : {
+        "coordinateType" : "PYPI",
+        "coordinate1" : "<undefined>",
+        "coordinate2" : null,
+        "version" : "<undefined>",
+        "scope" : null,
+        "platform" : null,
+        "commitHash" : null
+      },
+      "directs" : [ {
+        "coords" : {
+          "coordinateType" : "PYPI",
+          "coordinate1" : "PyLibrary",
+          "coordinate2" : null,
+          "version" : "1.0.0",
+          "scope" : null,
+          "platform" : null,
+          "commitHash" : null
+        },
+        "directs" : [ ],
+        "filename" : "requirements.txt",
+        "lineNumber" : 1,
+        "moduleName" : null,
+        "sha1" : null,
+        "sha2" : null,
+        "bytecodeHash" : null
+      } ],
+      "filename" : "requirements.txt",
+      "lineNumber" : null,
+      "moduleName" : null,
+      "sha1" : null,
+      "sha2" : null,
+      "bytecodeHash" : null
+    } ],
+    "libraries" : [ {
+      "name" : "PyLibrary",
+      "description" : "Python library",
+      "author" : "Example",
+      "authorUrl" : "https://github.com/example/pylibrary",
+      "language" : "PYTHON",
+      "coordinateType" : "PYPI",
+      "coordinate1" : "pylibrary",
+      "coordinate2" : "",
+      "bugTrackerUrl" : null,
+      "codeRepoType" : null,
+      "codeRepoUrl" : "https://github.com/example/pylibrary",
+      "latestRelease" : "2.0.0",
+      "latestReleaseDate" : "2021-01-01T00:00:00.000+00:00",
+      "recommendedVersion" : null,
+      "versions" : [ {
+        "version" : "1.0.0",
+        "releaseDate" : "2021-01-01T00:00:00.000+00:00",
+        "sha1" : "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed",
+        "sha2" : "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
+        "bytecodeHash" : null,
+        "platform" : "source",
+        "licenses" : [ {
+          "name" : "MIT",
+          "license" : "MIT license (MIT)",
+          "fromParentPom" : false,
+          "risk" : "LOW",
+          "spdxId" : "MIT"
+        } ],
+        "_links" : {
+          "html" : "https://example.com"
+        }
+      } ],
+      "_links" : {
+        "html" : "https://example.com"
+      }
+    } ],
+    "vulnerabilities" : [ ],
+    "unmatchedLibraries" : [ ],
+    "vulnMethods" : [ ]
+  } ]
+}
