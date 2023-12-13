@@ -93,7 +93,12 @@ def convert_output(output_str: str):
         return None
 
 
-def execute_trivy_lock_scan(path: str):
+def execute_trivy_lock_scan(path: str, include_dev: bool):
+    # passing in "include dev" tag if include_dev arg is True
+    if include_dev == True:
+        proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", "-include-dev-deps", path], capture_output=True, check=False)
+    else:
+        proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", path], capture_output=True, check=False)
     proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", path], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
@@ -173,9 +178,10 @@ def build_scan_parse_images(images) -> list:
 def main():
     logger.info("Executing Trivy")
     args = utils.parse_args()
+    include_dev = args.engine_vars.get("include_dev", False)
     results = []
     # Scan local lock files
-    output = execute_trivy_lock_scan(args.path)
+    output = execute_trivy_lock_scan(args.path, include_dev)
     output = convert_output(output)
     if not output:
         logger.warning("Lock file output is None. Continuing.")
