@@ -183,10 +183,12 @@ def _get_update_or_create_user(email: str) -> User:
     # If user is soft-deleted, return None so that auth fails
     # this should never occur in practice because user email is modified with a suffix of "_DELETED_{timestamp}" at deletion, but it is ok to retain this check
     if user and user.deleted:
+        LOG.debug(f"User found by email {email}, but is deleted")
         return None
 
     # if user is not found by email, check for aliases
     if not user and EMAIL_DOMAIN_ALIASES:
+        LOG.debug(f"User not found by email {email}, checking for aliases")
         email_local_part = email.split("@")[0]
         email_domain = email.split("@")[1]
 
@@ -204,22 +206,30 @@ def _get_update_or_create_user(email: str) -> User:
                     else:
                         old_email = f"{email_local_part}@{old_domain}"
 
+                    LOG.debug(f"Attempting to get user with possible alias {old_email}")
                     user = _get_user(old_email)
 
                     # If a user is found with an old email (and was not soft-deleted), update the email and return user
                     if user and not user.deleted:
+                        LOG.debug(f"User account discovered with old email {old_email}")
+                        LOG.debug(f"Attempting to user email from {old_email} to {email}")
                         user.email = email
                         user.save()
 
     # if user is found directly or via alias (and was not soft-deleted), ensure that user's self group is named correctly, then return user
     if user and not user.deleted:
+        LOG.debug("Checking that email and self group name match")
         if user.self_group.name != user.email:
+            LOG.debug(f"Self group {user.self_group.name} does not match email {user.email}")
+            LOG.debug(f"Attempting to update self group name to {user.email}")
             user.self_group.name = user.email
             user.self_group.save()
 
+        LOG.debug(f"Returning user with email {user.email}")
         return user
 
     # Create the user since no match has been found at this point
+    LOG.debug(f"No matching user discovered. Creating a new user with email {email}")
     return _create_user(email)
 
 
