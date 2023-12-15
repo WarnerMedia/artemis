@@ -215,10 +215,11 @@ def _get_update_or_create_user(email: str) -> User:
 
                     # If a user is found with an old email (and was not soft-deleted), update the email and return user
                     if user and not user.deleted:
-                        LOG.debug(f"User account discovered with old email {old_email}")
-                        LOG.debug(f"Attempting to user email from {old_email} to {email}")
+                        LOG.debug(f"User account discovered with alias {old_email}")
+                        LOG.debug(f"Attempting to update user email from {old_email} to {email}")
                         user.email = email
                         user.save()
+                        LOG.debug(f"User account email updated to {user.email}")
                         # since user was successfully found and updated, break out of inner loop
                         break
 
@@ -230,8 +231,9 @@ def _get_update_or_create_user(email: str) -> User:
             LOG.debug(f"Attempting to update self group name to {user.email}")
             user.self_group.name = user.email
             user.self_group.save()
+            LOG.debug(f"Self group name updated to {user.self_group.name}")
 
-        LOG.debug(f"Returning user with email {user.email}")
+        LOG.debug(f"Returning user with email {user.email} and self group {user.self_group.name}")
         return user
 
     # Create the user since no match has been found at this point

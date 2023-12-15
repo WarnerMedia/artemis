@@ -20,6 +20,11 @@ EMAIL_DOMAIN_ALIASES = [
         "old_domains": ["company.com"],
         "email_transformation": {"new_email_regex": "_", "old_email_expr": "."},
     },
+    {
+        "new_domain": "company5.com",
+        "old_domains": ["company6.com", "company6andsuffix.com"],
+        "email_transformation": {"new_email_regex": "[.]", "old_email_expr": "_"},
+    },
     {"new_domain": "newcompany.com", "old_domains": ["company.com"]},
 ]
 
@@ -59,6 +64,20 @@ USERS = [
         "deleted": False,
         "last_login": "2023-01-01 00:00:00.000000+00:00",
         "self_group": {"name": "first_last@company3.com"},
+    },
+    {
+        "id": 6,
+        "email": "first_last@company6.com",
+        "deleted": False,
+        "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first_last@company6.com"},
+    },
+    {
+        "id": 7,
+        "email": "first2_last2@company6andsuffix.com",
+        "deleted": False,
+        "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first2_last2@company6andsuffix.com"},
     },
 ]
 
@@ -239,6 +258,36 @@ class TestGetUser(unittest.TestCase):
         user = _get_update_or_create_user(email=email)
         self.assertTrue(
             user.__dict__.get("id") == expected_userid
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
+
+    def test_get_user_with_new_email_and_multiple_old_domains_first_domain(self):
+        """
+        User logs in with email "first.last@company5.com" and has an existing acount with email "first_last@company6.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@company5.com"
+        This is distinct from other tests because there are multiple old domains mapped to new domain company5.com
+        """
+        MockUser.users = copy.deepcopy(USERS)
+        email = "first.last@company5.com"
+        user = _get_update_or_create_user(email=email)
+        self.assertTrue(
+            user.__dict__.get("id") == 6
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
+
+    def test_get_user_with_new_email_and_multiple_old_domains_second_domain(self):
+        """
+        User logs in with email "first2.last2@company5.com" and has an existing acount with email "first2_last2@company6andsuffix.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@company5.com"
+        This is distinct from other tests because there are multiple old domains mapped to new domain company5.com
+        """
+        MockUser.users = copy.deepcopy(USERS)
+        email = "first2.last2@company5.com"
+        user = _get_update_or_create_user(email=email)
+        self.assertTrue(
+            user.__dict__.get("id") == 7
             and user.__dict__.get("email") == email
             and user.__dict__.get("self_group").name == email
         )
