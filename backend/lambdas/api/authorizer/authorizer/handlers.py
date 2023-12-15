@@ -194,6 +194,10 @@ def _get_update_or_create_user(email: str) -> User:
 
         # Check if any aliases exist for domain, and attempt to find a match
         for alias in EMAIL_DOMAIN_ALIASES:
+            # if user was found in a previous iteration, break the loop
+            if user and not user.deleted:
+                break
+
             if alias["new_domain"] == email_domain:
                 for old_domain in alias["old_domains"]:
                     if alias.get("email_transformation"):
@@ -215,6 +219,8 @@ def _get_update_or_create_user(email: str) -> User:
                         LOG.debug(f"Attempting to user email from {old_email} to {email}")
                         user.email = email
                         user.save()
+                        # since user was successfully found and updated, break out of inner loop
+                        break
 
     # if user is found directly or via alias (and was not soft-deleted), ensure that user's self group is named correctly, then return user
     if user and not user.deleted:
