@@ -112,7 +112,9 @@ def process_user_auth(event):
     _verify_claims(claims)
 
     # Get the user
-    user = _get_update_or_create_user(email=claims["email"].lower())
+    user = _get_update_or_create_user(
+        email=claims["email"].lower(), source_ip=event["requestContext"]["identity"]["sourceIp"]
+    )
 
     if not user:
         raise Exception("Unauthorized")
@@ -172,7 +174,7 @@ def _verify_claims(claims: dict):
 
 
 @transaction.atomic
-def _get_update_or_create_user(email: str) -> User:
+def _get_update_or_create_user(email: str, source_ip: str) -> User:
     """
     Attempt to get a user based on email.
     If user does not exist, try to match based on EMAIL_DOMAIN_ALIASES, and update email if successful.
@@ -219,6 +221,11 @@ def _get_update_or_create_user(email: str) -> User:
                         LOG.debug(f"Attempting to update user email from {old_email} to {email}")
                         user.email = email
                         user.save()
+
+                        audit_log = AuditLogger(principal=old_email, source_ip=source_ip)
+                        audit_log.user_modified(
+                            user=user.email, scope=user.scope, features=user.features, admin=user.admin
+                        )
                         LOG.debug(f"User account email updated to {user.email}")
                         # since user was successfully found and updated, break out of inner loop
                         break
@@ -231,6 +238,16 @@ def _get_update_or_create_user(email: str) -> User:
             LOG.debug(f"Attempting to update self group name to {user.email}")
             user.self_group.name = user.email
             user.self_group.save()
+
+            audit_log = AuditLogger(principal=user.email, source_ip=source_ip)
+            audit_log.group_modified(
+                group_id=str(user.self_group.group_id),
+                name=user.self_group.name,
+                scope=user.self_group.scope,
+                features=user.self_group.features,
+                admin=user.self_group.admin,
+                allowlist=user.self_group.allowlist,
+            )
             LOG.debug(f"Self group name updated to {user.self_group.name}")
 
         LOG.debug(f"Returning user with email {user.email} and self group {user.self_group.name}")
@@ -238,7 +255,7 @@ def _get_update_or_create_user(email: str) -> User:
 
     # Create the user since no match has been found at this point
     LOG.debug(f"No matching user discovered. Creating a new user with email {email}")
-    return _create_user(email)
+    return _create_user(email, source_ip)
 
 
 def _update_login_timestamp(user: User) -> None:
@@ -249,7 +266,7 @@ def _update_login_timestamp(user: User) -> None:
     user.save()
 
 
-def _create_user(email: str) -> User:
+def _create_user(email: str, source_ip: str) -> User:
     """
     Create a new user
     """
@@ -258,6 +275,16 @@ def _create_user(email: str) -> User:
     # User was created so create their self group as well
     Group.create_self_group(user)
 
+    audit_log = AuditLogger(principal=email, source_ip=source_ip)
+    audit_log.user_created(user=user.email, scope=user.scope, features=user.features, admin=user.admin)
+    audit_log.group_created(
+        group_id=str(user.self_group.group_id),
+        name=user.self_group.name,
+        scope=user.self_group.scope,
+        features=user.self_group.features,
+        admin=user.self_group.admin,
+        allowlist=user.self_group.allowlist,
+    )
     return user
 
 
