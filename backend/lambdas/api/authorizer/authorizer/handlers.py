@@ -227,6 +227,7 @@ def _get_update_or_create_user(email: str, source_ip: str) -> User:
                             user=user.email, scope=user.scope, features=user.features, admin=user.admin
                         )
                         LOG.debug(f"User account email updated to {user.email}")
+
                         # since user was successfully found and updated, break out of inner loop
                         break
 
@@ -285,6 +286,7 @@ def _create_user(email: str, source_ip: str) -> User:
         admin=user.self_group.admin,
         allowlist=user.self_group.allowlist,
     )
+
     return user
 
 
