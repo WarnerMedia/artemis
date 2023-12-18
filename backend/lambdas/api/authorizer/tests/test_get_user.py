@@ -87,11 +87,11 @@ EVENT_IP = "0.0.0.0"
 class MockGroup(object):
     def __init__(self, **kwargs):
         self.name = kwargs.get("name") or ""
-        self.group_id = ""
-        self.scope = []
-        self.features = {}
-        self.admin = False
-        self.allowlist = False
+        self.group_id = kwargs.get("group_id") or ""
+        self.scope = kwargs.get("scope") or []
+        self.features = kwargs.get("features") or {}
+        self.admin = kwargs.get("admin") or False
+        self.allowlist = kwargs.get("allowlist") or False
 
     def save(self):
         pass
@@ -114,9 +114,9 @@ class MockUser(object):
         self_group = kwargs.get("self_group") or None
         if self_group:
             self.self_group = MockGroup(name=self_group.get("name"))
-        self.scope = []
-        self.features = {}
-        self.admin = False
+        self.scope = kwargs.get("scope") or []
+        self.features = kwargs.get("features") or {}
+        self.admin = kwargs.get("admin") or False
 
     def save(self):
         for user in MockUser.users:
