@@ -54,6 +54,9 @@ def delete(event, email=None, admin: bool = False):
         # Hard delete all of the user's self group API keys
         user.self_group.apikey_set.all().delete()
 
+        # Hard delete user's services
+        user.userservice_set.all().delete()
+
     # This is outside the transaction so that if the transaction rolled back we don't log the audit event
     if user.deleted:
         audit_log = AuditLogger(principal=email, source_ip=event["requestContext"]["identity"]["sourceIp"])
