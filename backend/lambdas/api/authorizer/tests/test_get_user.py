@@ -81,10 +81,17 @@ USERS = [
     },
 ]
 
+EVENT_IP = "0.0.0.0"
+
 
 class MockGroup(object):
     def __init__(self, **kwargs):
         self.name = kwargs.get("name") or ""
+        self.group_id = ""
+        self.scope = []
+        self.features = {}
+        self.admin = False
+        self.allowlist = False
 
     def save(self):
         pass
@@ -107,6 +114,9 @@ class MockUser(object):
         self_group = kwargs.get("self_group") or None
         if self_group:
             self.self_group = MockGroup(name=self_group.get("name"))
+        self.scope = []
+        self.features = {}
+        self.admin = False
 
     def save(self):
         for user in MockUser.users:
@@ -137,6 +147,10 @@ class MockUser(object):
 _get_update_or_create_user = authorizer.handlers._get_update_or_create_user.__wrapped__
 
 
+@patch("authorizer.handlers.AuditLogger.group_created", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.group_modified", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.user_created", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.user_modified", lambda *x, **y: None)
 @patch("authorizer.handlers.EMAIL_DOMAIN_ALIASES", EMAIL_DOMAIN_ALIASES)
 @patch("authorizer.handlers.User", MockUser)
 @patch("authorizer.handlers.Group", MockGroup)
@@ -147,7 +161,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 1
             and user.__dict__.get("email") == email
@@ -160,7 +174,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last.1@company.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(user == None)
 
     def test_get_nonexistent_user(self):
@@ -170,7 +184,7 @@ class TestGetUser(unittest.TestCase):
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@doesnotexist.com"
         expected_userid = MockUser.users[-1].get("id") + 1
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == expected_userid
             and user.__dict__.get("email") == email
@@ -184,7 +198,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@newcompany.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 1
             and user.__dict__.get("email") == email
@@ -198,7 +212,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company1.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 2
             and user.__dict__.get("email") == email
@@ -212,7 +226,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company2.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 4
             and user.__dict__.get("email") == email
@@ -226,7 +240,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first_last@company3.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 1
             and user.__dict__.get("email") == email
@@ -240,7 +254,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company4.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 5
             and user.__dict__.get("email") == email
@@ -255,7 +269,7 @@ class TestGetUser(unittest.TestCase):
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last.1@newcompany.com"
         expected_userid = MockUser.users[-1].get("id") + 1
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == expected_userid
             and user.__dict__.get("email") == email
@@ -270,7 +284,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company5.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 6
             and user.__dict__.get("email") == email
@@ -285,7 +299,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first2.last2@company5.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 7
             and user.__dict__.get("email") == email
