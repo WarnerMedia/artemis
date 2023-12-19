@@ -1,7 +1,7 @@
 # Note: This Dockerfile creates an image intended ONLY for local development and testing
 # it may contain unnessary source code and artifacts that are NOT intended for deployment
 
-FROM node:18-bullseye-slim
+FROM node:20-bookworm-slim
 
 WORKDIR /app
 
@@ -16,9 +16,7 @@ COPY package*.json hadolint.sha512 ./
 # it doesn't include a file checksum, so use one we've generated to validate the package
 # hadolint ignore=DL3008
 RUN apt-get update && \
-	grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
 	apt-get upgrade -y && \
-	apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list && \
 	apt-get install -y --no-install-recommends jq wget ca-certificates make && \
 	wget --quiet \
 	https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 \
@@ -29,9 +27,9 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 # hadolint ignore=DL3059
-RUN npm install -g npm@^9.6.7 && \
+RUN npm install -g npm@^10.2.5 && \
 	npm ci && \
-	npm install -g serve@^14.2.0 && \
+	npm install -g serve@^14.2.1 && \
 	npm ls -a
 
 COPY . .
