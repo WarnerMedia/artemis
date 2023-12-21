@@ -16,9 +16,9 @@ JSON_FILE = "trivy.json"
 
 def parse_output(output: list) -> list:
     results = []
-    for item in output:
+    for item in output['Results']:
         source = item["Target"]
-        component_type = convert_type(item["Type"])
+        component_type = convert_type(item.get('Type', 'N/A'))
         if item.get("Vulnerabilities") is None:
             continue
         cve_set = set()
@@ -99,7 +99,6 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
         proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", "-include-dev-deps", path], capture_output=True, check=False)
     else:
         proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", path], capture_output=True, check=False)
-    proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", path], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -182,7 +181,9 @@ def main():
     results = []
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
+    # logger.debug(output)
     output = convert_output(output)
+    # print(output)
     if not output:
         logger.warning("Lock file output is None. Continuing.")
     else:
@@ -190,8 +191,8 @@ def main():
         logger.info("Lock file output parsed. Success: %s", not bool(result))
         results.extend(result)
     # Scan Images
-    image_outputs = build_scan_parse_images(args.images)
-    results.extend(image_outputs)
+    #image_outputs = build_scan_parse_images(args.images)
+    #results.extend(image_outputs)
 
     # Return results
     print(json.dumps({"success": not bool(results), "details": results}))
