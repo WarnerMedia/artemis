@@ -4,6 +4,7 @@ trivy plugin
 import json
 import subprocess
 from typing import NamedTuple
+import os
 
 from engine.plugins.lib import utils
 
@@ -13,10 +14,24 @@ DESC_REMEDIATION_SPLIT = "## Recommendation"
 NO_RESULTS_TEXT = "no supported file was detected"
 JSON_FILE = "trivy.json"
 
+def run_install(include_dev, path):
+    # Create a package-lock.json file if it doesn't already exist
+    logger.info(f'Generating package-lock.json for {path} (including dev dependencies: {include_dev})')
+    cmd = [
+        "npm",
+        "install",
+        "--package-lock-only",  # Generate the needed lockfile
+        "--legacy-bundling",  # Don't dedup dependencies so that we can correctly trace their root in package.json
+        "--legacy-peer-deps",  # Ignore peer dependencies, which is the NPM 6.x behavior
+        "--no-audit",  # Don't run an audit
+    ]
+    if not include_dev:
+        cmd.append("--only=prod")
+    return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
 
 def parse_output(output: list) -> list:
     results = []
-    for item in output['Results']:
+    for item in output:
         source = item["Target"]
         component_type = convert_type(item.get('Type', 'N/A'))
         if item.get("Vulnerabilities") is None:
@@ -95,10 +110,11 @@ def convert_output(output_str: str):
 
 def execute_trivy_lock_scan(path: str, include_dev: bool):
     # passing in "include dev" tag if include_dev arg is True
-    if include_dev == True:
-        proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", "-include-dev-deps", path], capture_output=True, check=False)
+    logger.info(f'Scanning lock-files. Dev-dependencies: {include_dev}')
+    if include_dev:
+        proc = subprocess.run(["trivy", "fs", "--offline-scan",  "--include-dev-deps", path, "--format", "json"], capture_output=True, check=False)
     else:
-        proc = subprocess.run(["trivy", "-q", "fs", "-f", "json", path], capture_output=True, check=False)
+        proc = subprocess.run(["trivy", "fs", "--offline-scan", path, "--format", "json"], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -112,7 +128,7 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 
 
 def execute_trivy_image_scan(image: str):
-    proc = subprocess.run(["trivy", "-q", "image", "-f", "json", image], capture_output=True, check=False)
+    proc = subprocess.run(["trivy", "image", "--offline-scan", image, "--format", "json"], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -132,7 +148,6 @@ def process_docker_images(images: list):
       "dockerfile": "/Dockerfiles"
         }
     """
-
     outputs = []
     for image in images:
         if not image.get("status"):
@@ -146,15 +161,17 @@ def process_docker_images(images: list):
                     image["dockerfile"],
                 )
             else:
-                # The tag-id is placed at the Target. The tag-id is auto-generated and is of no use to the end user.
-                # Placing the dockerfile location allows the user to better identify the location of the vulns
+                """
+                The tag-id is placed at the Target. The tag-id is auto-generated and is of no use to the end user.
+                Placing the dockerfile location allows the user to better identify the location of the vulns
+                """
                 items = []
-                for item in output:
-                    if image["tag-id"] in item["Target"]:
-                        item["Target"] = image["dockerfile"]
-                    else:
-                        item["Target"] = f"{image['dockerfile']} > {item['Target']}"
-                    items.append(item)
+                for item in output["Results"]:
+                  if image["tag-id"] in item["Target"]:
+                      item["Target"] = image["dockerfile"]
+                  else:
+                      item["Target"] = f"{image['dockerfile']} > {item['Target']}"
+                  items.append(item)
                 outputs.append(items)
         except Exception as e:
             logger.warning("Issue scanning image: %s", e)
@@ -179,20 +196,35 @@ def main():
     args = utils.parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
+
+    # Generate Lock files
+    results_dct = {}
+    lockfile = os.path.join(path, "package-lock.json")
+    lockfile_missing = not os.path.exists(lockfile)
+    if lockfile_missing:
+        msg = (
+            f"No package-lock.json file was found in path {path.replace(root_path, '')}. "
+            "Please consider creating a package-lock file for this project."
+        )
+        results_dct["warning"] = msg
+        r = run_install(include_dev, path, root_path)
+        if r.returncode != 0:
+            logger.error(r.stderr.decode("utf-8"))
+            return {"results": results_dct, "lockfile": lockfile, "lockfile_missing": lockfile_missing}
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
-    # logger.debug(output)
+    logger.debug(output)
     output = convert_output(output)
-    # print(output)
     if not output:
         logger.warning("Lock file output is None. Continuing.")
     else:
-        result = parse_output(output)
+        result = parse_output(output["Results"])
         logger.info("Lock file output parsed. Success: %s", not bool(result))
         results.extend(result)
+
     # Scan Images
-    #image_outputs = build_scan_parse_images(args.images)
-    #results.extend(image_outputs)
+    image_outputs = build_scan_parse_images(args.images)
+    results.extend(image_outputs)
 
     # Return results
     print(json.dumps({"success": not bool(results), "details": results}))

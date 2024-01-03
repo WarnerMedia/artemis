@@ -964,7 +964,7 @@ class Component(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")
 
     name = models.CharField(max_length=256)
-    version = models.CharField(max_length=32)
+    version = models.CharField(max_length=256)
     licenses = models.ManyToManyField(License)
 
     # This is an internal field to store the ltree-compatible label for this component.
