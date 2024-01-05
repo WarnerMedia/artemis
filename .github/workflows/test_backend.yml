@@ -2,15 +2,15 @@ name: Backend Unit Tests
 
 on:
   pull_request:
-    paths:
-      - "backend/**"
+    # paths:
+    #   - "backend/**"
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # actions/checkout@v4.1.1
-      - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # actions/setup-python@v2.1.4
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # actions/setup-python@v5.0.0
         with:
           python-version: "3.9"
       - name: Run backend tests
