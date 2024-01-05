@@ -2,8 +2,8 @@ name: Orchestrator Unit Tests
 
 on:
   pull_request:
-    # paths:
-    #   - "orchestrator/**"
+    paths:
+      - "orchestrator/**"
 
 jobs:
   test:

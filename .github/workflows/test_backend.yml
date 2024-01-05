@@ -2,8 +2,8 @@ name: Backend Unit Tests
 
 on:
   pull_request:
-    # paths:
-    #   - "backend/**"
+    paths:
+      - "backend/**"
 
 jobs:
   test:
