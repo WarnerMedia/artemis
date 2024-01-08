@@ -197,8 +197,8 @@ def main():
         results.extend(result)
 
     # Scan Images
-    image_outputs = build_scan_parse_images(args.images)
-    results.extend(image_outputs)
+    # image_outputs = build_scan_parse_images(args.images)
+    # results.extend(image_outputs)
 
     # Return results
     print(json.dumps({"success": not bool(results), "details": results}))
