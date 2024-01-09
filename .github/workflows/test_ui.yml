@@ -11,14 +11,14 @@ jobs:
     env:
       UI_PATH: ./ui
       HADOLINT_URL: https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
-      NPM_VERSION: 9
+      NPM_VERSION: 10
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # actions/checkout@v3.5.2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # actions/checkout@v4.1.1
 
       - name: Setup node from node version file
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # actions/setup-node@v3.6.0
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # actions/setup-node@v4.0.1
         with:
           node-version-file: "${{ env.UI_PATH }}/.nvmrc"
 

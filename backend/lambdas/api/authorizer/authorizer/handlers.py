@@ -112,7 +112,9 @@ def process_user_auth(event):
     _verify_claims(claims)
 
     # Get the user
-    user = _get_update_or_create_user(email=claims["email"].lower())
+    user = _get_update_or_create_user(
+        email=claims["email"].lower(), source_ip=event["requestContext"]["identity"]["sourceIp"]
+    )
 
     if not user:
         raise Exception("Unauthorized")
@@ -172,7 +174,7 @@ def _verify_claims(claims: dict):
 
 
 @transaction.atomic
-def _get_update_or_create_user(email: str) -> User:
+def _get_update_or_create_user(email: str, source_ip: str) -> User:
     """
     Attempt to get a user based on email.
     If user does not exist, try to match based on EMAIL_DOMAIN_ALIASES, and update email if successful.
@@ -183,15 +185,21 @@ def _get_update_or_create_user(email: str) -> User:
     # If user is soft-deleted, return None so that auth fails
     # this should never occur in practice because user email is modified with a suffix of "_DELETED_{timestamp}" at deletion, but it is ok to retain this check
     if user and user.deleted:
+        LOG.debug(f"User found by email {email}, but is deleted")
         return None
 
     # if user is not found by email, check for aliases
     if not user and EMAIL_DOMAIN_ALIASES:
+        LOG.debug(f"User not found by email {email}, checking for aliases")
         email_local_part = email.split("@")[0]
         email_domain = email.split("@")[1]
 
         # Check if any aliases exist for domain, and attempt to find a match
         for alias in EMAIL_DOMAIN_ALIASES:
+            # if user was found in a previous iteration, break the loop
+            if user and not user.deleted:
+                break
+
             if alias["new_domain"] == email_domain:
                 for old_domain in alias["old_domains"]:
                     if alias.get("email_transformation"):
@@ -204,23 +212,51 @@ def _get_update_or_create_user(email: str) -> User:
                     else:
                         old_email = f"{email_local_part}@{old_domain}"
 
+                    LOG.debug(f"Attempting to get user with possible alias {old_email}")
                     user = _get_user(old_email)
 
                     # If a user is found with an old email (and was not soft-deleted), update the email and return user
                     if user and not user.deleted:
+                        LOG.debug(f"User account discovered with alias {old_email}")
+                        LOG.debug(f"Attempting to update user email from {old_email} to {email}")
                         user.email = email
                         user.save()
 
+                        audit_log = AuditLogger(principal=old_email, source_ip=source_ip)
+                        audit_log.user_modified(
+                            user=user.email, scope=user.scope, features=user.features, admin=user.admin
+                        )
+                        LOG.debug(f"User account email updated to {user.email}")
+
+                        # since user was successfully found and updated, break out of inner loop
+                        break
+
     # if user is found directly or via alias (and was not soft-deleted), ensure that user's self group is named correctly, then return user
     if user and not user.deleted:
+        LOG.debug("Checking that email and self group name match")
         if user.self_group.name != user.email:
+            LOG.debug(f"Self group {user.self_group.name} does not match email {user.email}")
+            LOG.debug(f"Attempting to update self group name to {user.email}")
             user.self_group.name = user.email
             user.self_group.save()
 
+            audit_log = AuditLogger(principal=user.email, source_ip=source_ip)
+            audit_log.group_modified(
+                group_id=str(user.self_group.group_id),
+                name=user.self_group.name,
+                scope=user.self_group.scope,
+                features=user.self_group.features,
+                admin=user.self_group.admin,
+                allowlist=user.self_group.allowlist,
+            )
+            LOG.debug(f"Self group name updated to {user.self_group.name}")
+
+        LOG.debug(f"Returning user with email {user.email} and self group {user.self_group.name}")
         return user
 
     # Create the user since no match has been found at this point
-    return _create_user(email)
+    LOG.debug(f"No matching user discovered. Creating a new user with email {email}")
+    return _create_user(email, source_ip)
 
 
 def _update_login_timestamp(user: User) -> None:
@@ -231,7 +267,7 @@ def _update_login_timestamp(user: User) -> None:
     user.save()
 
 
-def _create_user(email: str) -> User:
+def _create_user(email: str, source_ip: str) -> User:
     """
     Create a new user
     """
@@ -239,6 +275,17 @@ def _create_user(email: str) -> User:
 
     # User was created so create their self group as well
     Group.create_self_group(user)
+
+    audit_log = AuditLogger(principal=email, source_ip=source_ip)
+    audit_log.user_created(user=user.email, scope=user.scope, features=user.features, admin=user.admin)
+    audit_log.group_created(
+        group_id=str(user.self_group.group_id),
+        name=user.self_group.name,
+        scope=user.self_group.scope,
+        features=user.self_group.features,
+        admin=user.self_group.admin,
+        allowlist=user.self_group.allowlist,
+    )
 
     return user
 

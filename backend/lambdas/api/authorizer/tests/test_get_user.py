@@ -20,6 +20,11 @@ EMAIL_DOMAIN_ALIASES = [
         "old_domains": ["company.com"],
         "email_transformation": {"new_email_regex": "_", "old_email_expr": "."},
     },
+    {
+        "new_domain": "company5.com",
+        "old_domains": ["company6.com", "company6andsuffix.com"],
+        "email_transformation": {"new_email_regex": "[.]", "old_email_expr": "_"},
+    },
     {"new_domain": "newcompany.com", "old_domains": ["company.com"]},
 ]
 
@@ -60,12 +65,33 @@ USERS = [
         "last_login": "2023-01-01 00:00:00.000000+00:00",
         "self_group": {"name": "first_last@company3.com"},
     },
+    {
+        "id": 6,
+        "email": "first_last@company6.com",
+        "deleted": False,
+        "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first_last@company6.com"},
+    },
+    {
+        "id": 7,
+        "email": "first2_last2@company6andsuffix.com",
+        "deleted": False,
+        "last_login": "2023-01-01 00:00:00.000000+00:00",
+        "self_group": {"name": "first2_last2@company6andsuffix.com"},
+    },
 ]
+
+EVENT_IP = "0.0.0.0"
 
 
 class MockGroup(object):
     def __init__(self, **kwargs):
         self.name = kwargs.get("name") or ""
+        self.group_id = kwargs.get("group_id") or ""
+        self.scope = kwargs.get("scope") or []
+        self.features = kwargs.get("features") or {}
+        self.admin = kwargs.get("admin") or False
+        self.allowlist = kwargs.get("allowlist") or False
 
     def save(self):
         pass
@@ -88,6 +114,9 @@ class MockUser(object):
         self_group = kwargs.get("self_group") or None
         if self_group:
             self.self_group = MockGroup(name=self_group.get("name"))
+        self.scope = kwargs.get("scope") or []
+        self.features = kwargs.get("features") or {}
+        self.admin = kwargs.get("admin") or False
 
     def save(self):
         for user in MockUser.users:
@@ -118,6 +147,10 @@ class MockUser(object):
 _get_update_or_create_user = authorizer.handlers._get_update_or_create_user.__wrapped__
 
 
+@patch("authorizer.handlers.AuditLogger.group_created", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.group_modified", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.user_created", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.user_modified", lambda *x, **y: None)
 @patch("authorizer.handlers.EMAIL_DOMAIN_ALIASES", EMAIL_DOMAIN_ALIASES)
 @patch("authorizer.handlers.User", MockUser)
 @patch("authorizer.handlers.Group", MockGroup)
@@ -128,7 +161,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 1
             and user.__dict__.get("email") == email
@@ -141,7 +174,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last.1@company.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(user == None)
 
     def test_get_nonexistent_user(self):
@@ -151,7 +184,7 @@ class TestGetUser(unittest.TestCase):
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@doesnotexist.com"
         expected_userid = MockUser.users[-1].get("id") + 1
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == expected_userid
             and user.__dict__.get("email") == email
@@ -165,7 +198,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@newcompany.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 1
             and user.__dict__.get("email") == email
@@ -179,7 +212,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company1.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 2
             and user.__dict__.get("email") == email
@@ -193,7 +226,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company2.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 4
             and user.__dict__.get("email") == email
@@ -207,7 +240,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first_last@company3.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 1
             and user.__dict__.get("email") == email
@@ -221,7 +254,7 @@ class TestGetUser(unittest.TestCase):
         """
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last@company4.com"
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == 5
             and user.__dict__.get("email") == email
@@ -236,9 +269,39 @@ class TestGetUser(unittest.TestCase):
         MockUser.users = copy.deepcopy(USERS)
         email = "first.last.1@newcompany.com"
         expected_userid = MockUser.users[-1].get("id") + 1
-        user = _get_update_or_create_user(email=email)
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
         self.assertTrue(
             user.__dict__.get("id") == expected_userid
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
+
+    def test_get_user_with_new_email_and_multiple_old_domains_first_domain(self):
+        """
+        User logs in with email "first.last@company5.com" and has an existing acount with email "first_last@company6.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@company5.com"
+        This is distinct from other tests because there are multiple old domains mapped to new domain company5.com
+        """
+        MockUser.users = copy.deepcopy(USERS)
+        email = "first.last@company5.com"
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
+        self.assertTrue(
+            user.__dict__.get("id") == 6
+            and user.__dict__.get("email") == email
+            and user.__dict__.get("self_group").name == email
+        )
+
+    def test_get_user_with_new_email_and_multiple_old_domains_second_domain(self):
+        """
+        User logs in with email "first2.last2@company5.com" and has an existing acount with email "first2_last2@company6andsuffix.com"
+        Existing account is found, and email and self group name are updated to the new email "first.last@company5.com"
+        This is distinct from other tests because there are multiple old domains mapped to new domain company5.com
+        """
+        MockUser.users = copy.deepcopy(USERS)
+        email = "first2.last2@company5.com"
+        user = _get_update_or_create_user(email=email, source_ip=EVENT_IP)
+        self.assertTrue(
+            user.__dict__.get("id") == 7
             and user.__dict__.get("email") == email
             and user.__dict__.get("self_group").name == email
         )

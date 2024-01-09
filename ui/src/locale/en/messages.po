@@ -686,7 +686,7 @@ msgstr "Update"
 msgid "Before"
 msgstr "Before"
 
-#: src/features/scans/scansSchemas.ts:493
+#: src/features/scans/scansSchemas.ts:495
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 
@@ -1191,8 +1191,8 @@ msgstr "API Key:"
 msgid "Software Bill of Materials"
 msgstr "Software Bill of Materials"
 
-#: src/features/scans/scansSchemas.ts:542
-#: src/features/scans/scansSchemas.ts:560
+#: src/features/scans/scansSchemas.ts:544
+#: src/features/scans/scansSchemas.ts:562
 msgid "Invalid path, longer than {MAX_PATH_LENGTH} characters"
 msgstr "Invalid path, longer than {MAX_PATH_LENGTH} characters"
 
@@ -1250,7 +1250,7 @@ msgstr "Modify Hidden Finding"
 msgid "Features"
 msgstr "Features"
 
-#: src/features/scans/scansSchemas.ts:509
+#: src/features/scans/scansSchemas.ts:511
 msgid "Contains one of more of the following invalid characters: space, \\, ~, ^, :, ?, *, ["
 msgstr "Contains one of more of the following invalid characters: space, \\, ~, ^, :, ?, *, ["
 
@@ -1417,8 +1417,8 @@ msgstr "Include paths: {0} ; Exclude paths: {1}"
 msgid "Standard"
 msgstr "Standard"
 
-#: src/features/scans/scansSchemas.ts:486
-#: src/features/scans/scansSchemas.ts:490
+#: src/features/scans/scansSchemas.ts:488
+#: src/features/scans/scansSchemas.ts:492
 #: src/pages/ResultsPage.tsx:937
 #: src/pages/ResultsPage.tsx:950
 #: src/pages/SearchPage.tsx:3441
@@ -1932,8 +1932,8 @@ msgstr "OWASP Check (Java)"
 msgid "Meta Data Field1 Missing"
 msgstr "Meta Data Field1 Missing"
 
-#: src/features/scans/scansSchemas.ts:541
-#: src/features/scans/scansSchemas.ts:559
+#: src/features/scans/scansSchemas.ts:543
+#: src/features/scans/scansSchemas.ts:561
 msgid "Invalid path, must be relative to repository base directory and contain valid characters"
 msgstr "Invalid path, must be relative to repository base directory and contain valid characters"
 
@@ -2185,7 +2185,7 @@ msgstr "Components or Licenses"
 msgid "This column is filtered"
 msgstr "This column is filtered"
 
-#: src/features/scans/scansSchemas.ts:499
+#: src/features/scans/scansSchemas.ts:501
 msgid "Missing \"Organization/\" Prefix"
 msgstr "Missing \"Organization/\" Prefix"
 
@@ -2474,8 +2474,8 @@ msgstr "Scan started"
 msgid "Meta data field2 must be less than {META_FIELD2_LENGTH} characters"
 msgstr "Meta data field2 must be less than {META_FIELD2_LENGTH} characters"
 
-#: src/features/scans/scansSchemas.ts:519
-#: src/features/scans/scansSchemas.ts:520
+#: src/features/scans/scansSchemas.ts:521
+#: src/features/scans/scansSchemas.ts:522
 msgid "Positive integer"
 msgstr "Positive integer"
 
@@ -2761,7 +2761,7 @@ msgstr "Start a new scan using the same options used in this scan?<0/>Initiating
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 
-#: src/features/scans/scansSchemas.ts:487
+#: src/features/scans/scansSchemas.ts:489
 #: src/pages/ResultsPage.tsx:6344
 msgid "Invalid value"
 msgstr "Invalid value"
@@ -2832,8 +2832,8 @@ msgstr "End"
 msgid "Bundler Audit (Ruby)"
 msgstr "Bundler Audit (Ruby)"
 
-#: src/features/scans/scansSchemas.ts:570
-#: src/features/scans/scansSchemas.ts:608
+#: src/features/scans/scansSchemas.ts:572
+#: src/features/scans/scansSchemas.ts:610
 msgid "At least one scan feature or plugin must be enabled"
 msgstr "At least one scan feature or plugin must be enabled"
 

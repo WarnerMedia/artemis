@@ -2945,7 +2945,7 @@ export function makeServer() {
 								{
 									name: "component1",
 									version: "0.1.0",
-									licenses: [{ id: "apache", name: "Apache" }],
+									licenses: [{ license_id: "apache", name: "Apache" }],
 									source: "node/module/package.json",
 									deps: [
 										{
@@ -2971,7 +2971,9 @@ export function makeServer() {
 												{
 													name: "component11",
 													version: "1.2.3",
-													licenses: [{ id: "unlicensed", name: "Unlicensed" }],
+													licenses: [
+														{ license_id: "unlicensed", name: "Unlicensed" },
+													],
 													source: "node/module/package.json",
 													deps: [],
 												},
@@ -2992,7 +2994,9 @@ export function makeServer() {
 												{
 													name: "component14",
 													version: "0.0.1",
-													licenses: [{ id: "bsd", name: "BSD 3-Clause" }],
+													licenses: [
+														{ license_id: "bsd", name: "BSD 3-Clause" },
+													],
 													source: "node/module/package.json",
 													deps: [],
 												},

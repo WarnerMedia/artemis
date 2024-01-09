@@ -3,9 +3,9 @@ import { t } from "@lingui/macro";
 import * as Yup from "yup";
 
 import { PagedResponse, Response, responseSchema } from "api/apiSchemas";
-import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
-import { User } from "features/users/usersSchemas";
 import { AppMeta, appMetaSchema } from "custom/scanMetaSchemas";
+import { User } from "features/users/usersSchemas";
+import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
 
 // interfaces
 export interface ScanFormLocationState {
@@ -161,7 +161,8 @@ export interface ResultsConfiguration {
 }
 
 interface SbomLicense {
-	id: string;
+	id?: string;
+	license_id?: string;
 	name: string;
 }
 
@@ -351,7 +352,8 @@ const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 
 const sbomLicenseSchema: Yup.ObjectSchema<SbomLicense> = Yup.object()
 	.shape({
-		id: Yup.string().defined(),
+		id: Yup.string(),
+		license_id: Yup.string(),
 		name: Yup.string().defined(),
 	})
 	.defined();
