@@ -2,7 +2,7 @@ import subprocess
 import os
 from glob import glob
 from engine.plugins.lib import utils
-from engine.plugins.trivy.write_npmrc import handle_npmrc_creation
+from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 
 logger = utils.setup_logging("trivy")
 

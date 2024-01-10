@@ -97,9 +97,9 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
     # passing in "include dev" tag if include_dev arg is True
     logger.info(f'Scanning lock-files. Dev-dependencies: {include_dev}')
     if include_dev:
-        proc = subprocess.run(["trivy", "fs", "--offline-scan",  "--include-dev-deps", path, "--format", "json"], capture_output=True, check=False)
+        proc = subprocess.run(["trivy", "fs", "--include-dev-deps", path, "--format", "json"], capture_output=True, check=False)
     else:
-        proc = subprocess.run(["trivy", "fs", "--offline-scan", path, "--format", "json"], capture_output=True, check=False)
+        proc = subprocess.run(["trivy", "fs", path, "--format", "json"], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -113,7 +113,7 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 
 
 def execute_trivy_image_scan(image: str):
-    proc = subprocess.run(["trivy", "image", "--offline-scan", image, "--format", "json"], capture_output=True, check=False)
+    proc = subprocess.run(["trivy", "image", image, "--format", "json"], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -197,8 +197,8 @@ def main():
         results.extend(result)
 
     # Scan Images
-    # image_outputs = build_scan_parse_images(args.images)
-    # results.extend(image_outputs)
+    image_outputs = build_scan_parse_images(args.images)
+    results.extend(image_outputs)
 
     # Return results
     print(json.dumps({"success": not bool(results), "details": results}))

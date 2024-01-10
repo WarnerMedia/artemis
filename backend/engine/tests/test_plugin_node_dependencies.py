@@ -8,7 +8,7 @@ import pytest
 
 from engine.plugins.lib.cve import find_cves
 from engine.plugins.lib.line_numbers.resolver import LineNumberResolver
-from engine.plugins.node_dependencies import write_npmrc
+from artemis.backend.engine.plugins.lib import write_npmrc
 from engine.plugins.node_dependencies.audit import npm_audit
 from engine.plugins.node_dependencies.main import _extract_advisories, _load_lockfile
 from engine.plugins.node_dependencies.parse import _find_versions_v1, _find_versions_v2, parse_advisory
