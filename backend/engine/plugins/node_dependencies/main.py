@@ -9,7 +9,7 @@ from engine.plugins.lib import utils
 from engine.plugins.lib.line_numbers.resolver import LineNumberResolver
 from engine.plugins.node_dependencies.audit import npm_audit
 from engine.plugins.node_dependencies.parse import parse_advisory
-from artemis.backend.engine.plugins.lib.write_npmrc import handle_npmrc_creation
+from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 
 log = utils.setup_logging("node_dependencies")
 
