@@ -6,9 +6,12 @@ from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 
 logger = utils.setup_logging("trivy")
 
+
 def install_package_files(include_dev, path, root_path):
     # Create a package-lock.json file if it doesn't already exist
-    logger.info(f'Generating package-lock.json for {path.replace(root_path, "")} (including dev dependencies: {include_dev})')
+    logger.info(
+        f'Generating package-lock.json for {path.replace(root_path, "")} (including dev dependencies: {include_dev})'
+    )
     cmd = [
         "npm",
         "install",
@@ -20,6 +23,7 @@ def install_package_files(include_dev, path, root_path):
     if not include_dev:
         cmd.append("--only=prod")
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
+
 
 def check_package_files(path: str, include_dev: bool) -> tuple:
     """
@@ -56,6 +60,6 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
             r = install_package_files(include_dev, sub_path, path)
             if r.returncode != 0:
                 logger.error(r.stderr.decode("utf-8"))
-                logger.warn( {"results": results_dct, "lockfile": lockfile, "lockfile_missing": lockfile_missing})
+                logger.warn({"results": results_dct, "lockfile": lockfile, "lockfile_missing": lockfile_missing})
                 return
     return

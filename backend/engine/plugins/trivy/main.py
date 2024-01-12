@@ -18,7 +18,7 @@ def parse_output(output: list) -> list:
     results = []
     for item in output:
         source = item["Target"]
-        component_type = convert_type(item.get('Type', 'N/A'))
+        component_type = convert_type(item.get("Type", "N/A"))
         if item.get("Vulnerabilities") is None:
             continue
         cve_set = set()
@@ -95,9 +95,11 @@ def convert_output(output_str: str):
 
 def execute_trivy_lock_scan(path: str, include_dev: bool):
     # passing in "include dev" tag if include_dev arg is True
-    logger.info(f'Scanning lock-files. Dev-dependencies: {include_dev}')
+    logger.info(f"Scanning lock-files. Dev-dependencies: {include_dev}")
     if include_dev:
-        proc = subprocess.run(["trivy", "fs", "--include-dev-deps", path, "--format", "json"], capture_output=True, check=False)
+        proc = subprocess.run(
+            ["trivy", "fs", "--include-dev-deps", path, "--format", "json"], capture_output=True, check=False
+        )
     else:
         proc = subprocess.run(["trivy", "fs", path, "--format", "json"], capture_output=True, check=False)
     if proc.returncode != 0:
@@ -152,11 +154,11 @@ def process_docker_images(images: list):
                 """
                 items = []
                 for item in output["Results"]:
-                  if image["tag-id"] in item["Target"]:
-                      item["Target"] = image["dockerfile"]
-                  else:
-                      item["Target"] = f"{image['dockerfile']} > {item['Target']}"
-                  items.append(item)
+                    if image["tag-id"] in item["Target"]:
+                        item["Target"] = image["dockerfile"]
+                    else:
+                        item["Target"] = f"{image['dockerfile']} > {item['Target']}"
+                    items.append(item)
                 outputs.append(items)
         except Exception as e:
             logger.warning("Issue scanning image: %s", e)

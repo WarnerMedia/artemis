@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('artemisdb', '0047_auto_20231115_1408'),
+        ("artemisdb", "0047_auto_20231115_1408"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='component',
-            name='version',
+            model_name="component",
+            name="version",
             field=models.CharField(max_length=256),
         ),
     ]
