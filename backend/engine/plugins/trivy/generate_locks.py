@@ -24,7 +24,7 @@ def install_package_files(include_dev, path, root_path):
 def check_package_files(path: str, include_dev: bool) -> tuple:
     """
     Main Function
-    Find all of the package.json files in the repo and run 'npm audit' against them.
+    Find all of the package.json files in the repo and build lock files for them if they dont have one already.
     Parses the results and returns them with the errors.
     """
 
@@ -41,6 +41,8 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
     # Write a .npmrc file based on the set of package.json files found
     handle_npmrc_creation(paths)
 
+    # Loop through paths that have a package file and generate a package-lock.json for them (if does not exist)
+    results_dct = {}
     for sub_path in paths:
         results_dct = {}
         lockfile = os.path.join(sub_path, "package-lock.json")
@@ -54,6 +56,6 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
             r = install_package_files(include_dev, sub_path, path)
             if r.returncode != 0:
                 logger.error(r.stderr.decode("utf-8"))
-                return {"results": results_dct, "lockfile": lockfile, "lockfile_missing": lockfile_missing}
-    # Return the results
-    return results_dct
+                logger.warn( {"results": results_dct, "lockfile": lockfile, "lockfile_missing": lockfile_missing})
+                return
+    return
