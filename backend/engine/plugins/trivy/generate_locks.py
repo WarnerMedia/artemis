@@ -32,6 +32,9 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
     Parses the results and returns them with the errors.
     """
 
+    errors = []
+    alerts = []
+
     # Find and loop through all the package.json files in the path
     files = glob("%s/**/package.json" % path, recursive=True)
 
@@ -46,9 +49,7 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
     handle_npmrc_creation(paths)
 
     # Loop through paths that have a package file and generate a package-lock.json for them (if does not exist)
-    results_dct = {}
     for sub_path in paths:
-        results_dct = {}
         lockfile = os.path.join(sub_path, "package-lock.json")
         lockfile_missing = not os.path.exists(lockfile)
         if lockfile_missing:
@@ -56,10 +57,12 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
                 f"No package-lock.json file was found in path {sub_path.replace(path, '')}. "
                 "Please consider creating a package-lock file for this project."
             )
-            results_dct["warning"] = msg
+            alerts.append(msg)
             r = install_package_files(include_dev, sub_path, path)
             if r.returncode != 0:
-                logger.error(r.stderr.decode("utf-8"))
-                logger.warn({"results": results_dct, "lockfile": lockfile, "lockfile_missing": lockfile_missing})
-                return
-    return
+                error = r.stderr.decode("utf-8")
+                logger.error(error)
+                errors.append(error)
+                return errors, alerts
+    # Return the results
+    return errors, alerts

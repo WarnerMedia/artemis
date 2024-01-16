@@ -185,7 +185,7 @@ def main():
     results = []
 
     # Generate Lock files
-    check_package_files(args.path, include_dev)
+    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev)
 
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
@@ -203,7 +203,11 @@ def main():
     results.extend(image_outputs)
 
     # Return results
-    print(json.dumps({"success": not bool(results), "details": results}))
+    print(
+        json.dumps(
+            {"success": bool(results), "details": results, "errors": lock_file_errors, "alerts": lock_file_alerts}
+        )
+    )
 
 
 if __name__ == "__main__":
