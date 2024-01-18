@@ -46,7 +46,7 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
         paths.add(os.path.dirname(filename))
 
     # Write a .npmrc file based on the set of package.json files found
-    handle_npmrc_creation(paths)
+    handle_npmrc_creation(logger, paths)
 
     # Loop through paths that have a package file and generate a package-lock.json for them (if does not exist)
     for sub_path in paths:

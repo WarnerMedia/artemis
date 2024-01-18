@@ -35,7 +35,7 @@ def check_package_files(path: str, include_dev: bool = False) -> tuple:
         paths.add(os.path.dirname(filename))
 
     # Write a .npmrc file based on the set of package.json files found
-    handle_npmrc_creation(paths)
+    handle_npmrc_creation(log, paths)
 
     for sub_path in paths:
         absolute_package_file = f"{sub_path}/package.json"
