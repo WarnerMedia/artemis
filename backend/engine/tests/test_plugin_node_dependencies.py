@@ -499,7 +499,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         with TemporaryDirectory() as working_dir:
             npmrc = os.path.join(working_dir, ".npmrc")
-            write_npmrc.write_npmrc(npmrc, scope_list)
+            write_npmrc.write_npmrc(log, npmrc, scope_list)
             with open(npmrc) as npm_file:
                 result = npm_file.read()
 
@@ -513,7 +513,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         expected_result = [TEST_SCOPE_CONFIG[0]]
 
-        result = write_npmrc.get_config_matches_in_packages(paths)
+        result = write_npmrc.get_config_matches_in_packages(log, paths)
 
         self.assertEqual(expected_result, result)
 
@@ -525,7 +525,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         expected_result = [TEST_SCOPE_CONFIG[1]]
 
-        result = write_npmrc.get_config_matches_in_packages(paths)
+        result = write_npmrc.get_config_matches_in_packages(log, paths)
 
         self.assertEqual(expected_result, result)
 
