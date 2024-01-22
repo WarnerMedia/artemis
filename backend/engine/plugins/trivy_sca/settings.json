@@ -1,7 +1,7 @@
 {
-    "name": "Trivy Scanner",
+    "name": "Trivy SCA Scanner",
     "type": "vulnerability",
     "image": "$ECR/artemis/dind:latest",
-    "build_images": true,
+    "build_images": false,
     "enabled": true
 }

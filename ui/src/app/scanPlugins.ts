@@ -178,9 +178,14 @@ export const vulnPluginsKeys: ScanPluginKeys = {
 		group: GROUP_VULN,
 	},
 	snyk: { displayName: t`Snyk`, apiName: "snyk", group: GROUP_VULN },
-	trivy: {
-		displayName: t`Trivy (Container Images & SCA)`,
-		apiName: "trivy",
+	trivy_image: {
+		displayName: t`Trivy (Container Images)`,
+		apiName: "trivy_image",
+		group: GROUP_VULN,
+	},
+	trivy_sca: {
+		displayName: t`Trivy (SCA)`,
+		apiName: "trivy_SCA",
 		group: GROUP_VULN,
 	},
 	veracode_sca: {
