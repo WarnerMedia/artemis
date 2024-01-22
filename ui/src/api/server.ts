@@ -326,7 +326,7 @@ export function makeServer() {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse convallis tempor ligula vel tempus.",
 						remediation: "",
-						source_plugins: ["Trivy"],
+						source_plugins: ["Trivy Container Image"],
 					},
 					"CVE-2016-00000": {
 						source: ["docker/Dockerfile"],
@@ -334,7 +334,7 @@ export function makeServer() {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras elementum fringilla elementum.",
 						remediation: "",
-						source_plugins: ["Trivy", "Aqua Container Security"],
+						source_plugins: ["Trivy Container Image", "Aqua Container Security"],
 					},
 				},
 				component1: {

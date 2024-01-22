@@ -12,6 +12,7 @@ logger = utils.setup_logging("trivy")
 
 NO_RESULTS_TEXT = "no supported file was detected"
 
+
 def execute_trivy_lock_scan(path: str, include_dev: bool):
     # passing in "include dev" tag if include_dev arg is True
     logger.info(f"Scanning lock-files. Dev-dependencies: {include_dev}")

@@ -9,6 +9,7 @@ from engine.plugins.lib.trivy_common.parsing_util import parse_output
 
 logger = utils.setup_logging("trivy")
 
+
 def execute_trivy_image_scan(image: str):
     proc = subprocess.run(["trivy", "image", image, "--format", "json"], capture_output=True, check=False)
     if proc.returncode != 0:
@@ -18,6 +19,7 @@ def execute_trivy_image_scan(image: str):
         return proc.stdout.decode("utf-8")
     logger.error(proc.stderr.decode("utf-8"))
     return None
+
 
 def process_docker_images(images: list):
     """
@@ -82,11 +84,7 @@ def main():
     results.extend(image_outputs)
 
     # Return results
-    print(
-        json.dumps(
-            {"success": bool(results), "details": results}
-        )
-    )
+    print(json.dumps({"success": bool(results), "details": results}))
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ logger = utils.setup_logging("trivy")
 
 DESC_REMEDIATION_SPLIT = "## Recommendation"
 
+
 def parse_output(output: list) -> list:
     results = []
     for item in output:
