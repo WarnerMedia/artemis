@@ -334,7 +334,10 @@ export function makeServer() {
 						description:
 							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras elementum fringilla elementum.",
 						remediation: "",
-						source_plugins: ["Trivy Container Image", "Aqua Container Security"],
+						source_plugins: [
+							"Trivy Container Image",
+							"Aqua Container Security",
+						],
 					},
 				},
 				component1: {
