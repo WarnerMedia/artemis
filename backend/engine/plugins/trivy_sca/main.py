@@ -8,7 +8,7 @@ from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.trivy_common.parsing_util import convert_output
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
 
-logger = utils.setup_logging("trivy")
+logger = utils.setup_logging("trivy_sca")
 
 NO_RESULTS_TEXT = "no supported file was detected"
 

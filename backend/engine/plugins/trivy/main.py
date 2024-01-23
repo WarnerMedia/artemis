@@ -1,5 +1,5 @@
 """
-trivy image plugin
+trivy image scanning plugin
 """
 import json
 import subprocess
