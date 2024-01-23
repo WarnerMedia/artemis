@@ -343,8 +343,8 @@ msgid "Component name must be less than {COMPONENT_NAME_LENGTH} characters"
 msgstr "Component name must be less than {COMPONENT_NAME_LENGTH} characters"
 
 #: src/app/scanPlugins.ts:182
-msgid "Trivy Container Images"
-msgstr "Trivy Container Images"
+#~ msgid "Trivy Container Images"
+#~ msgstr "Trivy Container Images"
 
 #: src/pages/UsersPage.tsx:410
 msgid "Artemis - User Management"
@@ -831,6 +831,10 @@ msgstr "Results may vary compared to scans run with other options. View scan res
 #: src/pages/ResultsPage.tsx:1697
 msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
 msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
+
+#: src/app/scanPlugins.ts:182
+msgid "Trivy Container Image"
+msgstr "Trivy Container Image"
 
 #: src/pages/ResultsPage.tsx:4789
 msgid "Show line numbers"

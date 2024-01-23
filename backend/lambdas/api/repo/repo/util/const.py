@@ -25,7 +25,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "owasp_dependency_check": None,
         "php_sensio_security_checker": None,
         "bundler_audit": None,
-        "trivy_image": None,
+        "trivy": None,
         "trivy_sca": None,
     },
     "secret": {"gitsecrets": None, "truffle_hog": None},
@@ -94,7 +94,7 @@ if AQUA_ENABLED:
     # Add the Aqua plugin if it is enabled
     PLUGIN_LIST_BY_CATEGORY["vulnerability"]["aqua_cli_scanner"] = None
     for i in QUALIFIED_PLUGINS["vulnerability"]:
-        if i == ["trivy_image" or "trivy_sca"]:
+        if i == ["trivy" or "trivy_sca"]:
             # Set aqua_cli_scanner as an alternate option to trivy for qualification
             i.append("aqua_cli_scanner")
 else:
