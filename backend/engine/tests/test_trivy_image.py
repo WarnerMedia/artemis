@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from docker import builder, remover
-from engine.plugins.trivy_image import main as Trivy
+from engine.plugins.trivy import main as Trivy
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 

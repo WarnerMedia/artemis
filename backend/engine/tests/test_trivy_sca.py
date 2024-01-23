@@ -6,6 +6,7 @@ import pytest
 
 from docker import builder, remover
 from engine.plugins.trivy_sca import main as Trivy
+from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -111,6 +112,33 @@ class TestTrivy(unittest.TestCase):
     def setUp(self) -> None:
         with open(TEST_OUTPUT) as output_file:
             self.demo_results_dict = json.load(output_file)
+
+    def test_lock_file_exists(self):
+        with patch(f"{AUDIT_PREFIX}os.path.exists", return_value=True):
+            with patch(f"{AUDIT_PREFIX}subprocess.run") as mock_proc:
+                mock_proc.stderr = mock_proc.stdout = None
+                mock_proc.return_value = CompletedProcess(args="", returncode=0)
+
+                actual = check_package_files("foo")
+
+        self.assertNotIn("warning", actual["results"])
+        self.assertFalse(actual["lockfile_missing"])
+
+    def test_lock_file_missing(self):
+        with patch(f"{AUDIT_PREFIX}os.path.exists", return_value=False):
+            with patch(f"{AUDIT_PREFIX}subprocess.run") as mock_proc:
+                mock_proc.stderr = mock_proc.stdout = None
+                mock_proc.return_value = CompletedProcess(args="", returncode=0)
+
+                actual = check_package_files("foo")
+
+        self.assertIn("warning", actual["results"])
+        expected_msg = (
+            "No package-lock.json file was found in path foo. "
+            "Please consider creating a package-lock file for this project."
+        )
+        self.assertEqual(actual["results"]["warning"], expected_msg)
+        self.assertTrue(actual["lockfile_missing"])
 
     def test_check_output(self):
         check_output_list = Trivy.parse_output(self.demo_results_dict)
