@@ -1,9 +1,10 @@
 import json
 import os.path
 import unittest
-
 import pytest
 
+from subprocess import CompletedProcess
+from unittest.mock import patch
 from docker import builder, remover
 from engine.plugins.trivy_sca import main as Trivy
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
@@ -13,13 +14,7 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 NODE_DIR = os.path.join(TEST_DIR, "data", "node")
 
 TEST_ROOT = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
-
-TEST_PACKAGE_FILE = os.path.join(NODE_DIR, "package.json")
-TEST_LOCKFILE_V1 = os.path.join(NODE_DIR, "v1", "package-lock.json")
-TEST_LOCKFILE_V2 = os.path.join(NODE_DIR, "v2", "package-lock.json")
-TEST_PACKAGE_FILE_RELATIVE = TEST_PACKAGE_FILE.replace(f"{TEST_DIR}", "")
-TEST_LOCKFILE_V1_RELATIVE = TEST_LOCKFILE_V1.replace(f"{TEST_DIR}", "")
-TEST_LOCKFILE_V2_RELATIVE = TEST_LOCKFILE_V2.replace(f"{TEST_DIR}", "")
+GENERATE_LOCKS_PREFIX = "engine.plugins.lib.trivy_common.generate_locks."
 
 TEST_DATA = os.path.join(TEST_DIR, "data")
 
@@ -114,31 +109,26 @@ class TestTrivy(unittest.TestCase):
             self.demo_results_dict = json.load(output_file)
 
     def test_lock_file_exists(self):
-        with patch(f"{AUDIT_PREFIX}os.path.exists", return_value=True):
-            with patch(f"{AUDIT_PREFIX}subprocess.run") as mock_proc:
-                mock_proc.stderr = mock_proc.stdout = None
-                mock_proc.return_value = CompletedProcess(args="", returncode=0)
-
-                actual = check_package_files("foo")
-
-        self.assertNotIn("warning", actual["results"])
-        self.assertFalse(actual["lockfile_missing"])
+        with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
+            mock_glob.return_value = ["/mocked/path/package.json"]
+            with patch(f"{GENERATE_LOCKS_PREFIX}handle_npmrc_creation"):
+                with patch(f"{GENERATE_LOCKS_PREFIX}os.path.exists", return_value=True):
+                    with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
+                        mock_proc.stderr = mock_proc.stdout = None
+                        mock_proc.return_value = CompletedProcess(args="", returncode=0)
+                        actual = check_package_files("/mocked/path/", False)
+        self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
 
     def test_lock_file_missing(self):
-        with patch(f"{AUDIT_PREFIX}os.path.exists", return_value=False):
-            with patch(f"{AUDIT_PREFIX}subprocess.run") as mock_proc:
-                mock_proc.stderr = mock_proc.stdout = None
-                mock_proc.return_value = CompletedProcess(args="", returncode=0)
-
-                actual = check_package_files("foo")
-
-        self.assertIn("warning", actual["results"])
-        expected_msg = (
-            "No package-lock.json file was found in path foo. "
-            "Please consider creating a package-lock file for this project."
-        )
-        self.assertEqual(actual["results"]["warning"], expected_msg)
-        self.assertTrue(actual["lockfile_missing"])
+        with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
+            mock_glob.return_value = ["/mocked/path/package.json"]
+            with patch(f"{GENERATE_LOCKS_PREFIX}handle_npmrc_creation"):
+                with patch(f"{GENERATE_LOCKS_PREFIX}os.path.exists", return_value=False):
+                    with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
+                        mock_proc.stderr = mock_proc.stdout = None
+                        mock_proc.return_value = CompletedProcess(args="", returncode=0)
+                        actual = check_package_files("/mocked/path/", False)
+        self.assertEqual(len(actual[1]), 1, "There should be a warning of a lock file missing")
 
     def test_check_output(self):
         check_output_list = Trivy.parse_output(self.demo_results_dict)

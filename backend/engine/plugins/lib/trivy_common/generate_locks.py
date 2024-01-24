@@ -4,7 +4,7 @@ from glob import glob
 from engine.plugins.lib import utils
 from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 
-logger = utils.setup_logging("trivy")
+logger = utils.setup_logging("trivy_sca")
 
 
 def install_package_files(include_dev, path, root_path):
@@ -40,6 +40,10 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
 
     logger.info("Found %d package.json files", len(files))
 
+    # If there are no package.json files, exit function
+    if len(files) == 0:
+        return errors, alerts
+
     # Build a set of all directories containing package files
     paths = set()
     for filename in files:
@@ -54,9 +58,10 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
         lockfile_missing = not os.path.exists(lockfile)
         if lockfile_missing:
             msg = (
-                f"No package-lock.json file was found in path {sub_path.replace(path, '')}. "
-                "Please consider creating a package-lock file for this project."
+                f"No package-lock.json file was found in path {sub_path.replace(path, '')}."
+                " Please consider creating a package-lock file for this project."
             )
+            logger.warning(msg)
             alerts.append(msg)
             r = install_package_files(include_dev, sub_path, path)
             if r.returncode != 0:
