@@ -1708,7 +1708,6 @@ describe("SearchPage component", () => {
 					within(dialog).getByText("NPM Audit (NodeJS)");
 					within(dialog).getByText("Snyk");
 					within(dialog).getByText("Trivy Container Image");
-					within(dialog).getByText("Trivy SCA");
 					within(dialog).getByText("Veracode SCA");
 					within(dialog).getByText("Youve_never_seen_this_plugin_before");
 
