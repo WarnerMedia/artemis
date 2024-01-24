@@ -94,7 +94,7 @@ if AQUA_ENABLED:
     # Add the Aqua plugin if it is enabled
     PLUGIN_LIST_BY_CATEGORY["vulnerability"]["aqua_cli_scanner"] = None
     for i in QUALIFIED_PLUGINS["vulnerability"]:
-        if i == ["trivy" or "trivy_sca"]:
+        if i == ["trivy"]:
             # Set aqua_cli_scanner as an alternate option to trivy for qualification
             i.append("aqua_cli_scanner")
 else:
