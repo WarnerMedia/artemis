@@ -178,7 +178,7 @@ export const vulnPluginsKeys: ScanPluginKeys = {
 		group: GROUP_VULN,
 	},
 	snyk: { displayName: t`Snyk`, apiName: "snyk", group: GROUP_VULN },
-	trivy_image: {
+	trivy: {
 		displayName: t`Trivy Container Image`,
 		apiName: "trivy",
 		group: GROUP_VULN,
