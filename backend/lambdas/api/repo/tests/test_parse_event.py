@@ -220,6 +220,7 @@ EXPECTED_EVENT_RESULT_1 = {
         "swiftlint",
         "checkov",
         "-trivy",
+        "-trivy_sca",
         "-technology_discovery",
         "-gitsecrets",
         "-owasp_dependency_check",

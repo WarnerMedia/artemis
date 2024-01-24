@@ -1,5 +1,5 @@
 """
-trivy parser
+trivy output parser
 """
 import json
 from typing import NamedTuple
