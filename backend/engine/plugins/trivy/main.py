@@ -84,7 +84,7 @@ def main():
     results.extend(image_outputs)
 
     # Return results
-    print(json.dumps({"success": bool(results), "details": results}))
+    print(json.dumps({"success": not bool(results), "details": results}))
 
 
 if __name__ == "__main__":
