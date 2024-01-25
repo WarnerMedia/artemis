@@ -188,10 +188,6 @@ msgstr "Priority"
 msgid "New Scan"
 msgstr "New Scan"
 
-#: src/components/FormikPickers.tsx:71
-#~ msgid "Previous month"
-#~ msgstr "Previous month"
-
 #: src/pages/ResultsPage.tsx:925
 msgid "Remove Hidden Finding"
 msgstr "Remove Hidden Finding"
@@ -345,6 +341,10 @@ msgstr "No technology inventory detected"
 #: src/pages/SearchPage.tsx:3352
 msgid "Component name must be less than {COMPONENT_NAME_LENGTH} characters"
 msgstr "Component name must be less than {COMPONENT_NAME_LENGTH} characters"
+
+#: src/app/scanPlugins.ts:182
+#~ msgid "Trivy Container Images"
+#~ msgstr "Trivy Container Images"
 
 #: src/pages/UsersPage.tsx:410
 msgid "Artemis - User Management"
@@ -832,6 +832,10 @@ msgstr "Results may vary compared to scans run with other options. View scan res
 msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
 msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
 
+#: src/app/scanPlugins.ts:182
+msgid "Trivy Container Image"
+msgstr "Trivy Container Image"
+
 #: src/pages/ResultsPage.tsx:4789
 msgid "Show line numbers"
 msgstr "Show line numbers"
@@ -852,6 +856,10 @@ msgstr "Unable to get user keys"
 #: src/pages/UsersPage.tsx:960
 msgid "Scope {0}"
 msgstr "Scope {0}"
+
+#: src/app/scanPlugins.ts:187
+msgid "Trivy SCA"
+msgstr "Trivy SCA"
 
 #: src/app/scanPlugins.ts:25
 msgid "Vulnerability Detection"
@@ -1946,10 +1954,6 @@ msgstr "Clear options"
 msgid "Component:"
 msgstr "Component:"
 
-#: src/components/FormikPickers.tsx:74
-#~ msgid "Next month"
-#~ msgstr "Next month"
-
 #: src/components/TableMenu.tsx:117
 #: src/pages/ResultsPage.tsx:4718
 msgid "I Acknowledge"
@@ -2581,10 +2585,6 @@ msgstr "Remediation must be less than {REMEDIATION_LENGTH} characters"
 msgid "Found in source files ({0}):"
 msgstr "Found in source files ({0}):"
 
-#: src/app/scanPlugins.ts:182
-msgid "Trivy (Container Images)"
-msgstr "Trivy (Container Images)"
-
 #: src/pages/SearchPage.tsx:2053
 #: src/pages/SearchPage.tsx:3913
 msgid "Licenses"
@@ -2757,7 +2757,7 @@ msgstr "Remove API key named \"{0}\"?"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
-#: src/app/scanPlugins.ts:187
+#: src/app/scanPlugins.ts:192
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 

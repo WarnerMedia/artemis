@@ -26,6 +26,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "php_sensio_security_checker": None,
         "bundler_audit": None,
         "trivy": None,
+        "trivy_sca": None,
     },
     "secret": {"gitsecrets": None, "truffle_hog": None},
     "static_analysis": {

@@ -6,12 +6,15 @@ from unittest.mock import patch
 
 import pytest
 
+from engine.plugins.lib import utils
 from engine.plugins.lib.cve import find_cves
 from engine.plugins.lib.line_numbers.resolver import LineNumberResolver
-from engine.plugins.node_dependencies import write_npmrc
+from engine.plugins.lib import write_npmrc
 from engine.plugins.node_dependencies.audit import npm_audit
 from engine.plugins.node_dependencies.main import _extract_advisories, _load_lockfile
 from engine.plugins.node_dependencies.parse import _find_versions_v1, _find_versions_v2, parse_advisory
+
+log = utils.setup_logging("node_dependencies")
 
 AUDIT_PREFIX = "engine.plugins.node_dependencies.audit."
 CVE_PREFIX = "engine.plugins.node_dependencies.parse."
@@ -496,7 +499,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         with TemporaryDirectory() as working_dir:
             npmrc = os.path.join(working_dir, ".npmrc")
-            write_npmrc.write_npmrc(npmrc, scope_list)
+            write_npmrc.write_npmrc(log, npmrc, scope_list)
             with open(npmrc) as npm_file:
                 result = npm_file.read()
 
@@ -510,7 +513,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         expected_result = [TEST_SCOPE_CONFIG[0]]
 
-        result = write_npmrc.get_config_matches_in_packages(paths)
+        result = write_npmrc.get_config_matches_in_packages(log, paths)
 
         self.assertEqual(expected_result, result)
 
@@ -522,7 +525,7 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         expected_result = [TEST_SCOPE_CONFIG[1]]
 
-        result = write_npmrc.get_config_matches_in_packages(paths)
+        result = write_npmrc.get_config_matches_in_packages(log, paths)
 
         self.assertEqual(expected_result, result)
 
@@ -536,14 +539,14 @@ class TestNodeDependencyPlugin(unittest.TestCase):
 
         with TemporaryDirectory() as working_dir:
             npmrc = os.path.join(working_dir, ".npmrc")
-            write_npmrc.handle_npmrc_creation(paths, home_dir=working_dir)
+            write_npmrc.handle_npmrc_creation(log, paths, home_dir=working_dir)
             with open(npmrc) as npm_file:
                 result = npm_file.read()
 
         self.assertEqual(expected_result, result)
 
     def test_handle_npmrc_creation_file_exists(self):
-        result = write_npmrc.handle_npmrc_creation(set(), os.path.join(NODE_DIR, "private_scope"))
+        result = write_npmrc.handle_npmrc_creation(log, set(), os.path.join(NODE_DIR, "private_scope"))
 
         self.assertFalse(result)
 
@@ -552,6 +555,6 @@ class TestNodeDependencyPlugin(unittest.TestCase):
         self.assertEqual(write_npmrc.get_scope_configs, mock_creds)
         mock_creds.return_value = TEST_SCOPE_CONFIG
 
-        result = write_npmrc.handle_npmrc_creation(set(), NODE_DIR)
+        result = write_npmrc.handle_npmrc_creation(log, set(), NODE_DIR)
 
         self.assertFalse(result)

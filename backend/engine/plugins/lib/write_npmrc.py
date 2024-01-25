@@ -3,10 +3,8 @@ from engine.plugins.lib import utils
 
 NODE_CRED_KEY = "node-dep-creds"
 
-log = utils.setup_logging("node_dependencies")
 
-
-def handle_npmrc_creation(paths: set, home_dir=None) -> bool:
+def handle_npmrc_creation(logger, paths: set, home_dir=None) -> bool:
     """
     Main npmrc creation function. Checks if the .npmrc file exists, and if not,
     gets and writes the private registries currently in the package.jsons
@@ -16,18 +14,18 @@ def handle_npmrc_creation(paths: set, home_dir=None) -> bool:
         home_dir = os.environ["HOME"]
     npmrc = os.path.join(home_dir, ".npmrc")
     if os.path.exists(npmrc):
-        log.info("%s already exists, skipping", npmrc)
+        logger.info("%s already exists, skipping", npmrc)
         return False
 
-    scope_list = get_config_matches_in_packages(paths)
+    scope_list = get_config_matches_in_packages(logger, paths)
     if not scope_list:
-        log.info("No supported private packages found. Skipping .npmrc creation.")
+        logger.info("No supported private packages found. Skipping .npmrc creation.")
         return False
-    write_npmrc(npmrc, scope_list)
+    write_npmrc(logger, npmrc, scope_list)
     return True
 
 
-def get_config_matches_in_packages(paths: set) -> list:
+def get_config_matches_in_packages(logger, paths: set) -> list:
     """
     - Gets a list of the private scopes supported from Secrets Manager.
     - Checks to see if the package.jsons in our paths have any supported private scopes.
@@ -35,9 +33,9 @@ def get_config_matches_in_packages(paths: set) -> list:
     return: List of private scopes
     """
     # get list of configs to check for
-    configs = get_scope_configs()
+    configs = get_scope_configs(logger)
     if configs is None:
-        log.warning("List of configs is empty. Skipping .npmrc creation.")
+        logger.warning("List of configs is empty. Skipping .npmrc creation.")
         return None
 
     private_scope_list = []
@@ -50,18 +48,18 @@ def get_config_matches_in_packages(paths: set) -> list:
             contents = f.read()
             for config in configs:
                 if f'"@{config["scope"]}/' in contents:
-                    log.info(f"%s has @%s packages", package_file, config["scope"])
+                    logger.info(f"%s has @%s packages", package_file, config["scope"])
                     private_scope_list.append(config)
     return private_scope_list
 
 
-def get_scope_configs():
+def get_scope_configs(logger):
     """
     grabs the list of private registries from secrets manager
     """
-    creds = utils.get_secret(NODE_CRED_KEY, log)
+    creds = utils.get_secret(NODE_CRED_KEY, logger)
     if not creds:
-        log.error("Unable to retrieve Node registry configs.")
+        logger.error("Unable to retrieve Node registry configs.")
         return None
     return creds
 
@@ -81,9 +79,9 @@ def build_npm_config(scope, registry, token, username, email, **kwargs):
     )
 
 
-def write_npmrc(npmrc, scope_list: list) -> None:
+def write_npmrc(logger, npmrc, scope_list: list) -> None:
     # Write the configs for flagged scopes to npmrc
     with open(npmrc, "a") as f:
         for scope in scope_list:
-            log.info(f"Writing {scope['scope']} config to %s", npmrc)
+            logger.info(f"Writing {scope['scope']} config to %s", npmrc)
             f.write(build_npm_config(**scope))

@@ -3,8 +3,8 @@ FROM docker:20.10.14-dind
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-ARG TRIVY_VER=v0.16.0
-ARG TRIVY_COMMIT=0285a89c7cce9b2d07bd5826cd2fed68420ca546
+ARG TRIVY_VER=v0.48.0
+ARG TRIVY_COMMIT=01edbda3472ebbbe71f341d1741194ec35de7d69
 ARG SNYK_VER=v1.889.0
 
 # Copy Artemis libraries into /src for installation
@@ -17,6 +17,7 @@ COPY ./libs/ /src/
 # - Symlink python3 to python for Analyzer Engine benefit
 RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk upgrade && \
+    apk add npm && \
     pip3 install --upgrade pip setuptools boto3 && \
     pip3 install boto3 && \
     ln -s /usr/bin/python3 /usr/bin/python && \

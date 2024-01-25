@@ -9,7 +9,7 @@ from engine.plugins.lib import utils
 from engine.plugins.lib.line_numbers.resolver import LineNumberResolver
 from engine.plugins.node_dependencies.audit import npm_audit
 from engine.plugins.node_dependencies.parse import parse_advisory
-from engine.plugins.node_dependencies.write_npmrc import handle_npmrc_creation
+from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 
 log = utils.setup_logging("node_dependencies")
 
@@ -35,7 +35,7 @@ def check_package_files(path: str, include_dev: bool = False) -> tuple:
         paths.add(os.path.dirname(filename))
 
     # Write a .npmrc file based on the set of package.json files found
-    handle_npmrc_creation(paths)
+    handle_npmrc_creation(log, paths)
 
     for sub_path in paths:
         absolute_package_file = f"{sub_path}/package.json"
