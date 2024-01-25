@@ -52,7 +52,7 @@ def parse_scan(data: dict, path: str) -> list:
                     "severity": warnings["severity"].lower(),
                     "message": warnings["details"],
                     "line": convert_line(warnings["line"]),  # Convert line number string to an int
-                    "type": "{}: {}".format(warnings["cwe"]["ID"], get_cwe_reason(warnings["cwe"]["ID"])),
+                    "type": "{}: {}".format(warnings["cwe"]["id"], get_cwe_reason(warnings["cwe"]["id"])),
                 }
             results_list.append(items)
     return results_list
@@ -75,7 +75,7 @@ def amend_rule(warnings: object, path: str) -> object:
         "severity": "low",
         "message": warnings["details"] + context if warnings["rule_id"] == "G404" else warnings["details"],
         "line": convert_line(warnings["line"]),  # Convert line number string to an int
-        "type": "{}: {}".format(warnings["cwe"]["ID"], get_cwe_reason(warnings["cwe"]["ID"])),
+        "type": "{}: {}".format(warnings["cwe"]["id"], get_cwe_reason(warnings["cwe"]["id"])),
     }
     return items
 

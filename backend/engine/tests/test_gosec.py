@@ -13,7 +13,7 @@ TEST_GOSEC_OUTPUT = {
         {
             "severity": "HIGH",
             "confidence": "MEDIUM",
-            "cwe": {"ID": "338", "URL": "https://cwe.mitre.org/data/definitions/338.html"},
+            "cwe": {"id": "338", "URL": "https://cwe.mitre.org/data/definitions/338.html"},
             "rule_id": "G404",
             "details": "Use of weak random number generator (math/rand instead of crypto/rand)",
             "file": "/go/golang-examples/expert/dynparallel.go",
@@ -28,7 +28,7 @@ TEST_GOSEC_OUTPUT = {
         {
             "severity": "HIGH",
             "confidence": "HIGH",
-            "cwe": {"ID": "295", "URL": "https://cwe.mitre.org/data/definitions/295.html"},
+            "cwe": {"id": "295", "URL": "https://cwe.mitre.org/data/definitions/295.html"},
             "rule_id": "G402",
             "details": "TLS MinVersion too low.",
             "file": "/go/golang-examples/expert/httpsd.go",
@@ -45,7 +45,7 @@ TEST_GOSEC_OUTPUT = {
         {
             "severity": "MEDIUM",
             "confidence": "HIGH",
-            "cwe": {"ID": "326", "URL": "https://cwe.mitre.org/data/definitions/326.html"},
+            "cwe": {"id": "326", "URL": "https://cwe.mitre.org/data/definitions/326.html"},
             "rule_id": "G401",
             "details": "Use of weak cryptographic primitive",
             "file": "/go/golang-examples/beginner/hashing.go",
@@ -59,7 +59,7 @@ TEST_GOSEC_OUTPUT = {
         {
             "severity": "MEDIUM",
             "confidence": "HIGH",
-            "cwe": {"ID": "78", "URL": "https://cwe.mitre.org/data/definitions/78.html"},
+            "cwe": {"id": "78", "URL": "https://cwe.mitre.org/data/definitions/78.html"},
             "rule_id": "G204",
             "details": "Subprocess launched with variable",
             "file": "/go/golang-examples/expert/gocomment.go",
@@ -73,7 +73,7 @@ TEST_GOSEC_OUTPUT = {
         {
             "severity": "LOW",
             "confidence": "HIGH",
-            "cwe": {"ID": "242", "URL": "https://cwe.mitre.org/data/definitions/242.html"},
+            "cwe": {"id": "242", "URL": "https://cwe.mitre.org/data/definitions/242.html"},
             "rule_id": "G103",
             "details": "Use of unsafe calls should be audited",
             "file": "/go/golang-examples/expert/cgo.go",
@@ -84,7 +84,7 @@ TEST_GOSEC_OUTPUT = {
         {
             "severity": "LOW",
             "confidence": "HIGH",
-            "cwe": {"ID": "703", "URL": "https://cwe.mitre.org/data/definitions/703.html"},
+            "cwe": {"id": "703", "URL": "https://cwe.mitre.org/data/definitions/703.html"},
             "rule_id": "G104",
             "details": "Errors unhandled.",
             "file": "/go/golang-examples/expert/upload.go",
@@ -153,7 +153,7 @@ TEST_PARSE_SCAN_OUTPUT = [
 TEST_AMEND_G404_INPUT = {
     "severity": "HIGH",
     "confidence": "MEDIUM",
-    "cwe": {"ID": "338", "URL": "https://cwe.mitre.org/data/definitions/338.html"},
+    "cwe": {"id": "338", "URL": "https://cwe.mitre.org/data/definitions/338.html"},
     "rule_id": "G404",
     "details": "Use of weak random number generator (math/rand instead of crypto/rand)",
     "file": "/go/golang-examples/expert/dynparallel.go",
@@ -179,7 +179,7 @@ TEST_AMEND_G404_OUTPUT = {
 TEST_AMEND_G307_INPUT = {
     "severity": "MEDIUM",
     "confidence": "MEDIUM",
-    "cwe": {"ID": "703", "URL": "https://cwe.mitre.org/data/definitions/703.html"},
+    "cwe": {"id": "703", "URL": "https://cwe.mitre.org/data/definitions/703.html"},
     "rule_id": "G307",
     "details": 'Deferring unsafe method "Close" on type "*os.File"',
     "file": "/go/golang-examples/expert/dynparallel.go",
