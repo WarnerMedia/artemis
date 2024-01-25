@@ -15,9 +15,9 @@ NO_RESULTS_TEXT = "no supported file was detected"
 
 def execute_trivy_lock_scan(path: str, include_dev: bool):
     logger.info(f"Scanning lock-files. Dev-dependencies: {include_dev}")
-    args = ["trivy", "fs", "--include-dev-deps", path, "--format", "json"]
-    if not include_dev:
-        args.remove("--include-dev-deps")
+    args = ["trivy", "fs", path, "--format", "json"]
+    if include_dev:
+        args.append("--include-dev-deps")
     proc = subprocess.run(args, capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
@@ -32,7 +32,7 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 
 
 def main():
-    logger.info("Executing Trivy")
+    logger.info("Executing Trivy SCA")
     args = utils.parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
