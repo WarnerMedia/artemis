@@ -38,6 +38,7 @@ requests = "*"
 python-dotenv = "*"
 checkov = "==2.0.1065"
 aiohttp = "*"
+gitpython = "*"
 
 [pipenv]
 allow_prereleases = true
