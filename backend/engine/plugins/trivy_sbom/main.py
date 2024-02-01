@@ -83,7 +83,7 @@ def main():
     results = []
 
     # Generate Lock files
-    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev)
+    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
     # Todo: add function to run npm install to get license info
     # Scan local lock files
     application_sbom_output = execute_trivy_application_sbom(args.path, include_dev)

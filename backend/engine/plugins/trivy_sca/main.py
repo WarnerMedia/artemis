@@ -38,7 +38,7 @@ def main():
     results = []
 
     # Generate Lock files
-    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev)
+    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, False)
 
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)

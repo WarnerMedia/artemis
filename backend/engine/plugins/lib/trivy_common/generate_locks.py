@@ -6,29 +6,30 @@ from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 
 logger = utils.setup_logging("trivy_sca")
 
-
-def install_package_files(include_dev, path, root_path):
-    # Create a package-lock.json file if it doesn't already exist
-    logger.info(
-        f'Generating package-lock.json for {path.replace(root_path, "")} (including dev dependencies: {include_dev})'
-    )
-    cmd = [
+cmd = [
         "npm",
         "install",
-        "--package-lock-only",  # Generate the needed lockfile
         "--legacy-bundling",  # Don't dedup dependencies so that we can correctly trace their root in package.json
         "--legacy-peer-deps",  # Ignore peer dependencies, which is the NPM 6.x behavior
         "--no-audit",  # Don't run an audit
     ]
+
+def install_package_files(include_dev, path, root_path, node_modules):
+    # Create a package-lock.json file if it doesn't already exist
+    logger.info(
+        f'Generating package-lock.json for {path.replace(root_path, "")} (including dev dependencies: {include_dev} (build node modules: {node_modules})'
+    )
     if not include_dev:
         cmd.append("--only=prod")
+    if not node_modules:
+        cmd.append("--package-lock-only")
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
 
-
-def check_package_files(path: str, include_dev: bool) -> tuple:
+def check_package_files(path: str, include_dev: bool, node_modules: bool) -> tuple:
     """
     Main Function
     Find all of the package.json files in the repo and build lock files for them if they dont have one already.
+    If node_modules is true, then that means we want to build the node_modules for every dir that has a package.json
     Parses the results and returns them with the errors.
     """
 
@@ -63,7 +64,14 @@ def check_package_files(path: str, include_dev: bool) -> tuple:
             )
             logger.warning(msg)
             alerts.append(msg)
-            r = install_package_files(include_dev, sub_path, path)
+            r = install_package_files(include_dev, sub_path, path, node_modules)
+            if r.returncode != 0:
+                error = r.stderr.decode("utf-8")
+                logger.error(error)
+                errors.append(error)
+                return errors, alerts
+        if node_modules and not lockfile_missing:
+            r = install_package_files(include_dev, sub_path, path, node_modules)
             if r.returncode != 0:
                 error = r.stderr.decode("utf-8")
                 logger.error(error)

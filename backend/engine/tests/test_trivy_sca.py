@@ -116,7 +116,7 @@ class TestTrivy(unittest.TestCase):
                     with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
                         mock_proc.stderr = mock_proc.stdout = None
                         mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                        actual = check_package_files("/mocked/path/", False)
+                        actual = check_package_files("/mocked/path/", False, False)
         self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
 
     def test_lock_file_missing(self):
@@ -127,7 +127,7 @@ class TestTrivy(unittest.TestCase):
                     with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
                         mock_proc.stderr = mock_proc.stdout = None
                         mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                        actual = check_package_files("/mocked/path/", False)
+                        actual = check_package_files("/mocked/path/", False, False)
         self.assertEqual(len(actual[1]), 1, "There should be a warning of a lock file missing")
 
     def test_check_output(self):
