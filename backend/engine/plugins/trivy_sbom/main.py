@@ -18,6 +18,7 @@ def execute_trivy_application_sbom(path: str, include_dev: bool):
     if include_dev:
         args.append("--include-dev-deps")
     proc = subprocess.run(args, capture_output=True, check=False)
+    print(proc)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -31,6 +32,7 @@ def execute_trivy_application_sbom(path: str, include_dev: bool):
 
 def execute_trivy_image_sbom(image: str):
     proc = subprocess.run(["trivy", "image", image, "--format", "cyclonedx"], capture_output=True, check=False)
+    print(proc)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -69,10 +71,7 @@ def build_scan_parse_images(images) -> list:
     results = []
     logger.info("Dockerfiles found: %d", images["dockerfile_count"])
     outputs = process_docker_images(images["results"])
-    for image_output in outputs:
-        output = parse_output(image_output)
-        if output:
-            results.extend(output)
+    results.extend(outputs)
     return results
 
 
