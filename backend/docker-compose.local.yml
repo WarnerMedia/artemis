@@ -18,7 +18,7 @@ services:
       - "8080:8080"
       - "4566:4566"
     environment:
-      SERVICES: "sqs"
+      SERVICES: "sqs, s3"
       HOSTNAME: "localstack"
       AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
   engine:
