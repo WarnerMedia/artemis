@@ -121,7 +121,6 @@ def root_nodes(tree_graph):
         # If a node does not appear as a dependency for any other node, it is considered a root node
         if not depends_on:
             roots.append(node)
-    print (len(roots))
     return roots
 
 def parser(output):
