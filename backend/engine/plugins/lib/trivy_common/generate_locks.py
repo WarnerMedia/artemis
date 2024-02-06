@@ -12,6 +12,7 @@ cmd = [
         "--legacy-bundling",  # Don't dedup dependencies so that we can correctly trace their root in package.json
         "--legacy-peer-deps",  # Ignore peer dependencies, which is the NPM 6.x behavior
         "--no-audit",  # Don't run an audit
+        "--ignore-scripts", # Skip execution of scripts
     ]
 
 def install_package_files(include_dev, path, root_path, node_modules):
