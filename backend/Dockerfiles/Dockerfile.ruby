@@ -1,4 +1,4 @@
-ARG RUBY_VER=3.3-alpine
+ARG RUBY_VER=3.0-alpine
 FROM ruby:${RUBY_VER}
 
 ARG MAINTAINER
@@ -19,8 +19,8 @@ ARG BUNDLER_VER=0.8.0
 # - Remove bundler-audit rspec Gemfiles so that Aqua doesn't generate F+ from them when scanned
 RUN apk update && \
     apk upgrade libcrypto1.1 libssl3 libretls && \
-    apk add git unzip python3 py3-pip jq py3-boto3&& \
-    ln -sf /usr/bin/python3 /usr/bin/python && \
+    apk add git unzip python3 py3-pip jq py3-boto3 && \
+    pip install --upgrade setuptools && \
     gem install brakeman --version 5.0.0 && \
     gem install bundler-audit --version ${BUNDLER_VER} && \
     rm -rf /usr/local/bundle/gems/bundler-audit-${BUNDLER_VER}/spec/
