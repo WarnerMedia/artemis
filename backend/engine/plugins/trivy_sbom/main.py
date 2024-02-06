@@ -5,7 +5,7 @@ import json
 import subprocess
 from engine.plugins.lib import utils
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
-from engine.plugins.trivy_sbom.parser import parse_output
+from engine.plugins.trivy_sbom.parser import parser
 
 logger = utils.setup_logging("trivy_sbom")
 
@@ -52,7 +52,7 @@ def process_docker_images(images: list):
             continue
         try:
             output = execute_trivy_image_sbom(image["tag-id"])
-            output = parse_output(output)
+            output = parser(output)
             if not output:
                 logger.warning(
                     "Image from Dockerfile %s could not be scanned or the results converted to JSON",
@@ -86,7 +86,7 @@ def main():
     # Todo: add function to run npm install to get license info
     # Scan local lock files
     application_sbom_output = execute_trivy_application_sbom(args.path, include_dev)
-    application_sbom_output = parse_output(application_sbom_output)
+    application_sbom_output = parser(application_sbom_output)
     logger.debug(application_sbom_output)
     if not application_sbom_output:
         logger.warning("Application SBOM output is None. Continuing.")
