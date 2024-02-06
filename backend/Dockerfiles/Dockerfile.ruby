@@ -20,6 +20,7 @@ ARG BUNDLER_VER=0.8.0
 RUN apk update && \
     apk upgrade libcrypto1.1 libssl3 libretls && \
     apk add git unzip python3 py3-pip jq py3-boto3&& \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
     gem install brakeman --version 5.0.0 && \
     gem install bundler-audit --version ${BUNDLER_VER} && \
     rm -rf /usr/local/bundle/gems/bundler-audit-${BUNDLER_VER}/spec/
