@@ -88,7 +88,7 @@ def convert_cyclonedx_to_tree(data:list, deps:list, ignore_list:list) -> tuple:
             if dependency not in graph:
                 graph[dependency] = {}
             # Add the dependency to the "dependsOn" list for the current node
-                graph[ref]["dependsOn"].append(dependency)
+            graph[ref]["dependsOn"].append(dependency)
     
     return graph, metadata
 
@@ -113,7 +113,7 @@ def root_nodes(tree_graph):
         depends_on = False
 
         for other_node in tree_graph[0].keys():
-            dependencies = tree_graph[0].get(other_node, {}). get("dependsOn", [])
+            dependencies = tree_graph[0].get(other_node, {}).get("dependsOn", [])
             if node in dependencies:
                 depends_on = True
                 break
