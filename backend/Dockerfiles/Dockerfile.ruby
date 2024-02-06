@@ -1,4 +1,4 @@
-ARG RUBY_VER=2.7-alpine
+ARG RUBY_VER=3.3-alpine
 FROM ruby:${RUBY_VER}
 
 ARG MAINTAINER
@@ -18,11 +18,8 @@ ARG BUNDLER_VER=0.8.0
 #   prevent it from being accidentally used (especially because webrick isn't used at all by Artemis plugins).
 # - Remove bundler-audit rspec Gemfiles so that Aqua doesn't generate F+ from them when scanned
 RUN apk update && \
-    apk upgrade libcrypto1.1 libssl1.1 libretls && \
-    apk add git unzip python3 py3-pip jq 'gmp=6.2.1-r2' && \
-    pip3 install --upgrade pip setuptools boto3 && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
+    apk upgrade libcrypto1.1 libssl3 libretls && \
+    apk add git unzip python3 py3-pip jq py3-boto3&& \
     gem install brakeman --version 5.0.0 && \
     gem install bundler-audit --version ${BUNDLER_VER} && \
-    gem install --default webrick:1.6.1 && \
     rm -rf /usr/local/bundle/gems/bundler-audit-${BUNDLER_VER}/spec/
