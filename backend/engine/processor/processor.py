@@ -19,6 +19,7 @@ from env import APPLICATION, REGION, SQS_ENDPOINT, VULNERABILITY_EVENTS_ENABLED
 from metadata.metadata import get_all_metadata
 from processor.details import Details
 from processor.sbom import process_sbom
+from processor.sbom_cdx import process_sbom as process_sbom_cdx
 from processor.scan_details import ScanDetails
 from processor.vulns import process_vulns, resolve_vulns
 from utils.deploy_key import create_ssh_url, git_clone
@@ -146,8 +147,13 @@ class EngineProcessor:
                 else:
                     logger.info("Plugin %s completed, updating results", plugin)
 
-                    if results.type == PluginType.SBOM.value:
+                    if results.type == PluginType.SBOM.value and plugin == "veracode_sbom":
                         process_sbom(results, self.scan.get_scan_object())
+
+                        # SBOM results should not be returned directly in the scan, so clear details
+                        results.details = []
+                    elif results.type == PluginType.SBOM.value and plugin != "veracode_sbom":
+                        process_sbom_cdx(results, self.scan.get_scan_object())
 
                         # SBOM results should not be returned directly in the scan, so clear details
                         results.details = []
