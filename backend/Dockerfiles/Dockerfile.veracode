@@ -182,4 +182,5 @@ RUN apt-get update && \
 			"yarn@1.22.x" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install -q --no-cache-dir "boto3==1.26.*"
+    pip install -q --no-cache-dir "boto3==1.26.*" && \
+    pip install --upgrade setuptools
