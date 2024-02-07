@@ -18,7 +18,7 @@ ARG BUNDLER_VER=0.8.0
 #   prevent it from being accidentally used (especially because webrick isn't used at all by Artemis plugins).
 # - Remove bundler-audit rspec Gemfiles so that Aqua doesn't generate F+ from them when scanned
 RUN apk update && \
-    apk upgrade libcrypto1.1 libssl3 libretls && \
+    apk upgrade libcrypto1.1 libssl1.1 libretls && \
     apk add git unzip python3 py3-pip jq py3-boto3 && \
     ln -sf /usr/bin/python3 /usr/bin/python && \
     pip install --upgrade setuptools && \
