@@ -946,7 +946,7 @@ class License(models.Model):
     # Suppress int->bigint migration
     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")
 
-    license_id = models.CharField(max_length=32, unique=True)
+    license_id = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=256)
 
     def __str__(self):
