@@ -84,9 +84,35 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
 
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
-    aws.write_s3_file(
-        path=(SBOM_JSON_S3_KEY % scan_id),
-        body=json.dumps(sbom),
+    s3_file_data = None
+    s3_file_list = []
+    s3_file_list = aws.get_s3_file_list(
+        prefix=(f"scans/{scan_id}/sbom/"),
         s3_bucket=SCAN_DATA_S3_BUCKET,
         endpoint_url=SCAN_DATA_S3_ENDPOINT,
     )
+    # if file already exists, add to it
+    if "artemis.json" in s3_file_list:
+        try:
+            s3_file_data = aws.get_s3_file(
+            path=(SBOM_JSON_S3_KEY % scan_id),
+            s3_bucket=SCAN_DATA_S3_BUCKET,
+            endpoint_url=SCAN_DATA_S3_ENDPOINT,
+            )
+            aws.write_s3_file(
+                path=(SBOM_JSON_S3_KEY % scan_id),
+                body=s3_file_data + json.dumps(sbom),
+                s3_bucket=SCAN_DATA_S3_BUCKET,
+                endpoint_url=SCAN_DATA_S3_ENDPOINT,
+            )
+        except Exception as error:
+            logger.error(error)
+    else:
+        # if file does not already exist, create and write to it
+        aws.write_s3_file(
+            path=(SBOM_JSON_S3_KEY % scan_id),
+            body=json.dumps(sbom),
+            s3_bucket=SCAN_DATA_S3_BUCKET,
+            endpoint_url=SCAN_DATA_S3_ENDPOINT,
+        )
+    
