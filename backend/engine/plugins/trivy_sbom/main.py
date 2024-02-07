@@ -5,7 +5,7 @@ import json
 import subprocess
 from engine.plugins.lib import utils
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
-from engine.plugins.trivy_sbom.parser import parser
+from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
 
 logger = utils.setup_logging("trivy_sbom")
 
@@ -18,7 +18,6 @@ def execute_trivy_application_sbom(path: str, include_dev: bool):
     if include_dev:
         args.append("--include-dev-deps")
     proc = subprocess.run(args, capture_output=True, check=False)
-    print(proc)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -52,7 +51,7 @@ def process_docker_images(images: list):
             continue
         try:
             output = execute_trivy_image_sbom(image["tag-id"])
-            output = parser(output)
+            output = clean_output_application_sbom(output)
             if not output:
                 logger.warning(
                     "Image from Dockerfile %s could not be scanned or the results converted to JSON",
@@ -86,7 +85,7 @@ def main():
     # Todo: add function to run npm install to get license info
     # Scan local lock files
     application_sbom_output = execute_trivy_application_sbom(args.path, include_dev)
-    application_sbom_output = parser(application_sbom_output)
+    application_sbom_output = clean_output_application_sbom(application_sbom_output)
     logger.debug(application_sbom_output)
     if not application_sbom_output:
         logger.warning("Application SBOM output is None. Continuing.")
@@ -95,13 +94,13 @@ def main():
         results.extend(application_sbom_output)
 
     # Scan Images
-    image_outputs = build_scan_parse_images(args.images)
-    if not image_outputs:
-        logger.warning("Images SBOM output is None. Continuing.")
-    else:
-        logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
-        results.extend(image_outputs)
-    # Return results
+    # image_outputs = build_scan_parse_images(args.images)
+    # if not image_outputs:
+    #     logger.warning("Images SBOM output is None. Continuing.")
+    # else:
+    #     logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
+    #     results.extend(image_outputs)
+    # # Return results
     print(
         json.dumps(
             {"success": not bool(results), "details": results, "errors": lock_file_errors, "alerts": lock_file_alerts}
