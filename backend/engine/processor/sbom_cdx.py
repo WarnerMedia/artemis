@@ -10,6 +10,7 @@ from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
 from processor.sbom import get_component
+from artemislib.consts import SCANS_S3_KEY
 
 logger = Logger(__name__)
 
@@ -50,14 +51,23 @@ def process_dependency(dep: dict, scan: Scan):
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None
-    s3_file_list = []
-    s3_file_list = aws.get_s3_file_list(
-        prefix=(f"scans/{scan_id}/sbom/"),
+    # s3_file_list = []
+    # s3_file_list = aws.get_s3_file_list(
+    #     prefix=(f"scans/{scan_id}/sbom/"),
+    #     s3_bucket=SCAN_DATA_S3_BUCKET,
+    #     endpoint_url=SCAN_DATA_S3_ENDPOINT,
+    # )
+    try:
+        s3_file_data = aws.get_s3_file(
+        path=(SBOM_JSON_S3_KEY % scan_id),
         s3_bucket=SCAN_DATA_S3_BUCKET,
         endpoint_url=SCAN_DATA_S3_ENDPOINT,
-    )
-    # if file already exists, add to it
-    if "artemis.json" in s3_file_list:
+        )
+        print(f"FILE DATA {s3_file_data}")
+    except Exception as error:
+        logger.error(error)
+    if s3_file_data != None:
+        # if file already exists, add to it
         try:
             s3_file_data = aws.get_s3_file(
             path=(SBOM_JSON_S3_KEY % scan_id),
@@ -80,4 +90,3 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
             s3_bucket=SCAN_DATA_S3_BUCKET,
             endpoint_url=SCAN_DATA_S3_ENDPOINT,
         )
-    
