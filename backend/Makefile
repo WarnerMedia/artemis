@@ -202,8 +202,8 @@ SEVERITY_LEVELS := critical,high
 PHP_SCANNER_VER := 1.0.0
 
 # Trivy
-TRIVY_COMMIT := 01edbda3472ebbbe71f341d1741194ec35de7d69
-TRIVY_VER := v0.48.0
+TRIVY_COMMIT := 6ccc0a554b07b05fd049f882a1825a0e1e0aabe1
+TRIVY_VER := v0.49.1
 
 # Snyk
 SNYK_VER := v1.889.0
@@ -613,7 +613,7 @@ dist/docker/ruby: Dockerfiles/Dockerfile.ruby
 	$(DOCKER) build . --pull -t ${RUBY_TAG} -f Dockerfiles/Dockerfile.ruby \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg RUBY_VER=2-alpine
+		--build-arg RUBY_VER=3.0-alpine
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${RUBY_TAG} ${ECR_URL}${RUBY_TAG}
 	${DOCKER} tag ${RUBY_TAG} ${ECR_URL}${RUBY_TAG}-stage-${LATEST_COMMIT}

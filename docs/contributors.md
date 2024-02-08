@@ -2,7 +2,6 @@
 
 ![Artemis](images/logo192.png)
 
-
 * [pizen](https://github.com/pizen) 
 * [davakos](https://github.com/davakos)
 * [jdempsey77](https://github.com/jdempsey77)
@@ -21,6 +20,6 @@
 * [dtamez](https://github.com/dtamez)
 * [breedenc](https://github.com/breedenc)
 * [faizan12123](https://github.com/faizan12123)
-
+* [Kamsiy](https://github.com/Kamsiy)
 
 **[Main](../README.md)**
