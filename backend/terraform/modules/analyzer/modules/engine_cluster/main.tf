@@ -21,42 +21,37 @@ resource "aws_route_table_association" "routing" {
 ###############################################################################
 # EC2 Instance
 ###############################################################################
-data "template_file" "engine-script" {
-  template = file("${path.module}/templates/user_data/engine.sh")
-
-  vars = {
-    s3_bucket                    = var.s3_analyzer_files_bucket
-    ver                          = var.ver
-    type                         = var.public ? "public" : "nat"
-    aqua_enabled                 = var.aqua_enabled ? 1 : 0
-    veracode_enabled             = var.veracode_enabled ? 1 : 0
-    snyk_enabled                 = var.snyk_enabled ? 1 : 0
-    ghas_enabled                 = var.ghas_enabled ? 1 : 0
-    github_app_id                = var.github_app_id
-    private_docker_repos_key     = var.private_docker_repos_key
-    plugin_java_heap_size        = var.plugin_java_heap_size
-    status_lambda                = var.system_status_lambda.arn
-    aws_region                   = var.aws_region
-    docker_compose_ver           = var.docker_compose_ver
-    engine_block_device          = var.engine_block_device
-    application                  = var.app
-    region                       = var.aws_region
-    domain_name                  = var.domain_name
-    mandatory_include_paths      = jsonencode(var.mandatory_include_paths)
-    metadata_scheme_modules      = var.metadata_scheme_modules
-    revproxy_domain_substring    = var.revproxy_domain_substring
-    revproxy_secret              = var.revproxy_secret
-    revproxy_secret_region       = var.revproxy_secret_region
-    secrets_events_enabled       = var.secrets_events_enabled
-    inventory_events_enabled     = var.inventory_events_enabled
-    configuration_events_enabled = var.configuration_events_enabled
-    vulnerability_events_enabled = var.vulnerability_events_enabled
-    log_level                    = var.log_level
-  }
-}
-
 locals {
-  engine_user_data = data.template_file.engine-script.rendered
+  engine_user_data = templatefile(
+    "${path.module}/templates/user_data/engine.sh", {
+      s3_bucket                    = var.s3_analyzer_files_bucket
+      ver                          = var.ver
+      type                         = var.public ? "public" : "nat"
+      aqua_enabled                 = var.aqua_enabled ? 1 : 0
+      veracode_enabled             = var.veracode_enabled ? 1 : 0
+      snyk_enabled                 = var.snyk_enabled ? 1 : 0
+      ghas_enabled                 = var.ghas_enabled ? 1 : 0
+      github_app_id                = var.github_app_id
+      private_docker_repos_key     = var.private_docker_repos_key
+      plugin_java_heap_size        = var.plugin_java_heap_size
+      status_lambda                = var.system_status_lambda.arn
+      aws_region                   = var.aws_region
+      docker_compose_ver           = var.docker_compose_ver
+      engine_block_device          = var.engine_block_device
+      application                  = var.app
+      region                       = var.aws_region
+      domain_name                  = var.domain_name
+      mandatory_include_paths      = jsonencode(var.mandatory_include_paths)
+      metadata_scheme_modules      = var.metadata_scheme_modules
+      revproxy_domain_substring    = var.revproxy_domain_substring
+      revproxy_secret              = var.revproxy_secret
+      revproxy_secret_region       = var.revproxy_secret_region
+      secrets_events_enabled       = var.secrets_events_enabled
+      inventory_events_enabled     = var.inventory_events_enabled
+      configuration_events_enabled = var.configuration_events_enabled
+      vulnerability_events_enabled = var.vulnerability_events_enabled
+      log_level                    = var.log_level
+  })
 }
 
 resource "aws_launch_template" "engine-template" {
