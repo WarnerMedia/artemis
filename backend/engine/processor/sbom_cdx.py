@@ -17,15 +17,19 @@ logger = Logger(__name__)
 
 
 def process_sbom(result: Result, scan: Scan):
+    results = result.details[0]
+    parsed = result.details[1]
     # Go through the graphs
-    for obj in result.details[0]:
+    for obj in parsed[0]:
         process_dependency(obj, scan)
 
     # Write the dependency information to S3
-    write_sbom_json(scan.scan_id, result.details)
+    write_sbom_json(scan.scan_id, results)
 
 
 def process_dependency(dep: dict, scan: Scan):
+    if dep.get("type") == "":
+        print(f"NO TYPE FOUND FOR: {dep["name"]}{dep["version"]}")
     component = get_component(dep["name"], dep["version"], scan, dep.get("type"))
 
     # Keep a copy of the license objects so they only have to be retrieved from the DB once

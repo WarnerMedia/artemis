@@ -31,7 +31,6 @@ def execute_trivy_application_sbom(path: str, include_dev: bool):
 
 def execute_trivy_image_sbom(image: str):
     proc = subprocess.run(["trivy", "image", image, "--format", "cyclonedx"], capture_output=True, check=False)
-    print(proc)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
         return None
@@ -46,12 +45,12 @@ def process_docker_images(images: list):
     example list item:
     """
     outputs = []
+    parsed = []
     for image in images:
         if not image.get("status"):
             continue
         try:
-            output = execute_trivy_image_sbom(image["tag-id"])
-            output = clean_output_application_sbom(output)
+            output = convert_output(execute_trivy_image_sbom(image["tag-id"]))
             if not output:
                 logger.warning(
                     "Image from Dockerfile %s could not be scanned or the results converted to JSON",
@@ -59,51 +58,66 @@ def process_docker_images(images: list):
                 )
             else:
                 outputs.append(output)
+                parsed.append(clean_output_application_sbom(output))
         except Exception as e:
             logger.warning("Issue scanning image: %s", e)
 
     logger.info("Successfully scanned %d images", len(outputs))
-    return outputs
+    return outputs, parsed
 
 
 def build_scan_parse_images(images) -> list:
     results = []
+    parsed = []
     logger.info("Dockerfiles found: %d", images["dockerfile_count"])
-    outputs = process_docker_images(images["results"])
-    results.extend(outputs)
-    return results
+    outputs, parsed_image = process_docker_images(images["results"])
+    results.append(outputs)
+    parsed.extend(parsed_image)
+    return results, parsed
 
+def convert_output(output_str: str):
+    if not output_str:
+        return None
+    try:
+        return json.loads(output_str)
+    except json.JSONDecodeError as e:
+        # logger.error(e)
+        return None
+    
 
 def main():
     logger.info("Executing Trivy SBOM")
     args = utils.parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
+    parsed = []
 
     # Generate Lock files
     lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
-    # Todo: add function to run npm install to get license info
+
     # Scan local lock files
-    application_sbom_output = execute_trivy_application_sbom(args.path, include_dev)
-    application_sbom_output = clean_output_application_sbom(application_sbom_output)
+    application_sbom_output = convert_output(execute_trivy_application_sbom(args.path, include_dev))
+    application_sbom_output_parsed = clean_output_application_sbom(application_sbom_output)
     logger.debug(application_sbom_output)
     if not application_sbom_output:
         logger.warning("Application SBOM output is None. Continuing.")
     else:
         logger.info("Application Level SBOM generated. Success: %s", bool(application_sbom_output))
-        results.extend(application_sbom_output)
-
+        results.append(application_sbom_output)
+        parsed.extend(application_sbom_output_parsed)
     # Scan Images
-    # image_outputs = build_scan_parse_images(args.images)
-    # if not image_outputs:
-    #     logger.warning("Images SBOM output is None. Continuing.")
-    # else:
-    #     logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
-    #     results.extend(image_outputs)
-    # # Return results
+    image_outputs, parsed_images = build_scan_parse_images(args.images)
+    if not image_outputs:
+        logger.warning("Images SBOM output is None. Continuing.")
+    else:
+        logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
+        results.extend(image_outputs)
+        parsed.extend(parsed_images)
+    # Return results
+    result_parser = [results,parsed]
     print(
         json.dumps(
-            {"success": not bool(results), "details": results, "errors": lock_file_errors, "alerts": lock_file_alerts}
+            {"success": not bool(results), "details": result_parser, "errors": lock_file_errors, "alerts": lock_file_alerts}
         )
     )
 
