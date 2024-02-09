@@ -384,7 +384,7 @@ msgstr "warning"
 msgid "This scan option was not used"
 msgstr "This scan option was not used"
 
-#: src/app/scanPlugins.ts:57
+#: src/app/scanPlugins.ts:62
 msgid "Truffle Hog"
 msgstr "Truffle Hog"
 
@@ -471,7 +471,7 @@ msgstr "Queued"
 msgid "Report Sections Tabs"
 msgstr "Report Sections Tabs"
 
-#: src/app/scanPlugins.ts:180
+#: src/app/scanPlugins.ts:185
 msgid "Snyk"
 msgstr "Snyk"
 
@@ -481,7 +481,7 @@ msgstr "Snyk"
 msgid "Search"
 msgstr "Search"
 
-#: src/app/scanPlugins.ts:80
+#: src/app/scanPlugins.ts:85
 msgid "Checkov (IaC)"
 msgstr "Checkov (IaC)"
 
@@ -530,7 +530,7 @@ msgstr "Component/commit must be less than {COMPONENT_LENGTH} characters"
 msgid "Must be a past date"
 msgstr "Must be a past date"
 
-#: src/app/scanPlugins.ts:70
+#: src/app/scanPlugins.ts:75
 msgid "Bandit (Python)"
 msgstr "Bandit (Python)"
 
@@ -554,11 +554,11 @@ msgstr "Info"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will reload this page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will reload this page to display scan progress."
 
-#: src/app/scanPlugins.ts:47
+#: src/app/scanPlugins.ts:52
 msgid "GitHub Advanced Security Secrets"
 msgstr "GitHub Advanced Security Secrets"
 
-#: src/app/scanPlugins.ts:125
+#: src/app/scanPlugins.ts:130
 msgid "Shell Check (Shell)"
 msgstr "Shell Check (Shell)"
 
@@ -641,6 +641,10 @@ msgstr "This vulnerability in THIS component"
 msgid "Hidden in source file:"
 msgstr "Hidden in source file:"
 
+#: src/app/scanPlugins.ts:44
+msgid "Trivy SBOM"
+msgstr "Trivy SBOM"
+
 #: src/pages/ResultsPage.tsx:2822
 #: src/pages/ResultsPage.tsx:5118
 #: src/pages/ResultsPage.tsx:5348
@@ -690,11 +694,11 @@ msgstr "Before"
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 
-#: src/app/scanPlugins.ts:115
+#: src/app/scanPlugins.ts:120
 msgid "NodeJS Scan (NodeJS)"
 msgstr "NodeJS Scan (NodeJS)"
 
-#: src/app/scanPlugins.ts:120
+#: src/app/scanPlugins.ts:125
 msgid "Pylint (Python)"
 msgstr "Pylint (Python)"
 
@@ -777,7 +781,7 @@ msgstr "No License"
 msgid "Administrators can manage all other users and groups"
 msgstr "Administrators can manage all other users and groups"
 
-#: src/app/scanPlugins.ts:135
+#: src/app/scanPlugins.ts:140
 msgid "TFLint (Terraform)"
 msgstr "TFLint (Terraform)"
 
@@ -832,7 +836,7 @@ msgstr "Results may vary compared to scans run with other options. View scan res
 msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
 msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
 
-#: src/app/scanPlugins.ts:182
+#: src/app/scanPlugins.ts:187
 msgid "Trivy Container Image"
 msgstr "Trivy Container Image"
 
@@ -857,7 +861,7 @@ msgstr "Unable to get user keys"
 msgid "Scope {0}"
 msgstr "Scope {0}"
 
-#: src/app/scanPlugins.ts:187
+#: src/app/scanPlugins.ts:192
 msgid "Trivy SCA"
 msgstr "Trivy SCA"
 
@@ -913,7 +917,7 @@ msgstr "Click + icon to add this value to the Current Scope list above"
 msgid "Repository"
 msgstr "Repository"
 
-#: src/app/scanPlugins.ts:52
+#: src/app/scanPlugins.ts:57
 msgid "Git Secrets"
 msgstr "Git Secrets"
 
@@ -988,7 +992,7 @@ msgstr "No secrets found"
 msgid "Linked Accounts"
 msgstr "Linked Accounts"
 
-#: src/app/scanPlugins.ts:156
+#: src/app/scanPlugins.ts:161
 msgid "Aqua CLI Scanner (Docker)"
 msgstr "Aqua CLI Scanner (Docker)"
 
@@ -1057,7 +1061,7 @@ msgstr "Vulnerability Match"
 msgid "Found in source file:"
 msgstr "Found in source file:"
 
-#: src/app/scanPlugins.ts:105
+#: src/app/scanPlugins.ts:110
 msgid "FindSecBugs (Java 13)"
 msgstr "FindSecBugs (Java 13)"
 
@@ -1271,7 +1275,7 @@ msgstr "Username:"
 msgid "Resource must be less than {RESOURCE_LENGTH} characters"
 msgstr "Resource must be less than {RESOURCE_LENGTH} characters"
 
-#: src/app/scanPlugins.ts:148
+#: src/app/scanPlugins.ts:153
 msgid "Enry Technology Discovery"
 msgstr "Enry Technology Discovery"
 
@@ -1443,7 +1447,7 @@ msgstr "Required"
 msgid "Add this item to scope"
 msgstr "Add this item to scope"
 
-#: src/app/scanPlugins.ts:90
+#: src/app/scanPlugins.ts:95
 msgid "ESlint (JavaScript)"
 msgstr "ESlint (JavaScript)"
 
@@ -1561,7 +1565,7 @@ msgstr "Teal"
 msgid "VCS/Org required"
 msgstr "VCS/Org required"
 
-#: src/app/scanPlugins.ts:166
+#: src/app/scanPlugins.ts:171
 msgid "NPM Audit (NodeJS)"
 msgstr "NPM Audit (NodeJS)"
 
@@ -1570,7 +1574,7 @@ msgstr "NPM Audit (NodeJS)"
 msgid "Top"
 msgstr "Top"
 
-#: src/app/scanPlugins.ts:75
+#: src/app/scanPlugins.ts:80
 msgid "Brakeman (Ruby)"
 msgstr "Brakeman (Ruby)"
 
@@ -1606,7 +1610,7 @@ msgstr "Invalid date format"
 msgid "Invalid email address"
 msgstr "Invalid email address"
 
-#: src/app/scanPlugins.ts:85
+#: src/app/scanPlugins.ts:90
 msgid "Detekt (Kotlin)"
 msgstr "Detekt (Kotlin)"
 
@@ -1701,7 +1705,7 @@ msgstr "One or more file or directory paths separated by a comma or newline. Sup
 msgid "Include Paths ({0})"
 msgstr "Include Paths ({0})"
 
-#: src/app/scanPlugins.ts:110
+#: src/app/scanPlugins.ts:115
 msgid "GoSec (Golang)"
 msgstr "GoSec (Golang)"
 
@@ -1719,7 +1723,7 @@ msgstr "This will be the only time this key will be displayed! Do not close this
 msgid "Negligible"
 msgstr "Negligible"
 
-#: src/app/scanPlugins.ts:100
+#: src/app/scanPlugins.ts:105
 msgid "FindSecBugs (Java 8)"
 msgstr "FindSecBugs (Java 8)"
 
@@ -1863,7 +1867,7 @@ msgstr "No configuration findings detected"
 msgid "Moderate: {count}"
 msgstr "Moderate: {count}"
 
-#: src/app/scanPlugins.ts:95
+#: src/app/scanPlugins.ts:100
 msgid "FindSecBugs (Java 7)"
 msgstr "FindSecBugs (Java 7)"
 
@@ -1932,7 +1936,7 @@ msgstr "Close More Actions Menu"
 msgid "High: {count}"
 msgstr "High: {count}"
 
-#: src/app/scanPlugins.ts:171
+#: src/app/scanPlugins.ts:176
 msgid "OWASP Check (Java)"
 msgstr "OWASP Check (Java)"
 
@@ -2262,7 +2266,7 @@ msgstr "Restrict user to only these repositories. Must be a subset of scopes fro
 msgid "Remediation Match"
 msgstr "Remediation Match"
 
-#: src/app/scanPlugins.ts:143
+#: src/app/scanPlugins.ts:148
 msgid "Base Images (Docker)"
 msgstr "Base Images (Docker)"
 
@@ -2307,7 +2311,7 @@ msgstr "No Qualified Scans"
 msgid "Reset Filters"
 msgstr "Reset Filters"
 
-#: src/app/scanPlugins.ts:176
+#: src/app/scanPlugins.ts:181
 msgid "Sensio Security Check (PHP)"
 msgstr "Sensio Security Check (PHP)"
 
@@ -2315,7 +2319,7 @@ msgstr "Sensio Security Check (PHP)"
 msgid "Session expired, redirecting to login..."
 msgstr "Session expired, redirecting to login..."
 
-#: src/app/scanPlugins.ts:65
+#: src/app/scanPlugins.ts:70
 msgid "AWS CloudFormation Linter"
 msgstr "AWS CloudFormation Linter"
 
@@ -2689,7 +2693,7 @@ msgstr "Invalid component version matcher"
 msgid "Status"
 msgstr "Status"
 
-#: src/app/scanPlugins.ts:130
+#: src/app/scanPlugins.ts:135
 msgid "SwiftLint (Swift)"
 msgstr "SwiftLint (Swift)"
 
@@ -2757,7 +2761,7 @@ msgstr "Remove API key named \"{0}\"?"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
-#: src/app/scanPlugins.ts:192
+#: src/app/scanPlugins.ts:197
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 
@@ -2828,7 +2832,7 @@ msgstr "Clear"
 msgid "End"
 msgstr "End"
 
-#: src/app/scanPlugins.ts:161
+#: src/app/scanPlugins.ts:166
 msgid "Bundler Audit (Ruby)"
 msgstr "Bundler Audit (Ruby)"
 

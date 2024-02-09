@@ -40,6 +40,11 @@ export const sbomPluginsKeys: ScanPluginKeys = {
 		apiName: "veracode_sbom",
 		group: GROUP_SBOM,
 	},
+	trivy_sbom: {
+		displayName: t`Trivy SBOM`,
+		apiName: "trivy_sbom",
+		group: GROUP_SBOM,
+	},
 };
 
 export const secretPluginsKeys: ScanPluginKeys = {
