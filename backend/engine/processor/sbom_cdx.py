@@ -10,6 +10,7 @@ from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
 from processor.sbom import get_component
+from processor.sbom import convert_output
 from artemislib.consts import SCANS_S3_KEY
 
 logger = Logger(__name__)
@@ -33,7 +34,6 @@ def process_dependency(dep: dict, scan: Scan):
     licenses = []
     for license in dep["licenses"]:
         license_id = license.get("id").lower()
-        print(f"Licenses: {license_id}")
         if license_id not in license_obj_cache:
             # If we don't have a local copy of the license object get it from the DB
             license_obj_cache[license_id], _ = License.objects.get_or_create(
@@ -51,32 +51,22 @@ def process_dependency(dep: dict, scan: Scan):
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None
-    # s3_file_list = []
-    # s3_file_list = aws.get_s3_file_list(
-    #     prefix=(f"scans/{scan_id}/sbom/"),
-    #     s3_bucket=SCAN_DATA_S3_BUCKET,
-    #     endpoint_url=SCAN_DATA_S3_ENDPOINT,
-    # )
+    # Check if file already exists
     try:
         s3_file_data = aws.get_s3_file(
         path=(SBOM_JSON_S3_KEY % scan_id),
         s3_bucket=SCAN_DATA_S3_BUCKET,
         endpoint_url=SCAN_DATA_S3_ENDPOINT,
         )
-        print(f"FILE DATA {s3_file_data}")
     except Exception as error:
         logger.error(error)
     if s3_file_data != None:
         # if file already exists, add to it
+        body = [convert_output(s3_file_data), sbom]
         try:
-            s3_file_data = aws.get_s3_file(
-            path=(SBOM_JSON_S3_KEY % scan_id),
-            s3_bucket=SCAN_DATA_S3_BUCKET,
-            endpoint_url=SCAN_DATA_S3_ENDPOINT,
-            )
             aws.write_s3_file(
                 path=(SBOM_JSON_S3_KEY % scan_id),
-                body=s3_file_data + json.dumps(sbom, indent=2),
+                body=json.dumps(body, indent=2),
                 s3_bucket=SCAN_DATA_S3_BUCKET,
                 endpoint_url=SCAN_DATA_S3_ENDPOINT,
             )

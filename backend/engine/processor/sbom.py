@@ -81,36 +81,35 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
 
     return component
 
+def convert_output(output_str: str):
+    if not output_str:
+        return None
+    try:
+        return json.loads(output_str)
+    except json.JSONDecodeError as e:
+        # logger.error(e)
+        return None
+    
 
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None
-    # s3_file_list = []
-    # s3_file_list = aws.get_s3_file_list(
-    #     prefix=(f"scans/{scan_id}/sbom/"),
-    #     s3_bucket=SCAN_DATA_S3_BUCKET,
-    #     endpoint_url=SCAN_DATA_S3_ENDPOINT,
-    # )
+    # Check if file already exists
     try:
         s3_file_data = aws.get_s3_file(
         path=(SBOM_JSON_S3_KEY % scan_id),
         s3_bucket=SCAN_DATA_S3_BUCKET,
         endpoint_url=SCAN_DATA_S3_ENDPOINT,
         )
-        print(f"FILE DATA {s3_file_data}")
     except Exception as error:
         logger.error(error)
     if s3_file_data != None:
         # if file already exists, add to it
+        body = [convert_output(s3_file_data), sbom]
         try:
-            s3_file_data = aws.get_s3_file(
-            path=(SBOM_JSON_S3_KEY % scan_id),
-            s3_bucket=SCAN_DATA_S3_BUCKET,
-            endpoint_url=SCAN_DATA_S3_ENDPOINT,
-            )
             aws.write_s3_file(
                 path=(SBOM_JSON_S3_KEY % scan_id),
-                body=s3_file_data + json.dumps(sbom, indent=2),
+                body=json.dumps(body, indent=2),
                 s3_bucket=SCAN_DATA_S3_BUCKET,
                 endpoint_url=SCAN_DATA_S3_ENDPOINT,
             )
