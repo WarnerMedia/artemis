@@ -6,17 +6,17 @@ from engine.plugins.lib import utils
 logger = utils.setup_logging("Go Installer (SBOM)")
 
 cmd = [
-        "yarn",
-        "install",
-        "--ignore-scripts",
-        "--frozen-lockfile",
-    ]
+    "yarn",
+    "install",
+    "--ignore-scripts",
+    "--frozen-lockfile",
+]
+
 
 def download_packages(path, root_path):
-    logger.info(
-        f'Downloading Yarn packages for {path.replace(root_path, "")})'
-    )
+    logger.info(f'Downloading Yarn packages for {path.replace(root_path, "")})')
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
+
 
 def yarn_install(path: str) -> tuple:
     """

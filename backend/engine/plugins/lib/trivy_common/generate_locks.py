@@ -7,13 +7,14 @@ from engine.plugins.lib.write_npmrc import handle_npmrc_creation
 logger = utils.setup_logging("trivy_sca")
 
 cmd = [
-        "npm",
-        "install",
-        "--legacy-bundling",  # Don't dedup dependencies so that we can correctly trace their root in package.json
-        "--legacy-peer-deps",  # Ignore peer dependencies, which is the NPM 6.x behavior
-        "--no-audit",  # Don't run an audit
-        "--ignore-scripts", # Skip execution of scripts
-    ]
+    "npm",
+    "install",
+    "--legacy-bundling",  # Don't dedup dependencies so that we can correctly trace their root in package.json
+    "--legacy-peer-deps",  # Ignore peer dependencies, which is the NPM 6.x behavior
+    "--no-audit",  # Don't run an audit
+    "--ignore-scripts",  # Skip execution of scripts
+]
+
 
 def install_package_files(include_dev, path, root_path, node_modules):
     # Create a package-lock.json file if it doesn't already exist
@@ -25,6 +26,7 @@ def install_package_files(include_dev, path, root_path, node_modules):
     if not node_modules:
         cmd.append("--package-lock-only")
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
+
 
 def check_package_files(path: str, include_dev: bool, node_modules: bool) -> tuple:
     """

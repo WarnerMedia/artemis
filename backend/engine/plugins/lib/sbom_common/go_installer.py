@@ -6,16 +6,16 @@ from engine.plugins.lib import utils
 logger = utils.setup_logging("Go Installer (SBOM)")
 
 cmd = [
-        "go",
-        "mod",
-        "download",
-    ]
+    "go",
+    "mod",
+    "download",
+]
+
 
 def download_packages(path, root_path):
-    logger.info(
-        f'Downloading Go Mod packages for {path.replace(root_path, "")})'
-    )
+    logger.info(f'Downloading Go Mod packages for {path.replace(root_path, "")})')
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
+
 
 def go_mod_download(path: str) -> tuple:
     """

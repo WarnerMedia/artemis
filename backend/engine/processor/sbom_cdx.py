@@ -56,9 +56,9 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
     # Check if file already exists
     try:
         s3_file_data = aws.get_s3_file(
-        path=(SBOM_JSON_S3_KEY % scan_id),
-        s3_bucket=SCAN_DATA_S3_BUCKET,
-        endpoint_url=SCAN_DATA_S3_ENDPOINT,
+            path=(SBOM_JSON_S3_KEY % scan_id),
+            s3_bucket=SCAN_DATA_S3_BUCKET,
+            endpoint_url=SCAN_DATA_S3_ENDPOINT,
         )
     except Exception as error:
         logger.error(error)

@@ -13,6 +13,7 @@ logger = utils.setup_logging("trivy_sbom")
 
 NO_RESULTS_TEXT = "no supported file was detected"
 
+
 # Scan the repo at an application level
 def execute_trivy_application_sbom(path: str, include_dev: bool):
     logger.info(f"Creating SBOM at an application level. Dev-dependencies: {include_dev}")
@@ -31,6 +32,7 @@ def execute_trivy_application_sbom(path: str, include_dev: bool):
     logger.error(proc.stderr.decode("utf-8"))
     return None
 
+
 # Scan the images
 def execute_trivy_image_sbom(image: str):
     proc = subprocess.run(["trivy", "image", image, "--format", "cyclonedx"], capture_output=True, check=False)
@@ -41,6 +43,7 @@ def execute_trivy_image_sbom(image: str):
         return proc.stdout.decode("utf-8")
     logger.error(proc.stderr.decode("utf-8"))
     return None
+
 
 def process_docker_images(images: list):
     """
@@ -78,6 +81,7 @@ def build_scan_parse_images(images) -> list:
     parsed.extend(parsed_image)
     return results, parsed
 
+
 def convert_output(output_str: str):
     if not output_str:
         return None
@@ -86,7 +90,7 @@ def convert_output(output_str: str):
     except json.JSONDecodeError as e:
         # logger.error(e)
         return None
-    
+
 
 def main():
     logger.info("Executing Trivy SBOM")
@@ -133,12 +137,9 @@ def main():
         parsed.extend(parsed_images)
 
     # Return results
-    result_parser = [results,parsed]
-    print(
-        json.dumps(
-            {"success": not bool(results), "details": result_parser, "errors": errors, "alerts": alerts}
-        )
-    )
+    result_parser = [results, parsed]
+    print(json.dumps({"success": not bool(results), "details": result_parser, "errors": errors, "alerts": alerts}))
+
 
 if __name__ == "__main__":
     main()
