@@ -87,7 +87,7 @@ def convert_output(output_str: str):
     try:
         return json.loads(output_str)
     except json.JSONDecodeError as e:
-        # logger.error(e)
+        logger.error(e)
         return None
     
 

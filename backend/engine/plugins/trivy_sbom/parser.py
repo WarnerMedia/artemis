@@ -8,11 +8,14 @@ logger = utils.setup_logging("trivy SBOM")
 
 import json
 
+# Gets the scan and formats it to work with the processor
 def clean_output_application_sbom(output:list) -> list:
     results = []
-    deps = output["dependencies"]
+    type = None
     for item in output["components"]:
-        if (item["type"] == ("application" or "operating-system")):
+        if item["type"] == "application":
+            continue
+        if item["type"] == "operating-system":
             continue
         bom_ref = item["bom-ref"]
         name = item.get("group", "") + item["name"]
@@ -27,7 +30,6 @@ def clean_output_application_sbom(output:list) -> list:
                 }
             )
         properties = item.get("properties", [])
-        type = ""
         for prop in properties:
             if prop["name"] == "aquasecurity:trivy:PkgType":
                 type = convert_bundler(prop["value"])
@@ -39,7 +41,10 @@ def clean_output_application_sbom(output:list) -> list:
             "licenses": licenses,
             "type" : type
         })
-    return results, deps
+    return results
+
+# def get_library(output):
+#     for 
 
 def convert_bundler(component_type: str) -> str:
     if component_type == "bundler":
