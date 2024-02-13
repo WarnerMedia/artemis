@@ -14,37 +14,5 @@ class Migration(migrations.Migration):
             model_name="license",
             name="license_id",
             field=models.CharField(max_length=256, unique=True),
-        ),
-        migrations.AlterField(
-            model_name="plugin",
-            name="type",
-            field=models.CharField(
-                choices=[
-                    (artemisdb.artemisdb.consts.PluginType["CONFIGURATION"], "configuration"),
-                    (artemisdb.artemisdb.consts.PluginType["INVENTORY"], "inventory"),
-                    (artemisdb.artemisdb.consts.PluginType["VULN"], "vulnerability"),
-                    (artemisdb.artemisdb.consts.PluginType["SBOM"], "sbom"),
-                    (artemisdb.artemisdb.consts.PluginType["SBOM_CDX"], "sbom_cdx"),
-                    (artemisdb.artemisdb.consts.PluginType["SECRETS"], "secrets"),
-                    (artemisdb.artemisdb.consts.PluginType["STATIC_ANALYSIS"], "static_analysis"),
-                ],
-                max_length=64,
-            ),
-        ),
-        migrations.AlterField(
-            model_name="pluginresult",
-            name="plugin_type",
-            field=models.CharField(
-                choices=[
-                    (artemisdb.artemisdb.consts.PluginType["CONFIGURATION"], "configuration"),
-                    (artemisdb.artemisdb.consts.PluginType["INVENTORY"], "inventory"),
-                    (artemisdb.artemisdb.consts.PluginType["VULN"], "vulnerability"),
-                    (artemisdb.artemisdb.consts.PluginType["SBOM"], "sbom"),
-                    (artemisdb.artemisdb.consts.PluginType["SBOM_CDX"], "sbom_cdx"),
-                    (artemisdb.artemisdb.consts.PluginType["SECRETS"], "secrets"),
-                    (artemisdb.artemisdb.consts.PluginType["STATIC_ANALYSIS"], "static_analysis"),
-                ],
-                max_length=64,
-            ),
-        ),
+        )
     ]
