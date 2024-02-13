@@ -96,6 +96,12 @@ def main():
     parsed = []
     alerts = []
     errors = []
+
+    # Run Yarn Install for license info
+    yarn_install_errors, yarn_install_alerts = yarn_install(args.path)
+    alerts.extend(yarn_install_alerts)
+    errors.extend(yarn_install_errors)
+
     # Generate Lock files
     lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
     alerts.extend(lock_file_alerts)
@@ -105,11 +111,6 @@ def main():
     go_mod_errors, go_mod_alerts = go_mod_download(args.path)
     alerts.extend(go_mod_alerts)
     errors.extend(go_mod_errors)
-
-    # Run Yarn Install for license info
-    yarn_install_errors, yarn_install_alerts = yarn_install(args.path)
-    alerts.extend(yarn_install_alerts)
-    errors.extend(yarn_install_errors)
 
     # Scan local lock files
     application_sbom_output = convert_output(execute_trivy_application_sbom(args.path, include_dev))
@@ -121,6 +122,7 @@ def main():
         logger.info("Application Level SBOM generated. Success: %s", bool(application_sbom_output))
         results.append(application_sbom_output)
         parsed.extend(application_sbom_output_parsed)
+
     # Scan Images
     image_outputs, parsed_images = build_scan_parse_images(args.images)
     if not image_outputs:
@@ -129,6 +131,7 @@ def main():
         logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
         results.extend(image_outputs)
         parsed.extend(parsed_images)
+
     # Return results
     result_parser = [results,parsed]
     print(
@@ -136,7 +139,6 @@ def main():
             {"success": not bool(results), "details": result_parser, "errors": errors, "alerts": alerts}
         )
     )
-
 
 if __name__ == "__main__":
     main()
