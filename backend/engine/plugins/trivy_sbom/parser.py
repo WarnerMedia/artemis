@@ -13,6 +13,7 @@ def clean_output_application_sbom(output:list) -> list:
     results = []
     type = None
     for item in output["components"]:
+        # Skip these because these are just stating the package management files
         if item["type"] == "application":
             continue
         if item["type"] == "operating-system":
@@ -23,10 +24,13 @@ def clean_output_application_sbom(output:list) -> list:
         licenses=[]
         licenses_list = item.get("licenses", [])
         for lic in licenses_list:
+            # Handles edge case where Licenses array exists with a license object but the license obj is empty. This ensures that licenses stays an empty array so that the processor does not try to override this value
+            if lic.get("license").get("name", None) == None:
+                break
             licenses.append(
                 {
-                    "id": lic.get("license").get("name", "placeholder"),
-                    "name": lic.get("license").get("name", "placeholder")
+                    "id": lic.get("license").get("name"),
+                    "name": lic.get("license").get("name")
                 }
             )
         properties = item.get("properties", [])
@@ -42,9 +46,6 @@ def clean_output_application_sbom(output:list) -> list:
             "type" : type
         })
     return results
-
-# def get_library(output):
-#     for 
 
 def convert_bundler(component_type: str) -> str:
     if component_type == "bundler":
