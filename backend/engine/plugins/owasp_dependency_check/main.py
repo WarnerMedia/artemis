@@ -10,7 +10,7 @@ from engine.plugins.lib import utils
 log = utils.setup_logging("owasp_dependency_check")
 
 
-def attempt_maven_build(repo_path, java_versions):
+def attempt_maven_build(repo_path, scan_working_dir, java_versions, engine_id):
     """
     Blindly cycle through the versions of java available.
     :param repo_path: path mounted from engine
@@ -27,17 +27,17 @@ def attempt_maven_build(repo_path, java_versions):
                 "run",
                 "--rm",
                 "--volumes-from",
-                "plugin",
+                f"{engine_id}",
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
                 "-w",
-                repo_path,
+                f"{scan_working_dir}",
                 f"maven:3-jdk-{version}",
                 "mvn",
                 "-q",
                 "-DskipTests",
                 "clean",
-                "package",
+                "package"
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -140,10 +140,14 @@ def main():
     if not args.cli_path.endswith("/"):
         args.cli_path += "/"
 
-    java_build_results = attempt_maven_build(args.path, json.loads(args.java_versions)["version_list"])
+    scan_working_dir = os.path.join("/work", args.engine_vars.get("scan_id", ""), "base")
 
+    java_build_results = attempt_maven_build(args.path,
+                                             scan_working_dir,
+                                             json.loads(args.java_versions)["version_list"],
+                                             args.engine_vars.get("engine_id", ""))
     if java_build_results["build_status"]:
-        owasp_results = run_owasp_dep_check(args.path, args.cli_path, json.loads(args.engine_vars).get("repo", ""))
+        owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
     else:
         owasp_results = {
             "success": True,
