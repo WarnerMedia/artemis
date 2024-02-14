@@ -1,6 +1,7 @@
 """
 owasp dep check plugin
 """
+
 import json
 import os
 import subprocess
@@ -37,7 +38,7 @@ def attempt_maven_build(repo_path, scan_working_dir, java_versions, engine_id):
                 "-q",
                 "-DskipTests",
                 "clean",
-                "package"
+                "package",
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -142,10 +143,12 @@ def main():
 
     scan_working_dir = os.path.join("/work", args.engine_vars.get("scan_id", ""), "base")
 
-    java_build_results = attempt_maven_build(args.path,
-                                             scan_working_dir,
-                                             json.loads(args.java_versions)["version_list"],
-                                             args.engine_vars.get("engine_id", ""))
+    java_build_results = attempt_maven_build(
+        args.path,
+        scan_working_dir,
+        json.loads(args.java_versions)["version_list"],
+        args.engine_vars.get("engine_id", ""),
+    )
     if java_build_results["build_status"]:
         owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
     else:
