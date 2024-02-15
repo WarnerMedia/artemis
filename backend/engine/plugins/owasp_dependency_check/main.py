@@ -120,6 +120,12 @@ def parse_scanner_output_json(repo_path, returncode):
                         "description": vuln["description"],
                         "severity": vuln["severity"].lower(),
                         "remediation": "",
+                        "inventory": {
+                            "component": {"name": vuln["name"], "version": "", "type": "maven"},
+                            "advisory_ids": [
+                                vuln["name"],
+                            ],
+                        },
                     }
                 )
 
