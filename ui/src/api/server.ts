@@ -2353,11 +2353,11 @@ export function makeServer() {
 			this.get("/users/self/keys", (_schema, request) => {
 				const limit =
 					request?.queryParams && request.queryParams.limit
-						? parseInt(request.queryParams.limit, 10)
+						? parseInt(request.queryParams.limit as string, 10)
 						: defaults.limit;
 				const offset =
 					request?.queryParams && request.queryParams.offset
-						? parseInt(request.queryParams.offset, 10)
+						? parseInt(request.queryParams.offset as string, 10)
 						: 0;
 				const results = userKeys.slice(offset, offset + limit);
 				let previous = null;
@@ -3378,11 +3378,11 @@ export function makeServer() {
 
 				const limit =
 					request?.queryParams && request.queryParams.limit
-						? parseInt(request.queryParams.limit, 10)
+						? parseInt(request.queryParams.limit as string, 10)
 						: defaults.limit;
 				const offset =
 					request?.queryParams && request.queryParams.offset
-						? parseInt(request.queryParams.offset, 10)
+						? parseInt(request.queryParams.offset as string, 10)
 						: 0;
 				const initiatedBy =
 					request?.queryParams && request.queryParams.initiated_by;
@@ -3591,7 +3591,7 @@ export function makeServer() {
 												}
 												return true; // don't know what to do here, assume match
 											}
-											return item.includes(value);
+											return item.includes(value as string);
 										});
 									}
 								} else if (param.endsWith("__icontains")) {
@@ -3608,11 +3608,13 @@ export function makeServer() {
 												if ("name" in item) {
 													return (item["name"] as any)
 														.toLowerCase()
-														.includes(value.toLowerCase());
+														.includes((value as string).toLowerCase());
 												}
 												return true; // don't know what to do here, assume match
 											}
-											return item.toLowerCase().includes(value.toLowerCase());
+											return item
+												.toLowerCase()
+												.includes((value as string).toLowerCase());
 										});
 									}
 								} else if (param.endsWith("__lt")) {
@@ -3623,7 +3625,9 @@ export function makeServer() {
 									}
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
-										return valueArr.some((item: string) => item < value);
+										return valueArr.some(
+											(item: string) => item < (value as string)
+										);
 									}
 								} else if (param.endsWith("__gt")) {
 									const field = param.replace(/__gt$/, "");
@@ -3633,7 +3637,9 @@ export function makeServer() {
 									}
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
-										return valueArr.some((item: string) => item > value);
+										return valueArr.some(
+											(item: string) => item > (value as string)
+										);
 									}
 								} else if (param.endsWith("__isnull")) {
 									const field = param.replace(/__isnull$/, "");
@@ -3642,7 +3648,9 @@ export function makeServer() {
 										v = keyExists(entity, field + "s");
 									}
 									const valueArr = Array.isArray(v) ? [...v] : [v];
-									const isNull = !(value.toLocaleLowerCase() === "false");
+									const isNull = !(
+										(value as string).toLocaleLowerCase() === "false"
+									);
 									if (valueArr.length === 0) {
 										return isNull;
 									}
@@ -3679,13 +3687,14 @@ export function makeServer() {
 
 				const limit =
 					request?.queryParams && request.queryParams.limit
-						? parseInt(request.queryParams.limit, 10)
+						? parseInt(request.queryParams.limit as string, 10)
 						: defaults.limit;
 				const offset =
 					request?.queryParams && request.queryParams.offset
-						? parseInt(request.queryParams.offset, 10)
+						? parseInt(request.queryParams.offset as string, 10)
 						: 0;
-				const orderBy = request?.queryParams && request.queryParams.order_by;
+				const orderBy =
+					request?.queryParams && (request.queryParams.order_by as string);
 				let orderedIds = [...filteredIds];
 				if (orderBy) {
 					let desc = false;
