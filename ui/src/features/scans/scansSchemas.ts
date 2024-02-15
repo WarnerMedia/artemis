@@ -160,23 +160,6 @@ export interface ResultsConfiguration {
 	[key: string]: ConfigurationDetails;
 }
 
-interface SbomLicense {
-	id?: string;
-	license_id?: string;
-	name: string;
-}
-
-interface SbomComponentBase<T> {
-	name: string;
-	version: string;
-	licenses: SbomLicense[];
-	source: string;
-	deps?: T[];
-}
-
-// use SbomComponent as recursive deps array field
-interface SbomComponent extends SbomComponentBase<SbomComponent> {}
-
 interface ScanResults {
 	vulnerabilities?: ResultsVulnComponents;
 	secrets?: SecretFindingResult;
@@ -215,7 +198,7 @@ export interface AnalysisReport extends ScanHistory {
 
 export interface SbomReport extends ScanHistory {
 	engine_id?: string | null;
-	sbom: SbomComponent[];
+	sbom: [];
 }
 
 export interface ScanHistoryResponse extends Response {
@@ -350,27 +333,7 @@ const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	})
 	.defined();
 
-const sbomLicenseSchema: Yup.ObjectSchema<SbomLicense> = Yup.object()
-	.shape({
-		id: Yup.string(),
-		license_id: Yup.string(),
-		name: Yup.string().defined(),
-	})
-	.defined();
-
-const sbomComponentSchema: Yup.ObjectSchema<SbomComponent> = Yup.object()
-	.shape({
-		name: Yup.string().defined(),
-		version: Yup.string().defined(),
-		licenses: Yup.array().of(sbomLicenseSchema.defined()).defined(),
-		source: Yup.string().defined(),
-		deps: Yup.array().of(
-			// lazy evaluate at validation/cast time to enable creation of recursive schemas
-			// default(undefined) prevents infinite recursion when cast
-			Yup.lazy(() => sbomComponentSchema.default(undefined))
-		),
-	})
-	.defined();
+const sbomComponentSchema = Yup.array().of(Yup.object().defined());
 
 const scanResultsSchema: Yup.ObjectSchema<ScanResults> = Yup.object()
 	.shape({
@@ -424,7 +387,7 @@ export const analysisReportResponseSchema = Yup.object().shape({
 	data: analysisReportSchema,
 });
 
-export const sbomReportSchema: Yup.ObjectSchema<SbomReport> = Yup.object()
+export const sbomReportSchema = Yup.object()
 	.shape({
 		scan_id: scanIdSchema.defined(),
 		engine_id: Yup.string().nullable(),
