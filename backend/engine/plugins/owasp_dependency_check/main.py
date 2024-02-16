@@ -102,15 +102,27 @@ def parse_scanner_output_json(repo_path, returncode):
     """
     results = []
     success = returncode == 0
+    errors = []
 
     if not os.path.exists(f"{repo_path}dependency-check-report.json"):
         return {"output": [], "errors": ["No report file found"], "success": success}
 
     with open(f"{repo_path}dependency-check-report.json") as json_file:
         data = json.load(json_file)
+        results = parse_vulnerabilities(data)
+        errors = parse_errors(data)
+
+    success = success & len(results) == 0
+    return {"output": results, "errors": errors, "success": success}
+
+
+def parse_vulnerabilities(data):
+    """
+    Parse Vulnerabilities reported by owasp-dependency-check in in JSON report
+    """
+    results = []
     for dep in data["dependencies"]:
         if "vulnerabilities" in dep:
-            success = False
             for vuln in dep["vulnerabilities"]:
                 results.append(
                     {
@@ -128,9 +140,20 @@ def parse_scanner_output_json(repo_path, returncode):
                         },
                     }
                 )
+    return results
 
-    return {"output": results, "errors": [], "success": success}
 
+def parse_errors(data):
+    """
+    Parse errors reported by owasp-dependency-check in JSON report
+    """
+    errors = []
+    owasp_errors = data["scanInfo"].get("analysisExceptions", [])
+
+    for error in owasp_errors:
+        errors.append(error["exception"]["message"])
+
+    return errors
 
 def main():
     """
