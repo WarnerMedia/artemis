@@ -62,7 +62,7 @@
         }
     ],
     "errors": [
-        "org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"/tmp/dctemp2ebe5b42-3852-4a6b-8148-f0ebaa1af432\"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer",
+        "org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"/tmp/example\"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer",
         "org.owasp.dependencycheck.analyzer.exception.SearchException: Could not perform Node Audit analysis. Invalid payload submitted to Node Audit API."
     ],
     "success": false

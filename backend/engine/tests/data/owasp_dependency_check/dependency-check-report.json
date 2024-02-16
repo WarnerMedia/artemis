@@ -19,7 +19,7 @@
         "analysisExceptions": [
             {
                 "exception": {
-                    "message": "org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"\/tmp\/dctemp2ebe5b42-3852-4a6b-8148-f0ebaa1af432\"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer",
+                    "message": "org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"\/tmp\/example\"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer",
                     "stackTrace": [
                         "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.prepareFileTypeAnalyzer(RubyBundleAuditAnalyzer.java:233)",
                         "org.owasp.dependencycheck.analyzer.AbstractFileTypeAnalyzer.prepareAnalyzer(AbstractFileTypeAnalyzer.java:83)",
@@ -44,7 +44,7 @@
                             "org.owasp.dependencycheck.App.main(App.java:81)"
                         ],
                         "cause": {
-                            "message": "java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"\/tmp\/dctemp2ebe5b42-3852-4a6b-8148-f0ebaa1af432\"): error=2, No such file or directory",
+                            "message": "java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"\/tmp\/example\"): error=2, No such file or directory",
                             "stackTrace": [
                                 "java.lang.ProcessBuilder.start(ProcessBuilder.java:1048)",
                                 "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.launchBundleAudit(RubyBundleAuditAnalyzer.java:190)",
