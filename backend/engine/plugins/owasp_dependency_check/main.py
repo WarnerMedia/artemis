@@ -131,6 +131,7 @@ def parse_scanner_output_json(repo_path, returncode):
 def parse_vulnerabilities(data):
     """
     Parse Vulnerabilities reported by owasp-dependency-check in in JSON report
+    :return: list of dicts
     """
     results = []
     for dep in data["dependencies"]:
@@ -158,6 +159,7 @@ def parse_vulnerabilities(data):
 def parse_errors(data):
     """
     Parse errors reported by owasp-dependency-check in JSON report
+    :return: list of strings
     """
     errors = []
     owasp_errors = data["scanInfo"].get("analysisExceptions", [])
