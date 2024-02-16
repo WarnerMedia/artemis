@@ -1,0 +1,1898 @@
+{
+    "reportSchema": "1.1",
+    "scanInfo": {
+        "engineVersion": "6.1.6",
+        "dataSource": [
+            {
+                "name": "NVD CVE Checked",
+                "timestamp": "2024-02-15T03:25:00"
+            },
+            {
+                "name": "NVD CVE Modified",
+                "timestamp": "2024-02-12T21:00:01"
+            },
+            {
+                "name": "VersionCheckOn",
+                "timestamp": "2024-02-12T21:54:35"
+            }
+        ],
+        "analysisExceptions": [
+            {
+                "exception": {
+                    "message": "org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"\/tmp\/example\"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer",
+                    "stackTrace": [
+                        "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.prepareFileTypeAnalyzer(RubyBundleAuditAnalyzer.java:233)",
+                        "org.owasp.dependencycheck.analyzer.AbstractFileTypeAnalyzer.prepareAnalyzer(AbstractFileTypeAnalyzer.java:83)",
+                        "org.owasp.dependencycheck.analyzer.AbstractAnalyzer.prepare(AbstractAnalyzer.java:102)",
+                        "org.owasp.dependencycheck.Engine.initializeAnalyzer(Engine.java:786)",
+                        "org.owasp.dependencycheck.Engine.analyzeDependencies(Engine.java:622)",
+                        "org.owasp.dependencycheck.App.runScan(App.java:254)",
+                        "org.owasp.dependencycheck.App.run(App.java:186)",
+                        "org.owasp.dependencycheck.App.main(App.java:81)"
+                    ],
+                    "cause": {
+                        "message": "org.owasp.dependencycheck.analyzer.exception.AnalysisException: bundle-audit initialization failure; this error can be ignored if you are not analyzing Ruby. Otherwise ensure that bundle-audit is installed and the path to bundle audit is correctly specified",
+                        "stackTrace": [
+                            "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.launchBundleAudit(RubyBundleAuditAnalyzer.java:192)",
+                            "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.prepareFileTypeAnalyzer(RubyBundleAuditAnalyzer.java:213)",
+                            "org.owasp.dependencycheck.analyzer.AbstractFileTypeAnalyzer.prepareAnalyzer(AbstractFileTypeAnalyzer.java:83)",
+                            "org.owasp.dependencycheck.analyzer.AbstractAnalyzer.prepare(AbstractAnalyzer.java:102)",
+                            "org.owasp.dependencycheck.Engine.initializeAnalyzer(Engine.java:786)",
+                            "org.owasp.dependencycheck.Engine.analyzeDependencies(Engine.java:622)",
+                            "org.owasp.dependencycheck.App.runScan(App.java:254)",
+                            "org.owasp.dependencycheck.App.run(App.java:186)",
+                            "org.owasp.dependencycheck.App.main(App.java:81)"
+                        ],
+                        "cause": {
+                            "message": "java.io.IOException: Cannot run program \"bundle-audit\" (in directory \"\/tmp\/example\"): error=2, No such file or directory",
+                            "stackTrace": [
+                                "java.lang.ProcessBuilder.start(ProcessBuilder.java:1048)",
+                                "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.launchBundleAudit(RubyBundleAuditAnalyzer.java:190)",
+                                "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.prepareFileTypeAnalyzer(RubyBundleAuditAnalyzer.java:213)",
+                                "org.owasp.dependencycheck.analyzer.AbstractFileTypeAnalyzer.prepareAnalyzer(AbstractFileTypeAnalyzer.java:83)",
+                                "org.owasp.dependencycheck.analyzer.AbstractAnalyzer.prepare(AbstractAnalyzer.java:102)",
+                                "org.owasp.dependencycheck.Engine.initializeAnalyzer(Engine.java:786)",
+                                "org.owasp.dependencycheck.Engine.analyzeDependencies(Engine.java:622)",
+                                "org.owasp.dependencycheck.App.runScan(App.java:254)",
+                                "org.owasp.dependencycheck.App.run(App.java:186)",
+                                "org.owasp.dependencycheck.App.main(App.java:81)"
+                            ],
+                            "cause": {
+                                "message": "java.io.IOException: error=2, No such file or directory",
+                                "stackTrace": [
+                                    "java.lang.UNIXProcess.forkAndExec(Native Method)",
+                                    "java.lang.UNIXProcess.<init>(UNIXProcess.java:247)",
+                                    "java.lang.ProcessImpl.start(ProcessImpl.java:134)",
+                                    "java.lang.ProcessBuilder.start(ProcessBuilder.java:1029)",
+                                    "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.launchBundleAudit(RubyBundleAuditAnalyzer.java:190)",
+                                    "org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.prepareFileTypeAnalyzer(RubyBundleAuditAnalyzer.java:213)",
+                                    "org.owasp.dependencycheck.analyzer.AbstractFileTypeAnalyzer.prepareAnalyzer(AbstractFileTypeAnalyzer.java:83)",
+                                    "org.owasp.dependencycheck.analyzer.AbstractAnalyzer.prepare(AbstractAnalyzer.java:102)",
+                                    "org.owasp.dependencycheck.Engine.initializeAnalyzer(Engine.java:786)",
+                                    "org.owasp.dependencycheck.Engine.analyzeDependencies(Engine.java:622)",
+                                    "org.owasp.dependencycheck.App.runScan(App.java:254)",
+                                    "org.owasp.dependencycheck.App.run(App.java:186)",
+                                    "org.owasp.dependencycheck.App.main(App.java:81)"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "exception": {
+                    "message": "org.owasp.dependencycheck.analyzer.exception.SearchException: Could not perform Node Audit analysis. Invalid payload submitted to Node Audit API.",
+                    "stackTrace": [
+                        "org.owasp.dependencycheck.data.nodeaudit.NodeAuditSearch.submitPackage(NodeAuditSearch.java:209)",
+                        "org.owasp.dependencycheck.data.nodeaudit.NodeAuditSearch.submitPackage(NodeAuditSearch.java:133)",
+                        "org.owasp.dependencycheck.analyzer.NodeAuditAnalyzer.analyzePackage(NodeAuditAnalyzer.java:188)",
+                        "org.owasp.dependencycheck.analyzer.NodeAuditAnalyzer.analyzeDependency(NodeAuditAnalyzer.java:145)",
+                        "org.owasp.dependencycheck.analyzer.AbstractAnalyzer.analyze(AbstractAnalyzer.java:131)",
+                        "org.owasp.dependencycheck.AnalysisTask.call(AnalysisTask.java:88)",
+                        "org.owasp.dependencycheck.AnalysisTask.call(AnalysisTask.java:37)",
+                        "java.util.concurrent.FutureTask.run(FutureTask.java:266)",
+                        "java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)",
+                        "java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)",
+                        "java.lang.Thread.run(Thread.java:748)"
+                    ]
+                }
+            }
+        ]
+    },
+    "projectInfo": {
+        "name": "example/repo",
+        "reportDate": "2024-02-15T03:25:11.238Z",
+        "credits": {
+            "NVD": "This report contains data retrieved from the National Vulnerability Database: http://nvd.nist.gov",
+            "NPM": "This report may contain data retrieved from the NPM Public Advisories: https://www.npmjs.com/advisories",
+            "RETIREJS": "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
+            "OSSINDEX": "This report may contain data retrieved from the Sonatype OSS Index: https://ossindex.sonatype.org"
+        }
+    },
+    "dependencies": [
+        {
+            "isVirtual": false,
+            "fileName": "CR789393.md.js",
+            "filePath": "\/work\/base\/node\/bad_javascript\/CR789393.md.js",
+            "md5": "9be5d9a13d9b39d96b9700e75a33a9ae",
+            "sha1": "056236f13cf1b35dcc836a62089c42abfdc70434",
+            "sha256": "42304485dbd64b94b33e069ebfedbcafb50b8e3c1220be39610f070d43a5c06d",
+            "evidenceCollected": {
+                "vendorEvidence": [],
+                "productEvidence": [],
+                "versionEvidence": []
+            }
+        },
+        {
+            "isVirtual": false,
+            "fileName": "CVE-2017-5088.md.js",
+            "filePath": "\/work\/base\/node\/bad_javascript\/CVE-2017-5088.md.js",
+            "md5": "fa099ae95aaeebcf94f815d281931b33",
+            "sha1": "c9b88851be33873ebb282c590eb211a3a2a5b248",
+            "sha256": "9872445178fec06e8e376879b1aec8a58a6c292aa5b7ab73c8d7f79f448c37e1",
+            "evidenceCollected": {
+                "vendorEvidence": [],
+                "productEvidence": [],
+                "versionEvidence": []
+            }
+        },
+        {
+            "isVirtual": false,
+            "fileName": "CVE-2018-6142.md.js",
+            "filePath": "\/work\/base\/node\/bad_javascript\/CVE-2018-6142.md.js",
+            "md5": "c130e4fcd3cc473328a970fda2dfb4eb",
+            "sha1": "e0fe29ed6b50965a87a2b0aab690a919c4e715fb",
+            "sha256": "7f6e06740101f89ec5a53ef85e7061de02b28b3deefbcd5f9bd1c43e9ddc6d41",
+            "evidenceCollected": {
+                "vendorEvidence": [],
+                "productEvidence": [],
+                "versionEvidence": []
+            }
+        },
+        {
+            "isVirtual": false,
+            "fileName": "CVE-2018-6143.md.js",
+            "filePath": "\/work\/base\/node\/bad_javascript\/CVE-2018-6143.md.js",
+            "md5": "9c06602ffd0f84e977c99ee383fb34f9",
+            "sha1": "ff93116b78ac742e2a9af12a4f7f90ca3a84cf50",
+            "sha256": "7ebc32bace92922c1c5a32cc2ffe236f756c028d9c137280dd93f55fe5a04e6b",
+            "evidenceCollected": {
+                "vendorEvidence": [],
+                "productEvidence": [],
+                "versionEvidence": []
+            }
+        },
+        {
+            "isVirtual": false,
+            "fileName": "CVE-2018-6149.md.js",
+            "filePath": "\/work\/base\/node\/bad_javascript\/CVE-2018-6149.md.js",
+            "md5": "f37977f7bbd331ae07b456bbfc616a5f",
+            "sha1": "92ec93872570ea7c427f02ce95c5948543d9be1d",
+            "sha256": "d139f1f22c6b0ed5e98ec4b64a99302a4179d5573e13c9dfe8e62f8070efd851",
+            "evidenceCollected": {
+                "vendorEvidence": [],
+                "productEvidence": [],
+                "versionEvidence": []
+            }
+        },
+        {
+            "isVirtual": false,
+            "fileName": "Gemfile.lock",
+            "filePath": "\/work\/base\/ruby\/dependency_vulnerability_samples\/Gemfile.lock",
+            "md5": "e4c8f913bc828f28e82a300869c87926",
+            "sha1": "71a84f34c69521823745f47343328571057a9787",
+            "sha256": "cd1f09cac6e4de7196f5dd1ce46f993d6a804dc4c9961d537840053e0ff67def",
+            "evidenceCollected": {
+                "vendorEvidence": [],
+                "productEvidence": [],
+                "versionEvidence": []
+            }
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar",
+            "md5": "473c5d0f77e282f4946a18a531fd9811",
+            "sha1": "5a6b23a6c970d59a57f68bda91e2debd2da95df8",
+            "sha256": "57ea2b61da36de16ceb6d80e69058bf0c515f21e14ca9fb92df439e6e8090c86",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "file",
+                        "name": "name",
+                        "value": "jackson-exploit"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "jar",
+                        "name": "package name",
+                        "value": "jackson"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "io.meterian.samples"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jackson-exploit"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "jar",
+                        "name": "package name",
+                        "value": "io"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "file",
+                        "name": "name",
+                        "value": "jackson-exploit"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "jar",
+                        "name": "package name",
+                        "value": "jackson"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jackson-exploit"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "io.meterian.samples"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "jar",
+                        "name": "package name",
+                        "value": "io"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "1.0-SNAPSHOT"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/io.meterian.samples\/jackson-exploit@1.0-SNAPSHOT",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/io.meterian.samples\/jackson-exploit@1.0-SNAPSHOT?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: ch.qos.logback:logback-classic:1.2.3)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/ch.qos.logback\/logback-classic\/pom.xml",
+            "md5": "0703e3a2583a976219f9703f9c86d343",
+            "sha1": "bc627b0345626c9dfa55eac703602c3a7846950b",
+            "sha256": "a051eb1a2548b93c99abca8eb71d5c75d2ff06976682960348124bc4901a5315",
+            "description": "logback-classic module",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Logback Classic Module"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "logback-parent"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "ch.qos.logback"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "logback-classic"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Logback Classic Module"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "ch.qos.logback"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "logback-classic"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "logback-parent"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "1.2.3"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/ch.qos.logback\/logback-classic@1.2.3",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/ch.qos.logback\/logback-classic@1.2.3?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ],
+            "vulnerabilityIds": [
+                {
+                    "id": "cpe:2.3:a:qos:logback:1.2.3:*:*:*:*:*:*:*",
+                    "confidence": "HIGHEST",
+                    "url": "https:\/\/nvd.nist.gov\/vuln\/search\/results?form_type=Advanced&results_type=overview&search_type=all&cpe_vendor=cpe%3A%2F%3Aqos&cpe_product=cpe%3A%2F%3Aqos%3Alogback&cpe_version=cpe%3A%2F%3Aqos%3Alogback%3A1.2.3"
+                }
+            ],
+            "vulnerabilities": [
+                {
+                    "source": "NVD",
+                    "name": "CVE-2021-42550",
+                    "severity": "MEDIUM",
+                    "cvssv2": {
+                        "score": 8.5,
+                        "accessVector": "NETWORK",
+                        "accessComplexity": "MEDIUM",
+                        "authenticationr": "SINGLE",
+                        "confidentialImpact": "COMPLETE",
+                        "integrityImpact": "COMPLETE",
+                        "availabilityImpact": "COMPLETE",
+                        "severity": "HIGH",
+                        "version": "2.0",
+                        "exploitabilityScore": "6.8",
+                        "impactScore": "10.0"
+                    },
+                    "cvssv3": {
+                        "baseScore": 6.6,
+                        "attackVector": "NETWORK",
+                        "attackComplexity": "HIGH",
+                        "privilegesRequired": "HIGH",
+                        "userInteraction": "NONE",
+                        "scope": "UNCHANGED",
+                        "confidentialityImpact": "HIGH",
+                        "integrityImpact": "HIGH",
+                        "availabilityImpact": "HIGH",
+                        "baseSeverity": "MEDIUM",
+                        "exploitabilityScore": "0.7",
+                        "impactScore": "5.9",
+                        "version": "3.1"
+                    },
+                    "cwes": [
+                        "CWE-502"
+                    ],
+                    "description": "In logback version 1.2.7 and prior versions, an attacker with the required privileges to edit configurations files could craft a malicious configuration allowing to execute arbitrary code loaded from LDAP servers.",
+                    "notes": "",
+                    "references": [
+                        {
+                            "source": "CONFIRM",
+                            "url": "https:\/\/security.netapp.com\/advisory\/ntap-20211229-0001\/",
+                            "name": "https:\/\/security.netapp.com\/advisory\/ntap-20211229-0001\/"
+                        },
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2021-42550?component-type=maven&component-name=ch.qos.logback%2Flogback-core&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2021-42550] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "MISC",
+                            "url": "http:\/\/packetstormsecurity.com\/files\/167794\/Open-Xchange-App-Suite-7.10.x-Cross-Site-Scripting-Command-Injection.html",
+                            "name": "http:\/\/packetstormsecurity.com\/files\/167794\/Open-Xchange-App-Suite-7.10.x-Cross-Site-Scripting-Command-Injection.html"
+                        },
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2021-42550?component-type=maven&component-name=ch.qos.logback%2Flogback-classic&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2021-42550] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "MISC",
+                            "url": "https:\/\/jira.qos.ch\/browse\/LOGBACK-1591",
+                            "name": "https:\/\/jira.qos.ch\/browse\/LOGBACK-1591"
+                        },
+                        {
+                            "source": "CONFIRM",
+                            "url": "https:\/\/cert-portal.siemens.com\/productcert\/pdf\/ssa-371761.pdf",
+                            "name": "https:\/\/cert-portal.siemens.com\/productcert\/pdf\/ssa-371761.pdf"
+                        },
+                        {
+                            "source": "FULLDISC",
+                            "url": "http:\/\/seclists.org\/fulldisclosure\/2022\/Jul\/11",
+                            "name": "20220721 Open-Xchange Security Advisory 2022-07-21"
+                        },
+                        {
+                            "source": "MISC",
+                            "url": "https:\/\/github.com\/cn-panda\/logbackRceDemo",
+                            "name": "https:\/\/github.com\/cn-panda\/logbackRceDemo"
+                        },
+                        {
+                            "source": "CONFIRM",
+                            "url": "http:\/\/logback.qos.ch\/news.html",
+                            "name": "http:\/\/logback.qos.ch\/news.html"
+                        }
+                    ],
+                    "vulnerableSoftware": [
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha2:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:netapp:cloud_manager:-:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha9:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:redhat:satellite:6.0:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha0:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:siemens:sinec_nms:*:*:*:*:*:*:*:*",
+                                "versionEndExcluding": "1.0.3"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha1:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha5:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha10:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha6:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:netapp:snap_creator_framework:-:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "vulnerabilityIdMatched": "true",
+                                "versionEndIncluding": "1.2.7"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha4:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha7:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha3:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:netapp:service_level_manager:-:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha8:*:*:*:*:*:*"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "source": "NVD",
+                    "name": "CVE-2023-6378",
+                    "severity": "HIGH",
+                    "cvssv3": {
+                        "baseScore": 7.5,
+                        "attackVector": "NETWORK",
+                        "attackComplexity": "LOW",
+                        "privilegesRequired": "NONE",
+                        "userInteraction": "NONE",
+                        "scope": "UNCHANGED",
+                        "confidentialityImpact": "NONE",
+                        "integrityImpact": "NONE",
+                        "availabilityImpact": "HIGH",
+                        "baseSeverity": "HIGH",
+                        "exploitabilityScore": "3.9",
+                        "impactScore": "3.6",
+                        "version": "3.1"
+                    },
+                    "cwes": [
+                        "CWE-502"
+                    ],
+                    "description": "A serialization vulnerability in logback receiver component part of \nlogback version 1.4.11 allows an attacker to mount a Denial-Of-Service \nattack by sending poisoned data.\n\n",
+                    "notes": "",
+                    "references": [
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2023-6378?component-type=maven&component-name=ch.qos.logback%2Flogback-classic&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2023-6378] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2023-6378?component-type=maven&component-name=ch.qos.logback%2Flogback-core&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2023-6378] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "",
+                            "url": "https:\/\/logback.qos.ch\/news.html#1.3.12",
+                            "name": "https:\/\/logback.qos.ch\/news.html#1.3.12"
+                        }
+                    ],
+                    "vulnerableSoftware": [
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "vulnerabilityIdMatched": "true",
+                                "versionStartIncluding": "1.2.0",
+                                "versionEndExcluding": "1.2.13"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "versionStartIncluding": "1.4.0",
+                                "versionEndExcluding": "1.4.12"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "versionStartIncluding": "1.3.0",
+                                "versionEndExcluding": "1.3.12"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: ch.qos.logback:logback-core:1.2.3)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/ch.qos.logback\/logback-core\/pom.xml",
+            "md5": "b3162fcaaf3a26bc46fd79258bd6d151",
+            "sha1": "a8d536fbd395b033310f686c4085eec5d6099b0f",
+            "sha256": "df4d7181ec51655baaaab067971180d7681643ddd274139f0c3078dba14e97e0",
+            "description": "logback-core module",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "logback-core"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "logback-parent"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "ch.qos.logback"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Logback Core Module"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "ch.qos.logback"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Logback Core Module"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "logback-core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "logback-parent"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "1.2.3"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/ch.qos.logback\/logback-core@1.2.3",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/ch.qos.logback\/logback-core@1.2.3?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ],
+            "vulnerabilityIds": [
+                {
+                    "id": "cpe:2.3:a:qos:logback:1.2.3:*:*:*:*:*:*:*",
+                    "confidence": "HIGHEST",
+                    "url": "https:\/\/nvd.nist.gov\/vuln\/search\/results?form_type=Advanced&results_type=overview&search_type=all&cpe_vendor=cpe%3A%2F%3Aqos&cpe_product=cpe%3A%2F%3Aqos%3Alogback&cpe_version=cpe%3A%2F%3Aqos%3Alogback%3A1.2.3"
+                }
+            ],
+            "vulnerabilities": [
+                {
+                    "source": "NVD",
+                    "name": "CVE-2021-42550",
+                    "severity": "MEDIUM",
+                    "cvssv2": {
+                        "score": 8.5,
+                        "accessVector": "NETWORK",
+                        "accessComplexity": "MEDIUM",
+                        "authenticationr": "SINGLE",
+                        "confidentialImpact": "COMPLETE",
+                        "integrityImpact": "COMPLETE",
+                        "availabilityImpact": "COMPLETE",
+                        "severity": "HIGH",
+                        "version": "2.0",
+                        "exploitabilityScore": "6.8",
+                        "impactScore": "10.0"
+                    },
+                    "cvssv3": {
+                        "baseScore": 6.6,
+                        "attackVector": "NETWORK",
+                        "attackComplexity": "HIGH",
+                        "privilegesRequired": "HIGH",
+                        "userInteraction": "NONE",
+                        "scope": "UNCHANGED",
+                        "confidentialityImpact": "HIGH",
+                        "integrityImpact": "HIGH",
+                        "availabilityImpact": "HIGH",
+                        "baseSeverity": "MEDIUM",
+                        "exploitabilityScore": "0.7",
+                        "impactScore": "5.9",
+                        "version": "3.1"
+                    },
+                    "cwes": [
+                        "CWE-502"
+                    ],
+                    "description": "In logback version 1.2.7 and prior versions, an attacker with the required privileges to edit configurations files could craft a malicious configuration allowing to execute arbitrary code loaded from LDAP servers.",
+                    "notes": "",
+                    "references": [
+                        {
+                            "source": "CONFIRM",
+                            "url": "https:\/\/security.netapp.com\/advisory\/ntap-20211229-0001\/",
+                            "name": "https:\/\/security.netapp.com\/advisory\/ntap-20211229-0001\/"
+                        },
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2021-42550?component-type=maven&component-name=ch.qos.logback%2Flogback-core&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2021-42550] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "MISC",
+                            "url": "http:\/\/packetstormsecurity.com\/files\/167794\/Open-Xchange-App-Suite-7.10.x-Cross-Site-Scripting-Command-Injection.html",
+                            "name": "http:\/\/packetstormsecurity.com\/files\/167794\/Open-Xchange-App-Suite-7.10.x-Cross-Site-Scripting-Command-Injection.html"
+                        },
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2021-42550?component-type=maven&component-name=ch.qos.logback%2Flogback-classic&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2021-42550] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "MISC",
+                            "url": "https:\/\/jira.qos.ch\/browse\/LOGBACK-1591",
+                            "name": "https:\/\/jira.qos.ch\/browse\/LOGBACK-1591"
+                        },
+                        {
+                            "source": "CONFIRM",
+                            "url": "https:\/\/cert-portal.siemens.com\/productcert\/pdf\/ssa-371761.pdf",
+                            "name": "https:\/\/cert-portal.siemens.com\/productcert\/pdf\/ssa-371761.pdf"
+                        },
+                        {
+                            "source": "FULLDISC",
+                            "url": "http:\/\/seclists.org\/fulldisclosure\/2022\/Jul\/11",
+                            "name": "20220721 Open-Xchange Security Advisory 2022-07-21"
+                        },
+                        {
+                            "source": "MISC",
+                            "url": "https:\/\/github.com\/cn-panda\/logbackRceDemo",
+                            "name": "https:\/\/github.com\/cn-panda\/logbackRceDemo"
+                        },
+                        {
+                            "source": "CONFIRM",
+                            "url": "http:\/\/logback.qos.ch\/news.html",
+                            "name": "http:\/\/logback.qos.ch\/news.html"
+                        }
+                    ],
+                    "vulnerableSoftware": [
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha2:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:netapp:cloud_manager:-:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha9:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:redhat:satellite:6.0:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha0:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:siemens:sinec_nms:*:*:*:*:*:*:*:*",
+                                "versionEndExcluding": "1.0.3"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha1:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha5:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha10:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha6:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:netapp:snap_creator_framework:-:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "vulnerabilityIdMatched": "true",
+                                "versionEndIncluding": "1.2.7"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha4:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha7:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha3:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:netapp:service_level_manager:-:*:*:*:*:*:*:*"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:1.3.0:alpha8:*:*:*:*:*:*"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "source": "NVD",
+                    "name": "CVE-2023-6378",
+                    "severity": "HIGH",
+                    "cvssv3": {
+                        "baseScore": 7.5,
+                        "attackVector": "NETWORK",
+                        "attackComplexity": "LOW",
+                        "privilegesRequired": "NONE",
+                        "userInteraction": "NONE",
+                        "scope": "UNCHANGED",
+                        "confidentialityImpact": "NONE",
+                        "integrityImpact": "NONE",
+                        "availabilityImpact": "HIGH",
+                        "baseSeverity": "HIGH",
+                        "exploitabilityScore": "3.9",
+                        "impactScore": "3.6",
+                        "version": "3.1"
+                    },
+                    "cwes": [
+                        "CWE-502"
+                    ],
+                    "description": "A serialization vulnerability in logback receiver component part of \nlogback version 1.4.11 allows an attacker to mount a Denial-Of-Service \nattack by sending poisoned data.\n\n",
+                    "notes": "",
+                    "references": [
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2023-6378?component-type=maven&component-name=ch.qos.logback%2Flogback-classic&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2023-6378] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2023-6378?component-type=maven&component-name=ch.qos.logback%2Flogback-core&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2023-6378] CWE-502: Deserialization of Untrusted Data"
+                        },
+                        {
+                            "source": "",
+                            "url": "https:\/\/logback.qos.ch\/news.html#1.3.12",
+                            "name": "https:\/\/logback.qos.ch\/news.html#1.3.12"
+                        }
+                    ],
+                    "vulnerableSoftware": [
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "vulnerabilityIdMatched": "true",
+                                "versionStartIncluding": "1.2.0",
+                                "versionEndExcluding": "1.2.13"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "versionStartIncluding": "1.4.0",
+                                "versionEndExcluding": "1.4.12"
+                            }
+                        },
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:qos:logback:*:*:*:*:*:*:*:*",
+                                "versionStartIncluding": "1.3.0",
+                                "versionEndExcluding": "1.3.12"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: com.fasterxml.jackson.core:jackson-annotations:2.9.10)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/com.fasterxml.jackson.core\/jackson-annotations\/pom.xml",
+            "md5": "2bd5f4756f8d47345ad0baf7c397291f",
+            "sha1": "fd57098f3f964d1a319cb72d039eec0ffa973d39",
+            "sha256": "36eb3e6fd8dc526e52f68cd94c0387d7a3adc334d33433512e3690d49701e039",
+            "description": "Core annotations used for value types, used by Jackson data binding package.\n  ",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jackson-parent"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jackson-annotations"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jackson-annotations"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "fasterxml.jackson.core"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "com.fasterxml.jackson"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/github.com\/FasterXML\/jackson"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "hint analyzer",
+                        "name": "product",
+                        "value": "modules"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "hint analyzer",
+                        "name": "product",
+                        "value": "java8"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jackson-annotations"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "fasterxml.jackson.core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jackson-annotations"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/github.com\/FasterXML\/jackson"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "com.fasterxml.jackson"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jackson-parent"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-version",
+                        "value": "2.9.10"
+                    },
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "2.9.10"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/com.fasterxml.jackson.core\/jackson-annotations@2.9.10",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/com.fasterxml.jackson.core\/jackson-annotations@2.9.10?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ],
+            "vulnerabilityIds": [
+                {
+                    "id": "cpe:2.3:a:fasterxml:jackson-modules-java8:2.9.10:*:*:*:*:*:*:*",
+                    "confidence": "LOW"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: com.fasterxml.jackson.core:jackson-core:2.9.10)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/com.fasterxml.jackson.core\/jackson-core\/pom.xml",
+            "md5": "fc677756884aaf299711b61ee99d7f83",
+            "sha1": "cef2444d3862b81dc73e40d37d2d0cb0c949e1ec",
+            "sha256": "eabe34fd41a3df75ee72afac561d22eed35edd5fd501a5e124ff52e83f12e6dd",
+            "description": "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jackson-core"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jackson-core"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jackson-base"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "fasterxml.jackson.core"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "com.fasterxml.jackson"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "FasterXML\/jackson-core"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "hint analyzer",
+                        "name": "product",
+                        "value": "modules"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jackson-core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "FasterXML\/jackson-core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "hint analyzer",
+                        "name": "product",
+                        "value": "java8"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "fasterxml.jackson.core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "com.fasterxml.jackson"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jackson-core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jackson-base"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "2.9.10"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/com.fasterxml.jackson.core\/jackson-core@2.9.10",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/com.fasterxml.jackson.core\/jackson-core@2.9.10?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ],
+            "vulnerabilityIds": [
+                {
+                    "id": "cpe:2.3:a:fasterxml:jackson-modules-java8:2.9.10:*:*:*:*:*:*:*",
+                    "confidence": "LOW"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: com.sparkjava:spark-core:2.7.2)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/com.sparkjava\/spark-core\/pom.xml",
+            "md5": "24640f3d7a09b4d30279b0187424a980",
+            "sha1": "6ffbe95151d09f0f3389fb23bd65bbf388fec909",
+            "sha256": "4fd6e61be7e7ea40fed16fb3f620aa562182c17b995c9d73c879790d1a98467d",
+            "description": "A Sinatra inspired java web framework",
+            "license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Spark"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "sparkjava"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "spark-core"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/www.sparkjava.com"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Spark"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "sparkjava"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "spark-core"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/www.sparkjava.com"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "2.7.2"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/com.sparkjava\/spark-core@2.7.2",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/com.sparkjava\/spark-core@2.7.2?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ],
+            "vulnerabilityIds": [
+                {
+                    "id": "cpe:2.3:a:sparkjava:spark:2.7.2:*:*:*:*:*:*:*",
+                    "confidence": "HIGHEST",
+                    "url": "https:\/\/nvd.nist.gov\/vuln\/search\/results?form_type=Advanced&results_type=overview&search_type=all&cpe_vendor=cpe%3A%2F%3Asparkjava&cpe_product=cpe%3A%2F%3Asparkjava%3Aspark&cpe_version=cpe%3A%2F%3Asparkjava%3Aspark%3A2.7.2"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: javax.servlet:javax.servlet-api:3.1.0)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/javax.servlet\/javax.servlet-api\/pom.xml",
+            "md5": "6a2986e18b635d080acc64f56f438c6c",
+            "sha1": "330afdf2f976af1584c6a18333f4d53d264df1de",
+            "sha256": "b31109e22ea3f2df1ad7955432e718a35def50ae6c19698034afa8a0cf9e9069",
+            "license": "CDDL + GPLv2 with classpath exception: https:\/\/glassfish.dev.java.net\/nonav\/public\/CDDL+GPL.html",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "javax.servlet"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jvnet-parent"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "net.java"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "organization url",
+                        "value": "https:\/\/glassfish.dev.java.net"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/servlet-spec.java.net"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Java Servlet API"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "organization name",
+                        "value": "GlassFish Community"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "javax.servlet-api"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "javax.servlet"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "javax.servlet-api"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/servlet-spec.java.net"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "organization name",
+                        "value": "GlassFish Community"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "organization url",
+                        "value": "https:\/\/glassfish.dev.java.net"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "net.java"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jvnet-parent"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Java Servlet API"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-version",
+                        "value": "3.1.0"
+                    },
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "3.1.0"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/javax.servlet\/javax.servlet-api@3.1.0",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/javax.servlet\/javax.servlet-api@3.1.0?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: org.eclipse.jetty.websocket:websocket-api:9.4.8.v20171121)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/org.eclipse.jetty.websocket\/websocket-api\/pom.xml",
+            "md5": "61d53647f7a8290efaaf40e0cf0a731c",
+            "sha1": "3aa2ee68036607d55781d1edff4c239b84804677",
+            "sha256": "bf3bb1b9d079321a28dd158dd075b1c3b4335ba2010a116b74bb0df57e47bbb1",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "eclipse.jetty.websocket"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "websocket-api"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jetty :: Websocket :: API"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "websocket-parent"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "org.eclipse.jetty.websocket"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "eclipse.jetty.websocket"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "websocket-parent"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "websocket-api"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jetty :: Websocket :: API"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "org.eclipse.jetty.websocket"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "9.4.8.v20171121"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/org.eclipse.jetty.websocket\/websocket-api@9.4.8.v20171121",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/org.eclipse.jetty.websocket\/websocket-api@9.4.8.v20171121?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: org.eclipse.jetty:jetty-io:9.4.8.v20171121)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/org.eclipse.jetty\/jetty-io\/pom.xml",
+            "md5": "0ace7670c6e3380b91e385464542cba3",
+            "sha1": "1fc6a8ef988f5c754a120f9697369e853fcf9721",
+            "sha256": "6b8d1598714cad2c6879c7ec6f3be7cde03c70c482dab9f3a2b6ec3daaa766ff",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "org.eclipse.jetty"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "eclipse.jetty"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jetty-io"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jetty-project"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jetty :: IO Utility"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/www.eclipse.org\/jetty"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/www.eclipse.org\/jetty"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "org.eclipse.jetty"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "jetty-project"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "eclipse.jetty"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "jetty-io"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "Jetty :: IO Utility"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "9.4.8.v20171121"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/org.eclipse.jetty\/jetty-io@9.4.8.v20171121",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/org.eclipse.jetty\/jetty-io@9.4.8.v20171121?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ],
+            "vulnerabilities": [
+                {
+                    "source": "OSSINDEX",
+                    "name": "CVE-2021-28165",
+                    "severity": "HIGH",
+                    "cvssv2": {
+                        "score": 7.5,
+                        "accessVector": "N",
+                        "accessComplexity": "L",
+                        "authenticationr": "$enc.json($vuln.cvssV2.authentication)",
+                        "confidentialImpact": "N",
+                        "integrityImpact": "N",
+                        "availabilityImpact": "H",
+                        "severity": "HIGH"
+                    },
+                    "cwes": [
+                        "CWE-400"
+                    ],
+                    "description": "In Eclipse Jetty 7.2.2 to 9.4.38, 10.0.0.alpha0 to 10.0.1, and 11.0.0.alpha0 to 11.0.1, CPU usage can reach 100% upon receiving a large invalid TLS frame.\n\nSonatype's research suggests that this CVE's details differ from those defined at NVD. See https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2021-28165 for details",
+                    "notes": "",
+                    "references": [
+                        {
+                            "source": "OSSINDEX",
+                            "url": "https:\/\/ossindex.sonatype.org\/vulnerability\/CVE-2021-28165?component-type=maven&component-name=org.eclipse.jetty%2Fjetty-io&utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6",
+                            "name": "[CVE-2021-28165] CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')"
+                        }
+                    ],
+                    "vulnerableSoftware": [
+                        {
+                            "software": {
+                                "id": "cpe:2.3:a:org.eclipse.jetty:jetty-io:9.4.8.v20171121:*:*:*:*:*:*:*",
+                                "vulnerabilityIdMatched": "true"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "jackson-exploit-1.0-SNAPSHOT.jar (shaded: org.slf4j:slf4j-api:1.7.13)",
+            "filePath": "\/work\/base\/target\/jackson-exploit-1.0-SNAPSHOT.jar\/META-INF\/maven\/org.slf4j\/slf4j-api\/pom.xml",
+            "md5": "03558a9935fc8ef2a8617798d2054580",
+            "sha1": "3991fd2a57dcdf0f3c7cc7bce6a7b08ef9484688",
+            "sha256": "5aab0ad8d0ee4933f57abdbedc8a3c2a1d6a5f7bd7135efbc407a29d8872abae",
+            "description": "The slf4j API",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/www.slf4j.org"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "slf4j-parent"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "org.slf4j"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "LOW",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "slf4j-api"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "slf4j"
+                    },
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "SLF4J API Module"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-artifactid",
+                        "value": "slf4j-parent"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "url",
+                        "value": "http:\/\/www.slf4j.org"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "MEDIUM",
+                        "source": "pom",
+                        "name": "parent-groupid",
+                        "value": "org.slf4j"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "artifactid",
+                        "value": "slf4j-api"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "groupid",
+                        "value": "slf4j"
+                    },
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "pom",
+                        "name": "name",
+                        "value": "SLF4J API Module"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "1.7.13"
+                    }
+                ]
+            },
+            "packages": [
+                {
+                    "id": "pkg:maven\/org.slf4j\/slf4j-api@1.7.13",
+                    "confidence": "HIGH",
+                    "url": "https:\/\/ossindex.sonatype.org\/component\/pkg:maven\/org.slf4j\/slf4j-api@1.7.13?utm_source=dependency-check&utm_medium=integration&utm_content=6.1.6"
+                }
+            ]
+        },
+        {
+            "isVirtual": false,
+            "fileName": "original-jackson-exploit-1.0-SNAPSHOT.jar",
+            "filePath": "\/work\/base\/target\/original-jackson-exploit-1.0-SNAPSHOT.jar",
+            "md5": "219d94b5bcb3fe85c069741e9491f87f",
+            "sha1": "3a361e1fd09a891028182dbe3c2a0241915562aa",
+            "sha256": "ab2cededdef33a43a328ac22906534f1659a62af4121a4fc55ccab8d3567fc95",
+            "evidenceCollected": {
+                "vendorEvidence": [
+                    {
+                        "type": "vendor",
+                        "confidence": "HIGH",
+                        "source": "file",
+                        "name": "name",
+                        "value": "original-jackson-exploit"
+                    }
+                ],
+                "productEvidence": [
+                    {
+                        "type": "product",
+                        "confidence": "HIGH",
+                        "source": "file",
+                        "name": "name",
+                        "value": "original-jackson-exploit"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGH",
+                        "source": "file",
+                        "name": "version",
+                        "value": "1.0.snapshot"
+                    },
+                    {
+                        "type": "version",
+                        "confidence": "MEDIUM",
+                        "source": "file",
+                        "name": "name",
+                        "value": "original-jackson-exploit"
+                    }
+                ]
+            }
+        }
+    ]
+}
