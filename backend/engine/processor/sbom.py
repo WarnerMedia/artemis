@@ -120,7 +120,7 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
         # if file does not already exist, create and write to it
         aws.write_s3_file(
             path=(SBOM_JSON_S3_KEY % scan_id),
-            body=json.dumps([sbom], indent=2),
+            body=json.dumps({sbom}, indent=2),
             s3_bucket=SCAN_DATA_S3_BUCKET,
             endpoint_url=SCAN_DATA_S3_ENDPOINT,
         )

@@ -198,7 +198,7 @@ export interface AnalysisReport extends ScanHistory {
 
 export interface SbomReport extends ScanHistory {
 	engine_id?: string | null;
-	sbom: [];
+	sbom: any[];
 }
 
 export interface ScanHistoryResponse extends Response {
@@ -333,7 +333,8 @@ const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	})
 	.defined();
 
-const sbomComponentSchema = Yup.array().of(Yup.object().defined());
+
+const sbomComponentSchema = Yup.object().defined();
 
 const scanResultsSchema: Yup.ObjectSchema<ScanResults> = Yup.object()
 	.shape({
@@ -387,7 +388,7 @@ export const analysisReportResponseSchema = Yup.object().shape({
 	data: analysisReportSchema,
 });
 
-export const sbomReportSchema = Yup.object()
+export const sbomReportSchema: Yup.ObjectSchema<SbomReport> = Yup.object()
 	.shape({
 		scan_id: scanIdSchema.defined(),
 		engine_id: Yup.string().nullable(),
