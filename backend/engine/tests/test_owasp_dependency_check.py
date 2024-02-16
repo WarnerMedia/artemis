@@ -11,12 +11,11 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 DEPENDENCY_CHECK_DIR = os.path.join(TEST_DIR, "data", "owasp_dependency_check/")
 JAVA_DIR = os.path.join(TEST_DIR, "data", "java")
 
-PARSED_ERROR = (
-    [
-        'org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program "bundle-audit" (in directory "/tmp/dctemp2ebe5b42-3852-4a6b-8148-f0ebaa1af432"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer',
-        "org.owasp.dependencycheck.analyzer.exception.SearchException: Could not perform Node Audit analysis. Invalid payload submitted to Node Audit API.",
-    ],
-)
+PARSED_ERROR = [
+    "org.owasp.dependencycheck.analyzer.exception.SearchException: Could not perform Node Audit analysis. Invalid payload submitted to Node Audit API.",
+    'org.owasp.dependencycheck.exception.InitializationException: Exception from bundle-audit process: java.io.IOException: Cannot run program "bundle-audit" (in directory "/tmp/dctemp2ebe5b42-3852-4a6b-8148-f0ebaa1af432"): error=2, No such file or directory. Disabling Ruby Bundle Audit Analyzer',
+]
+
 
 PARSED_VULNERABILITIES = [
     {
@@ -81,15 +80,15 @@ PARSED_VULNERABILITIES = [
     },
 ]
 
+
 class TestBandit(unittest.TestCase):
 
     def test_parse_build_results(self):
         scan_report = owasp.parse_scanner_output_json(DEPENDENCY_CHECK_DIR, 0)
 
         self.assertListEqual(scan_report["errors"], PARSED_ERROR)
-        self.assertListEqual(scan_report["output"], PARSED_VULNERABILITIES)
+        self.assertDictEqual(scan_report["output"], PARSED_VULNERABILITIES)
 
-    
     def test_pom_exists(self):
         self.assertFalse(owasp.pom_exists(DEPENDENCY_CHECK_DIR))
         self.assertTrue(owasp.pom_exists(JAVA_DIR))
