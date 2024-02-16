@@ -2,8 +2,7 @@ import uuid
 
 import simplejson as json
 
-from artemisdb.artemisdb.consts import ComponentType
-from artemisdb.artemisdb.models import Component, License, RepoComponentScan, Scan
+from artemisdb.artemisdb.models import License, Scan
 from artemislib.aws import AWSConnect
 from artemislib.consts import SBOM_JSON_S3_KEY
 from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
@@ -11,7 +10,6 @@ from artemislib.logging import Logger
 from utils.plugin import Result
 from processor.sbom import get_component
 from processor.sbom import convert_output
-from artemislib.consts import SCANS_S3_KEY
 
 logger = Logger(__name__)
 
