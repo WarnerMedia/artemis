@@ -81,7 +81,19 @@ def run_owasp_dep_check(repo_path, owasp_path, repo_name):
     :return: dict scan results
     """
     r = subprocess.run(
-        [f"{owasp_path}bin/dependency-check.sh", "--project", f"{repo_name}", "-f", "JSON", "--scan", f"{repo_path}"],
+        [
+            f"{owasp_path}bin/dependency-check.sh",
+            "--project",
+            f"{repo_name}",
+            "-f",
+            "JSON",
+            "--disableNodeAudit",
+            "--disableBundleAudit",
+            "--disableNodeJS",
+            "--disableYarnAudit",
+            "--scan",
+            f"{repo_path}",
+        ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         cwd=repo_path,
