@@ -6,16 +6,19 @@ import json
 import os
 import subprocess
 
+from typing import Any
 from engine.plugins.lib import utils
 
 log = utils.setup_logging("owasp_dependency_check")
 
 
-def attempt_maven_build(repo_path, scan_working_dir, java_versions, engine_id):
+def attempt_maven_build(repo_path: str, scan_working_dir: str, java_versions: list, engine_id: str) -> dict:
     """
     Blindly cycle through the versions of java available.
     :param repo_path: path mounted from engine
+    :param scan_working_dir: path to the cloned repo
     :param java_versions: list of java versions to try
+    :param engine_id: containerID that stores the shared volumes
     :return: dict
     """
     for version in java_versions:
@@ -59,11 +62,11 @@ def attempt_maven_build(repo_path, scan_working_dir, java_versions, engine_id):
     return {"build_status": False, "build_debug": None, "java_version": None}
 
 
-def git_clean_repo(path):
+def git_clean_repo(path: str) -> bool:
     """
     Clean repo between java build attempts
     :param path: current working directory to run command
-    :return: string
+    :return: bool
     """
     r = subprocess.run(
         ["git", "clean", "-f", "-d", "-x"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False
@@ -71,7 +74,7 @@ def git_clean_repo(path):
     return r.returncode == 0
 
 
-def run_owasp_dep_check(repo_path, owasp_path, repo_name):
+def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict:
     """
     Run the dependency-check.sh script against each built jar
     :param repo_path: path to work directory
@@ -106,7 +109,7 @@ def run_owasp_dep_check(repo_path, owasp_path, repo_name):
     return parse_scanner_output_json(repo_path, r.returncode)
 
 
-def parse_scanner_output_json(repo_path, returncode):
+def parse_scanner_output_json(repo_path: str, returncode: int) -> dict:
     """
     Parse json output from dependency-check.sh.
     Limit output to filename, score and severity.
@@ -128,9 +131,9 @@ def parse_scanner_output_json(repo_path, returncode):
     return {"output": results, "errors": errors, "success": success}
 
 
-def parse_vulnerabilities(data):
+def parse_vulnerabilities(data: dict) -> list:
     """
-    Parse Vulnerabilities reported by owasp-dependency-check in in JSON report
+    Parse Vulnerabilities reported by owasp-dependency-check in the JSON report
     :return: list of dicts
     """
     results = []
@@ -156,7 +159,7 @@ def parse_vulnerabilities(data):
     return results
 
 
-def parse_errors(data):
+def parse_errors(data: list) -> list:
     """
     Parse errors reported by owasp-dependency-check in JSON report
     :return: list of strings
@@ -170,7 +173,7 @@ def parse_errors(data):
     return errors
 
 
-def pom_exists(repo_path):
+def pom_exists(repo_path: str) -> bool:
     """
     Maven requires a pom.xml in its working directory or a path/to/pom.xml inorder to build the project
     Returns True if a pom.xml file is found at the root of the project
