@@ -86,7 +86,7 @@ class TestBandit(unittest.TestCase):
     def test_parse_build_results(self):
         scan_report = owasp.parse_scanner_output_json(DEPENDENCY_CHECK_DIR, 0)
 
-        self.assertListEqual(scan_report["errors"], PARSED_ERROR)
+        self.assertListEqual(scan_report["errors"].sort(), PARSED_ERROR.sort())
         self.assertDictEqual(scan_report["output"], PARSED_VULNERABILITIES)
 
     def test_pom_exists(self):
