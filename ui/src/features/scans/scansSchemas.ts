@@ -333,7 +333,6 @@ const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	})
 	.defined();
 
-
 const sbomComponentSchema = Yup.object().defined();
 
 const scanResultsSchema: Yup.ObjectSchema<ScanResults> = Yup.object()
