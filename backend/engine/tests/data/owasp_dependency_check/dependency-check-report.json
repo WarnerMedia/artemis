@@ -100,7 +100,7 @@
         ]
     },
     "projectInfo": {
-        "name": "wmcso\/artemis-demo",
+        "name": "example/repo",
         "reportDate": "2024-02-15T03:25:11.238Z",
         "credits": {
             "NVD": "This report contains data retrieved from the National Vulnerability Database: http://nvd.nist.gov",
