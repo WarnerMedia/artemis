@@ -167,6 +167,31 @@ def parse_errors(data):
 
     return errors
 
+
+def pom_exists(repo_path):
+    """
+    Maven requires a pom.xml in its working directory or a path/to/pom.xml inorder to build the project
+    Returns True if a pom.xml file is found at the root of the project
+    :return: bool
+    """
+    log.info("Searching for pom file in: %s", repo_path)
+    r = subprocess.run(
+        [
+            "find",
+            ".",
+            "-name",
+            "pom.xml",
+            "-maxdepth",
+            "1",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=repo_path,
+        check=False,
+    )
+    return len(r.stdout) > 0 and r.returncode == 0
+
+
 def main():
     """
     Main plugin execution
@@ -182,21 +207,28 @@ def main():
     if not args.cli_path.endswith("/"):
         args.cli_path += "/"
 
-    scan_working_dir = os.path.join("/work", args.engine_vars.get("scan_id", ""), "base")
-
-    java_build_results = attempt_maven_build(
-        args.path,
-        scan_working_dir,
-        json.loads(args.java_versions)["version_list"],
-        args.engine_vars.get("engine_id", ""),
-    )
-    if java_build_results["build_status"]:
-        owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
-    else:
+    if not pom_exists(args.path):
+        log.info("No pom.xml found in the root of the project")
         owasp_results = {
             "success": True,
-            "info": ["Java build failed"],
+            "info": ["No pom.xml found in the root of the project"],
         }
+    else:
+        log.info("Maven pom.xml found")
+        scan_working_dir = os.path.join("/work", args.engine_vars.get("scan_id", ""), "base")
+        java_build_results = attempt_maven_build(
+            args.path,
+            scan_working_dir,
+            json.loads(args.java_versions)["version_list"],
+            args.engine_vars.get("engine_id", ""),
+        )
+        if java_build_results["build_status"]:
+            owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
+        else:
+            owasp_results = {
+                "success": True,
+                "info": ["Java build failed"],
+            }
 
     print(
         json.dumps(
