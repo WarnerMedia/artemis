@@ -66,13 +66,7 @@ TEST_CHECK_OUTPUT_SBOM_FILE = {
     "vulnerabilities": [],
 }
 TEST_CHECK_OUTPUT_SBOM_FILE_PARSED = [
-    {
-        "bom-ref": "pkg",
-        "name": "test",
-        "version": "0.16.2",
-        "licenses": [{"license": {"id": "MIT", "name": "MIT"}}],
-        "type": "npm",
-    }
+    {"bom-ref": "pkg", "name": "test", "version": "0.16.2", "licenses": [{"id": "MIT", "name": "MIT"}], "type": "npm"}
 ]
 
 TEST_BUILD_SCAN_PARSE_RESULT_DICT = {
@@ -97,7 +91,7 @@ class TestTrivy(unittest.TestCase):
                 mock_proc.stderr = mock_proc.stdout = None
                 mock_proc.return_value = CompletedProcess(args="", returncode=0)
                 actual = go_mod_download("/mocked/path/")
-        self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
+        self.assertEqual(len(actual[1]), 1, "There should be a warning of a go.mod file being downloaded")
 
     def test_yarn_download(self):
         with patch(f"{DOWNLOAD_YARN_PREFIX}glob") as mock_glob:
@@ -106,7 +100,7 @@ class TestTrivy(unittest.TestCase):
                 mock_proc.stderr = mock_proc.stdout = None
                 mock_proc.return_value = CompletedProcess(args="", returncode=0)
                 actual = yarn_install("/mocked/path/")
-        self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
+        self.assertEqual(len(actual[1]), 1, "There should be a warning of a yarn.lock file being downloaded")
 
     def test_parser(self):
         check_parsed_output = Trivy.clean_output_application_sbom(TEST_CHECK_OUTPUT_SBOM_FILE)
