@@ -76,6 +76,7 @@ def get_engine_vars(scan, depth=None, include_dev=False, services=None):
     """
     return json.dumps(
         {
+            "scan_id": str(scan.scan_id),
             "repo": scan.repo.repo,
             "ref": scan.ref,
             "ecr_url": ECR,

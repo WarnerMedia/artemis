@@ -1,20 +1,24 @@
 """
 owasp dep check plugin
 """
+
 import json
 import os
 import subprocess
 
+from typing import Any
 from engine.plugins.lib import utils
 
 log = utils.setup_logging("owasp_dependency_check")
 
 
-def attempt_maven_build(repo_path, java_versions):
+def attempt_maven_build(repo_path: str, scan_working_dir: str, java_versions: list, engine_id: str) -> dict:
     """
     Blindly cycle through the versions of java available.
     :param repo_path: path mounted from engine
+    :param scan_working_dir: path to the cloned repo
     :param java_versions: list of java versions to try
+    :param engine_id: containerID that stores the shared volumes
     :return: dict
     """
     for version in java_versions:
@@ -27,11 +31,11 @@ def attempt_maven_build(repo_path, java_versions):
                 "run",
                 "--rm",
                 "--volumes-from",
-                "plugin",
+                f"{engine_id}",
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
                 "-w",
-                repo_path,
+                f"{scan_working_dir}",
                 f"maven:3-jdk-{version}",
                 "mvn",
                 "-q",
@@ -58,11 +62,11 @@ def attempt_maven_build(repo_path, java_versions):
     return {"build_status": False, "build_debug": None, "java_version": None}
 
 
-def git_clean_repo(path):
+def git_clean_repo(path: str) -> bool:
     """
     Clean repo between java build attempts
     :param path: current working directory to run command
-    :return: string
+    :return: bool
     """
     r = subprocess.run(
         ["git", "clean", "-f", "-d", "-x"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False
@@ -70,7 +74,7 @@ def git_clean_repo(path):
     return r.returncode == 0
 
 
-def run_owasp_dep_check(repo_path, owasp_path, repo_name):
+def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict:
     """
     Run the dependency-check.sh script against each built jar
     :param repo_path: path to work directory
@@ -80,7 +84,19 @@ def run_owasp_dep_check(repo_path, owasp_path, repo_name):
     :return: dict scan results
     """
     r = subprocess.run(
-        [f"{owasp_path}bin/dependency-check.sh", "--project", f"{repo_name}", "-f", "JSON", "--scan", f"{repo_path}"],
+        [
+            f"{owasp_path}bin/dependency-check.sh",
+            "--project",
+            f"{repo_name}",
+            "-f",
+            "JSON",
+            "--disableNodeAudit",
+            "--disableBundleAudit",
+            "--disableNodeJS",
+            "--disableYarnAudit",
+            "--scan",
+            f"{repo_path}",
+        ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         cwd=repo_path,
@@ -93,7 +109,7 @@ def run_owasp_dep_check(repo_path, owasp_path, repo_name):
     return parse_scanner_output_json(repo_path, r.returncode)
 
 
-def parse_scanner_output_json(repo_path, returncode):
+def parse_scanner_output_json(repo_path: str, returncode: int) -> dict:
     """
     Parse json output from dependency-check.sh.
     Limit output to filename, score and severity.
@@ -101,15 +117,28 @@ def parse_scanner_output_json(repo_path, returncode):
     """
     results = []
     success = returncode == 0
+    errors = []
 
     if not os.path.exists(f"{repo_path}dependency-check-report.json"):
         return {"output": [], "errors": ["No report file found"], "success": success}
 
     with open(f"{repo_path}dependency-check-report.json") as json_file:
         data = json.load(json_file)
+        results = parse_vulnerabilities(data)
+        errors = parse_errors(data)
+
+    success = success & len(results) == 0
+    return {"output": results, "errors": errors, "success": success}
+
+
+def parse_vulnerabilities(data: dict) -> list:
+    """
+    Parse Vulnerabilities reported by owasp-dependency-check in the JSON report
+    :return: list of dicts
+    """
+    results = []
     for dep in data["dependencies"]:
         if "vulnerabilities" in dep:
-            success = False
             for vuln in dep["vulnerabilities"]:
                 results.append(
                     {
@@ -119,10 +148,53 @@ def parse_scanner_output_json(repo_path, returncode):
                         "description": vuln["description"],
                         "severity": vuln["severity"].lower(),
                         "remediation": "",
+                        "inventory": {
+                            "component": {"name": vuln["name"], "version": "", "type": "maven"},
+                            "advisory_ids": [
+                                vuln["name"],
+                            ],
+                        },
                     }
                 )
+    return results
 
-    return {"output": results, "errors": [], "success": success}
+
+def parse_errors(data: list) -> list:
+    """
+    Parse errors reported by owasp-dependency-check in JSON report
+    :return: list of strings
+    """
+    errors = []
+    owasp_errors = data["scanInfo"].get("analysisExceptions", [])
+
+    for error in owasp_errors:
+        errors.append(error["exception"]["message"])
+
+    return errors
+
+
+def pom_exists(repo_path: str) -> bool:
+    """
+    Maven requires a pom.xml in its working directory or a path/to/pom.xml inorder to build the project
+    Returns True if a pom.xml file is found at the root of the project
+    :return: bool
+    """
+    log.info("Searching for pom file in: %s", repo_path)
+    r = subprocess.run(
+        [
+            "find",
+            ".",
+            "-name",
+            "pom.xml",
+            "-maxdepth",
+            "1",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=repo_path,
+        check=False,
+    )
+    return len(r.stdout) > 0 and r.returncode == 0
 
 
 def main():
@@ -140,15 +212,28 @@ def main():
     if not args.cli_path.endswith("/"):
         args.cli_path += "/"
 
-    java_build_results = attempt_maven_build(args.path, json.loads(args.java_versions)["version_list"])
-
-    if java_build_results["build_status"]:
-        owasp_results = run_owasp_dep_check(args.path, args.cli_path, json.loads(args.engine_vars).get("repo", ""))
-    else:
+    if not pom_exists(args.path):
+        log.info("No pom.xml found in the root of the project")
         owasp_results = {
             "success": True,
-            "info": ["Java build failed"],
+            "info": ["No pom.xml found in the root of the project"],
         }
+    else:
+        log.info("Maven pom.xml found")
+        scan_working_dir = os.path.join("/work", args.engine_vars.get("scan_id", ""), "base")
+        java_build_results = attempt_maven_build(
+            args.path,
+            scan_working_dir,
+            json.loads(args.java_versions)["version_list"],
+            args.engine_vars.get("engine_id", ""),
+        )
+        if java_build_results["build_status"]:
+            owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
+        else:
+            owasp_results = {
+                "success": True,
+                "info": ["Java build failed"],
+            }
 
     print(
         json.dumps(
