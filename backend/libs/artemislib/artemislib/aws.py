@@ -38,7 +38,7 @@ class AWSConnect:
             cls._instance._SECRETS_MANAGER = boto3.client("secretsmanager", region_name=region)
             cls._instance._SQS = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=region)
             cls._instance._EC2 = boto3.resource("ec2", region_name=region)
-            cls._instance._ID = boto3.client('sts').get_caller_identity().get('Account')
+            cls._instance._ID = boto3.client('sts').get_caller_identity()
         return cls._instance
 
     def get_secret(self, secret_name):
