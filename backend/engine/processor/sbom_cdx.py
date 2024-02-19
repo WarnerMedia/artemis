@@ -52,6 +52,9 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None
     # Check if file already exists
+    print(f'Path: {SBOM_JSON_S3_KEY % scan_id}')
+    print(f's3 bucket: {SCAN_DATA_S3_BUCKET}')
+    print(f'Endpoint URL: {SCAN_DATA_S3_ENDPOINT}')
     try:
         s3_file_data = aws.get_s3_file(
             path=(SBOM_JSON_S3_KEY % scan_id),
