@@ -16,7 +16,7 @@ cmd = [
 ]
 
 
-def install_package_files(include_dev, path, root_path, node_modules):
+def install_package_files(include_dev: bool, path: str, root_path: str, node_modules: bool):
     # Create a package-lock.json file if it doesn't already exist
     logger.info(
         f'Generating package-lock.json for {path.replace(root_path, "")} (including dev dependencies: {include_dev} (build node modules: {node_modules})'
