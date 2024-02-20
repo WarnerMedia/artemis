@@ -51,6 +51,8 @@ def process_dependency(dep: dict, scan: Scan):
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None
+    # Reading from an s3 file will fail unless you add read permissions for EC2s in permissions.tf
+
     # Check if file already exists
     try:
         s3_file_data = aws.get_s3_file(
