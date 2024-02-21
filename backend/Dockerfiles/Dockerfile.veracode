@@ -72,8 +72,8 @@ RUN mkdir -p /maven && \
 
 FROM ${PYTHON_IMG_VER} as node-builder
 
-ARG NODEVER=18.18.2
-ARG NODESHA=a44c3e7f8bf91e852c928e5d8bd67ca316b35e27eec1d8acbe3b9dbe03688dab
+ARG NODEVER=18.19.1
+ARG NODESHA=724802c45237477dbe5777923743e6c77906830cae03a82b5653ebd75b301dda
 
 RUN mkdir -p /node && \
     echo "$NODESHA /node/node.tar.gz" > /node_checksum.txt && \
@@ -171,10 +171,11 @@ RUN apt-get update && \
 			"libsodium23=1.0.*" \
 			"libsqlite3-0=3.40.*" \
 			"libssl3=3.0.*" \
-			"libxml2=2.9.*" \
+			"libxml2=2.13.*" \
 			"libyaml-0-2=0.2.*" \
 			"ruby=1:3.1*" \
 			"srcclr=3.8.*" \
+            "libexpat1=2.6.*" \
 			"zlib1g=1:1.2.*" && \
 		apt-get -s dist-upgrade | { grep -E '^Inst ' | grep -F 'Debian-Security' || true; } | awk '{print $2}' | xargs apt-get -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" install && \
     npm install --global \
