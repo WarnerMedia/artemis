@@ -81,6 +81,7 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
 
     return component
 
+
 def convert_string_to_json(output_str: str, log):
     if not output_str:
         return None
@@ -89,7 +90,8 @@ def convert_string_to_json(output_str: str, log):
     except json.JSONDecodeError as e:
         log.error(e)
         return None
-    
+
+
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None

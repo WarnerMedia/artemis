@@ -2,7 +2,7 @@
 trivy output parser
 """
 from engine.plugins.lib.utils import setup_logging
-from engine.plugins.lib.utils import convert_type
+from engine.plugins.lib.trivy_common.parsing_util import convert_type
 
 logger = setup_logging("trivy_sbom")
 

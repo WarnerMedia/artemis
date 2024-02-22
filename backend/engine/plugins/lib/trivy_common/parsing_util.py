@@ -3,7 +3,6 @@ trivy output parser
 """
 from typing import NamedTuple
 from engine.plugins.lib.utils import setup_logging
-from engine.plugins.lib.utils import convert_type
 
 logger = setup_logging("trivy")
 
@@ -71,3 +70,7 @@ def get_description_and_remediation(description, fixed_version) -> NamedTuple:
     result.description = description
     result.remediation = remediation
     return result
+
+def convert_type(component_type: str) -> str:
+    mapping = {"bundler": "gem"}
+    return mapping.get(component_type, component_type).lower()
