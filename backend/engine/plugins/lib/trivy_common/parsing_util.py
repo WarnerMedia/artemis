@@ -2,10 +2,10 @@
 trivy output parser
 """
 from typing import NamedTuple
-from engine.plugins.lib import utils
-from utils import convert_type
+from engine.plugins.lib.utils import setup_logging
+from engine.plugins.lib.utils import convert_type
 
-logger = utils.setup_logging("trivy")
+logger = setup_logging("trivy")
 
 DESC_REMEDIATION_SPLIT = "## Recommendation"
 
