@@ -1,9 +1,9 @@
 """
 trivy output parser
 """
-import json
 from typing import NamedTuple
 from engine.plugins.lib import utils
+from utils import convert_type
 
 logger = utils.setup_logging("trivy")
 
@@ -50,13 +50,6 @@ def parse_output(output: list) -> list:
             )
     return results
 
-
-def convert_type(component_type: str) -> str:
-    if component_type == "bundler":
-        return "gem"
-    return component_type.lower()
-
-
 def get_description_and_remediation(description, fixed_version) -> NamedTuple:
     """
     gets the description and remediation fields after pulling them from the vuln and appending/removing additional info
@@ -78,12 +71,3 @@ def get_description_and_remediation(description, fixed_version) -> NamedTuple:
     result.remediation = remediation
     return result
 
-
-def convert_output(output_str: str):
-    if not output_str:
-        return None
-    try:
-        return json.loads(output_str)
-    except json.JSONDecodeError as e:
-        logger.error(e)
-        return None

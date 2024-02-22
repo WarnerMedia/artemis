@@ -8,6 +8,7 @@ from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
 from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
+from engine.plugins.lib.utils import convert_string_to_json
 
 logger = utils.setup_logging("trivy_sbom")
 
@@ -56,10 +57,10 @@ def process_docker_images(images: list):
         if not image.get("status"):
             continue
         try:
-            output = convert_output(execute_trivy_image_sbom(image["tag-id"]))
+            output = convert_string_to_json(execute_trivy_image_sbom(image["tag-id"], logger))
             if not output:
                 logger.warning(
-                    "Image from Dockerfile %s could not be scanned or the results converted to JSON",
+                    "Image from Dockerfile %s could not be scanned or the results could not be converted to JSON",
                     image["dockerfile"],
                 )
             else:
@@ -82,16 +83,6 @@ def build_scan_parse_images(images) -> list:
     return results, parsed
 
 
-def convert_output(output_str: str):
-    if not output_str:
-        return None
-    try:
-        return json.loads(output_str)
-    except json.JSONDecodeError as e:
-        # logger.error(e)
-        return None
-
-
 def main():
     logger.info("Executing Trivy SBOM")
     args = utils.parse_args()
@@ -106,7 +97,7 @@ def main():
     alerts.extend(yarn_install_alerts)
     errors.extend(yarn_install_errors)
 
-    # Generate Lock files
+    # Generate Lock files (and install npm packages for license info)
     lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
     alerts.extend(lock_file_alerts)
     errors.extend(lock_file_errors)
@@ -117,7 +108,7 @@ def main():
     errors.extend(go_mod_errors)
 
     # Scan local lock files
-    application_sbom_output = convert_output(execute_trivy_application_sbom(args.path, include_dev))
+    application_sbom_output = convert_string_to_json(execute_trivy_application_sbom(args.path, include_dev), logger)
     application_sbom_output_parsed = clean_output_application_sbom(application_sbom_output)
     logger.debug(application_sbom_output)
     if not application_sbom_output:

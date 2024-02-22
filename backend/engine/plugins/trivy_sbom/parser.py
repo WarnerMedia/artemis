@@ -1,13 +1,10 @@
 """
 trivy output parser
 """
-import json
 from engine.plugins.lib import utils
+from utils import convert_type
 
 logger = utils.setup_logging("trivy SBOM")
-
-import json
-
 
 # Gets the scan and formats it to work with the processor
 def clean_output_application_sbom(output: list) -> list:
@@ -32,13 +29,7 @@ def clean_output_application_sbom(output: list) -> list:
         properties = item.get("properties", [])
         for prop in properties:
             if prop["name"] == "aquasecurity:trivy:PkgType":
-                type = convert_bundler(prop["value"])
+                type = convert_type(prop["value"])
                 break
         results.append({"bom-ref": bom_ref, "name": name, "version": version, "licenses": licenses, "type": type})
     return results
-
-
-def convert_bundler(component_type: str) -> str:
-    if component_type == "bundler":
-        return "gem"
-    return component_type.lower()

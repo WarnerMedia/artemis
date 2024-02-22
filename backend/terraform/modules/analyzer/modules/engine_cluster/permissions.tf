@@ -97,7 +97,7 @@ data "aws_iam_policy_document" "s3-policy" {
       "${var.s3_analyzer_files_arn}/scripts/*",
       "${var.s3_analyzer_files_arn}/services.json",
       "${var.s3_analyzer_files_arn}/plugins/*",
-      # "${var.s3_analyzer_files_arn}/scans/*" Uncomment this line if multiple SBOM tools are being used concurrently.
+      "${var.s3_analyzer_files_arn}/scans/*"
     ]
   }
   statement {

@@ -7,6 +7,10 @@ import pytest
 
 from docker import builder, remover
 from engine.plugins.trivy import main as Trivy
+from engine.plugins.lib.utils import convert_string_to_json
+from engine.plugins.lib import utils
+
+logger = utils.setup_logging("trivy_image_test")
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,6 +25,8 @@ TRIVY_DATA = os.path.join(TEST_DATA, "trivy")
 TEST_OUTPUT = os.path.join(TRIVY_DATA, "demo-results.json")
 
 TEST_IMAGE = os.path.join(TEST_DATA, "image", "test_file_for_docker")
+
+
 
 
 TEST_IMAGE_VULN_DICT = {
@@ -120,7 +126,7 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_execute_trivy_image_no_image(self):
         response = Trivy.execute_trivy_image_scan("test-docker-doesnt-exist-t-1000")
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response, logger)
         self.assertIsNone(result)
 
     @pytest.mark.integtest

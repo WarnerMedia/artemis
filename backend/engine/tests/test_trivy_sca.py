@@ -8,6 +8,10 @@ from unittest.mock import patch
 from docker import remover
 from engine.plugins.trivy_sca import main as Trivy
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.utils import convert_string_to_json
+from engine.plugins.lib import utils
+
+logger = utils.setup_logging("trivy_sca_test")
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,7 +25,6 @@ TEST_DATA = os.path.join(TEST_DIR, "data")
 TRIVY_DATA = os.path.join(TEST_DATA, "trivy")
 
 TEST_OUTPUT = os.path.join(TRIVY_DATA, "demo-results.json")
-
 
 TEST_CHECK_OUTPUT_GEMLOCK_FILE = {
     "component": "rest-client-1.7.3",
@@ -159,7 +162,7 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_convert_output_success(self):
         response = Trivy.execute_trivy_lock_scan(TEST_ROOT)
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response, logger)
         self.assertNotIn(result, [[], None])
         self.assertIsInstance(result, list)
 
@@ -167,7 +170,7 @@ class TestTrivyIntegration(unittest.TestCase):
     def test_convert_output_output_correct(self):
         self.maxDiff = None
         response = Trivy.execute_trivy_lock_scan(TRIVY_DATA)
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response, logger)
         self.assertIsInstance(result[0]["Vulnerabilities"], list)
         result[0]["Vulnerabilities"] = None
         self.assertEqual(ARTEMIS_VULN, result)

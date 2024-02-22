@@ -4,7 +4,7 @@ trivy image scanning plugin
 import json
 import subprocess
 from engine.plugins.lib import utils
-from engine.plugins.lib.trivy_common.parsing_util import convert_output
+from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
 
 logger = utils.setup_logging("trivy")
@@ -37,10 +37,10 @@ def process_docker_images(images: list):
             continue
         try:
             result = execute_trivy_image_scan(image["tag-id"])
-            output = convert_output(result)
+            output = convert_string_to_json(result, logger)
             if not output:
                 logger.warning(
-                    "Image from Dockerfile %s could not be scanned or the results converted to JSON",
+                    "Image from Dockerfile %s Image from Dockerfile %s",
                     image["dockerfile"],
                 )
             else:

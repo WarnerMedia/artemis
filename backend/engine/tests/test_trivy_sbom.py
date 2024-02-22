@@ -10,6 +10,10 @@ from docker import remover
 from engine.plugins.trivy_sbom import main as Trivy
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
+from engine.plugins.lib.utils import convert_string_to_json
+from engine.plugins.lib import utils
+
+logger = utils.setup_logging("trivy_sbom_test")
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -123,7 +127,7 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_execute_trivy_image_no_image(self):
         response = Trivy.execute_trivy_image_sbom("test-docker-doesnt-exist-t-1000")
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response)
         self.assertIsNone(result)
 
     @pytest.mark.integtest
@@ -155,6 +159,6 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_convert_output_success(self):
         response = Trivy.execute_trivy_application_sbom(TEST_ROOT)
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response)
         self.assertNotIn(result, [[], None])
         self.assertIsInstance(result, list)

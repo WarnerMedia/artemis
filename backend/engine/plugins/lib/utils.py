@@ -157,3 +157,8 @@ def docker_login(log, url: str, username: str, password: str, cwd: str = None) -
 
     log.info("Login successful")
     return True
+
+
+def convert_type(component_type: str) -> str:
+    mapping = {"bundler": "gem"}
+    return mapping.get(component_type, component_type).lower()

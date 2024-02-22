@@ -9,7 +9,7 @@ from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
 from processor.sbom import get_component
-from processor.sbom import convert_output
+from engine.plugins.lib.utils import convert_string_to_json
 
 logger = Logger(__name__)
 
@@ -64,7 +64,7 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
         logger.error(error)
     if s3_file_data != None:
         # if file already exists, add to it
-        body = [convert_output(s3_file_data), sbom]
+        body = [convert_string_to_json(s3_file_data, logger), sbom]
         try:
             aws.write_s3_file(
                 path=(SBOM_JSON_S3_KEY % scan_id),

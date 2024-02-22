@@ -9,6 +9,7 @@ from artemislib.consts import SBOM_JSON_S3_KEY
 from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
+from engine.plugins.lib.utils import convert_string_to_json
 
 logger = Logger(__name__)
 
@@ -82,16 +83,6 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
     return component
 
 
-def convert_output(output_str: str):
-    if not output_str:
-        return None
-    try:
-        return json.loads(output_str)
-    except json.JSONDecodeError as e:
-        logger.error(e)
-        return None
-
-
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None
@@ -108,7 +99,7 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
         logger.error(error)
     if s3_file_data != None:
         # if file already exists, add to it
-        body = [convert_output(s3_file_data), sbom]
+        body = [convert_string_to_json(s3_file_data, logger), sbom]
         try:
             aws.write_s3_file(
                 path=(SBOM_JSON_S3_KEY % scan_id),

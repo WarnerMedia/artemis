@@ -3,7 +3,7 @@ import os
 from glob import glob
 from engine.plugins.lib import utils
 
-logger = utils.setup_logging("Go Installer (SBOM)")
+logger = utils.setup_logging("yarn_installer_sbom")
 
 cmd = [
     "yarn",
@@ -45,9 +45,8 @@ def yarn_install(path: str) -> tuple:
     for sub_path in paths:
         msg = (
             f"Installing yarn packages in path {sub_path.replace(path, '')}."
-            "Please lock package versions for the most accurate results possible."
+            "If you are not already doing so, please lock package versions for the most accurate results possible."
         )
-        logger.warning(msg)
         alerts.append(msg)
         r = download_packages(sub_path, path)
         if r.returncode != 0:
