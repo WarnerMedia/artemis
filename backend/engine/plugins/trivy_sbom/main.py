@@ -3,14 +3,15 @@ trivy SBOM plugin
 """
 import json
 import subprocess
-from engine.plugins.lib import utils
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
 from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
 from engine.plugins.lib.utils import convert_string_to_json
+from engine.plugins.lib.utils import setup_logging
+from engine.plugins.lib.utils import parse_args
 
-logger = utils.setup_logging("trivy_sbom")
+logger = setup_logging("trivy_sbom")
 
 NO_RESULTS_TEXT = "no supported file was detected"
 
@@ -85,7 +86,7 @@ def build_scan_parse_images(images) -> list:
 
 def main():
     logger.info("Executing Trivy SBOM")
-    args = utils.parse_args()
+    args = parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
     parsed = []

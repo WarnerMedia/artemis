@@ -9,7 +9,7 @@ from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
 from processor.sbom import get_component
-from engine.plugins.lib.utils import convert_string_to_json
+from processor.sbom import convert_string_to_json
 
 logger = Logger(__name__)
 

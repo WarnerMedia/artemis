@@ -11,9 +11,9 @@ from engine.plugins.trivy_sbom import main as Trivy
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
 from engine.plugins.lib.utils import convert_string_to_json
-from engine.plugins.lib import utils
+from engine.plugins.lib.utils import setup_logging
 
-logger = utils.setup_logging("trivy_sbom_test")
+logger = setup_logging("trivy_sbom_test")
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 

@@ -9,7 +9,6 @@ from artemislib.consts import SBOM_JSON_S3_KEY
 from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
 from utils.plugin import Result
-from engine.plugins.lib.utils import convert_string_to_json
 
 logger = Logger(__name__)
 
@@ -82,7 +81,15 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
 
     return component
 
-
+def convert_string_to_json(output_str: str, log):
+    if not output_str:
+        return None
+    try:
+        return json.loads(output_str)
+    except json.JSONDecodeError as e:
+        log.error(e)
+        return None
+    
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
     s3_file_data = None

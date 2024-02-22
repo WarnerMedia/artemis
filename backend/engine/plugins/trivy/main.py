@@ -3,11 +3,12 @@ trivy image scanning plugin
 """
 import json
 import subprocess
-from engine.plugins.lib import utils
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
+from engine.plugins.lib.utils import setup_logging
+from engine.plugins.lib.utils import parse_args
 
-logger = utils.setup_logging("trivy")
+logger = setup_logging("trivy")
 
 
 def execute_trivy_image_scan(image: str):
@@ -76,7 +77,7 @@ def build_scan_parse_images(images) -> list:
 
 def main():
     logger.info("Executing Trivy")
-    args = utils.parse_args()
+    args = parse_args()
     results = []
 
     # Scan Images

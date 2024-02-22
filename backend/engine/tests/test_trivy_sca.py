@@ -9,9 +9,9 @@ from docker import remover
 from engine.plugins.trivy_sca import main as Trivy
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.utils import convert_string_to_json
-from engine.plugins.lib import utils
+from engine.plugins.lib.utils import setup_logging
 
-logger = utils.setup_logging("trivy_sca_test")
+logger = setup_logging("trivy_sca_test")
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
