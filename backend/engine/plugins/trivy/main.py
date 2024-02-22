@@ -40,7 +40,7 @@ def process_docker_images(images: list):
             output = convert_string_to_json(result, logger)
             if not output:
                 logger.warning(
-                    "Image from Dockerfile %s Image from Dockerfile %s",
+                    "Image from Dockerfile %s could not be scanned or the results could not be converted to JSON",
                     image["dockerfile"],
                 )
             else:
