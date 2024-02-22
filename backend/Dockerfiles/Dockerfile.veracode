@@ -93,8 +93,8 @@ FROM ${PYTHON_IMG_VER} as java-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG JAVAVER=17.0.10
-ARG JAVASHA=e4fb2df9a32a876afb0a6e17f54c594c2780e18badfa2e8fc99bc2656b0a57b1
+ARG JAVAVER=17.0.9
+ARG JAVASHA=ad45ac97b3bc65497376f98ee276f84f4ab55ef2f62ab7f82ac0013e5b17744a
 
 RUN mkdir -p /java && \
     echo "$JAVASHA java.tar.gz" >java_checksum.txt && \
