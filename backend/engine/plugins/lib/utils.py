@@ -157,4 +157,3 @@ def docker_login(log, url: str, username: str, password: str, cwd: str = None) -
 
     log.info("Login successful")
     return True
-

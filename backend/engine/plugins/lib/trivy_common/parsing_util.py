@@ -71,6 +71,7 @@ def get_description_and_remediation(description, fixed_version) -> NamedTuple:
     result.remediation = remediation
     return result
 
+
 def convert_type(component_type: str) -> str:
     mapping = {"bundler": "gem"}
     return mapping.get(component_type, component_type).lower()
