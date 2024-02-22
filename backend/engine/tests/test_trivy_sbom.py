@@ -127,7 +127,7 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_execute_trivy_image_no_image(self):
         response = Trivy.execute_trivy_image_sbom("test-docker-doesnt-exist-t-1000")
-        result = convert_string_to_json(response)
+        result = convert_string_to_json(response, logger)
         self.assertIsNone(result)
 
     @pytest.mark.integtest
@@ -159,6 +159,6 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_convert_output_success(self):
         response = Trivy.execute_trivy_application_sbom(TEST_ROOT)
-        result = convert_string_to_json(response)
+        result = convert_string_to_json(response, logger)
         self.assertNotIn(result, [[], None])
         self.assertIsInstance(result, list)

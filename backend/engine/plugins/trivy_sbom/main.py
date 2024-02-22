@@ -58,7 +58,7 @@ def process_docker_images(images: list):
         if not image.get("status"):
             continue
         try:
-            output = convert_string_to_json(execute_trivy_image_sbom(image["tag-id"], logger))
+            output = convert_string_to_json(execute_trivy_image_sbom(image["tag-id"]), logger)
             if not output:
                 logger.warning(
                     "Image from Dockerfile %s could not be scanned or the results could not be converted to JSON",
