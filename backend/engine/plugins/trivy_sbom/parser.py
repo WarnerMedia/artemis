@@ -4,7 +4,7 @@ trivy output parser
 from engine.plugins.lib.utils import setup_logging
 from engine.plugins.lib.utils import convert_type
 
-logger = setup_logging("trivy SBOM")
+logger = setup_logging("trivy_sbom")
 
 # Gets the scan and formats it to work with the processor
 def clean_output_application_sbom(output: list) -> list:
