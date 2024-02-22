@@ -50,6 +50,7 @@ def parse_output(output: list) -> list:
             )
     return results
 
+
 def get_description_and_remediation(description, fixed_version) -> NamedTuple:
     """
     gets the description and remediation fields after pulling them from the vuln and appending/removing additional info
@@ -70,4 +71,3 @@ def get_description_and_remediation(description, fixed_version) -> NamedTuple:
     result.description = description
     result.remediation = remediation
     return result
-

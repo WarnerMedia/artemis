@@ -27,8 +27,6 @@ TEST_OUTPUT = os.path.join(TRIVY_DATA, "demo-results.json")
 TEST_IMAGE = os.path.join(TEST_DATA, "image", "test_file_for_docker")
 
 
-
-
 TEST_IMAGE_VULN_DICT = {
     "Target": "test-docker-dcff6ea60ec3cbae155abaed414c033b-t-1000 (alpine 3.12.3)",
     "Type": "alpine",
