@@ -37,7 +37,7 @@ def process_dependency(dep: dict, scan: Scan):
 
     licenses = []
     for license in dep["licenses"]:
-        license_id = license["id"].lower()
+        license_id = license.get("id").lower()
         if license_id not in license_obj_cache:
             # If we don't have a local copy of the license object get it from the DB
             license_obj_cache[license_id], _ = License.objects.get_or_create(
@@ -82,11 +82,47 @@ def get_component(name: str, version: str, scan: Scan, component_type: str = Non
     return component
 
 
+def convert_string_to_json(output_str: str, log):
+    if not output_str:
+        return None
+    try:
+        return json.loads(output_str)
+    except json.JSONDecodeError as e:
+        log.error(e)
+        return None
+
+
 def write_sbom_json(scan_id: str, sbom: str) -> None:
     aws = AWSConnect()
-    aws.write_s3_file(
-        path=(SBOM_JSON_S3_KEY % scan_id),
-        body=json.dumps(sbom),
-        s3_bucket=SCAN_DATA_S3_BUCKET,
-        endpoint_url=SCAN_DATA_S3_ENDPOINT,
-    )
+    s3_file_data = None
+    # Reading from an s3 file will fail unless you add read permissions for EC2s in permissions.tf
+
+    # Check if file already exists
+    try:
+        s3_file_data = aws.get_s3_file(
+            path=(SBOM_JSON_S3_KEY % scan_id),
+            s3_bucket=SCAN_DATA_S3_BUCKET,
+            endpoint_url=SCAN_DATA_S3_ENDPOINT,
+        )
+    except Exception as error:
+        logger.error(error)
+    if s3_file_data != None:
+        # if file already exists, add to it
+        body = [convert_string_to_json(s3_file_data, logger), sbom]
+        try:
+            aws.write_s3_file(
+                path=(SBOM_JSON_S3_KEY % scan_id),
+                body=json.dumps(body, indent=2),
+                s3_bucket=SCAN_DATA_S3_BUCKET,
+                endpoint_url=SCAN_DATA_S3_ENDPOINT,
+            )
+        except Exception as error:
+            logger.error(error)
+    else:
+        # if file does not already exist, create and write to it
+        aws.write_s3_file(
+            path=(SBOM_JSON_S3_KEY % scan_id),
+            body=json.dumps(sbom, indent=2),
+            s3_bucket=SCAN_DATA_S3_BUCKET,
+            endpoint_url=SCAN_DATA_S3_ENDPOINT,
+        )

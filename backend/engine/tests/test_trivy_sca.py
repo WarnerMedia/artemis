@@ -8,6 +8,10 @@ from unittest.mock import patch
 from docker import remover
 from engine.plugins.trivy_sca import main as Trivy
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.utils import convert_string_to_json
+from engine.plugins.lib.utils import setup_logging
+
+logger = setup_logging("trivy_sca_test")
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,7 +25,6 @@ TEST_DATA = os.path.join(TEST_DIR, "data")
 TRIVY_DATA = os.path.join(TEST_DATA, "trivy")
 
 TEST_OUTPUT = os.path.join(TRIVY_DATA, "demo-results.json")
-
 
 TEST_CHECK_OUTPUT_GEMLOCK_FILE = {
     "component": "rest-client-1.7.3",
@@ -116,7 +119,7 @@ class TestTrivy(unittest.TestCase):
                     with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
                         mock_proc.stderr = mock_proc.stdout = None
                         mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                        actual = check_package_files("/mocked/path/", False)
+                        actual = check_package_files("/mocked/path/", False, False)
         self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
 
     def test_lock_file_missing(self):
@@ -127,7 +130,7 @@ class TestTrivy(unittest.TestCase):
                     with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
                         mock_proc.stderr = mock_proc.stdout = None
                         mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                        actual = check_package_files("/mocked/path/", False)
+                        actual = check_package_files("/mocked/path/", False, False)
         self.assertEqual(len(actual[1]), 1, "There should be a warning of a lock file missing")
 
     def test_check_output(self):
@@ -159,7 +162,7 @@ class TestTrivyIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_convert_output_success(self):
         response = Trivy.execute_trivy_lock_scan(TEST_ROOT)
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response, logger)
         self.assertNotIn(result, [[], None])
         self.assertIsInstance(result, list)
 
@@ -167,7 +170,7 @@ class TestTrivyIntegration(unittest.TestCase):
     def test_convert_output_output_correct(self):
         self.maxDiff = None
         response = Trivy.execute_trivy_lock_scan(TRIVY_DATA)
-        result = Trivy.convert_output(response)
+        result = convert_string_to_json(response, logger)
         self.assertIsInstance(result[0]["Vulnerabilities"], list)
         result[0]["Vulnerabilities"] = None
         self.assertEqual(ARTEMIS_VULN, result)

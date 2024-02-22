@@ -1,0 +1,59 @@
+{
+    "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.5",
+    "serialNumber": "urn:uuid:51f14561-5344-43f4-9ed5-d7ac6386df7f",
+    "version": 1,
+    "metadata": {
+      "timestamp": "2024-02-01T15:14:54+00:00",
+      "tools": [
+        {
+          "vendor": "aquasecurity",
+          "name": "trivy",
+          "version": "0.49.1"
+        }
+      ],
+      "component": {
+        "bom-ref": "7a718bdf-33b2-40b3-aae1-9f79ec8b4145",
+        "type": "application",
+        "name": ".",
+        "properties": [
+          {
+            "name": "aquasecurity:trivy:SchemaVersion",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    "components": [
+      {
+        "bom-ref": "56a86101-8c62-4e28-8abf-c583dfbc6ddd",
+        "type": "type_test",
+        "name": "test_name",
+        "properties": [
+          {
+            "name": "aquasecurity:trivy:Class",
+            "value": "lang-pkgs"
+          },
+          {
+            "name": "aquasecurity:trivy:Type",
+            "value": "pom"
+          }
+        ]
+      }
+    ],
+    "dependencies": [
+      {
+        "ref": "56a86101-8c62-4e28-8abf-c583dfbc6ddd",
+        "dependsOn": [
+          "test_data1",
+          "test_data2",
+          "test_data3",
+          "test_data4",
+          "test_data5",
+          "test_data6"
+        ]
+      }
+    ],
+    "vulnerabilities": []
+  }

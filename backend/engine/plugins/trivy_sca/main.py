@@ -3,12 +3,13 @@ trivy SCA plugin
 """
 import json
 import subprocess
-from engine.plugins.lib import utils
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
-from engine.plugins.lib.trivy_common.parsing_util import convert_output
+from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
+from engine.plugins.lib.utils import setup_logging
+from engine.plugins.lib.utils import parse_args
 
-logger = utils.setup_logging("trivy_sca")
+logger = setup_logging("trivy_sca")
 
 NO_RESULTS_TEXT = "no supported file was detected"
 
@@ -33,17 +34,17 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 
 def main():
     logger.info("Executing Trivy SCA")
-    args = utils.parse_args()
+    args = parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
 
-    # Generate Lock files
-    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev)
+    # Generate Lock files (without installing npm packages)
+    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, False)
 
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
     logger.debug(output)
-    output = convert_output(output)
+    output = convert_string_to_json(output, logger)
     if not output:
         logger.warning("Lock file output is None. Continuing.")
     else:
