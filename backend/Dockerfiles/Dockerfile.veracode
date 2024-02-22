@@ -161,7 +161,7 @@ ENV PATH="$PATH:/usr/local/java/bin"
 
 # hadolint ignore=DL3005
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" \
+    apt-get install -y --no-install-recommends \
 			"git=1:2.39.*" \
 			"libargon2-1=0~20171227-0.3*" \
 			"libcurl4=7.88.*" \
@@ -171,11 +171,9 @@ RUN apt-get update && \
 			"libsodium23=1.0.*" \
 			"libsqlite3-0=3.40.*" \
 			"libssl3=3.0.*" \
-			"libxml2=2.13.*" \
 			"libyaml-0-2=0.2.*" \
 			"ruby=1:3.1*" \
 			"srcclr=3.8.*" \
-            "libexpat1=2.6.*" \
 			"zlib1g=1:1.2.*" && \
 		apt-get -s dist-upgrade | { grep -E '^Inst ' | grep -F 'Debian-Security' || true; } | awk '{print $2}' | xargs apt-get -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" install && \
     npm install --global \
