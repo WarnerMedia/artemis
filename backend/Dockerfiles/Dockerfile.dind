@@ -6,12 +6,12 @@ LABEL maintainer=$MAINTAINER
 ARG TRIVY_VER=v0.49.1
 ARG TRIVY_COMMIT=6ccc0a554b07b05fd049f882a1825a0e1e0aabe1
 ARG SNYK_VER=v1.889.0
+ARG SNYK_FLAG
 
 # Copy Artemis libraries into /src for installation
 RUN mkdir -p /src
 COPY ./libs/ /src/
 
-# Run all additional config in a single RUN to reduce the layers:
 # - Base apk requirements to execute script
 # - Upgrade pip and install boto3 for plugin utils
 # - Symlink python3 to python for Analyzer Engine benefit
@@ -22,12 +22,15 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     pip3 install boto3 && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/$TRIVY_COMMIT/contrib/install.sh | sh -s -- -b /usr/local/bin $TRIVY_VER && \
-    wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine && \
-    wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine.sha256 && \
-    sha256sum -c snyk-alpine.sha256 && \
-    rm snyk-alpine.sha256 && \
-    mv snyk-alpine snyk && \
-    install snyk /usr/local/bin/ && \
     pip3 install /src/artemislib && \
     pip3 install /src/artemisdb && \
     rm -r /src
+
+RUN if [ "${SNYK_FLAG}" = "true" ]; then \
+        wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine && \
+        wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine.sha256 && \
+        sha256sum -c snyk-alpine.sha256 && \
+        rm snyk-alpine.sha256 && \
+        mv snyk-alpine snyk && \
+        install snyk /usr/local/bin/; \
+    fi;
