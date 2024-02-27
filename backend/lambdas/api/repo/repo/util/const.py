@@ -48,7 +48,7 @@ PLUGIN_LIST_BY_CATEGORY = {
     },
     "inventory": {"technology_discovery": None, "base_images": None},
     "configuration": {"github_repo_health": None},
-    "sbom": {},
+    "sbom": {"trivy_sbom": None},
 }
 
 # These are disabled unless explicitly enabled in the request
