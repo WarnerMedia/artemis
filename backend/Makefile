@@ -207,6 +207,8 @@ TRIVY_VER := v0.49.1
 
 # Snyk
 SNYK_VER := v1.889.0
+# Context: egrep grabs the terraform line that notes whether Snyk is enabled. sed removes all spacing. Cut grabs the bool.
+SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 # Detekt
 DETEKT_VER := 1.19.0
@@ -528,7 +530,8 @@ dist/docker/dind: Dockerfiles/Dockerfile.dind
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg TRIVY_VER=${TRIVY_VER} \
 		--build-arg TRIVY_COMMIT=${TRIVY_COMMIT} \
-		--build-arg SNYK_VER=${SNYK_VER}
+		--build-arg SNYK_VER=${SNYK_VER} \
+		--build-arg SNYK_FLAG=${SNYK_FLAG}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${DIND_TAG} ${ECR_URL}${DIND_TAG}
 	${DOCKER} tag ${DIND_TAG} ${ECR_URL}${DIND_TAG}-stage-${LATEST_COMMIT}
