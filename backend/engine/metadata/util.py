@@ -75,6 +75,6 @@ def load_schemes() -> dict:
         try:
             m = importlib.import_module(module)
             schemes[m.SCHEME_NAME] = m.get_metadata
-        except (ModuleNotFoundError, AttributeError):
-            LOG.error("Unable to load metadata processing module %s", module)
+        except (ModuleNotFoundError, AttributeError) as e:
+            LOG.error("Unable to load metadata processing module %s, Error: %s", module, e)
     return schemes
