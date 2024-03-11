@@ -52,8 +52,8 @@ def load_custom_filtering():
         try:
             m = importlib.import_module(CUSTOM_FILTERING_MODULE)
             CUSTOM_FILTERING = m.CUSTOM_FILTERING
-        except (ModuleNotFoundError, AttributeError):
-            LOG.error("Unable to load custom filtering module %s", CUSTOM_FILTERING_MODULE)
+        except (ModuleNotFoundError, AttributeError) as e:
+            LOG.error("Unable to load custom filtering module %s, Error: %s", CUSTOM_FILTERING_MODULE, e)
 
 
 class Filter:

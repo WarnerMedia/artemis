@@ -40,8 +40,8 @@ if METADATA_FORMATTER_MODULE:
     try:
         m = importlib.import_module(METADATA_FORMATTER_MODULE)
         METADATA_FORMATTER = m.formatter
-    except (ModuleNotFoundError, AttributeError):
-        LOG.error("Unable to load metadata formatter module %s", METADATA_FORMATTER_MODULE)
+    except (ModuleNotFoundError, AttributeError) as e:
+        LOG.error("Unable to load metadata formatter module %s. Error: %s", METADATA_FORMATTER_MODULE, e)
 
 
 class User(models.Model):
