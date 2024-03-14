@@ -226,10 +226,10 @@ class GetProxySecret:
 
     def __new__(cls):
         if not cls._secret:
-            from repo.util.aws import AWSConnect  # pylint: disable=import-outside-toplevel
+            from artemislib.aws import AWSConnect  # pylint: disable=import-outside-toplevel
 
             aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
-            cls._secret = aws_connect.get_key(REV_PROXY_SECRET)["SecretString"]
+            cls._secret = aws_connect.get_secret_raw(REV_PROXY_SECRET)
         return cls._secret
 
 
