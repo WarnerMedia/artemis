@@ -226,7 +226,7 @@ class Service:
             repo_auth_url = f'{url}/user/permissions/workspaces?q=workspace.slug="{self._org}"'
 
         service_auth_url = f"{url}/user"
-        self._test_bitbucket(key, repo_auth_url, service_auth_url)
+        self._test_bitbucket(key, service_auth_url, repo_auth_url)
 
     def _test_ado(self, key: str):
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
