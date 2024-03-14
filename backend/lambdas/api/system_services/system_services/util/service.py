@@ -215,7 +215,7 @@ class Service:
         if self._org:
             org, repo = self.org.split("/", 1)
             repo_auth_url = f'{self._service["url"]}/projects/{org}/repos/{repo}'
-        
+
         service_auth_url = f'{self._service["url"]}/projects'
         self._test_bitbucket(key, service_auth_url, repo_auth_url)
 
@@ -225,7 +225,7 @@ class Service:
         if self._org:
             repo_auth_url = f'{url}/user/permissions/workspaces?q=workspace.slug="{self._org}"'
 
-        service_auth_url = f'{url}/user'
+        service_auth_url = f"{url}/user"
         self._test_bitbucket(key, repo_auth_url, service_auth_url)
 
     def _test_ado(self, key: str):
