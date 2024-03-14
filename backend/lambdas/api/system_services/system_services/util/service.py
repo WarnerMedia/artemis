@@ -83,14 +83,18 @@ class Service:
 
     def _test_auth(self):
         key = get_api_key(self._service["secret_loc"])
+        bitbucket_v1 = "/1.0" in self._service["url"] and self._service["type"] == ServiceType.BITBUCKET
+
         if key is None:
             self._error = "Unable to retrieve key"
         if self._service["type"] == ServiceType.GITHUB:
             self._test_github(key)
         elif self._service["type"] == ServiceType.GITLAB:
             self._test_gitlab(key)
-        elif self._service["type"] == ServiceType.BITBUCKET:
-            self._test_bitbucket(key)
+        elif self._service["type"] == ServiceType.BITBUCKET and not bitbucket_v1:
+            self._test_bitbucket_v2(key)
+        elif self._service["type"] == ServiceType.BITBUCKET and bitbucket_v1:
+            self._test_bitbucket_v1(key)
         elif self._service["type"] == ServiceType.ADO:
             self._test_ado(key)
 
@@ -169,7 +173,7 @@ class Service:
             self._reachable = False
             self._auth_successful = False
 
-    def _test_bitbucket(self, key: str):
+    def _test_bitbucket(self, key: str, service_auth_url: str, repo_auth_url: str):
         revproxy = False
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in self._service["url"]:
@@ -177,14 +181,14 @@ class Service:
             revproxy = True
 
         try:
-            response = requests.get(url=f'{self._service["url"]}/user', headers=headers, timeout=3)
+            response = requests.get(url=service_auth_url, headers=headers, timeout=3)
             self._reachable = True
             if response.status_code == 200:
                 if not self._org:
                     self._auth_successful = True
                 else:
                     response = requests.get(
-                        url=f'{self._service["url"]}/user/permissions/workspaces?q=workspace.slug="{self._org}"',
+                        url=repo_auth_url,
                         headers=headers,
                         timeout=3,
                     )
@@ -205,6 +209,24 @@ class Service:
         except requests.ConnectionError:
             self._reachable = False
             self._auth_successful = False
+
+    def _test_bitbucket_v1(self, key: str):
+        repo_auth_url = ""
+        if self._org:
+            org, repo = self.org.split("/", 1)
+            repo_auth_url = f'{self._service["url"]}/projects/{org}/repos/{repo}'
+        
+        service_auth_url = f'{self._service["url"]}/projects'
+        self._test_bitbucket(key, service_auth_url, repo_auth_url)
+
+    def _test_bitbucket_v2(self, key: str):
+        url = self._service["url"]
+        repo_auth_url = ""
+        if self._org:
+            repo_auth_url = f'{url}/user/permissions/workspaces?q=workspace.slug="{self._org}"'
+
+        service_auth_url = f'{url}/user'
+        self._test_bitbucket(key, repo_auth_url, service_auth_url)
 
     def _test_ado(self, key: str):
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
