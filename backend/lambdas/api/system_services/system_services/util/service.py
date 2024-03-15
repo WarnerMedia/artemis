@@ -198,7 +198,6 @@ class Service:
                         headers=headers,
                         timeout=3,
                     )
-                    log.info("Attempted to reach this URL: %s, Got Response: %s", repo_auth_url, str(response.content))
                     if response.status_code == 200 and response.json().get("size", 0) == 1:
                         self._auth_successful = True
                     else:
