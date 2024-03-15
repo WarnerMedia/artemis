@@ -123,27 +123,32 @@ class Service:
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in self._service["url"]:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
+        try:
+            query = ""
+            if self._org is not None:
+                query = 'organization(login: "%s") { login }' % self._org
+            else:
+                query = "viewer { login }"
 
-        if self._org is not None:
-            try:
-                response = requests.post(
-                    url=self._service["url"],
-                    headers=headers,
-                    json={"query": 'organization(login: "%s") { login }' % self._org},
-                    timeout=3,
-                )
-                if response.status_code == 200:
-                    self._auth_successful = True
-                    self._auth_type = AuthType.SVC
-                else:
-                    self._auth_successful = False
-                    if revproxy and response.status_code == 401 and response.text == "key is invalid":
-                        # Request did not make it through the reverse proxy
-                        self._reachable = False
-                        self._error = "Reverse proxy authentication failure"
-            except requests.ConnectionError:
-                self._reachable = False
+            response = requests.post(
+                url=self._service["url"],
+                headers=headers,
+                json={"query": query},
+                timeout=3,
+            )
+            if response.status_code == 200:
+                self._auth_successful = True
+                self._auth_type = AuthType.SVC
+            else:
                 self._auth_successful = False
+                if revproxy and response.status_code == 401 and response.text == "key is invalid":
+                    # Request did not make it through the reverse proxy
+                    self._reachable = False
+                    self._error = "Reverse proxy authentication failure"
+        except requests.ConnectionError:
+            self._reachable = False
+            self._auth_successful = False
+            self._error = "Connection Error"
 
     def _test_gitlab(self, key: str):
         revproxy = False
@@ -172,6 +177,7 @@ class Service:
         except requests.ConnectionError:
             self._reachable = False
             self._auth_successful = False
+            self._error = "Connection Error"
 
     def _test_bitbucket(self, key: str, service_auth_url: str, repo_auth_url: str):
         revproxy = False
@@ -192,6 +198,7 @@ class Service:
                         headers=headers,
                         timeout=3,
                     )
+                    log.info("Attempted to reach this URL: %s, Got Response: %s", repo_auth_url, str(response.content))
                     if response.status_code == 200 and response.json().get("size", 0) == 1:
                         self._auth_successful = True
                     else:
@@ -209,6 +216,7 @@ class Service:
         except requests.ConnectionError:
             self._reachable = False
             self._auth_successful = False
+            self._error = "Connection Error"
 
     def _test_bitbucket_v1(self, key: str):
         repo_auth_url = ""
