@@ -24,6 +24,13 @@ class Service:
         else:
             self._service_name = self.name
         self._service = services_dict["services"][self._service_name]
+
+        # Update Bitbucket Service Type
+        if self._service["type"] in ServiceType.BITBUCKET_V2:
+            self._service["type"] = ServiceType.BITBUCKET_V2
+            if "/1.0" in self._service["url"]:
+                self._service["type"] = ServiceType.BITBUCKET_V1
+
         self._reachable = False
         self._auth_successful = False
         self._auth_type = AuthType.SVC
@@ -83,14 +90,17 @@ class Service:
 
     def _test_auth(self):
         key = get_api_key(self._service["secret_loc"])
+
         if key is None:
             self._error = "Unable to retrieve key"
         if self._service["type"] == ServiceType.GITHUB:
             self._test_github(key)
         elif self._service["type"] == ServiceType.GITLAB:
             self._test_gitlab(key)
-        elif self._service["type"] == ServiceType.BITBUCKET:
-            self._test_bitbucket(key)
+        elif self._service["type"] == ServiceType.BITBUCKET_V1:
+            self._test_bitbucket_v1(key)
+        elif self._service["type"] == ServiceType.BITBUCKET_V2:
+            self._test_bitbucket_v2(key)
         elif self._service["type"] == ServiceType.ADO:
             self._test_ado(key)
 
@@ -119,27 +129,32 @@ class Service:
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in self._service["url"]:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
+        try:
+            query = ""
+            if self._org is not None:
+                query = 'organization(login: "%s") { login }' % self._org
+            else:
+                query = "viewer { login }"
 
-        if self._org is not None:
-            try:
-                response = requests.post(
-                    url=self._service["url"],
-                    headers=headers,
-                    json={"query": 'organization(login: "%s") { login }' % self._org},
-                    timeout=3,
-                )
-                if response.status_code == 200:
-                    self._auth_successful = True
-                    self._auth_type = AuthType.SVC
-                else:
-                    self._auth_successful = False
-                    if revproxy and response.status_code == 401 and response.text == "key is invalid":
-                        # Request did not make it through the reverse proxy
-                        self._reachable = False
-                        self._error = "Reverse proxy authentication failure"
-            except requests.ConnectionError:
-                self._reachable = False
+            response = requests.post(
+                url=self._service["url"],
+                headers=headers,
+                json={"query": query},
+                timeout=3,
+            )
+            if response.status_code == 200:
+                self._auth_successful = True
+                self._auth_type = AuthType.SVC
+            else:
                 self._auth_successful = False
+                if revproxy and response.status_code == 401 and response.text == "key is invalid":
+                    # Request did not make it through the reverse proxy
+                    self._reachable = False
+                    self._error = "Reverse proxy authentication failure"
+        except requests.ConnectionError:
+            self._reachable = False
+            self._auth_successful = False
+            self._error = "Connection Error"
 
     def _test_gitlab(self, key: str):
         revproxy = False
@@ -168,8 +183,9 @@ class Service:
         except requests.ConnectionError:
             self._reachable = False
             self._auth_successful = False
+            self._error = "Connection Error"
 
-    def _test_bitbucket(self, key: str):
+    def _test_bitbucket(self, key: str, service_auth_url: str, repo_auth_url: str):
         revproxy = False
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in self._service["url"]:
@@ -177,14 +193,14 @@ class Service:
             revproxy = True
 
         try:
-            response = requests.get(url=f'{self._service["url"]}/user', headers=headers, timeout=3)
+            response = requests.get(url=service_auth_url, headers=headers, timeout=3)
             self._reachable = True
             if response.status_code == 200:
                 if not self._org:
                     self._auth_successful = True
                 else:
                     response = requests.get(
-                        url=f'{self._service["url"]}/user/permissions/workspaces?q=workspace.slug="{self._org}"',
+                        url=repo_auth_url,
                         headers=headers,
                         timeout=3,
                     )
@@ -205,6 +221,25 @@ class Service:
         except requests.ConnectionError:
             self._reachable = False
             self._auth_successful = False
+            self._error = "Connection Error"
+
+    def _test_bitbucket_v1(self, key: str):
+        repo_auth_url = ""
+        if self._org:
+            org, repo = self.org.split("/", 1)
+            repo_auth_url = f'{self._service["url"]}/projects/{org}/repos/{repo}'
+
+        service_auth_url = f'{self._service["url"]}/projects'
+        self._test_bitbucket(key, service_auth_url, repo_auth_url)
+
+    def _test_bitbucket_v2(self, key: str):
+        url = self._service["url"]
+        repo_auth_url = ""
+        if self._org:
+            repo_auth_url = f'{url}/user/permissions/workspaces?q=workspace.slug="{self._org}"'
+
+        service_auth_url = f"{url}/user"
+        self._test_bitbucket(key, service_auth_url, repo_auth_url)
 
     def _test_ado(self, key: str):
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
@@ -226,10 +261,10 @@ class GetProxySecret:
 
     def __new__(cls):
         if not cls._secret:
-            from repo.util.aws import AWSConnect  # pylint: disable=import-outside-toplevel
+            from artemislib.aws import AWSConnect  # pylint: disable=import-outside-toplevel
 
             aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
-            cls._secret = aws_connect.get_key(REV_PROXY_SECRET)["SecretString"]
+            cls._secret = aws_connect.get_secret_raw(REV_PROXY_SECRET)
         return cls._secret
 
 

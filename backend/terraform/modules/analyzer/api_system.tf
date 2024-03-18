@@ -254,11 +254,14 @@ resource "aws_lambda_function" "system_services" {
 
   environment {
     variables = {
-      ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
-      ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-      ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-      ARTEMIS_GITHUB_APP_ID           = var.github_app_id
-      S3_BUCKET                       = var.s3_analyzer_files_id
+      ANALYZER_DJANGO_SECRETS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
+      ANALYZER_DB_CREDS_ARN             = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
+      ARTEMIS_CUSTOM_FILTERING_MODULE   = var.custom_filtering_module
+      ARTEMIS_GITHUB_APP_ID             = var.github_app_id
+      ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
+      ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
+      ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
+      S3_BUCKET                         = var.s3_analyzer_files_id
     }
   }
 
