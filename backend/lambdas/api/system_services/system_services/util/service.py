@@ -24,6 +24,13 @@ class Service:
         else:
             self._service_name = self.name
         self._service = services_dict["services"][self._service_name]
+
+        # Update Bitbucket Service Type
+        if self._service["type"] in ServiceType.BITBUCKET_V2:
+            self._service["type"] = ServiceType.BITBUCKET_V2
+            if "/1.0" in self._service["url"]:
+                self._service["type"] = ServiceType.BITBUCKET_V1
+
         self._reachable = False
         self._auth_successful = False
         self._auth_type = AuthType.SVC
@@ -83,7 +90,6 @@ class Service:
 
     def _test_auth(self):
         key = get_api_key(self._service["secret_loc"])
-        bitbucket_v1 = "/1.0" in self._service["url"] and self._service["type"] == ServiceType.BITBUCKET
 
         if key is None:
             self._error = "Unable to retrieve key"
@@ -91,10 +97,10 @@ class Service:
             self._test_github(key)
         elif self._service["type"] == ServiceType.GITLAB:
             self._test_gitlab(key)
-        elif self._service["type"] == ServiceType.BITBUCKET and not bitbucket_v1:
-            self._test_bitbucket_v2(key)
-        elif self._service["type"] == ServiceType.BITBUCKET and bitbucket_v1:
+        elif self._service["type"] == ServiceType.BITBUCKET_V1:
             self._test_bitbucket_v1(key)
+        elif self._service["type"] == ServiceType.BITBUCKET_V2:
+            self._test_bitbucket_v2(key)
         elif self._service["type"] == ServiceType.ADO:
             self._test_ado(key)
 

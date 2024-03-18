@@ -12,6 +12,7 @@ class Resources(str, Enum):
 
 class ServiceType(str, Enum):
     ADO = "ado"
-    BITBUCKET = "bitbucket"
+    BITBUCKET_V1 = "bitbucket_v1"
+    BITBUCKET_V2 = "bitbucket_v2"
     GITHUB = "github"
     GITLAB = "gitlab"
