@@ -30,6 +30,7 @@ pytest-black = "==0.3.12"
 pylint = "*"
 autopep8 = "*"
 black = "*"
+cryptography = "*"
 
 [pipenv]
 allow_prereleases = true
