@@ -131,6 +131,9 @@ def _set_http_basic_auth(repo: str, key: str, base: str) -> bool:
 
 def _set_extra_header(repo: str, header: str, value: str, base: str) -> bool:
     """Sets an extra header in the git config"""
+    if not repo.endswith(".git"):
+        repo = f"{repo}.git"
+
     r = subprocess.run(
         ["git", "config", f"http.{repo}/.extraheader", f"{header}: {value}"],
         cwd=base,
