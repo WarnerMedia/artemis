@@ -62,6 +62,12 @@ variable "db_instance_type" {
   description = "RDS instance type"
 }
 
+variable "db_engine_version" {
+  description = "RDS database engine version"
+  type        = string
+  default     = "11"
+}
+
 variable "ui_origin_url" {
   description = "Origin URL for the UI"
 }
