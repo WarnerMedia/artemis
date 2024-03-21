@@ -25,7 +25,7 @@ setup(
         "boto3",
         # pyjwt requires the cryptography library but it needs to be installed
         # separately because it contains platform-dependent pre-compiled code
-        "pyjwt",
+        "pyjwt[crypto]",
         "requests",
         "urllib3<2",  # https://github.com/boto/botocore/issues/2926
     ],
