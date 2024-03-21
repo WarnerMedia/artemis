@@ -1,7 +1,7 @@
 version: "3"
 services:
   database:
-    image: "postgres:11.7"
+    image: "postgres:16.1"
     container_name: "artemisdb"
     ports:
       - "${ANALYZER_DB_PORT}:5432"
