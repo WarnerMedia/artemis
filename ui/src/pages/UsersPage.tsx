@@ -717,7 +717,7 @@ export default function UsersPage() {
 				// check scope contains only valid characters:
 				// hostname chars, repo name chars, python fnmatch glob chars (*, ?, !, [])
 				if (
-					!fieldValue.match(/^([a-zA-Z0-9.\-_/[\]*?!]+(\s*[,]*\s*)*){1,}$/gm)
+					!fieldValue.match(/^([a-zA-Z0-9.\-_/[\]*?!]([,]?\s?)){1,}$/gm)
 				) {
 					setNewScopeError(
 						i18n._(
