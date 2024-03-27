@@ -194,6 +194,9 @@ TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 # CFN Python Lint
 CFN_VER = 0.53.0
 
+# Python Packaging Library Version
+PACKAGING_VER = 21.3
+
 # Artemis test parameters
 BRANCH_NAME := $(shell git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 SEVERITY_LEVELS := critical,high
@@ -493,6 +496,7 @@ dist/docker/python3: Dockerfiles/Dockerfile.python3
 		--build-arg TFLINT_VER=${TFLINT_VER} \
 		--build-arg TFLINT_SHA=${TFLINT_SHA} \
 		--build-arg CFN_VER=${CFN_VER} \
+		--build-arg PACKAGING_VER=${PACKAGING_VER} \
 		--build-arg CHECKOV_VER=${CHECKOV_VER}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${PYTHON_TAG} ${ECR_URL}${PYTHON_TAG}
