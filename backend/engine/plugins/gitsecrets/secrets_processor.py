@@ -51,6 +51,7 @@ REGEXES = [
     re.compile(str(r"((A3T[A-Z0-9]|AKIA|ASIA|ACCA)[A-Z0-9]{16})")),
     re.compile(str(r"([-]{5}BEGIN\s((RSA|DSA|EC|PGP|OPENSSH)\s)?PRIVATE\s(KEY|KEY\sBLOCK)[-]{5})")),
     re.compile(str(r"(gh[pousr]_[A-Za-z0-9_]{36,255})")),
+    re.compile(str(r"(github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59})")),
 ]
 
 
