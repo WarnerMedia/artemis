@@ -28,6 +28,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     npm install eslint-plugin-security && \
+    npm install typescript@5.1.6 @typescript-eslint/parser@5.50.0 && \
     npm install -g eslint npm@7.8.0 && \
     pip3 install --upgrade setuptools && \
     pip3 install --upgrade pip boto3 && \

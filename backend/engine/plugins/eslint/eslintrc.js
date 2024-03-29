@@ -1,10 +1,17 @@
 module.exports = exports = {
 	"plugins": [
-		"security",
+		"security"
 	],
 	"extends": ["plugin:security/recommended-legacy"],
 	"parserOptions": {
-		"ecmaVersion": "latest",
-		"sourceType": "module"
-	}
+		"ecmaVersion": "latest"
+	},
+	
+	// Add Typescript Support
+	"overrides": [
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"parser": "@typescript-eslint/parser"
+		}
+	]
 }
