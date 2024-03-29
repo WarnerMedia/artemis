@@ -48,10 +48,6 @@ def _build_queries(req_list, service, authz):
     for req in req_list:
         branch_name = req.get("branch")
 
-        # Escape Double quotes in branch name. Leaving double quotes in will affect the graphql query
-        if branch_name:
-            branch_name = branch_name.replace('"', '\\"')
-
         org_name = req.get("org", DEFAULT_ORG)
 
         # Validate that this API key is authorized to scan this repo
@@ -61,6 +57,9 @@ def _build_queries(req_list, service, authz):
             continue
 
         if branch_name:
+            # Escape Double quotes in branch name. Leaving double quotes in will affect the graphql query
+            branch_name = branch_name.replace('"', '\\"')
+
             query_list.append(
                 """
                 repo%d: repository(owner: "%s", name: "%s") {
