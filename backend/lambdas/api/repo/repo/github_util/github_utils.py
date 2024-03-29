@@ -59,7 +59,6 @@ def _build_queries(req_list, service, authz):
         if branch_name:
             # Escape Double quotes in branch name. Leaving double quotes in will affect the graphql query
             branch_name = branch_name.replace('"', '\\"')
-
             query_list.append(
                 """
                 repo%d: repository(owner: "%s", name: "%s") {
