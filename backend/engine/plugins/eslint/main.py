@@ -1,6 +1,7 @@
 """
 module running eslint on javascript/typescript files
 """
+
 import json
 import subprocess
 
@@ -75,12 +76,12 @@ def main():
     """
     args = utils.parse_args(
         extra_args=[
-            [
-                ["--config"],
-                {"dest": "config", "type": str, "nargs": "?", "default": "/srv/engine/plugins/eslint/eslintrc.js"},
-            ]
+            [["eslint_config"], {"type": str, "nargs": "?", "default": "/srv/engine/plugins/eslint/eslintrc.js"}],
         ]
     )
+    if not args.config:
+        args.config = args.eslint_config
+
     scan_results = run_eslint(args.path, args.config)
     details = parse_details(scan_results.get("data"), args.path)
 
