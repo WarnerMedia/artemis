@@ -1,5 +1,6 @@
 from django.db import migrations
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -32,6 +33,6 @@ CREATE TRIGGER dependency_path_after_trg
     FOR EACH ROW
     WHEN (NEW.path IS DISTINCT FROM OLD.path)
     EXECUTE PROCEDURE _update_descendants_dependency_path();
-"""
+""",
         )
     ]
