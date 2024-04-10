@@ -38,66 +38,64 @@ GITLAB_REPO_QUERY = """
 """
 
 GITHUB_REPO_QUERY = """
-{
-    organization(login: "%s") {
-        repositories(first: 75,
-                     after: %s,
-                     orderBy: {field: NAME, direction: ASC}) {
-            nodes {
-                name
-                defaultBranchRef {
-                    name
-                    target {
-                        ... on Commit {
-                            committedDate
-                        }
-                    }
-                }
-                isPrivate
-                refs(first: 75, refPrefix:"refs/heads/", direction: ASC) {
-                    nodes {
-                        name
-                        target {
-                            ... on Commit {
-                                committedDate
-                            }
-                        }
-                    }
-                    pageInfo {
-                        endCursor
-                        hasNextPage
-                    }
-                }
+query getRepos($org: String!, $cursor: String!) {
+  organization(login: $org) {
+    repositories(first: 75, after: $cursor, orderBy: {field: NAME, direction: ASC}) {
+      nodes {
+        name
+        defaultBranchRef {
+          name
+          target {
+            ... on Commit {
+              committedDate
             }
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
+          }
         }
+        isPrivate
+        refs(first: 75, refPrefix: "refs/heads/", direction: ASC) {
+          nodes {
+            name
+            target {
+              ... on Commit {
+                committedDate
+              }
+            }
+          }
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
     }
+  }
 }
 """
 
 GITHUB_REPO_REF_QUERY = """
-{
-    organization(login: "%s") {
-        repository(name: "%s") {
-            refs(first: 100, refPrefix:"refs/heads/", direction: ASC, after: "%s") {
-                nodes {
-                    name
-                    target {
-                        ... on Commit {
-                            committedDate
-                        }
-                    }
-                }
-                pageInfo {
-                    endCursor
-                    hasNextPage
-                }
+query getRefs($org: String!, $repo: String!, $cursor: String!) {
+  organization(login: $org) {
+    repository(name: $repo) {
+      refs(first: 100, refPrefix: "refs/heads/", orderBy: {field: TAG_COMMIT_DATE, direction: ASC}, after: $cursor) {
+        nodes {
+          name
+          target {
+            ... on Commit {
+              committedDate
             }
+          }
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
     }
+  }
 }
 """
 
