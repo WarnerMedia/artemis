@@ -52,11 +52,15 @@ locals {
 resource "aws_db_parameter_group" "db_parameter_group" {
   name   = "${var.app}-db-parameter-group"
   family = local.parameter_group_family
+
+  tags = var.tags
 }
 
 resource "aws_rds_cluster_parameter_group" "cluster_parameter_group" {
   name   = "${var.app}-cluster-parameter-group"
   family = local.parameter_group_family
+
+  tags = var.tags
 }
 
 resource "aws_security_group" "db" {
