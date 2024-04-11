@@ -40,14 +40,27 @@ module "aurora" {
   )
 }
 
+locals {
+  # If the parameter_group_family hasn't been set, use the default based
+  # on the database engine major version.
+  engine_major_version = split(".", var.db_engine_version)[0]
+  parameter_group_family = var.db_parameter_group_family == null ? (
+    "aurora-postgresql${local.engine_major_version}"
+  ) : var.db_parameter_group_family
+}
+
 resource "aws_db_parameter_group" "db_parameter_group" {
   name   = "${var.app}-db-parameter-group"
-  family = "aurora-postgresql11"
+  family = local.parameter_group_family
+
+  tags = var.tags
 }
 
 resource "aws_rds_cluster_parameter_group" "cluster_parameter_group" {
   name   = "${var.app}-cluster-parameter-group"
-  family = "aurora-postgresql11"
+  family = local.parameter_group_family
+
+  tags = var.tags
 }
 
 resource "aws_security_group" "db" {

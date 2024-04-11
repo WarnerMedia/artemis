@@ -68,6 +68,12 @@ variable "db_engine_version" {
   default     = "11"
 }
 
+variable "db_parameter_group_family" {
+  description = "RDS database parameter group family"
+  type        = string
+  default     = null
+}
+
 variable "ui_origin_url" {
   description = "Origin URL for the UI"
 }
