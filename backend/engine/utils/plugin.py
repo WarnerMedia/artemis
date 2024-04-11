@@ -33,6 +33,7 @@ from env import (
     SECRETS_EVENTS_ENABLED,
     INVENTORY_EVENTS_ENABLED,
     CONFIGURATION_EVENTS_ENABLED,
+    METADATA_EVENTS_ENABLED,
     VULNERABILITY_EVENTS_ENABLED,
 )
 
@@ -434,6 +435,12 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "report_url": scan.report_url,
             }
             queue_event(scan.repo.repo, plugin_type, payload)
+    elif plugin_type == PluginType.CONFIGURATION.value and METADATA_EVENTS_ENABLED:
+        payload = {
+            "repo": scan.repo.repo,
+            "application_metadata": scan.application_metadata,
+        }
+        queue_event(scan.repo.repo, "metadata", payload)
 
 
 def queue_event(repo, plugin_type, payload):

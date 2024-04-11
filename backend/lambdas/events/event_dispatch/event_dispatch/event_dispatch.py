@@ -31,6 +31,12 @@ VULNERABILITY_EVENTS_QUEUE = os.environ.get("ARTEMIS_VULNERABILITY_EVENTS_QUEUE"
 if VULNERABILITY_EVENTS_ENABLED and VULNERABILITY_EVENTS_QUEUE and "vulnerability" not in ADDITIONAL_ROUTING:
     ADDITIONAL_ROUTING["vulnerability"] = VULNERABILITY_EVENTS_QUEUE
 
+# Set the routing for metadata events. Can be set directly or overridden in the additional routing config.
+METADATA_EVENTS_ENABLED = os.environ.get("ARTEMIS_METADATA_EVENTS_ENABLED", "false").lower() == "true"
+METADATA_EVENTS_QUEUE = os.environ.get("ARTEMIS_METADATA_EVENTS_QUEUE")
+if METADATA_EVENTS_ENABLED and METADATA_EVENTS_QUEUE and "metadata" not in ADDITIONAL_ROUTING:
+    ADDITIONAL_ROUTING["metadata"] = METADATA_EVENTS_QUEUE
+
 if SECRETS_QUEUE and AUDIT_QUEUE:
     # This is in a conditional so it doesn't run when this file is loaded during unit testing
     SQS = boto3.client("sqs")

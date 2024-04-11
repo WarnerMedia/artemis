@@ -279,6 +279,11 @@ variable "vulnerability_events_enabled" {
   default     = false
 }
 
+variable "metadata_events_enabled" {
+  description = "Whether to send metadata events to the event queue"
+  default     = false
+}
+
 ################################################
 # GitHub App
 ################################################
