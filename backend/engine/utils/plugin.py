@@ -435,7 +435,8 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "report_url": scan.report_url,
             }
             queue_event(scan.repo.repo, plugin_type, payload)
-    elif plugin_type == PluginType.CONFIGURATION.value and METADATA_EVENTS_ENABLED:
+    
+    if plugin_type == PluginType.CONFIGURATION.value and METADATA_EVENTS_ENABLED:
         payload = {
             "repo": scan.repo.repo,
             "application_metadata": scan.application_metadata,
