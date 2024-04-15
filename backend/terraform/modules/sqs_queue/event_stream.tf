@@ -35,6 +35,17 @@ resource "aws_sqs_queue" "audit-event-queue" {
   )
 }
 
+resource "aws_sqs_queue" "metadata-events-queue" {
+  name = "${var.app}-metadata-events-queue"
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "Artemis Metadata Events Queue"
+    }
+  )
+}
+
 output "event_queue" {
   value = aws_sqs_queue.event-queue
 }
@@ -45,4 +56,8 @@ output "secrets_queue" {
 
 output "audit_event_queue" {
   value = aws_sqs_queue.audit-event-queue
+}
+
+output "metadata_events_queue" {
+  value = aws_sqs_queue.metadata-events-queue
 }
