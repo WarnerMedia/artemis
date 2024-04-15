@@ -11,42 +11,43 @@ DESC_REMEDIATION_SPLIT = "## Recommendation"
 
 def parse_output(output: list) -> list:
     results = []
-    for item in output:
-        source = item["Target"]
-        component_type = convert_type(item.get("Type", "N/A"))
-        if item.get("Vulnerabilities") is None:
-            continue
-        cve_set = set()
-        for vuln in item["Vulnerabilities"]:
-            vuln_id = vuln.get("VulnerabilityID")
-            if vuln_id in cve_set:
+    if output:
+        for item in output:
+            source = item.get("Target")
+            component_type = convert_type(item.get("Type", "N/A"))
+            if item.get("Vulnerabilities") is None:
                 continue
-            cve_set.add(vuln_id)
-            description_result = get_description_and_remediation(vuln.get("Description"), vuln.get("FixedVersion"))
+            cve_set = set()
+            for vuln in item.get("Vulnerabilities"):
+                vuln_id = vuln.get("VulnerabilityID")
+                if vuln_id in cve_set:
+                    continue
+                cve_set.add(vuln_id)
+                description_result = get_description_and_remediation(vuln.get("Description"), vuln.get("FixedVersion"))
 
-            component = vuln.get("PkgName")
-            if vuln.get("InstalledVersion"):
-                component = f'{component}-{vuln.get("InstalledVersion")}'
-            results.append(
-                {
-                    "component": component,
-                    "source": source,
-                    "id": vuln_id,
-                    "description": description_result.description,
-                    "severity": vuln.get("Severity", "").lower(),
-                    "remediation": description_result.remediation,
-                    "inventory": {
-                        "component": {
-                            "name": vuln.get("PkgName"),
-                            "version": vuln.get("InstalledVersion"),
-                            "type": component_type,
+                component = vuln.get("PkgName")
+                if vuln.get("InstalledVersion"):
+                    component = f'{component}-{vuln.get("InstalledVersion")}'
+                results.append(
+                    {
+                        "component": component,
+                        "source": source,
+                        "id": vuln_id,
+                        "description": description_result.description,
+                        "severity": vuln.get("Severity", "").lower(),
+                        "remediation": description_result.remediation,
+                        "inventory": {
+                            "component": {
+                                "name": vuln.get("PkgName"),
+                                "version": vuln.get("InstalledVersion"),
+                                "type": component_type,
+                            },
+                            "advisory_ids": sorted(
+                                list(set(filter(None, [vuln_id, vuln.get("PrimaryURL")] + vuln.get("References", []))))
+                            ),
                         },
-                        "advisory_ids": sorted(
-                            list(set(filter(None, [vuln_id, vuln.get("PrimaryURL")] + vuln.get("References", []))))
-                        ),
-                    },
-                }
-            )
+                    }
+                )
     return results
 
 
