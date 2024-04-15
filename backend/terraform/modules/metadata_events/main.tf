@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 ###############################################################################
 # Metadata Events Lambda
 ###############################################################################
@@ -117,7 +119,7 @@ module "access-secret-manager-keys" {
 ###############################################################################
 
 resource "aws_lambda_event_source_mapping" "metadata-events-handler" {
-  event_source_arn = var.metadata_event_queue.arn
+  event_source_arn = var.metadata_events_queue.arn
   function_name    = aws_lambda_function.metadata-events-handler.arn
   enabled          = var.metadata_events_enabled
 }

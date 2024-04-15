@@ -203,6 +203,8 @@ variable "audit_event_queue" {}
 
 variable "scheduled_scan_queue" {}
 
+variable "metadata_events_queue" {}
+
 ################################################
 # Feature Control
 ################################################
