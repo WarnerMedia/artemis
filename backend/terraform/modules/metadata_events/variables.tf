@@ -30,5 +30,5 @@ variable "s3_analyzer_files_id" {}
 variable "metadata_events_queue" {}
 
 variable "metadata_events_enabled" {
-  description = "Whether to enable the Secrets Management process integration"
+  description = "Whether to enable the Metadata Events"
 }
