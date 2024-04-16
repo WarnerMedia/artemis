@@ -6,6 +6,7 @@ from engine.plugins.lib.trivy_common.parsing_util import convert_type
 
 logger = setup_logging("trivy_sbom")
 
+
 # Gets the scan and formats it to work with the processor
 def clean_output_application_sbom(output: list) -> list:
     results = []
@@ -33,6 +34,7 @@ def clean_output_application_sbom(output: list) -> list:
                 break
         results.append({"bom-ref": bom_ref, "name": name, "version": version, "licenses": licenses, "type": type})
     return results
+
 
 # Updates the path to be relative to the repo instead of relative to artemis
 def edit_application_sbom_path(repo: str, application_sbom_output: dict):
