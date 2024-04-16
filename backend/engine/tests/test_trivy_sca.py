@@ -138,7 +138,7 @@ class TestTrivy(unittest.TestCase):
         self.assertIn(TEST_CHECK_OUTPUT_PACKAGE_LOCK, check_output_list)
         self.assertIn(TEST_CHECK_OUTPUT_GEMLOCK_FILE, check_output_list)
 
-    def test_check_output(self):
+    def test_check_output_no_results(self):
         check_output_list = Trivy.parse_output(None)
         self.assertIn([], check_output_list)
 
