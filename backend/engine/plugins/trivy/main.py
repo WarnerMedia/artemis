@@ -66,8 +66,8 @@ def process_docker_images(images: list):
 
 def build_scan_parse_images(images) -> list:
     results = []
-    logger.info("Dockerfiles found: %d", images["dockerfile_count"])
-    outputs = process_docker_images(images["results"])
+    logger.info("Dockerfiles found: %d", images.get("dockerfile_count"))
+    outputs = process_docker_images(images.get("results"))
     for image_output in outputs:
         output = parse_output(image_output)
         if output:

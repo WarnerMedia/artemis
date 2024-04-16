@@ -48,7 +48,7 @@ def main():
     if not output:
         logger.warning("Lock file output is None. Continuing.")
     else:
-        result = parse_output(output["Results"])
+        result = parse_output(output.get("Results"))
         logger.info("Lock file output parsed. Success: %s", bool(result))
         results.extend(result)
 
