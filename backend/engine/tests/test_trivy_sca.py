@@ -140,7 +140,7 @@ class TestTrivy(unittest.TestCase):
 
     def test_check_output_no_results(self):
         check_output_list = Trivy.parse_output(None)
-        self.assertIn([], check_output_list)
+        self.assertEqual([], check_output_list)
 
     def test_parse_output_one_file(self):
         result = Trivy.parse_output([TEST_VULN_LOCK_FILE_DICT])
