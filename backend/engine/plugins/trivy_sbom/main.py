@@ -7,6 +7,7 @@ from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
 from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
+from engine.plugins.trivy_sbom.parser import edit_application_sbom_path
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.utils import setup_logging
 from engine.plugins.lib.utils import parse_args
@@ -50,7 +51,6 @@ def execute_trivy_image_sbom(image: str):
 def process_docker_images(images: list):
     """
     Pulls a list of image information, scans the successful ones, and returns the outputs.
-    example list item:
     """
     outputs = []
     parsed = []
@@ -88,6 +88,7 @@ def main():
     logger.info("Executing Trivy SBOM")
     args = parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
+    repo = args.engine_vars.get("repo")
     results = []
     parsed = []
     alerts = []
@@ -109,7 +110,7 @@ def main():
     errors.extend(go_mod_errors)
 
     # Scan local lock files
-    application_sbom_output = convert_string_to_json(execute_trivy_application_sbom(args.path, include_dev), logger)
+    application_sbom_output = edit_application_sbom_path(repo, convert_string_to_json(execute_trivy_application_sbom(args.path, include_dev), logger))
     application_sbom_output_parsed = clean_output_application_sbom(application_sbom_output)
     logger.debug(application_sbom_output)
     if not application_sbom_output:
