@@ -15,7 +15,7 @@ from artemislib.datetime import get_utc_datetime
 from artemislib.db_cache import DBLookupCache
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
-from env import APPLICATION, REGION, SQS_ENDPOINT, VULNERABILITY_EVENTS_ENABLED
+from env import APPLICATION, REGION, SQS_ENDPOINT, VULNERABILITY_EVENTS_ENABLED, METADATA_EVENTS_ENABLED
 from metadata.metadata import get_all_metadata
 from processor.details import Details
 from processor.sbom import process_sbom
@@ -25,7 +25,7 @@ from processor.vulns import process_vulns, resolve_vulns
 from utils.deploy_key import create_ssh_url, git_clone
 from utils.engine import get_key
 from utils.git import git_clean, git_pull, git_reset
-from utils.plugin import Result, is_plugin_disabled, run_plugin, process_event_info
+from utils.plugin import Result, is_plugin_disabled, run_plugin, process_event_info, queue_event
 
 logger = Logger(__name__)
 
@@ -275,6 +275,11 @@ class EngineProcessor:
         self.scan.set_branch_last_commit(self.action_details.scan_working_dir)
         self.scan.save_object()
 
+        # Now that the metadata has been formatted and stored
+        # send the metadata to the metadata_queue for further processing
+        if METADATA_EVENTS_ENABLED:
+            self._process_metadata_events()
+
     def _cache_results(self, results: Result):
         if not isinstance(self.lookup_cache, DBLookupCache):
             return
@@ -373,6 +378,27 @@ class EngineProcessor:
 
         # Send the results for processing into the event queue
         process_event_info(self.scan.get_scan_object(), results, PluginType.VULN.value, None)
+
+    def _process_metadata_events(self) -> None:
+        """
+        Queues a metadata event when METADATA_EVENTS_ENABLED is true
+        :return: None
+        """
+        logger.info("Processing Metadata Events")
+        scan = self.scan.get_scan_object()
+
+        # Check if a branch was provided
+        default_branch = self.action_details.branch is None
+
+        # Process Metadata event
+        if default_branch & METADATA_EVENTS_ENABLED:
+            payload = {
+                "repo": scan.repo.repo,
+                "type": "metadata",
+                "application_metadata": scan.application_metadata,
+            }
+            logger.info(payload)
+            queue_event(scan.repo.repo, "metadata", payload)
 
 
 def get_api_key(service_dict: dict, api_key=True, org=None):
