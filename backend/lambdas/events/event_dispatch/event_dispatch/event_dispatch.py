@@ -59,7 +59,6 @@ def handler(event, _):
 
 
 def process(event):
-    print(event)
     if event["type"] == "secrets":
         # Get all of the secrets management processes that are applicable for this event
         processes = determine_secrets_management_processes(event)
