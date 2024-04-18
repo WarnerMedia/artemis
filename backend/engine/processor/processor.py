@@ -400,7 +400,6 @@ class EngineProcessor:
             logger.info(payload)
             queue_event(scan.repo.repo, "metadata", payload)
 
-
 def get_api_key(service_dict: dict, api_key=True, org=None):
     """gets service API key from AWS Secrets Manager
     if api_key is True, the "key" value is pulled
