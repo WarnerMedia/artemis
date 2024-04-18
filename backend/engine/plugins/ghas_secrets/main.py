@@ -48,9 +48,7 @@ def main():
 
 def _ghas_secrets_enabled(gh: GitHubAPI) -> bool:
     resp = gh.get_repo()
-    return (
-        resp.get("security_and_analysis", {}).get("secret_scanning", {}).get("status") == "enabled"
-    )
+    return resp.get("security_and_analysis", {}).get("secret_scanning", {}).get("status") == "enabled"
 
 
 def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
