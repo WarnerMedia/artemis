@@ -435,6 +435,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
             }
             queue_event(scan.repo.repo, plugin_type, payload)
 
+
 def queue_event(repo, plugin_type, payload):
     log.info("Queuing %s event for %s", plugin_type, repo)
     try:
