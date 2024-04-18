@@ -49,8 +49,7 @@ def main():
 def _ghas_secrets_enabled(gh: GitHubAPI) -> bool:
     resp = gh.get_repo()
     return (
-        resp.get("security_and_analysis", {}).get("advanced_security", {}).get("status") == "enabled"
-        and resp.get("security_and_analysis", {}).get("secret_scanning", {}).get("status") == "enabled"
+        resp.get("security_and_analysis", {}).get("secret_scanning", {}).get("status") == "enabled"
     )
 
 
