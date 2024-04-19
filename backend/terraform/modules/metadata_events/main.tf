@@ -99,7 +99,9 @@ module "write-logs" {
     aws_iam_role.metadata-events-role.name
   ]
   name      = "${var.app}-metadata-events-write-logs"
-  resources = ["arn:aws:logs:*:*:*"]
+  resources = [
+    "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.app}*:*"
+  ]
 }
 
 module "access-secret-manager-keys" {
