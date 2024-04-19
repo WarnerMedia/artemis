@@ -391,7 +391,7 @@ class EngineProcessor:
         default_branch = self.action_details.branch is None
 
         # Process Metadata event
-        if default_branch & METADATA_EVENTS_ENABLED:
+        if default_branch and METADATA_EVENTS_ENABLED:
             payload = {
                 "repo": scan.repo.repo,
                 "type": "metadata",

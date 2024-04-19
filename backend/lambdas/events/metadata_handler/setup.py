@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 # available inside the package for use at runtime.
 __version__ = None  # Will get set in next line
 # pylint: disable=exec-used
-exec(open("secrets_handler/__version__.py").read())
+exec(open("metadata_handler/__version__.py").read())
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
