@@ -27,7 +27,7 @@ setup(
         # separately because it contains platform-dependent pre-compiled code
         "pyjwt[crypto]",
         "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+        "urllib3",
     ],
     tests_require=["pytest"],
     classifiers=[
