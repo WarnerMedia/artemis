@@ -23,7 +23,6 @@ setup(
     setup_requires=["pytest-runner"],
     install_requires=[
         "requests",
-        "urllib3",
     ],
     tests_require=["pytest"],
     classifiers=[
