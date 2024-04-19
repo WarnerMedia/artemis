@@ -23,7 +23,7 @@ setup(
     setup_requires=["pytest-runner"],
     install_requires=[
         "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+        "urllib3",
     ],
     tests_require=["pytest"],
     classifiers=[
