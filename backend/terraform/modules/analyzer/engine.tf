@@ -57,6 +57,7 @@ module "public_engine_cluster" {
   inventory_events_enabled     = var.inventory_events_enabled
   configuration_events_enabled = var.configuration_events_enabled
   vulnerability_events_enabled = var.vulnerability_events_enabled
+  metadata_events_enabled      = var.metadata_events_enabled
 }
 
 module "nat_engine_cluster" {
@@ -119,4 +120,5 @@ module "nat_engine_cluster" {
   inventory_events_enabled     = var.inventory_events_enabled
   configuration_events_enabled = var.configuration_events_enabled
   vulnerability_events_enabled = var.vulnerability_events_enabled
+  metadata_events_enabled      = var.metadata_events_enabled
 }
