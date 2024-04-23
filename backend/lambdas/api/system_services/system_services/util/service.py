@@ -61,6 +61,16 @@ class Service:
             },
         }
 
+    def _set_request_fail(self, error: str = None):
+        """
+        Set the failure state for a request error, with an optional error message.
+
+        Request errors are considered to be reachability failures for the purposes of system status.
+        """
+        self._reachable = False
+        self._auth_successful = False
+        self._error = error
+
     def _get_service_stats(self, scope: list[list[list[str]]]):
         repos = Repo.in_scope(scope).filter(service=self._service_name).order_by("repo")
         if self._org:
@@ -91,27 +101,32 @@ class Service:
     def _test_auth(self):
         key = get_api_key(self._service["secret_loc"])
 
-        if key is None:
-            self._error = "Unable to retrieve key"
-        if self._service["type"] == ServiceType.GITHUB:
-            self._test_github(key)
-        elif self._service["type"] == ServiceType.GITLAB:
-            self._test_gitlab(key)
-        elif self._service["type"] == ServiceType.BITBUCKET_V1:
-            self._test_bitbucket_v1(key)
-        elif self._service["type"] == ServiceType.BITBUCKET_V2:
-            self._test_bitbucket_v2(key)
-        elif self._service["type"] == ServiceType.ADO:
-            self._test_ado(key)
+        # We are intentionally high-level in the error message returned to the
+        # user -- we don't control what potentially-sensitive information
+        # might be contained in the request error details.
+        try:
+            if key is None:
+                self._error = "Unable to retrieve key"
+            if self._service["type"] == ServiceType.GITHUB:
+                self._test_github(key)
+            elif self._service["type"] == ServiceType.GITLAB:
+                self._test_gitlab(key)
+            elif self._service["type"] == ServiceType.BITBUCKET_V1:
+                self._test_bitbucket_v1(key)
+            elif self._service["type"] == ServiceType.BITBUCKET_V2:
+                self._test_bitbucket_v2(key)
+            elif self._service["type"] == ServiceType.ADO:
+                self._test_ado(key)
+        except requests.Timeout:
+            self._set_request_fail("Timeout")
+        except requests.ConnectionError:
+            self._set_request_fail("Connection error")
+        except requests.RequestException:
+            self._set_request_fail("Request failed")
 
     def _test_github(self, key: str):
-        try:
-            requests.get(url=self._service["url"], timeout=3)
-            self._reachable = True
-        except requests.ConnectionError:
-            self._reachable = False
-            self._auth_successful = False
-            return
+        requests.get(url=self._service["url"], timeout=3)
+        self._reachable = True
 
         if self._org is not None:
             # Attempt to get an app installation token for the organization
@@ -129,32 +144,28 @@ class Service:
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in self._service["url"]:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
-        try:
-            query = ""
-            if self._org is not None:
-                query = 'organization(login: "%s") { login }' % self._org
-            else:
-                query = "viewer { login }"
 
-            response = requests.post(
-                url=self._service["url"],
-                headers=headers,
-                json={"query": query},
-                timeout=3,
-            )
-            if response.status_code == 200:
-                self._auth_successful = True
-                self._auth_type = AuthType.SVC
-            else:
-                self._auth_successful = False
-                if revproxy and response.status_code == 401 and response.text == "key is invalid":
-                    # Request did not make it through the reverse proxy
-                    self._reachable = False
-                    self._error = "Reverse proxy authentication failure"
-        except requests.ConnectionError:
-            self._reachable = False
+        query = ""
+        if self._org is not None:
+            query = 'organization(login: "%s") { login }' % self._org
+        else:
+            query = "viewer { login }"
+
+        response = requests.post(
+            url=self._service["url"],
+            headers=headers,
+            json={"query": query},
+            timeout=3,
+        )
+        if response.status_code == 200:
+            self._auth_successful = True
+            self._auth_type = AuthType.SVC
+        else:
             self._auth_successful = False
-            self._error = "Connection Error"
+            if revproxy and response.status_code == 401 and response.text == "key is invalid":
+                # Request did not make it through the reverse proxy
+                self._reachable = False
+                self._error = "Reverse proxy authentication failure"
 
     def _test_gitlab(self, key: str):
         revproxy = False
@@ -163,27 +174,22 @@ class Service:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
 
-        try:
-            response = requests.post(
-                url=self._service["url"], headers=headers, json={"query": 'echo(text: "foo")'}, timeout=3
-            )
-            self._reachable = True
-            if response.status_code == 200:
-                echo = response.json().get("data", {}).get("echo", "")
-                if echo == "nil says: foo":
-                    self._auth_successful = False
-                else:
-                    self._auth_successful = True
-            else:
+        response = requests.post(
+            url=self._service["url"], headers=headers, json={"query": 'echo(text: "foo")'}, timeout=3
+        )
+        self._reachable = True
+        if response.status_code == 200:
+            echo = response.json().get("data", {}).get("echo", "")
+            if echo == "nil says: foo":
                 self._auth_successful = False
-                if revproxy and response.status_code == 401 and response.text == "key is invalid":
-                    # Request did not make it through the reverse proxy
-                    self._reachable = False
-                    self._error = "Reverse proxy authentication failure"
-        except requests.ConnectionError:
-            self._reachable = False
+            else:
+                self._auth_successful = True
+        else:
             self._auth_successful = False
-            self._error = "Connection Error"
+            if revproxy and response.status_code == 401 and response.text == "key is invalid":
+                # Request did not make it through the reverse proxy
+                self._reachable = False
+                self._error = "Reverse proxy authentication failure"
 
     def _test_bitbucket(self, key: str, service_auth_url: str, repo_auth_url: str):
         revproxy = False
@@ -192,36 +198,31 @@ class Service:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
 
-        try:
-            response = requests.get(url=service_auth_url, headers=headers, timeout=3)
-            self._reachable = True
-            if response.status_code == 200:
-                if not self._org:
+        response = requests.get(url=service_auth_url, headers=headers, timeout=3)
+        self._reachable = True
+        if response.status_code == 200:
+            if not self._org:
+                self._auth_successful = True
+            else:
+                response = requests.get(
+                    url=repo_auth_url,
+                    headers=headers,
+                    timeout=3,
+                )
+                if response.status_code == 200 and response.json().get("size", 0) == 1:
                     self._auth_successful = True
                 else:
-                    response = requests.get(
-                        url=repo_auth_url,
-                        headers=headers,
-                        timeout=3,
-                    )
-                    if response.status_code == 200 and response.json().get("size", 0) == 1:
-                        self._auth_successful = True
-                    else:
-                        self._auth_successful = False
-                        if revproxy and response.status_code == 401 and response.text == "key is invalid":
-                            # Request did not make it through the reverse proxy
-                            self._reachable = False
-                            self._error = "Reverse proxy authentication failure"
-            else:
-                self._auth_successful = False
-                if revproxy and response.status_code == 401 and response.text == "key is invalid":
-                    # Request did not make it through the reverse proxy
-                    self._reachable = False
-                    self._error = "Reverse proxy authentication failure"
-        except requests.ConnectionError:
-            self._reachable = False
+                    self._auth_successful = False
+                    if revproxy and response.status_code == 401 and response.text == "key is invalid":
+                        # Request did not make it through the reverse proxy
+                        self._reachable = False
+                        self._error = "Reverse proxy authentication failure"
+        else:
             self._auth_successful = False
-            self._error = "Connection Error"
+            if revproxy and response.status_code == 401 and response.text == "key is invalid":
+                # Request did not make it through the reverse proxy
+                self._reachable = False
+                self._error = "Reverse proxy authentication failure"
 
     def _test_bitbucket_v1(self, key: str):
         repo_auth_url = ""
@@ -243,17 +244,12 @@ class Service:
 
     def _test_ado(self, key: str):
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
-        try:
-            response = requests.get(f'{self._service["url"]}/{self._org}/_apis/projects', headers=headers)
-            self._reachable = True
-            if response.status_code == 200:
-                self._auth_successful = True
-            else:
-                self._auth_successful = False
-        except requests.ConnectionError:
-            self._reachable = False
+        response = requests.get(f'{self._service["url"]}/{self._org}/_apis/projects', headers=headers)
+        self._reachable = True
+        if response.status_code == 200:
+            self._auth_successful = True
+        else:
             self._auth_successful = False
-        return
 
 
 class GetProxySecret:
