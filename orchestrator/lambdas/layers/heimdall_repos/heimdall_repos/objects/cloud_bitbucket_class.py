@@ -1,6 +1,7 @@
 from string import Template
 from heimdall_repos.repo_layer_env import (
     BITBUCKET_PUBLIC_BRANCH_QUERY,
+    BITBUCKET_PUBLIC_COMMIT_QUERY,
     BITBUCKET_PUBLIC_ORG_QUERY,
     BITBUCKET_PUBLIC_REPO_QUERY,
     BITBUCKET_PUBLIC_SPECIFIC_BRANCH_QUERY,
@@ -46,6 +47,9 @@ class CloudBitbucket(AbstractBitbucket):
                 service_url=url, org=org, repo=repo, cursor=cursor, branch=branch
             )
         return Template(BITBUCKET_PUBLIC_BRANCH_QUERY).substitute(service_url=url, org=org, repo=repo, cursor=cursor)
+
+    def construct_bitbucket_commit_url(self, url: str, org: str, repo: str, commit_id: str):
+        return Template(BITBUCKET_PUBLIC_COMMIT_QUERY).substitute(service_url=url, org=org, repo=repo, commit=commit_id)
 
     def get_default_cursor(self):
         return "1"
