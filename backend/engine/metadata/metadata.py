@@ -15,7 +15,7 @@ def get_all_metadata(app_metadata_settings, service, repo, working_dir, schemes:
     """
     result = {}
     timestamps = {}
-    for scheme in (schemes if schemes != None else default_schemes):
+    for scheme in schemes if schemes != None else default_schemes:
         if scheme in app_metadata_settings:
             metadata = app_metadata_settings[scheme]
             if is_name_in_patterns(repo, metadata["include"]) and not is_name_in_patterns(repo, metadata["exclude"]):
