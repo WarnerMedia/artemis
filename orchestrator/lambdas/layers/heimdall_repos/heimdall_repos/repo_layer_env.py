@@ -15,10 +15,10 @@ BITBUCKET_PUBLIC_SPECIFIC_BRANCH_QUERY = "$service_url/repositories/$org/$repo/r
 BITBUCKET_PRIVATE_SPECIFIC_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?start=$cursor&name=$branch"
 
 GITLAB_REPO_QUERY = """
-{
-    group(fullPath: "%s") {
+query getLogin($org: String!, $cursor: String!) {
+    group(fullPath: $org) {
         projects(first: 100,
-                 after: %s,
+                 after: $cursor,
                  includeSubgroups: true) {
             nodes {
                 fullPath

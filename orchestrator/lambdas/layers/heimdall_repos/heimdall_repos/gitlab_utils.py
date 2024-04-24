@@ -223,7 +223,7 @@ class ProcessGitlabRepos:
         response = requests.post(
             url=url,
             headers=self._get_request_headers(url),
-            json={"query": GITLAB_REPO_QUERY % (self.service_info.org, self.service_info.cursor)},
+            json={"query": GITLAB_REPO_QUERY, "variables": {"org": self.service_info.org, "cursor": self.service_info.cursor}},
             timeout=DEFAULT_API_TIMEOUT,
         )
         if response.status_code != 200:
