@@ -14,9 +14,13 @@ def is_name_in_patterns(name, patterns: list) -> bool:
     return False
 
 
-def load_schemes() -> dict:
+def load_schemes(scheme_modules: list[str] = None) -> dict:
     """
-    Load the metadata processing plugin modules and populate the schemes dictionary
+    Load the metadata processing plugin modules and populate the schemes dictionary.
+
+    If the list scheme modules is omitted, then the list will be loaded from the global configuration.
+
+    Any modules that fail to load are skipped.
     """
     # The schemes dictionary takes the following format:
     #
@@ -71,7 +75,7 @@ def load_schemes() -> dict:
     # It is required that each module has a SCHEME_NAME string and a method called get_metadata to
     # facilitate building of the schemes mapping dictionary.
     schemes = {}
-    for module in METADATA_SCHEME_MODULES:
+    for module in scheme_modules if scheme_modules != None else METADATA_SCHEME_MODULES:
         try:
             m = importlib.import_module(module)
             schemes[m.SCHEME_NAME] = m.get_metadata
