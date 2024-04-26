@@ -394,7 +394,7 @@ class EngineProcessor:
         if default_branch and METADATA_EVENTS_ENABLED:
             payload = {
                 "repo": scan.repo.repo,
-                "service": scan.service,
+                "service": self.details.service,
                 "type": "metadata",
                 "application_metadata": scan.application_metadata,
             }
