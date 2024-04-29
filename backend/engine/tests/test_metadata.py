@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from copy import deepcopy
 
-from metadata import metadata
+from metadata import metadata, util
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_REPO = "WarnerMedia/artemis"
@@ -56,3 +56,14 @@ class TestMetadata(unittest.TestCase):
         plugin.assert_not_called()
         self.assertEqual(result, {})
         self.assertEqual(timestamps, {})
+
+    @patch.object(util, "METADATA_SCHEME_MODULES", ["xx_fake_metadata_plugin"])
+    def test_load_schemes_default_invalid(self):
+        with self.assertLogs("metadata.util", "ERROR") as lc:
+            actual = metadata.load_schemes()
+            self.assertEqual(actual, {})  # No valid modules.
+            self.assertEqual(len(lc.output), 1)
+            self.assertIn(
+                "Unable to load metadata processing module xx_fake_metadata_plugin",
+                lc.output[0],
+            )
