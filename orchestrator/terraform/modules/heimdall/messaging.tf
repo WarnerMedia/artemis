@@ -5,6 +5,10 @@
 resource "aws_sqs_queue" "org-queue" {
   name                       = "${var.app}-org-queue"
   visibility_timeout_seconds = 900
+  redrive_policy = jsonencode({
+    "deadLetterTargetArn" = aws_sqs_queue.org-deadletter-queue.arn
+    "maxReceiveCount"     = 10
+  })
 
   tags = merge(
     var.tags,
@@ -14,13 +18,43 @@ resource "aws_sqs_queue" "org-queue" {
   )
 }
 
+resource "aws_sqs_queue" "org-deadletter-queue" {
+  name                       = "${var.app}-org-deadletter-queue"
+  visibility_timeout_seconds = 900
+  message_retention_seconds  = 691200
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "Heimdall Org Deadletter Queue"
+    }
+  )
+}
+
 resource "aws_sqs_queue" "repo-queue" {
   name = "${var.app}-repo-queue"
+  redrive_policy = jsonencode({
+    "deadLetterTargetArn" = aws_sqs_queue.org-deadletter-queue.arn
+    "maxReceiveCount"     = 10
+  })
 
   tags = merge(
     var.tags,
     {
       "Name" = "Heimdall Repo Queue"
+    }
+  )
+}
+
+resource "aws_sqs_queue" "repo-deadletter-queue" {
+  name                       = "${var.app}-repo-deadletter-queue"
+  visibility_timeout_seconds = 900
+  message_retention_seconds  = 691200
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "Heimdall Repo Deadletter Queue"
     }
   )
 }
@@ -59,6 +93,7 @@ data "aws_iam_policy_document" "org-queue-receive" {
 
     resources = [
       "${aws_sqs_queue.org-queue.arn}",
+      "${aws_sqs_queue.org-deadletter-queue.arn}",
     ]
   }
 }
@@ -89,6 +124,7 @@ data "aws_iam_policy_document" "repo-queue-receive" {
 
     resources = [
       "${aws_sqs_queue.repo-queue.arn}",
+      "${aws_sqs_queue.repo-deadletter-queue.arn}",
     ]
   }
 }
@@ -157,4 +193,12 @@ output "org-queue" {
 
 output "repo-queue" {
   value = aws_sqs_queue.repo-queue.id
+}
+
+output "org-deadletter-queue" {
+  value = aws_sqs_queue.org-deadletter-queue.id
+}
+
+output "repo-deadletter-queue" {
+  value = aws_sqs_queue.repo-deadletter-queue.id
 }
