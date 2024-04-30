@@ -10,6 +10,7 @@ GROUP_ID = "87879daa-e6cb-4bf9-8575-649b00aff132"
 UNPARSED_EVENT_ID = {"pathParameters": {"id": GROUP_ID}}
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
 class TestGroupsDelete(unittest.TestCase):
     @patch.object(groups_delete, "GroupsDBHelper")
     def test_delete_group_success_admin(self, db_caller):

@@ -9,6 +9,8 @@ from tests.stubs.mock_group import MockGroup
 from tests.stubs.parsed_event import ParsedEventStub
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.group_modified", lambda *x, **y: None)
 class TestGroupsPost(unittest.TestCase):
     @patch.object(groups_post, "GroupsDBHelper")
     def test_post_group_with_parent(self, db_caller):
