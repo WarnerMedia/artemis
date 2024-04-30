@@ -14,6 +14,10 @@ BITBUCKET_PUBLIC_SPECIFIC_BRANCH_QUERY = "$service_url/repositories/$org/$repo/r
 
 BITBUCKET_PRIVATE_SPECIFIC_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?start=$cursor&name=$branch"
 
+BITBUCKET_PUBLIC_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/$commit"
+
+BITBUCKET_PRIVATE_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/$commit"
+
 GITLAB_REPO_QUERY = """
 {
     group(fullPath: "%s") {
