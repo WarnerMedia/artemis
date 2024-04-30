@@ -18,7 +18,7 @@ pyjwt = "*"
 cryptography = "*"
 packaging = "==21.3"
 urllib3 = "<2"
-gql = "*"
+gql = {extras = ["requests"], version = "*"}
 
 [dev-packages]
 pytest = "==6.0.1"

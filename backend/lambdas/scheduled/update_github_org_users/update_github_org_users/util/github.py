@@ -1,9 +1,8 @@
 import os
 from typing import Union
-import requests
-# from gql import Client
-# from gql.transport.requests import RequestsHTTPTransport
-# from gql.dsl import DSLQuery, DSLSchema, dsl_gql, DSLVariableDefinitions
+from gql import Client
+from gql.transport.requests import RequestsHTTPTransport
+from gql.dsl import DSLQuery, DSLSchema, dsl_gql, DSLVariableDefinitions, DSLVariable
 
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
@@ -31,56 +30,44 @@ def query_users_for_org(authorization: str, github_users: list, org: str) -> Uni
     """
     Given a list of GitHub users, determine if each is/is not part of a given org
     """
-    headers = {"accept": "application/vnd.github.v3+json", "authorization": f"{authorization}"}
-    query = "{"
+    client = _get_client(authorization)
+    with client as session:
+        query, variables = _build_queries(client, org, github_users)
 
-    for github_user in github_users:
-        query += f"""{github_user["query_name"]}: user(login: "{github_user["username"]}") {{ organization(login: "{org}") {{ login }} }}"""
-
-    query += "}"
-    r = requests.post("https://api.github.com/graphql", json={"query": query}, headers=headers)
-
-    if r.status_code != 200:
-        log.error("Non-200 status code returned from GitHub")
-        log.error(f"Status Code: {r.status_code}")
-        log.error(f"Body: {r.text}")
-        return False
-    return r.json()
+        result = session.execute(query, variable_values=variables, get_execution_result=True)
+        return result
 
 
-def query_users_for_org_new(authorization: str, github_users: list, org: str) -> Union[bool, dict]:
-    """
-    Given a list of GitHub users, determine if each is/is not part of a given org
-    """
-    user_queries = []
-    variables = {"org": org}
+def _get_client(authorization):
     headers = {"accept": "application/vnd.github.v3+json", "authorization": f"{authorization}"}
     transport = RequestsHTTPTransport(url="https://api.github.com/graphql", headers=headers)
-    client = Client(transport=transport, fetch_schema_from_transport=True)
-    with client as session:
-        assert client.schema is not None
+    return Client(transport=transport, fetch_schema_from_transport=True)
 
-        ds = DSLSchema(client.schema)
-        var_defs = DSLVariableDefinitions()
 
-        for github_user in github_users:
-            variables[github_user["query_name"]] = github_user["username"]
-            user_queries.append((
-                ds.Query.user
-                .args(login=var_defs[github_user["query_name"]])
-                .alias(github_user["query_name"])
-                .select(ds.Organization.args(login=var_defs.org)
-                    .select(ds.Organization.login)
-                )
-            ))
+def _build_queries(client, org, github_users):
+    user_queries = []
+    variables = {"org": org}
+    assert client.schema is not None
 
-        operation = DSLQuery(user_queries)
-        operation.variable_definitions = var_defs
-        query = dsl_gql(operation)
+    ds = DSLSchema(client.schema)
+    var_defs = DSLVariableDefinitions()
+    for github_user in github_users:
+        variables.update({github_user["query_name"]:github_user["username"]})
+        # This is kind of hacky but it won't let us dynamically set vars otherwise.
+        var_defs.variables[github_user["query_name"]] = DSLVariable(github_user["query_name"])
+        user_queries.append((
+            ds.Query.user
+            .args(login=var_defs.variables[github_user["query_name"]])
+            .alias(github_user["query_name"])
+            .select(ds.User.organization.args(login=var_defs.org)
+                .select(ds.Organization.login)
+            )
+        ))
 
-        result = session.execute(query, variable_values=variables)
-
-        return result
+    operation = DSLQuery(*user_queries)
+    operation.variable_definitions = var_defs
+    query = dsl_gql(operation)
+    return query, variables
 
 
 def _get_api_key(service_secret):

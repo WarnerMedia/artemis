@@ -1,32 +1,95 @@
 import unittest
-import requests
 import responses
-from update_github_org_users.util.github import query_users_for_org
+from .introspection_json import introspection
+from update_github_org_users.util.github import _get_client, _build_queries
+from graphql import print_ast
 
 def noop():
     pass
 
 class TestQueryUsersForOrg(unittest.TestCase):
-    @responses.activate
-    def test_query_users_for_org(self):
+    @responses.activate()
+    def test_query_single_user_for_org(self):
+        expected_query = """query ($q1: String!, $org: String!) {
+  q1: user(login: $q1) {
+    organization(login: $org) {
+      login
+    }
+  }
+}"""
         responses.add(
             responses.POST,
             "https://api.github.com/graphql",
-            json={"data":{"q1":{"organization":{"login":"WarnerMedia"}}}},
-            status=200,
+            json=introspection,
+            status=200
         )
-        authorization = "noauth"
-        org = "WarnerMedia"
-        github_users = []
-        github_user = {}
-        github_user["artemis_user_id"] = "1234"
-        github_user["username"] = "test_user"
-        github_user["query_name"] = "q1"
-        github_users.append(github_user)
-        query_response = query_users_for_org(authorization, github_users, org)
-        data = query_response.get("data")
-        if data:
-            data_user = data.get(github_user["query_name"])
-        if data_user:
-            user_in_organization = data_user.get("organization")
-        self.assertEqual(user_in_organization, {"login":"WarnerMedia"})
+        client = _get_client("")
+        with client as session:
+            org = "artemis"
+            github_users = [{
+                "artemis_user_id": "1234",
+                "username": "test-user",
+                "query_name": "q1"
+            }]
+            query, variables = _build_queries(client, org, github_users)
+            self.assertEqual(print_ast(query), expected_query)
+            self.assertEqual(variables, {
+                "org": "artemis",
+                "q1": "test-user"
+            })
+
+
+    @responses.activate()
+    def test_query_users_for_org(self):
+        expected_query = """query ($q1: String!, $org: String!, $q2: String!, $q3: String!) {
+  q1: user(login: $q1) {
+    organization(login: $org) {
+      login
+    }
+  }
+  q2: user(login: $q2) {
+    organization(login: $org) {
+      login
+    }
+  }
+  q3: user(login: $q3) {
+    organization(login: $org) {
+      login
+    }
+  }
+}"""
+        expected_vars = {
+            "q1": "test-user1",
+            "q2": "test-user2",
+            "q3": "test-user3",
+            "org": "artemis"
+        }
+        responses.add(
+            responses.POST,
+            "https://api.github.com/graphql",
+            json=introspection,
+            status=200
+        )
+        client = _get_client("")
+        with client as session:
+            org = "artemis"
+            github_users = [
+                {
+                    "artemis_user_id": "1234",
+                    "username": "test-user1",
+                    "query_name": "q1"
+                },
+                {
+                    "artemis_user_id": "12345",
+                    "username": "test-user2",
+                    "query_name": "q2"
+                },
+                {
+                    "artemis_user_id": "123456",
+                    "username": "test-user3",
+                    "query_name": "q3"
+                }
+            ]
+            query, variables = _build_queries(client, org, github_users)
+            self.assertEqual(print_ast(query), expected_query)
+            self.assertEqual(variables, expected_vars)
