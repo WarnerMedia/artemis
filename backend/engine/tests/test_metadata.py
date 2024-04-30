@@ -1,6 +1,6 @@
 import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 from copy import deepcopy
 
 from metadata import metadata, util
@@ -67,3 +67,25 @@ class TestMetadata(unittest.TestCase):
                 "Unable to load metadata processing module xx_fake_metadata_plugin",
                 lc.output[0],
             )
+
+    def test_load_schemes_valid(self):
+        mock_plugin = Mock()
+        mock_plugin.SCHEME_NAME = "mock_metadata_plugin"
+        mock_plugin.get_metadata = lambda: "foo_bar"
+        with patch.dict("sys.modules", {"mock_metadata_plugin": mock_plugin}):
+            actual = metadata.load_schemes(["mock_metadata_plugin"])
+            self.assertEqual(actual["mock_metadata_plugin"](), "foo_bar")
+
+    def test_load_schemes_incomplete_module(self):
+        mock_plugin = {
+            # No SCHEME_NAME or get_metadata defined.
+        }
+        with patch.dict("sys.modules", {"mock_invalid_metadata_plugin": mock_plugin}):
+            with self.assertLogs("metadata.util", "ERROR") as lc:
+                actual = metadata.load_schemes(["mock_invalid_metadata_plugin"])
+                self.assertEqual(actual, {})  # No valid modules.
+                self.assertEqual(len(lc.output), 1)
+                self.assertIn(
+                    "Unable to load metadata processing module mock_invalid_metadata_plugin",
+                    lc.output[0],
+                )
