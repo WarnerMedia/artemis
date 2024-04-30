@@ -203,7 +203,7 @@ class ProcessBitbucketRepos:
                     timestamp = timestamp / 1000
 
                     # Format timestamp
-                    timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.localtime(timestamp))
+                    timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(timestamp))
 
                     timestamps[ref_name] = timestamp
 
