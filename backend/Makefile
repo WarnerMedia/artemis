@@ -298,11 +298,11 @@ install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
 	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/github_repo_health/cli/generated_requirements.txt
 
-
 unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
 	@echo "${INFO}Running Unit tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
+	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "not integtest and not end2end" ${PYTEST_EXTRA_ARGS};
@@ -312,6 +312,7 @@ unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependen
 integration-test: get-trivy
 	@echo "${INFO}Running Integration tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
+	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
@@ -321,6 +322,7 @@ integration-test: get-trivy
 end2end-test:
 	@echo "${INFO}Running end to end tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
+	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "end2end" ${PYTEST_EXTRA_ARGS};
@@ -331,6 +333,7 @@ test: get-shell-check
 	@echo "${INFO}Running All tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
+	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini";
