@@ -20,6 +20,8 @@ USER_RECORD = {
 }
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.user_modified", lambda *x, **y: None)
 class TestPut(unittest.TestCase):
     def test_nonadmin(self):
         event = {"pathParameters": {"id": EMAIL}}

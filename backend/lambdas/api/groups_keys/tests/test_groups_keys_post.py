@@ -19,6 +19,7 @@ GROUP_AUTH_GROUP_ADMIN = {GROUP_ID: True}
 GROUP_AUTH_NON_GROUP_ADMIN = {GROUP_ID: False}
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
 class TestGroupsKeysPost(unittest.TestCase):
     def test_key_id_provided(self):
         event = {

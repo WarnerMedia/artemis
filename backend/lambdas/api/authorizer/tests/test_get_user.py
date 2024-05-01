@@ -147,6 +147,7 @@ class MockUser(object):
 _get_update_or_create_user = authorizer.handlers._get_update_or_create_user.__wrapped__
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
 @patch("authorizer.handlers.AuditLogger.group_created", lambda *x, **y: None)
 @patch("authorizer.handlers.AuditLogger.group_modified", lambda *x, **y: None)
 @patch("authorizer.handlers.AuditLogger.user_created", lambda *x, **y: None)

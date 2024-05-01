@@ -28,6 +28,8 @@ GROUP_RECORD = {
 GROUP_1 = Group(group_id=1, name="test", description="test group", created_by=None, scope=["*"], features={})
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.group_modified", lambda *x, **y: None)
 class TestGroupsPut(unittest.TestCase):
     def test_non_group_admin(self):
         with patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership:

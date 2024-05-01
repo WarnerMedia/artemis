@@ -23,6 +23,8 @@ GROUP_AUTH_GROUP_ADMIN = {GROUP_ID: True}
 GROUP_AUTH_NON_GROUP_ADMIN = {GROUP_ID: False}
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.group_member_removed", lambda *x, **y: None)
 class TestGroupsMembersDelete(unittest.TestCase):
     def test_only_admins_can_delete(self):
         with patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership, patch(
