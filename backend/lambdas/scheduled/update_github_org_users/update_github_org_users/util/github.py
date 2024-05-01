@@ -26,6 +26,7 @@ def get_token(org: str, github_secret: str) -> str:
     key = _get_api_key(github_secret)
     return f"bearer {key}"
 
+
 def query_users_for_org(authorization: str, github_users: list, org: str) -> Union[bool, dict]:
     """
     Given a list of GitHub users, determine if each is/is not part of a given org
@@ -52,17 +53,16 @@ def _build_queries(client, org, github_users):
     ds = DSLSchema(client.schema)
     var_defs = DSLVariableDefinitions()
     for github_user in github_users:
-        variables.update({github_user["query_name"]:github_user["username"]})
+        variables.update({github_user["query_name"]: github_user["username"]})
         # This is kind of hacky but it won't let us dynamically set vars otherwise.
         var_defs.variables[github_user["query_name"]] = DSLVariable(github_user["query_name"])
-        user_queries.append((
-            ds.Query.user
-            .args(login=var_defs.variables[github_user["query_name"]])
-            .alias(github_user["query_name"])
-            .select(ds.User.organization.args(login=var_defs.org)
-                .select(ds.Organization.login)
+        user_queries.append(
+            (
+                ds.Query.user.args(login=var_defs.variables[github_user["query_name"]])
+                .alias(github_user["query_name"])
+                .select(ds.User.organization.args(login=var_defs.org).select(ds.Organization.login))
             )
-        ))
+        )
 
     operation = DSLQuery(*user_queries)
     operation.variable_definitions = var_defs
