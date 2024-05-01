@@ -133,7 +133,7 @@ class Service:
             query = ""
             variables = {}
             if self._org is not None:
-                query = 'query getLogin($org: String!) {organization(login: $org) {login}}'
+                query = "query getLogin($org: String!) {organization(login: $org) {login}}"
                 variables.org = self._org
             else:
                 query = "viewer { login }"
