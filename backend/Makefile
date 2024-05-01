@@ -303,7 +303,7 @@ install-plugin-dependencies:
 unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
 	@echo "${INFO}Running Unit tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
-	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
@@ -335,7 +335,7 @@ end2end-test:
 test: get-shell-check
 	@echo "${INFO}Running All tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
-	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
