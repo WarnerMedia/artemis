@@ -292,7 +292,9 @@ get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 .PHONY: get-mock-swiftlint
 
 get-trivy:
-	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | sh -s -- -b /usr/local/bin ${TRIVY_VER};
+	mkdir -p ${ROOT_DIR}/.temp/trivy; \
+	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | \
+		sh -s -- -b ${ROOT_DIR}/.temp/trivy ${TRIVY_VER};
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
@@ -312,6 +314,7 @@ unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependen
 integration-test: get-trivy
 	@echo "${INFO}Running Integration tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
+	export PATH='${ROOT_DIR}/.temp/trivy:${PATH}' \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
