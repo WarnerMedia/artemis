@@ -262,13 +262,6 @@ help:  ## Print this help text
 # Testing targets
 ###############################################################################
 
-venv:  ## Build Python virtual environment
-	@echo "${INFO}Building venv"
-	${PIP} install --upgrade --user pipenv; \
-	${PYTHON} -m pipenv install
-	@echo "${OK}"
-.PHONY: venv
-
 $(ROOT_DIR)/.temp/detekt/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
@@ -305,7 +298,7 @@ install-plugin-dependencies:
 	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/github_repo_health/cli/generated_requirements.txt
 
 
-unit-test: venv get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
+unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
 	@echo "${INFO}Running Unit tests"
 	export PYTHONPATH='${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report'; \
 	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
@@ -315,7 +308,7 @@ unit-test: venv get-shell-check get-detekt get-mock-swiftlint install-plugin-dep
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "not integtest and not end2end" ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 
-integration-test: venv get-trivy
+integration-test: get-trivy
 	@echo "${INFO}Running Integration tests"
 	export PYTHONPATH=${COMMON_PYTHONPATH}:'${ROOT_DIR}/lambdas/generators/json_report'; \
 	${PYTHON} -m pipenv check; \
@@ -324,7 +317,7 @@ integration-test: venv get-trivy
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 
-end2end-test: venv
+end2end-test:
 	@echo "${INFO}Running end to end tests"
 	export PYTHONPATH=${COMMON_PYTHONPATH}; \
 	${PYTHON} -m pipenv check; \
@@ -333,7 +326,7 @@ end2end-test: venv
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "end2end";
 	@echo "${OK}"
 
-test: venv get-shell-check
+test: get-shell-check
 	@echo "${INFO}Running All tests"
 	export PYTHONPATH=${COMMON_PYTHONPATH}; \
 	export PATH=${PATH}:'${ROOT_DIR}/.temp/shellcheck'; \
