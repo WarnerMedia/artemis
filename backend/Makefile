@@ -241,6 +241,7 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/engine/plugins/repo_health/cli
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/system_services
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report
 
 # Artemis scan configuration
 ARTEMIS_SCAN_ARGS :=
@@ -300,7 +301,7 @@ install-plugin-dependencies:
 
 unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
 	@echo "${INFO}Running Unit tests"
-	export PYTHONPATH='${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report'; \
+	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
@@ -310,7 +311,7 @@ unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependen
 
 integration-test: get-trivy
 	@echo "${INFO}Running Integration tests"
-	export PYTHONPATH=${COMMON_PYTHONPATH}:'${ROOT_DIR}/lambdas/generators/json_report'; \
+	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
@@ -319,17 +320,17 @@ integration-test: get-trivy
 
 end2end-test:
 	@echo "${INFO}Running end to end tests"
-	export PYTHONPATH=${COMMON_PYTHONPATH}; \
+	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "end2end";
+	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "end2end" ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 .PHONY: end2end-test
 
 test: get-shell-check
 	@echo "${INFO}Running All tests"
-	export PYTHONPATH=${COMMON_PYTHONPATH}; \
-	export PATH=${PATH}:'${ROOT_DIR}/.temp/shellcheck'; \
+	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
+	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini";
