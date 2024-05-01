@@ -307,6 +307,7 @@ unit-test: get-shell-check get-detekt get-mock-swiftlint install-plugin-dependen
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "not integtest and not end2end" ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
+.PHONY: unit-test
 
 integration-test: get-trivy
 	@echo "${INFO}Running Integration tests"
@@ -316,6 +317,7 @@ integration-test: get-trivy
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
+.PHONY: integration-test
 
 end2end-test:
 	@echo "${INFO}Running end to end tests"
@@ -325,6 +327,7 @@ end2end-test:
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "end2end";
 	@echo "${OK}"
+.PHONY: end2end-test
 
 test: get-shell-check
 	@echo "${INFO}Running All tests"
@@ -335,7 +338,7 @@ test: get-shell-check
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c "pytest.ini";
 	@echo "${OK}"
-
+.PHONY: test
 
 lint_api_spec:
 	@echo "${INFO}Linting API spec"
