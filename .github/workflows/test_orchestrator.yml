@@ -15,6 +15,9 @@ jobs:
         with:
           python-version: "3.9"
           architecture: "x64"
+      - name: Install Test Dependencies
+        run: |
+          pip install --upgrade pipenv wheel
       - name: Run orchestrator tests
         run: |
           make -C orchestrator unit-test ENV=example

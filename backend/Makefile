@@ -241,6 +241,7 @@ COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/engine/plugins/repo_health/cli
 COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/system_services
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report
 
 # Artemis scan configuration
 ARTEMIS_SCAN_ARGS :=
@@ -261,13 +262,6 @@ help:  ## Print this help text
 ###############################################################################
 # Testing targets
 ###############################################################################
-
-venv:  ## Build Python virtual environment
-	@echo "${INFO}Building venv"
-	${PIP} install --upgrade --user pipenv; \
-	${PYTHON} -m pipenv install
-	@echo "${OK}"
-.PHONY: venv
 
 $(ROOT_DIR)/.temp/detekt/detekt.jar:
 	mkdir -p $(@D)
@@ -298,51 +292,43 @@ get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 .PHONY: get-mock-swiftlint
 
 get-trivy:
-	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | sh -s -- -b /usr/local/bin ${TRIVY_VER};
+	mkdir -p ${ROOT_DIR}/.temp/trivy; \
+	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | \
+		sh -s -- -b ${ROOT_DIR}/.temp/trivy ${TRIVY_VER};
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
 	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/github_repo_health/cli/generated_requirements.txt
 
-
-unit-test: venv get-shell-check get-detekt get-mock-swiftlint install-plugin-dependencies ## Run unit tests
-	@echo "${INFO}Running Unit tests"
-	export PYTHONPATH='${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report'; \
-	export PATH='${PATH}:${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint'; \
-	${PYTHON} -m pipenv check; \
+define run-pytest
+	@echo "${INFO}Running $1"
+	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
+	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
 	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "not integtest and not end2end" ${PYTEST_EXTRA_ARGS};
+	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
+endef
 
-integration-test: venv get-trivy
-	@echo "${INFO}Running Integration tests"
-	export PYTHONPATH=${COMMON_PYTHONPATH}:'${ROOT_DIR}/lambdas/generators/json_report'; \
-	${PYTHON} -m pipenv check; \
-	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
-	@echo "${OK}"
+test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy install-plugin-dependencies
+.PHONY: test-deps
 
-end2end-test: venv
-	@echo "${INFO}Running end to end tests"
-	export PYTHONPATH=${COMMON_PYTHONPATH}; \
-	${PYTHON} -m pipenv check; \
-	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "end2end";
-	@echo "${OK}"
+unit-test: test-deps
+	$(call run-pytest,unit tests,-m "not integtest and not end2end")
+.PHONY: unit-test
 
-test: venv get-shell-check
-	@echo "${INFO}Running All tests"
-	export PYTHONPATH=${COMMON_PYTHONPATH}; \
-	export PATH=${PATH}:'${ROOT_DIR}/.temp/shellcheck'; \
-	${PYTHON} -m pipenv check; \
-	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini";
-	@echo "${OK}"
+integration-test: test-deps
+	$(call run-pytest,integration tests,-m "integtest")
+.PHONY: integration-test
 
+end2end-test: test-deps
+	$(call run-pytest,end to end tests,-m "end2end")
+.PHONY: end2end-test
+
+test: test-deps
+	$(call run-pytest,all tests)
+.PHONY: test
 
 lint_api_spec:
 	@echo "${INFO}Linting API spec"
