@@ -12,9 +12,16 @@ jobs:
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # actions/checkout@v4.1.2
       - name: setup python environment
         uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # actions/setup-python@v5.0.0
+        id: setup-python
         with:
           python-version: "3.9"
           architecture: "x64"
+      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # actions/cache@v4.0.2
+        with:
+          path: orchestrator/.pytest_cache
+          key: orchestrator-${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pytest-${{ hashFiles('orchestrator/**/Pipfile.lock', 'orchestrator/**/pytest.ini') }}
+          restore-keys: |
+            orchestrator-${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pytest-
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
