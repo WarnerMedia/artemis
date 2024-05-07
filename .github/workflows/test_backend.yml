@@ -16,6 +16,8 @@ jobs:
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
+      - name: Run code style tests
+        run: make -C backend style-test ENV=example
       - name: Run backend tests
         env:
           ANALYZER_DJANGO_SECRET_KEY: ${{ secrets.TEST_DJANGO_SECRET_KEY }}
