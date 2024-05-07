@@ -326,16 +326,16 @@ end2end-test: test-deps
 	$(call run-pytest,end to end tests,-m "end2end")
 .PHONY: end2end-test
 
-test: test-deps format-test
+test: test-deps style-test
 	$(call run-pytest,all tests)
 .PHONY: test
 
-format-test:
-	@echo "${INFO}Running format checks"
+style-test:
+	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv install --dev
 	${PYTHON} -m pipenv run black --check .
 	@echo "${OK}"
-.PHONY: format-test
+.PHONY: style-test
 
 lint_api_spec:
 	@echo "${INFO}Linting API spec"
