@@ -8,13 +8,12 @@ from heimdall_utils import get_services
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVICES_LOC = os.path.abspath(os.path.join(TEST_DIR, "data", "services.json"))
 SERVICE_KEYS = ["services", "repos", "scan_orgs", "external_orgs"]
-SERVICE_SERVICES = ["github", "gitlab", "bitbucket", "git.example.com"]
+SERVICE_SERVICES = ["azure", "github", "gitlab", "bitbucket", "git.example.com"]
 
 
-@pytest.mark.integtest
 class TestServices(unittest.TestCase):
     def setUp(self) -> None:
-        self.full_services_dict = get_services.get_services_dict("services.json")
+        self.full_services_dict = get_services.get_services_dict(SERVICES_LOC)
 
     def test_verify_json_keys(self):
         service_keys = self.full_services_dict.keys()

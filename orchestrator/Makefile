@@ -97,11 +97,12 @@ unit-test: venv ## Run unit tests
 
 integration-test: venv ## Run integration tests
 	export ARTEMIS_S3_BUCKET=${ARTEMIS_S3_BUCKET};\
+	export ARTEMIS_API=${ARTEMIS_API}; \
 	export SCAN_TABLE=$(shell terraform -chdir=${TERRAFORM}/environments/${ENV} output repo-scan-table-name); \
 	export PYTHONPATH=${PYTHONPATH}:${TEST_DIRS}; \
 	${PYTHON} -m pipenv check; \
 	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" --no-pylint ${PYTEST_EXTRA_ARGS};
+	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
 
 test: unit-test \
 	  integration-test
