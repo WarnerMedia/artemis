@@ -62,12 +62,13 @@ HEIMDALL_ORGS_SRC = $(shell find ${HEIMDALL_ORGS_DIR} -type f -name '*.py' -o -n
 HEIMDALL_UTILS_SRC = $(shell find ${HEIMDALL_UTILS_DIR} -type f -name '*.py' -o -name '*.cfg')
 HEIMDALL_REPOS_SRC = $(shell find ${HEIMDALL_REPOS_DIR} -type f -name '*.py' -o -name '*.cfg')
 
-TEST_DIRS := ${ROOT_DIR}/lambdas/org_queue
-TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/repo_queue
-TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/repo_scan
-TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/layers/heimdall_orgs
-TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/layers/heimdall_repos
-TEST_DIRS := ${TEST_DIRS}:${ROOT_DIR}/lambdas/layers/heimdall_utils
+COMMON_PYTHONPATH := ${PYTHONPATH}
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/org_queue
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/repo_queue
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/repo_scan
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/layers/heimdall_orgs
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/layers/heimdall_repos
+COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/layers/heimdall_utils
 
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
@@ -82,31 +83,44 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
-venv:
-	@echo "${INFO}Building venv"
-	${PIP} install --upgrade --user pipenv; \
-	${PYTHON} -m pipenv install
+define run-pytest
+	@echo "${INFO}Running $1"
+	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
+	export PIPENV_DONT_LOAD_ENV=1; \
+	$2 \
+	${PYTHON} -m pipenv install --dev; \
+	${PYTHON} -m pipenv run pytest -c pytest.ini $3 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
-.PHONY: venv
+endef
 
-unit-test: venv ## Run unit tests
-	export PYTHONPATH=${PYTHONPATH}:${TEST_DIRS}; \
-	${PYTHON} -m pipenv check; \
-	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "not integtest" ${PYTEST_EXTRA_ARGS};
+unit-test:
+	$(call run-pytest,unit tests,,-m "not integtest and not end2end")
+.PHONY: unit-test
 
-integration-test: venv ## Run integration tests
-	export ARTEMIS_S3_BUCKET=${ARTEMIS_S3_BUCKET};\
-	export ARTEMIS_API=${ARTEMIS_API}; \
-	export SCAN_TABLE=$(shell terraform -chdir=${TERRAFORM}/environments/${ENV} output repo-scan-table-name); \
-	export PYTHONPATH=${PYTHONPATH}:${TEST_DIRS}; \
-	${PYTHON} -m pipenv check; \
-	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pytest -c "pytest.ini" -m "integtest" ${PYTEST_EXTRA_ARGS};
+integration-test:
+	$(call run-pytest,integration tests,\
+		export ARTEMIS_S3_BUCKET=${ARTEMIS_S3_BUCKET}; \
+		export ARTEMIS_API=${ARTEMIS_API};,\
+		-m "integtest")
+.PHONY: integration-test
 
-test: unit-test \
-	  integration-test
+end2end-test:
+	$(call run-pytest,end to end tests,,-m "end2end")
+.PHONY: end2end-test
+
+test: style-test
+	$(call run-pytest,all tests,\
+		export ARTEMIS_S3_BUCKET=${ARTEMIS_S3_BUCKET}; \
+		export ARTEMIS_API=${ARTEMIS_API};,\
+	)
 .PHONY: test
+
+style-test:
+	@echo "${INFO}Running code style checks"
+	${PYTHON} -m pipenv install --dev
+	${PYTHON} -m pipenv run black --check .
+	@echo "${OK}"
+.PHONY: style-test
 
 ###############################################################################
 # Lambdas

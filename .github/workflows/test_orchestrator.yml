@@ -20,6 +20,8 @@ jobs:
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
+      - name: Run code style tests
+        run: make -C orchestrator style-test ENV=example
       - name: Run orchestrator tests
         run: |
           make -C orchestrator unit-test ENV=example
