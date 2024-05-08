@@ -108,12 +108,19 @@ end2end-test:
 	$(call run-pytest,end to end tests,,-m "end2end")
 .PHONY: end2end-test
 
-test:
+test: style-test
 	$(call run-pytest,all tests,\
 		export ARTEMIS_S3_BUCKET=${ARTEMIS_S3_BUCKET}; \
 		export ARTEMIS_API=${ARTEMIS_API};,\
 	)
 .PHONY: test
+
+style-test:
+	@echo "${INFO}Running code style checks"
+	${PYTHON} -m pipenv install --dev
+	${PYTHON} -m pipenv run black --check .
+	@echo "${OK}"
+.PHONY: style-test
 
 ###############################################################################
 # Lambdas
