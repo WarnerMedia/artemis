@@ -138,6 +138,10 @@ class TestTrivy(unittest.TestCase):
         self.assertIn(TEST_CHECK_OUTPUT_PACKAGE_LOCK, check_output_list)
         self.assertIn(TEST_CHECK_OUTPUT_GEMLOCK_FILE, check_output_list)
 
+    def test_check_output_no_results(self):
+        check_output_list = Trivy.parse_output(None)
+        self.assertEqual([], check_output_list)
+
     def test_parse_output_one_file(self):
         result = Trivy.parse_output([TEST_VULN_LOCK_FILE_DICT])
         self.assertEqual([TEST_CHECK_OUTPUT_PACKAGE_LOCK], result)

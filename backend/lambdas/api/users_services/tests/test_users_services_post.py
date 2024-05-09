@@ -1,7 +1,7 @@
 import json
 import unittest
 from copy import deepcopy
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from artemislib.datetime import format_timestamp, get_utc_datetime
 from users_services.handlers import handler
@@ -62,8 +62,8 @@ def _add_user_service(user_services, admin: bool, params: dict):
     }
 
     with patch("users_services.post.get_github_username") as mock_get_github_username, patch(
-        "users_services.post.AWSConnect.invoke_lambda"
-    ) as mock_invoke_lambda, patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user:
+        "users_services.post.AWSConnect"
+    ) as mock_aws_connect, patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user:
 
         get_obj = deepcopy(EMPTY_OBJECT)
         get_obj.userservice_set = deepcopy(EMPTY_OBJECT)
@@ -72,8 +72,11 @@ def _add_user_service(user_services, admin: bool, params: dict):
             "", (), {"service": x["service"], "username": x["username"], "created": TIMESTAMP}
         )()
 
+        mock_aws_connect_inst = MagicMock()
+        mock_aws_connect_inst.invoke_lambda.return_value = None
+        mock_aws_connect.return_value = mock_aws_connect_inst
+
         mock_get_github_username.return_value = SERVICE_USERNAME
-        mock_invoke_lambda.return_value = None
         mock_get_user.return_value = get_obj
 
         return handler(event, {})

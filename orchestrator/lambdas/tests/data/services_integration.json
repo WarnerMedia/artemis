@@ -59,6 +59,20 @@
       "initial_page": {
         "cursor": "null"
       }
+    },
+    "git.example.com": {
+      "secret_loc": "example-api-key",
+      "type": "gitlab",
+      "hostname": null,
+      "url": "https://git.example.com/api/graphql",
+      "branch_url": "https://git.example.com/api/v4",
+      "allow_all": true,
+      "api_key_add": "oauth2:$key",
+      "use_deploy_key": false,
+      "batch_queries": true,
+      "initial_page": {
+        "cursor": "null"
+      }
     }
   },
   "repos": [

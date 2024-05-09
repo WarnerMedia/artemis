@@ -15,6 +15,7 @@ GROUP_AUTH_GROUP_ADMIN = {GROUP_ID: True}
 GROUP_AUTH_NON_GROUP_ADMIN = {GROUP_ID: False}
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
 class TestGroupsKeysDelete(unittest.TestCase):
     def test_key_id_not_provided(self):
         event = {"pathParameters": {"id": GROUP_ID}}

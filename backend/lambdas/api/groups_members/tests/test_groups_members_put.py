@@ -22,6 +22,8 @@ GROUP_AUTH_GROUP_ADMIN = {GROUP_ID: True}
 GROUP_AUTH_NON_GROUP_ADMIN = {GROUP_ID: False}
 
 
+@patch("authorizer.handlers.AuditLogger.__init__", lambda *x, **y: None)
+@patch("authorizer.handlers.AuditLogger.group_member_modified", lambda *x, **y: None)
 class TestGroupsMembersPut(unittest.TestCase):
     def test_non_group_admin(self):
         event = {"pathParameters": {"id": GROUP_ID, "uid": EMAIL2}, "body": json.dumps({"group_admin": False})}

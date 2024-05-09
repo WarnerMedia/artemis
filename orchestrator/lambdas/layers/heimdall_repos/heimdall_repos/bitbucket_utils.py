@@ -2,6 +2,7 @@
 from typing import Tuple
 
 import requests
+import time
 
 from heimdall_repos.objects.cloud_bitbucket_class import CloudBitbucket
 from heimdall_repos.objects.server_v1_bitbucket_class import ServerV1Bitbucket
@@ -184,7 +185,27 @@ class ProcessBitbucketRepos:
             for ref in repo_refs:
                 ref_name = self.service_helper.get_branch_name(ref)
                 ref_names.add(ref_name)
-                timestamps[ref_name] = ref["target"]["date"]
+
+                # Retrieve the timestamp of the latest commit
+                if "target" in ref and "date" in ref["target"]:
+                    timestamps[ref_name] = ref["target"]["date"]
+                else:
+                    # Query the commit endpoint for the timestamp of the latest commit
+                    commit_id = ref["latestCommit"]
+                    commit_url = self.service_helper.construct_bitbucket_commit_url(
+                        self.service_info.url, self.service_info.org, repo, commit_id
+                    )
+                    commit_query_response = self._query_bitbucket_api(commit_url)
+                    commit_query_response_dict = self.json_utils.get_json_from_response(commit_query_response)
+
+                    # Convert timestamp from milliseconds to seconds
+                    timestamp = commit_query_response_dict["committerTimestamp"]
+                    timestamp = timestamp / 1000
+
+                    # Format timestamp
+                    timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(timestamp))
+
+                    timestamps[ref_name] = timestamp
 
             cursor = None
             if self.service_helper.has_next_page(response_dict):

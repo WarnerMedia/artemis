@@ -152,13 +152,22 @@ class ProcessGitlabRepos:
                     # Only make the additional query to get the rootRef timestamp if it will actually be used.
                     # If there is no redundant scan query we can skip making this API call.
                     refs, timestamps = self._get_ref_names(repo["id"], repo["repository"]["rootRef"])
+
+                    timestamp = None
+                    if refs and timestamps:
+                        timestamp = timestamps[refs[0]]
+                    else:
+                        LOG.warning(
+                            "Unable to retrieve timestamp for %s/%s/%s", self.service_info.service, base_org, name
+                        )
+
                     if redundant_scan_exists(
                         api_key=self.artemis_api_key,
                         service=self.service_info.service,
                         org=self.service_info.org,
                         repo=name,
                         branch=None,
-                        timestamp=timestamps[refs[0]],
+                        timestamp=timestamp,
                         query=self.redundant_scan_query,
                     ):
                         continue

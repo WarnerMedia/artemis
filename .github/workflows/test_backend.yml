@@ -13,6 +13,13 @@ jobs:
       - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # actions/setup-python@v5.0.0
         with:
           python-version: "3.9"
+          cache: pipenv
+          cache-dependency-path: backend/Pipfile.lock
+      - name: Install Test Dependencies
+        run: |
+          pip install --upgrade pipenv wheel
+      - name: Run code style tests
+        run: make -C backend style-test ENV=example
       - name: Run backend tests
         env:
           ANALYZER_DJANGO_SECRET_KEY: ${{ secrets.TEST_DJANGO_SECRET_KEY }}

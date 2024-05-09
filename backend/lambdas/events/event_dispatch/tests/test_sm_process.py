@@ -4,7 +4,7 @@ import botocore.exceptions
 
 try:
     from event_dispatch.event_dispatch import determine_secrets_management_processes
-except (botocore.exceptions.ClientError, botocore.exceptions.NoCredentialsError):
+except (botocore.exceptions.ClientError, botocore.exceptions.NoCredentialsError, botocore.exceptions.ProfileNotFound):
     raise unittest.SkipTest("Unit Test requires AWS Credentials to run. Skipping.")
 
 SERVICES = {

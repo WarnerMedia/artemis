@@ -209,6 +209,8 @@ variable "audit_event_queue" {}
 
 variable "scheduled_scan_queue" {}
 
+variable "metadata_events_queue" {}
+
 ################################################
 # Feature Control
 ################################################
@@ -282,6 +284,11 @@ variable "configuration_events_enabled" {
 
 variable "vulnerability_events_enabled" {
   description = "Whether to send vulnerability events to the event queue"
+  default     = false
+}
+
+variable "metadata_events_enabled" {
+  description = "Whether to send metadata events to the event queue"
   default     = false
 }
 
