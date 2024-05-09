@@ -100,7 +100,12 @@ class GithubOrgs:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
 
         try:
-            response = requests.post(url=self.api_url, headers=headers, json={"query": query, "variables": {"cursor": cursor}}, timeout=TIMEOUT)
+            response = requests.post(
+                url=self.api_url,
+                headers=headers,
+                json={"query": query, "variables": {"cursor": cursor}},
+                timeout=TIMEOUT,
+            )
         except requests.exceptions.Timeout:
             log.error("Request timed out after %ss retrieving orgs for %s", TIMEOUT, self.service)
             return None
