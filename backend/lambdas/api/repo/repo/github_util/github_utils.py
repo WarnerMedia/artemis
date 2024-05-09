@@ -39,27 +39,6 @@ def process_github(
     return PROCESS_RESPONSE_TUPLE(total_queued, total_failed, unauthorized)
 
 
-def _get_query_response(authorization, service_url, query, variables):
-    # Query the GitHub API
-    headers = {"Authorization": authorization, "Content-Type": "application/json"}
-    if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_url:
-        headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
-    log.error(service_url)
-    response = requests.post(
-        url=service_url,
-        headers=headers,
-        json={"query": query, "variables": variables},
-    )
-
-    log.info("Got API response")
-
-    if response.status_code != 200:
-        log.error("Error retrieving query: %s", response.text)
-        return None
-
-    return json.loads(response.text)
-
-
 def _build_query(org, req_list, service, authz):
     # Build up a GraphQL query for each repo in the request
     unauthorized = []
