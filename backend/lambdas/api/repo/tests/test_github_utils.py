@@ -1,35 +1,116 @@
-import json
-import os
 import unittest
+from repo.github_util.github_utils import _build_query
 
-import pytest
-
-from repo.github_util.github_utils import _get_query_response
-from repo.util.utils import get_api_key
-
-TEST_DIR = os.path.dirname(os.path.abspath(__file__))
-
-with open(os.path.join(TEST_DIR, "data/services.json")) as services_file:
-    SERVICES_DICT = json.load(services_file)
-
-PRIVATE_PROXY_GITHUB = SERVICES_DICT["services"]["git.example.com"]
-
-QUERY_LIST = [
-    """
-    repo0: repository(owner: "example", name: "behavior3") {
-                    url
-                    nameWithOwner
-                    isPrivate
-                    diskUsage
-                    }
-    """
-]
+ORG = "org"
+SERVICE = "github"
+AUTHZ = [[["github/*"]]]
 
 
-@pytest.mark.integtest
 class TestGithub(unittest.TestCase):
-    def test_private_github_rev_proxy_query(self):
-        authorization = f"bearer {get_api_key(PRIVATE_PROXY_GITHUB['secret_loc'])}"
+    def test_single_repo_with_no_branch(self):
+        expected_query = """query GetRepos(
+  $org: String!
+  $repo0: String!
+) {
+  repo0: repository(
+    owner: $org
+    name: $repo0
+  ) {
+    url
+    nameWithOwner
+    isPrivate
+    diskUsage
+  }
+}"""
+        expected_vars = {"org": ORG, "repo0": "artemis"}
+        req_list = [{"org": ORG, "branch": "", "repo": "artemis"}]
+        query, _, variables, _ = _build_query(ORG, req_list, SERVICE, AUTHZ)
+        self.assertEqual(query, expected_query)
+        self.assertEqual(variables, expected_vars)
 
-        resp = _get_query_response(authorization, PRIVATE_PROXY_GITHUB["url"], QUERY_LIST)
-        self.assertEqual(resp["data"]["repo0"]["nameWithOwner"], "example/behavior3")
+    def test_multi_repos_with_some_branches(self):
+        expected_query = """query GetRepos(
+  $org: String!
+  $repo0: String!
+  $branch0: String!
+  $repo1: String!
+  $repo2: String!
+  $branch2: String!
+  $repo3: String!
+  $branch3: String!
+) {
+  repo0: repository(
+    owner: $org
+    name: $repo0
+  ) {
+    url
+    nameWithOwner
+    isPrivate
+    diskUsage
+    ref(
+      qualified_name: $branch0
+    ) {
+      name
+    }
+  }
+
+  repo1: repository(
+    owner: $org
+    name: $repo1
+  ) {
+    url
+    nameWithOwner
+    isPrivate
+    diskUsage
+  }
+
+  repo2: repository(
+    owner: $org
+    name: $repo2
+  ) {
+    url
+    nameWithOwner
+    isPrivate
+    diskUsage
+    ref(
+      qualified_name: $branch2
+    ) {
+      name
+    }
+  }
+
+  repo3: repository(
+    owner: $org
+    name: $repo3
+  ) {
+    url
+    nameWithOwner
+    isPrivate
+    diskUsage
+    ref(
+      qualified_name: $branch3
+    ) {
+      name
+    }
+  }
+}"""
+        expected_vars = {
+            "org": ORG,
+            "repo0": "artemis1",
+            "branch0": "main",
+            "repo1": "artemis2",
+            "repo2": "artemis3",
+            "branch2": "main",
+            "repo3": "artemis4",
+            "branch3": "main",
+        }
+        req_list = [
+            {"org": ORG, "branch": "main", "repo": "artemis1"},
+            {"org": ORG, "branch": "", "repo": "artemis2"},
+            {"org": ORG, "branch": "main", "repo": "artemis3"},
+            {"org": ORG, "branch": "main", "repo": "artemis4"},
+        ]
+        query, query_map, variables, _ = _build_query(ORG, req_list, SERVICE, AUTHZ)
+        self.assertEqual(query, expected_query)
+        self.assertEqual(len(query_map), 4)
+        self.assertEqual(variables, expected_vars)

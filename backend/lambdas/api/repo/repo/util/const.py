@@ -2,6 +2,7 @@
 Constants file
 todo : search plugin settings.json to obtain a dynamic list of plugins and categories.
 """
+
 # pylint: disable=no-member
 import os
 from collections import namedtuple
@@ -185,35 +186,6 @@ SCAN_PARAMS = [
     "include_paths",
     "exclude_paths",
 ]
-
-GITLAB_QUERY_WITH_BRANCH = """
-repo$count{ project(fullPath: "$org_name/$repo") {
-    httpUrlToRepo,
-    fullPath,
-    visibility,
-    statistics {
-        repositorySize
-    }
-    repository {
-        tree(ref: "$branch") {
-            lastCommit {
-                id
-            }
-        }
-    }
-}}
-"""
-
-GITLAB_QUERY_NO_BRANCH = """
-repo$count{ project(fullPath: "$org_name/$repo") {
-    httpUrlToRepo,
-    fullPath,
-    visibility,
-    statistics {
-        repositorySize
-    }
-}}
-"""
 
 BITBUCKET_PUBLIC_REPO_QUERY = "$service_url/repositories/$org/$repo"
 

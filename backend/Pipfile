@@ -18,7 +18,7 @@ pyjwt = "*"
 cryptography = "*"
 packaging = "==21.3"
 urllib3 = "<2"
-gql = {extras = ["requests"], version = "*"}
+graphql-query = "*"
 
 [dev-packages]
 pytest = "==6.0.1"
@@ -40,7 +40,6 @@ python-dotenv = "*"
 checkov = "==2.0.1065"
 aiohttp = "*"
 gitpython = "*"
-responses = "*"
 
 [pipenv]
 allow_prereleases = true

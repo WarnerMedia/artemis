@@ -2,26 +2,23 @@
 import json
 import re
 import urllib
-from string import Template
-
 import requests
+from string import Template
+from graphql_query import Argument, Field, Operation, Query, Variable
 
 from repo.util.aws import AWSConnect
-from repo.util.const import GITLAB_QUERY_NO_BRANCH, GITLAB_QUERY_WITH_BRANCH
 from repo.util.env import DEFAULT_ORG, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 from repo.util.utils import GetProxySecret, Logger, auth
 
 log = Logger(__name__)
 
 
-def _process_query_list(key, service_url, query_list, batch_query=True):
+def process_query_list(key, service_url, query_list, vars, batch_query=True):
     if batch_query:
-        query = "{%s}" % " ".join(query_list)
-        return _get_query_response(key, service_url, query)
+        return _get_query_response(key, service_url, query_list, vars)
     response_dict = {"data": {}}
     for query_item in query_list:
-        query = "query {}".format(query_item)
-        resp = _get_query_response(key, service_url, query)
+        resp = _get_query_response(key, service_url, query_item, vars)
         if resp and "data" in resp and "project" in resp.get("data"):
             resp_data = resp["data"]["project"]
             repo = re.match("repo[0-9]*", query_item.strip()).group(0)
@@ -32,11 +29,11 @@ def _process_query_list(key, service_url, query_list, batch_query=True):
     return response_dict
 
 
-def _get_query_response(key, service_url, query):
+def _get_query_response(key, service_url, query, vars):
     headers = {"Authorization": "Bearer %s" % key, "Content-Type": "application/json"}
     if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_url:
         headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
-    response = requests.post(url=service_url, headers=headers, json={"query": query})
+    response = requests.post(url=service_url, headers=headers, json={"query": query, "variables": vars})
     log.info("Got API response")
     if response.status_code != 200:
         log.error("Error retrieving query: %s", response.text)
@@ -59,39 +56,69 @@ def check_diff(diff_url, key, org_repo, base, compare):
     return r.status_code == 200
 
 
-def _build_queries(req_list, authz, service):
+def build_queries(req_list, authz, service, batch_queries):
     # Build up a GraphQL query for each repo in the request
     unauthorized = []
     query_list = []
     query_map = {}
+    variables = {}
+    var_defs = {}
+    queries = []
+    var_defs.update({"org": Variable(name="org", type="String!")})
 
     count = 0
     for req in req_list:
         branch_name = req.get("branch")
         org_name = req.get("org", DEFAULT_ORG)
-
+        variables.update({"org": org_name})
         # Validate that this API key is authorized to scan this repo
         allowed = auth(f"{org_name}/{req['repo']}", service, authz)
         if not allowed:
             unauthorized.append({"repo": f"{service}/{org_name}/{req['repo']}", "error": "Not Authorized"})
             continue
 
-        if branch_name:
-            query = Template(GITLAB_QUERY_WITH_BRANCH).substitute(
-                count=count, org_name=org_name, repo=req["repo"], branch=branch_name
-            )
-            query_list.append(query)
-        else:
-            # If no branch was specified don't include ref in the query so
-            # we can distinguish between no branch and invalid branch in the
-            # query results.
-            query = Template(GITLAB_QUERY_NO_BRANCH).substitute(count=count, org_name=org_name, repo=req["repo"])
-            query_list.append(query)
+        repo_alias = f"repo{count}"
+        variables.update({repo_alias: f"{org_name}/{req['repo']}"})
 
+        var_defs.update({repo_alias: Variable(name=repo_alias, type="String!")})
+        query = Query(
+            name="project",
+            alias=repo_alias,
+            arguments=[
+                Argument(name="fullPath", value=var_defs.get(repo_alias)),
+            ],
+            fields=["httpUrlToRepo", "fullPath", "visibility", Field(name="statistics", fields=["repositorySize"])],
+        )
+
+        if branch_name:
+            branch_alias = f"branch{count}"
+            var_defs.update({branch_alias: Variable(name=branch_alias, type="String!")})
+            query.fields.append(
+                Field(
+                    name="repository",
+                    fields=[
+                        Field(
+                            name="tree",
+                            arguments=[Argument(name="ref", value=var_defs.get(branch_alias))],
+                            fields=[Field(name="lastCommit", fields=["id"])],
+                        )
+                    ],
+                )
+            )
+            variables.update({branch_alias: branch_name})
+
+        query_list.append(query)
         query_map["repo%d" % count] = {"repo": "%s/%s" % (org_name, req["repo"]), "branch": branch_name}
         count += 1
 
-    return query_list, query_map, unauthorized
+    if batch_queries:
+        operation = Operation(type="query", name="GetRepos", variables=var_defs.values(), queries=query_list)
+        queries.append(operation.render())
+    else:
+        for item in query_list:
+            operation = Operation(type="query", name="GetRepo", variables=var_defs.values(), queries=item)
+            queries.append(operation.render())
+    return queries, variables, query_map, unauthorized
 
 
 def queue_gitlab_repository(

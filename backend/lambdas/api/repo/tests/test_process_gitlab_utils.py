@@ -1,10 +1,51 @@
 import unittest
-from string import Template
 from unittest.mock import patch
 
 from repo.gitlab_util import process_gitlab_utils
-from repo.util.const import GITLAB_QUERY_NO_BRANCH, GITLAB_QUERY_WITH_BRANCH
 
+SERVICE = "gitlab"
+AUTHZ = [[["gitlab/*"]]]
+
+GITLAB_QUERY_WITH_BRANCH_EXPECTED = """query GetRepos(
+  $org: String!
+  $repo0: String!
+  $branch0: String!
+) {
+  repo0: project(
+    fullPath: $repo0
+  ) {
+    httpUrlToRepo
+    fullPath
+    visibility
+    statistics {
+      repositorySize
+    }
+    repository {
+      tree(
+        ref: $branch0
+      ) {
+        lastCommit {
+          id
+        }
+      }
+    }
+  }
+}"""
+GITLAB_QUERY_NO_BRANCH_EXPECTED = """query GetRepos(
+  $org: String!
+  $repo0: String!
+) {
+  repo0: project(
+    fullPath: $repo0
+  ) {
+    httpUrlToRepo
+    fullPath
+    visibility
+    statistics {
+      repositorySize
+    }
+  }
+}"""
 TEST_SERVICE_URL = None
 TEST_QUERY_LIST = [
     '    repo0 {\n  project(fullPath: "test/test_package") {\n    httpUrlToRepo,'
@@ -29,25 +70,23 @@ class TestGitlabUtils(unittest.TestCase):
     def test_process_query_list(self, get_query_response):
         self.assertEqual(process_gitlab_utils._get_query_response, get_query_response)
         get_query_response.return_value = TEST_QUERY_RESPONSE
-        resp = process_gitlab_utils._process_query_list(None, TEST_SERVICE_URL, TEST_QUERY_LIST, False)
+        resp = process_gitlab_utils.process_query_list(None, TEST_SERVICE_URL, TEST_QUERY_LIST, {}, False)
         self.assertEqual(TEST_RESPONSE_DICT, resp)
 
     def test_build_query_no_branch(self):
-        request_list = [{"org": "testorg", "repo": "testrepo"}]
-        expected_query = Template(GITLAB_QUERY_NO_BRANCH).substitute(
-            count=0, org_name=request_list[0]["org"], repo=request_list[0]["repo"]
+        request_list = [{"org": "testorg", "repo": "artemis"}]
+
+        query_list, variables, _, _ = process_gitlab_utils.build_queries(
+            req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=True
         )
-        self.build_queries(request_list, expected_query)
+        print(query_list[0])
+        self.assertEqual(query_list[0], GITLAB_QUERY_NO_BRANCH_EXPECTED)
+        self.assertEqual(variables, {"org": "testorg", "repo0": "testorg/artemis"})
 
     def test_build_queries_branch(self):
-        request_list = [{"org": "testorg", "repo": "testrepo", "branch": "main"}]
-        expected_query = Template(GITLAB_QUERY_WITH_BRANCH).substitute(
-            count=0, org_name=request_list[0]["org"], repo=request_list[0]["repo"], branch=request_list[0]["branch"]
+        request_list = [{"org": "testorg", "repo": "artemis", "branch": "main"}]
+        query_list, variables, _, _ = process_gitlab_utils.build_queries(
+            req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=True
         )
-        self.build_queries(request_list, expected_query)
-
-    def build_queries(self, request_list, expected_query):
-        service_type = "github"
-        authz = [[["github/*"]]]
-        query_list, _, _ = process_gitlab_utils._build_queries(req_list=request_list, authz=authz, service=service_type)
-        self.assertEqual(expected_query.strip(), query_list[0].strip())
+        self.assertEqual(query_list[0], GITLAB_QUERY_WITH_BRANCH_EXPECTED)
+        self.assertEqual(variables, {"org": "testorg", "repo0": "testorg/artemis", "branch0": "main"})
