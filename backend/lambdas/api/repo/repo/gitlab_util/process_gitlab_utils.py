@@ -3,7 +3,6 @@ import json
 import re
 import urllib
 import requests
-from string import Template
 from graphql_query import Argument, Field, Operation, Query, Variable
 
 from repo.util.aws import AWSConnect
