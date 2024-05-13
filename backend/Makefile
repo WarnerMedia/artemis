@@ -225,24 +225,6 @@ LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 
-# Common PYTHONPATH
-COMMON_PYTHONPATH := ${PYTHONPATH}
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/repo
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/users
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/engine
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/users_keys
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/users_services
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/events/event_dispatch
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/scheduled/scan_scheduler
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_keys
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/groups_members
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/${ARTEMISAPI}
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/authorizer
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/engine/plugins/repo_health/cli
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/api/system_services
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/generators/json_report
-
 # Artemis scan configuration
 ARTEMIS_SCAN_ARGS :=
 
@@ -302,11 +284,9 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv install --dev; \
-	${PYTHON} -m pipenv run pip install ${ARTEMISLIB} ${ARTEMISDB}; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef

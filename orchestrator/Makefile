@@ -62,14 +62,6 @@ HEIMDALL_ORGS_SRC = $(shell find ${HEIMDALL_ORGS_DIR} -type f -name '*.py' -o -n
 HEIMDALL_UTILS_SRC = $(shell find ${HEIMDALL_UTILS_DIR} -type f -name '*.py' -o -name '*.cfg')
 HEIMDALL_REPOS_SRC = $(shell find ${HEIMDALL_REPOS_DIR} -type f -name '*.py' -o -name '*.cfg')
 
-COMMON_PYTHONPATH := ${PYTHONPATH}
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/org_queue
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/repo_queue
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/repo_scan
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/layers/heimdall_orgs
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/layers/heimdall_repos
-COMMON_PYTHONPATH := ${COMMON_PYTHONPATH}:${ROOT_DIR}/lambdas/layers/heimdall_utils
-
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
@@ -85,7 +77,6 @@ help:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PYTHONPATH='${COMMON_PYTHONPATH}'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	$2 \
 	${PYTHON} -m pipenv install --dev; \
