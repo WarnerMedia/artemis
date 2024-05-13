@@ -115,7 +115,7 @@ def build_queries(req_list, authz, service, batch_queries):
         queries.append(operation.render())
     else:
         for item in query_list:
-            operation = Operation(type="query", name="GetRepo", variables=var_defs.values(), queries=item)
+            operation = Operation(type="query", name="GetRepo", variables=var_defs.values(), queries=[item])
             queries.append(operation.render())
     return queries, variables, query_map, unauthorized
 
