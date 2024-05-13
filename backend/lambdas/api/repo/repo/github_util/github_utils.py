@@ -80,7 +80,7 @@ def _build_query(org, req_list, service, authz):
             query.fields.append(
                 Field(
                     name="ref",
-                    arguments=[Argument(name="qualified_name", value=var_defs.get(branch_alias))],
+                    arguments=[Argument(name="qualifiedName", value=var_defs.get(branch_alias))],
                     fields=["name"],
                 )
             )
@@ -99,7 +99,7 @@ def _get_query_response(authorization, service_url, query, variables):
     headers = {"Authorization": authorization, "Content-Type": "application/json"}
     if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_url:
         headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
-    log.error(service_url)
+
     response = requests.post(
         url=service_url,
         headers=headers,
