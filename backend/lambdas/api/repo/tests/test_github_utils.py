@@ -48,7 +48,7 @@ class TestGithub(unittest.TestCase):
     isPrivate
     diskUsage
     ref(
-      qualified_name: $branch0
+      qualifiedName: $branch0
     ) {
       name
     }
