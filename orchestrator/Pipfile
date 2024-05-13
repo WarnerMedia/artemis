@@ -19,7 +19,7 @@ pyjwt = "*"
 cryptography = "*"
 
 [dev-packages]
-pytest = "==7.3.1"
+pytest = ">=8.2.0"
 flake8 = ">=3.3.0"
 mock = "==2.0.0"
 moto = "==1.3.7"
