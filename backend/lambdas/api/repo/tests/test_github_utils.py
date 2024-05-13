@@ -73,7 +73,7 @@ class TestGithub(unittest.TestCase):
     isPrivate
     diskUsage
     ref(
-      qualified_name: $branch2
+      qualifiedName: $branch2
     ) {
       name
     }
@@ -88,7 +88,7 @@ class TestGithub(unittest.TestCase):
     isPrivate
     diskUsage
     ref(
-      qualified_name: $branch3
+      qualifiedName: $branch3
     ) {
       name
     }
