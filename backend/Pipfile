@@ -40,6 +40,7 @@ python-dotenv = "*"
 checkov = "==2.0.1065"
 aiohttp = "*"
 gitpython = "*"
+psycopg2-binary = ">=2.9.0"
 
 [pipenv]
 allow_prereleases = true
