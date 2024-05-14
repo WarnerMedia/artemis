@@ -107,7 +107,7 @@ class Service:
         try:
             if key is None:
                 self._error = "Unable to retrieve key"
-            if self._service["type"] == ServiceType.GITHUB:
+            elif self._service["type"] == ServiceType.GITHUB:
                 self._test_github(key)
             elif self._service["type"] == ServiceType.GITLAB:
                 self._test_gitlab(key)
