@@ -7,8 +7,7 @@ SERVICE = "gitlab"
 AUTHZ = [[["gitlab/*"]]]
 
 GITLAB_QUERY_WITH_BRANCH_EXPECTED = """query GetRepos(
-  $org: String!
-  $repo0: String!
+  $repo0: ID!
   $branch0: String!
 ) {
   repo0: project(
@@ -32,8 +31,7 @@ GITLAB_QUERY_WITH_BRANCH_EXPECTED = """query GetRepos(
   }
 }"""
 GITLAB_QUERY_NO_BRANCH_EXPECTED = """query GetRepos(
-  $org: String!
-  $repo0: String!
+  $repo0: ID!
 ) {
   repo0: project(
     fullPath: $repo0
@@ -53,7 +51,7 @@ TEST_QUERY_LIST = [
 ]
 TEST_QUERY_RESPONSE = {
     "data": {
-        "project": {
+        "repo0": {
             "httpUrlToRepo": "https://test_gitlab_instance/test/test_package.git",
             "fullPath": "test/test_package",
             "visibility": "internal",
