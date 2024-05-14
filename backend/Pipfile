@@ -22,7 +22,7 @@ graphql-query = "*"
 sqlparse = "==0.5.0"
 
 [dev-packages]
-pytest = "==6.0.1"
+pytest = ">=8.2.0"
 flake8 = ">=3.3.0"
 mock = "==4.0.2"
 moto = "==1.3.14"
@@ -41,6 +41,7 @@ python-dotenv = "*"
 checkov = "==2.0.1065"
 aiohttp = "*"
 gitpython = "*"
+psycopg2-binary = ">=2.9.0"
 
 [pipenv]
 allow_prereleases = true

@@ -21,11 +21,4 @@ jobs:
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests
-        env:
-          ANALYZER_DJANGO_SECRET_KEY: ${{ secrets.TEST_DJANGO_SECRET_KEY }}
-          ANALYZER_DB_HOST: ${{ secrets.TEST_DB_HOST }}
-          ANALYZER_DB_PORT: ${{ secrets.TEST_DB_PORT }}
-          ANALYZER_DB_NAME: ${{ secrets.TEST_DB_NAME }}
-          ANALYZER_DB_USERNAME: ${{ secrets.TEST_DB_USERNAME }}
-          ANALYZER_DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
         run: make -C backend unit-test ENV=example
