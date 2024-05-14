@@ -60,7 +60,7 @@ TEST_QUERY_RESPONSE = {
     }
 }
 
-TEST_RESPONSE_DICT = {"data": {"repo0": TEST_QUERY_RESPONSE["data"]["project"]}}
+TEST_RESPONSE_DICT = {"data": {"repo0": TEST_QUERY_RESPONSE["data"]["repo0"]}}
 
 
 class TestGitlabUtils(unittest.TestCase):
