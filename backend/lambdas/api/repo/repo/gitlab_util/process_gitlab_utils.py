@@ -18,10 +18,10 @@ def process_query_list(key, service_url, query_list, vars, batch_query=True):
     response_dict = {"data": {}}
     for query_item in query_list:
         resp = _get_query_response(key, service_url, query_item, vars)
-        if resp and "data" in resp and "project" in resp.get("data"):
-            resp_data = resp["data"]["project"]
-            repo = re.match("repo[0-9]*", query_item.strip()).group(0)
-            response_dict["data"][repo] = resp_data
+        if resp and "data" in resp:
+            resp_data = resp["data"]
+            repo = re.search("repo[0-9]*", query_item.strip()).group(0)
+            response_dict["data"][repo] = resp_data[repo]
         else:
             log.error("Repo query failed to receive valid output: %s", query_item)
 
@@ -63,13 +63,11 @@ def build_queries(req_list, authz, service, batch_queries):
     variables = {}
     var_defs = {}
     queries = []
-    var_defs.update({"org": Variable(name="org", type="String!")})
 
     count = 0
     for req in req_list:
         branch_name = req.get("branch")
         org_name = req.get("org", DEFAULT_ORG)
-        variables.update({"org": org_name})
         # Validate that this API key is authorized to scan this repo
         allowed = auth(f"{org_name}/{req['repo']}", service, authz)
         if not allowed:
@@ -77,9 +75,10 @@ def build_queries(req_list, authz, service, batch_queries):
             continue
 
         repo_alias = f"repo{count}"
-        variables.update({repo_alias: f"{org_name}/{req['repo']}"})
+        repo_id = f"{org_name}/{req['repo']}"
+        variables.update({repo_alias: repo_id})
 
-        var_defs.update({repo_alias: Variable(name=repo_alias, type="String!")})
+        var_defs.update({repo_alias: Variable(name=repo_alias, type="ID!")})
         query = Query(
             name="project",
             alias=repo_alias,
@@ -107,7 +106,7 @@ def build_queries(req_list, authz, service, batch_queries):
             variables.update({branch_alias: branch_name})
 
         query_list.append(query)
-        query_map["repo%d" % count] = {"repo": "%s/%s" % (org_name, req["repo"]), "branch": branch_name}
+        query_map["repo%d" % count] = {"repo": repo_id, "branch": branch_name}
         count += 1
 
     if batch_queries:
