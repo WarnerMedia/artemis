@@ -22,7 +22,7 @@ def process_query_list(key, service_url, query_list, vars, batch_query=True):
             resp_data = resp["data"]
             # Parsing out the alias from the GraphQL query, so we can use it for mapping.
             # ex: query GetRepos($repo0: ID!) {repo0: project(fullPath: $repo0) {**}
-            repo = re.search("\$(repo[0-9]*):", query_item.strip()).group(0)
+            repo = re.search("\$(repo[0-9]*):", query_item.strip()).group(1)
             response_dict["data"][repo] = resp_data[repo]
         else:
             log.error("Repo query failed to receive valid output: %s", query_item)
