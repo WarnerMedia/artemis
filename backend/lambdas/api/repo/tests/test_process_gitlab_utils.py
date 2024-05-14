@@ -79,7 +79,7 @@ class TestGitlabUtils(unittest.TestCase):
         )
         print(query_list[0])
         self.assertEqual(query_list[0], GITLAB_QUERY_NO_BRANCH_EXPECTED)
-        self.assertEqual(variables, {"org": "testorg", "repo0": "testorg/artemis"})
+        self.assertEqual(variables, {"repo0": "testorg/artemis"})
 
     def test_build_queries_branch(self):
         request_list = [{"org": "testorg", "repo": "artemis", "branch": "main"}]
@@ -87,7 +87,7 @@ class TestGitlabUtils(unittest.TestCase):
             req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=True
         )
         self.assertEqual(query_list[0], GITLAB_QUERY_WITH_BRANCH_EXPECTED)
-        self.assertEqual(variables, {"org": "testorg", "repo0": "testorg/artemis", "branch0": "main"})
+        self.assertEqual(variables, {"repo0": "testorg/artemis", "branch0": "main"})
 
     def test_build_queries_branch_nobatch(self):
         request_list = [{"org": "testorg", "repo": "artemis", "branch": "main"}]
@@ -95,4 +95,4 @@ class TestGitlabUtils(unittest.TestCase):
             req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=False
         )
         self.assertEqual(query_list[0], GITLAB_QUERY_WITH_BRANCH_EXPECTED)
-        self.assertEqual(variables, {"org": "testorg", "repo0": "testorg/artemis", "branch0": "main"})
+        self.assertEqual(variables, {"repo0": "testorg/artemis", "branch0": "main"})
