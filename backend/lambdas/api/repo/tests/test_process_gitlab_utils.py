@@ -46,8 +46,7 @@ GITLAB_QUERY_NO_BRANCH_EXPECTED = """query GetRepos(
 }"""
 TEST_SERVICE_URL = None
 TEST_QUERY_LIST = [
-    '    repo0 {\n  project(fullPath: "test/test_package") {\n    httpUrlToRepo,'
-    "\n    fullPath,\n    visibility,\n    statistics {\n      repositorySize\n    }\n  }\n}"
+    "query GetRepos(  $repo0: ID!) {  repo0: project(    fullPath: $repo0  ) {    httpUrlToRepo    fullPath    visibility    statistics {      repositorySize    }  }}"
 ]
 TEST_QUERY_RESPONSE = {
     "data": {
