@@ -25,7 +25,7 @@ setup(
         "requests",
         "urllib3<2",  # https://github.com/boto/botocore/issues/2926
         "graphql_query",
-        "pydantic_core",
+        "pydantic_core._pydantic_core",
     ],
     tests_require=["pytest"],
     classifiers=[
