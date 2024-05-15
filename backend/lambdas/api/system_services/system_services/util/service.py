@@ -1,3 +1,4 @@
+import functools
 import requests
 from artemisdb.artemisdb.models import Repo, Scan, User
 from artemislib.datetime import format_timestamp
@@ -6,6 +7,7 @@ from artemislib.logging import Logger
 from system_services.util.const import AuthType, ServiceType
 from system_services.util.env import (
     APPLICATION,
+    SERVICE_AUTH_CHECK_TIMEOUT,
     REV_PROXY_DOMAIN_SUBSTRING,
     REV_PROXY_SECRET,
     REV_PROXY_SECRET_HEADER,
@@ -30,6 +32,11 @@ class Service:
             self._service["type"] = ServiceType.BITBUCKET_V2
             if "/1.0" in self._service["url"]:
                 self._service["type"] = ServiceType.BITBUCKET_V1
+
+        # Set timeout for all requests.
+        # See: https://github.com/psf/requests/issues/2011#issuecomment-490050252
+        self._request = requests.Session()
+        self._request.request = functools.partial(self._request.request, timeout=SERVICE_AUTH_CHECK_TIMEOUT)
 
         self._reachable = False
         self._auth_successful = False
@@ -125,7 +132,7 @@ class Service:
             self._set_request_fail("Request failed")
 
     def _test_github(self, key: str):
-        requests.get(url=self._service["url"], timeout=3)
+        self._request.get(url=self._service["url"], timeout=3)
         self._reachable = True
 
         if self._org is not None:
@@ -151,7 +158,7 @@ class Service:
         else:
             query = "viewer { login }"
 
-        response = requests.post(
+        response = self._request.post(
             url=self._service["url"],
             headers=headers,
             json={"query": query},
@@ -174,7 +181,7 @@ class Service:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
 
-        response = requests.post(
+        response = self._request.post(
             url=self._service["url"], headers=headers, json={"query": 'echo(text: "foo")'}, timeout=3
         )
         self._reachable = True
@@ -198,13 +205,13 @@ class Service:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             revproxy = True
 
-        response = requests.get(url=service_auth_url, headers=headers, timeout=3)
+        response = self._request.get(url=service_auth_url, headers=headers, timeout=3)
         self._reachable = True
         if response.status_code == 200:
             if not self._org:
                 self._auth_successful = True
             else:
-                response = requests.get(
+                response = self._request.get(
                     url=repo_auth_url,
                     headers=headers,
                     timeout=3,
@@ -244,7 +251,7 @@ class Service:
 
     def _test_ado(self, key: str):
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
-        response = requests.get(f'{self._service["url"]}/{self._org}/_apis/projects', headers=headers)
+        response = self._request.get(f'{self._service["url"]}/{self._org}/_apis/projects', headers=headers)
         self._reachable = True
         if response.status_code == 200:
             self._auth_successful = True

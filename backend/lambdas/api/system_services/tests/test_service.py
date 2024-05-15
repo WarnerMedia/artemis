@@ -28,6 +28,23 @@ class TestService(unittest.TestCase):
         )
 
     @responses.activate
+    @patch("system_services.util.service.SERVICE_AUTH_CHECK_TIMEOUT", 123)
+    @patch("system_services.util.service.get_api_key", lambda *x, **y: "fake_key")
+    def test_configured_timeout(self):
+        service_dict = {
+            "services": {"org": {"type": ServiceType.ADO, "secret_loc": "foo", "url": "http://example.com"}}
+        }
+        svc = Service("org/repo", service_dict)
+        responses.get(
+            "http://example.com/repo/_apis/projects",
+            body=requests.Timeout(),
+            match=[matchers.request_kwargs_matcher({"timeout": 123})],
+        )
+        actual = svc.to_dict()
+        # responses will throw "Connection error" if not matched.
+        self.assertNotEqual(actual["error"], "Connection error")
+
+    @responses.activate
     @patch("system_services.util.service.get_api_key", lambda *x, **y: "fake_key")
     def test_timeout_error(self):
         service_dict = {
