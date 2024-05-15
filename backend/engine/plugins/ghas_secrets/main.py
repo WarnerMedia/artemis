@@ -111,6 +111,9 @@ def _validate_location(location: dict, path: str) -> Tuple[bool, str, str]:
     valid = False
     author = None
     author_timestamp = None
+    if location["type"] != "commit":
+        LOG.debug("Location is not a commit, ignoring")
+        return valid, author, author_timestamp
 
     r = subprocess.run(
         ["git", "merge-base", "--is-ancestor", location["details"]["commit_sha"], "HEAD"], cwd=path, capture_output=True
