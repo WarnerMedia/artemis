@@ -21,12 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/lambdas/api/repo"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=[
-        "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
-        "graphql_query",
-        "pydantic_core._pydantic_core",
-    ],
+    install_requires=["requests", "urllib3<2", "graphql_query"],  # https://github.com/boto/botocore/issues/2926
     tests_require=["pytest"],
     classifiers=[
         "Programming Language :: Python :: 3.9",
