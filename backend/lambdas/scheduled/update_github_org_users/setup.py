@@ -21,7 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/lambdas/scheduled/update_github_org_users"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=["graphql_query"],
+    install_requires=["graphql_query", "pydantic_core"],
     tests_require=["pytest"],
     classifiers=[
         "Programming Language :: Python :: 3.9",
