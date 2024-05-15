@@ -9,7 +9,6 @@ from system_services.util.const import ServiceType
 
 
 class TestService(unittest.TestCase):
-
     @patch("system_services.util.service.get_api_key", lambda *x, **y: None)
     def test_missing_auth_key(self):
         service_dict = {"services": {"test_org": {"type": ServiceType.GITHUB, "secret_loc": "foo"}}}
