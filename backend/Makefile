@@ -350,7 +350,7 @@ dist/api/index.html: lambdas/api/spec.yaml
 dist/lambdas/%.zip: $$(shell find lambdas/$$* -type f)
 	@echo "${INFO}Building $*"
 	mkdir -p ${BUILD_DIR}/lambdas/$*
-	${PIP} install lambdas/$* -t ${BUILD_DIR}/lambdas/$* --upgrade
+	${PIP} install lambdas/$* -t ${BUILD_DIR}/lambdas/$* --upgrade --platform manylinux2014_aarch64
 	cp lambdas/$*/handlers.py ${BUILD_DIR}/lambdas/$*
 	mkdir -p ${DIST_DIR}/lambdas/$*
 	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip *
