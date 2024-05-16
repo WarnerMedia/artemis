@@ -38,8 +38,13 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
         # Scheduled scanning. This came from the CloudWatch event target configuration directly.
         data = event or {}  # If called manually with no event default to empty dict
 
-    # Extract the details of the operation or use the defaults
-    orgs = data.get("orgs", full_services_dict.get("scan_orgs"))
+     # Extract the details of the operation or use the defaults
+    if data.get("exclude_orgs"):
+        for excluded_org in data.get("exclude_orgs"):
+            full_services_dict.get("scan_orgs").remove(excluded_org)
+        orgs = full_services_dict.get("scan_orgs")
+    else:
+        orgs = data.get("orgs", full_services_dict.get("scan_orgs"))
     org_queue = data.get("org_queue", ORG_QUEUE)
     plugins = data.get("plugins", DEFAULT_PLUGINS)
     default_branch_only = data.get("default_branch_only", False)
