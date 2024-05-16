@@ -26,6 +26,9 @@ class TestService(unittest.TestCase):
             },
         )
 
+    # Note: For testing request error conditions, we use the ADO service since it
+    #       is the simplest implementation.
+
     @responses.activate
     @patch("system_services.util.service.SERVICE_AUTH_CHECK_TIMEOUT", 123)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: "fake_key")
@@ -107,6 +110,10 @@ class TestService(unittest.TestCase):
                 "error": "Request failed",
             },
         )
+
+
+class TestADOService(unittest.TestCase):
+    """Tests specific to the ADO service"""
 
     @responses.activate
     @patch("system_services.util.service.get_api_key", lambda *x, **y: "fake_key")
