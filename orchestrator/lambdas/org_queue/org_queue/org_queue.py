@@ -41,7 +41,8 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
      # Extract the details of the operation or use the defaults
     if data.get("exclude_orgs"):
         for excluded_org in data.get("exclude_orgs"):
-            full_services_dict.get("scan_orgs").remove(excluded_org)
+            if excluded_org in full_services_dict.get("scan_orgs"):
+                full_services_dict.get("scan_orgs").remove(excluded_org)
         orgs = full_services_dict.get("scan_orgs")
     else:
         orgs = data.get("orgs", full_services_dict.get("scan_orgs"))
