@@ -41,6 +41,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
      # Extract the details of the operation or use the defaults
     if data.get("exclude_orgs"):
         log.info(f'NOT QUE: {data}')
+        log.info(f'FULL LIST: {full_services_dict.get("scan_orgs")}')
         for excluded_org in data.get("exclude_orgs"):
             if excluded_org in full_services_dict.get("scan_orgs"):
                 full_services_dict.get("scan_orgs").remove(excluded_org)
