@@ -2,13 +2,21 @@ name: Backend Unit Tests
 
 on:
   pull_request:
-    paths:
-      - "backend/**"
+  merge_group:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Path filtering
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          base: ${{ github.event.merge_group.base_ref}}
+          ref: ${{ github.event.merge_group.head_ref }}
+          filters: |
+            backend:
+              - "backend/**"
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # actions/checkout@v4.1.2
       - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # actions/setup-python@v5.0.0
         with:
