@@ -16,6 +16,7 @@ packaging = "==21.3"  # Must match version in Makefile.
 psycopg2-binary = "~=2.9"
 PyGithub = "~=2.1"
 pyjwt = "~=2.8"
+python-jose = "~=3.3"
 requests = "~=2.31"
 simplejson = "~=3.19"
 sqlparse = "~=0.5"
