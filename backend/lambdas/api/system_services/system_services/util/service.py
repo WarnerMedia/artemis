@@ -160,7 +160,7 @@ class Service:
         else:
             query = "viewer { login }"
 
-        response = requests.post(
+        response = self._request.post(
             url=self._service["url"],
             headers=headers,
             json={"query": query, "variables": variables},

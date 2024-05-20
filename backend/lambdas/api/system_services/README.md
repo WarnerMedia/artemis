@@ -1,4 +1,4 @@
-# Service Management
+# Service Status
 
 API endpoints for retrieving the status (reachability, authentication, etc.) of system services.
 
