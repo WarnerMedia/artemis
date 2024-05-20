@@ -22,9 +22,9 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[
-        "requests",
+        "requests~=2.31",
     ],
-    tests_require=["pytest"],
+    tests_require=["pytest~=8.2"],
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",

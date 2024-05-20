@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[],
-    tests_require=["pytest"],
+    tests_require=["pytest~=8.2"],
     entry_points={"console_scripts": ["artemis_db_cleanup=db_cleanup.handlers:handler"]},
     classifiers=[
         "Programming Language :: Python :: 3.9",
