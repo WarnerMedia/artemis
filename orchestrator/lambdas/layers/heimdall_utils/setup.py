@@ -22,11 +22,10 @@ setup(
     packages=find_packages(),
     setup_requires=[],
     install_requires=[
-        "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+        "requests~=2.31",
         "awscli",
-        "boto3",
-        "pyjwt",
+        "boto3~=1.34",
+        "pyjwt~=2.8",
     ],
     tests_require=[],
     classifiers=[
