@@ -21,12 +21,12 @@ sqlparse = "~=0.5"
 
 [dev-packages]
 aiohttp = "~=3.9"
-autopep8 = "~=2.0"
+autopep8 = "~=2.1"
 awscli = "*"  # Only used in scripts.
 black = "==22.3.0"  # Pending upgrade later.
 cfn-lint = "==0.53.0"
 checkov = "==2.0.1065"
-flake8 = "~=3.3"
+flake8 = "~=7.0"
 gitpython = "~=3.1"
 isort = "~=5.12"
 mock = "~=4.0"
