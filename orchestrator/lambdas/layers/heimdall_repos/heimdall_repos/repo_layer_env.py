@@ -19,10 +19,10 @@ BITBUCKET_PUBLIC_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/
 BITBUCKET_PRIVATE_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/$commit"
 
 GITLAB_REPO_QUERY = """
-{
-    group(fullPath: "%s") {
+query getLogin($org: String!, $cursor: String!) {
+    group(fullPath: $org) {
         projects(first: 100,
-                 after: %s,
+                 after: $cursor,
                  includeSubgroups: true) {
             nodes {
                 fullPath
@@ -42,11 +42,9 @@ GITLAB_REPO_QUERY = """
 """
 
 GITHUB_REPO_QUERY = """
-{
-    organization(login: "%s") {
-        repositories(first: 75,
-                     after: %s,
-                     orderBy: {field: NAME, direction: ASC}) {
+query getRepos($org: String!, $cursor: String!) {
+    organization(login: $org) {
+        repositories(first: 75, after: $cursor, orderBy: {field: NAME, direction: ASC}) {
             nodes {
                 name
                 defaultBranchRef {
@@ -58,7 +56,7 @@ GITHUB_REPO_QUERY = """
                     }
                 }
                 isPrivate
-                refs(first: 75, refPrefix:"refs/heads/", direction: ASC) {
+                refs(first: 75, refPrefix: "refs/heads/", direction: ASC) {
                     nodes {
                         name
                         target {
@@ -83,10 +81,10 @@ GITHUB_REPO_QUERY = """
 """
 
 GITHUB_REPO_REF_QUERY = """
-{
-    organization(login: "%s") {
-        repository(name: "%s") {
-            refs(first: 100, refPrefix:"refs/heads/", direction: ASC, after: "%s") {
+query getRefs($org: String!, $repo: String!, $cursor: String!) {
+    organization(login: $org) {
+        repository(name: $repo) {
+            refs(first: 100, refPrefix: "refs/heads/", direction: ASC, after: $cursor) {
                 nodes {
                     name
                     target {

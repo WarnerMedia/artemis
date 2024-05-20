@@ -1,7 +1,8 @@
 import os
-from typing import Union
-
 import requests
+from typing import Union
+from graphql_query import Argument, Field, Operation, Query, Variable
+
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
 
@@ -30,14 +31,9 @@ def query_users_for_org(authorization: str, github_users: list, org: str) -> Uni
     Given a list of GitHub users, determine if each is/is not part of a given org
     """
     headers = {"accept": "application/vnd.github.v3+json", "authorization": f"{authorization}"}
-    query = "{"
 
-    for github_user in github_users:
-        query += f"""{github_user["query_name"]}: user(login: "{github_user["username"]}") {{ organization(login: "{org}") {{ login }} }}"""
-
-    query += "}"
-
-    r = requests.post("https://api.github.com/graphql", json={"query": query}, headers=headers)
+    query, variables = _build_queries(org, github_users)
+    r = requests.post("https://api.github.com/graphql", json={"query": query, "variables": variables}, headers=headers)
 
     if r.status_code != 200:
         log.error("Non-200 status code returned from GitHub")
@@ -46,6 +42,34 @@ def query_users_for_org(authorization: str, github_users: list, org: str) -> Uni
         return False
 
     return r.json()
+
+
+def _build_queries(org, github_users):
+    user_queries = []
+    variables = {"org": org}
+    var_defs = {}
+    var_defs.update({"org": Variable(name="org", type="String!")})
+
+    for github_user in github_users:
+        variables.update({github_user["query_name"]: github_user["username"]})
+        var_defs.update({github_user["query_name"]: Variable(name=github_user["query_name"], type="String!")})
+        user_queries.append(
+            Query(
+                name="user",
+                alias=github_user["query_name"],
+                arguments=[Argument(name="login", value=var_defs.get(github_user["query_name"]))],
+                fields=[
+                    Field(
+                        name="organization",
+                        arguments=[Argument(name="login", value=var_defs.get("org"))],
+                        fields=["login"],
+                    )
+                ],
+            )
+        )
+
+    operation = Operation(type="query", name="GetUsers", variables=var_defs.values(), queries=user_queries)
+    return operation.render(), variables
 
 
 def _get_api_key(service_secret):

@@ -1,6 +1,6 @@
 from repo.gitlab_util.process_gitlab_utils import (
-    _build_queries,
-    _process_query_list,
+    build_queries,
+    process_query_list,
     check_diff,
     queue_gitlab_repository,
 )
@@ -12,9 +12,10 @@ log = Logger(__name__)
 
 def process_gitlab(req_list, service, service_url, service_secret, batch_queries, nat_connect, identity, diff_url):
     options_map = build_options_map(req_list)
-    query_list, query_map, unauthorized = _build_queries(req_list, identity.scope, service)
+    query_list, variables, query_map, unauthorized = build_queries(req_list, identity.scope, service, batch_queries)
     queued, failed = _query(
         query_list,
+        variables,
         query_map,
         options_map,
         service,
@@ -31,6 +32,7 @@ def process_gitlab(req_list, service, service_url, service_secret, batch_queries
 
 def _query(
     query_list,
+    variables,
     query_map,
     options_map,
     service,
@@ -50,7 +52,7 @@ def _query(
 
     log.info(f"Querying {service} API for {len(query_list)} repos")
 
-    resp = _process_query_list(key, service_url, query_list, batch_queries)
+    resp = process_query_list(key, service_url, query_list, variables, batch_queries)
 
     log.info("Queuing repos")
 

@@ -11,8 +11,8 @@ from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRE
 log = Logger(__name__)
 
 GITHUB_ORG_QUERY = """
-{
-  organizations(first: 100, after: %s){nodes{login}, pageInfo{startCursor, endCursor, hasNextPage}}
+query getLogin($cursor: String!) {
+  organizations(first: 100, after: $cursor){nodes{login}, pageInfo{startCursor, endCursor, hasNextPage}}
 }
 """
 
@@ -78,15 +78,14 @@ class GithubOrgs:
         if not self.api_url:
             log.info("Service %s url was not found and therefore deemed unsupported", self.service)
             return None
-        query = GITHUB_ORG_QUERY % cursor
-        response = self._query_service(query)
+        response = self._query_service(GITHUB_ORG_QUERY, cursor)
         if not response:
             log.info("Error retrieving orgs for %s", self.service)
             return None
 
         return response.json()
 
-    def _query_service(self, query):
+    def _query_service(self, query, cursor):
         if not self.api_url:
             log.info(
                 "Service %s url was not found and therefore deemed unsupported",
@@ -101,7 +100,12 @@ class GithubOrgs:
             headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
 
         try:
-            response = requests.post(url=self.api_url, headers=headers, json={"query": query}, timeout=TIMEOUT)
+            response = requests.post(
+                url=self.api_url,
+                headers=headers,
+                json={"query": query, "variables": {"cursor": cursor}},
+                timeout=TIMEOUT,
+            )
         except requests.exceptions.Timeout:
             log.error("Request timed out after %ss retrieving orgs for %s", TIMEOUT, self.service)
             return None

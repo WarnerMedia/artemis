@@ -55,7 +55,7 @@ HEIMDALL_UTILS := ${PREFIX}-utils
 HEIMDALL_REPOS := ${PREFIX}-repos
 
 HEIMDALL_ORGS_DIR := lambdas/layers/heimdall_orgs
-HEIMDALL_UTILS_DIR := lambdas/layers/heimdall_utils 
+HEIMDALL_UTILS_DIR := lambdas/layers/heimdall_utils
 HEIMDALL_REPOS_DIR := lambdas/layers/heimdall_repos
 
 HEIMDALL_ORGS_SRC = $(shell find ${HEIMDALL_ORGS_DIR} -type f -name '*.py' -o -name '*.cfg')

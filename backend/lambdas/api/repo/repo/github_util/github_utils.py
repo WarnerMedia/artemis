@@ -1,6 +1,6 @@
 import json
-
 import requests
+from graphql_query import Argument, Field, Operation, Query, Variable
 
 from artemislib.github.app import GithubApp
 from repo.util.aws import AWSConnect
@@ -18,19 +18,20 @@ def process_github(
     total_failed = []
     grouped_reqs = _group_reqs(req_list)
     for org in grouped_reqs:
+        authorization = _get_authorization(org, service_secret)
         options_map = build_options_map(grouped_reqs[org])
-        query_list, query_map, unauthorized = _build_queries(grouped_reqs[org], service, identity.scope)
+        query, query_map, query_vars, unauthorized = _build_query(org, grouped_reqs[org], service, identity.scope)
         queued, failed = _query(
-            query_list,
+            query,
             query_map,
+            query_vars,
             options_map,
             service,
             service_url,
-            service_secret,
+            authorization,
             nat_connect=nat_connect,
             identity=identity,
             diff_url=diff_url,
-            org=org,
         )
         total_queued += queued
         total_failed += failed
@@ -38,11 +39,14 @@ def process_github(
     return PROCESS_RESPONSE_TUPLE(total_queued, total_failed, unauthorized)
 
 
-def _build_queries(req_list, service, authz):
+def _build_query(org, req_list, service, authz):
     # Build up a GraphQL query for each repo in the request
     unauthorized = []
     query_list = []
     query_map = {}
+    variables = {"org": org}
+    var_defs = {}
+    var_defs.update({"org": Variable(name="org", type="String!")})
 
     count = 0
     for req in req_list:
@@ -56,53 +60,50 @@ def _build_queries(req_list, service, authz):
             unauthorized.append({"repo": f"{service}/{org_name}/{req['repo']}", "error": "Not Authorized"})
             continue
 
-        if branch_name:
-            # Escape Double quotes in branch name. Leaving double quotes in will affect the graphql query
-            branch_name = branch_name.replace('"', '\\"')
-            query_list.append(
-                """
-                repo%d: repository(owner: "%s", name: "%s") {
-                    url
-                    nameWithOwner
-                    isPrivate
-                    diskUsage
-                    ref(qualifiedName: "%s") {name}
-                }
-            """
-                % (count, org_name, req["repo"], branch_name)
-            )
-        else:
-            # If no branch was specified don't include ref in the query so
-            # we can distinguish between no branch and invalid branch in the
-            # query results.
-            query_list.append(
-                """
-                repo%d: repository(owner: "%s", name: "%s") {
-                    url
-                    nameWithOwner
-                    isPrivate
-                    diskUsage
-                }
-            """
-                % (count, org_name, req["repo"])
-            )
+        repo_alias = f"repo{count}"
+        variables.update({repo_alias: req["repo"]})
 
-        query_map["repo%d" % count] = "%s/%s" % (org_name, req["repo"])
+        var_defs.update({repo_alias: Variable(name=repo_alias, type="String!")})
+        query = Query(
+            name="repository",
+            alias=repo_alias,
+            arguments=[
+                Argument(name="owner", value=var_defs.get("org")),
+                Argument(name="name", value=var_defs.get(repo_alias)),
+            ],
+            fields=["url", "nameWithOwner", "isPrivate", "diskUsage"],
+        )
+
+        if branch_name:
+            branch_alias = f"branch{count}"
+            var_defs.update({branch_alias: Variable(name=branch_alias, type="String!")})
+            query.fields.append(
+                Field(
+                    name="ref",
+                    arguments=[Argument(name="qualifiedName", value=var_defs.get(branch_alias))],
+                    fields=["name"],
+                )
+            )
+            variables.update({f"branch{count}": branch_name})
+
+        query_list.append(query)
+        query_map[repo_alias] = f"{org_name}/{req['repo']}"
         count += 1
 
-    return query_list, query_map, unauthorized
+    operation = Operation(type="query", name="GetRepos", variables=var_defs.values(), queries=query_list)
+    return operation.render(), query_map, variables, unauthorized
 
 
-def _get_query_response(authorization, service_url, query_list):
+def _get_query_response(authorization, service_url, query, variables):
     # Query the GitHub API
     headers = {"Authorization": authorization, "Content-Type": "application/json"}
     if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_url:
         headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
-    log.error(service_url)
+
     response = requests.post(
         url=service_url,
         headers=headers,
-        json={"query": "{%s}" % " ".join(query_list)},
+        json={"query": query, "variables": variables},
     )
 
     log.info("Got API response")
@@ -115,22 +116,18 @@ def _get_query_response(authorization, service_url, query_list):
 
 
 def _query(
-    query_list, query_map, options_map, service, service_url, service_secret, nat_connect, identity, diff_url, org
+    query, query_map, query_vars, options_map, service, service_url, authorization, nat_connect, identity, diff_url
 ):
-    """
-    todo: move queueing repos to aws.py
-    """
     aws_connect = AWSConnect()
     queued = []
     failed = []
-    if not query_list:
+    if not query:
         return queued, failed
 
-    authorization = _get_authorization(org, service_secret)
+    log.info("Querying GitHub API for %d repos" % len(query_map))
 
-    log.info("Querying GitHub API for %d repos" % len(query_list))
+    resp = _get_query_response(authorization, service_url, query, query_vars)
 
-    resp = _get_query_response(authorization, service_url, query_list)
     if resp is None:
         log.info("Query was invalid, returning")
         return None

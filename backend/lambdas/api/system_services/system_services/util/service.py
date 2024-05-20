@@ -153,15 +153,17 @@ class Service:
             revproxy = True
 
         query = ""
+        variables = {}
         if self._org is not None:
-            query = 'organization(login: "%s") { login }' % self._org
+            query = "query getLogin($org: String!) {organization(login: $org) {login}}"
+            variables.org = self._org
         else:
             query = "viewer { login }"
 
         response = self._request.post(
             url=self._service["url"],
             headers=headers,
-            json={"query": query},
+            json={"query": query, "variables": variables},
             timeout=3,
         )
         if response.status_code == 200:

@@ -46,7 +46,7 @@ class ProcessGithubRepos:
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query or {}
 
-    def _query_github_api(self, query: str) -> str:
+    def _query_github_api(self, query: str, variables: dict) -> str:
         # Query the GitHub API
         headers = {
             "Authorization": self._get_authorization(),
@@ -58,7 +58,7 @@ class ProcessGithubRepos:
         response = requests.post(
             url=self.service_info.url,
             headers=headers,
-            json={"query": query},
+            json={"query": query, "variables": variables},
             timeout=DEFAULT_API_TIMEOUT,
         )
 
@@ -140,8 +140,8 @@ class ProcessGithubRepos:
 
     def query_github(self) -> list:
         self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
-        query = GITHUB_REPO_QUERY % (self.service_info.org, self.service_info.cursor)
-        response_text = self._query_github_api(query)
+        variables = {"org": self.service_info.org, "cursor": self.service_info.cursor}
+        response_text = self._query_github_api(GITHUB_REPO_QUERY, variables)
         if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
@@ -280,8 +280,8 @@ class ProcessGithubRepos:
         cursor = page_info.get("endCursor")
 
         while next_page:
-            query = GITHUB_REPO_REF_QUERY % (self.service_info.org, repo, cursor)
-            response_text = self._query_github_api(query)
+            variables = {"org": self.service_info.org, "repo": repo, "cursor": cursor}
+            response_text = self._query_github_api(GITHUB_REPO_REF_QUERY, variables)
             if not response_text or response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
                 break
             response_dict = self.json_utils.get_json_from_response(response_text)
