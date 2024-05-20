@@ -76,7 +76,7 @@ class TestGitlabUtils(unittest.TestCase):
         query_list, variables, _, _ = process_gitlab_utils.build_queries(
             req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=True
         )
-        print(query_list[0])
+
         self.assertEqual(query_list[0], GITLAB_QUERY_NO_BRANCH_EXPECTED)
         self.assertEqual(variables, {"repo0": "testorg/artemis"})
 
