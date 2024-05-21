@@ -195,7 +195,7 @@ TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 CFN_VER = 0.53.0
 
 # Python Packaging Library Version
-PACKAGING_VER = 21.3
+PACKAGING_VER = 24.0
 
 # Artemis test parameters
 BRANCH_NAME := $(shell git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
