@@ -17,7 +17,7 @@ requests = "~=2.31"
 [dev-packages]
 autopep8 = "~=2.1"
 awscli = "*"  # Only used in scripts.
-black = "==22.3.0"  # Pending upgrade later.
+black = "==24.4.2"  # Upgrade separately to avoid unexpected style changes.
 cryptography = "~=42.0"
 flake8 = "~=7.0"
 mock = "~=5.1"

@@ -29,9 +29,11 @@ def get_json():
             "engines": _engine_status(),
         },
         code=HTTPStatus.SERVICE_UNAVAILABLE if MAINTENANCE_MODE else HTTPStatus.OK,
-        headers={"Retry-After": format_http_date(MAINTENANCE_MODE_RETRY_AFTER)}
-        if MAINTENANCE_MODE and MAINTENANCE_MODE_RETRY_AFTER
-        else None,
+        headers=(
+            {"Retry-After": format_http_date(MAINTENANCE_MODE_RETRY_AFTER)}
+            if MAINTENANCE_MODE and MAINTENANCE_MODE_RETRY_AFTER
+            else None
+        ),
     )
 
 
@@ -52,9 +54,9 @@ def get_html():
         with open(MAINTENANCE_TEMPLATE) as f:
             page = Template(f.read()).substitute(
                 MAINTENANCE_MODE_MESSAGE=MAINTENANCE_MODE_MESSAGE,
-                MAINTENANCE_MODE_RETRY_AFTER=MAINTENANCE_MODE_RETRY_AFTER
-                if MAINTENANCE_MODE_RETRY_AFTER is not None
-                else "TBD",
+                MAINTENANCE_MODE_RETRY_AFTER=(
+                    MAINTENANCE_MODE_RETRY_AFTER if MAINTENANCE_MODE_RETRY_AFTER is not None else "TBD"
+                ),
             )
         if MAINTENANCE_MODE_RETRY_AFTER:
             headers = {"Retry-After": format_http_date(MAINTENANCE_MODE_RETRY_AFTER)}

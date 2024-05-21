@@ -1,6 +1,7 @@
 """
 python_code_checker plugin
 """
+
 import json
 import subprocess
 from glob import glob

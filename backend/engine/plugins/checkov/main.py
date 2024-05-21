@@ -1,6 +1,7 @@
 """
 Checkov Plugin
 """
+
 import json
 import subprocess
 import tempfile

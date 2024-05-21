@@ -1,6 +1,7 @@
 """
 Tests Bandit Plugin
 """
+
 import unittest
 
 from engine.plugins.bandit import main as bandit

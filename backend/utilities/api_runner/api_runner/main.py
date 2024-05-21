@@ -131,11 +131,11 @@ def build_lambda_event(args):
                 "scheduler": args.scheduler,
                 "maintenance_mode": "true" if args.maintenance else "false",
                 "maintenance_mode_message": "Test message" if args.maintenance else None,
-                "maintenance_mode_retry_after": datetime.isoformat(
-                    datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(hours=1)
-                )
-                if args.maintenance
-                else None,
+                "maintenance_mode_retry_after": (
+                    datetime.isoformat(datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(hours=1))
+                    if args.maintenance
+                    else None
+                ),
                 "allowlist_denied": args.allowlist_denied,
             },
             "identity": {"sourceIp": "127.0.0.1"},
