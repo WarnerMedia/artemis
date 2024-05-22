@@ -1,10 +1,10 @@
 .PHONY: install install-dev build test format update-requirements
 
 install:
-	@python -m pipenv install
+	@python -m pipenv sync
 
 install-dev:
-	@python -m pipenv install --dev
+	@python -m pipenv sync --dev
 	@pip install --editable .
 
 build:

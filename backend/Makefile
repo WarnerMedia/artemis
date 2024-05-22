@@ -286,7 +286,7 @@ define run-pytest
 	@echo "${INFO}Running $1"
 	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
-	${PYTHON} -m pipenv install --dev; \
+	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
@@ -312,7 +312,7 @@ test: test-deps style-test
 
 style-test:
 	@echo "${INFO}Running code style checks"
-	${PYTHON} -m pipenv install --dev
+	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
 	@echo "${OK}"
 .PHONY: style-test
