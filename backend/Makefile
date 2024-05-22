@@ -273,10 +273,13 @@ $(ROOT_DIR)/.temp/swiftlint/swiftlint:
 get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 .PHONY: get-mock-swiftlint
 
-get-trivy:
+${ROOT_DIR}/.temp/trivy:
 	mkdir -p ${ROOT_DIR}/.temp/trivy; \
 	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | \
 		sh -s -- -b ${ROOT_DIR}/.temp/trivy ${TRIVY_VER};
+
+get-trivy: ${ROOT_DIR}/.temp/trivy
+.PHONY: get-trivy
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
