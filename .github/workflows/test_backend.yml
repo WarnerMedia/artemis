@@ -15,6 +15,11 @@ jobs:
           python-version: "3.9"
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
+      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # actions/cache@v4.0.2
+        with:
+          # Tool versions are defined in the Makefile.
+          key: backend-unit-test-tools-${{ runner.os }}-${{ hashFiles('backend/Makefile') }}
+          path: backend/.temp
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
