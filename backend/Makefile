@@ -245,26 +245,26 @@ help:  ## Print this help text
 # Testing targets
 ###############################################################################
 
-$(ROOT_DIR)/.temp/detekt/detekt.jar:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
-$(ROOT_DIR)/.temp/detekt/detekt: ${ROOT_DIR}/engine/plugins/detekt/detekt.sh
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt: ${ROOT_DIR}/engine/plugins/detekt/detekt.sh
 	mkdir -p $(@D)
 	cp $< $@
 
-get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
+get-detekt: $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt
 .PHONY: get-detekt
 
-${ROOT_DIR}/.temp/shellcheck/shellcheck:
-	mkdir -p ${ROOT_DIR}/.temp/shellcheck
+${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck:
+	mkdir -p $(@D)
 	utilities/shellcheck-release-url.sh ${SHELLCHECKVER} > ${ROOT_DIR}/.temp/shellcheck-release.txt
-	wget -q -i ${ROOT_DIR}/.temp/shellcheck-release.txt -O ${ROOT_DIR}/.temp/shellcheck.tar.xz
-	tar -xJf ${ROOT_DIR}/.temp/shellcheck.tar.xz -C ${ROOT_DIR}/.temp/shellcheck --strip-components=1
+	wget -q -i ${ROOT_DIR}/.temp/shellcheck-release.txt -O ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}.tar.xz
+	tar -xJf ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}.tar.xz -C $(@D) --strip-components=1
 
-get-shell-check: ${ROOT_DIR}/.temp/shellcheck/shellcheck
+get-shell-check: ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck
 .PHONY: get-shell-check
 
 # This copies a script which mocks swiftlint for unit tests
@@ -276,12 +276,12 @@ $(ROOT_DIR)/.temp/swiftlint/swiftlint: ${ROOT_DIR}/engine/tests/data/swiftlint/s
 get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 .PHONY: get-mock-swiftlint
 
-${ROOT_DIR}/.temp/trivy:
-	mkdir -p ${ROOT_DIR}/.temp/trivy; \
+${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy:
+	mkdir -p $(@D)
 	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | \
-		sh -s -- -b ${ROOT_DIR}/.temp/trivy ${TRIVY_VER};
+		sh -s -- -b $(@D) ${TRIVY_VER};
 
-get-trivy: ${ROOT_DIR}/.temp/trivy
+get-trivy: ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy
 .PHONY: get-trivy
 
 install-plugin-dependencies:
@@ -290,7 +290,7 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
