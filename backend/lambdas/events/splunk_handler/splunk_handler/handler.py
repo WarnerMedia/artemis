@@ -11,6 +11,7 @@ APPLICATION = os.environ.get("APPLICATION", "artemis")
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "nonprod")
 SM_KEY = os.environ.get("ARTEMIS_SPLUNK_KEY", f"{APPLICATION}/splunk-hec")
 SCRUB_NONPROD = os.environ.get("ARTEMIS_SCRUB_NONPROD", "true").lower() == "true"
+SCRUB_DETAILS = os.environ.get("ARTEMIS_SCRUB_DETAILS", "false").lower() == "false"
 REGION = os.environ.get("REGION", "us-east-2")
 
 
@@ -23,7 +24,7 @@ def handler(event, _):
     for item in event["Records"]:
         splunk_event = json.loads(item["body"])
 
-        if SCRUB_NONPROD and ENVIRONMENT != "prod":
+        if SCRUB_DETAILS or SCRUB_NONPROD and ENVIRONMENT != "prod":
             # If this lambda is not running in prod this will be sent to the
             # dev index so delete the sensitive details
             del splunk_event["details"]
