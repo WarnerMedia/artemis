@@ -251,9 +251,9 @@ $(ROOT_DIR)/.temp/detekt/detekt.jar:
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
-$(ROOT_DIR)/.temp/detekt/detekt:
+$(ROOT_DIR)/.temp/detekt/detekt: ${ROOT_DIR}/engine/plugins/detekt/detekt.sh
 	mkdir -p $(@D)
-	cp ${ROOT_DIR}/engine/plugins/detekt/detekt.sh $@
+	cp $< $@
 
 get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
 .PHONY: get-detekt
