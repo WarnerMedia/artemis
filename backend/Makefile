@@ -266,9 +266,9 @@ get-shell-check:
 
 # This copies a script which mocks swiftlint for unit tests
 # The script gets renamed from "swiftlint_mock.sh" to simply "swiftlint" to match the real binary name
-$(ROOT_DIR)/.temp/swiftlint/swiftlint:
+$(ROOT_DIR)/.temp/swiftlint/swiftlint: ${ROOT_DIR}/engine/tests/data/swiftlint/swiftlint_mock.sh
 	mkdir -p $(@D)
-	cp ${ROOT_DIR}/engine/tests/data/swiftlint/swiftlint_mock.sh $@
+	cp $< $@
 
 get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 .PHONY: get-mock-swiftlint
