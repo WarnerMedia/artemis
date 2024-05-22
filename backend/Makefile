@@ -258,10 +258,12 @@ $(ROOT_DIR)/.temp/detekt/detekt:
 get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
 .PHONY: get-detekt
 
-get-shell-check:
-	mkdir -p ${ROOT_DIR}/.temp/shellcheck; \
-	wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECKVER}/shellcheck-v${SHELLCHECKVER}.${OSFLAG}.x86_64.tar.xz -O ${ROOT_DIR}/.temp/shellcheck.tar.xz; \
-    tar -xJf ${ROOT_DIR}/.temp/shellcheck.tar.xz -C ${ROOT_DIR}/.temp/shellcheck --strip-components=1;
+${ROOT_DIR}/.temp/shellcheck/shellcheck:
+	mkdir -p ${ROOT_DIR}/.temp/shellcheck
+	wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECKVER}/shellcheck-v${SHELLCHECKVER}.${OSFLAG}.x86_64.tar.xz -O ${ROOT_DIR}/.temp/shellcheck.tar.xz
+	tar -xJf ${ROOT_DIR}/.temp/shellcheck.tar.xz -C ${ROOT_DIR}/.temp/shellcheck --strip-components=1
+
+get-shell-check: ${ROOT_DIR}/.temp/shellcheck/shellcheck
 .PHONY: get-shell-check
 
 # This copies a script which mocks swiftlint for unit tests
