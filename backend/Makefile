@@ -260,7 +260,8 @@ get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
 
 ${ROOT_DIR}/.temp/shellcheck/shellcheck:
 	mkdir -p ${ROOT_DIR}/.temp/shellcheck
-	wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECKVER}/shellcheck-v${SHELLCHECKVER}.${OSFLAG}.x86_64.tar.xz -O ${ROOT_DIR}/.temp/shellcheck.tar.xz
+	utilities/shellcheck-release-url.sh ${SHELLCHECKVER} > ${ROOT_DIR}/.temp/shellcheck-release.txt
+	wget -q -i ${ROOT_DIR}/.temp/shellcheck-release.txt -O ${ROOT_DIR}/.temp/shellcheck.tar.xz
 	tar -xJf ${ROOT_DIR}/.temp/shellcheck.tar.xz -C ${ROOT_DIR}/.temp/shellcheck --strip-components=1
 
 get-shell-check: ${ROOT_DIR}/.temp/shellcheck/shellcheck
