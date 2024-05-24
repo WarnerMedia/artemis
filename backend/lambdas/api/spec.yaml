@@ -1585,6 +1585,8 @@ paths:
       - $ref: "#/components/parameters/branch__icontains"
       - $ref: "#/components/parameters/branch__isnull"
       - $ref: "#/components/parameters/sbom"
+      - $ref: "#/components/parameters/plugin_contains"
+      - $ref: "#/components/parameters/plugin_icontains"
       - name: order_by
         in: query
         description: Order the list by the fields listed
@@ -1711,7 +1713,7 @@ paths:
       operationId: system_services_get_all
       responses:
         "200":
-          description: List of system services 
+          description: List of system services
           content:
             "application/json":
               schema:
@@ -3195,7 +3197,6 @@ components:
               type: integer
               format: int32
 
-
     #System Service
     SystemService:
       type: object
@@ -3226,7 +3227,7 @@ components:
           description: Error encountered when testing connection from Artemis to service
           type: string
           nullable: true
-    
+
     SystemServiceStats:
       type: object
       required:
@@ -3292,7 +3293,6 @@ components:
         previous:
           description: Link to the previous page of results
           type: string
-
 
     # Groups
     GroupItem:
@@ -3752,6 +3752,20 @@ components:
       required: false
       schema:
         type: boolean
+    plugin_contains:
+      name: plugin__contains
+      in: query
+      description: Filter on a plugin (case-sensitive substring match)
+      required: false
+      schema:
+        type: string
+    plugin_icontains:
+      name: plugin__icontains
+      in: query
+      description: Filter on a plugin (case-insensitive substring match)
+      required: false
+      schema:
+        type: string
 
   securitySchemes:
     x-api-key:
