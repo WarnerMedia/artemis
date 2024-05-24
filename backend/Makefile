@@ -290,7 +290,7 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
