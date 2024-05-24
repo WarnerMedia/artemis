@@ -66,6 +66,7 @@
 		"@types/redux-logger": "^3.0.9",
 		"@types/webpack-env": "^1.18.1",
 		"env-cmd": "^10.1.0",
+		"jest-html-reporter": "^3.10.2",
 		"markdownlint": "^0.29.0",
 		"markdownlint-cli2": "^0.7.1",
 		"miragejs": "^0.1.47",
@@ -127,5 +128,11 @@
 		"transformIgnorePatterns": [
 			"node_modules/(?!d3-shape)/"
 		]
-	}
+	},
+  "jest-html-reporter": {
+    "pageTitle": "Artemis UI Test Report",
+    "outputPath": "test-report/index.html",
+    "includeFailureMsg": true,
+    "includeSuiteFailure": true
+  }
 }
