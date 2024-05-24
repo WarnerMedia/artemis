@@ -133,6 +133,7 @@
     "pageTitle": "Artemis UI Test Report",
     "outputPath": "test-report/index.html",
     "includeFailureMsg": true,
-    "includeSuiteFailure": true
+    "includeSuiteFailure": true,
+    "includeConsoleLog": true
   }
 }
