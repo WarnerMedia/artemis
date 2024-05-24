@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Artemis REST API
-  version: 1.0.0
+  version: 1.1.0
   contact:
     email: "cso_appsec@warnermedia.com"
 tags:
