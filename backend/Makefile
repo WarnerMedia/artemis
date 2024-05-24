@@ -245,17 +245,17 @@ help:  ## Print this help text
 # Testing targets
 ###############################################################################
 
-$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar:
+$(ROOT_DIR)/.temp/detekt/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
-$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt: ${ROOT_DIR}/engine/plugins/detekt/detekt.sh
+$(ROOT_DIR)/.temp/detekt/detekt:
 	mkdir -p $(@D)
-	cp $< $@
+	cp ${ROOT_DIR}/engine/plugins/detekt/detekt.sh $@
 
-get-detekt: $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt
+get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
 .PHONY: get-detekt
 
 ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck:
@@ -290,7 +290,7 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};

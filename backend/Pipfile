@@ -20,7 +20,7 @@ python-jose = "~=3.3"
 requests = "~=2.31"
 simplejson = "~=3.19"
 sqlparse = "~=0.5"
-awscli = "*"
+awscli = "~=1.32"
 
 [dev-packages]
 aiohttp = "~=3.9"
