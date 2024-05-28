@@ -40,4 +40,3 @@ jobs:
         with:
           name: ui-test
           path: ui/test-report/index.html
-          retention-days: 14
