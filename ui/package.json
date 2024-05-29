@@ -129,11 +129,11 @@
 			"node_modules/(?!d3-shape)/"
 		]
 	},
-  "jest-html-reporter": {
-    "pageTitle": "Artemis UI Test Report",
-    "outputPath": "test-report/index.html",
-    "includeFailureMsg": true,
-    "includeSuiteFailure": true,
-    "includeConsoleLog": true
-  }
+	"jest-html-reporter": {
+		"pageTitle": "Artemis UI Test Report",
+		"outputPath": "test-report/index.html",
+		"includeFailureMsg": true,
+		"includeSuiteFailure": true,
+		"includeConsoleLog": true
+	}
 }
