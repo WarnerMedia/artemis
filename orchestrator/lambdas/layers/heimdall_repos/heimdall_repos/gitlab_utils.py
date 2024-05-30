@@ -63,7 +63,8 @@ class ProcessGitlabRepos:
 
     def _setup(self, cursor):
         """
-        Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
+        Updates the cursor to a None type if needed.
+        Without this, GraphQL would read `null` as a string and not a Null value
         """
         if cursor in {"null", "None"}:
             self.service_info.cursor = None
