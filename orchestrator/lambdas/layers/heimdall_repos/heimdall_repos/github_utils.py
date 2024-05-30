@@ -172,7 +172,7 @@ class ProcessGithubRepos:
             self.log.error("Key pageInfo not found for %s. Returning repos found.", self.service_info.org)
             return repos
         if page_info.get("hasNextPage"):
-            cursor = {page_info.get("endCursor")}
+            cursor = page_info.get("endCursor")
 
             # Re-queue this org, setting the cursor for the next page of the query
             self.log.info("Queueing %s to re-start at cursor %s", self.service_info.org, cursor)
