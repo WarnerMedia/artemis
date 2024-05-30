@@ -139,15 +139,20 @@ class ProcessGithubRepos:
         return None
 
     def query_github(self) -> list:
+        cursor = self.service_info.cursor
+        # Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
+        if cursor == "null":
+            cursor = None
+
         self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
-        variables = {"org": self.service_info.org, "cursor": self.service_info.cursor}
+        variables = {"org": self.service_info.org, "cursor": cursor}
         response_text = self._query_github_api(GITHUB_REPO_QUERY, variables)
         if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
                 self.service_info.org,
-                {"cursor": self.service_info.cursor},
+                {"cursor": cursor},
                 self.default_branch_only,
                 self.plugins,
                 self.batch_id,

@@ -229,13 +229,17 @@ class ProcessGitlabRepos:
         :param url: str url of the service to send the POST request to
         :return: str response text or None if the request was not successful
         """
+        cursor = self.service_info.cursor
+        # Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
+        if cursor == "null":
+            cursor = None
 
         response = requests.post(
             url=url,
             headers=self._get_request_headers(url),
             json={
                 "query": GITLAB_REPO_QUERY,
-                "variables": {"org": self.service_info.org, "cursor": self.service_info.cursor},
+                "variables": {"org": self.service_info.org, "cursor": cursor},
             },
             timeout=DEFAULT_API_TIMEOUT,
         )
