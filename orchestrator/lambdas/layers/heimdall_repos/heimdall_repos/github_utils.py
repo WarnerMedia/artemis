@@ -36,7 +36,7 @@ class ProcessGithubRepos:
         redundant_scan_query: dict = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, cursor)
+        self.service_info = ServiceInfo(service, service_dict, org, api_key)
         self.default_branch_only = default_branch_only
         self.plugins = plugins
         self.external_orgs = external_orgs
@@ -45,6 +45,17 @@ class ProcessGithubRepos:
         self.batch_id = batch_id
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query or {}
+
+        self._setup(cursor)
+
+    def _setup(self, cursor):
+        """
+        Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
+        """
+        if cursor in {"null", "None"}:
+            self.service_info.cursor = None
+        else:
+            self.service_info.cursor = cursor
 
     def _query_github_api(self, query: str, variables: dict) -> str:
         # Query the GitHub API
@@ -139,20 +150,15 @@ class ProcessGithubRepos:
         return None
 
     def query_github(self) -> list:
-        cursor = self.service_info.cursor
-        # Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
-        if cursor == "null":
-            cursor = None
-
         self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
-        variables = {"org": self.service_info.org, "cursor": cursor}
+        variables = {"org": self.service_info.org, "cursor": self.service_info.cursor}
         response_text = self._query_github_api(GITHUB_REPO_QUERY, variables)
         if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
                 self.service_info.org,
-                {"cursor": cursor},
+                {"cursor": self.service_info.cursor},
                 self.default_branch_only,
                 self.plugins,
                 self.batch_id,

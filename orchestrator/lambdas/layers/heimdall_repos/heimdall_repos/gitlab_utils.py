@@ -59,6 +59,17 @@ class ProcessGitlabRepos:
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
+        self._setup(cursor)
+
+    def _setup(self, cursor):
+        """
+        Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
+        """
+        if cursor in {"null", "None"}:
+            self.service_info.cursor = None
+        else:
+            self.service_info.cursor = cursor
+
     def validate_input(self) -> bool:
         """
         Checks if important, but not necessarily available, information exists.
@@ -229,17 +240,12 @@ class ProcessGitlabRepos:
         :param url: str url of the service to send the POST request to
         :return: str response text or None if the request was not successful
         """
-        cursor = self.service_info.cursor
-        # Set Cursor to None type. Without this, GraphQL would read this as a string and not a Null value
-        if cursor == "null":
-            cursor = None
-
         response = requests.post(
             url=url,
             headers=self._get_request_headers(url),
             json={
                 "query": GITLAB_REPO_QUERY,
-                "variables": {"org": self.service_info.org, "cursor": cursor},
+                "variables": {"org": self.service_info.org, "cursor": self.service_info.cursor},
             },
             timeout=DEFAULT_API_TIMEOUT,
         )
