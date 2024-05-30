@@ -19,7 +19,7 @@ BITBUCKET_PUBLIC_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/
 BITBUCKET_PRIVATE_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/$commit"
 
 GITLAB_REPO_QUERY = """
-query getLogin($org: String!, $cursor: String) {
+query getLogin($org: ID!, $cursor: String) {
     group(fullPath: $org) {
         projects(first: 100,
                  after: $cursor,
