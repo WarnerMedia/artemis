@@ -21,7 +21,7 @@ black = "==22.3.0"  # Pending upgrade later.
 cryptography = "~=42.0"
 flake8 = "~=7.0"
 mock = "~=5.1"
-moto = {extras = ["awslambda", "secretsmanager", "s3", "ec2", "sqs"], version = "==5.0.7"}
+moto = {extras = ["awslambda", "sqs", "s3", "ec2", "secretsmanager"], version = "==5.0.8"}  # Locked to avoid resolving to prerelease versions.
 pylint = "~=3.0"
 pytest = "~=8.2"
 pytest-cov = "~=5.0"
