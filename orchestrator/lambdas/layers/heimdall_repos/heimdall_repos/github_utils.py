@@ -36,7 +36,7 @@ class ProcessGithubRepos:
         redundant_scan_query: dict = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, cursor)
+        self.service_info = ServiceInfo(service, service_dict, org, api_key)
         self.default_branch_only = default_branch_only
         self.plugins = plugins
         self.external_orgs = external_orgs
@@ -45,6 +45,18 @@ class ProcessGithubRepos:
         self.batch_id = batch_id
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query or {}
+
+        self._setup(cursor)
+
+    def _setup(self, cursor):
+        """
+        Updates the cursor to a None type if needed.
+        Without this, GraphQL would read `null` as a string and not a Null value
+        """
+        if cursor in {"null", "None"}:
+            self.service_info.cursor = None
+        else:
+            self.service_info.cursor = cursor
 
     def _query_github_api(self, query: str, variables: dict) -> str:
         # Query the GitHub API
@@ -172,7 +184,7 @@ class ProcessGithubRepos:
             self.log.error("Key pageInfo not found for %s. Returning repos found.", self.service_info.org)
             return repos
         if page_info.get("hasNextPage"):
-            cursor = f"\"{page_info.get('endCursor')}\""
+            cursor = page_info.get("endCursor")
 
             # Re-queue this org, setting the cursor for the next page of the query
             self.log.info("Queueing %s to re-start at cursor %s", self.service_info.org, cursor)

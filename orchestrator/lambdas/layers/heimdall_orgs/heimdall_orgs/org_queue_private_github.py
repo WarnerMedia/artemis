@@ -11,7 +11,7 @@ from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRE
 log = Logger(__name__)
 
 GITHUB_ORG_QUERY = """
-query getLogin($cursor: String!) {
+query getLogin($cursor: String) {
   organizations(first: 100, after: $cursor){nodes{login}, pageInfo{startCursor, endCursor, hasNextPage}}
 }
 """
