@@ -41,12 +41,24 @@ class AWSConnect:
         return cls._instance
 
     def get_secret(self, secret_name):
+        """
+        Retrieves a JSON value from Secrets Manager.
+
+        Returns None if the Secrets Manager value is not a string.
+        Raises botocore.exceptions.ClientError if secret value is not set or cannot be decrypted.
+        """
         raw_secret = self.get_secret_raw(secret_name)
         if raw_secret is not None:
             return json.loads(raw_secret)
         return None
 
     def get_secret_raw(self, secret_name):
+        """
+        Retrieves a raw Secrets Manager string value.
+
+        Returns None if the Secrets Manager value is not a string.
+        Raises botocore.exceptions.ClientError if secret value is not set or cannot be decrypted.
+        """
         try:
             get_secret_value_response = self._SECRETS_MANAGER.get_secret_value(SecretId=secret_name)
         except ClientError as e:
@@ -75,6 +87,9 @@ class AWSConnect:
     def copy_s3_object(
         self, s3_key, new_s3_key, s3_bucket=S3_BUCKET, new_s3_bucket=S3_BUCKET, endpoint_url: str = DEFAULT_S3_ENDPOINT
     ):
+        """
+        Copies an S3 object from one location to another.
+        """
         copy_source = {"Bucket": s3_bucket, "Key": s3_key}
         new_obj = self._S3[endpoint_url].Bucket(new_s3_bucket).Object(new_s3_key)
         new_obj.copy(copy_source)
