@@ -2,7 +2,6 @@ import json
 import os
 import re
 import time
-import urllib.request
 from datetime import datetime, timezone
 from typing import Tuple
 
@@ -14,6 +13,8 @@ from artemisdb.artemisdb.models import APIKey, Group, User, UserService
 from artemislib.audit.logger import AuditLogger
 from artemislib.db_cache import DBLookupCache
 from artemislib.logging import Logger
+
+from authorizer.cognito import load_cognito_public_keys
 
 LOG = Logger("api_authorizer")
 
@@ -35,9 +36,10 @@ EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 # we download them only on cold start
 # https://aws.amazon.com/blogs/compute/container-reuse-in-lambda/
 if REGION is not None and USERPOOL_ID is not None:  # Make sure this doesn't run during loading unit tests
-    with urllib.request.urlopen(KEYS_URL) as f:
-        url_response = f.read()
-    KEYS = jwk.KeySet.import_key_set(json.loads(url_response.decode("utf-8"))["keys"])
+    KEYS = load_cognito_public_keys(REGION, USERPOOL_ID)
+    # with urllib.request.urlopen(KEYS_URL) as f:
+    #     url_response = f.read()
+    # KEYS = jwk.KeySet.import_key_set(json.loads(url_response.decode("utf-8"))["keys"])
 
 
 def handler(event, _):
