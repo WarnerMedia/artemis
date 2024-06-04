@@ -19,12 +19,16 @@ EXAMPLE_PUBLIC_KEYS = b"""{
     }]
 }"""
 
+EXPECTED_COGNITO_PUBLIC_KEY_URL = (
+    f"https://cognito-idp.{EXAMPLE_REGION}.amazonaws.com/{EXAMPLE_USERPOOL_ID}/.well-known/jwks.json"
+)
+
 
 class TestCognito(unittest.TestCase):
     @responses.activate
     def test_load_cognito_public_keys_valid(self):
         responses.get(
-            f"https://cognito-idp.{EXAMPLE_REGION}.amazonaws.com/{EXAMPLE_USERPOOL_ID}/.well-known/jwks.json",
+            EXPECTED_COGNITO_PUBLIC_KEY_URL,
             body=EXAMPLE_PUBLIC_KEYS,
         )
         actual = load_cognito_public_keys(EXAMPLE_REGION, EXAMPLE_USERPOOL_ID)
@@ -33,8 +37,17 @@ class TestCognito(unittest.TestCase):
     @responses.activate
     def test_load_cognito_public_keys_failed(self):
         responses.get(
-            f"https://cognito-idp.{EXAMPLE_REGION}.amazonaws.com/{EXAMPLE_USERPOOL_ID}/.well-known/jwks.json",
+            EXPECTED_COGNITO_PUBLIC_KEY_URL,
             status=404,
         )
         with self.assertRaises(Exception):
+            load_cognito_public_keys(EXAMPLE_REGION, EXAMPLE_USERPOOL_ID)
+
+    @responses.activate
+    def test_load_cognito_public_keys_empty(self):
+        responses.get(
+            EXPECTED_COGNITO_PUBLIC_KEY_URL,
+            body=b'{"keys":[]}',
+        )
+        with self.assertRaises(AssertionError):
             load_cognito_public_keys(EXAMPLE_REGION, EXAMPLE_USERPOOL_ID)
