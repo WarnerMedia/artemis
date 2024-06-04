@@ -21,7 +21,6 @@ LOG = Logger("api_authorizer")
 REGION = os.environ.get("REGION")
 USERPOOL_ID = os.environ.get("USERPOOL_ID")
 APP_CLIENT_ID = os.environ.get("APP_CLIENT_ID")
-KEYS_URL = "https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json".format(REGION, USERPOOL_ID)
 
 MAINTENANCE_MODE = os.environ.get("ARTEMIS_MAINTENANCE_MODE", "false").lower() == "true"
 MAINTENANCE_MODE_MESSAGE = os.environ.get("ARTEMIS_MAINTENANCE_MODE_MESSAGE")
@@ -37,9 +36,6 @@ EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 # https://aws.amazon.com/blogs/compute/container-reuse-in-lambda/
 if REGION is not None and USERPOOL_ID is not None:  # Make sure this doesn't run during loading unit tests
     KEYS = load_cognito_public_keys(REGION, USERPOOL_ID)
-    # with urllib.request.urlopen(KEYS_URL) as f:
-    #     url_response = f.read()
-    # KEYS = jwk.KeySet.import_key_set(json.loads(url_response.decode("utf-8"))["keys"])
 
 
 def handler(event, _):
