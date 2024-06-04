@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch
 
+from joserfc.jwk import KeySet
+
 from authorizer.handlers import _verify_claims, _verify_signature
 
 # JWK public key generated locally to be similar to what AWS Cognito generates.
@@ -12,6 +14,7 @@ EXAMPLE_JWK_PUBLIC_KEY = {
     "n": "0Y54hlQM_nRgUsoiLQ4NJETjZ8p0qVgM86kkC9oZBxxQMAgrlYFuFyYv9HxgcOu5WVqh3KemYiWw0SNBbZTRPWcFW1HPImgAqbNCy-iZrgEs_JDdgqAjEVqAjfq2YAxCBxp6QgNociDornGbMJPzcIihL4Mb8oEvKEh-Tc0hCJuJoJ4yDZTpAVSJR0z4GA-hADL-jKlhWpupLc7n3p04r7BAWZN1MGf7-fRjOfPDf_3Jr0VApv5ALhcYP2unKsglMgIxcxEN0Z6qsnXPHTR1hGceJOqiCFi_eOQEBAJc9dRZEI9x8bwJofmoLmKDYDU3YVzKXTj8AQF4EH6hB3gzvw",
     "use": "sig",
 }
+EXAMPLE_KEYSET = KeySet.import_key_set({"keys": [EXAMPLE_JWK_PUBLIC_KEY]})
 EXAMPLE_APP_ID = "ooGh2xeroJohC6cobaenai7VaiSh3lue"
 
 VALID_CLAIMS = {
@@ -29,11 +32,12 @@ VALID_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMyMjE5NjE0ODAwLCJh
 class TestVerifyToken(unittest.TestCase):
     def test_verify_signature_valid(self):
         # Does not raise exception.
-        _verify_signature(VALID_TOKEN, EXAMPLE_JWK_PUBLIC_KEY)
+        token = _verify_signature(VALID_TOKEN, EXAMPLE_KEYSET)
+        self.assertEqual(token.claims, VALID_CLAIMS)
 
     def test_verify_signature_invalid_token(self):
         with self.assertRaises(Exception) as ex:
-            _verify_signature("foo.bar.baz", EXAMPLE_JWK_PUBLIC_KEY)
+            _verify_signature("foo.bar.baz", EXAMPLE_KEYSET)
         self.assertEqual(str(ex.exception), "Unauthorized")
 
     def test_verify_claims_valid(self):

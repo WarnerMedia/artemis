@@ -7,8 +7,7 @@ from datetime import datetime, timezone
 from typing import Tuple
 
 from django.db import transaction
-from jose import jwk, jwt
-from jose.utils import base64url_decode
+from joserfc import jwk, jwt
 
 from artemisdb.artemisdb.auth import get_api_key
 from artemisdb.artemisdb.models import APIKey, Group, User, UserService
@@ -38,7 +37,7 @@ EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 if REGION is not None and USERPOOL_ID is not None:  # Make sure this doesn't run during loading unit tests
     with urllib.request.urlopen(KEYS_URL) as f:
         url_response = f.read()
-    KEYS = json.loads(url_response.decode("utf-8"))["keys"]
+    KEYS = jwk.KeySet.import_key_set(json.loads(url_response.decode("utf-8"))["keys"])
 
 
 def handler(event, _):
@@ -90,23 +89,8 @@ def process_user_auth(event):
     # Pull the token value out of the cookie header value
     token = re.sub(r"^.*id_token=([a-zA-Z0-9\-_\.]+).*$", r"\1", cookie)
 
-    # get the key ID (kid) from the headers prior to verification
-    headers = jwt.get_unverified_headers(token)
-    kid = headers["kid"]
-
-    # search for the kid in the downloaded public keys
-    for key in KEYS:
-        if kid == key["kid"]:
-            break
-    else:
-        LOG.error("Public key not found in jwks.json")
-        raise Exception("Unauthorized")
-
-    # Check the signature
-    _verify_signature(token, key)
-
-    # Signature is valid so use the unverified claims
-    claims = jwt.get_unverified_claims(token)
+    # Check the signature and extract claims
+    claims = _verify_signature(token, KEYS).claims
 
     # Check the claims
     _verify_claims(claims)
@@ -149,15 +133,17 @@ def process_user_auth(event):
     )
 
 
-def _verify_signature(token: str, key: str):
-    # Get the last two sections of the token, message and signature, and decode the signature from base64
-    message, encoded_signature = str(token).rsplit(".", 1)
-    decoded_signature = base64url_decode(encoded_signature.encode("utf-8"))
+def _verify_signature(token: str, keys: jwk.KeySet) -> jwt.Token:
+    """
+    Decode and verify the JWT string with the given keyset.
 
-    # Construct the public key and verify the signature
-    public_key = jwk.construct(key)
-    if not public_key.verify(message.encode("utf8"), decoded_signature):
-        LOG.error("Signature verification failed")
+    Returns the decoded token.
+    Raises Exception("Unauthorized") if the token is invalid.
+    """
+    try:
+        return jwt.decode(token, keys)
+    except Exception as ex:
+        LOG.error(f"Signature verification failed: {str(ex)}")
         raise Exception("Unauthorized")
 
 
