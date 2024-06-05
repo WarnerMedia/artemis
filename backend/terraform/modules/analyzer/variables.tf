@@ -77,7 +77,7 @@ variable "db_parameter_group_family" {
 variable "db_ca_cert_identifier" {
   description = "Certificate authority ID"
   type        = string
-  default     = "rds-ca-2019"
+  default     = "rds-ca-ecc384-g1"
 }
 
 variable "ui_origin_url" {
