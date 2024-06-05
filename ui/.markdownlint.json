@@ -1,7 +1,9 @@
 {
-    "default": true,
-    "line-length": false,
-    "no-inline-html": {
-        "allowed_elements": [ "pre" ]
-    }
+  "default": true,
+  "line-length": false,
+  "no-inline-html": {
+    "allowed_elements": [
+      "pre"
+    ]
+  }
 }
