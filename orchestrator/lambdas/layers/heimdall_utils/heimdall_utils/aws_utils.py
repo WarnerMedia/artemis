@@ -97,6 +97,39 @@ def queue_service_and_org(
         return False
 
 
+def queue_branch_and_repo(
+    queue: str,
+    service: str,
+    org_name: str,
+    branch_cursor: str,
+    repo: str,
+    plugins: dict,
+    batch_id: str,
+    redundant_scan_query: str,
+):
+    try:
+        sqs = get_sqs_connection(REGION)
+        sqs.send_message(
+            QueueUrl=queue,
+            MessageBody=json.dumps(
+                {
+                    "service": service,
+                    "org": org_name,
+                    "plugins": plugins,
+                    "batch_id": batch_id,
+                    "redundant_scan_query": redundant_scan_query,
+                    "repo": repo,
+                    "branch_cursor": branch_cursor,
+                }
+            ),
+        )
+        log.info(f"Queued {service}/{org_name} for scanning")
+        return True
+    except ClientError:
+        log.info(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
+        return False
+
+
 class GetProxySecret:
     _secret = None
 
