@@ -17,41 +17,41 @@ FAILURE=1
 AWS=aws
 
 function checkForProfile(){
-    matched_profile=$(grep -F "[${CHECK_AWS_PROFILE}]" ~/.aws/credentials | tr -d '[]')
-    if [ -n "${matched_profile}" ];
-    then
-        echo $TRUE
-    else
-        echo $FALSE
-    fi
+  matched_profile=$(grep -F "[${CHECK_AWS_PROFILE}]" ~/.aws/credentials | tr -d '[]')
+  if [ -n "${matched_profile}" ];
+  then
+    echo $TRUE
+  else
+    echo $FALSE
+  fi
 }
 
 if [ "$1" != "ci" ];
 then
-    @echo "${INFO}Check Credentials for role ${GREEN}${CHECK_AWS_PROFILE}${CNone}"
-    # expect $CHECK_AWS_PROFILE to be set in the Makefile
+  @echo "${INFO}Check Credentials for role ${GREEN}${CHECK_AWS_PROFILE}${CNone}"
+  # expect $CHECK_AWS_PROFILE to be set in the Makefile
+  if [ "$(checkForProfile)" == $TRUE ];
+  then
+    echo -e "${OK} found credentials"
+    export AWS_PROFILE=${CHECK_AWS_PROFILE}
+  else
+    echo -e "${INFO} Requesting for user credentials"
+    if ! gimme-aws-creds;
+    then
+      echo -e "\n${FAIL} Failed to obtain AWS credentials"
+      exit $FAILURE
+    fi
+
+    echo -e "\n"
     if [ "$(checkForProfile)" == $TRUE ];
     then
-        echo -e "${OK} found credentials"
-        export AWS_PROFILE=${CHECK_AWS_PROFILE}
+      echo -e "${OK} Successfully obtained credentials for role ${GREEN}${CHECK_AWS_PROFILE}${CNone} credentials"
+      export AWS_PROFILE=${CHECK_AWS_PROFILE}
     else
-        echo -e "${INFO} Requesting for user credentials"
-        if ! gimme-aws-creds;
-        then
-            echo -e "\n${FAIL} Failed to obtain AWS credentials"
-            exit $FAILURE
-        fi
-
-        echo -e "\n"
-        if [ "$(checkForProfile)" == $TRUE ];
-        then
-            echo -e "${OK} Successfully obtained credentials for role ${GREEN}${CHECK_AWS_PROFILE}${CNone} credentials"
-            export AWS_PROFILE=${CHECK_AWS_PROFILE}
-        else
-            echo -e "\n${FAIL} Failed to obtain credentials for role ${GREEN}${CHECK_AWS_PROFILE}${CNone}"
-            exit $FAILURE
-        fi
+      echo -e "\n${FAIL} Failed to obtain credentials for role ${GREEN}${CHECK_AWS_PROFILE}${CNone}"
+      exit $FAILURE
     fi
+  fi
 fi
 
 # note: results, settings, users, etc. files are special cases where we need a placeholder for a
