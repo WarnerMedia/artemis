@@ -24,8 +24,8 @@
     "@mui/x-date-pickers": "^5.0.20",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/node": "^18.16.16",
-    "@types/react": "^18.2.7",
-    "@types/react-dom": "^18.2.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.3.3",
     "autosuggest-highlight": "3.2.1",
     "axios": "^1.6.8",
@@ -52,7 +52,7 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
-    "@babel/types": "^7.23.0",
+    "@babel/types": "^7.24.7",
     "@lingui/cli": "^4.2.0",
     "@lingui/macro": "^4.2.0",
     "@testing-library/jest-dom": "^5.16.5",
@@ -60,7 +60,7 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/jest": "27.5.2",
-    "@types/luxon": "^3.3.0",
+    "@types/luxon": "^3.4.2",
     "@types/react-copy-to-clipboard": "^5.0.7",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/redux-logger": "3.0.9",
