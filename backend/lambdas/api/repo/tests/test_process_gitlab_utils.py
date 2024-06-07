@@ -44,6 +44,56 @@ GITLAB_QUERY_NO_BRANCH_EXPECTED = """query GetRepos(
     }
   }
 }"""
+GITLAB_QUERY_NO_BRANCH_EXPECTED2 = """query GetRepos(
+  $repo1: ID!
+) {
+  repo1: project(
+    fullPath: $repo1
+  ) {
+    httpUrlToRepo
+    fullPath
+    visibility
+    statistics {
+      repositorySize
+    }
+  }
+}"""
+BATCH_GITLAB_QUERY1 = """query GetRepos(
+  $repo0: ID!
+  $branch0: String!
+  $repo1: ID!
+) {
+  repo0: project(
+    fullPath: $repo0
+  ) {
+    httpUrlToRepo
+    fullPath
+    visibility
+    statistics {
+      repositorySize
+    }
+    repository {
+      tree(
+        ref: $branch0
+      ) {
+        lastCommit {
+          id
+        }
+      }
+    }
+  }
+
+  repo1: project(
+    fullPath: $repo1
+  ) {
+    httpUrlToRepo
+    fullPath
+    visibility
+    statistics {
+      repositorySize
+    }
+  }
+}"""
 TEST_SERVICE_URL = None
 TEST_QUERY_LIST = [
     "query GetRepos(  $repo0: ID!) {  repo0: project(    fullPath: $repo0  ) {    httpUrlToRepo    fullPath    visibility    statistics {      repositorySize    }  }}"
@@ -95,3 +145,27 @@ class TestGitlabUtils(unittest.TestCase):
         )
         self.assertEqual(query_list[0], GITLAB_QUERY_WITH_BRANCH_EXPECTED)
         self.assertEqual(variables, {"repo0": "testorg/artemis", "branch0": "main"})
+
+    def test_multi_repos_with_batch_queries_true(self):
+        request_list = [
+            {"org": "testorg", "branch": "main", "repo": "artemis1"},
+            {"org": "testorg", "branch": "", "repo": "artemis2"},
+        ]
+        query, query_map, variables, _ = process_gitlab_utils.build_queries(
+            req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=True
+        )
+        print(query)
+
+        self.assertEqual(query[0], BATCH_GITLAB_QUERY1)
+
+    def test_multi_repos_with_batch_queries_false(self):
+        self.maxDiff = None
+        request_list = [
+            {"org": "testorg", "branch": "main", "repo": "artemis1"},
+            {"org": "testorg", "branch": "", "repo": "artemis2"},
+        ]
+        query, query_map, variables, _ = process_gitlab_utils.build_queries(
+            req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=False
+        )
+        self.assertEqual(query[0], GITLAB_QUERY_WITH_BRANCH_EXPECTED)
+        self.assertEqual(query[1], GITLAB_QUERY_NO_BRANCH_EXPECTED2)
