@@ -4,6 +4,7 @@ import re
 import urllib
 import requests
 from graphql_query import Argument, Field, Operation, Query, Variable
+from itertools import chain
 
 from repo.util.aws import AWSConnect
 from repo.util.env import DEFAULT_ORG, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
@@ -63,7 +64,7 @@ def build_queries(req_list, authz, service, batch_queries):
     query_list = []
     query_map = {}
     variables = {}
-    var_defs = {}
+    graphql_query_map = {}  # maps each graphql query to its list of variables
     queries = []
 
     count = 0
@@ -80,43 +81,48 @@ def build_queries(req_list, authz, service, batch_queries):
         repo_id = f"{org_name}/{req['repo']}"
         variables.update({repo_alias: repo_id})
 
-        var_defs.update({repo_alias: Variable(name=repo_alias, type="ID!")})
+        repo_variable = Variable(name=repo_alias, type="ID!")
+        graphql_variables = [repo_variable]
         query = Query(
             name="project",
             alias=repo_alias,
-            arguments=[
-                Argument(name="fullPath", value=var_defs.get(repo_alias)),
-            ],
+            arguments=[Argument(name="fullPath", value=repo_variable)],
             fields=["httpUrlToRepo", "fullPath", "visibility", Field(name="statistics", fields=["repositorySize"])],
         )
 
         if branch_name:
             branch_alias = f"branch{count}"
-            var_defs.update({branch_alias: Variable(name=branch_alias, type="String!")})
+            branch_variable = Variable(name=branch_alias, type="String!")
             query.fields.append(
                 Field(
                     name="repository",
                     fields=[
                         Field(
                             name="tree",
-                            arguments=[Argument(name="ref", value=var_defs.get(branch_alias))],
+                            arguments=[Argument(name="ref", value=branch_variable)],
                             fields=[Field(name="lastCommit", fields=["id"])],
                         )
                     ],
                 )
             )
             variables.update({branch_alias: branch_name})
+            graphql_variables.append(branch_variable)
 
         query_list.append(query)
+        graphql_query_map[query.alias] = graphql_variables
         query_map["repo%d" % count] = {"repo": repo_id, "branch": branch_name}
         count += 1
 
     if batch_queries:
-        operation = Operation(type="query", name="GetRepos", variables=var_defs.values(), queries=query_list)
+        graphql_variable_list = list(chain(*graphql_query_map.values()))
+
+        operation = Operation(type="query", name="GetRepos", variables=graphql_variable_list, queries=query_list)
         queries.append(operation.render())
     else:
         for item in query_list:
-            operation = Operation(type="query", name="GetRepos", variables=var_defs.values(), queries=[item])
+            operation = Operation(
+                type="query", name="GetRepos", variables=graphql_query_map[item.alias], queries=[item]
+            )
             queries.append(operation.render())
     return queries, variables, query_map, unauthorized
 
