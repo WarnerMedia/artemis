@@ -32,7 +32,7 @@ yum -y update
 
 # Install dependencies
 yum -y install jq
-amazon-linux-extras install -y docker
+amazon-linux-extras install -y docker=20.10.25
 
 # Allow ec2-user to use docker
 usermod -a -G docker ec2-user
