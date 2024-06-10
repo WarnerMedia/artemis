@@ -374,11 +374,20 @@ def process_event_info(scan, results, plugin_type, plugin_name):
             log.info("Skipping secrets event processing of scan with path inclusions/exclusions")
             return
         for item in results.get("details", []):
+            if "/" in scan.repo.repo:
+                [org, repository] = scan.repo.repo.split("/", 1)
+            else:
+                org = scan.repo.repo
+                repository = scan.repo.repo
+
             payload = {
                 "timestamp": timestamp,
                 "type": plugin_type,
                 "service": scan.repo.service,
                 "repo": scan.repo.repo,
+                "org": org,
+                "repository": repository,
+                "plugin": plugin_name,
                 "branch": scan.ref,
                 "last-commit-timestamp": scan.branch_last_commit_timestamp,
                 "filename": item["filename"],

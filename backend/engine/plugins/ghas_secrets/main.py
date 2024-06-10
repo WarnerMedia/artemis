@@ -59,6 +59,7 @@ def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
     for alert in alerts:
         locations = _get_locations(gh, alert["number"])
         for location in locations:
+            LOG.info(location)
             valid, author, author_timestamp = _validate_location(location, path)
             if not valid:
                 LOG.debug("Location not valid for this branch")
