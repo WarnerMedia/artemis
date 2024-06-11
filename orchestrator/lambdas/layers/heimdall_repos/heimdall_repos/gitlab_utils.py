@@ -39,7 +39,7 @@ class ProcessGitlabRepos:
         service_dict: dict = None,
         org: str = None,
         api_key: str = None,
-        cursor: str = None,
+        repo_cursor: str = None,
         default_branch_only: bool = False,
         plugins: list = None,
         external_orgs: list = None,
@@ -47,9 +47,11 @@ class ProcessGitlabRepos:
         batch_id: str = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
+        branch_cursor: str = None,
+        repo: str = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, cursor)
+        self.service_info = ServiceInfo(service, service_dict, org, api_key, repo_cursor, branch_cursor, repo)
         self.default_branch_only = default_branch_only
         self.plugins = plugins
         self.external_orgs = external_orgs
@@ -59,7 +61,7 @@ class ProcessGitlabRepos:
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
-        self._setup(cursor)
+        self._setup(repo_cursor)
 
     def _setup(self, cursor):
         """
@@ -104,7 +106,7 @@ class ProcessGitlabRepos:
         LOG.info(
             "Querying for repos in %s starting at cursor %s",
             self.service_info.service_org,
-            self.service_info.cursor,
+            self.service_info.repo_cursor,
         )
 
         # Query the GitLab API
@@ -121,7 +123,7 @@ class ProcessGitlabRepos:
             return repos
         LOG.info("Processing %s results", len(nodes))
 
-        repos_result = self._process_nodes(nodes)
+        repos_result = self._process_repos(nodes)
         repos.extend(repos_result)
 
         page_info = self.json_utils.get_object_from_json_dict(resp, ["data", "group", "projects", "pageInfo"])
@@ -142,7 +144,7 @@ class ProcessGitlabRepos:
 
         return repos
 
-    def _process_nodes(self, nodes: list) -> list:
+    def _process_repos(self, nodes: list) -> list:
         """
         Processes each repo and its branches to be queued for scanning.
         :param nodes: list of repositories

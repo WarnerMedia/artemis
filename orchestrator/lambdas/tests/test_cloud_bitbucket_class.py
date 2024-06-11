@@ -6,7 +6,7 @@ from heimdall_repos.objects.cloud_bitbucket_class import CloudBitbucket
 from heimdall_utils.utils import get_json_from_file
 from lambdas.tests.test_bitbucket_utils import (
     TEST_CLOUD_BRANCH_RESPONSE_FILE,
-    TEST_CURSOR,
+    TEST_REPO_CURSOR,
     TEST_DIR,
     TEST_ORG,
     TEST_REPO,
@@ -73,7 +73,7 @@ class TestCloudBitbucket(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     def test_construct_bitbucket_refs_url_with_cursor(self):
-        expected_result = f"{TEST_URL}/repositories/{TEST_ORG}/{TEST_REPO}/refs/branches?page={TEST_CURSOR}"
-        result = self.service_helper.construct_bitbucket_branch_url(TEST_URL, TEST_ORG, TEST_REPO, TEST_CURSOR)
+        expected_result = f"{TEST_URL}/repositories/{TEST_ORG}/{TEST_REPO}/refs/branches?page={TEST_REPO_CURSOR}"
+        result = self.service_helper.construct_bitbucket_branch_url(TEST_URL, TEST_ORG, TEST_REPO, TEST_REPO_CURSOR)
 
         self.assertEqual(expected_result, result)

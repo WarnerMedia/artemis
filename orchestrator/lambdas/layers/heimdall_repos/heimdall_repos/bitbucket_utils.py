@@ -63,7 +63,7 @@ class ProcessBitbucketRepos:
         """
         Process bitbucket org, get all repos, and return the repos + branches
         """
-        # Process a single repository
+        # Process branches in a single repository
         if self.service_info.repo:
             self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.service_info.repo)
             return self._process_branches(self.service_info.repo)
@@ -80,7 +80,6 @@ class ProcessBitbucketRepos:
             return []
         nodes = resp.get("values")
 
-        # process repos
         repos = self._process_repos(nodes)
 
         if self.service_helper.has_next_page(resp):
@@ -97,7 +96,6 @@ class ProcessBitbucketRepos:
                 self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
-
         return repos
 
     def _process_repos(self, nodes: list) -> list:
@@ -113,10 +111,12 @@ class ProcessBitbucketRepos:
                 self.log.info("Skipping public repo %s in external org", name)
                 return []
 
+            # default_branch = repo.get("mainbranch", {}).get("name", None)
+
             repos.extend(self._process_branches(name))
         return repos
 
-    def _process_branches(self, repo_name) -> list:
+    def _process_branches(self, repo_name: str) -> list:
         """
         Handles processing for all branches in a given repository
         """

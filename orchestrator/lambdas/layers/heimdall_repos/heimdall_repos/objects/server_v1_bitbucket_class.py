@@ -5,7 +5,6 @@ from heimdall_repos.repo_layer_env import (
     BITBUCKET_PRIVATE_ORG_QUERY,
     BITBUCKET_PRIVATE_REPO_QUERY,
     BITBUCKET_PRIVATE_DEFAULT_BRANCH_QUERY,
-    BITBUCKET_PRIVATE_REPO_REF_QUERY,
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
 

@@ -107,7 +107,7 @@ class TestGitlabUtils(unittest.TestCase):
             org=TEST_ORG,
             service_dict=TEST_SERVICE_DICT,
             api_key=TEST_KEY,
-            cursor=TEST_CURSOR,
+            repo_cursor=TEST_CURSOR,
             default_branch_only=False,
             plugins=TEST_PLUGINS,
             external_orgs=TEST_EXTERNAL_ORGS,
@@ -115,7 +115,7 @@ class TestGitlabUtils(unittest.TestCase):
         )
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_process_nodes_one_branch(self, get_project_branches):
+    def test_process_repos_one_branch(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = json.dumps([TEST_BRANCH_RESPONSE[0]])
 
@@ -129,12 +129,12 @@ class TestGitlabUtils(unittest.TestCase):
             }
         ]
 
-        response = self.process_gitlab_repos._process_nodes(TEST_NODES)
+        response = self.process_gitlab_repos._process_repos(TEST_NODES)
 
         self.assertEqual(expected_response, response)
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_process_nodes_multiple_branches(self, get_project_branches):
+    def test_process_repos_multiple_branches(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = json.dumps(TEST_BRANCH_RESPONSE)
         expected_response = [
@@ -161,7 +161,7 @@ class TestGitlabUtils(unittest.TestCase):
             },
         ]
 
-        response = self.process_gitlab_repos._process_nodes(TEST_NODES)
+        response = self.process_gitlab_repos._process_repos(TEST_NODES)
 
         self.assertCountEqual(expected_response, response)
 
@@ -171,22 +171,22 @@ class TestGitlabUtils(unittest.TestCase):
         self.assertFalse(gitlab_processor.validate_input())
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_get_ref_names_no_branch_response(self, get_project_branches):
+    def test_get_branch_names_no_branch_response(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = ""
         expected_response = []
 
-        response, _ = self.process_gitlab_repos._get_ref_names("foo")
+        response, _ = self.process_gitlab_repos._get_branch_names("foo")
 
         self.assertEqual(expected_response, response)
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_get_ref_names_success(self, get_project_branches):
+    def test_get_branch_names_success(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = json.dumps(TEST_BRANCH_RESPONSE)
         expected_response = ["rollback", "master", "production"]
 
-        response, _ = self.process_gitlab_repos._get_ref_names("foo")
+        response, _ = self.process_gitlab_repos._get_branch_names("foo")
 
         self.assertEqual(sorted(expected_response), sorted(response))
 

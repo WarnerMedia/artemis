@@ -64,7 +64,7 @@ class TestGithubUtils(unittest.TestCase):
             org=TEST_ORG,
             service_dict=TEST_SERVICE_DICT,
             api_key=TEST_KEY,
-            cursor=TEST_CURSOR,
+            repo_cursor=TEST_CURSOR,
             default_branch_only=False,
             plugins=TEST_PLUGINS,
             external_orgs=TEST_EXTERNAL_ORGS,
@@ -138,14 +138,14 @@ class TestGithubUtils(unittest.TestCase):
         query_mock.return_value = GITHUB_RATE_ABUSE_FLAG
         self.assertEqual(github_utils.queue_service_and_org, queue_mock)
 
-        self.process_github_repos.query_github()
+        self.process_github_repos.query()
 
         self.assertTrue(queue_mock.called)
 
-    def test_process_nodes_repo_no_branches(self):
+    def test_process_repos_repo_no_branches(self):
         expected_response = []
 
-        response = self.process_github_repos._process_nodes([TEST_EMPTY_NODE])
+        response = self.process_github_repos._process_repos([TEST_EMPTY_NODE])
 
         self.assertEqual(expected_response, response)
 
