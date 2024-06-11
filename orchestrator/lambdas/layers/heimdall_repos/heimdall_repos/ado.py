@@ -32,6 +32,8 @@ class ADORepoProcessor:
         batch_id: str = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
+        branch_cursor: str = None,
+        repo: str = None,
     ):
         self.queue = queue
         self.service_info = ServiceInfo(service, service_dict, org, api_key)
@@ -44,14 +46,17 @@ class ADORepoProcessor:
         self._setup(cursor)
         self.json_utils = JSONUtils(self.log)
 
-    def _setup(self, cursor):
+    def _setup(self, repo_cursor, branch_cursor):
         """
         Use logic to set the cursor class variables.
         """
+        self.service_info.repo_cursor = self._parse_cursor(repo_cursor)
+        self.service_info.branch_cursor = self._parse_cursor(branch_cursor)
+
+    def _parse_cursor(self, cursor) -> str:
         if not cursor or cursor in {"null", "None"}:
-            self.service_info.cursor = "0"
-        else:
-            self.service_info.cursor = cursor
+            return "0"
+        return cursor
 
     def query(self) -> list:
         """
