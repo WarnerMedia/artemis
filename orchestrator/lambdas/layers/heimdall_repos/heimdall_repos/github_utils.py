@@ -359,34 +359,3 @@ class ProcessGithubRepos:
 
         # Fall back to using the PAT
         return f"bearer {self.service_info.api_key}"
-
-
-if __name__ == "__main__":
-    processor = ProcessGithubRepos(
-        "",
-        "github",
-        "wmcso",
-        {
-            "secret_loc": "github-api-key",
-            "type": "github",
-            "hostname": None,
-            "url": "https://api.github.com/graphql",
-            "branch_url": None,
-            "diff_url": "https://api.github.com",
-            "allow_all": False,
-            "api_key_add": None,
-            "use_deploy_key": False,
-            "batch_queries": True,
-            "nat_connect": False,
-            "app_integration": True,
-            "initial_page": {"cursor": None},
-        },
-        "",
-        None,
-        False,
-        None,
-        [],
-        None,
-    )
-    res = processor.query()
-    # print(res)
