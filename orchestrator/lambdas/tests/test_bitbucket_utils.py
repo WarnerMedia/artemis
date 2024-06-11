@@ -116,10 +116,13 @@ class TestBitbucketUtils(unittest.TestCase):
 
         self.assertEqual(expected_result, result)
 
+    @patch("heimdall_utils.aws_utils.queue_branch_and_repo")
     @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_query_bitbucket_api")
-    def test_get_branch_names_cloud_null_response(self, query_bitbucket_api):
+    def test_get_branch_names_cloud_null_response(self, query_bitbucket_api, queue_branch_and_repo):
         self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         query_bitbucket_api.return_value = None
+
+        queue_branch_and_repo.return_value = None
 
         expected_result = ([], {})
         result = self.process_bitbucket_cloud._get_branch_names(TEST_REPO)
