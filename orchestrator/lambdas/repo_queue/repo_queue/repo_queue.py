@@ -4,16 +4,12 @@ from itertools import zip_longest
 
 from botocore.exceptions import ClientError
 
-from heimdall_repos.ado import ADORepoProcessor
-from heimdall_repos.bitbucket_utils import ProcessBitbucketRepos
-from heimdall_repos.github_utils import ProcessGithubRepos
-from heimdall_repos.gitlab_utils import ProcessGitlabRepos
 from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection
 from heimdall_utils.env import API_KEY_LOC
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import Logger
 from heimdall_utils.variables import REGION
-from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE
+from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, SERVICE_PROCESSORS
 
 
 log = Logger(__name__)
@@ -67,7 +63,10 @@ def query(
     batch_id: str,
     artemis_api_key: str,
     redundant_scan_query: dict,
+    branch_cursor: str,
+    repo: str,
 ) -> list:
+    """Retrieves a list of repository events to send to the Repo SQS Queue"""
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
         return []
@@ -77,75 +76,29 @@ def query(
         return []
     cursor = page["cursor"]
 
-    ret = []
-    if service_dict.get("type") == "github":
-        github_class = ProcessGithubRepos(
-            queue=ORG_QUEUE,
-            service=service,
-            org=org,
-            service_dict=service_dict,
-            api_key=api_key,
-            cursor=cursor,
-            default_branch_only=default_branch_only,
-            plugins=plugins,
-            external_orgs=external_orgs,
-            batch_id=batch_id,
-            artemis_api_key=artemis_api_key,
-            redundant_scan_query=redundant_scan_query,
-        )
-        ret = github_class.query_github()
-    elif service_dict.get("type") in ["gitlab"]:
-        gitlab_class = ProcessGitlabRepos(
-            queue=ORG_QUEUE,
-            service=service,
-            org=org,
-            service_dict=service_dict,
-            api_key=api_key,
-            cursor=cursor,
-            default_branch_only=default_branch_only,
-            plugins=plugins,
-            external_orgs=external_orgs,
-            batch_id=batch_id,
-            artemis_api_key=artemis_api_key,
-            redundant_scan_query=redundant_scan_query,
-        )
-        if not gitlab_class.validate_input():
-            log.error("Validation failed for %s", service)
-        else:
-            ret = gitlab_class.query_gitlab()
-    elif service_dict.get("type") == "bitbucket":
-        bitbucket_class = ProcessBitbucketRepos(
-            queue=ORG_QUEUE,
-            service=service,
-            org=org,
-            service_dict=service_dict,
-            api_key=api_key,
-            cursor=cursor,
-            default_branch_only=default_branch_only,
-            plugins=plugins,
-            external_orgs=external_orgs,
-            batch_id=batch_id,
-            artemis_api_key=artemis_api_key,
-            redundant_scan_query=redundant_scan_query,
-        )
-        ret = bitbucket_class.query_bitbucket()
-    elif service_dict.get("type") == "ado":
-        ado = ADORepoProcessor(
-            queue=ORG_QUEUE,
-            service=service,
-            org=org,
-            service_dict=service_dict,
-            api_key=api_key,
-            cursor=cursor,
-            default_branch_only=default_branch_only,
-            plugins=plugins,
-            external_orgs=external_orgs,
-            batch_id=batch_id,
-            artemis_api_key=artemis_api_key,
-            redundant_scan_query=redundant_scan_query,
-        )
-        ret = ado.query()
-    return ret
+    service_type = service_dict.get("type")
+    if service_type not in SERVICE_PROCESSORS:
+        log.warning(f"Unable to Process Service: {service}")
+        return []
+
+    service_processor = SERVICE_PROCESSORS[service_type](
+        queue=ORG_QUEUE,
+        service=service,
+        org=org,
+        service_dict=service_dict,
+        api_key=api_key,
+        repo_cursor=cursor,
+        default_branch_only=default_branch_only,
+        plugins=plugins,
+        external_orgs=external_orgs,
+        batch_id=batch_id,
+        artemis_api_key=artemis_api_key,
+        redundant_scan_query=redundant_scan_query,
+        branch_cursor=branch_cursor,
+        repo=repo,
+    )
+
+    return service_processor.query()
 
 
 def queue_repo_group(repo_group: iter, plugins: list, batch_id: str) -> int:
