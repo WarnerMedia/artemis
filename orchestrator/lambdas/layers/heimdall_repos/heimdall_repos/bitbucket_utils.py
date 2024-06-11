@@ -31,7 +31,7 @@ class ProcessBitbucketRepos:
         repo=None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, branch_cursor, repo)
+        self.service_info = ServiceInfo(service, service_dict, org, api_key, repo=repo)
         self.scan_options = ScanOptions(default_branch_only, plugins, batch_id)
         self.external_orgs = external_orgs
         self.log = Logger("ProcessBitbucketRepos")
@@ -44,7 +44,7 @@ class ProcessBitbucketRepos:
 
     def _setup(self, service, repo_cursor, branch_cursor):
         """
-        Set the service_helper, repo_cursor and branch_cursor class variables
+        Use logic to set the cursor class variables.
         """
         if service == "bitbucket":
             self.service_helper = CloudBitbucket(service)
@@ -55,14 +55,20 @@ class ProcessBitbucketRepos:
         self.service_info.branch_cursor = self._parse_cursor(branch_cursor)
 
     def _parse_cursor(self, cursor):
-        if not cursor or cursor in {"null", "None", None}:
+        if cursor in {"null", "None", None}:
             return self.service_helper.get_default_cursor()
         return cursor
 
-    def query_bitbucket(self) -> list:
+    def query(self) -> list:
         """
         Process bitbucket org, get all repos, and return the repos + branches
         """
+        # Process a single repository
+        if self.service_info.repo:
+            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.service_info.repo)
+            return self._process_branches(self.service_info.repo)
+
+        # Process all repositories in an organization
         self.log.info("Querying for repos in %s", self.service_info.service_org)
         repo_query_url = self.service_helper.construct_bitbucket_org_url(
             self.service_info.url, self.service_info.org, self.service_info.repo_cursor
@@ -75,7 +81,7 @@ class ProcessBitbucketRepos:
         nodes = resp.get("values")
 
         # process repos
-        repos = self._process_nodes(nodes)
+        repos = self._process_repos(nodes)
 
         if self.service_helper.has_next_page(resp):
             cursor = self.service_helper.get_cursor(resp)
@@ -94,55 +100,51 @@ class ProcessBitbucketRepos:
 
         return repos
 
-    def _process_nodes(self, nodes: list) -> list:
+    def _process_repos(self, nodes: list) -> list:
         """
         Handles processing for a single repository or all repositories in an organization
         """
-        # Process a single repo
-        if self.service_info.repo:
-            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.service_info.repo)
-            return self._process_refs(self.service_info.repo)
-
-        # Process all repos in an organization
-        self.log.info("Processing repos in org: %s", self.service_info.org)
         repos = []
         for repo in nodes:
-            repos.extend(self._process_refs(repo))
+            name = repo.get("slug")
+            # With an external org we only want to scan the private repos
+            # shared with us any not that org's public repos
+            if f"bitbucket/{self.service_info.org}" in self.external_orgs and self.service_helper.is_public(repo):
+                self.log.info("Skipping public repo %s in external org", name)
+                return []
+
+            repos.extend(self._process_branches(name))
         return repos
 
-    def _process_refs(self, repo) -> list:
+    def _process_branches(self, repo_name) -> list:
         """
         Handles processing for all branches in a given repository
         """
-        name = repo.get("slug")
-        repos = []
-        if f"bitbucket/{self.service_info.org}" in self.external_orgs and self.service_helper.is_public(repo):
-            self.log.info("Skipping public repo %s in external org", name)
-            return []
+        branch_tasks = []
 
-        refs, timestamps = self._get_ref_names(name)
-        for ref in refs:
+        branch_names, timestamps = self._get_branch_names(repo_name)
+        for branch in branch_names:
             if not redundant_scan_exists(
                 api_key=self.artemis_api_key,
                 service=self.service_info.service,
                 org=self.service_info.org,
-                repo=name,
-                branch=ref,
-                timestamp=timestamps[ref],
+                repo=repo_name,
+                branch=branch,
+                timestamp=timestamps[branch],
                 query=self.redundant_scan_query,
             ):
-                repos.append(
+                branch_tasks.append(
                     {
                         "service": self.service_info.service,
-                        "repo": name,
+                        "repo": repo_name,
                         "org": self.service_info.org,
                         "plugins": self.scan_options.plugins,
-                        "branch": ref,
+                        "branch": branch,
                     }
                 )
-        return repos
+        return branch_tasks
 
-    def _get_ref_names(self, repo) -> Tuple[list, dict]:
+    def _get_branch_names(self, repo) -> Tuple[list, dict]:
         """
         Retrieves the branches and timestamps for a given repository.
 
@@ -165,7 +167,7 @@ class ProcessBitbucketRepos:
         ref_names = set()
         timestamps = dict()
 
-        self.log.info("Getting branches for repo %s", repo)
+        self.log.debug("Processing branches in repo %s/%s", self.service_info.org, repo)
         response_text = self._query_bitbucket_api(repo_url)
         response_dict = self.json_utils.get_json_from_response(response_text)
 
@@ -187,13 +189,13 @@ class ProcessBitbucketRepos:
             ref_name = self.service_helper.get_branch_name(ref)
             ref_names.add(ref_name)
 
-            timestamp = self._get_ref_timestamp(repo, ref)
+            timestamp = self._get_branch_timestamp(repo, ref)
             timestamps[ref_name] = timestamp
 
         if self.service_helper.has_next_page(response_dict):
             branch_cursor = self.service_helper.get_cursor(response_dict)
 
-            self.log.info("Queueing the next page of branches in %s to start at cursor: %s", repo, branch_cursor)
+            self.log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
             queue_branch_and_repo(
                 self.queue,
                 self.service_info.service,
@@ -207,7 +209,7 @@ class ProcessBitbucketRepos:
 
         return list(ref_names), timestamps
 
-    def _get_ref_timestamp(self, repo: str, ref: dict):
+    def _get_branch_timestamp(self, repo: str, ref: dict):
         """
         Retrieves the timestamp of the last commit in a given branch(ref)
         """
