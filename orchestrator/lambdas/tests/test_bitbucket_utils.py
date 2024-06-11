@@ -12,6 +12,9 @@ from heimdall_utils.utils import get_json_from_file
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TEST_PRIVATE_ORG_RESPONSE_FILE = os.path.abspath(os.path.join(TEST_DIR, "data", "bitbucket_server_org_response.json"))
+TEST_PRIVATE_BRANCHES_RESPONSE_FILE = os.path.abspath(
+    os.path.join(TEST_DIR, "data", "bitbucket_server_branches_response.json")
+)
 
 TEST_URL = "www.example.com"
 TEST_KEY = "test_key"
@@ -57,7 +60,7 @@ class TestBitbucketUtils(unittest.TestCase):
         self.server_service_helper = ServerV1Bitbucket(SERVER_SERVICE)
 
         self.process_bitbucket_cloud = bitbucket_utils.ProcessBitbucketRepos(
-            queue="None",
+            queue="",
             service=BITBUCKET_SERVICE,
             service_dict=TEST_SERVICE_DICT,
             org=TEST_ORG,
@@ -72,7 +75,7 @@ class TestBitbucketUtils(unittest.TestCase):
         )
 
         self.process_bitbucket_server = bitbucket_utils.ProcessBitbucketRepos(
-            queue="None",
+            queue="",
             service=SERVER_SERVICE,
             service_dict=TEST_SERVICE_DICT,
             org=TEST_ORG,
@@ -118,7 +121,7 @@ class TestBitbucketUtils(unittest.TestCase):
         self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         query_bitbucket_api.return_value = None
 
-        expected_result = (["main"], {"main": "1970-01-01T00:00:00Z"})
+        expected_result = ([], {})
         result = self.process_bitbucket_cloud._get_branch_names(TEST_REPO)
 
         self.assertEqual(expected_result, result)
@@ -128,8 +131,7 @@ class TestBitbucketUtils(unittest.TestCase):
         self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         query_bitbucket_api.return_value = json.dumps({"error": "something went wrong!"})
 
-        expected_result = (["main"], {"main": "1970-01-01T00:00:00Z"})
-
+        expected_result = ([], {})
         result = self.process_bitbucket_cloud._get_branch_names(TEST_REPO)
 
         self.assertEqual(expected_result, result)

@@ -109,7 +109,7 @@ class ProcessBitbucketRepos:
             # shared with us any not that org's public repos
             if f"bitbucket/{self.service_info.org}" in self.external_orgs and self.service_helper.is_public(repo):
                 self.log.info("Skipping public repo %s in external org", name)
-                return []
+                continue
 
             # default_branch = repo.get("mainbranch", {}).get("name", None)
 
@@ -172,7 +172,7 @@ class ProcessBitbucketRepos:
         response_dict = self.json_utils.get_json_from_response(response_text)
 
         if not response_dict:
-            self.log.warning("Unable to process repo %s/%s", self.service_info.org, repo)
+            self.log.warning("Unable to process branches in repo %s/%s", self.service_info.org, repo)
             return list(ref_names), timestamps
 
         if self.scan_options.default_branch_only:
