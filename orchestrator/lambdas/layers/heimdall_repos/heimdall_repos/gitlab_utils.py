@@ -67,9 +67,9 @@ class ProcessGitlabRepos:
         Without this, GraphQL would read `null` as a string and not a Null value
         """
         if cursor in {"null", "None"}:
-            self.service_info.cursor = None
+            self.service_info.repo_cursor = None
         else:
-            self.service_info.cursor = cursor
+            self.service_info.repo_cursor = cursor
 
     def validate_input(self) -> bool:
         """
@@ -92,7 +92,7 @@ class ProcessGitlabRepos:
 
         return True
 
-    def query_gitlab(self) -> list:
+    def query(self) -> list:
         """
         MAIN FUNCTION:
         Pulls the service group information to get all repositories and branches,
@@ -164,7 +164,7 @@ class ProcessGitlabRepos:
                 if self.redundant_scan_query:
                     # Only make the additional query to get the rootRef timestamp if it will actually be used.
                     # If there is no redundant scan query we can skip making this API call.
-                    refs, timestamps = self._get_ref_names(repo["id"], repo["repository"]["rootRef"])
+                    refs, timestamps = self._get_branch_names(repo["id"], repo["repository"]["rootRef"])
 
                     timestamp = None
                     if refs and timestamps:
@@ -189,7 +189,7 @@ class ProcessGitlabRepos:
                 )
             else:
                 LOG.info("getting branches for repo: %s", name)
-                refs, timestamps = self._get_ref_names(repo["id"])
+                refs, timestamps = self._get_branch_names(repo["id"])
                 for ref in refs:
                     if not redundant_scan_exists(
                         api_key=self.artemis_api_key,
@@ -217,7 +217,7 @@ class ProcessGitlabRepos:
         )
         return repos
 
-    def _get_ref_names(self, project_id: str, ref: str = None) -> Tuple[list, dict]:
+    def _get_branch_names(self, project_id: str, ref: str = None) -> Tuple[list, dict]:
         """
         Queries the service (using api/v4/ currently) to get all branches for a project.
         :param project_id: str unique id of project
