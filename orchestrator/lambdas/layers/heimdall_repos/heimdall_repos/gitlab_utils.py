@@ -248,7 +248,7 @@ class ProcessGitlabRepos:
             headers=self._get_request_headers(url),
             json={
                 "query": GITLAB_REPO_QUERY,
-                "variables": {"org": self.service_info.org, "cursor": self.service_info.cursor},
+                "variables": {"org": self.service_info.org, "cursor": self.service_info.repo_cursor},
             },
             timeout=DEFAULT_API_TIMEOUT,
         )
