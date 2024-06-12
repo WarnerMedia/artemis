@@ -4,6 +4,7 @@ FROM openjdk:$OPENJDK_VER
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
+ARG DETEKT_VER
 ARG FSB_PATCH=""
 ARG FSB_VER=1.9.0
 ARG OWASP_DC=""
@@ -54,8 +55,9 @@ RUN sed -i -e 's/\r$//' findsecbugs.sh
 RUN chmod a+x findsecbugs.sh
 
 # Install detekt
-COPY ./.temp/detekt/detekt.jar /usr/local/bin/detekt.jar
+RUN wget -q -O /usr/local/bin/detekt.jar \
+    "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar"
 ## The detekt wrapper script is renamed from detekt.sh to "detekt"
 ## This is for compatability with installations done via a package manager
-COPY ./.temp/detekt/detekt /usr/local/bin/detekt
+COPY ./engine/plugins/detekt/detekt.sh /usr/local/bin/detekt
 RUN chmod a+x /usr/local/bin/detekt
