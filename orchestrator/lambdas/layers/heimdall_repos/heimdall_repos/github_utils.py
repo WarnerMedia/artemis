@@ -343,8 +343,8 @@ class ProcessGithubRepos:
                 self.service_info.org,
                 branch_cursor,
                 repo,
-                self.scan_options.plugins,
-                self.scan_options.batch_id,
+                self.plugins,
+                self.batch_id,
                 self.redundant_scan_query,
             )
         return list(ref_names), timestamps
