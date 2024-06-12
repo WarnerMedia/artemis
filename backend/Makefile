@@ -215,6 +215,7 @@ SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM}/enviro
 
 # Detekt
 DETEKT_VER := 1.19.0
+DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # psycopg2
 PSYCOPG2_VER := 2.9.3
@@ -248,6 +249,7 @@ help:  ## Print this help text
 $(ROOT_DIR)/.temp/detekt/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
+	echo "${DETEKT_SHA} $@" | sha256sum -c -
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
@@ -543,6 +545,7 @@ dist/docker/java7: Dockerfiles/Dockerfile.java
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=7u201-jdk-alpine3.9 \
 		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -558,6 +561,7 @@ dist/docker/java8: Dockerfiles/Dockerfile.java
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=8u201-jdk-alpine3.9 \
 		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH} \
 		--build-arg OWASP_DC=${OWASP_DC} \
@@ -575,6 +579,7 @@ dist/docker/java13: Dockerfiles/Dockerfile.java
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=13-ea-14-jdk-alpine3.9 \
 		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -590,6 +595,7 @@ dist/docker/java17: Dockerfiles/Dockerfile.java
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=17-ea-14-jdk-alpine3.12 \
 		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
