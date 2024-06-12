@@ -38,7 +38,7 @@ class ProcessGithubRepos:
         repo: str = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key)
+        self.service_info = ServiceInfo(service, service_dict, org, api_key, repo=repo)
         self.default_branch_only = default_branch_only
         self.plugins = plugins
         self.external_orgs = external_orgs
@@ -47,7 +47,6 @@ class ProcessGithubRepos:
         self.batch_id = batch_id
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query or {}
-        self.repo = repo
 
         self._setup(repo_cursor, branch_cursor)
 
