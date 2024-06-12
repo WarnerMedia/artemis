@@ -5,7 +5,7 @@ import { mockCurrentUser, mockScan001 } from "../../../testData/testMockData";
 import { AnalysisReport } from "features/scans/scansSchemas";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
 import { validateSelect } from "pages/SearchPageTestCommon";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 
 const HASH_PREFIX = FILTER_PREFIX_VULN;
 const mockSaveFilters = jest.fn();
