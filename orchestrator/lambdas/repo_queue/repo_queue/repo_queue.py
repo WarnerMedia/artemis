@@ -34,7 +34,6 @@ def run(event=None, _context=None, services_file=None) -> None:
             data.get("batch_id"),
             artemis_api_key,
             data.get("redundant_scan_query"),
-            data.get("branch_cursor"),
             data.get("repo"),
         )
         log.info(f"Queuing {len(repos)} repos+branches...")
@@ -65,7 +64,6 @@ def query(
     batch_id: str,
     artemis_api_key: str,
     redundant_scan_query: dict,
-    branch_cursor: str,
     repo: str,
 ) -> list:
     """Retrieves a list of repository events to send to the Repo SQS Queue"""
@@ -76,7 +74,8 @@ def query(
     if not api_key:
         log.error(f"Could not retrieve Service {service} api key.")
         return []
-    cursor = page["cursor"]
+    repo_cursor = page.get("repo_cursor")
+    branch_cursor = page.get("branch_cursor")
 
     service_type = service_dict.get("type")
     if service_type not in SERVICE_PROCESSORS:
@@ -89,7 +88,7 @@ def query(
         org=org,
         service_dict=service_dict,
         api_key=api_key,
-        repo_cursor=cursor,
+        repo_cursor=repo_cursor,
         default_branch_only=default_branch_only,
         plugins=plugins,
         external_orgs=external_orgs,

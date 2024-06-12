@@ -119,7 +119,7 @@ def queue_branch_and_repo(
                     "batch_id": batch_id,
                     "redundant_scan_query": redundant_scan_query,
                     "repo": repo,
-                    "branch_cursor": branch_cursor,
+                    "page": {"branch_cursor": branch_cursor},
                 }
             ),
         )
