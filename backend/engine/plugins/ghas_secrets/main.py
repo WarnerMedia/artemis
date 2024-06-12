@@ -73,6 +73,8 @@ def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
                 "type": _normalize_secret_type(alert["secret_type"]),
                 "author": author,
                 "author-timestamp": author_timestamp,
+                "validity": alert["validity"],
+                "state": alert["state"],
             }
             results.append(item)
             event_info[item_id] = {"match": alert["secret"], "type": item["type"]}
