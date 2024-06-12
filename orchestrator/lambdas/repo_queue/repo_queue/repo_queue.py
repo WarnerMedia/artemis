@@ -34,6 +34,8 @@ def run(event=None, _context=None, services_file=None) -> None:
             data.get("batch_id"),
             artemis_api_key,
             data.get("redundant_scan_query"),
+            data.get("branch_cursor")
+            data.get("repo")
         )
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
