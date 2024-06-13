@@ -74,7 +74,7 @@ def query(
     if not api_key:
         log.error(f"Could not retrieve Service {service} api key.")
         return []
-    repo_cursor = page.get("repo_cursor")
+    repo_cursor = page.get("cursor")
     branch_cursor = page.get("branch_cursor")
 
     service_type = service_dict.get("type")
