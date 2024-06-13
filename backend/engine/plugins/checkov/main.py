@@ -1,6 +1,7 @@
 """
 Checkov Plugin
 """
+
 import json
 import subprocess
 import tempfile
@@ -101,7 +102,7 @@ def run_checkov(path: str, config: dict = {}) -> dict:
     return output
 
 
-def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, config: dict) -> (list, str):
+def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, config: dict) -> tuple[list, str]:
     """
     Parse the output of Checkov
     """
@@ -143,7 +144,7 @@ def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, c
     return (findings, error)
 
 
-def get_config_dir(repo_path: str, config: dict) -> (str, str):
+def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
     """
     Determine if config directory should be from S3 or default (local)
     """
@@ -173,7 +174,7 @@ def get_config_dir(repo_path: str, config: dict) -> (str, str):
     return (config_dir, error)
 
 
-def get_ckv_severities(config_dir: str, config: dict) -> (dict, str):
+def get_ckv_severities(config_dir: str, config: dict) -> tuple[dict, str]:
     """
     Read Checkov severities from JSON file, and return them as dict
     """
