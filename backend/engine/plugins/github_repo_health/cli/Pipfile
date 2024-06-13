@@ -6,9 +6,13 @@ name = "pypi"
 [packages]
 jsonschema = "*"
 pygithub = "*"
-pytest = "*"
 
 [requires]
 python_version = "3.9"
 
 [dev-packages]
+pytest = "*"
+black = "*"
+build = "*"
+isort = "*"
+setuptools = "*"
