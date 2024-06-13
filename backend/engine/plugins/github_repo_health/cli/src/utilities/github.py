@@ -131,5 +131,5 @@ class Github:
 
         return Github(auth)
 
-    def _get_request_headers(token):
+    def _get_request_headers(self, token):
         return {"Authorization": f"token {token}", GITHUB_API_NAME_HEADER: GITHUB_API_NAME}
