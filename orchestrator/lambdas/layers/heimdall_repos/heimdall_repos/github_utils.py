@@ -14,7 +14,7 @@ from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
 from heimdall_utils.env import DEFAULT_API_TIMEOUT
 from heimdall_utils.github.app import GithubApp
-from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo
+from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo, ScanOptions
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 
@@ -22,41 +22,31 @@ class ProcessGithubRepos:
     # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
-        queue,
-        service,
-        org,
-        service_dict,
-        api_key,
-        repo_cursor,
-        default_branch_only,
-        plugins,
-        external_orgs,
-        batch_id: str,
+        queue: str,
+        scan_options: ScanOptions,
+        service_info: ServiceInfo,
+        external_orgs: list = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
-        branch_cursor=None,
-        repo: str = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, repo=repo)
-        self.default_branch_only = default_branch_only
-        self.plugins = plugins
+        self.service_info = service_info
+        self.scan_options = scan_options
         self.external_orgs = external_orgs
         self.log = Logger("ProcessGithubRepos")
         self.json_utils = JSONUtils(self.log)
-        self.batch_id = batch_id
         self.artemis_api_key = artemis_api_key
-        self.redundant_scan_query = redundant_scan_query or {}
+        self.redundant_scan_query = redundant_scan_query
 
-        self._setup(repo_cursor, branch_cursor)
+        self._setup()
 
-    def _setup(self, repo_cursor, branch_cursor):
+    def _setup(self):
         """
         Updates the cursor to a None type if needed.
         Without this, GraphQL would read `null` as a string and not a Null value
         """
-        self.service_info.repo_cursor = self._parse_cursor(repo_cursor)
-        self.service_info.branch_cursor = self._parse_cursor(branch_cursor)
+        self.service_info.repo_cursor = self._parse_cursor(self.service_info.repo_cursor)
+        self.service_info.branch_cursor = self._parse_cursor(self.service_info.branch_cursor)
 
     def _parse_cursor(self, cursor):
         if cursor in {"null", "None"}:
@@ -104,7 +94,7 @@ class ProcessGithubRepos:
         except AttributeError:
             return False
 
-    def _analyze_error_response(self, response, response_text) -> str or None:
+    def _analyze_error_response(self, response, response_text) -> str:
         if response is None or response_text is None:
             return None
 
@@ -157,9 +147,9 @@ class ProcessGithubRepos:
 
     def query(self) -> list:
         # Process a single repo
-        if self.service_info.repo:
-            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.service_info.repo)
-            return self._process_branches(self.service_info.repo, None, None)
+        if self.scan_options.repo:
+            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
+            return self._process_branches(self.scan_options.repo, None, None)
 
         # Process all repos in an organization
         self.log.info(
@@ -173,9 +163,9 @@ class ProcessGithubRepos:
                 self.service_info.service,
                 self.service_info.org,
                 {"cursor": self.service_info.repo_cursor},
-                self.default_branch_only,
-                self.plugins,
-                self.batch_id,
+                self.scan_options.default_branch_only,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
             return []
@@ -206,9 +196,9 @@ class ProcessGithubRepos:
                 self.service_info.service,
                 self.service_info.org,
                 {"cursor": cursor},
-                self.default_branch_only,
-                self.plugins,
-                self.batch_id,
+                self.scan_options.default_branch_only,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
 
@@ -259,11 +249,11 @@ class ProcessGithubRepos:
         tasks = []
         self.log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name)
 
-        if self.service_info.repo:
+        if self.scan_options.repo:
             # Query for Repo Branches
             variables = {
                 "org": self.service_info.org,
-                "repo": self.service_info.repo,
+                "repo": self.scan_options.repo,
                 "cursor": self.service_info.branch_cursor,
             }
             response_text = self._query_github_api(GITHUB_REPO_REF_QUERY, variables)
@@ -277,7 +267,7 @@ class ProcessGithubRepos:
             )
 
         branch_names, timestamps = self._get_branch_names(repo_name, branches)
-        if self.default_branch_only:
+        if self.scan_options.default_branch_only:
             branch_names = [default_branch]
             if default_branch not in timestamps:
                 timestamps[default_branch] = "1970-01-01T00:00:00Z"
@@ -298,7 +288,7 @@ class ProcessGithubRepos:
                         "repo": repo_name,
                         "org": self.service_info.org,
                         "branch": branch,
-                        "plugins": self.plugins,
+                        "plugins": self.scan_options.plugins,
                     }
                 )
         return tasks
@@ -342,8 +332,8 @@ class ProcessGithubRepos:
                 self.service_info.org,
                 branch_cursor,
                 repo,
-                self.plugins,
-                self.batch_id,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
         return list(ref_names), timestamps

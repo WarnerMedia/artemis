@@ -12,10 +12,8 @@ from heimdall_repos.repo_layer_env import GITLAB_REPO_QUERY
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org
 from heimdall_utils.env import DEFAULT_API_TIMEOUT
-from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo
+from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo, ScanOptions
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
-
-LOG = Logger("ProcessGitlabRepos")
 
 
 class ProcessGitlabRepos:
@@ -35,43 +33,32 @@ class ProcessGitlabRepos:
     def __init__(
         self,
         queue: str,
-        service: str,
-        service_dict: dict = None,
-        org: str = None,
-        api_key: str = None,
-        repo_cursor: str = None,
-        default_branch_only: bool = False,
-        plugins: list = None,
+        scan_options: ScanOptions,
+        service_info: ServiceInfo,
         external_orgs: list = None,
-        requeue_org: bool = True,
-        batch_id: str = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
-        branch_cursor: str = None,
-        repo: str = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, repo_cursor, branch_cursor, repo)
-        self.default_branch_only = default_branch_only
-        self.plugins = plugins
+        self.scan_options = scan_options
+        self.service_info = service_info
         self.external_orgs = external_orgs
-        self.requeue_orgs = requeue_org
-        self.json_utils = JSONUtils(LOG)
-        self.batch_id = batch_id
+        self.log = Logger("ProcessGitlabRepos")
+        self.json_utils = JSONUtils(self.log)
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
-        self._setup(repo_cursor)
+        self._setup()
 
-    def _setup(self, cursor):
+    def _setup(self):
         """
         Updates the cursor to a None type if needed.
         Without this, GraphQL would read `null` as a string and not a Null value
         """
-        if cursor in {"null", "None"}:
+        if self.service_info.repo_cursor in {"null", "None"}:
             self.service_info.repo_cursor = None
         else:
-            self.service_info.repo_cursor = cursor
+            self.service_info.repo_cursor = self.service_info.repo_cursor
 
     def validate_input(self) -> bool:
         """
@@ -79,14 +66,14 @@ class ProcessGitlabRepos:
         If not, the validation fails and returns False.
         """
         if not self.service_info.url:
-            LOG.error(
+            self.log.error(
                 "Service %s url was not found and therefore deemed unsupported",
                 self.service_info.service,
             )
             return False
 
-        if not self.service_info.branch_url and not self.default_branch_only:
-            LOG.error(
+        if not self.service_info.branch_url and not self.scan_options.default_branch_only:
+            self.log.error(
                 "Service %s url was not found and therefore deemed unsupported",
                 self.service_info.service,
             )
@@ -101,9 +88,9 @@ class ProcessGitlabRepos:
         and compiles them into a list that is returned.
         :return: list of repos to scan
         """
-        LOG.info("querying gitlab service %s", self.service_info.service)
+        self.log.info("querying gitlab service %s", self.service_info.service)
         repos = []
-        LOG.info(
+        self.log.info(
             "Querying for repos in %s starting at cursor %s",
             self.service_info.service_org,
             self.service_info.repo_cursor,
@@ -121,13 +108,13 @@ class ProcessGitlabRepos:
         nodes = self.json_utils.get_object_from_json_dict(resp, ["data", "group", "projects", "nodes"])
         if not nodes:
             return repos
-        LOG.info("Processing %s results", len(nodes))
+        self.log.info("Processing %s results", len(nodes))
 
         repos_result = self._process_repos(nodes)
         repos.extend(repos_result)
 
         page_info = self.json_utils.get_object_from_json_dict(resp, ["data", "group", "projects", "pageInfo"])
-        if page_info and page_info.get("hasNextPage") and self.requeue_orgs:
+        if page_info and page_info.get("hasNextPage"):
             cursor = f"\"{page_info.get('endCursor')}\""
 
             # Re-queue this org, setting the cursor for the next page of the query
@@ -136,9 +123,9 @@ class ProcessGitlabRepos:
                 self.service_info.service,
                 self.service_info.org,
                 {"cursor": cursor},
-                self.default_branch_only,
-                self.plugins,
-                self.batch_id,
+                self.scan_options.default_branch_only,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
 
@@ -158,11 +145,11 @@ class ProcessGitlabRepos:
             if self.service_info.service_org in self.external_orgs and repo["visibility"] != "private":
                 # With an external org we only want to scan the private repos
                 # shared with us any not that org's public repos
-                LOG.info("Skipping public repo %s in external org", name)
+                self.log.info("Skipping public repo %s in external org", name)
                 continue
             if not repo["repository"]:
                 repo["repository"] = {"rootRef": "HEAD"}
-            if self.default_branch_only:
+            if self.scan_options.default_branch_only:
                 if self.redundant_scan_query:
                     # Only make the additional query to get the rootRef timestamp if it will actually be used.
                     # If there is no redundant scan query we can skip making this API call.
@@ -172,7 +159,7 @@ class ProcessGitlabRepos:
                     if refs and timestamps:
                         timestamp = timestamps[refs[0]]
                     else:
-                        LOG.warning(
+                        self.log.warning(
                             "Unable to retrieve timestamp for %s/%s/%s", self.service_info.service, base_org, name
                         )
 
@@ -190,7 +177,7 @@ class ProcessGitlabRepos:
                     {"service": self.service_info.service, "repo": name, "org": base_org, "plugins": self.plugins}
                 )
             else:
-                LOG.info("getting branches for repo: %s", name)
+                self.log.info("getting branches for repo: %s", name)
                 refs, timestamps = self._get_branch_names(repo["id"])
                 for ref in refs:
                     if not redundant_scan_exists(
@@ -208,10 +195,10 @@ class ProcessGitlabRepos:
                                 "repo": name,
                                 "org": base_org,
                                 "branch": ref,
-                                "plugins": self.plugins,
+                                "plugins": self.scan_options.plugins,
                             }
                         )
-        LOG.info(
+        self.log.info(
             "%d repos processed and ready to be queued for %s/%s",
             len(repos),
             self.service_info.service,
@@ -253,7 +240,7 @@ class ProcessGitlabRepos:
             timeout=DEFAULT_API_TIMEOUT,
         )
         if response.status_code != 200:
-            LOG.error("Received %s status code when retrieving nodes: %s", response.status_code, response.text)
+            self.log.error("Received %s status code when retrieving nodes: %s", response.status_code, response.text)
             return None
         return response.text
 
@@ -275,7 +262,7 @@ class ProcessGitlabRepos:
         )
 
         if response.status_code != 200:
-            LOG.error(
+            self.log.error(
                 "Received %s status code when retrieving branches for %s: %s",
                 response.status_code,
                 project_id,

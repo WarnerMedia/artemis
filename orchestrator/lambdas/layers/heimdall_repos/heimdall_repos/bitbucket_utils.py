@@ -16,43 +16,36 @@ class ProcessBitbucketRepos:
     def __init__(
         self,
         queue: str,
-        service: str,
-        service_dict: dict = None,
-        org: str = None,
-        api_key: str = None,
-        repo_cursor: str = None,
-        default_branch_only: bool = False,
-        plugins: list = None,
+        scan_options: ScanOptions,
+        service_info: ServiceInfo,
         external_orgs: list = None,
-        batch_id: str = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
-        branch_cursor=None,
-        repo=None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key, repo=repo)
-        self.scan_options = ScanOptions(default_branch_only, plugins, batch_id)
+        self.scan_options = scan_options
+        self.service_info = service_info
         self.external_orgs = external_orgs
         self.log = Logger("ProcessBitbucketRepos")
+        self.json_utils = JSONUtils(self.log)
         self.service_helper = None
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
-        self._setup(service, repo_cursor, branch_cursor)
-        self.json_utils = JSONUtils(self.log)
+        self._setup()
 
-    def _setup(self, service, repo_cursor, branch_cursor):
+    def _setup(self):
         """
-        Use logic to set the cursor class variables.
+        Use logic to set the cursor class variables for the ServiceInfo
         """
+        service = self.service_info.service
         if service == "bitbucket":
             self.service_helper = CloudBitbucket(service)
         else:
             self.service_helper = ServerV1Bitbucket(service)
 
-        self.service_info.repo_cursor = self._parse_cursor(repo_cursor)
-        self.service_info.branch_cursor = self._parse_cursor(branch_cursor)
+        self.service_info.repo_cursor = self._parse_cursor(self.service_info.repo_cursor)
+        self.service_info.branch_cursor = self._parse_cursor(self.service_info.branch_cursor)
 
     def _parse_cursor(self, cursor):
         if cursor in {"null", "None", None}:
@@ -64,9 +57,9 @@ class ProcessBitbucketRepos:
         Process bitbucket org, get all repos, and return the repos + branches
         """
         # Process branches in a single repository
-        if self.service_info.repo:
+        if self.scan_options.repo:
             self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.service_info.repo)
-            return self._process_branches(self.service_info.repo)
+            return self._process_branches(self.scan_options.repo)
 
         # Process all repositories in an organization
         self.log.info("Querying for repos in %s", self.service_info.service_org)

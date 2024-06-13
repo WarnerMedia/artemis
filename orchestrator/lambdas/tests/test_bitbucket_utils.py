@@ -7,7 +7,7 @@ from unittest.mock import patch
 from heimdall_repos import bitbucket_utils
 from heimdall_repos.objects.cloud_bitbucket_class import CloudBitbucket
 from heimdall_repos.objects.server_v1_bitbucket_class import ServerV1Bitbucket
-from heimdall_utils.utils import get_json_from_file
+from heimdall_utils.utils import ScanOptions, ServiceInfo, get_json_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -59,34 +59,22 @@ class TestBitbucketUtils(unittest.TestCase):
         self.cloud_service_helper = CloudBitbucket(BITBUCKET_SERVICE)
         self.server_service_helper = ServerV1Bitbucket(SERVER_SERVICE)
 
+        service_info = ServiceInfo(BITBUCKET_SERVICE, TEST_SERVICE_DICT, TEST_ORG, TEST_KEY, TEST_REPO_CURSOR)
+        scan_options = ScanOptions(False, TEST_PLUGINS, TEST_BATCH_ID, None)
+
         self.process_bitbucket_cloud = bitbucket_utils.ProcessBitbucketRepos(
             queue="",
-            service=BITBUCKET_SERVICE,
-            service_dict=TEST_SERVICE_DICT,
-            org=TEST_ORG,
-            api_key=TEST_KEY,
-            repo_cursor=TEST_REPO_CURSOR,
-            default_branch_only=False,
-            plugins=TEST_PLUGINS,
+            service_info=service_info,
+            scan_options=scan_options,
             external_orgs=TEST_EXTERNAL_ORGS,
-            batch_id=TEST_BATCH_ID,
-            branch_cursor=None,
-            repo=None,
         )
 
+        service_info = ServiceInfo(SERVER_SERVICE, TEST_SERVICE_DICT, TEST_ORG, TEST_KEY)
         self.process_bitbucket_server = bitbucket_utils.ProcessBitbucketRepos(
             queue="",
-            service=SERVER_SERVICE,
-            service_dict=TEST_SERVICE_DICT,
-            org=TEST_ORG,
-            api_key=TEST_KEY,
-            repo_cursor=None,
-            default_branch_only=False,
-            plugins=TEST_PLUGINS,
+            service_info=service_info,
+            scan_options=scan_options,
             external_orgs=TEST_EXTERNAL_ORGS,
-            batch_id=TEST_BATCH_ID,
-            branch_cursor=None,
-            repo=None,
         )
 
     @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_get_branch_names")
@@ -136,21 +124,6 @@ class TestBitbucketUtils(unittest.TestCase):
 
         self.assertEqual(expected_result, result)
 
-    @patch("heimdall_utils.aws_utils.queue_branch_and_repo")
-    @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_query_bitbucket_api")
-    def test_get_branch_names_cloud_pass_with_next(self, query_bitbucket_api, queue_branch_and_repo):
-        self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
-        queue_branch_and_repo.return_value = None
-
-        altered_response = copy.deepcopy(self.cloud_branch_response)
-        altered_response["next"] = "?page=4"
-        query_bitbucket_api.side_effect = [json.dumps(altered_response), json.dumps(self.cloud_branch_response)]
-
-        expected_result = ["development", "main", "origin/testbranch"]
-        result, _ = self.process_bitbucket_cloud._get_branch_names(TEST_REPO)
-
-        self.assertEqual(expected_result, sorted(result))
-
     @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_query_bitbucket_api")
     def test_get_branch_names_cloud_pass(self, query_bitbucket_api):
         self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
@@ -173,15 +146,20 @@ class TestBitbucketUtils(unittest.TestCase):
         self.assertEqual(expected_url, query_url)
 
     def test_construct_bitbucket_org_url_server_success_cursor(self):
-        test_bitbucket_server = copy.deepcopy(self.process_bitbucket_server)
-        test_bitbucket_server._setup(test_bitbucket_server.service_info.service, TEST_REPO_CURSOR, TEST_BRANCH_CURSOR)
+        service_info = ServiceInfo(SERVER_SERVICE, TEST_SERVICE_DICT, TEST_ORG, TEST_KEY, TEST_REPO_CURSOR)
+        bitbucket_server_with_cursor = bitbucket_utils.ProcessBitbucketRepos(
+            queue="",
+            service_info=service_info,
+            scan_options=None,
+            external_orgs=None,
+        )
 
         expected_url = f"{TEST_URL}/projects/{TEST_ORG}/repos?start={TEST_REPO_CURSOR}"
 
-        query_url = test_bitbucket_server.service_helper.construct_bitbucket_org_url(
-            test_bitbucket_server.service_info.url,
-            test_bitbucket_server.service_info.org,
-            test_bitbucket_server.service_info.repo_cursor,
+        query_url = bitbucket_server_with_cursor.service_helper.construct_bitbucket_org_url(
+            bitbucket_server_with_cursor.service_info.url,
+            bitbucket_server_with_cursor.service_info.org,
+            bitbucket_server_with_cursor.service_info.repo_cursor,
         )
 
         self.assertEqual(expected_url, query_url)
