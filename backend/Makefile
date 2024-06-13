@@ -34,6 +34,7 @@ TERRAFORM_DIR := ${WORKING_DIR}/terraform
 DOCKER := docker
 PYTHON := python3
 PIP := pip3
+TERRAFORM := terraform
 
 VERSION := 2.0.0
 
@@ -322,6 +323,9 @@ style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
+#	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
+#	not overrrides.
+	${TERRAFORM} fmt -check -recursive terraform
 	@echo "${OK}"
 .PHONY: style-test
 
