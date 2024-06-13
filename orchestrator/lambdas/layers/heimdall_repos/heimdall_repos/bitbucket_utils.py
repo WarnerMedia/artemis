@@ -58,7 +58,7 @@ class ProcessBitbucketRepos:
         """
         # Process branches in a single repository
         if self.scan_options.repo:
-            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.service_info.repo)
+            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
             return self._process_branches(self.scan_options.repo)
 
         # Process all repositories in an organization
@@ -185,7 +185,7 @@ class ProcessBitbucketRepos:
             timestamp = self._get_branch_timestamp(repo, ref)
             timestamps[ref_name] = timestamp
 
-        if self.service_helper.has_next_page(response_dict):
+        if self.service_helper.has_next_page(response_dict) and not self.scan_options.default_branch_only:
             branch_cursor = self.service_helper.get_cursor(response_dict)
 
             self.log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)

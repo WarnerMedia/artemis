@@ -148,7 +148,9 @@ class ProcessGithubRepos:
     def query(self) -> list:
         # Process a single repo
         if self.scan_options.repo:
-            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
+            self.log.info(
+                "Processing additional branches in repo: %s/%s", self.service_info.org, self.scan_options.repo
+            )
             return self._process_branches(self.scan_options.repo, None, None)
 
         # Process all repos in an organization
@@ -323,7 +325,7 @@ class ProcessGithubRepos:
         branch_cursor = page_info.get("endCursor")
 
         next_page = page_info.get("hasNextPage")
-        if next_page:
+        if next_page and not self.scan_options.default_branch_only:
             branch_cursor = page_info.get("endCursor")
             self.log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
             queue_branch_and_repo(
