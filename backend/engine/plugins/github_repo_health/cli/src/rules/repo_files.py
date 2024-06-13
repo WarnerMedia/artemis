@@ -1,5 +1,7 @@
 from .helpers import add_metadata, array_config_schema, evaluate_array_config, severity_schema
 
+from github import GithubException
+
 
 class RepoFiles:
     identifier = "repo_files"
@@ -35,6 +37,9 @@ class RepoFiles:
 
 
 def _file_exists(github, owner, repo, path):
-    contents = github.get_repository_content(owner, repo, path)
+    try:
+        contents = github.get_repository_content(owner, repo, path)
+    except GithubException as e:
+        return False
 
     return contents.get("type") == "file"

@@ -5,14 +5,10 @@ name = "pypi"
 
 [packages]
 jsonschema = "*"
-octokitpy = "*"
-
-[dev-packages]
-black = "*"
-build = "*"
-isort = "*"
+pygithub = "*"
 pytest = "*"
-setuptools = "*"
 
 [requires]
 python_version = "3.9"
+
+[dev-packages]

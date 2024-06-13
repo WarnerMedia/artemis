@@ -1,5 +1,7 @@
 from .helpers import add_metadata, severity_schema
 
+from github import GithubException
+
 
 class RepoSecretScanning:
     identifier = "repo_secret_scanning"
@@ -22,11 +24,10 @@ class RepoSecretScanning:
 
     @staticmethod
     def check(github, owner, repo, branch=None, config={}):
-        repository = github.get_repository(owner, repo)
-
-        message = repository.get("message")
-        if message:
-            return add_metadata(False, RepoSecretScanning, config, error_message=message)
+        try:
+            repository = github.get_repository(owner, repo)
+        except GithubException as e:
+            return add_metadata(False, RepoSecretScanning, config, error_message=e.data.get("message"))
 
         security_and_analysis = repository.get("security_and_analysis")
         if security_and_analysis == None:

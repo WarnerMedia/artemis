@@ -1,5 +1,7 @@
 from .helpers import add_metadata, severity_schema
 
+from github import GithubException
+
 
 class BranchEnforceAdmins:
     identifier = "branch_enforce_admins"
@@ -21,11 +23,10 @@ class BranchEnforceAdmins:
 
     @staticmethod
     def check(github, owner, repo, branch, config={}):
-        protection_config = github.get_branch_protection(owner, repo, branch)
-
-        message = protection_config.get("message")
-        if message:
-            return add_metadata(False, BranchEnforceAdmins, config, error_message=message)
+        try:
+            protection_config = github.get_branch_protection(owner, repo, branch)
+        except GithubException as e:
+            return add_metadata(False, BranchEnforceAdmins, config, error_message=e.data.get("message"))
 
         passing = protection_config.get("enforce_admins", {}).get("enabled") == True
         return add_metadata(passing, BranchEnforceAdmins, config)

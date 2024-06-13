@@ -6,6 +6,8 @@ from .helpers import (
     severity_schema,
 )
 
+from github import GithubException
+
 
 class BranchStatusChecks:
     identifier = "branch_status_checks"
@@ -33,20 +35,14 @@ class BranchStatusChecks:
 
     @staticmethod
     def check(github, owner, repo, branch, config={}):
-        protection_config = github.get_branch_protection(owner, repo, branch)
-
-        message = protection_config.get("message")
-        if message:
-            return add_metadata(False, BranchStatusChecks, config, error_message=message)
+        try:
+            protection_config = github.get_branch_protection(owner, repo, branch)
+        except GithubException as e:
+            return add_metadata(False, BranchStatusChecks, config, error_message=e.data.get("message"))
 
         checks_response = protection_config.get("required_status_checks")
         if checks_response:
             contexts = checks_response.get("contexts")
-
-            if contexts == None:
-                raise Exception(
-                    'Unexpected response: "required_status_checks" exists but not "required_status_checks.contexts". The Github API may have changed'
-                )
 
             expect = config.get("expect", {})
             expect_passing = is_subdict_of(expect, checks_response)

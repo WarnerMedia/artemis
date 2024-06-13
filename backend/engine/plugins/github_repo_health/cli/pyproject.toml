@@ -7,7 +7,7 @@ name = "repo-health-cli"
 version = "0.0.1"
 dependencies = [
     "jsonschema",
-    "octokitpy",
+    "pygithub",
 ]
 
 [project.scripts]

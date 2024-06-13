@@ -1,5 +1,7 @@
 from .helpers import add_metadata, is_subdict_of, severity_schema
 
+from github import GithubException
+
 
 class BranchPullRequests:
     identifier = "branch_pull_requests"
@@ -23,13 +25,13 @@ class BranchPullRequests:
 
     @staticmethod
     def check(github, owner, repo, branch, config={}):
-        protection_config = github.get_branch_protection(owner, repo, branch)
-
-        message = protection_config.get("message")
-        if message:
-            return add_metadata(False, BranchPullRequests, config, error_message=message)
+        try:
+            protection_config = github.get_branch_protection(owner, repo, branch)
+        except GithubException as e:
+            return add_metadata(False, BranchPullRequests, config, error_message=e.data.get("message"))
 
         pulls_config = protection_config.get("required_pull_request_reviews")
+
         if pulls_config:
             requirements = config.get("expect", {})
             requirements_result = is_subdict_of(requirements, pulls_config)
