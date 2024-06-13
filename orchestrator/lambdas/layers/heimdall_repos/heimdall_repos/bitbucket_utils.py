@@ -209,7 +209,6 @@ class ProcessBitbucketRepos:
         if "target" in ref and "date" in ref["target"]:
             return ref["target"]["date"]
 
-        self.log.debug("Querying the commit endpoint for the timestamp of the latest commit")
         commit_id = ref["latestCommit"]
         commit_url = self.service_helper.construct_bitbucket_commit_url(
             self.service_info.url, self.service_info.org, repo, commit_id

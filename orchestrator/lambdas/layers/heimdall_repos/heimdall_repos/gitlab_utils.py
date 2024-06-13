@@ -174,7 +174,12 @@ class ProcessGitlabRepos:
                     ):
                         continue
                 repos.append(
-                    {"service": self.service_info.service, "repo": name, "org": base_org, "plugins": self.plugins}
+                    {
+                        "service": self.service_info.service,
+                        "repo": name,
+                        "org": base_org,
+                        "plugins": self.scan_options.plugins,
+                    }
                 )
             else:
                 self.log.info("getting branches for repo: %s", name)
