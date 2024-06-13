@@ -72,7 +72,7 @@ def get_key(secret_name, region=REGION):
 
 
 def queue_service_and_org(
-    queue, service, org_name, page, default_branch_only, plugins, batch_id: str, redundant_scan_query: dict
+    queue, service, org_name, repo_cursor, default_branch_only, plugins, batch_id: str, redundant_scan_query: dict
 ):
     try:
         sqs = get_sqs_connection(REGION)
@@ -82,7 +82,7 @@ def queue_service_and_org(
                 {
                     "service": service,
                     "org": org_name,
-                    "page": page,
+                    "page": {"repo_cursor": repo_cursor},
                     "default_branch_only": default_branch_only,
                     "plugins": plugins,
                     "batch_id": batch_id,

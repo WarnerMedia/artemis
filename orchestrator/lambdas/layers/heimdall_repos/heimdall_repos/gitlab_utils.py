@@ -122,7 +122,7 @@ class ProcessGitlabRepos:
                 self.queue,
                 self.service_info.service,
                 self.service_info.org,
-                {"cursor": cursor},
+                cursor,
                 self.scan_options.default_branch_only,
                 self.scan_options.plugins,
                 self.scan_options.batch_id,

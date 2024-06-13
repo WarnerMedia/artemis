@@ -162,7 +162,7 @@ class ProcessGithubRepos:
                 self.queue,
                 self.service_info.service,
                 self.service_info.org,
-                {"cursor": self.service_info.repo_cursor},
+                {"repo_cursor": self.service_info.repo_cursor},
                 self.scan_options.default_branch_only,
                 self.scan_options.plugins,
                 self.scan_options.batch_id,
@@ -195,7 +195,7 @@ class ProcessGithubRepos:
                 self.queue,
                 self.service_info.service,
                 self.service_info.org,
-                {"cursor": cursor},
+                cursor,
                 self.scan_options.default_branch_only,
                 self.scan_options.plugins,
                 self.scan_options.batch_id,
@@ -348,3 +348,33 @@ class ProcessGithubRepos:
 
         # Fall back to using the PAT
         return f"bearer {self.service_info.api_key}"
+
+
+if __name__ == "__main__":
+    service_info = ServiceInfo(
+        "github",
+        {
+            "secret_loc": "github-api-key",
+            "type": "github",
+            "hostname": None,
+            "url": "https://api.github.com/graphql",
+            "branch_url": None,
+            "diff_url": "https://api.github.com",
+            "allow_all": False,
+            "api_key_add": None,
+            "use_deploy_key": False,
+            "batch_queries": True,
+            "nat_connect": False,
+            "app_integration": True,
+            "initial_page": {"cursor": None},
+        },
+        "wmcso",
+        None,
+    )
+    scan_options = ScanOptions(False, "", "", "")
+    processor = ProcessGithubRepos(
+        "",
+        scan_options=
+    )
+    res = processor.query()
+    # print(res)
