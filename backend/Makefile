@@ -215,6 +215,7 @@ SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM}/enviro
 
 # Detekt
 DETEKT_VER := 1.19.0
+DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # psycopg2
 PSYCOPG2_VER := 2.9.3
@@ -245,17 +246,18 @@ help:  ## Print this help text
 # Testing targets
 ###############################################################################
 
-$(ROOT_DIR)/.temp/detekt/detekt.jar:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
+	echo "${DETEKT_SHA} $@" | sha256sum -c -
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
-$(ROOT_DIR)/.temp/detekt/detekt:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt:
 	mkdir -p $(@D)
 	cp ${ROOT_DIR}/engine/plugins/detekt/detekt.sh $@
 
-get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
+get-detekt: $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt
 .PHONY: get-detekt
 
 ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck:
@@ -290,7 +292,7 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
@@ -536,12 +538,14 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java7: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java7: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA7_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=7u201-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -550,12 +554,14 @@ dist/docker/java7: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java8: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java8: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA8_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=8u201-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH} \
 		--build-arg OWASP_DC=${OWASP_DC} \
@@ -566,12 +572,14 @@ dist/docker/java8: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java13: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java13: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull  -t ${JAVA13_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=13-ea-14-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -580,12 +588,14 @@ dist/docker/java13: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java17: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java17: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA17_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=17-ea-14-jdk-alpine3.12 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
