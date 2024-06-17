@@ -34,3 +34,9 @@ jobs:
 
       - name: Run precommit checks (linting & testing etc)
         run: make -C $UI_PATH precommit
+
+      - name: Save test results
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # actions/upload-artifact@v4.3.3
+        with:
+          name: ui-test
+          path: ui/test-report/index.html

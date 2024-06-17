@@ -61,6 +61,7 @@ engine/tests/data/auth.json
 
 # testing
 /ui/coverage
+/ui/test-report
 
 # misc
 /ui/**/.eslintcache

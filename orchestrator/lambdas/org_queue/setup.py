@@ -22,8 +22,7 @@ setup(
     packages=find_packages(),
     setup_requires=[],
     install_requires=[
-        "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
+        "requests~=2.31",
     ],
     tests_require=[],
     classifiers=[

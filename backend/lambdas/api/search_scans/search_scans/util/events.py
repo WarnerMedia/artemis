@@ -24,4 +24,5 @@ class ParsedEvent:
             timestamp_filters=["created"],
             boolean_filters=["sbom"],
             ordering_fields=["created"],
+            substring_filters=["plugin"],
         )

@@ -20,6 +20,7 @@ module "aurora" {
   preferred_maintenance_window    = "Mon:00:00-Mon:03:00"
   preferred_backup_window         = "03:30-06:30"
   deletion_protection             = true
+  ca_cert_identifier              = var.db_ca_cert_identifier
 
   database_name = "analyzer"
   port          = 5432

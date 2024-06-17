@@ -79,7 +79,7 @@ define run-pytest
 	@echo "${INFO}Running $1"
 	export PIPENV_DONT_LOAD_ENV=1; \
 	$2 \
-	${PYTHON} -m pipenv install --dev; \
+	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $3 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
@@ -108,7 +108,7 @@ test: style-test
 
 style-test:
 	@echo "${INFO}Running code style checks"
-	${PYTHON} -m pipenv install --dev
+	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
 	@echo "${OK}"
 .PHONY: style-test

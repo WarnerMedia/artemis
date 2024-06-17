@@ -215,6 +215,7 @@ SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM}/enviro
 
 # Detekt
 DETEKT_VER := 1.19.0
+DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # psycopg2
 PSYCOPG2_VER := 2.9.3
@@ -245,38 +246,45 @@ help:  ## Print this help text
 # Testing targets
 ###############################################################################
 
-$(ROOT_DIR)/.temp/detekt/detekt.jar:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
+	echo "${DETEKT_SHA} $@" | sha256sum -c -
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
-$(ROOT_DIR)/.temp/detekt/detekt:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt:
 	mkdir -p $(@D)
 	cp ${ROOT_DIR}/engine/plugins/detekt/detekt.sh $@
 
-get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
+get-detekt: $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt
 .PHONY: get-detekt
 
-get-shell-check:
-	mkdir -p ${ROOT_DIR}/.temp/shellcheck; \
-	wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECKVER}/shellcheck-v${SHELLCHECKVER}.${OSFLAG}.x86_64.tar.xz -O ${ROOT_DIR}/.temp/shellcheck.tar.xz; \
-    tar -xJf ${ROOT_DIR}/.temp/shellcheck.tar.xz -C ${ROOT_DIR}/.temp/shellcheck --strip-components=1;
+${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck:
+	mkdir -p $(@D)
+	utilities/shellcheck-release-url.sh ${SHELLCHECKVER} > ${ROOT_DIR}/.temp/shellcheck-release.txt
+	wget -q -i ${ROOT_DIR}/.temp/shellcheck-release.txt -O ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}.tar.xz
+	tar -xJf ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}.tar.xz -C $(@D) --strip-components=1
+
+get-shell-check: ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck
 .PHONY: get-shell-check
 
 # This copies a script which mocks swiftlint for unit tests
 # The script gets renamed from "swiftlint_mock.sh" to simply "swiftlint" to match the real binary name
-$(ROOT_DIR)/.temp/swiftlint/swiftlint:
+$(ROOT_DIR)/.temp/swiftlint/swiftlint: ${ROOT_DIR}/engine/tests/data/swiftlint/swiftlint_mock.sh
 	mkdir -p $(@D)
-	cp ${ROOT_DIR}/engine/tests/data/swiftlint/swiftlint_mock.sh $@
+	cp $< $@
 
 get-mock-swiftlint: $(ROOT_DIR)/.temp/swiftlint/swiftlint
 .PHONY: get-mock-swiftlint
 
-get-trivy:
-	mkdir -p ${ROOT_DIR}/.temp/trivy; \
+${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy:
+	mkdir -p $(@D)
 	wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_COMMIT}/contrib/install.sh | \
-		sh -s -- -b ${ROOT_DIR}/.temp/trivy ${TRIVY_VER};
+		sh -s -- -b $(@D) ${TRIVY_VER};
+
+get-trivy: ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy
+.PHONY: get-trivy
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
@@ -284,9 +292,9 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${PATH}:'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
-	${PYTHON} -m pipenv install --dev; \
+	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
@@ -312,7 +320,7 @@ test: test-deps style-test
 
 style-test:
 	@echo "${INFO}Running code style checks"
-	${PYTHON} -m pipenv install --dev
+	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
 	@echo "${OK}"
 .PHONY: style-test
@@ -530,12 +538,14 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java7: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java7: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA7_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=7u201-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -544,12 +554,14 @@ dist/docker/java7: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java8: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java8: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA8_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=8u201-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH} \
 		--build-arg OWASP_DC=${OWASP_DC} \
@@ -560,12 +572,14 @@ dist/docker/java8: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java13: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java13: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull  -t ${JAVA13_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=13-ea-14-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -574,12 +588,14 @@ dist/docker/java13: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java17: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java17: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA17_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=17-ea-14-jdk-alpine3.12 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker

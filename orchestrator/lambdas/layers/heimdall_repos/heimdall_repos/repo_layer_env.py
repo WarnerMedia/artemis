@@ -19,7 +19,7 @@ BITBUCKET_PUBLIC_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/
 BITBUCKET_PRIVATE_COMMIT_QUERY = "$service_url/projects/$org/repos/$repo/commits/$commit"
 
 GITLAB_REPO_QUERY = """
-query getLogin($org: String!, $cursor: String!) {
+query getLogin($org: ID!, $cursor: String) {
     group(fullPath: $org) {
         projects(first: 100,
                  after: $cursor,
@@ -42,7 +42,7 @@ query getLogin($org: String!, $cursor: String!) {
 """
 
 GITHUB_REPO_QUERY = """
-query getRepos($org: String!, $cursor: String!) {
+query getRepos($org: String!, $cursor: String) {
     organization(login: $org) {
         repositories(first: 75, after: $cursor, orderBy: {field: NAME, direction: ASC}) {
             nodes {
@@ -81,7 +81,7 @@ query getRepos($org: String!, $cursor: String!) {
 """
 
 GITHUB_REPO_REF_QUERY = """
-query getRefs($org: String!, $repo: String!, $cursor: String!) {
+query getRefs($org: String!, $repo: String!, $cursor: String) {
     organization(login: $org) {
         repository(name: $repo) {
             refs(first: 100, refPrefix: "refs/heads/", direction: ASC, after: $cursor) {
