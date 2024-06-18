@@ -13,7 +13,7 @@ EMAIL_DOMAIN_ALIASES = [
     {
         "new_domain": "company2.com",
         "old_domains": ["company2.com"],
-        "email_transformation": {"new_email_regex": "([a-z]+)\.([a-z]+)", "old_email_expr": "\\2.\\1"},
+        "email_transformation": {"new_email_regex": "([a-z]+)\\.([a-z]+)", "old_email_expr": "\\2.\\1"},
     },
     {
         "new_domain": "company3.com",
