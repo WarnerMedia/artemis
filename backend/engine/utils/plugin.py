@@ -396,6 +396,8 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "author": item["author"],
                 "author-timestamp": item["author-timestamp"],
                 "details": results["event_info"][item["id"]],
+                "validity": "unknown",
+                "secret_type": results["event_info"][item["id"]]["type"],
                 "report_url": (
                     f"{scan.report_url}&tab={UI_SECRETS_TAB_INDEX}"  # Report URL + Secrets tab selection
                     f"#st_filename={quote_plus(item['filename'])}"  # Filter on filename
