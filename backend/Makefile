@@ -29,11 +29,12 @@ WORKING_DIR := ${ROOT_DIR}
 BUILD_DIR := ${ROOT_DIR}/build
 DIST_DIR := ${ROOT_DIR}/dist
 STAGE_DIR := ${ROOT_DIR}/stage
-TERRAFORM := ${WORKING_DIR}/terraform
+TERRAFORM_DIR := ${WORKING_DIR}/terraform
 
 DOCKER := docker
 PYTHON := python3
 PIP := pip3
+TERRAFORM := terraform
 
 VERSION := 2.0.0
 
@@ -47,7 +48,7 @@ ENV := nonprod
 include ${WORKING_DIR}/$(ENV).mk
 
 # Application name extracted from Terraform
-PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
+PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
 
 S3_BUCKET := ${PREFIX}-${ACCOUNT_ID}
 S3_DOCS_BUCKET := ${PREFIX}-docs-${ACCOUNT_ID}
@@ -144,7 +145,7 @@ DB_MAINT_TAG := ${DB_MAINT_PKG}:latest
 VERACODE_PKG := ${PREFIX}/veracode
 VERACODE_TAG := ${VERACODE_PKG}:latest
 # Context: egrep grabs the terraform line that notes whether veracode is enabled. sed removes all spacing. Cut grabs the bool.
-VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
+VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
@@ -211,7 +212,7 @@ TRIVY_VER := v0.49.1
 # Snyk
 SNYK_VER := v1.889.0
 # Context: egrep grabs the terraform line that notes whether Snyk is enabled. sed removes all spacing. Cut grabs the bool.
-SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
+SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 # Detekt
 DETEKT_VER := 1.19.0
@@ -221,7 +222,7 @@ DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 PSYCOPG2_VER := 2.9.3
 
 # Lambdas
-LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
+LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
@@ -322,6 +323,9 @@ style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
+#	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
+#	not overrrides.
+	${TERRAFORM} fmt -check -recursive terraform
 	@echo "${OK}"
 .PHONY: style-test
 
