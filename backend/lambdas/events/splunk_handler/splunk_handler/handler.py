@@ -11,7 +11,7 @@ APPLICATION = os.environ.get("APPLICATION", "artemis")
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "nonprod")
 SM_KEY = os.environ.get("ARTEMIS_SPLUNK_KEY", f"{APPLICATION}/splunk-hec")
 SCRUB_NONPROD = os.environ.get("ARTEMIS_SCRUB_NONPROD", "true").lower() == "true"
-SCRUB_DETAILS = os.environ.get("ARTEMIS_SCRUB_DETAILS", "false").lower() == "false"
+SCRUB_DETAILS = os.environ.get("ARTEMIS_SCRUB_DETAILS", "true").lower() == "true"
 REGION = os.environ.get("REGION", "us-east-2")
 
 
