@@ -8,7 +8,7 @@ The list of version control systems are defined in the [`services.json`](../../.
 
 To trigger this lambda, invoke this function with a message in this format:
 
-```json
+```jsonc
 {
   // "scan_orgs": is a List that identifies which organizations should be scanned.
   // When this field is defined, it will overwrite the default list.

@@ -51,7 +51,7 @@ These are Environment Variables that are used in all Heimdall Lambdas
 
 The messages sent to the `ORG SQS Queue` are in this format:
 
-```json
+```jsonc
 {
   "service": "github",                                                  // Valid inputs are github, bitbucket, gitlab, ado,
   "org": "Warnermedia",                                                 // Name of the Organization to Process
@@ -71,7 +71,7 @@ The messages sent to the `ORG SQS Queue` are in this format:
 
 The messages sent to the `REPO SQS Queue` are in this format:
 
-```json
+```jsonc
 {
   "service": "github", // Available options: ado, github, bitbucket, gitlab
   "org": "Warnermedia", // Name of the organization to scan
