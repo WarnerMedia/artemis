@@ -20,10 +20,10 @@ Heimdall can schedule scans in the following Version control systems:
 
 ## Lambdas
 
-- [Repo Scan](https://github.com/WarnerMedia/artemis/tree/main/orchestrator/lambdas/repo_scan)
-- [Repo Scan Loop](https://github.com/WarnerMedia/artemis/tree/main/orchestrator/lambdas/repo_scan_loop)
-- [Repo-Queue Lambda](https://github.com/WarnerMedia/artemis/tree/main/orchestrator/lambdas/repo_queue)
-- [Org-Queue Lambda](https://github.com/WarnerMedia/artemis/tree/main/orchestrator/lambdas/org_queue)
+- [Repo Scan](./lambdas/repo_scan)
+- [Repo Scan Loop](./lambdas/repo_scan_loop)
+- [Repo-Queue Lambda](./lambdas/repo_queue)
+- [Org-Queue Lambda](./lambdas/org_queue)
 
 ### Standard Lambda Configurations
 
