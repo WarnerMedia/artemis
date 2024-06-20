@@ -21,37 +21,34 @@ class ADORepoProcessor:
     def __init__(
         self,
         queue: str,
-        service: str,
-        service_dict: dict = None,
-        org: str = None,
-        api_key: str = None,
-        cursor: str = None,
-        default_branch_only: bool = False,
-        plugins: list = None,
+        scan_options: ScanOptions,
+        service_info: ServiceInfo,
         external_orgs: list = None,
-        batch_id: str = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key)
-        self.scan_options = ScanOptions(default_branch_only, plugins, batch_id)
+        self.service_info = service_info
+        self.scan_options = scan_options
         self.external_orgs = external_orgs
         self.log = Logger("ADORepoProcessor")
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
-        self._setup(cursor)
+        self._setup()
         self.json_utils = JSONUtils(self.log)
 
-    def _setup(self, cursor):
+    def _setup(self):
         """
         Use logic to set the cursor class variables.
         """
+        self.service_info.repo_cursor = self._parse_cursor(self.service_info.repo_cursor)
+        self.service_info.branch_cursor = self._parse_cursor(self.service_info.branch_cursor)
+
+    def _parse_cursor(self, cursor) -> str:
         if not cursor or cursor in {"null", "None"}:
-            self.service_info.cursor = "0"
-        else:
-            self.service_info.cursor = cursor
+            return "0"
+        return cursor
 
     def query(self) -> list:
         """
@@ -61,7 +58,7 @@ class ADORepoProcessor:
 
         repos = []
 
-        projects = self._get_projects(self.service_info.cursor)
+        projects = self._get_projects(self.service_info.repo_cursor)
         for project in projects["projects"]:
             repos = self._get_repos(project)
 

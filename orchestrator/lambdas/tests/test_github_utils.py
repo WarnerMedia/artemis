@@ -7,6 +7,8 @@ from unittest.mock import patch
 from heimdall_repos import github_utils
 from heimdall_repos.repo_layer_env import GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG
 
+from heimdall_utils.utils import ScanOptions, ServiceInfo
+
 TEST_ABUSE_RESPONSE = {
     "documentation_url": "https://developer.github.com/v3/#abuse-rate-limits",
     "message": "You have triggered an abuse detection mechanism. Please wait a few minutes before you try again.",
@@ -58,17 +60,13 @@ class Response:
 
 class TestGithubUtils(unittest.TestCase):
     def setUp(self) -> None:
+        service_info = ServiceInfo(TEST_SERVICE, TEST_SERVICE_DICT, TEST_ORG, TEST_KEY, TEST_CURSOR)
+        scan_options = ScanOptions(False, TEST_PLUGINS, TEST_BATCH_ID, None)
         self.process_github_repos = github_utils.ProcessGithubRepos(
             queue=None,
-            service=TEST_SERVICE,
-            org=TEST_ORG,
-            service_dict=TEST_SERVICE_DICT,
-            api_key=TEST_KEY,
-            cursor=TEST_CURSOR,
-            default_branch_only=False,
-            plugins=TEST_PLUGINS,
+            service_info=service_info,
+            scan_options=scan_options,
             external_orgs=TEST_EXTERNAL_ORGS,
-            batch_id=TEST_BATCH_ID,
         )
 
     def test_check_for_errors_in_response_dict_true(self):
@@ -138,14 +136,14 @@ class TestGithubUtils(unittest.TestCase):
         query_mock.return_value = GITHUB_RATE_ABUSE_FLAG
         self.assertEqual(github_utils.queue_service_and_org, queue_mock)
 
-        self.process_github_repos.query_github()
+        self.process_github_repos.query()
 
         self.assertTrue(queue_mock.called)
 
-    def test_process_nodes_repo_no_branches(self):
+    def test_process_repos_repo_no_branches(self):
         expected_response = []
 
-        response = self.process_github_repos._process_nodes([TEST_EMPTY_NODE])
+        response = self.process_github_repos._process_repos([TEST_EMPTY_NODE])
 
         self.assertEqual(expected_response, response)
 

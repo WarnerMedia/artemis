@@ -45,18 +45,19 @@ class Logger:
 
 class ServiceInfo:
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, service, service_dict, org, api_key, cursor=None):
+    def __init__(self, service, service_dict, org, api_key, repo_cursor=None, branch_cursor=None):
         self.service = service
         self.url = service_dict.get("url")
         self.branch_url = service_dict.get("branch_url")
         self.org = org
         self.api_key = api_key
-        self.cursor = cursor
+        self.repo_cursor = repo_cursor
+        self.branch_cursor = branch_cursor
         self.service_org = f"{self.service}/{self.org}"
         self.app_integration = service_dict.get("app_integration", False)
 
 
-ScanOptions = namedtuple("ScanOptions", ["default_branch_only", "plugins", "batch_id"])
+ScanOptions = namedtuple("ScanOptions", ["default_branch_only", "plugins", "batch_id", "repo"])
 
 
 class JSONUtils:
