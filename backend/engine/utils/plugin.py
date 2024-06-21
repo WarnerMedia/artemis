@@ -400,6 +400,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "state": item.get("state", "open"),
                 "validity": item.get("validity", "unknown"),
                 "secret_type": results["event_info"][item["id"]]["type"],
+                "secret_type_display_name": results["event_info"][item["id"]]["type"],
                 "report_url": (
                     f"{scan.report_url}&tab={UI_SECRETS_TAB_INDEX}"  # Report URL + Secrets tab selection
                     f"#st_filename={quote_plus(item['filename'])}"  # Filter on filename
