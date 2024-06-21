@@ -395,6 +395,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "commit": item["commit"],
                 "author": item["author"],
                 "author-timestamp": item["author-timestamp"],
+                "created_at": item.get("created_at", item["author-timestamp"]),
                 "details": results["event_info"][item["id"]],
                 "state": item.get("state", "open"),
                 "validity": item.get("validity", "unknown"),

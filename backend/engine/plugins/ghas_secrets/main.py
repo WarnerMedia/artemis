@@ -74,6 +74,7 @@ def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
                 "author-timestamp": author_timestamp,
                 "validity": alert["validity"],
                 "state": alert["state"],
+                "created_at": alert["created_at"],
             }
             results.append(item)
             event_info[item_id] = {"match": alert["secret"], "type": item["type"]}
