@@ -52,6 +52,10 @@ SECRETS_MANAGEMENT = {}
 if SECRETS_MANAGEMENT_SCHEME:
     SECRETS_MANAGEMENT = {SECRETS_MANAGEMENT_SCHEME: SECRETS_QUEUE}  # Secrets go to the secrets queue
 
+if "secrets" in ADDITIONAL_ROUTING and type(ADDITIONAL_ROUTING["secrets"]) is list:
+    for route in ADDITIONAL_ROUTING["secrets"]:
+        SECRETS_MANAGEMENT[route["id"]] = route["queue"]
+
 
 def handler(event, _):
     for item in event["Records"]:
