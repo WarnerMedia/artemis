@@ -375,7 +375,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
             return
         for item in results.get("details", []):
             if "/" in scan.repo.repo:
-                [org, repository] = scan.repo.repo.split("/", 1)
+                org, repository = scan.repo.repo.split("/", 1)
             else:
                 org = scan.repo.repo
                 repository = scan.repo.repo
