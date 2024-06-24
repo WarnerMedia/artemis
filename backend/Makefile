@@ -29,11 +29,12 @@ WORKING_DIR := ${ROOT_DIR}
 BUILD_DIR := ${ROOT_DIR}/build
 DIST_DIR := ${ROOT_DIR}/dist
 STAGE_DIR := ${ROOT_DIR}/stage
-TERRAFORM := ${WORKING_DIR}/terraform
+TERRAFORM_DIR := ${WORKING_DIR}/terraform
 
 DOCKER := docker
 PYTHON := python3
 PIP := pip3
+TERRAFORM := terraform
 
 VERSION := 2.0.0
 
@@ -47,7 +48,7 @@ ENV := nonprod
 include ${WORKING_DIR}/$(ENV).mk
 
 # Application name extracted from Terraform
-PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
+PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
 
 S3_BUCKET := ${PREFIX}-${ACCOUNT_ID}
 S3_DOCS_BUCKET := ${PREFIX}-docs-${ACCOUNT_ID}
@@ -144,7 +145,7 @@ DB_MAINT_TAG := ${DB_MAINT_PKG}:latest
 VERACODE_PKG := ${PREFIX}/veracode
 VERACODE_TAG := ${VERACODE_PKG}:latest
 # Context: egrep grabs the terraform line that notes whether veracode is enabled. sed removes all spacing. Cut grabs the bool.
-VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
+VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
@@ -211,16 +212,17 @@ TRIVY_VER := v0.49.1
 # Snyk
 SNYK_VER := v1.889.0
 # Context: egrep grabs the terraform line that notes whether Snyk is enabled. sed removes all spacing. Cut grabs the bool.
-SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
+SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 # Detekt
 DETEKT_VER := 1.19.0
+DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # psycopg2
 PSYCOPG2_VER := 2.9.3
 
 # Lambdas
-LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
+LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
@@ -245,17 +247,18 @@ help:  ## Print this help text
 # Testing targets
 ###############################################################################
 
-$(ROOT_DIR)/.temp/detekt/detekt.jar:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar:
 	mkdir -p $(@D)
 	curl -sL "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" >$@
+	echo "${DETEKT_SHA} $@" | sha256sum -c -
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
 # This is for compatability with installations done via a package manager
-$(ROOT_DIR)/.temp/detekt/detekt:
+$(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt:
 	mkdir -p $(@D)
 	cp ${ROOT_DIR}/engine/plugins/detekt/detekt.sh $@
 
-get-detekt: $(ROOT_DIR)/.temp/detekt/detekt.jar $(ROOT_DIR)/.temp/detekt/detekt
+get-detekt: $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt
 .PHONY: get-detekt
 
 ${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}/shellcheck:
@@ -290,7 +293,7 @@ install-plugin-dependencies:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
+	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
@@ -320,6 +323,9 @@ style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
+#	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
+#	not overrrides.
+	${TERRAFORM} fmt -check -recursive terraform
 	@echo "${OK}"
 .PHONY: style-test
 
@@ -536,12 +542,14 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java7: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java7: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA7_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=7u201-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -550,12 +558,14 @@ dist/docker/java7: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java8: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java8: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA8_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=8u201-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH} \
 		--build-arg OWASP_DC=${OWASP_DC} \
@@ -566,12 +576,14 @@ dist/docker/java8: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java13: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java13: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull  -t ${JAVA13_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=13-ea-14-jdk-alpine3.9 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker
@@ -580,12 +592,14 @@ dist/docker/java13: Dockerfiles/Dockerfile.java get-detekt
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java17: Dockerfiles/Dockerfile.java get-detekt
+dist/docker/java17: Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${JAVA17_TAG} -f Dockerfiles/Dockerfile.java \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg OPENJDK_VER=17-ea-14-jdk-alpine3.12 \
+		--build-arg DETEKT_VER=${DETEKT_VER} \
+		--build-arg DETEKT_SHA=${DETEKT_SHA} \
 		--build-arg FSB_VER=${FSB_VER} \
 		--build-arg FSB_PATCH=${FSB_PATCH}
 	mkdir -p ${DIST_DIR}/docker

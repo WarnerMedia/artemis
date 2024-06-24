@@ -11,10 +11,10 @@ from heimdall_repos.repo_layer_env import (
     GITHUB_TIMEOUT_KEYWORDS,
 )
 from heimdall_utils.artemis import redundant_scan_exists
-from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org
+from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
 from heimdall_utils.env import DEFAULT_API_TIMEOUT
 from heimdall_utils.github.app import GithubApp
-from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo
+from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo, ScanOptions
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 
@@ -22,41 +22,36 @@ class ProcessGithubRepos:
     # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
-        queue,
-        service,
-        org,
-        service_dict,
-        api_key,
-        cursor,
-        default_branch_only,
-        plugins,
-        external_orgs,
-        batch_id: str,
+        queue: str,
+        scan_options: ScanOptions,
+        service_info: ServiceInfo,
+        external_orgs: list = None,
         artemis_api_key: str = None,
         redundant_scan_query: dict = None,
     ):
         self.queue = queue
-        self.service_info = ServiceInfo(service, service_dict, org, api_key)
-        self.default_branch_only = default_branch_only
-        self.plugins = plugins
+        self.service_info = service_info
+        self.scan_options = scan_options
         self.external_orgs = external_orgs
         self.log = Logger("ProcessGithubRepos")
         self.json_utils = JSONUtils(self.log)
-        self.batch_id = batch_id
         self.artemis_api_key = artemis_api_key
-        self.redundant_scan_query = redundant_scan_query or {}
+        self.redundant_scan_query = redundant_scan_query
 
-        self._setup(cursor)
+        self._setup()
 
-    def _setup(self, cursor):
+    def _setup(self):
         """
         Updates the cursor to a None type if needed.
         Without this, GraphQL would read `null` as a string and not a Null value
         """
+        self.service_info.repo_cursor = self._parse_cursor(self.service_info.repo_cursor)
+        self.service_info.branch_cursor = self._parse_cursor(self.service_info.branch_cursor)
+
+    def _parse_cursor(self, cursor):
         if cursor in {"null", "None"}:
-            self.service_info.cursor = None
-        else:
-            self.service_info.cursor = cursor
+            return None
+        return cursor
 
     def _query_github_api(self, query: str, variables: dict) -> str:
         # Query the GitHub API
@@ -99,7 +94,7 @@ class ProcessGithubRepos:
         except AttributeError:
             return False
 
-    def _analyze_error_response(self, response, response_text) -> str or None:
+    def _analyze_error_response(self, response, response_text) -> str:
         if response is None or response_text is None:
             return None
 
@@ -150,19 +145,29 @@ class ProcessGithubRepos:
         self.log.error("Code: %s - %s", response.status_code, error_response)
         return None
 
-    def query_github(self) -> list:
-        self.log.info("Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.cursor)
-        variables = {"org": self.service_info.org, "cursor": self.service_info.cursor}
+    def query(self) -> list:
+        # Process a single repo
+        if self.scan_options.repo:
+            self.log.info(
+                "Processing additional branches in repo: %s/%s", self.service_info.org, self.scan_options.repo
+            )
+            return self._process_branches(self.scan_options.repo, None, None)
+
+        # Process all repos in an organization
+        self.log.info(
+            "Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.repo_cursor
+        )
+        variables = {"org": self.service_info.org, "cursor": self.service_info.repo_cursor}
         response_text = self._query_github_api(GITHUB_REPO_QUERY, variables)
         if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
                 self.service_info.org,
-                {"cursor": self.service_info.cursor},
-                self.default_branch_only,
-                self.plugins,
-                self.batch_id,
+                {"cursor": self.service_info.repo_cursor},
+                self.scan_options.default_branch_only,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
             return []
@@ -175,7 +180,7 @@ class ProcessGithubRepos:
         count = len(nodes)
         self.log.info("Processing %s Github results", count)
 
-        repos = self._process_nodes(nodes)
+        repos = self._process_repos(nodes)
 
         page_info = self.json_utils.get_object_from_json_dict(
             resp, ["data", "organization", "repositories", "pageInfo"]
@@ -193,15 +198,19 @@ class ProcessGithubRepos:
                 self.service_info.service,
                 self.service_info.org,
                 {"cursor": cursor},
-                self.default_branch_only,
-                self.plugins,
-                self.batch_id,
+                self.scan_options.default_branch_only,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
                 self.redundant_scan_query,
             )
 
         return repos
 
-    def _process_nodes(self, nodes: list) -> list:
+    def _process_repos(self, nodes: list) -> list:
+        """
+        Handles processing for a single repository or all repositories in an organization
+        """
+        self.log.info("Processing repos in org: %s", self.service_info.org)
         repos = []
         for repo in nodes:
             name = repo.get("name")
@@ -212,53 +221,17 @@ class ProcessGithubRepos:
                 # shared with us any not that org's public repos
                 self.log.info("Skipping public repo %s in external org", name)
                 continue
-            default_branch = repo.get("defaultBranchRef")
+
             if not self._is_repo_valid(repo):
                 continue
+
+            default_branch = repo.get("defaultBranchRef")
             if not default_branch:
                 default_branch_name = "HEAD"
             else:
                 default_branch_name = default_branch.get("name", "HEAD")
-                timestamp = default_branch.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
-            if self.default_branch_only:
-                if not redundant_scan_exists(
-                    api_key=self.artemis_api_key,
-                    service=self.service_info.service,
-                    org=self.service_info.org,
-                    repo=name,
-                    branch=None,
-                    timestamp=timestamp,
-                    query=self.redundant_scan_query,
-                ):
-                    repos.append(
-                        {
-                            "service": self.service_info.service,
-                            "repo": name,
-                            "org": self.service_info.org,
-                            "plugins": self.plugins,
-                        }
-                    )
-            else:
-                refs, timestamps = self._get_ref_names(name, default_branch_name, repo.get("refs"))
-                for ref in refs:
-                    if not redundant_scan_exists(
-                        api_key=self.artemis_api_key,
-                        service=self.service_info.service,
-                        org=self.service_info.org,
-                        repo=name,
-                        branch=ref,
-                        timestamp=timestamps[ref],
-                        query=self.redundant_scan_query,
-                    ):
-                        repos.append(
-                            {
-                                "service": self.service_info.service,
-                                "repo": name,
-                                "org": self.service_info.org,
-                                "branch": ref,
-                                "plugins": self.plugins,
-                            }
-                        )
+
+            repos.extend(self._process_branches(name, default_branch_name, repo.get("refs")))
         return repos
 
     def _is_repo_valid(self, repo: dict):
@@ -271,11 +244,70 @@ class ProcessGithubRepos:
         self.log.info(f"repo {repo.get('name')} has no branches. Skipping")
         return False
 
-    def _get_ref_names(self, repo: str, default: str, refs: dict) -> Tuple[list, dict]:
-        ref_names = set()
-        ref_names.add(default)
+    def _process_branches(self, repo_name, default_branch, branches) -> list:
+        """
+        Handles processing for all branches in a given repository
+        """
+        tasks = []
+        self.log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name)
 
-        timestamps = {default: "1970-01-01T00:00:00Z"}  # This will be set to the correct value later
+        if self.scan_options.repo:
+            # Query for Repo Branches
+            variables = {
+                "org": self.service_info.org,
+                "repo": self.scan_options.repo,
+                "cursor": self.service_info.branch_cursor,
+            }
+            response_text = self._query_github_api(GITHUB_REPO_REF_QUERY, variables)
+            if not response_text or response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
+                return tasks
+            response_dict = self.json_utils.get_json_from_response(response_text)
+            if not response_dict:
+                return tasks
+            branches = self.json_utils.get_object_from_json_dict(
+                response_dict, ["data", "organization", "repository", "refs"]
+            )
+
+        branch_names, timestamps = self._get_branch_names(repo_name, branches)
+        if self.scan_options.default_branch_only:
+            branch_names = [default_branch]
+            if default_branch not in timestamps:
+                timestamps[default_branch] = "1970-01-01T00:00:00Z"
+
+        for branch in branch_names:
+            if not redundant_scan_exists(
+                api_key=self.artemis_api_key,
+                service=self.service_info.service,
+                org=self.service_info.org,
+                repo=repo_name,
+                branch=branch,
+                timestamp=timestamps[branch],
+                query=self.redundant_scan_query,
+            ):
+                tasks.append(
+                    {
+                        "service": self.service_info.service,
+                        "repo": repo_name,
+                        "org": self.service_info.org,
+                        "branch": branch,
+                        "plugins": self.scan_options.plugins,
+                    }
+                )
+        return tasks
+
+    def _get_branch_names(self, repo: str, refs: dict) -> Tuple[list, dict]:
+        """
+        Retrieves the branches and timestamps for a given repository.
+
+        Returns:
+            A list of branches(refs) for the given repo and
+            a dictionary mapping each branch to the timestamp of the last commit
+
+            For example:
+            ["master"], {"master", "1970-01-01T00:00:00Z"}
+        """
+        ref_names = set()
+        timestamps = dict()
 
         if not refs:
             return list(ref_names), timestamps
@@ -288,33 +320,24 @@ class ProcessGithubRepos:
         if not page_info:
             self.log.error("Key pageInfo not found for %s. Returning ref names found.", self.service_info.org)
             return list(ref_names), timestamps
+
         next_page = page_info.get("hasNextPage")
-        cursor = page_info.get("endCursor")
+        branch_cursor = page_info.get("endCursor")
 
-        while next_page:
-            variables = {"org": self.service_info.org, "repo": repo, "cursor": cursor}
-            response_text = self._query_github_api(GITHUB_REPO_REF_QUERY, variables)
-            if not response_text or response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
-                break
-            response_dict = self.json_utils.get_json_from_response(response_text)
-            if not response_dict:
-                break
-            repo_refs = self.json_utils.get_object_from_json_dict(
-                response_dict, ["data", "organization", "repository", "refs"]
+        next_page = page_info.get("hasNextPage")
+        if next_page and not self.scan_options.default_branch_only:
+            branch_cursor = page_info.get("endCursor")
+            self.log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
+            queue_branch_and_repo(
+                self.queue,
+                self.service_info.service,
+                self.service_info.org,
+                branch_cursor,
+                repo,
+                self.scan_options.plugins,
+                self.scan_options.batch_id,
+                self.redundant_scan_query,
             )
-            if not repo_refs:
-                break
-            for ref in repo_refs.get("nodes"):
-                ref_names.add(ref.get("name"))
-                timestamps[ref.get("name")] = ref.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
-
-            page_info = repo_refs.get("pageInfo")
-            if not page_info:
-                self.log.error("Key pageInfo not found for %s/%s. Breaking.", self.service_info.org, repo)
-                break
-            next_page = page_info.get("hasNextPage")
-            cursor = page_info.get("endCursor")
-
         return list(ref_names), timestamps
 
     def _get_authorization(self) -> str:

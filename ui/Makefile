@@ -29,6 +29,7 @@ HADOLINT = $(shell which hadolint)
 ifeq ($(HADOLINT),)
 	HADOLINT := ${CURDIR}/hadolint
 endif
+TERRAFORM = terraform
 
 APP := artemis-ui
 PORT := 3000
@@ -199,6 +200,7 @@ test:  ## Run tests
 check: $(SRC)  ## Check code style
 	@echo "${INFO}Checking code style"
 	$(NPM) run prettier-check
+	$(TERRAFORM) fmt -check -recursive terraform
 	@echo "${OK}"
 
 # run coding standards auto-fix

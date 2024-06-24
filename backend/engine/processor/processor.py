@@ -326,7 +326,7 @@ class EngineProcessor:
         # log any unexpected severities, so we can investigate or update the severity dictionary
         # if (not in the dict) & (not empty string) then log it
         if (item_severity_int == -1) & (isinstance(item_severity, str)) & (len(item_severity) > 0):
-            logger.warn(
+            logger.warning(
                 f"Received an unexpected item_severity: {item_severity}, caching most_severe value: {most_severe}."
             )
 

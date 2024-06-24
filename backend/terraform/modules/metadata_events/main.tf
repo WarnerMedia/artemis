@@ -19,10 +19,10 @@ resource "aws_lambda_function" "metadata-events-handler" {
 
   environment {
     variables = {
-      APPLICATION                  = var.app
-      ENVIRONMENT                  = var.environment
-      ARTEMIS_SPLUNK_KEY           = aws_secretsmanager_secret.metadata-events-secret.name
-      ARTEMIS_SCRUB_NONPROD        = "false"
+      APPLICATION           = var.app
+      ENVIRONMENT           = var.environment
+      ARTEMIS_SPLUNK_KEY    = aws_secretsmanager_secret.metadata-events-secret.name
+      ARTEMIS_SCRUB_NONPROD = "false"
     }
   }
 
@@ -98,7 +98,7 @@ module "write-logs" {
   iam_role_names = [
     aws_iam_role.metadata-events-role.name
   ]
-  name      = "${var.app}-metadata-events-write-logs"
+  name = "${var.app}-metadata-events-write-logs"
   resources = [
     "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.app}*:*"
   ]

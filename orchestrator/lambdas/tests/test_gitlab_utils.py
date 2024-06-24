@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from heimdall_repos import gitlab_utils
+from heimdall_utils.utils import ScanOptions, ServiceInfo
 
 TEST_BRANCH_RESPONSE = [
     {
@@ -101,21 +102,17 @@ TEST_BATCH_ID = "4886eea8-ebca-4bcf-bf22-063ca255067c"
 
 class TestGitlabUtils(unittest.TestCase):
     def setUp(self) -> None:
+        service_info = ServiceInfo(TEST_SERVICE, TEST_SERVICE_DICT, TEST_ORG, TEST_KEY, TEST_CURSOR)
+        scan_options = ScanOptions(False, TEST_PLUGINS, TEST_BATCH_ID, None)
         self.process_gitlab_repos = gitlab_utils.ProcessGitlabRepos(
-            queue=None,
-            service=TEST_SERVICE,
-            org=TEST_ORG,
-            service_dict=TEST_SERVICE_DICT,
-            api_key=TEST_KEY,
-            cursor=TEST_CURSOR,
-            default_branch_only=False,
-            plugins=TEST_PLUGINS,
+            queue="",
+            service_info=service_info,
+            scan_options=scan_options,
             external_orgs=TEST_EXTERNAL_ORGS,
-            batch_id=TEST_BATCH_ID,
         )
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_process_nodes_one_branch(self, get_project_branches):
+    def test_process_repos_one_branch(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = json.dumps([TEST_BRANCH_RESPONSE[0]])
 
@@ -129,12 +126,12 @@ class TestGitlabUtils(unittest.TestCase):
             }
         ]
 
-        response = self.process_gitlab_repos._process_nodes(TEST_NODES)
+        response = self.process_gitlab_repos._process_repos(TEST_NODES)
 
         self.assertEqual(expected_response, response)
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_process_nodes_multiple_branches(self, get_project_branches):
+    def test_process_repos_multiple_branches(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = json.dumps(TEST_BRANCH_RESPONSE)
         expected_response = [
@@ -161,32 +158,36 @@ class TestGitlabUtils(unittest.TestCase):
             },
         ]
 
-        response = self.process_gitlab_repos._process_nodes(TEST_NODES)
+        response = self.process_gitlab_repos._process_repos(TEST_NODES)
 
         self.assertCountEqual(expected_response, response)
 
     def test_validate_input_no_url(self):
-        gitlab_processor = gitlab_utils.ProcessGitlabRepos(queue=None, service="", service_dict={})
+        service_info = ServiceInfo(None, {}, None, None, None, None)
+        scan_options = ScanOptions("", False, "", "")
+        gitlab_processor = gitlab_utils.ProcessGitlabRepos(
+            queue=None, scan_options=scan_options, service_info=service_info
+        )
 
         self.assertFalse(gitlab_processor.validate_input())
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_get_ref_names_no_branch_response(self, get_project_branches):
+    def test_get_branch_names_no_branch_response(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = ""
         expected_response = []
 
-        response, _ = self.process_gitlab_repos._get_ref_names("foo")
+        response, _ = self.process_gitlab_repos._get_branch_names("foo")
 
         self.assertEqual(expected_response, response)
 
     @patch.object(gitlab_utils.ProcessGitlabRepos, "_get_project_branches")
-    def test_get_ref_names_success(self, get_project_branches):
+    def test_get_branch_names_success(self, get_project_branches):
         self.assertEqual(self.process_gitlab_repos._get_project_branches, get_project_branches)
         get_project_branches.return_value = json.dumps(TEST_BRANCH_RESPONSE)
         expected_response = ["rollback", "master", "production"]
 
-        response, _ = self.process_gitlab_repos._get_ref_names("foo")
+        response, _ = self.process_gitlab_repos._get_branch_names("foo")
 
         self.assertEqual(sorted(expected_response), sorted(response))
 

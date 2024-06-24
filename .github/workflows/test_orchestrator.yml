@@ -9,14 +9,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # actions/checkout@v4.1.2
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # actions/checkout@v4.1.7
       - name: setup python environment
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # actions/setup-python@v5.0.0
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # actions/setup-python@v5.1.0
         with:
           python-version: "3.9"
           architecture: "x64"
           cache: pipenv
           cache-dependency-path: orchestrator/Pipfile.lock
+      - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # hashicorp/setup-terraform@v3.1.1
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel

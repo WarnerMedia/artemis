@@ -26,11 +26,12 @@ BUILD_DIR := ${ROOT_DIR}/build
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 DIST_DIR := ${ROOT_DIR}/dist
 STAGE_DIR := ${ROOT_DIR}/stage
-TERRAFORM := ${WORKING_DIR}/terraform
+TERRAFORM_DIR := ${WORKING_DIR}/terraform
 BACKEND := ${ROOT_DIR}/../backend
 
 PYTHON := python3
 PIP := pip3
+TERRAFORM := terraform
 
 VERSION := 1.0.0
 
@@ -41,7 +42,7 @@ ENV := nonprod
 include ${WORKING_DIR}/$(ENV).mk
 
 # Application name extracted from Terraform
-PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
+PREFIX := $(shell egrep "application\s+=\s+\".+\"" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's:[ "]::g' | cut -d'=' -f2)
 
 S3_BUCKET := ${PREFIX}-${ACCOUNT_ID}
 ECR_URL := ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/
@@ -62,7 +63,7 @@ HEIMDALL_ORGS_SRC = $(shell find ${HEIMDALL_ORGS_DIR} -type f -name '*.py' -o -n
 HEIMDALL_UTILS_SRC = $(shell find ${HEIMDALL_UTILS_DIR} -type f -name '*.py' -o -name '*.cfg')
 HEIMDALL_REPOS_SRC = $(shell find ${HEIMDALL_REPOS_DIR} -type f -name '*.py' -o -name '*.cfg')
 
-LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
+LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
 LAMBDA_PYTHON_VER := 3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 
@@ -110,6 +111,9 @@ style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
 	${PYTHON} -m pipenv run black --check .
+#	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
+#	not overrrides.
+	${TERRAFORM} fmt -check -recursive terraform
 	@echo "${OK}"
 .PHONY: style-test
 

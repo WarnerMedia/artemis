@@ -17,7 +17,7 @@ import {
 } from "../../../testData/testMockData";
 import { formatDate } from "utils/formatters";
 import { validateSelect } from "pages/SearchPageTestCommon";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 
 const HASH_PREFIX = FILTER_PREFIX_HIDDEN;
 const mockSaveFilters = jest.fn();

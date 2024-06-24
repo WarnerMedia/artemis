@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "78fcb35e3a49f4f1dad2779f71def745819f856c503f75846b684cbc68aedfc4"
+            "sha256": "20714ec9f6be0e52dac311eb8960e8c8f271e2781390d5e528f98814cf89f3de"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1684,14 +1684,19 @@
             "markers": "python_version >= '3.7'",
             "version": "==4.0.11"
         },
+        "gitdb2": {
+            "hashes": [
+                "sha256:0986cb4003de743f2b3aba4c828edd1ab58ce98e1c4a8acf72ef02760d4beb4e",
+                "sha256:a1c974e5fab8c2c90192c1367c81cbc54baec04244bda1816e9c8ab377d1cba3"
+            ],
+            "version": "==4.0.2"
+        },
         "gitpython": {
             "hashes": [
-                "sha256:35f314a9f878467f5453cc1fee295c3e18e52f1b99f10f6cf5b1682e968a9e7c",
-                "sha256:eec7ec56b92aad751f9912a73404bc02ba212a23adb2c7098ee668417051a1ff"
+                "sha256:5b5b7b29baa27680a7dff85f171a251d48ac37c5f04cba15d381b56991cc7a48"
             ],
-            "index": "pypi",
-            "markers": "python_version >= '3.7'",
-            "version": "==3.1.43"
+            "markers": "python_version >= '3.4'",
+            "version": "==3.0.6"
         },
         "idna": {
             "hashes": [
@@ -2636,6 +2641,21 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==4.66.4"
+        },
+        "trufflehog": {
+            "hashes": [
+                "sha256:7f0d09c8cda2a90ae42f81405e5944a3325d90a5842d2dde014471e4d65c71e4",
+                "sha256:ac411e29ffac06555cdc40ed1cbff0b3c74cb0ed26af2a0432ed15e61b94e6b5"
+            ],
+            "index": "pypi",
+            "version": "==2.2.1"
+        },
+        "trufflehogregexes": {
+            "hashes": [
+                "sha256:627e7cd246153135dea86bacd1253df262c525874f9008395ffe81eb63f92352",
+                "sha256:b81dfc60c86c1e353f436a0e201fd88edb72d5a574615a7858485c59edf32405"
+            ],
+            "version": "==0.0.7"
         },
         "types-setuptools": {
             "hashes": [

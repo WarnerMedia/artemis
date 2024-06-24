@@ -4,7 +4,7 @@ import { FILTER_PREFIX_SECRET, SecretsTabContent } from "pages/ResultsPage";
 import { mockCurrentUser, mockScan001 } from "../../../testData/testMockData";
 import { AnalysisReport } from "features/scans/scansSchemas";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 
 const HASH_PREFIX = FILTER_PREFIX_SECRET;
 const mockSaveFilters = jest.fn();
