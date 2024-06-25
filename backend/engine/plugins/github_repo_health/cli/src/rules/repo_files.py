@@ -31,15 +31,22 @@ class RepoFiles:
     @staticmethod
     def check(github, owner, repo, branch, config):
         files_config = config.get("files", {})
-        passing = evaluate_array_config(files_config, lambda path: _file_exists(github, owner, repo, path))
+        try:
+            passing = evaluate_array_config(files_config, lambda path: _file_exists(github, owner, repo, path))
 
-        return add_metadata(passing, RepoFiles, config)
+            return add_metadata(passing, RepoFiles, config)
+        except GithubException as e:
+            return add_metadata(False, RepoFiles, config, error_message=e.data.get("message"))
 
 
 def _file_exists(github, owner, repo, path):
     try:
         contents = github.get_repository_content(owner, repo, path)
     except GithubException as e:
-        return False
+        status = e.data.get('status')
+        if status == '404':
+            return False
+        else:
+            raise e
 
     return contents.get("type") == "file"
