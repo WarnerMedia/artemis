@@ -12,20 +12,21 @@ BRANCH = "branch"
 
 FILE_EXISTS_RESPONSE = {"type": "file"}
 
+
 ### IMPORTANT
 # In tests, if file has "exists" in its path, it will exist. Otherwise, it'll throw some sort of
 # error, defaulting to 404 - "Not Found"
-def get_mock_content_fn(error_status=404, error_message='Not Found'):
+def get_mock_content_fn(error_status=404, error_message="Not Found"):
     def mock_get_repository_content(owner, repo, path):
         if "exists" in path:
             return FILE_EXISTS_RESPONSE
         else:
             data = {
-                'status': str(error_status),
-                'message': error_message,
+                "status": str(error_status),
+                "message": error_message,
             }
             raise GithubException(error_status, data)
-        
+
     return mock_get_repository_content
 
 
@@ -368,8 +369,10 @@ class TestRepoFilesExist(unittest.TestCase):
     def test_non_404_error_response(self):
         mock_github = Github(None)
 
-        err_msg = 'Unauthorized'
-        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn(error_status='401', error_message=err_msg))
+        err_msg = "Unauthorized"
+        mock_github.get_repository_content = MagicMock(
+            side_effect=get_mock_content_fn(error_status="401", error_message=err_msg)
+        )
 
         config = {"files": {"any_of": ["errors.py"]}}
 
@@ -378,7 +381,7 @@ class TestRepoFilesExist(unittest.TestCase):
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
-            "error_message": err_msg
+            "error_message": err_msg,
         }
 
         self.assertEqual(expected, RepoFiles.check(mock_github, OWNER, REPO, BRANCH, config))

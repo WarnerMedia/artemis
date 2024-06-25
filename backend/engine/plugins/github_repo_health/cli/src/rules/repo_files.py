@@ -43,8 +43,8 @@ def _file_exists(github, owner, repo, path):
     try:
         contents = github.get_repository_content(owner, repo, path)
     except GithubException as e:
-        status = e.data.get('status')
-        if status == '404':
+        status = e.data.get("status")
+        if status == "404":
             return False
         else:
             raise e

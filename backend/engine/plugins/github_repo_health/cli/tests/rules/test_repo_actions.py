@@ -24,7 +24,7 @@ class TestRepoActions(unittest.TestCase):
         err_msg = "Not Found"
 
         mock_github = Github(None)
-        exception = GithubException(400, { 'message': err_msg })
+        exception = GithubException(400, {"message": err_msg})
         mock_github.get_actions_permissions_repository = Mock(side_effect=exception)
 
         expected = {
