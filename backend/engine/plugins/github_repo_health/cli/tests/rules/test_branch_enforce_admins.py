@@ -26,7 +26,7 @@ class TestBranchEnforceAdmins(unittest.TestCase):
 
         self.assertEqual(expected, BranchEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
 
-    def test_enforce_admins_enables(self):
+    def test_enforce_admins_enabled(self):
         mock_github = Github(None)
         mock_response = {"enforce_admins": {"enabled": True}}
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
