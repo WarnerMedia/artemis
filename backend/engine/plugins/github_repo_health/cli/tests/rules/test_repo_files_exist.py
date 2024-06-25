@@ -13,9 +13,9 @@ BRANCH = "branch"
 FILE_EXISTS_RESPONSE = {"type": "file"}
 
 
-### IMPORTANT
-# In tests, if file has "exists" in its path, it will exist. Otherwise, it'll throw some sort of
-# error, defaulting to 404 - "Not Found"
+# When result from get_mock_content_fn is used, if path contains the string "exists", we will return
+# a result as if it exists.
+# Otherwise, it'll raise some sort of exception, defaulting to 404 - "Not Found"
 def get_mock_content_fn(error_status=404, error_message="Not Found"):
     def mock_get_repository_content(owner, repo, path):
         if "exists" in path:
