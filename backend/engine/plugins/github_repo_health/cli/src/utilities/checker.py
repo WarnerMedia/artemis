@@ -1,4 +1,4 @@
-import rules
+from .. import rules
 
 
 class Checker:
