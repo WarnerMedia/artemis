@@ -371,7 +371,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
         err_msg = "Unauthorized"
         mock_github.get_repository_content = MagicMock(
-            side_effect=get_mock_content_fn(error_status="401", error_message=err_msg)
+            side_effect=get_mock_content_fn(error_status=401, error_message=err_msg)
         )
 
         config = {"files": {"any_of": ["errors.py"]}}
