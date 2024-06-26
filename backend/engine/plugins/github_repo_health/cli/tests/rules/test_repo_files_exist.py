@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
+from github import GithubException
+
 from ...src.rules import RepoFiles
 from ...src.utilities import Github
 
@@ -9,14 +11,23 @@ REPO = "repo"
 BRANCH = "branch"
 
 FILE_EXISTS_RESPONSE = {"type": "file"}
-NO_FILE_RESPONSE = {}
 
 
-def mock_get_repository_content(owner, repo, path):
-    if "exists" in path:
-        return FILE_EXISTS_RESPONSE
-    else:
-        return NO_FILE_RESPONSE
+# When result from get_mock_content_fn is used, if path contains the string "exists", we will return
+# a result as if it exists.
+# Otherwise, it'll raise some sort of exception, defaulting to 404 - "Not Found"
+def get_mock_content_fn(error_status=404, error_message="Not Found"):
+    def mock_get_repository_content(owner, repo, path):
+        if "exists" in path:
+            return FILE_EXISTS_RESPONSE
+        else:
+            data = {
+                "status": str(error_status),
+                "message": error_message,
+            }
+            raise GithubException(error_status, data)
+
+    return mock_get_repository_content
 
 
 class TestRepoFilesExist(unittest.TestCase):
@@ -99,7 +110,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_any_of_one_exists(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {"files": {"any_of": ["exists.py"]}}
 
@@ -114,7 +125,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_any_of_two_exist(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -136,7 +147,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_any_of_one_of_two_exists(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -158,7 +169,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_any_of_none_of_two_exist(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -180,7 +191,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_one_exists(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {"files": {"all_of": ["exists.py"]}}
 
@@ -195,7 +206,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_two_exist(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -217,7 +228,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_one_of_two_exists(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -239,7 +250,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_none_of_two_exist(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -261,7 +272,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_with_any_of_both_true(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -285,7 +296,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_with_any_of_and_only_any_of_true(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -309,7 +320,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_with_any_of_and_only_all_of_true(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -333,7 +344,7 @@ class TestRepoFilesExist(unittest.TestCase):
 
     def test_all_of_with_any_of_and_neither_true(self):
         mock_github = Github(None)
-        mock_github.get_repository_content = MagicMock(side_effect=mock_get_repository_content)
+        mock_github.get_repository_content = MagicMock(side_effect=get_mock_content_fn())
 
         config = {
             "files": {
@@ -351,6 +362,26 @@ class TestRepoFilesExist(unittest.TestCase):
             "name": RepoFiles.name,
             "description": RepoFiles.description,
             "pass": False,
+        }
+
+        self.assertEqual(expected, RepoFiles.check(mock_github, OWNER, REPO, BRANCH, config))
+
+    def test_non_404_error_response(self):
+        mock_github = Github(None)
+
+        err_msg = "Unauthorized"
+        mock_github.get_repository_content = MagicMock(
+            side_effect=get_mock_content_fn(error_status=401, error_message=err_msg)
+        )
+
+        config = {"files": {"any_of": ["errors.py"]}}
+
+        expected = {
+            "id": RepoFiles.identifier,
+            "name": RepoFiles.name,
+            "description": RepoFiles.description,
+            "pass": False,
+            "error_message": err_msg,
         }
 
         self.assertEqual(expected, RepoFiles.check(mock_github, OWNER, REPO, BRANCH, config))

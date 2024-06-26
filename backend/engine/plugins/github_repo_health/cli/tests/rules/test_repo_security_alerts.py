@@ -10,13 +10,9 @@ BRANCH = "branch"
 
 
 class TestRepoSecurityAlerts(unittest.TestCase):
-    def test_an_error_message_is_returned(self):
+    def test_false_is_returned(self):
         mock_github = Github(None)
-        mock_response = {
-            # It returns 404 with a message if vuln alerts are not enabled
-            "message": "this is an error message"
-        }
-        mock_github.check_vulnerability_alerts = MagicMock(return_value=mock_response)
+        mock_github.are_vulnerability_alerts_enabled = MagicMock(return_value=False)
 
         expected = {
             "id": RepoSecurityAlerts.identifier,
@@ -27,12 +23,9 @@ class TestRepoSecurityAlerts(unittest.TestCase):
 
         self.assertEqual(expected, RepoSecurityAlerts.check(mock_github, OWNER, REPO, BRANCH))
 
-    def test_nothing_is_returned(self):
+    def test_true_is_returned(self):
         mock_github = Github(None)
-        mock_response = {
-            # It just returns 200 with no body when vuln alerts are enabled
-        }
-        mock_github.check_vulnerability_alerts = MagicMock(return_value=mock_response)
+        mock_github.are_vulnerability_alerts_enabled = MagicMock(return_value=True)
 
         expected = {
             "id": RepoSecurityAlerts.identifier,

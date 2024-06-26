@@ -5,6 +5,8 @@ from .helpers import (
     severity_schema,
 )
 
+from github import GithubException
+
 
 class RepoActions:
     identifier = "repo_actions"
@@ -48,11 +50,10 @@ class RepoActions:
 
     @staticmethod
     def check(github, owner, repo, branch=None, config={}):
-        actions = github.get_actions_permissions_repository(owner, repo)
-
-        message = actions.get("message")
-        if message:
-            return add_metadata(False, RepoActions, config, error_message=message)
+        try:
+            actions = github.get_actions_permissions_repository(owner, repo)
+        except GithubException as e:
+            return add_metadata(False, RepoActions, config, error_message=e.data.get("message"))
 
         config_expect_any_of = config.get("expect_any_of")
         passing = config_expect_any_of == None or any(

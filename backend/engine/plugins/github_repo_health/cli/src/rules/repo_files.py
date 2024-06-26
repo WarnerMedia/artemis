@@ -1,5 +1,7 @@
 from .helpers import add_metadata, array_config_schema, evaluate_array_config, severity_schema
 
+from github import GithubException
+
 
 class RepoFiles:
     identifier = "repo_files"
@@ -29,12 +31,21 @@ class RepoFiles:
     @staticmethod
     def check(github, owner, repo, branch, config):
         files_config = config.get("files", {})
-        passing = evaluate_array_config(files_config, lambda path: _file_exists(github, owner, repo, path))
+        try:
+            passing = evaluate_array_config(files_config, lambda path: _file_exists(github, owner, repo, path))
 
-        return add_metadata(passing, RepoFiles, config)
+            return add_metadata(passing, RepoFiles, config)
+        except GithubException as e:
+            return add_metadata(False, RepoFiles, config, error_message=e.data.get("message"))
 
 
 def _file_exists(github, owner, repo, path):
-    contents = github.get_repository_content(owner, repo, path)
+    try:
+        contents = github.get_repository_content(owner, repo, path)
+    except GithubException as e:
+        if e.status == 404:
+            return False
+        else:
+            raise e
 
     return contents.get("type") == "file"

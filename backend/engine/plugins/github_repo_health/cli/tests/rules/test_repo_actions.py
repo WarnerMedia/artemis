@@ -1,5 +1,7 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
+
+from github import GithubException
 
 from ...src.rules import RepoActions
 from ...src.utilities import Github
@@ -22,8 +24,8 @@ class TestRepoActions(unittest.TestCase):
         err_msg = "Not Found"
 
         mock_github = Github(None)
-        mock_response = {"message": err_msg}
-        mock_github.get_actions_permissions_repository = MagicMock(return_value=mock_response)
+        exception = GithubException(400, {"message": err_msg})
+        mock_github.get_actions_permissions_repository = Mock(side_effect=exception)
 
         expected = {
             "id": RepoActions.identifier,
