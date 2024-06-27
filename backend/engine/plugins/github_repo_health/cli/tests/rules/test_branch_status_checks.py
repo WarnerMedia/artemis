@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from ...src.rules import BranchStatusChecks
+from ...src.rules import BranchProtectionStatusChecks
 from ...src.utilities import Github
 
 OWNER = "owner"
@@ -25,13 +25,13 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH))
 
     def test_required_status_checks(self):
         mock_github = Github(None)
@@ -39,13 +39,13 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH))
 
     def test_no_checks_in_config(self):
         mock_github = Github(None)
@@ -54,7 +54,7 @@ class TestBranchStatusChecks(unittest.TestCase):
 
         self.assertRaises(
             Exception,
-            BranchStatusChecks.check,
+            BranchProtectionStatusChecks.check,
             [mock_github, OWNER, REPO, BRANCH, bad_config],
         )
 
@@ -66,13 +66,13 @@ class TestBranchStatusChecks(unittest.TestCase):
         config = {"name": override_name}
 
         expected = {
-            "id": BranchStatusChecks.identifier,
+            "id": BranchProtectionStatusChecks.identifier,
             "name": override_name,
-            "description": BranchStatusChecks.description,
+            "description": BranchProtectionStatusChecks.description,
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config))
 
     def test_override_check_description(self):
         mock_github = Github(None)
@@ -82,28 +82,28 @@ class TestBranchStatusChecks(unittest.TestCase):
         config = {"description": override_description}
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
             "description": override_description,
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config))
 
     def test_no_required_status_checks(self):
         mock_github = Github(None)
         mock_github.get_branch_protection = MagicMock(return_value=NO_STATUS_CHECKS_RESPONSE)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": False,
         }
 
         self.assertEqual(
             expected,
-            BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
         )
 
     def test_single_expected_check_exists(self):
@@ -112,15 +112,15 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": True,
         }
 
         self.assertEqual(
             expected,
-            BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
         )
 
     def test_single_expected_check_does_not_exist(self):
@@ -129,15 +129,15 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": False,
         }
 
         self.assertEqual(
             expected,
-            BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
         )
 
     def test_multiple_expected_checks_exist(self):
@@ -154,15 +154,15 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": True,
         }
 
         self.assertEqual(
             expected,
-            BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, MULTI_CHECK_NO_OVERRIDE_CONFIG),
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, MULTI_CHECK_NO_OVERRIDE_CONFIG),
         )
 
     def test_multiple_expected_checks_do_not_exist(self):
@@ -171,15 +171,15 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": False,
         }
 
         self.assertEqual(
             expected,
-            BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, MULTI_CHECK_NO_OVERRIDE_CONFIG),
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, MULTI_CHECK_NO_OVERRIDE_CONFIG),
         )
 
     def test_multiple_expected_checks_one_does_not_exist(self):
@@ -188,13 +188,13 @@ class TestBranchStatusChecks(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchStatusChecks.identifier,
-            "name": BranchStatusChecks.name,
-            "description": BranchStatusChecks.description,
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
             "pass": False,
         }
 
         self.assertEqual(
             expected,
-            BranchStatusChecks.check(mock_github, OWNER, REPO, BRANCH, MULTI_CHECK_NO_OVERRIDE_CONFIG),
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, MULTI_CHECK_NO_OVERRIDE_CONFIG),
         )

@@ -3,18 +3,19 @@ import json
 
 from jsonschema import exceptions, validate
 
-from .. import rules
+import rules
 
 default_config = {
     "name": "default",
     "version": "0.0.1",
     "rules": [
-        {"type": rules.BranchCommitSigning.identifier},
-        {"type": rules.BranchEnforceAdmins.identifier},
+        {"type": rules.BranchProtectionCommitSigning.identifier},
+        {"type": rules.BranchProtectionEnforceAdmins.identifier},
         {
-            "type": rules.BranchPullRequests.identifier,
+            "type": rules.BranchProtectionPullRequests.identifier,
             "min_approvals": 1,
         },
+        {"type": rules.BranchProtectionStatusChecks.identifier, "expect": {"strict": True}},
         {
             "type": rules.RepoActions.identifier,
             "expect_any_of": [
@@ -29,7 +30,6 @@ default_config = {
                 },
             ],
         },
-        {"type": rules.BranchStatusChecks.identifier, "expect": {"strict": True}},
         {"type": rules.RepoCodeScanning.identifier},
         {"type": rules.RepoSecretScanning.identifier, "require_push_protection": True},
         {"type": rules.RepoSecurityAlerts.identifier},

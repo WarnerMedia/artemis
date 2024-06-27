@@ -3,10 +3,10 @@ from .helpers import add_metadata, severity_schema
 from github import GithubException
 
 
-class BranchCommitSigning:
-    identifier = "branch_commit_signing"
-    name = "Branch - Require Commit Signing"
-    description = "Branch protection rule is enabled to enforce code signing"
+class BranchProtectionEnforceAdmins:
+    identifier = "branch_protection_enforce_admins"
+    name = "Branch Protection - Enforce Protection for Admins"
+    description = 'Requires that branch protection rule, "Do not allow bypassing the above settings" is enabled. This enforces branch protection for admins'
 
     config_schema = {
         "type": "object",
@@ -26,7 +26,7 @@ class BranchCommitSigning:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchCommitSigning, config, error_message=e.data.get("message"))
+            return add_metadata(False, BranchProtectionEnforceAdmins, config, error_message=e.data.get("message"))
 
-        passing = protection_config.get("required_signatures", {}).get("enabled") == True
-        return add_metadata(passing, BranchCommitSigning, config)
+        passing = protection_config.get("enforce_admins", {}).get("enabled") == True
+        return add_metadata(passing, BranchProtectionEnforceAdmins, config)

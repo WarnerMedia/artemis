@@ -3,10 +3,10 @@ from .helpers import add_metadata, is_subdict_of, severity_schema
 from github import GithubException
 
 
-class BranchPullRequests:
-    identifier = "branch_pull_requests"
-    name = "Branch - Require Pull Requests"
-    description = "Branch protection rule is enabled that requires pull requests"
+class BranchProtectionPullRequests:
+    identifier = "branch_protection_pull_requests"
+    name = "Branch Protection - Require Pull Requests"
+    description = "Requires that a branch protection rule is enabled that requires pull requests"
 
     config_schema = {
         "type": "object",
@@ -28,7 +28,7 @@ class BranchPullRequests:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchPullRequests, config, error_message=e.data.get("message"))
+            return add_metadata(False, BranchProtectionPullRequests, config, error_message=e.data.get("message"))
 
         pulls_config = protection_config.get("required_pull_request_reviews")
 
@@ -40,6 +40,7 @@ class BranchPullRequests:
             actual_required_approvals = pulls_config.get("required_approving_review_count", 0)
             min_approvals_met = min_approvals <= actual_required_approvals
 
-            return add_metadata(requirements_result and min_approvals_met, BranchPullRequests, config)
+            passing = requirements_result and min_approvals_met
+            return add_metadata(passing, BranchProtectionPullRequests, config)
         else:
-            return add_metadata(False, BranchPullRequests, config)
+            return add_metadata(False, BranchProtectionPullRequests, config)

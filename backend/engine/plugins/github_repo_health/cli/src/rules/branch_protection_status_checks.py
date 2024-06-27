@@ -9,10 +9,10 @@ from .helpers import (
 from github import GithubException
 
 
-class BranchStatusChecks:
-    identifier = "branch_status_checks"
-    name = "Branch - Require Status Checks"
-    description = "Branch protection rule is enabled that requires status checks on pull requests"
+class BranchProtectionStatusChecks:
+    identifier = "branch_protection_status_checks"
+    name = "Branch Protection - Require Status Checks"
+    description = "Requires that a branch protection rule is enabled that requires status checks on pull requests"
 
     config_schema = {
         "type": "object",
@@ -38,7 +38,7 @@ class BranchStatusChecks:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchStatusChecks, config, error_message=e.data.get("message"))
+            return add_metadata(False, BranchProtectionStatusChecks, config, error_message=e.data.get("message"))
 
         checks_response = protection_config.get("required_status_checks")
         if checks_response:
@@ -50,6 +50,6 @@ class BranchStatusChecks:
             checks_array_config = config.get("checks", {})
             checks_passing = evaluate_array_config(checks_array_config, lambda check: check in contexts)
 
-            return add_metadata(expect_passing and checks_passing, BranchStatusChecks, config)
+            return add_metadata(expect_passing and checks_passing, BranchProtectionStatusChecks, config)
         else:
-            return add_metadata(False, BranchStatusChecks, config)
+            return add_metadata(False, BranchProtectionStatusChecks, config)
