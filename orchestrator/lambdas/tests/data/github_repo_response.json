@@ -1,0 +1,74 @@
+{
+    "data": {
+        "organization": {
+            "repositories": {
+                "nodes": [
+                    {
+                        "name": "test-repo-1",
+                        "defaultBranchRef": {
+                            "name": "master",
+                            "target": {
+                                "committedDate": "2024-05-31T01:43:42Z"
+                            }
+                        },
+                        "isPrivate": true,
+                        "refs": {
+                            "nodes": [
+                                {
+                                    "name": "test-branch-1",
+                                    "target": {
+                                        "committedDate": "2024-02-29T18:10:27Z"
+                                    }
+                                },
+                                {
+                                    "name": "master",
+                                    "target": {
+                                        "committedDate": "2024-05-31T01:43:42Z"
+                                    }
+                                }
+                            ],
+                            "pageInfo": {
+                                "endCursor": "branchCursor5",
+                                "hasNextPage": false
+                            }
+                        }
+                    },
+                    {
+                        "name": "test-repo-2",
+                        "defaultBranchRef": {
+                            "name": "feature-test-1",
+                            "target": {
+                                "committedDate": "2022-08-08T18:50:31Z"
+                            }
+                        },
+                        "isPrivate": true,
+                        "refs": {
+                            "nodes": [
+                                {
+                                    "name": "feature-test-1",
+                                    "target": {
+                                        "committedDate": "2022-01-11T14:25:49Z"
+                                    }
+                                },
+                                {
+                                    "name": "master",
+                                    "target": {
+                                        "committedDate": "2022-08-08T18:50:31Z"
+                                    }
+                                }
+                            ],
+                            "pageInfo": {
+                                "endCursor": "branchCursor15",
+                                "hasNextPage": false
+                            }
+                        }
+                    }
+                ],
+                "pageInfo": {
+                    "endCursor": "repoCursor4",
+                    "hasNextPage": true
+                }
+            }
+        }
+    }
+}

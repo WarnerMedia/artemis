@@ -10,7 +10,7 @@ BITBUCKET_PUBLIC_BRANCH_QUERY = "$service_url/repositories/$org/$repo/refs/branc
 
 BITBUCKET_PRIVATE_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?start=$cursor"
 
-BITBUCKET_PUBLIC_DEFAULT_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?page=$cursor"
+BITBUCKET_PUBLIC_DEFAULT_BRANCH_QUERY = "$service_url/repositories/$org/$repo/"
 
 BITBUCKET_PRIVATE_DEFAULT_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches/default"
 
@@ -84,6 +84,16 @@ GITHUB_REPO_REF_QUERY = """
 query getRefs($org: String!, $repo: String!, $cursor: String) {
     organization(login: $org) {
         repository(name: $repo) {
+            name
+            defaultBranchRef {
+                name
+                target {
+                    ... on Commit {
+                        committedDate
+                    }
+                }
+            }
+            isPrivate
             refs(first: 100, refPrefix: "refs/heads/", direction: ASC, after: $cursor) {
                 nodes {
                     name

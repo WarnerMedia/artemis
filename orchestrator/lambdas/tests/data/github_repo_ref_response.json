@@ -1,0 +1,36 @@
+{
+    "data": {
+        "organization": {
+            "repository": {
+                "name": "test-repo-15",
+                "defaultBranchRef": {
+                    "name": "master",
+                    "target": {
+                        "committedDate": "2024-05-08T19:02:08Z"
+                    }
+                },
+                "isPrivate": true,
+                "refs": {
+                    "nodes": [
+                        {
+                            "name": "test-branch-2",
+                            "target": {
+                                "committedDate": "2024-02-08T21:20:06Z"
+                            }
+                        },
+                        {
+                            "name": "master",
+                            "target": {
+                                "committedDate": "2023-04-26T20:13:20Z"
+                            }
+                        }
+                    ],
+                    "pageInfo": {
+                        "endCursor": "branchCursor25",
+                        "hasNextPage": true
+                    }
+                }
+            }
+        }
+    }
+}
