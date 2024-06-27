@@ -9,6 +9,7 @@ from heimdall_orgs.org_queue_private_github import GithubOrgs
 from heimdall_utils.utils import Logger
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+GITHUB_ORG_GRAPHQL_ERROR_RESPONSE = os.path.abspath(os.path.join(TEST_DIR, "data", "github_org_error_response.json"))
 GITHUB_ORG_RESPONSE_LOC = os.path.abspath(os.path.join(TEST_DIR, "data", "github_org_response.json"))
 SERVICES_LOC = os.path.abspath(os.path.join(TEST_DIR, "data", "services.json"))
 RESPONSE_TEST_RESULT = [
@@ -30,6 +31,7 @@ class TestOrgQueueGithub(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
         self.org_dict = get_json_from_file(GITHUB_ORG_RESPONSE_LOC)
+        self.error_response = get_json_from_file(GITHUB_ORG_GRAPHQL_ERROR_RESPONSE)
 
     @patch.object(GithubOrgs, "_request_orgs")
     def test_get_org_set_original_dict(self, mock_request):
@@ -71,6 +73,14 @@ class TestOrgQueueGithub(unittest.TestCase):
 
         org_set = GithubOrgs.get_all_orgs(None, None, None)
         self.assertEqual(set(RESPONSE_TEST_RESULT), org_set)
+
+    @patch.object(GithubOrgs, "_query_service")
+    def test_get_all_orgs_handles_graphql_error(self, mock_request):
+        self.assertEqual(GithubOrgs._query_service, mock_request)
+        mock_request.return_value = self.error_response
+
+        org_set = GithubOrgs.get_all_orgs(None, None, None)
+        self.assertEqual(None, org_set)
 
 
 def get_json_from_file(file_path):

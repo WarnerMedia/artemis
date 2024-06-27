@@ -71,7 +71,7 @@ class GithubOrgs:
         :param cursor: where to start in the query
         :return: dict response
         """
-        if cursor is "null":
+        if cursor in {"null", "None", None}:
             cursor = None
         else:
             cursor = f'"{cursor}"'
@@ -83,12 +83,14 @@ class GithubOrgs:
             log.info("Error retrieving orgs for %s", self.service)
             return None
 
+        response = response.json()
+
         errors = response.get("errors", None)
         if errors:
-            log.info("Error in GraphQL query for %s. Error Message: %s", self.service, errors.get("message", ""))
+            log.info("Error in GraphQL query for %s. Error Message: %s", self.service, errors)
             return None
 
-        return response.json()
+        return response
 
     def _query_service(self, query, cursor):
         if not self.api_url:
