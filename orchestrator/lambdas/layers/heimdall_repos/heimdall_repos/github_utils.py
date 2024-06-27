@@ -43,13 +43,13 @@ class ProcessGithubRepos:
     def _setup(self):
         """
         Updates the cursor to a None type if needed.
-        Without this, GraphQL would read `None` as a string and not a None value
+        Without this, GraphQL would read `null` as a string and not a Null value
         """
         self.service_info.repo_cursor = self._parse_cursor(self.service_info.repo_cursor)
         self.service_info.branch_cursor = self._parse_cursor(self.service_info.branch_cursor)
 
     def _parse_cursor(self, cursor):
-        if cursor in {"None", "None"}:
+        if cursor in {"null", "None"}:
             return None
         return cursor
 

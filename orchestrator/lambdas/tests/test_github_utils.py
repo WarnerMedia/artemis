@@ -153,7 +153,6 @@ class TestGithubUtils(unittest.TestCase):
     @patch.object(github_utils, "queue_service_and_org")
     @patch.object(github_utils.ProcessGithubRepos, "_query_github_api")
     def test_query_github_rate_abuse(self, query_mock, queue_mock):
-        self.maxDiff = None
         self.assertEqual(self.process_github_repos._query_github_api, query_mock)
         query_mock.return_value = GITHUB_RATE_ABUSE_FLAG
         self.assertEqual(github_utils.queue_service_and_org, queue_mock)
