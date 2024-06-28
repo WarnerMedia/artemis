@@ -1,0 +1,32 @@
+{
+    "errors": [
+        {
+            "type": "INVALID_CURSOR_ARGUMENTS",
+            "path": [
+                "organizations",
+                "nodes"
+            ],
+            "locations": [
+                {
+                    "line": 1,
+                    "column": 1
+                }
+            ],
+            "message": "`'None'` does not appear to be a valid cursor."
+        },
+        {
+            "type": "INVALID_CURSOR_ARGUMENTS",
+            "path": [
+                "organizations",
+                "pageInfo"
+            ],
+            "locations": [
+                {
+                    "line": 1,
+                    "column": 1
+                }
+            ],
+            "message": "`'None'` does not appear to be a valid cursor."
+        }
+    ]
+}
