@@ -79,16 +79,6 @@ class GithubOrgs:
             log.info("Service %s url was not found and therefore deemed unsupported", self.service)
             return None
         response = self._query_service(GITHUB_ORG_QUERY, cursor)
-        if not response:
-            log.info("Error retrieving orgs for %s", self.service)
-            return None
-
-        response = response.json()
-
-        errors = response.get("errors", None)
-        if errors:
-            log.info("Error in GraphQL query for %s. Error Message: %s", self.service, errors)
-            return None
 
         return response
 
@@ -120,9 +110,17 @@ class GithubOrgs:
             log.error("Error connecting to %s: %s", self.service, str(e))
             return None
 
-        if response.status_code != 200:
+        if response.status_code != 200 or response == None:
             log.info("Error retrieving orgs for %s: %s", self.service, response.text)
             return None
+
+        response = response.json()
+
+        errors = response.get("errors", None)
+        if errors:
+            log.info("Error in GraphQL query for %s. Error Message: %s", self.service, errors)
+            return None
+
         return response
 
 
