@@ -77,10 +77,13 @@ class TestBitbucketUtils(unittest.TestCase):
             external_orgs=TEST_EXTERNAL_ORGS,
         )
 
+    @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_query_bitbucket_api")
     @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_get_branch_names")
-    def test_process_repos_cloud_not_private_and_external(self, get_branch_names):
+    def test_process_repos_cloud_not_private_and_external(self, get_branch_names, query_bitbucket_api):
         self.assertEqual(self.process_bitbucket_cloud._get_branch_names, get_branch_names)
+        self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         get_branch_names.return_value = TEST_BRANCH_NAMES_RESPONSE
+        query_bitbucket_api.return_value = "main"
 
         expected_result = copy.deepcopy(EXPECTED_RESULT_PROCESS_REPOS)
         # In the test_repo_response, repo 'has-no-default-branch' is set as a public repo.
@@ -90,10 +93,13 @@ class TestBitbucketUtils(unittest.TestCase):
 
         self.assertEqual(expected_result, result)
 
+    @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_query_bitbucket_api")
     @patch.object(bitbucket_utils.ProcessBitbucketRepos, "_get_branch_names")
-    def test_process_repos_cloud_pass(self, get_branch_names):
+    def test_process_repos_cloud_not_private_and_external(self, get_branch_names, query_bitbucket_api):
         self.assertEqual(self.process_bitbucket_cloud._get_branch_names, get_branch_names)
+        self.assertEqual(self.process_bitbucket_cloud._query_bitbucket_api, query_bitbucket_api)
         get_branch_names.return_value = TEST_BRANCH_NAMES_RESPONSE
+        query_bitbucket_api.return_value = "main"
 
         expected_result = copy.deepcopy(EXPECTED_RESULT_PROCESS_REPOS)
         # In the test_repo_response, repo 'has-no-default-branch' is set as a public repo.
