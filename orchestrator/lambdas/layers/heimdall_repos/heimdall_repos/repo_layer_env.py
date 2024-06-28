@@ -88,6 +88,16 @@ GITHUB_REPO_REF_QUERY = """
 query getRefs($org: String!, $repo: String!, $cursor: String) {
     organization(login: $org) {
         repository(name: $repo) {
+            name
+            defaultBranchRef {
+                name
+                target {
+                    ... on Commit {
+                        committedDate
+                    }
+                }
+            }
+            isPrivate
             refs(first: 100, refPrefix: "refs/heads/", direction: ASC, after: $cursor) {
                 nodes {
                     name

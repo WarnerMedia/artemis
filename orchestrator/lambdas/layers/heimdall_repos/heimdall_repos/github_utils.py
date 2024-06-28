@@ -146,19 +146,24 @@ class ProcessGithubRepos:
         return None
 
     def query(self) -> list:
-        # Process a single repo
         if self.scan_options.repo:
+            # Process a single repo
+            variables = {
+                "org": self.service_info.org,
+                "repo": self.scan_options.repo,
+                "cursor": self.service_info.branch_cursor,
+            }
+            query = GITHUB_REPO_REF_QUERY
+            self.log.info("Querying for branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
+        else:
+            # Process all repos in an organization
+            variables = {"org": self.service_info.org, "cursor": self.service_info.repo_cursor}
+            query = GITHUB_REPO_QUERY
             self.log.info(
-                "Processing additional branches in repo: %s/%s", self.service_info.org, self.scan_options.repo
+                "Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.repo_cursor
             )
-            return self._process_branches(self.scan_options.repo, None, None)
 
-        # Process all repos in an organization
-        self.log.info(
-            "Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.repo_cursor
-        )
-        variables = {"org": self.service_info.org, "cursor": self.service_info.repo_cursor}
-        response_text = self._query_github_api(GITHUB_REPO_QUERY, variables)
+        response_text = self._query_github_api(query, variables)
         if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
             queue_service_and_org(
                 self.queue,
@@ -174,9 +179,14 @@ class ProcessGithubRepos:
         resp = self.json_utils.get_json_from_response(response_text)
         if not resp:
             return []
+
         nodes = self.json_utils.get_object_from_json_dict(resp, ["data", "organization", "repositories", "nodes"])
         if not nodes:
-            return []
+            repo = self.json_utils.get_object_from_json_dict(resp, ["data", "organization", "repository"])
+            if not repo:
+                return []
+            nodes = [repo]
+
         count = len(nodes)
         self.log.info("Processing %s Github results", count)
 
@@ -244,29 +254,12 @@ class ProcessGithubRepos:
         self.log.info(f"repo {repo.get('name')} has no branches. Skipping")
         return False
 
-    def _process_branches(self, repo_name, default_branch, branches) -> list:
+    def _process_branches(self, repo_name: str, default_branch: str, branches: dict) -> list:
         """
         Handles processing for all branches in a given repository
         """
         tasks = []
         self.log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name)
-
-        if self.scan_options.repo:
-            # Query for Repo Branches
-            variables = {
-                "org": self.service_info.org,
-                "repo": self.scan_options.repo,
-                "cursor": self.service_info.branch_cursor,
-            }
-            response_text = self._query_github_api(GITHUB_REPO_REF_QUERY, variables)
-            if not response_text or response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
-                return tasks
-            response_dict = self.json_utils.get_json_from_response(response_text)
-            if not response_dict:
-                return tasks
-            branches = self.json_utils.get_object_from_json_dict(
-                response_dict, ["data", "organization", "repository", "refs"]
-            )
 
         branch_names, timestamps = self._get_branch_names(repo_name, branches)
         if self.scan_options.default_branch_only:
@@ -275,24 +268,30 @@ class ProcessGithubRepos:
                 timestamps[default_branch] = "1970-01-01T00:00:00Z"
 
         for branch in branch_names:
+            search_branch = branch
+            if branch == default_branch:
+                search_branch = None
+
             if not redundant_scan_exists(
                 api_key=self.artemis_api_key,
                 service=self.service_info.service,
                 org=self.service_info.org,
                 repo=repo_name,
-                branch=branch,
+                branch=search_branch,
                 timestamp=timestamps[branch],
                 query=self.redundant_scan_query,
             ):
-                tasks.append(
-                    {
-                        "service": self.service_info.service,
-                        "repo": repo_name,
-                        "org": self.service_info.org,
-                        "branch": branch,
-                        "plugins": self.scan_options.plugins,
-                    }
-                )
+                task = {
+                    "service": self.service_info.service,
+                    "repo": repo_name,
+                    "org": self.service_info.org,
+                    "plugins": self.scan_options.plugins,
+                    "branch": branch,
+                }
+                if branch == default_branch:
+                    task.pop("branch")
+
+                tasks.append(task)
         return tasks
 
     def _get_branch_names(self, repo: str, refs: dict) -> Tuple[list, dict]:
