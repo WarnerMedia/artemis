@@ -24,7 +24,7 @@ def handler(event, _):
     for item in event["Records"]:
         splunk_event = json.loads(item["body"])
 
-        if SCRUB_DETAILS or SCRUB_NONPROD and ENVIRONMENT != "prod" and "details" in splunk_event:
+        if "details" in splunk_event and (SCRUB_DETAILS or SCRUB_NONPROD and ENVIRONMENT != "prod"):
             # If this lambda is not running in prod this will be sent to the
             # dev index so delete the sensitive details
             del splunk_event["details"]
