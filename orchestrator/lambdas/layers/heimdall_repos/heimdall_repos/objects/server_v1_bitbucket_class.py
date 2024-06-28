@@ -5,6 +5,7 @@ from heimdall_repos.repo_layer_env import (
     BITBUCKET_PRIVATE_ORG_QUERY,
     BITBUCKET_PRIVATE_REPO_QUERY,
     BITBUCKET_PRIVATE_DEFAULT_BRANCH_QUERY,
+    BITBUCKET_PRIVATE_SINGLE_REPO_QUERY,
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
 
@@ -28,25 +29,28 @@ class ServerV1Bitbucket(AbstractBitbucket):
     def get_branch_name(self, ref: dict) -> str:
         return ref.get("displayId")
 
+    def get_default_branch_name(self, response_dict: dict) -> str:
+        return self.get_branch_name(response_dict)
+
     def construct_bitbucket_org_url(self, url: str, org: str, cursor: str) -> str:
         return Template(BITBUCKET_PRIVATE_ORG_QUERY).substitute(service_url=url, org=org, cursor=cursor)
 
     def construct_bitbucket_repo_url(self, url: str, org: str, repo: str, cursor: str) -> str:
         return Template(BITBUCKET_PRIVATE_REPO_QUERY).substitute(service_url=url, org=org, repo=repo, cursor=cursor)
 
-    def construct_bitbucket_branch_url(self, url: str, org: str, repo: str, cursor: str, default: bool = False):
-        if not default:
-            return Template(BITBUCKET_PRIVATE_BRANCH_QUERY).substitute(
-                service_url=url, org=org, repo=repo, cursor=cursor
-            )
-        return Template(BITBUCKET_PRIVATE_DEFAULT_BRANCH_QUERY).substitute(
-            service_url=url, org=org, repo=repo, cursor=cursor
-        )
+    def construct_bitbucket_branch_url(self, url: str, org: str, repo: str, cursor: str):
+        return Template(BITBUCKET_PRIVATE_BRANCH_QUERY).substitute(service_url=url, org=org, repo=repo, cursor=cursor)
 
     def construct_bitbucket_commit_url(self, url: str, org: str, repo: str, commit_id: str):
         return Template(BITBUCKET_PRIVATE_COMMIT_QUERY).substitute(
             service_url=url, org=org, repo=repo, commit=commit_id
         )
+
+    def construct_bitbucket_default_branch_url(self, url: str, org: str, repo: str):
+        return Template(BITBUCKET_PRIVATE_DEFAULT_BRANCH_QUERY).substitute(service_url=url, org=org, repo=repo)
+
+    def construct_bitbucket_single_repo_url(self, url: str, org: str, repo: str):
+        return Template(BITBUCKET_PRIVATE_SINGLE_REPO_QUERY).substitute(service_url=url, org=org, repo=repo)
 
     def get_default_cursor(self):
         return "0"
