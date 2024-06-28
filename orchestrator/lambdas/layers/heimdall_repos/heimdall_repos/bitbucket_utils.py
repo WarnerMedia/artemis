@@ -74,12 +74,9 @@ class ProcessBitbucketRepos:
         if not resp:
             return []
 
-        nodes = resp.get("values", None)
+        nodes = resp.get("values", [])
         if not nodes and "slug" in resp:
             nodes = [resp]
-
-        if not nodes:
-            return []
 
         repos = self._process_repos(nodes)
 
@@ -243,7 +240,7 @@ class ProcessBitbucketRepos:
                 default_branch = "HEAD"
                 return default_branch
 
-            default_branch = self.service_helper._get_default_branch_name(response)
+            default_branch = self.service_helper.get_default_branch_name(response)
         return default_branch
 
     def _get_branch_timestamp(self, repo: str, ref: dict):
