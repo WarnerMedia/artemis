@@ -10,7 +10,11 @@ BITBUCKET_PUBLIC_BRANCH_QUERY = "$service_url/repositories/$org/$repo/refs/branc
 
 BITBUCKET_PRIVATE_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?start=$cursor"
 
-BITBUCKET_PUBLIC_DEFAULT_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches?page=$cursor"
+BITBUCKET_PUBLIC_SINGLE_REPO_QUERY = "$service_url/repositories/$org/$repo/"
+
+BITBUCKET_PRIVATE_SINGLE_REPO_QUERY = "$service_url/projects/$org/repos/$repo"
+
+BITBUCKET_PUBLIC_DEFAULT_BRANCH_QUERY = "$service_url/repositories/$org/$repo/"
 
 BITBUCKET_PRIVATE_DEFAULT_BRANCH_QUERY = "$service_url/projects/$org/repos/$repo/branches/default"
 

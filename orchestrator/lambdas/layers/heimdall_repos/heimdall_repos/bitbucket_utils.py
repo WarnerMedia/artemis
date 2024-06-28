@@ -56,22 +56,30 @@ class ProcessBitbucketRepos:
         """
         Process bitbucket org, get all repos, and return the repos + branches
         """
-        # Process branches in a single repository
         if self.scan_options.repo:
-            self.log.info("Processing branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
-            return self._process_branches(self.scan_options.repo)
+            # Process a single repository
+            self.log.info("Querying for branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
+            query = self.service_helper.construct_bitbucket_single_repo_url(
+                url=self.service_info.url, org=self.service_info.org, repo=self.scan_options.repo
+            )
+        else:
+            # Process all repositories in an organization
+            self.log.info("Querying for repos in %s", self.service_info.service_org)
+            query = self.service_helper.construct_bitbucket_org_url(
+                self.service_info.url, self.service_info.org, self.service_info.repo_cursor
+            )
 
-        # Process all repositories in an organization
-        self.log.info("Querying for repos in %s", self.service_info.service_org)
-        repo_query_url = self.service_helper.construct_bitbucket_org_url(
-            self.service_info.url, self.service_info.org, self.service_info.repo_cursor
-        )
-
-        response_text = self._query_bitbucket_api(repo_query_url)
+        response_text = self._query_bitbucket_api(query)
         resp = self.json_utils.get_json_from_response(response_text)
         if not resp:
             return []
-        nodes = resp.get("values")
+
+        nodes = resp.get("values", None)
+        if not nodes and "slug" in resp:
+            nodes = [resp]
+
+        if not nodes:
+            return []
 
         repos = self._process_repos(nodes)
 
@@ -104,45 +112,59 @@ class ProcessBitbucketRepos:
                 self.log.info("Skipping public repo %s in external org", name)
                 continue
 
-            # default_branch = repo.get("mainbranch", {}).get("name", None)
+            default_branch = self._get_default_branch(name, repo)
+            repos.extend(self._process_branches(name, default_branch))
 
-            repos.extend(self._process_branches(name))
         return repos
 
-    def _process_branches(self, repo_name: str) -> list:
+    def _process_branches(self, repo_name: str, default_branch: str) -> list:
         """
         Handles processing for all branches in a given repository
         """
         branch_tasks = []
-
         branch_names, timestamps = self._get_branch_names(repo_name)
+
+        if self.scan_options.default_branch_only:
+            branch_names = [default_branch]
+            timestamp = timestamps.get(default_branch, "1970-01-01T00:00:00Z")
+            timestamps = {default_branch: timestamp}
+
         for branch in branch_names:
+            search_branch = branch
+            if branch == default_branch:
+                search_branch = None
+
             if not redundant_scan_exists(
                 api_key=self.artemis_api_key,
                 service=self.service_info.service,
                 org=self.service_info.org,
                 repo=repo_name,
-                branch=branch,
+                branch=search_branch,
                 timestamp=timestamps[branch],
                 query=self.redundant_scan_query,
             ):
-                branch_tasks.append(
-                    {
-                        "service": self.service_info.service,
-                        "repo": repo_name,
-                        "org": self.service_info.org,
-                        "plugins": self.scan_options.plugins,
-                        "branch": branch,
-                    }
-                )
+                task = {
+                    "service": self.service_info.service,
+                    "repo": repo_name,
+                    "org": self.service_info.org,
+                    "plugins": self.scan_options.plugins,
+                    "branch": branch,
+                }
+                if branch == default_branch:
+                    task.pop("branch")
+
+                branch_tasks.append(task)
         return branch_tasks
 
-    def _get_branch_names(self, repo) -> Tuple[list, dict]:
+    def _get_branch_names(self, repo: str) -> Tuple[list, dict]:
         """
         Retrieves the branches and timestamps for a given repository.
 
+        Args:
+            repo (str): name of the repo to process
+
         Returns:
-            A list of branches(refs) for the given repo and
+            Tuple[list, dict]: A list of branches for the given repo and
             a dictionary mapping each branch to the timestamp of the last commit
 
             For example:
@@ -150,17 +172,17 @@ class ProcessBitbucketRepos:
         """
         branch_cursor = self.service_info.branch_cursor
         repo_url = self.service_helper.construct_bitbucket_branch_url(
-            self.service_info.url,
-            self.service_info.org,
-            repo,
-            branch_cursor,
-            self.scan_options.default_branch_only,
+            url=self.service_info.url,
+            org=self.service_info.org,
+            repo=repo,
+            cursor=branch_cursor,
         )
 
         ref_names = set()
         timestamps = dict()
 
-        self.log.debug("Processing branches in repo %s/%s", self.service_info.org, repo)
+        self.log.info("Processing branches in repo: %s/%s", self.service_info.org, repo)
+
         response_text = self._query_bitbucket_api(repo_url)
         response_dict = self.json_utils.get_json_from_response(response_text)
 
@@ -168,10 +190,7 @@ class ProcessBitbucketRepos:
             self.log.warning("Unable to process branches in repo %s/%s", self.service_info.org, repo)
             return list(ref_names), timestamps
 
-        if self.scan_options.default_branch_only:
-            repo_refs = [response_dict]
-        else:
-            repo_refs = response_dict.get("values", [])
+        repo_refs = response_dict.get("values", [])
 
         if not repo_refs:
             self.log.warning(
@@ -202,6 +221,31 @@ class ProcessBitbucketRepos:
 
         return list(ref_names), timestamps
 
+    def _get_default_branch(self, repo_name: str, repo_dict: dict) -> str:
+        """Returns the name of the default branch for a given repo
+
+        Args:
+            repo_name (str): The name of the repo
+            repo_dict (dict): The dictionary containing the branch name
+
+        Returns:
+            (str): The name of the default branch
+        """
+        default_branch = self.service_helper.get_default_branch_name(repo_dict)
+        if not default_branch:
+            url = self.service_helper.construct_bitbucket_default_branch_url(
+                url=self.service_info.url, org=self.service_info.org, repo=repo_name
+            )
+            response = self._query_bitbucket_api(url)
+            response = self.json_utils.get_json_from_response(response)
+            if not response:
+                self.log.warning("Unable to retrieve Default Branch for repo: %s/%s", self.service_info.org, repo_name)
+                default_branch = "HEAD"
+                return default_branch
+
+            default_branch = self.service_helper._get_default_branch_name(response)
+        return default_branch
+
     def _get_branch_timestamp(self, repo: str, ref: dict):
         """
         Retrieves the timestamp of the last commit in a given branch(ref)
@@ -209,7 +253,10 @@ class ProcessBitbucketRepos:
         if "target" in ref and "date" in ref["target"]:
             return ref["target"]["date"]
 
-        commit_id = ref["latestCommit"]
+        commit_id = ref.get("latestCommit", None)
+        if not commit_id:
+            return "1970-01-01T00:00:00Z"
+
         commit_url = self.service_helper.construct_bitbucket_commit_url(
             self.service_info.url, self.service_info.org, repo, commit_id
         )
