@@ -30,7 +30,7 @@ class BranchRuleCommitSigning:
         except GithubException as e:
             return add_metadata(False, BranchRuleCommitSigning, config, error_message=e.data.get("message"))
 
-        is_rule_commit_signing_iter = map(lambda rule: rule.get("type") == DESIRED_RULE_TYPE, rules)
+        is_rule_commit_signing_map = map(lambda rule: rule.get("type") == DESIRED_RULE_TYPE, rules)
+        passing = any(is_rule_commit_signing_map)
 
-        passing = any(is_rule_commit_signing_iter)
         return add_metadata(passing, BranchRuleCommitSigning, config)

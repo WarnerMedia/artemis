@@ -16,7 +16,7 @@ MULTI_CHECK_NO_OVERRIDE_CONFIG = {"checks": {"all_of": [EXPECTED_CHECK, EXPECTED
 NO_STATUS_CHECKS_RESPONSE = {}
 
 
-class TestBranchStatusChecks(unittest.TestCase):
+class TestBranchProtectionStatusChecks(unittest.TestCase):
     def test_no_required_status_checks(self):
         mock_github = Github(None)
         mock_response = {

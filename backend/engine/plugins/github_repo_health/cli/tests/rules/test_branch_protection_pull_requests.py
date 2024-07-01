@@ -10,7 +10,7 @@ BRANCH = "branch"
 NUM_APPROVALS = 7
 
 
-class TestBranchPullRequests(unittest.TestCase):
+class TestBranchProtectionPullRequests(unittest.TestCase):
     def test_no_required_pull_request_reviews(self):
         mock_github = Github(None)
         mock_response = {

@@ -47,19 +47,17 @@ class BranchRuleStatusChecks:
         passing = any(map(lambda rule: _check_rule(config, rule), status_check_rules))
         return add_metadata(passing, BranchRuleStatusChecks, config)
 
+
 def _check_rule(config, rule):
-    parameters = rule.get("parameters")
+    parameters = rule.get("parameters", {})
 
-    if parameters:
-        expect_config = config.get("expect", {})
-        checks_array_config = config.get("checks", {})
+    expect_config = config.get("expect", {})
+    checks_array_config = config.get("checks", {})
 
-        expect_passing = is_subdict_of(expect_config, parameters)
+    expect_passing = is_subdict_of(expect_config, parameters)
 
-        required_status_checks = parameters.get("required_status_checks", [])
-        contexts = list(map(lambda required_check: required_check.get('context'), required_status_checks))
-        checks_passing = evaluate_array_config(checks_array_config, lambda check: check in contexts)
+    required_status_checks = parameters.get("required_status_checks", [])
+    contexts = list(map(lambda required_check: required_check.get("context"), required_status_checks))
+    checks_passing = evaluate_array_config(checks_array_config, lambda check: check in contexts)
 
-        return expect_passing and checks_passing
-    else:
-        return False
+    return expect_passing and checks_passing

@@ -31,7 +31,7 @@ class BranchRulesetBypassActors:
             ruleset_ids = _get_ruleset_ids(github, owner, repo, branch)
 
             if not ruleset_ids:
-                return add_metadata(False, BranchRulesetBypassActors, config)
+                return add_metadata(True, BranchRulesetBypassActors, config)
 
             rulesets = list(map(lambda id: github.get_repo_ruleset(owner, repo, id), ruleset_ids))
             passing = all(map(lambda ruleset: _check_ruleset(config, ruleset), rulesets))

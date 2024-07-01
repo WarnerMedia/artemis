@@ -9,7 +9,7 @@ REPO = "repo"
 BRANCH = "branch"
 
 
-class TestBranchCommitSigning(unittest.TestCase):
+class TestBranchProtectionCommitSigning(unittest.TestCase):
     def test_no_required_signatures(self):
         mock_github = Github(None)
         mock_response = {

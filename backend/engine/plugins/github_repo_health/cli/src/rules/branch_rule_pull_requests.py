@@ -40,17 +40,14 @@ class BranchRulePullRequests:
 
 
 def _check_rule(config, rule):
-    parameters = rule.get("parameters")
+    parameters = rule.get("parameters", {})
 
-    if parameters:
-        expect_config = config.get("expect", {})
-        min_approvals_config = config.get("min_approvals", 0)
+    expect_config = config.get("expect", {})
+    min_approvals_config = config.get("min_approvals", 0)
 
-        expect_passing = is_subdict_of(expect_config, parameters)
+    expect_passing = is_subdict_of(expect_config, parameters)
 
-        required_approvals = parameters.get("required_approving_review_count", 0)
-        min_approvals_met = min_approvals_config <= required_approvals
+    required_approvals = parameters.get("required_approving_review_count", 0)
+    min_approvals_met = min_approvals_config <= required_approvals
 
-        return expect_passing and min_approvals_met
-    else:
-        return False
+    return expect_passing and min_approvals_met

@@ -9,7 +9,7 @@ REPO = "repo"
 BRANCH = "branch"
 
 
-class TestBranchEnforceAdmins(unittest.TestCase):
+class TestBranchProtectionEnforceAdmins(unittest.TestCase):
     def test_enforce_admins_disabled(self):
         mock_github = Github(None)
         mock_response = {
