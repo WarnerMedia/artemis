@@ -50,6 +50,7 @@ class BranchProtectionStatusChecks:
             checks_array_config = config.get("checks", {})
             checks_passing = evaluate_array_config(checks_array_config, lambda check: check in contexts)
 
-            return add_metadata(expect_passing and checks_passing, BranchProtectionStatusChecks, config)
+            passing = expect_passing and checks_passing
+            return add_metadata(passing, BranchProtectionStatusChecks, config)
         else:
             return add_metadata(False, BranchProtectionStatusChecks, config)

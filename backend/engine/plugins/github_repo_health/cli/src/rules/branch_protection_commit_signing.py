@@ -29,5 +29,4 @@ class BranchProtectionCommitSigning:
             return add_metadata(False, BranchProtectionCommitSigning, config, error_message=error_message)
 
         passing = protection_config.get("required_signatures", {}).get("enabled") == True
-
         return add_metadata(passing, BranchProtectionCommitSigning, config)
