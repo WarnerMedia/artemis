@@ -39,24 +39,25 @@ Tool for checking that github repositories are configured to meet a security bas
         - [`checks`](#checks-1)
         - [`expect`](#expect-3)
     - [Branch Ruleset Bypass Actors](#branch-ruleset-bypass-actors)
-      - [`allowed_bypass_actor_ids`](#allowed_bypass_actor_ids)
-      - [`required_bypass_actor_ids`](#required_bypass_actor_ids)
-      - [`allowed_bypass_actor_types`](#allowed_bypass_actor_types)
-      - [`allowed_bypass_actor_modes`](#allowed_bypass_actor_modes)
-    - [Repo Actions](#repo-actions)
       - [Fields](#fields-4)
+        - [`allowed_bypass_actor_ids`](#allowed_bypass_actor_ids)
+        - [`required_bypass_actor_ids`](#required_bypass_actor_ids)
+        - [`allowed_bypass_actor_types`](#allowed_bypass_actor_types)
+        - [`allowed_bypass_actor_modes`](#allowed_bypass_actor_modes)
+    - [Repo Actions](#repo-actions)
+      - [Fields](#fields-5)
         - [`expect_any_of`](#expect_any_of)
           - [`enabled`](#enabled)
           - [`allowed_actions`](#allowed_actions)
           - [`selected_actions`](#selected_actions)
     - [Repo Code Scanning](#repo-code-scanning)
     - [Repo Files](#repo-files)
-      - [Fields](#fields-5)
+      - [Fields](#fields-6)
         - [`any_of`](#any_of)
         - [`all_of`](#all_of)
         - [`none_of`](#none_of)
     - [Repo Secret Scanning](#repo-secret-scanning)
-      - [Fields](#fields-6)
+      - [Fields](#fields-7)
         - [`require_push_protection`](#require_push_protection)
     - [Repo Security Alerts](#repo-security-alerts)
 
@@ -490,84 +491,30 @@ Checks that branch rulesets affecting the given branch have acceptable bypass ac
 used to enforce that only a particular role, app, or team can bypass branch rules, or it can be used
 to restrict it so that nobody can bypass branch rules.
 
-#### `allowed_bypass_actor_ids`
+#### Fields
+
+##### `allowed_bypass_actor_ids`
 An array of integers representing actor ids that are allowed. If any actor id exists that is not
 specified here, the rule will fail. Set this to empty array to accept no bypass actors.
 
 There isn't an easy way to discover what the actor id is for a particular actor. It's suggested to set the desired role and then query the API yourself to find it.
 
-#### `required_bypass_actor_ids`
+##### `required_bypass_actor_ids`
 Like `allowed_bypass_actor_ids`, but fails if any of these ids are excluded. 
 
-#### `allowed_bypass_actor_types`
+##### `allowed_bypass_actor_types`
 An array of strings representing actor types that are allowed. At this time, options exposed by
 Github are `Team`, `Integration`, or `RepositoryRole`.
 
-#### `allowed_bypass_actor_modes`
+##### `allowed_bypass_actor_modes`
 An array of strings representing actor bypass modes that are allowed. At this time, options exposed
 by Github are `always` or `pull_request`
 
 #### Example <!-- omit from toc -->
-- [repo-health-cli](#repo-health-cli)
-  - [Getting set up](#getting-set-up)
-    - [Environment Variables](#environment-variables)
-      - [Authentication](#authentication)
-      - [Configuration](#configuration)
-    - [Installation](#installation)
-    - [Test](#test)
-    - [Building](#building)
-  - [Usage](#usage)
-    - [Set up environment variables](#set-up-environment-variables)
-    - [Running](#running)
-    - [Command-line arguments](#command-line-arguments)
-  - [Configuration](#configuration-1)
-    - [Omitted Fields](#omitted-fields)
-    - [Loading configs](#loading-configs)
-  - [Rules](#rules)
-      - [Errors](#errors)
-    - [Branch Protection Commit Signing](#branch-protection-commit-signing)
-    - [Branch Protection Enforce Admins](#branch-protection-enforce-admins)
-    - [Branch Protection Pull Requests](#branch-protection-pull-requests)
-      - [Fields](#fields)
-        - [`min_approvals`](#min_approvals)
-        - [`expect`](#expect)
-    - [Branch Protection Status Checks](#branch-protection-status-checks)
-      - [Fields](#fields-1)
-        - [`checks`](#checks)
-        - [`expect`](#expect-1)
-    - [Branch Rule Commit Signing](#branch-rule-commit-signing)
-    - [Branch Rule Pull Requests](#branch-rule-pull-requests)
-      - [Fields](#fields-2)
-        - [`min_approvals`](#min_approvals-1)
-        - [`expect`](#expect-2)
-    - [Branch Rule Status Checks](#branch-rule-status-checks)
-      - [Fields](#fields-3)
-        - [`checks`](#checks-1)
-        - [`expect`](#expect-3)
-    - [Branch Ruleset Bypass Actors](#branch-ruleset-bypass-actors)
-      - [`allowed_bypass_actor_ids`](#allowed_bypass_actor_ids)
-      - [`required_bypass_actor_ids`](#required_bypass_actor_ids)
-      - [`allowed_bypass_actor_types`](#allowed_bypass_actor_types)
-      - [`allowed_bypass_actor_modes`](#allowed_bypass_actor_modes)
-    - [Repo Actions](#repo-actions)
-      - [Fields](#fields-4)
-        - [`expect_any_of`](#expect_any_of)
-          - [`enabled`](#enabled)
-          - [`allowed_actions`](#allowed_actions)
-          - [`selected_actions`](#selected_actions)
-    - [Repo Code Scanning](#repo-code-scanning)
-    - [Repo Files](#repo-files)
-      - [Fields](#fields-5)
-        - [`any_of`](#any_of)
-        - [`all_of`](#all_of)
-        - [`none_of`](#none_of)
-    - [Repo Secret Scanning](#repo-secret-scanning)
-      - [Fields](#fields-6)
-        - [`require_push_protection`](#require_push_protection)
-    - [Repo Security Alerts](#repo-security-alerts)
+To allow repository admins to bypass pull requests only:
 ```
 {
-    "type": "branch_rule_bypass_actors",
+    "type": "branch_ruleset_bypass_actors",
     "allowed_bypass_actor_ids" [
         5
     ],
