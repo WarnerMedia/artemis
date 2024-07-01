@@ -19,30 +19,44 @@ Tool for checking that github repositories are configured to meet a security bas
     - [Loading configs](#loading-configs)
   - [Rules](#rules)
       - [Errors](#errors)
-    - [Branch Commit Signing](#branch-commit-signing)
-    - [Branch Enforce Admins](#branch-enforce-admins)
-    - [Branch Pull Requests](#branch-pull-requests)
+    - [Branch Protection Commit Signing](#branch-protection-commit-signing)
+    - [Branch Protection Enforce Admins](#branch-protection-enforce-admins)
+    - [Branch Protection Pull Requests](#branch-protection-pull-requests)
       - [Fields](#fields)
         - [`min_approvals`](#min_approvals)
         - [`expect`](#expect)
-    - [Branch Status Checks](#branch-status-checks)
+    - [Branch Protection Status Checks](#branch-protection-status-checks)
       - [Fields](#fields-1)
         - [`checks`](#checks)
         - [`expect`](#expect-1)
-    - [Repo Actions](#repo-actions)
+    - [Branch Rule Commit Signing](#branch-rule-commit-signing)
+    - [Branch Rule Pull Requests](#branch-rule-pull-requests)
       - [Fields](#fields-2)
+        - [`min_approvals`](#min_approvals-1)
+        - [`expect`](#expect-2)
+    - [Branch Rule Status Checks](#branch-rule-status-checks)
+      - [Fields](#fields-3)
+        - [`checks`](#checks-1)
+        - [`expect`](#expect-3)
+    - [Branch Ruleset Bypass Actors](#branch-ruleset-bypass-actors)
+      - [`allowed_bypass_actor_ids`](#allowed_bypass_actor_ids)
+      - [`required_bypass_actor_ids`](#required_bypass_actor_ids)
+      - [`allowed_bypass_actor_types`](#allowed_bypass_actor_types)
+      - [`allowed_bypass_actor_modes`](#allowed_bypass_actor_modes)
+    - [Repo Actions](#repo-actions)
+      - [Fields](#fields-4)
         - [`expect_any_of`](#expect_any_of)
           - [`enabled`](#enabled)
           - [`allowed_actions`](#allowed_actions)
           - [`selected_actions`](#selected_actions)
     - [Repo Code Scanning](#repo-code-scanning)
     - [Repo Files](#repo-files)
-      - [Fields](#fields-3)
+      - [Fields](#fields-5)
         - [`any_of`](#any_of)
         - [`all_of`](#all_of)
         - [`none_of`](#none_of)
     - [Repo Secret Scanning](#repo-secret-scanning)
-      - [Fields](#fields-4)
+      - [Fields](#fields-6)
         - [`require_push_protection`](#require_push_protection)
     - [Repo Security Alerts](#repo-security-alerts)
 
@@ -287,7 +301,7 @@ teams can decide what is best for them. If the intent is to have the pull
 requests rule ignore `dismiss_stale_reviews`, it should be omitted:
 ```
 {
-    "type": "branch_pull_requests",
+    "type": "branch_protection_pull_requests",
     "expect": {
         ...
     }
@@ -304,17 +318,17 @@ Rules are checks that are run on the repositories.
 #### Errors
 If an error occurs while running a rule, it will automatically fail. In addition, its result will have an `error_message` field that contains information on what went wrong.
 
-### Branch Commit Signing
+### Branch Protection Commit Signing
 For checking that a branch protection rule is enabled that enforces commit signing.
 
 #### Example <!-- omit from toc -->
 ```
 {
-    "type": "branch_commit_signing"
+    "type": "branch_protection_commit_signing"
 }
 ```
 
-### Branch Enforce Admins
+### Branch Protection Enforce Admins
 Checks that a branch protection rule is enabled that enforces branch protection
 for admins. Mapped to "Do not allow bypassing the above settings" in branch
 protection rules in Github's UI
@@ -322,11 +336,11 @@ protection rules in Github's UI
 #### Example <!-- omit from toc -->
 ```
 {
-    "type": "branch_enforce_admins"
+    "type": "branch_protection_enforce_admins"
 }
 ```
 
-### Branch Pull Requests
+### Branch Protection Pull Requests
 For checking that a branch protection rule is enabled that requires pull requests.
 
 #### Fields
@@ -342,7 +356,7 @@ Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-
 #### Example <!-- omit from toc -->
 ```
 {
-    "type": "branch_pull_requests",
+    "type": "branch_protection_pull_requests",
     "min_approvals": 1,
     "expect": {
         "dismiss_stale_reviews": true,
@@ -351,7 +365,7 @@ Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-
 }
 ```
 
-### Branch Status Checks
+### Branch Protection Status Checks
 For checking that a branch protection rule is enabled that requires status
 checks to pass on pull requests.
 
@@ -378,7 +392,7 @@ Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-
 #### Example <!-- omit from toc -->
 ```
 {
-    "type": "branch_status_checks",
+    "type": "branch_protection_status_checks",
     "checks": {
         "all_of": [
             "build",
@@ -388,6 +402,178 @@ Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-
     "expect": {
         "strict": true
     }
+}
+```
+
+### Branch Rule Commit Signing
+For checking that a branch rule is enabled that enforces commit signing.
+
+#### Example <!-- omit from toc -->
+```
+{
+    "type": "branch_rule_commit_signing"
+}
+```
+
+
+### Branch Rule Pull Requests
+For checking that a branch rule is enabled that requires pull requests.
+
+#### Fields
+
+##### `min_approvals`
+Minimum number of approvals that must be configured. This should be a number
+
+##### `expect`
+Fields to expect in the response. Refer to fields within the "parameters" property where `type` is
+`pull_request` in [Github's "get rules for a branch"
+endpoint](https://docs.github.com/en/rest/repos/rules?apiVersion=2022-11-28#get-rules-for-a-branch).
+
+**NOTE:** The "expect" blocks for these will be different than for `branch_protection_pull_requests`
+due to differences in Github's API
+
+#### Example <!-- omit from toc -->
+```
+{
+    "type": "branch_rule_pull_requests",
+    "min_approvals": 1,
+    "expect": {
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": true,
+        "require_last_push_approval": true,
+        "required_review_thread_resolution": true
+    }
+}
+```
+
+### Branch Rule Status Checks
+For checking that a branch rule is enabled that requires status checks to pass on pull requests.
+
+#### Fields
+
+##### `checks`
+An object containing `all_of`, `any_of`, and/or `none_of` fields that are each
+arrays of strings. The check passes if all conditions of the subfields are met.
+
+`all_of` - All of the fields in this array are names of status checks required
+on pull requests into the branch
+
+`any_of` - Any of the fields in this array are names of status checks required
+on pull requests into the branch
+
+`none_of` - None of the fields in this array are names of status checks required
+on pull requests into the branch
+
+##### `expect`
+Fields to expect in the response. Refer to fields within the "parameters" property where `type` is
+`required_status_checks` in [Github's "get rules for a branch"
+endpoint](https://docs.github.com/en/rest/repos/rules?apiVersion=2022-11-28#get-rules-for-a-branch).
+
+#### Example <!-- omit from toc -->
+```
+{
+    "type": "branch_rule_status_checks",
+    "checks": {
+        "all_of": [
+            "build",
+            "test"
+        ]
+    },
+    "expect": {
+        "strict_required_status_checks_policy": true
+    }
+}
+```
+
+### Branch Ruleset Bypass Actors
+Checks that branch rulesets affecting the given branch have acceptable bypass actors. This can be
+used to enforce that only a particular role, app, or team can bypass branch rules, or it can be used
+to restrict it so that nobody can bypass branch rules.
+
+#### `allowed_bypass_actor_ids`
+An array of integers representing actor ids that are allowed. If any actor id exists that is not
+specified here, the rule will fail. Set this to empty array to accept no bypass actors.
+
+There isn't an easy way to discover what the actor id is for a particular actor. It's suggested to set the desired role and then query the API yourself to find it.
+
+#### `required_bypass_actor_ids`
+Like `allowed_bypass_actor_ids`, but fails if any of these ids are excluded. 
+
+#### `allowed_bypass_actor_types`
+An array of strings representing actor types that are allowed. At this time, options exposed by
+Github are `Team`, `Integration`, or `RepositoryRole`.
+
+#### `allowed_bypass_actor_modes`
+An array of strings representing actor bypass modes that are allowed. At this time, options exposed
+by Github are `always` or `pull_request`
+
+#### Example <!-- omit from toc -->
+- [repo-health-cli](#repo-health-cli)
+  - [Getting set up](#getting-set-up)
+    - [Environment Variables](#environment-variables)
+      - [Authentication](#authentication)
+      - [Configuration](#configuration)
+    - [Installation](#installation)
+    - [Test](#test)
+    - [Building](#building)
+  - [Usage](#usage)
+    - [Set up environment variables](#set-up-environment-variables)
+    - [Running](#running)
+    - [Command-line arguments](#command-line-arguments)
+  - [Configuration](#configuration-1)
+    - [Omitted Fields](#omitted-fields)
+    - [Loading configs](#loading-configs)
+  - [Rules](#rules)
+      - [Errors](#errors)
+    - [Branch Protection Commit Signing](#branch-protection-commit-signing)
+    - [Branch Protection Enforce Admins](#branch-protection-enforce-admins)
+    - [Branch Protection Pull Requests](#branch-protection-pull-requests)
+      - [Fields](#fields)
+        - [`min_approvals`](#min_approvals)
+        - [`expect`](#expect)
+    - [Branch Protection Status Checks](#branch-protection-status-checks)
+      - [Fields](#fields-1)
+        - [`checks`](#checks)
+        - [`expect`](#expect-1)
+    - [Branch Rule Commit Signing](#branch-rule-commit-signing)
+    - [Branch Rule Pull Requests](#branch-rule-pull-requests)
+      - [Fields](#fields-2)
+        - [`min_approvals`](#min_approvals-1)
+        - [`expect`](#expect-2)
+    - [Branch Rule Status Checks](#branch-rule-status-checks)
+      - [Fields](#fields-3)
+        - [`checks`](#checks-1)
+        - [`expect`](#expect-3)
+    - [Branch Ruleset Bypass Actors](#branch-ruleset-bypass-actors)
+      - [`allowed_bypass_actor_ids`](#allowed_bypass_actor_ids)
+      - [`required_bypass_actor_ids`](#required_bypass_actor_ids)
+      - [`allowed_bypass_actor_types`](#allowed_bypass_actor_types)
+      - [`allowed_bypass_actor_modes`](#allowed_bypass_actor_modes)
+    - [Repo Actions](#repo-actions)
+      - [Fields](#fields-4)
+        - [`expect_any_of`](#expect_any_of)
+          - [`enabled`](#enabled)
+          - [`allowed_actions`](#allowed_actions)
+          - [`selected_actions`](#selected_actions)
+    - [Repo Code Scanning](#repo-code-scanning)
+    - [Repo Files](#repo-files)
+      - [Fields](#fields-5)
+        - [`any_of`](#any_of)
+        - [`all_of`](#all_of)
+        - [`none_of`](#none_of)
+    - [Repo Secret Scanning](#repo-secret-scanning)
+      - [Fields](#fields-6)
+        - [`require_push_protection`](#require_push_protection)
+    - [Repo Security Alerts](#repo-security-alerts)
+```
+{
+    "type": "branch_rule_bypass_actors",
+    "allowed_bypass_actor_ids" [
+        5
+    ],
+    "allowed_bypass_actor_modes": [
+        "pull_request
+    ]
 }
 ```
 
