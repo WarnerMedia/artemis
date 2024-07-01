@@ -2,8 +2,6 @@ from .helpers import add_metadata, severity_schema
 
 from github import GithubException
 
-NOT_PROTECTED_ERROR_MESSAGE = "Branch not protected"
-
 
 class BranchProtectionCommitSigning:
     identifier = "branch_protection_commit_signing"
