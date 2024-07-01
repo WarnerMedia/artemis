@@ -46,7 +46,9 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
 
     def test_single_expected_check_exists(self):
         mock_github = Github(None)
-        mock_response = [{"type": "required_status_checks", "parameters": {"required_status_checks": [ {"context": EXPECTED_CHECK}]}}]
+        mock_response = [
+            {"type": "required_status_checks", "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}]}}
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         expected = {
@@ -63,7 +65,12 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
 
     def test_single_expected_check_does_not_exist(self):
         mock_github = Github(None)
-        mock_response = [{"type": "required_status_checks", "parameters": {"required_status_checks": [ {"context": "this_is_not_the_check_you_are_looking_for"}]}}]
+        mock_response = [
+            {
+                "type": "required_status_checks",
+                "parameters": {"required_status_checks": [{"context": "this_is_not_the_check_you_are_looking_for"}]},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         expected = {
@@ -80,7 +87,12 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
 
     def test_multiple_expected_checks_exist(self):
         mock_github = Github(None)
-        mock_response = [{"type": "required_status_checks", "parameters": {"required_status_checks": [ {"context": EXPECTED_CHECK}, {"context": EXPECTED_CHECK_2}]}}]
+        mock_response = [
+            {
+                "type": "required_status_checks",
+                "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}, {"context": EXPECTED_CHECK_2}]},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         expected = {
@@ -97,7 +109,9 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
 
     def test_multiple_expected_checks_one_does_not_exist(self):
         mock_github = Github(None)
-        mock_response = [{"type": "required_status_checks", "parameters": {"required_status_checks": [ {"context": EXPECTED_CHECK}]}}]
+        mock_response = [
+            {"type": "required_status_checks", "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}]}}
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         expected = {
