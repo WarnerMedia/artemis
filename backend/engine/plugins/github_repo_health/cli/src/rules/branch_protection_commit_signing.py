@@ -26,7 +26,7 @@ class BranchProtectionCommitSigning:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchProtectionCommitSigning, config, error_message=error_message)
+            return add_metadata(False, BranchProtectionCommitSigning, config, error_message=e.data.get("message"))
 
         passing = protection_config.get("required_signatures", {}).get("enabled") == True
         return add_metadata(passing, BranchProtectionCommitSigning, config)
