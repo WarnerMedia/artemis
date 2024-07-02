@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from ...src.rules import BranchEnforceAdmins
+from ...src.rules import BranchProtectionEnforceAdmins
 from ...src.utilities import Github
 
 OWNER = "owner"
@@ -9,7 +9,7 @@ REPO = "repo"
 BRANCH = "branch"
 
 
-class TestBranchEnforceAdmins(unittest.TestCase):
+class TestBranchProtectionEnforceAdmins(unittest.TestCase):
     def test_enforce_admins_disabled(self):
         mock_github = Github(None)
         mock_response = {
@@ -18,13 +18,13 @@ class TestBranchEnforceAdmins(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchEnforceAdmins.identifier,
-            "name": BranchEnforceAdmins.name,
-            "description": BranchEnforceAdmins.description,
+            "id": BranchProtectionEnforceAdmins.identifier,
+            "name": BranchProtectionEnforceAdmins.name,
+            "description": BranchProtectionEnforceAdmins.description,
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(expected, BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
 
     def test_enforce_admins_enabled(self):
         mock_github = Github(None)
@@ -32,10 +32,10 @@ class TestBranchEnforceAdmins(unittest.TestCase):
         mock_github.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
-            "id": BranchEnforceAdmins.identifier,
-            "name": BranchEnforceAdmins.name,
-            "description": BranchEnforceAdmins.description,
+            "id": BranchProtectionEnforceAdmins.identifier,
+            "name": BranchProtectionEnforceAdmins.name,
+            "description": BranchProtectionEnforceAdmins.description,
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(expected, BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
