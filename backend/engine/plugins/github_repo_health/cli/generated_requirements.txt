@@ -15,5 +15,5 @@ referencing==0.35.1
 requests==2.32.3
 rpds-py==0.18.1
 typing_extensions==4.12.2
-urllib3==2.2.1
+urllib3==2.2.2
 wrapt==1.16.0
