@@ -5,6 +5,10 @@
 resource "aws_lambda_function" "org-queue" {
   function_name = "${var.app}-org-queue"
 
+  logging_config {
+    log_format = "JSON"
+  }
+
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/org_queue/v${var.ver}/org_queue.zip"
 
@@ -59,6 +63,10 @@ resource "aws_lambda_function" "org-queue" {
 
 resource "aws_lambda_function" "repo-queue" {
   function_name = "${var.app}-repo-queue"
+
+  logging_config {
+    log_format = "JSON"
+  }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/repo_queue/v${var.ver}/repo_queue.zip"
@@ -115,6 +123,10 @@ resource "aws_lambda_function" "repo-queue" {
 resource "aws_lambda_function" "repo-scan" {
   function_name = "${var.app}-repo-scan"
 
+  logging_config {
+    log_format = "JSON"
+  }
+
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/repo_scan/v${var.ver}/repo_scan.zip"
 
@@ -158,6 +170,10 @@ resource "aws_lambda_function" "repo-scan" {
 
 resource "aws_lambda_function" "repo-scan-loop" {
   function_name = "${var.app}-repo-scan-loop"
+
+  logging_config {
+    log_format = "JSON"
+  }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/repo_scan_loop/v${var.ver}/repo_scan_loop.zip"

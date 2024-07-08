@@ -109,7 +109,7 @@ class JsonFormatter(BaseFormatter):
     def _get_default_format(self) -> Dict[str, Any]:
         return {
             "level": "%(levelname)s",
-            "location": "%(funcName)s:%(lineno)d",
+            "location": "%(name)s:%(funcName)s:%(lineno)d",
             "timestamp": "%(asctime)s",
             "message": None,
         }

@@ -1,6 +1,5 @@
 import json
 import unittest
-import sys
 
 from heimdall_utils import utils
 from heimdall_utils.logging.formatter import JsonFormatter

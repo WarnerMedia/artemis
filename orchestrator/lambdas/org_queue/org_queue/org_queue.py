@@ -15,7 +15,7 @@ from heimdall_utils.datetime import format_timestamp, get_utc_datetime
 from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
-from heimdall_utils.utils import Logger
+from heimdall_utils.utils import Logger, build_context_dict
 from org_queue.org_queue_env import ORG_QUEUE
 
 log = Logger(__name__)
@@ -25,6 +25,9 @@ DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if non
 
 
 def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
+    context = build_context_dict(_context)
+    log.add_keys(context)
+
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
     queued = []

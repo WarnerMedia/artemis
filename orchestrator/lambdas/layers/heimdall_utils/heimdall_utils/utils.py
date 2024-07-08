@@ -26,6 +26,7 @@ LEVEL_MAP = {
 DYNAMODB_TTL_DAYS = 60
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("botocore").setLevel(logging.WARNING)
 
 
 class Logger:
@@ -43,10 +44,10 @@ class Logger:
         e.g. "heimdall_repo"
 
     function_version (str): The version of the lambda function
-        e.g. "TODO: Fill this out"
+        e.g. $LATEST
 
     aws_request_id (str): The identifier of the invocation request.
-        e.g. "TODO: Fill this out"
+        e.g. "a1b2dde3-34db-56a7-a89b-12b34f56aa78"
 
 
     Parameters:
@@ -60,14 +61,14 @@ class Logger:
 
     """
 
-    _lambda_context: Dict[str, Any] = {}
+    __lambda_context: Dict[str, Any] = {}
 
     def __new__(
         cls,
         name: str,
         level: str = LOG_LEVEL,
         stream: IO = sys.stderr,
-        lambda_context: Dict[str, Any] = None,
+        lambda_context: Any = None,
         **kwargs,
     ) -> logging.Logger:
 
@@ -75,7 +76,7 @@ class Logger:
         formatter = JsonFormatter(datefmt="%Y-%m-%d %H:%M:%S%z")
 
         if lambda_context:
-            cls._lambda_context = lambda_context
+            cls.__lambda_context = lambda_context
             context_dict = build_context_dict(lambda_context)
             additional_fields.update(context_dict)
 

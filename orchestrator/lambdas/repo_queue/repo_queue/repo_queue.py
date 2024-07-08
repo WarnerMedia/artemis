@@ -1,4 +1,5 @@
 # pylint: disable=no-name-in-module, no-member
+from distutils.command import build
 import json
 from itertools import zip_longest
 
@@ -7,7 +8,7 @@ from botocore.exceptions import ClientError
 from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection
 from heimdall_utils.env import API_KEY_LOC
 from heimdall_utils.get_services import get_services_dict
-from heimdall_utils.utils import Logger, ServiceInfo, ScanOptions
+from heimdall_utils.utils import Logger, ServiceInfo, ScanOptions, build_context_dict
 from heimdall_utils.variables import REGION
 from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, SERVICE_PROCESSORS
 
@@ -16,6 +17,9 @@ log = Logger(__name__)
 
 
 def run(event=None, _context=None, services_file=None) -> None:
+    context_dict = build_context_dict(_context)
+    log.add_keys(**context_dict)
+
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
     artemis_api_key = get_analyzer_api_key(API_KEY_LOC)
@@ -67,6 +71,7 @@ def query(
     repo: str,
 ) -> list:
     """Retrieves a list of repository events to send to the Repo SQS Queue"""
+    log.add_keys(service=service, repo=repo, batch_id=batch_id, page=page)
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
         return []
