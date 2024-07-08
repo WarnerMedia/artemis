@@ -28,7 +28,7 @@ EXPECTED_LOG_OUTPUT4 = {
 class TestUtils(unittest.TestCase):
     def setUp(self) -> None:
         self.formatter = JsonFormatter()
-        self.log = utils.DefaultLogger(__name__, "INFO")
+        self.log = utils.Logger(__name__, "INFO")
         self.json_utils = utils.JSONUtils(self.log)
 
     def test_get_json_from_response_text_None(self):

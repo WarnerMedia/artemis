@@ -5,7 +5,7 @@ from typing import Dict, Any, Iterable, IO
 from heimdall_utils.logging.formatter import BaseFormatter
 
 
-class Logger(logging.Logger):
+class HeimdallLogger(logging.Logger):
     """
     Logger for Heimdall Lambdas
     """

@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from json import JSONDecodeError
 
 from heimdall_utils.logging.formatter import JsonFormatter
-from heimdall_utils.logging.logger import Logger
+from heimdall_utils.logging.logger import HeimdallLogger
 from typing import Dict, Any, IO
 
 DEFAULT_LOG_LEVEL = "INFO"
@@ -28,9 +28,9 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
-class DefaultLogger:
+class Logger:
     """
-    Factory Class for creating Loggers with a default configuration
+    Factory Class for creating HeimdallLoggers with a default configuration
 
     The DefaultLogger for the Heimdall uses a JSONFormatter to structure
     the Lambda logs to include optional keys and the lambda_context
@@ -79,7 +79,7 @@ class DefaultLogger:
             context_dict = build_context_dict(lambda_context)
             additional_fields.update(context_dict)
 
-        return Logger(name, LEVEL_MAP[level], formatter, stream, **additional_fields)
+        return HeimdallLogger(name, LEVEL_MAP[level], formatter, stream, **additional_fields)
 
 
 def build_context_dict(context) -> Dict:
@@ -88,25 +88,6 @@ def build_context_dict(context) -> Dict:
         "function_version": context.function_version,
         "aws_request_id": context.aws_request_id,
     }
-
-
-# class Logger:
-#     def __new__(cls, name: str, level=LOG_LEVEL):
-#         log = logging.getLogger(name.strip())
-#         if log.hasHandlers():
-#             # The AWS Lambda environment starts with a handler already configured so remove it
-#             # to replace it with our own.
-#             for handler in log.handlers:
-#                 log.removeHandler(handler)
-#         console = logging.StreamHandler(sys.stderr)
-#         formatter = logging.Formatter(
-#             fmt="%(asctime)s %(levelname)-8s [%(name)-12s] %(message)s", datefmt="[%Y-%m-%d %H:%M:%S%z]"
-#         )
-#         console.setFormatter(formatter)
-#         log.addHandler(console)
-#         log.setLevel(LEVEL_MAP.get(level, DEFAULT_LOG_LEVEL))
-#         log.propagate = False
-#         return log
 
 
 class ServiceInfo:
