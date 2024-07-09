@@ -1,4 +1,4 @@
-from rules.helpers import (
+from ..helpers import (
     add_metadata,
     array_config_schema,
     evaluate_array_config,
@@ -38,7 +38,12 @@ class BranchProtectionStatusChecks:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchProtectionStatusChecks, config, error_message=e.data.get("message"))
+            return add_metadata(
+                False,
+                BranchProtectionStatusChecks,
+                config,
+                error_message=e.data.get("message"),
+            )
 
         checks_response = protection_config.get("required_status_checks")
         if checks_response:

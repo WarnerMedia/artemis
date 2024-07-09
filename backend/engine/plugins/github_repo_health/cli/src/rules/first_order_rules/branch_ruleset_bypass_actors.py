@@ -1,4 +1,4 @@
-from rules.helpers import add_metadata, severity_schema
+from ..helpers import add_metadata, severity_schema
 
 from github import GithubException
 
@@ -19,8 +19,14 @@ class BranchRulesetBypassActors:
             "description": {"type": "string"},
             "severity": severity_schema,
             "allowed_bypass_actor_ids": {"type": "array", "items": {"type": "number"}},
-            "allowed_bypass_actor_types": {"type": "array", "items": {"type": "string"}},
-            "allowed_bypass_actor_modes": {"type": "array", "items": {"type": "string"}},
+            "allowed_bypass_actor_types": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "allowed_bypass_actor_modes": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
             "required_bypass_actor_ids": {"type": "array", "items": {"type": "number"}},
         },
     }
@@ -39,7 +45,12 @@ class BranchRulesetBypassActors:
             return add_metadata(passing, BranchRulesetBypassActors, config)
 
         except GithubException as e:
-            return add_metadata(False, BranchRulesetBypassActors, config, error_message=e.data.get("message"))
+            return add_metadata(
+                False,
+                BranchRulesetBypassActors,
+                config,
+                error_message=e.data.get("message"),
+            )
 
 
 def _get_ruleset_ids(github, owner, repo, branch):

@@ -1,4 +1,4 @@
-from rules.helpers import add_metadata, is_subdict_of, severity_schema
+from ..helpers import add_metadata, is_subdict_of, severity_schema
 
 from github import GithubException
 
@@ -28,7 +28,12 @@ class BranchProtectionPullRequests:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchProtectionPullRequests, config, error_message=e.data.get("message"))
+            return add_metadata(
+                False,
+                BranchProtectionPullRequests,
+                config,
+                error_message=e.data.get("message"),
+            )
 
         pulls_config = protection_config.get("required_pull_request_reviews")
 

@@ -31,7 +31,10 @@ class TestBranchProtectionStatusChecks(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH),
+        )
 
     def test_required_status_checks(self):
         mock_github = Github(None)
@@ -45,7 +48,10 @@ class TestBranchProtectionStatusChecks(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH),
+        )
 
     def test_no_checks_in_config(self):
         mock_github = Github(None)
@@ -72,7 +78,10 @@ class TestBranchProtectionStatusChecks(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_override_check_description(self):
         mock_github = Github(None)
@@ -88,7 +97,10 @@ class TestBranchProtectionStatusChecks(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_no_required_status_checks(self):
         mock_github = Github(None)

@@ -80,7 +80,10 @@ def _get_results_and_errors(rules_config, owner, repo, branch):
         return ([], [])
 
     checks = list(
-        map(lambda rule_config: CompositeRule._checker.run_check(rule_config, owner, repo, branch), rules_config)
+        map(
+            lambda rule_config: CompositeRule._checker.run_check(rule_config, owner, repo, branch),
+            rules_config,
+        )
     )
 
     results = list(map(lambda result: result.get("pass"), checks))

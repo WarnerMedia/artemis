@@ -25,7 +25,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH),
+        )
 
     def test_required_pull_request_reviews(self):
         mock_github = Github(None)
@@ -39,7 +42,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH),
+        )
 
     def test_config_min_approvals_equal(self):
         mock_github = Github(None)
@@ -55,7 +61,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_min_approvals_less_than(self):
         mock_github = Github(None)
@@ -71,7 +80,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_min_approvals_greater_than(self):
         mock_github = Github(None)
@@ -87,7 +99,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_expect_field_exists_and_is_equal(self):
         mock_github = Github(None)
@@ -103,7 +118,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_expect_field_exists_but_is_not_equal(self):
         mock_github = Github(None)
@@ -119,7 +137,10 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_expect_field_does_not_exist(self):
         mock_github = Github(None)
@@ -135,4 +156,7 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchProtectionPullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )

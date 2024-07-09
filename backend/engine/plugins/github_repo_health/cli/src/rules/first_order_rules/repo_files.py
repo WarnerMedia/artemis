@@ -1,4 +1,9 @@
-from rules.helpers import add_metadata, array_config_schema, evaluate_array_config, severity_schema
+from ..helpers import (
+    add_metadata,
+    array_config_schema,
+    evaluate_array_config,
+    severity_schema,
+)
 
 from github import GithubException
 

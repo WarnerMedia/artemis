@@ -24,7 +24,10 @@ class TestBranchProtectionCommitSigning(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionCommitSigning.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionCommitSigning.check(mock_github, OWNER, REPO, BRANCH),
+        )
 
     def test_required_signatures(self):
         mock_github = Github(None)
@@ -38,4 +41,7 @@ class TestBranchProtectionCommitSigning(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionCommitSigning.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionCommitSigning.check(mock_github, OWNER, REPO, BRANCH),
+        )

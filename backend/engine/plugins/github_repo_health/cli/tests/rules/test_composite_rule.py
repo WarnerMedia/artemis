@@ -7,15 +7,15 @@ OWNER = "owner"
 REPO = "repo"
 BRANCH = "branch"
 
-PASS_TYPE = "branch_protection_commit_signing" 
-FAIL_TYPE="branch_rule_commit_signing"
-ERROR_1_TYPE="branch_protection_pull_requests"
-ERROR_2_TYPE="branch_rule_pull_requests"
+PASS_TYPE = "branch_protection_commit_signing"
+FAIL_TYPE = "branch_rule_commit_signing"
+ERROR_1_TYPE = "branch_protection_pull_requests"
+ERROR_2_TYPE = "branch_rule_pull_requests"
 
-PASS_CONFIG = { "type": PASS_TYPE}
-FAIL_CONFIG = { "type": FAIL_TYPE }
-ERROR_1_CONFIG = { "type": ERROR_1_TYPE }
-ERROR_2_CONFIG = { "type": ERROR_2_TYPE }
+PASS_CONFIG = {"type": PASS_TYPE}
+FAIL_CONFIG = {"type": FAIL_TYPE}
+ERROR_1_CONFIG = {"type": ERROR_1_TYPE}
+ERROR_2_CONFIG = {"type": ERROR_2_TYPE}
 
 ERROR_1_MESSAGE = "First error"
 ERROR_2_MESSAGE = "Second error"
@@ -37,14 +37,14 @@ ERROR_1_RESULT = {
     "name": "Errored example 1",
     "description": "This one always errors with the first error message",
     "pass": False,
-    "error_message": ERROR_1_MESSAGE
+    "error_message": ERROR_1_MESSAGE,
 }
 ERROR_2_RESULT = {
     "id": ERROR_2_TYPE,
     "name": "Errored example 2",
     "description": "This one always errors with the second error message",
     "pass": False,
-    "error_message": ERROR_2_MESSAGE
+    "error_message": ERROR_2_MESSAGE,
 }
 
 RESULTS_DICT = {
@@ -54,136 +54,179 @@ RESULTS_DICT = {
     ERROR_2_TYPE: ERROR_2_RESULT,
 }
 
+
 @pytest.mark.parametrize(
     "config,expected_pass",
-    [        
+    [
         pytest.param({}, True, id="should pass if nothing specified in config"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    PASS_CONFIG
-                ]
-            }
-        }, True, id="should pass if subrules is all_of with one member and it passes"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    FAIL_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is all_of with one member and it fails"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    PASS_CONFIG,
-                    PASS_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, True, id="should pass if subrules is all_of with three members that all pass"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    PASS_CONFIG,
-                    FAIL_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is all_of with three members and one fails"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    FAIL_CONFIG,
-                    FAIL_CONFIG,
-                    FAIL_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is all_of with three members that all fail"),
-        pytest.param({
-            "subrules": {
-                "any_of": [
-                    PASS_CONFIG
-                ]
-            }
-        }, True, id="should pass if subrules is any_of with one member and it passes"),
-        pytest.param({
-            "subrules": {
-                "any_of": [
-                    FAIL_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is any_of with one member and it fails"),
-        pytest.param({
-            "subrules": {
-                "any_of": [
-                    PASS_CONFIG,
-                    PASS_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, True, id="should pass if subrules is any_of with three members that all pass"),
-        pytest.param({
-            "subrules": {
-                "any_of": [
-                    PASS_CONFIG,
-                    FAIL_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, True, id="should pass if subrules is any_of with three members and one fails"),
-        pytest.param({
-            "subrules": {
-                "any_of": [
-                    FAIL_CONFIG,
-                    FAIL_CONFIG,
-                    FAIL_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is any_of with three members that all fail"),
-        pytest.param({
-            "subrules": {
-                "none_of": [
-                    PASS_CONFIG
-                ]
-            }
-        }, False, id="should fail if subrules is none_of with one member and it passes"),
-        pytest.param({
-            "subrules": {
-                "none_of": [
-                    FAIL_CONFIG,
-                ]
-            }
-        }, True, id="should pass if subrules is none_of with one member and it fails"),
-        pytest.param({
-            "subrules": {
-                "none_of": [
-                    PASS_CONFIG,
-                    PASS_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is none_of with three members that all pass"),
-        pytest.param({
-            "subrules": {
-                "none_of": [
-                    PASS_CONFIG,
-                    FAIL_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, False, id="should fail if subrules is none_of with three members and one fails"),
-        pytest.param({
-            "subrules": {
-                "none_of": [
-                    FAIL_CONFIG,
-                    FAIL_CONFIG,
-                    FAIL_CONFIG,
-                ]
-            }
-        }, True, id="should pass if subrules is none_of with three members that all fail"),
+        pytest.param(
+            {"subrules": {"all_of": [PASS_CONFIG]}},
+            True,
+            id="should pass if subrules is all_of with one member and it passes",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        FAIL_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is all_of with one member and it fails",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        PASS_CONFIG,
+                        PASS_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            True,
+            id="should pass if subrules is all_of with three members that all pass",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        PASS_CONFIG,
+                        FAIL_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is all_of with three members and one fails",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        FAIL_CONFIG,
+                        FAIL_CONFIG,
+                        FAIL_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is all_of with three members that all fail",
+        ),
+        pytest.param(
+            {"subrules": {"any_of": [PASS_CONFIG]}},
+            True,
+            id="should pass if subrules is any_of with one member and it passes",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "any_of": [
+                        FAIL_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is any_of with one member and it fails",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "any_of": [
+                        PASS_CONFIG,
+                        PASS_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            True,
+            id="should pass if subrules is any_of with three members that all pass",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "any_of": [
+                        PASS_CONFIG,
+                        FAIL_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            True,
+            id="should pass if subrules is any_of with three members and one fails",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "any_of": [
+                        FAIL_CONFIG,
+                        FAIL_CONFIG,
+                        FAIL_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is any_of with three members that all fail",
+        ),
+        pytest.param(
+            {"subrules": {"none_of": [PASS_CONFIG]}},
+            False,
+            id="should fail if subrules is none_of with one member and it passes",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "none_of": [
+                        FAIL_CONFIG,
+                    ]
+                }
+            },
+            True,
+            id="should pass if subrules is none_of with one member and it fails",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "none_of": [
+                        PASS_CONFIG,
+                        PASS_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is none_of with three members that all pass",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "none_of": [
+                        PASS_CONFIG,
+                        FAIL_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            False,
+            id="should fail if subrules is none_of with three members and one fails",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "none_of": [
+                        FAIL_CONFIG,
+                        FAIL_CONFIG,
+                        FAIL_CONFIG,
+                    ]
+                }
+            },
+            True,
+            id="should pass if subrules is none_of with three members that all fail",
+        ),
     ],
 )
-@patch('utilities.Checker')
+@patch("utilities.Checker")
 def test_rule(Checker, config, expected_pass):
     mock_checker = MagicMock()
     mock_checker.run_check = MagicMock(side_effect=_get_checker_result)
@@ -203,67 +246,86 @@ def test_rule(Checker, config, expected_pass):
 
     assert expected == actual
 
+
 @pytest.mark.parametrize(
     "config,expected_error_message",
-    [ 
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    ERROR_1_CONFIG
-                ]
-            }
-        }, f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}", id="should error as intended with a single error"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    ERROR_1_CONFIG,
-                    PASS_CONFIG,
-                ]
-            }
-        }, f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}", id="should error as intended with a single error even if another rule passes without errors"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    ERROR_1_CONFIG,
-                    ERROR_2_CONFIG,
-                ]
-            }
-        }, f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}", id="should error as intended with two errors"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    PASS_CONFIG,
-                    ERROR_1_CONFIG,
-                    ERROR_2_CONFIG,
-                ]
-            }
-        }, f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}", id="should error as intended with two errors even if another rule has no errors"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    ERROR_1_CONFIG,
-                ],
-                "any_of": [
-                    ERROR_2_CONFIG,
-                ]
-            }
-        }, f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}", id="should error as intended with two errors in different logic blocks"),
-        pytest.param({
-            "subrules": {
-                "all_of": [
-                    ERROR_1_CONFIG,
-                ],
-                "any_of": [
-                    ERROR_2_CONFIG,
-                ],
-                "none_of": [
-                    PASS_CONFIG,
-                ]
-            }
-        }, f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}", id="should error as intended with two errors in different logic blocks and a non-error in a third logic block"),
+    [
+        pytest.param(
+            {"subrules": {"all_of": [ERROR_1_CONFIG]}},
+            f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}",
+            id="should error as intended with a single error",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        ERROR_1_CONFIG,
+                        PASS_CONFIG,
+                    ]
+                }
+            },
+            f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}",
+            id="should error as intended with a single error even if another rule passes without errors",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        ERROR_1_CONFIG,
+                        ERROR_2_CONFIG,
+                    ]
+                }
+            },
+            f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}",
+            id="should error as intended with two errors",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        PASS_CONFIG,
+                        ERROR_1_CONFIG,
+                        ERROR_2_CONFIG,
+                    ]
+                }
+            },
+            f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}",
+            id="should error as intended with two errors even if another rule has no errors",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        ERROR_1_CONFIG,
+                    ],
+                    "any_of": [
+                        ERROR_2_CONFIG,
+                    ],
+                }
+            },
+            f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}",
+            id="should error as intended with two errors in different logic blocks",
+        ),
+        pytest.param(
+            {
+                "subrules": {
+                    "all_of": [
+                        ERROR_1_CONFIG,
+                    ],
+                    "any_of": [
+                        ERROR_2_CONFIG,
+                    ],
+                    "none_of": [
+                        PASS_CONFIG,
+                    ],
+                }
+            },
+            f"{ERROR_1_TYPE}: {ERROR_1_MESSAGE}, {ERROR_2_TYPE}: {ERROR_2_MESSAGE}",
+            id="should error as intended with two errors in different logic blocks and a non-error in a third logic block",
+        ),
     ],
 )
-@patch('utilities.Checker')
+@patch("utilities.Checker")
 def test_errors(Checker, config, expected_error_message):
     mock_checker = MagicMock()
     mock_checker.run_check = MagicMock(side_effect=_get_checker_result)
@@ -274,7 +336,7 @@ def test_errors(Checker, config, expected_error_message):
         "name": CompositeRule.name,
         "description": CompositeRule.description,
         "pass": False,
-        "error_message": expected_error_message
+        "error_message": expected_error_message,
     }
 
     actual = CompositeRule.check(None, OWNER, REPO, BRANCH, config)
@@ -283,6 +345,7 @@ def test_errors(Checker, config, expected_error_message):
     CompositeRule._checker = None
 
     assert expected == actual
+
 
 def _get_checker_result(config, owner, repo, branch):
     rule_type = config.get("type")

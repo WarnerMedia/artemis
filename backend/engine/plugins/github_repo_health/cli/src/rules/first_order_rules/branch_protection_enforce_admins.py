@@ -1,4 +1,4 @@
-from rules.helpers import add_metadata, severity_schema
+from ..helpers import add_metadata, severity_schema
 
 from github import GithubException
 
@@ -26,7 +26,12 @@ class BranchProtectionEnforceAdmins:
         try:
             protection_config = github.get_branch_protection(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchProtectionEnforceAdmins, config, error_message=e.data.get("message"))
+            return add_metadata(
+                False,
+                BranchProtectionEnforceAdmins,
+                config,
+                error_message=e.data.get("message"),
+            )
 
         passing = protection_config.get("enforce_admins", {}).get("enabled") == True
         return add_metadata(passing, BranchProtectionEnforceAdmins, config)

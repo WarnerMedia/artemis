@@ -3,7 +3,7 @@ import json
 
 from jsonschema import exceptions, validate
 
-import rules
+from .. import rules
 
 default_config = {
     "name": "default",
@@ -15,7 +15,10 @@ default_config = {
             "type": rules.BranchProtectionPullRequests.identifier,
             "min_approvals": 1,
         },
-        {"type": rules.BranchProtectionStatusChecks.identifier, "expect": {"strict": True}},
+        {
+            "type": rules.BranchProtectionStatusChecks.identifier,
+            "expect": {"strict": True},
+        },
         {
             "type": rules.RepoActions.identifier,
             "expect_any_of": [

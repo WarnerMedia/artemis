@@ -1,4 +1,4 @@
-from rules.helpers import add_metadata, is_subdict_of, severity_schema
+from ..helpers import add_metadata, is_subdict_of, severity_schema
 
 from github import GithubException
 
@@ -30,7 +30,12 @@ class BranchRulePullRequests:
         try:
             rules = github.get_branch_rules(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchRulePullRequests, config, error_message=e.data.get("message"))
+            return add_metadata(
+                False,
+                BranchRulePullRequests,
+                config,
+                error_message=e.data.get("message"),
+            )
 
         pull_request_rules = filter(lambda rule: rule.get("type") == DESIRED_RULE_TYPE, rules)
 

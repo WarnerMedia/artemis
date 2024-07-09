@@ -170,4 +170,7 @@ class Github:
             return response
 
     def _get_request_headers(self, token):
-        return {"Authorization": f"token {token}", GITHUB_API_NAME_HEADER: GITHUB_API_NAME}
+        return {
+            "Authorization": f"token {token}",
+            GITHUB_API_NAME_HEADER: GITHUB_API_NAME,
+        }

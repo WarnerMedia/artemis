@@ -41,7 +41,12 @@ class TestBranchRulePullRequests(unittest.TestCase):
 
     def test_config_min_approvals_equal(self):
         mock_github = Github(None)
-        mock_response = [{"type": "pull_request", "parameters": {"required_approving_review_count": NUM_APPROVALS}}]
+        mock_response = [
+            {
+                "type": "pull_request",
+                "parameters": {"required_approving_review_count": NUM_APPROVALS},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         config = {"min_approvals": NUM_APPROVALS}
@@ -53,11 +58,19 @@ class TestBranchRulePullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_min_approvals_less_than(self):
         mock_github = Github(None)
-        mock_response = [{"type": "pull_request", "parameters": {"required_approving_review_count": NUM_APPROVALS}}]
+        mock_response = [
+            {
+                "type": "pull_request",
+                "parameters": {"required_approving_review_count": NUM_APPROVALS},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         config = {"min_approvals": NUM_APPROVALS + 1}
@@ -69,11 +82,19 @@ class TestBranchRulePullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_min_approvals_greater_than(self):
         mock_github = Github(None)
-        mock_response = [{"type": "pull_request", "parameters": {"required_approving_review_count": NUM_APPROVALS}}]
+        mock_response = [
+            {
+                "type": "pull_request",
+                "parameters": {"required_approving_review_count": NUM_APPROVALS},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         config = {"min_approvals": NUM_APPROVALS - 1}
@@ -85,11 +106,19 @@ class TestBranchRulePullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_expect_field_exists_and_is_equal(self):
         mock_github = Github(None)
-        mock_response = [{"type": "pull_request", "parameters": {"exists": "this-should-be-the-same"}}]
+        mock_response = [
+            {
+                "type": "pull_request",
+                "parameters": {"exists": "this-should-be-the-same"},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         config = {"expect": {"exists": "this-should-be-the-same"}}
@@ -101,11 +130,19 @@ class TestBranchRulePullRequests(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_expect_field_exists_but_is_not_equal(self):
         mock_github = Github(None)
-        mock_response = [{"type": "pull_request", "parameters": {"exists": "this-should-be-the-same"}}]
+        mock_response = [
+            {
+                "type": "pull_request",
+                "parameters": {"exists": "this-should-be-the-same"},
+            }
+        ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
         config = {"expect": {"exists": "this-is-different"}}
@@ -117,7 +154,10 @@ class TestBranchRulePullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )
 
     def test_config_expect_field_does_not_exist(self):
         mock_github = Github(None)
@@ -133,4 +173,7 @@ class TestBranchRulePullRequests(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config))
+        self.assertEqual(
+            expected,
+            BranchRulePullRequests.check(mock_github, OWNER, REPO, BRANCH, config),
+        )

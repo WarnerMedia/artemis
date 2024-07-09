@@ -2,7 +2,7 @@ import argparse
 import json
 import sys
 
-from utilities import Checker, Config, ErrorCode, Github, environment
+from .utilities import Checker, Config, ErrorCode, Github, environment
 
 LIST_AVAILABLE_RULES = "--list-available-rules"
 JSON_INDENT = 2
@@ -41,7 +41,12 @@ def _get_parser():
     parser = argparse.ArgumentParser(
         description="Checks Github repo health against a baseline defined in a configuration"
     )
-    parser.add_argument("repo", metavar="OWNER/REPO", type=str, help="the repo to run on. ex: <owner>/<repo>")
+    parser.add_argument(
+        "repo",
+        metavar="OWNER/REPO",
+        type=str,
+        help="the repo to run on. ex: <owner>/<repo>",
+    )
     parser.add_argument(
         "-b",
         "--branch",
@@ -50,11 +55,17 @@ def _get_parser():
     )
     parser.add_argument("-c", "--config", type=str, help="path to file to use as a config")
     parser.add_argument(
-        "--ghconfig", type=str, help="Github path to file to use as a config. ex: <owner>/<repo>:<path-to-file>"
+        "--ghconfig",
+        type=str,
+        help="Github path to file to use as a config. ex: <owner>/<repo>:<path-to-file>",
     )
     parser.add_argument("--json", action="store_true", help="print output as a json object")
     parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument(LIST_AVAILABLE_RULES, action="store_true", help="print the rules that are available to be run")
+    parser.add_argument(
+        LIST_AVAILABLE_RULES,
+        action="store_true",
+        help="print the rules that are available to be run",
+    )
 
     return parser
 

@@ -14,7 +14,10 @@ EXAMPLE_CONFIG = {
     "expect_any_of": [
         {"enabled": False},
         {"allowed_actions": "local_only"},
-        {"allowed_actions": "selected", "selected_actions": {"github_owned_allowed": True}},
+        {
+            "allowed_actions": "selected",
+            "selected_actions": {"github_owned_allowed": True},
+        },
     ]
 }
 
@@ -96,7 +99,12 @@ class TestRepoActions(unittest.TestCase):
         mock_github.get_selected_actions_repository = MagicMock(return_value=mock_selected_action_response)
 
         config = {
-            "expect_any_of": [{"allowed_actions": "selected", "selected_actions": {"github_owned_allowed": True}}]
+            "expect_any_of": [
+                {
+                    "allowed_actions": "selected",
+                    "selected_actions": {"github_owned_allowed": True},
+                }
+            ]
         }
 
         expected = {
@@ -123,7 +131,10 @@ class TestRepoActions(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG))
+        self.assertEqual(
+            expected,
+            RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG),
+        )
 
     def test_example_config_actions_all(self):
         mock_github = Github(None)
@@ -141,7 +152,10 @@ class TestRepoActions(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG))
+        self.assertEqual(
+            expected,
+            RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG),
+        )
 
     def test_example_config_actions_local_only(self):
         mock_github = Github(None)
@@ -159,7 +173,10 @@ class TestRepoActions(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG))
+        self.assertEqual(
+            expected,
+            RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG),
+        )
 
     def test_example_config_actions_selected_no_github_owned(self):
         mock_github = Github(None)
@@ -183,7 +200,10 @@ class TestRepoActions(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG))
+        self.assertEqual(
+            expected,
+            RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG),
+        )
 
     def test_example_config_actions_selected_with_github_owned(self):
         mock_github = Github(None)
@@ -207,4 +227,7 @@ class TestRepoActions(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG))
+        self.assertEqual(
+            expected,
+            RepoActions.check(mock_github, OWNER, REPO, BRANCH, EXAMPLE_CONFIG),
+        )

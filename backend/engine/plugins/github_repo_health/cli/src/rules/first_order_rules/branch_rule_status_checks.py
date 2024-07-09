@@ -1,4 +1,4 @@
-from rules.helpers import (
+from ..helpers import (
     add_metadata,
     array_config_schema,
     evaluate_array_config,
@@ -40,7 +40,12 @@ class BranchRuleStatusChecks:
         try:
             rules = github.get_branch_rules(owner, repo, branch)
         except GithubException as e:
-            return add_metadata(False, BranchRuleStatusChecks, config, error_message=e.data.get("message"))
+            return add_metadata(
+                False,
+                BranchRuleStatusChecks,
+                config,
+                error_message=e.data.get("message"),
+            )
 
         status_check_rules = filter(lambda rule: rule.get("type") == DESIRED_RULE_TYPE, rules)
 

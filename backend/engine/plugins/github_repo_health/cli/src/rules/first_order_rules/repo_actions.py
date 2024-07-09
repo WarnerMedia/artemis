@@ -1,4 +1,4 @@
-from rules.helpers import (
+from ..helpers import (
     add_metadata,
     array_config_schema,
     evaluate_array_config,
@@ -30,7 +30,10 @@ class RepoActions:
                     "additionalProperties": False,
                     "properties": {
                         "enabled": {"type": "boolean"},
-                        "allowed_actions": {"type": "string", "enum": ["all", "local_only", "selected"]},
+                        "allowed_actions": {
+                            "type": "string",
+                            "enum": ["all", "local_only", "selected"],
+                        },
                         "selected_actions": {
                             "type": "object",
                             "properties": {

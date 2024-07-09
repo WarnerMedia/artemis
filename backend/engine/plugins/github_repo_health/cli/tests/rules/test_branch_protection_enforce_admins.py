@@ -24,7 +24,10 @@ class TestBranchProtectionEnforceAdmins(unittest.TestCase):
             "pass": False,
         }
 
-        self.assertEqual(expected, BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH),
+        )
 
     def test_enforce_admins_enabled(self):
         mock_github = Github(None)
@@ -38,4 +41,7 @@ class TestBranchProtectionEnforceAdmins(unittest.TestCase):
             "pass": True,
         }
 
-        self.assertEqual(expected, BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH))
+        self.assertEqual(
+            expected,
+            BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH),
+        )

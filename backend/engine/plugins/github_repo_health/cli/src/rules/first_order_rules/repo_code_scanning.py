@@ -1,4 +1,4 @@
-from rules.helpers import add_metadata, severity_schema
+from ..helpers import add_metadata, severity_schema
 
 from github import GithubException
 
@@ -31,7 +31,10 @@ class RepoCodeScanning:
         security_and_analysis = repository.get("security_and_analysis")
         if security_and_analysis == None:
             return add_metadata(
-                False, RepoCodeScanning, config, error_message="GitHub Advanced Security is not enabled"
+                False,
+                RepoCodeScanning,
+                config,
+                error_message="GitHub Advanced Security is not enabled",
             )
 
         passing = security_and_analysis.get("advanced_security", {}).get("status") == "enabled"

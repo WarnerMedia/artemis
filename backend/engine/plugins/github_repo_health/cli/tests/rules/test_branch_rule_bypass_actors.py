@@ -32,7 +32,12 @@ def test_branch_rules_empty():
 @pytest.mark.parametrize(
     "config,bypass_actors,expected_pass",
     [
-        pytest.param({}, [], True, id="should pass if nothing specified in config and no bypass actors"),
+        pytest.param(
+            {},
+            [],
+            True,
+            id="should pass if nothing specified in config and no bypass actors",
+        ),
         pytest.param(
             {},
             [ROLE_ACTOR, APP_ACTOR, TEAM_ACTOR],

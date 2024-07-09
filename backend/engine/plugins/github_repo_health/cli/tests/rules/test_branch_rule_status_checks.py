@@ -47,7 +47,10 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
     def test_single_expected_check_exists(self):
         mock_github = Github(None)
         mock_response = [
-            {"type": "required_status_checks", "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}]}}
+            {
+                "type": "required_status_checks",
+                "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}]},
+            }
         ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
@@ -90,7 +93,12 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
         mock_response = [
             {
                 "type": "required_status_checks",
-                "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}, {"context": EXPECTED_CHECK_2}]},
+                "parameters": {
+                    "required_status_checks": [
+                        {"context": EXPECTED_CHECK},
+                        {"context": EXPECTED_CHECK_2},
+                    ]
+                },
             }
         ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
@@ -110,7 +118,10 @@ class TestBranchRuleStatusChecks(unittest.TestCase):
     def test_multiple_expected_checks_one_does_not_exist(self):
         mock_github = Github(None)
         mock_response = [
-            {"type": "required_status_checks", "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}]}}
+            {
+                "type": "required_status_checks",
+                "parameters": {"required_status_checks": [{"context": EXPECTED_CHECK}]},
+            }
         ]
         mock_github.get_branch_rules = MagicMock(return_value=mock_response)
 
