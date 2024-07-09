@@ -19,45 +19,48 @@ Tool for checking that github repositories are configured to meet a security bas
     - [Loading configs](#loading-configs)
   - [Rules](#rules)
       - [Errors](#errors)
+    - [Composite Rules](#composite-rules)
+      - [Fields](#fields)
+        - [`subrules`](#subrules)
     - [Branch Protection Commit Signing](#branch-protection-commit-signing)
     - [Branch Protection Enforce Admins](#branch-protection-enforce-admins)
     - [Branch Protection Pull Requests](#branch-protection-pull-requests)
-      - [Fields](#fields)
+      - [Fields](#fields-1)
         - [`min_approvals`](#min_approvals)
         - [`expect`](#expect)
     - [Branch Protection Status Checks](#branch-protection-status-checks)
-      - [Fields](#fields-1)
+      - [Fields](#fields-2)
         - [`checks`](#checks)
         - [`expect`](#expect-1)
     - [Branch Rule Commit Signing](#branch-rule-commit-signing)
     - [Branch Rule Pull Requests](#branch-rule-pull-requests)
-      - [Fields](#fields-2)
+      - [Fields](#fields-3)
         - [`min_approvals`](#min_approvals-1)
         - [`expect`](#expect-2)
     - [Branch Rule Status Checks](#branch-rule-status-checks)
-      - [Fields](#fields-3)
+      - [Fields](#fields-4)
         - [`checks`](#checks-1)
         - [`expect`](#expect-3)
     - [Branch Ruleset Bypass Actors](#branch-ruleset-bypass-actors)
-      - [Fields](#fields-4)
+      - [Fields](#fields-5)
         - [`allowed_bypass_actor_ids`](#allowed_bypass_actor_ids)
         - [`required_bypass_actor_ids`](#required_bypass_actor_ids)
         - [`allowed_bypass_actor_types`](#allowed_bypass_actor_types)
         - [`allowed_bypass_actor_modes`](#allowed_bypass_actor_modes)
     - [Repo Actions](#repo-actions)
-      - [Fields](#fields-5)
+      - [Fields](#fields-6)
         - [`expect_any_of`](#expect_any_of)
           - [`enabled`](#enabled)
           - [`allowed_actions`](#allowed_actions)
           - [`selected_actions`](#selected_actions)
     - [Repo Code Scanning](#repo-code-scanning)
     - [Repo Files](#repo-files)
-      - [Fields](#fields-6)
+      - [Fields](#fields-7)
         - [`any_of`](#any_of)
         - [`all_of`](#all_of)
         - [`none_of`](#none_of)
     - [Repo Secret Scanning](#repo-secret-scanning)
-      - [Fields](#fields-7)
+      - [Fields](#fields-8)
         - [`require_push_protection`](#require_push_protection)
     - [Repo Security Alerts](#repo-security-alerts)
 
@@ -215,7 +218,7 @@ repo-health --list-available-rules
 
 ## Configuration
 Configurations are of the following format:
-```
+```json
 {
     "name": "example",
     "description": "An example config. It is not strictly valid as it has comments and placeholders",
@@ -286,7 +289,7 @@ it may be explicitly required to be `false`, even if it's unintuitive for a
 configuration to require the field to be false.
 
 For example, the follow config would require that `dismiss_stale_reviews` is false.
-```
+```json
 {
     "type": "branch_pull_requests",
     "expect": {
@@ -300,7 +303,7 @@ It does not make much sense to do this from a security configuration
 perspective. It would, however, make sense to allow any value there so that
 teams can decide what is best for them. If the intent is to have the pull
 requests rule ignore `dismiss_stale_reviews`, it should be omitted:
-```
+```json
 {
     "type": "branch_protection_pull_requests",
     "expect": {
@@ -319,11 +322,111 @@ Rules are checks that are run on the repositories.
 #### Errors
 If an error occurs while running a rule, it will automatically fail. In addition, its result will have an `error_message` field that contains information on what went wrong.
 
+### Composite Rules
+Composite rules are new in version `1.0.0`. They are rules that are made up of other rules, rather
+than performing a check against GitHub itself.
+
+They are useful for combining other rules into a new rule. For example, it can be used to have a
+single "Branch - Commit Signing" rule that checks for either a branch protection rule or a branch
+rule that requires commit signing on a repository.
+
+Because composite rules do not perform any checks themselves, their default `id`, `name`, and
+`description` are placeholders and should always be set in configs.
+
+#### Fields
+
+##### `subrules`
+`subrules` defines the logic around the other rules that are being run. It has three fields, `all_of`, `any_of` or
+`none_of`. Each is an array of rules.
+
+`all_of` - Passes if all of the rules in this array pass.
+
+`any_of` - Passes if any of the rules in this array pass.
+
+`none_of` - Passes if none of the rules in this array pass.
+
+#### Example <!-- omit from toc -->
+```json
+{
+    "type": "composite_rule",
+    "id": "branch_commit_signing",
+    "name": "Branch - Commit Signing",
+    "description": "Branch rule or branch protection rule is enabled to enforce commit signing",
+    "subrules": {
+        "any_of": [
+            {
+                "type": "branch_protection_commit_signing"
+            },
+            {
+                "type": "branch_rule_commit_signing"
+            }
+        ]
+    }
+}
+```
+
+##### Nested composite rules example <!-- omit from toc -->
+```json
+{
+    "type": "composite_rule",
+    "id": "repo_scanning",
+    "name": "Branch - Secret Scanning and Code Scanning",
+    "description": "Requires either a secret and code scanning status check or for GHAS secret scanning and code scanning to be enabled",
+    "subrules": {
+        "any_of": [
+            {
+                "type": "composite_rule",
+                "id": "repo_ghas_secret_scanning_and_code_scanning",
+                "subrules": {
+                    "all_of": [
+                        {
+                            "type": "repo_secret_scanning",
+                            "require_push_protection": true
+                        },
+                        {
+                            "type": "repo_code_scanning"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "composite_rule",
+                "id": "branch_checks_secrets_and_static_analysis",
+                "subrules": {
+                    "any_of": [
+                        {
+                            "type": "branch_protection_status_checks",
+                            "checks": {
+                                "all_of": [
+                                    "secrets",
+                                    "static-analysis"
+                                ]
+                            }
+                        },
+                        {
+                            "type": "branch_rule_status_checks",
+                            "checks": {
+                                "all_of": [
+                                    "secrets",
+                                    "static-analysis"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+            
+        ]
+    }
+}
+```
+
+
 ### Branch Protection Commit Signing
 For checking that a branch protection rule is enabled that enforces commit signing.
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_protection_commit_signing"
 }
@@ -335,7 +438,7 @@ for admins. Mapped to "Do not allow bypassing the above settings" in branch
 protection rules in Github's UI
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_protection_enforce_admins"
 }
@@ -355,7 +458,7 @@ Fields to expect in the response. Refer to fields within the
 Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-protection).
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_protection_pull_requests",
     "min_approvals": 1,
@@ -391,7 +494,7 @@ Fields to expect in the response. Refer to fields within the
 Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-protection).
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_protection_status_checks",
     "checks": {
@@ -410,7 +513,7 @@ Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-
 For checking that a branch rule is enabled that enforces commit signing.
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_rule_commit_signing"
 }
@@ -434,7 +537,7 @@ endpoint](https://docs.github.com/en/rest/repos/rules?apiVersion=2022-11-28#get-
 due to differences in Github's API
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_rule_pull_requests",
     "min_approvals": 1,
@@ -471,7 +574,7 @@ Fields to expect in the response. Refer to fields within the "parameters" proper
 endpoint](https://docs.github.com/en/rest/repos/rules?apiVersion=2022-11-28#get-rules-for-a-branch).
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "branch_rule_status_checks",
     "checks": {
@@ -512,7 +615,7 @@ by Github are `always` or `pull_request`
 
 #### Example <!-- omit from toc -->
 To allow repository admins to bypass pull requests only:
-```
+```json
 {
     "type": "branch_ruleset_bypass_actors",
     "allowed_bypass_actor_ids" [
@@ -554,7 +657,7 @@ Selected actions have the following fields:
 #### Example <!-- omit from toc -->
 This example will be true if actions are disabled, actions are `local_only`, or
 if only select actions are allowed, including github owned and verified actions.
-```
+```json
 {
     "type": "repo_actions",
     "expect_any_of": [
@@ -580,7 +683,7 @@ if only select actions are allowed, including github owned and verified actions.
 Checks that Github Advanced Security code scanning is enabled properly
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "repo_code_scanning"
 }
@@ -601,7 +704,7 @@ Array of paths. Passes if all of the files exist on the default branch
 Array of paths. Passes if none of the files exist on the default branch
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "repo_files",
     "any_of": [
@@ -626,7 +729,7 @@ Checks that Github Advanced Security secret scanning is enabled properly
 Requires that secret scanning push protection is enabled
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "repo_secret_scanning",
     "require_push_protection": true
@@ -637,7 +740,7 @@ Requires that secret scanning push protection is enabled
 Checks that Dependabot vulnerability alerts are enabled
 
 #### Example <!-- omit from toc -->
-```
+```json
 {
     "type": "repo_security_alerts"
 }
