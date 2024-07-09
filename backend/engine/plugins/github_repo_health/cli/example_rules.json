@@ -3,34 +3,110 @@
     "version": "0.1.2",
     "rules": [
         {
-            "type": "branch_commit_signing"
-        },
-        {
-            "type": "branch_enforce_admins"
-        },
-        {
-            "type": "branch_pull_requests",
-            "expect": {
-                "dismiss_stale_reviews": true,
-                "require_code_owner_reviews": true
-            },
-            "min_approvals": 1
-        },
-        {
-            "type": "branch_status_checks",
-            "expect": {
-                "strict": true
+            "type": "composite_rule",
+            "id": "branch_commit_signing",
+            "name": "Branch - Commit Signing",
+            "description": "Branch rule or branch protection rule is enabled to enforce commit signing",
+            "subrules": {
+                "any_of": [
+                    {
+                        "type": "branch_protection_commit_signing"
+                    },
+                    {
+                        "type": "branch_rule_commit_signing"
+                    }
+                ]
             }
         },
         {
-            "type": "branch_status_checks",
-            "enabled": true,
-            "id": "branch_build_required",
-            "name": "Branch - Build Required",
-            "description": "Branch protection rules are enabled to enforce that the 'build' status check passes",
-            "checks": {
+            "type": "composite_rule",
+            "id": "branch_enforce_admins",
+            "name": "Branch - Enforce Rules for Admins",
+            "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins",
+            "subrules": {
                 "all_of": [
-                    "build"
+                    {
+                        "type": "branch_protection_enforce_admins"
+                    },
+                    {
+                        "type": "branch_ruleset_bypass_actors",
+                        "description": "There are no bypass actors allowed in branch rules",
+                        "allowed_bypass_actor_ids": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "composite_rule",
+            "id": "branch_pull_requests",
+            "name": "Branch - Pull Request",
+            "description": "Branch rule or branch protection rule is enabled to require pull requests",
+            "subrules": {
+                "any_of": [
+                    {
+                        "type": "branch_protection_pull_requests",
+                        "expect": {
+                            "dismiss_stale_reviews": true,
+                            "require_code_owner_reviews": true
+                        },
+                        "min_approvals": 1
+                    },
+                    {
+                        "type": "branch_rule_pull_requests",
+                        "expect": {
+                            "dismiss_stale_reviews_on_push": true,
+                            "require_code_owner_review": true
+                        },
+                        "min_approvals": 1
+                    }
+                ]
+            }
+        },
+        {
+            "type": "composite_rule",
+            "id": "branch_status_checks",
+            "name": "Branch - Status Checks",
+            "description": "Branch or branch protection rule is enabled to require strict status checks",
+            "subrules": {
+                "any_of": [
+                    {
+                        "type": "branch_protection_status_checks",
+                        "expect": {
+                            "strict": true
+                        }
+                    },
+                    {
+                        "type": "branch_rule_status_checks",
+                        "expect": {
+                            "strict_required_status_checks_policy": true
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "composite_rule",
+            "id": "branch_build_required",
+            "name": "Branch - Require Builds to Pass",
+            "description": "Branch or branch protection rule is enabled to enforce that the 'build' status check passes",
+            "subrules": {
+                "any_of": [
+                    {
+                        "type": "branch_protection_status_checks",
+                        "checks": {
+                            "all_of": [
+                                "build"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "branch_rule_status_checks",
+                        "checks": {
+                            "all_of": [
+                                "build"
+                            ]
+                        }
+                    }
                 ]
             }
         },
