@@ -110,7 +110,7 @@ test: style-test
 style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
-	${PYTHON} -m pipenv run black --check .
+	${PYTHON} -m pipenv run ruff format --check .
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
