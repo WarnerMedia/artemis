@@ -1,4 +1,4 @@
-from .helpers import add_metadata, severity_schema
+from rules.helpers import add_metadata, severity_schema
 
 
 class RepoSecurityAlerts:

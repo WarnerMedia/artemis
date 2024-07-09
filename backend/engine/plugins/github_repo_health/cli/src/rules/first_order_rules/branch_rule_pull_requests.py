@@ -1,4 +1,4 @@
-from .helpers import add_metadata, is_subdict_of, severity_schema
+from rules.helpers import add_metadata, is_subdict_of, severity_schema
 
 from github import GithubException
 

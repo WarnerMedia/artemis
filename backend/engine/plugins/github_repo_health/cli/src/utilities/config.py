@@ -3,7 +3,7 @@ import json
 
 from jsonschema import exceptions, validate
 
-from .. import rules
+import rules
 
 default_config = {
     "name": "default",

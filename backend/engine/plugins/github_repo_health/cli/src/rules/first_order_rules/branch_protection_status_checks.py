@@ -1,4 +1,4 @@
-from .helpers import (
+from rules.helpers import (
     add_metadata,
     array_config_schema,
     evaluate_array_config,
