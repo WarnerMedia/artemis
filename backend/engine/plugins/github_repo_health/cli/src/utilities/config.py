@@ -7,17 +7,85 @@ from .. import rules
 
 default_config = {
     "name": "default",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "rules": [
-        {"type": rules.BranchProtectionCommitSigning.identifier},
-        {"type": rules.BranchProtectionEnforceAdmins.identifier},
         {
-            "type": rules.BranchProtectionPullRequests.identifier,
-            "min_approvals": 1,
+            "type": rules.CompositeRule.identifier,
+            "id": "branch_commit_signing",
+            "name": "Branch - Commit Signing",
+            "description": "Branch rule or branch protection rule is enabled to enforce commit signing",
+            "subrules": {
+                "any_of": [
+                    {"type": rules.BranchProtectionCommitSigning.identifier},
+                    {"type": rules.BranchRuleCommitSigning.identifier},
+                ]
+            },
         },
         {
-            "type": rules.BranchProtectionStatusChecks.identifier,
-            "expect": {"strict": True},
+            "type": rules.CompositeRule.identifier,
+            "id": "branch_enforce_admins",
+            "name": "Branch - Enforce Rules for Admins",
+            "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins",
+            "subrules": {
+                "all_of": [
+                    {
+                        "type": rules.BranchProtectionEnforceAdmins.identifier,
+                    },
+                    {
+                        "type": rules.BranchRulesetBypassActors.identifier,
+                        "description": "There are no bypass actors allowed in branch rules",
+                        "allowed_bypass_actor_ids": [],
+                    },
+                ]
+            },
+        },
+        {
+            "type": rules.CompositeRule.identifier,
+            "id": "branch_pull_requests",
+            "name": "Branch - Pull Request",
+            "description": "Branch rule or branch protection rule is enabled to require pull requests",
+            "subrules": {
+                "any_of": [
+                    {
+                        "type": rules.BranchProtectionPullRequests.identifier,
+                        "expect": {
+                            "dismiss_stale_reviews": True,
+                            "require_code_owner_reviews": True,
+                        },
+                        "min_approvals": 1,
+                    },
+                    {
+                        "type": rules.BranchRulePullRequests.identifier,
+                        "expect": {
+                            "dismiss_stale_reviews_on_push": True,
+                            "require_code_owner_review": True,
+                        },
+                        "min_approvals": 1,
+                    },
+                ]
+            },
+        },
+        {
+            "type": rules.CompositeRule.identifier,
+            "id": "branch_status_checks",
+            "name": "Branch - Status Checks",
+            "description": "Branch or branch protection rule is enabled to require strict status checks",
+            "subrules": {
+                "any_of": [
+                    {
+                        "type": rules.BranchProtectionStatusChecks.identifier,
+                        "expect": {
+                            "strict": True,
+                        },
+                    },
+                    {
+                        "type": rules.BranchRuleStatusChecks.identifier,
+                        "expect": {
+                            "strict_required_status_checks_policy": True,
+                        },
+                    },
+                ]
+            },
         },
         {
             "type": rules.RepoActions.identifier,
