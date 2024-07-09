@@ -69,7 +69,7 @@ default_config = {
             "type": rules.CompositeRule.identifier,
             "id": "branch_status_checks",
             "name": "Branch - Status Checks",
-            "description": "Branch or branch protection rule is enabled to require strict status checks",
+            "description": "Branch rule or branch protection rule is enabled to require strict status checks",
             "subrules": {
                 "any_of": [
                     {
