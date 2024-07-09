@@ -218,7 +218,7 @@ repo-health --list-available-rules
 
 ## Configuration
 Configurations are of the following format:
-```json
+```
 {
     "name": "example",
     "description": "An example config. It is not strictly valid as it has comments and placeholders",
@@ -289,7 +289,7 @@ it may be explicitly required to be `false`, even if it's unintuitive for a
 configuration to require the field to be false.
 
 For example, the follow config would require that `dismiss_stale_reviews` is false.
-```json
+```
 {
     "type": "branch_pull_requests",
     "expect": {
@@ -303,7 +303,7 @@ It does not make much sense to do this from a security configuration
 perspective. It would, however, make sense to allow any value there so that
 teams can decide what is best for them. If the intent is to have the pull
 requests rule ignore `dismiss_stale_reviews`, it should be omitted:
-```json
+```
 {
     "type": "branch_protection_pull_requests",
     "expect": {
@@ -415,7 +415,6 @@ Because composite rules do not perform any checks themselves, their default `id`
                     ]
                 }
             }
-            
         ]
     }
 }
