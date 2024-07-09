@@ -62,7 +62,7 @@ RESULTS_DICT = {
         pytest.param(
             {"subrules": {"all_of": [PASS_CONFIG]}},
             True,
-            id="should pass if subrules is all_of with one member and it passes",
+            id="should pass if subrules is all_of with one item and it passes",
         ),
         pytest.param(
             {
@@ -73,7 +73,7 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is all_of with one member and it fails",
+            id="should fail if subrules is all_of with one item and it fails",
         ),
         pytest.param(
             {
@@ -86,7 +86,7 @@ RESULTS_DICT = {
                 }
             },
             True,
-            id="should pass if subrules is all_of with three members that all pass",
+            id="should pass if subrules is all_of with three items that all pass",
         ),
         pytest.param(
             {
@@ -99,7 +99,7 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is all_of with three members and one fails",
+            id="should fail if subrules is all_of with three items and one fails",
         ),
         pytest.param(
             {
@@ -112,12 +112,12 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is all_of with three members that all fail",
+            id="should fail if subrules is all_of with three items that all fail",
         ),
         pytest.param(
             {"subrules": {"any_of": [PASS_CONFIG]}},
             True,
-            id="should pass if subrules is any_of with one member and it passes",
+            id="should pass if subrules is any_of with one item and it passes",
         ),
         pytest.param(
             {
@@ -128,7 +128,7 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is any_of with one member and it fails",
+            id="should fail if subrules is any_of with one item and it fails",
         ),
         pytest.param(
             {
@@ -141,7 +141,7 @@ RESULTS_DICT = {
                 }
             },
             True,
-            id="should pass if subrules is any_of with three members that all pass",
+            id="should pass if subrules is any_of with three items that all pass",
         ),
         pytest.param(
             {
@@ -154,7 +154,7 @@ RESULTS_DICT = {
                 }
             },
             True,
-            id="should pass if subrules is any_of with three members and one fails",
+            id="should pass if subrules is any_of with three items and one fails",
         ),
         pytest.param(
             {
@@ -167,12 +167,12 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is any_of with three members that all fail",
+            id="should fail if subrules is any_of with three items that all fail",
         ),
         pytest.param(
             {"subrules": {"none_of": [PASS_CONFIG]}},
             False,
-            id="should fail if subrules is none_of with one member and it passes",
+            id="should fail if subrules is none_of with one item and it passes",
         ),
         pytest.param(
             {
@@ -183,7 +183,7 @@ RESULTS_DICT = {
                 }
             },
             True,
-            id="should pass if subrules is none_of with one member and it fails",
+            id="should pass if subrules is none_of with one item and it fails",
         ),
         pytest.param(
             {
@@ -196,7 +196,7 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is none_of with three members that all pass",
+            id="should fail if subrules is none_of with three items that all pass",
         ),
         pytest.param(
             {
@@ -209,7 +209,7 @@ RESULTS_DICT = {
                 }
             },
             False,
-            id="should fail if subrules is none_of with three members and one fails",
+            id="should fail if subrules is none_of with three items and one fails",
         ),
         pytest.param(
             {
@@ -222,7 +222,7 @@ RESULTS_DICT = {
                 }
             },
             True,
-            id="should pass if subrules is none_of with three members that all fail",
+            id="should pass if subrules is none_of with three items that all fail",
         ),
     ],
 )
