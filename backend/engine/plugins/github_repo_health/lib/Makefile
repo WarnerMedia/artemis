@@ -17,6 +17,3 @@ format:
 	@python -m pipenv run black src/ --line-length=120 
 	@python -m pipenv run isort src/ --profile black 
 
-update-requirements: install
-	@python -m pipenv uninstall --all-dev
-	@python -m pipenv run pip freeze > generated_requirements.txt
