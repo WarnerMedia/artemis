@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 from github import GithubException
 
-from repohealth.rules import RepoFiles
-from repohealth.utilities import Github
+from github_repo_health.rules import RepoFiles
+from github_repo_health.utilities import Github
 
 OWNER = "owner"
 REPO = "repo"

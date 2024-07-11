@@ -289,7 +289,7 @@ get-trivy: ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
-	${PYTHON} -m pipenv run pip install ${ROOT_DIR}/engine/plugins/github_repo_health/github_repo_health
+	${PYTHON} -m pipenv run pip install ${ROOT_DIR}/engine/plugins/github_repo_health/lib
 
 define run-pytest
 	@echo "${INFO}Running $1"

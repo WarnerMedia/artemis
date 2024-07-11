@@ -11,11 +11,11 @@ dependencies = [
 ]
 
 [project.scripts]
-repo-health = "cli:main"
+repo-health = "github_repo_health.cli:main"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  "github_repo_health"
+  "src/github_repo_health"
 ]
 
 [tool.black]

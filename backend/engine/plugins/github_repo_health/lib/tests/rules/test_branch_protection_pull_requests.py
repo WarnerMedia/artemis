@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from repohealth.rules import BranchProtectionPullRequests
-from repohealth.utilities import Github
+from github_repo_health.rules import BranchProtectionPullRequests
+from github_repo_health.utilities import Github
 
 OWNER = "owner"
 REPO = "repo"

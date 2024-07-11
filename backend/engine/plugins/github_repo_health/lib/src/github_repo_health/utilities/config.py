@@ -3,7 +3,7 @@ import json
 
 from jsonschema import exceptions, validate
 
-import rules
+from github_repo_health import rules
 
 default_config = {
     "name": "default",

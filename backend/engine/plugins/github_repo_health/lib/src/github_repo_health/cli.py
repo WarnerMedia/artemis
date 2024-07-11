@@ -2,7 +2,7 @@ import argparse
 import json
 import sys
 
-from utilities import Checker, Config, ErrorCode, Github, environment
+from github_repo_health.utilities import Checker, Config, ErrorCode, Github, environment
 
 LIST_AVAILABLE_RULES = "--list-available-rules"
 JSON_INDENT = 2

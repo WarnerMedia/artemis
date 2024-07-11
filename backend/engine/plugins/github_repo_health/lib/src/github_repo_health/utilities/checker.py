@@ -1,4 +1,4 @@
-import rules
+from github_repo_health import rules
 
 
 class Checker:
