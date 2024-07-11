@@ -144,7 +144,7 @@ class TestRepoScan(unittest.TestCase):
         self.assertEqual(repo_scan.get_queue_size, queue_mock)
         queue_mock.return_value = 0
 
-        result = repo_scan.run(_context=MockLambdaContext)
+        result = repo_scan.run(context=MockLambdaContext, event={})
 
         self.assertIsNone(result)
 
@@ -159,7 +159,7 @@ class TestRepoScan(unittest.TestCase):
         api_key_mock.return_value = ""
         sqs_mock.return_value = []
 
-        result = repo_scan.run(_context=MockLambdaContext)
+        result = repo_scan.run(context=MockLambdaContext, event={})
 
         self.assertTrue(sqs_mock.called)
         self.assertIsNone(result)
@@ -184,7 +184,7 @@ class TestRepoScan(unittest.TestCase):
 
         expected_result = ANALYZER_QUEUED_RESULT_GITHUB_ESLINT
 
-        result = repo_scan.run(_context=MockLambdaContext)
+        result = repo_scan.run(context=MockLambdaContext, event={})
 
         self.assertTrue(sqs_mock.called)
         self.assertTrue(delete_mock.called)

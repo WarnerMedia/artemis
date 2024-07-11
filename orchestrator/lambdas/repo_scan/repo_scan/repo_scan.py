@@ -31,7 +31,7 @@ json_utils = JSONUtils(log)
 
 @log.inject_lambda_context
 def run(
-    _event: dict[str, Any] = None, _context: LambdaContext = None, size: int = 100
+    event: dict[str, Any] = None, context: LambdaContext = None, size: int = 100
 ) -> Optional[list[dict[str, Any]]]:
     # Get the size of the REPO_QUEUE
     message_num = get_queue_size(REPO_QUEUE)
