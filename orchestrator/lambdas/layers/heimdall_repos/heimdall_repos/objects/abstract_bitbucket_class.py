@@ -1,11 +1,10 @@
-from heimdall_utils.utils import JSONUtils, Logger
+from heimdall_utils.utils import JSONUtils
 
 
 class AbstractBitbucket:
-    def __init__(self, service, name):
+    def __init__(self, service, logger):
         self.service = service
-        self.log = Logger(name)
-        self.json_utils = JSONUtils(self.log)
+        self.json_utils = JSONUtils(logger)
 
     def is_public(self, repo: dict) -> bool:
         pass

@@ -4,12 +4,16 @@ from typing import Tuple
 import requests
 import time
 
+from aws_lambda_powertools import Logger
+
 from heimdall_repos.objects.cloud_bitbucket_class import CloudBitbucket
 from heimdall_repos.objects.server_v1_bitbucket_class import ServerV1Bitbucket
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
-from heimdall_utils.utils import JSONUtils, Logger, ScanOptions, ServiceInfo
+from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
+
+log = Logger("ProcessBitbucketRepos", child=True)
 
 
 class ProcessBitbucketRepos:
@@ -26,8 +30,7 @@ class ProcessBitbucketRepos:
         self.scan_options = scan_options
         self.service_info = service_info
         self.external_orgs = external_orgs
-        self.log = Logger("ProcessBitbucketRepos")
-        self.json_utils = JSONUtils(self.log)
+        self.json_utils = JSONUtils(log)
         self.service_helper = None
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
@@ -58,13 +61,13 @@ class ProcessBitbucketRepos:
         """
         if self.scan_options.repo:
             # Process a single repository
-            self.log.info("Querying for branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
+            log.info("Querying for branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
             query = self.service_helper.construct_bitbucket_single_repo_url(
                 url=self.service_info.url, org=self.service_info.org, repo=self.scan_options.repo
             )
         else:
             # Process all repositories in an organization
-            self.log.info("Querying for repos in %s", self.service_info.service_org)
+            log.info("Querying for repos in %s", self.service_info.service_org)
             query = self.service_helper.construct_bitbucket_org_url(
                 self.service_info.url, self.service_info.org, self.service_info.repo_cursor
             )
@@ -83,7 +86,7 @@ class ProcessBitbucketRepos:
         if self.service_helper.has_next_page(resp):
             cursor = self.service_helper.get_cursor(resp)
             # Re-queue this org, setting the cursor for the next page of the query
-            self.log.info("Queueing next page of repos %s to re-start at cursor %s", self.service_info.org, cursor)
+            log.info("Queueing next page of repos %s to re-start at cursor %s", self.service_info.org, cursor)
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
@@ -106,7 +109,7 @@ class ProcessBitbucketRepos:
             # With an external org we only want to scan the private repos
             # shared with us any not that org's public repos
             if f"bitbucket/{self.service_info.org}" in self.external_orgs and self.service_helper.is_public(repo):
-                self.log.info("Skipping public repo %s in external org", name)
+                log.info("Skipping public repo %s in external org", name)
                 continue
 
             default_branch = self._get_default_branch(name, repo)
@@ -178,19 +181,19 @@ class ProcessBitbucketRepos:
         ref_names = set()
         timestamps = dict()
 
-        self.log.info("Processing branches in repo: %s/%s", self.service_info.org, repo)
+        log.info("Processing branches in repo: %s/%s", self.service_info.org, repo)
 
         response_text = self._query_bitbucket_api(repo_url)
         response_dict = self.json_utils.get_json_from_response(response_text)
 
         if not response_dict:
-            self.log.warning("Unable to process branches in repo %s/%s", self.service_info.org, repo)
+            log.warning("Unable to process branches in repo %s/%s", self.service_info.org, repo)
             return list(ref_names), timestamps
 
         repo_refs = response_dict.get("values", [])
 
         if not repo_refs:
-            self.log.warning(
+            log.warning(
                 "Bitbucket repo dict branch list was None. Confirm JSON values at %s",
                 repo_url,
             )
@@ -204,7 +207,7 @@ class ProcessBitbucketRepos:
         if self.service_helper.has_next_page(response_dict) and not self.scan_options.default_branch_only:
             branch_cursor = self.service_helper.get_cursor(response_dict)
 
-            self.log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
+            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
             queue_branch_and_repo(
                 self.queue,
                 self.service_info.service,
@@ -236,7 +239,7 @@ class ProcessBitbucketRepos:
             response = self._query_bitbucket_api(url)
             response = self.json_utils.get_json_from_response(response)
             if not response:
-                self.log.warning("Unable to retrieve Default Branch for repo: %s/%s", self.service_info.org, repo_name)
+                log.warning("Unable to retrieve Default Branch for repo: %s/%s", self.service_info.org, repo_name)
                 default_branch = "HEAD"
                 return default_branch
 
@@ -279,6 +282,6 @@ class ProcessBitbucketRepos:
                 headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             response = session.get(url=url, headers=headers)
             if response.status_code != 200:
-                self.log.error("Error retrieving Bitbucket query: %s", response.text)
+                log.error("Error retrieving Bitbucket query: %s", response.text)
                 return None
             return response.text

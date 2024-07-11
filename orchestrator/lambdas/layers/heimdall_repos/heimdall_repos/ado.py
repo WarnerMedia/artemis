@@ -1,10 +1,12 @@
 # pylint: disable=no-name-in-module,no-member
 import requests
 
+from aws_lambda_powertools import Logger
+
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import queue_service_and_org
 from heimdall_utils.env import DEFAULT_API_TIMEOUT
-from heimdall_utils.utils import JSONUtils, Logger, ScanOptions, ServiceInfo
+from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
 
 API_VERSION = "6.0"
 CONTINUATION_HEADER = "x-ms-continuationtoken"
@@ -15,6 +17,8 @@ CONTINUATION_HEADER = "x-ms-continuationtoken"
 PROJECT_PAGE_SIZE = 1
 
 REF_PAGE_SIZE = 50
+
+log = Logger("ADORepoProcessor", child=True)
 
 
 class ADORepoProcessor:
@@ -31,12 +35,11 @@ class ADORepoProcessor:
         self.service_info = service_info
         self.scan_options = scan_options
         self.external_orgs = external_orgs
-        self.log = Logger("ADORepoProcessor")
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
         self._setup()
-        self.json_utils = JSONUtils(self.log)
+        self.json_utils = JSONUtils(log)
 
     def _setup(self):
         """
@@ -54,7 +57,7 @@ class ADORepoProcessor:
         """
         Process ADO org, get all repos, and return the repos + branches
         """
-        self.log.info("Querying for repos in %s", self.service_info.service_org)
+        log.info("Querying for repos in %s", self.service_info.service_org)
 
         repos = []
 
@@ -64,7 +67,7 @@ class ADORepoProcessor:
 
         if projects["cursor"]:
             # Re-queue this org, setting the cursor for the next page of the query
-            self.log.info("Queueing %s to re-start at cursor %s", self.service_info.org, projects["cursor"])
+            log.info("Queueing %s to re-start at cursor %s", self.service_info.org, projects["cursor"])
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
@@ -193,7 +196,7 @@ class ADORepoProcessor:
             timeout=DEFAULT_API_TIMEOUT,
         )
         if resp.status_code != 200:
-            self.log.error("Error retrieving ADO query: %s", resp.text)
+            log.error("Error retrieving ADO query: %s", resp.text)
             return {}
 
         ret = resp.json()

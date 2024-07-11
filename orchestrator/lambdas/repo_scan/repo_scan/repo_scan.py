@@ -3,9 +3,10 @@ import json
 import os
 from collections import namedtuple
 from datetime import datetime
+from aws_lambda_powertools import Logger
 
 from heimdall_utils.aws_utils import get_analyzer_api_key, send_analyzer_request
-from heimdall_utils.utils import JSONUtils, Logger, get_ttl_expiration
+from heimdall_utils.utils import JSONUtils, get_ttl_expiration
 from repo_scan.aws_connect import (
     batch_update_db,
     delete_processed_messages,
@@ -21,7 +22,7 @@ PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
-log = Logger(__name__)
+log = Logger(__name__, child=True)
 json_utils = JSONUtils(log)
 
 
