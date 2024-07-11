@@ -25,7 +25,7 @@ PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
-log = Logger(service=APPLICATION, name="RepoScan Lambda")
+log = Logger(service=APPLICATION, name="repo_scan")
 json_utils = JSONUtils(log)
 
 

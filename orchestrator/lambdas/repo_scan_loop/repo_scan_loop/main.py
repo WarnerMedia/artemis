@@ -10,7 +10,7 @@ REGION = os.environ.get("REGION", "us-east-1")
 REPO_SCAN_LAMBDA = os.environ.get("HEIMDALL_REPO_SCAN_LAMBDA")
 INVOKE_COUNT = int(os.environ.get("HEIMDALL_INVOKE_COUNT", "10"))
 
-LOG = Logger(service=APPLICATION, name="RepoScanLoop Lambda")
+LOG = Logger(service=APPLICATION, name="repo_scan_loop")
 
 
 def handler(_event=None, _context=None) -> None:

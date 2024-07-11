@@ -20,7 +20,7 @@ from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
 from org_queue.org_queue_env import ORG_QUEUE
 
-log = Logger(service=APPLICATION, name="OrgQueue Lambda")
+log = Logger(service=APPLICATION, name="org_queue")
 FAILED = {}
 
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
