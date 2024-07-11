@@ -65,5 +65,5 @@ RUN echo "$TFLINT_SHA  tflint_linux_amd64.zip" > tflint_checksum.txt && \
     rm tflint_linux_amd64.zip tflint tflint_checksum.txt
 
 # Install github_repo_health
-COPY engine/plugins/github_repo_health/repohealth/ /github_repo_health
+COPY engine/plugins/github_repo_health/github_repo_health/ /github_repo_health
 RUN pip install /github_repo_health && rm -rf /github_repo_health

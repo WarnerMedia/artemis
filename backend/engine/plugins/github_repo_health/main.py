@@ -3,7 +3,7 @@ import json
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
 from engine.plugins.lib import utils
-from repohealth import utilities
+from github_repo_health import utilities
 
 PLUGIN_NAME = "github_repo_health"
 

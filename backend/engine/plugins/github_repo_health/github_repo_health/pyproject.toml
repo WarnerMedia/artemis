@@ -15,7 +15,7 @@ repo-health = "cli:main"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  "repohealth"
+  "github_repo_health"
 ]
 
 [tool.black]
