@@ -19,7 +19,7 @@ DEFAULT_LOG_LEVEL = "INFO"
 LOG_LEVEL = os.environ.get("HEIMDALL_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
 LOG_LEVEL = LEVEL_MAP.get(LOG_LEVEL, DEFAULT_LOG_LEVEL)
 
-# Set log levels for third party 
+# Set log levels for third party
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)

@@ -4,14 +4,16 @@ import os
 import boto3
 from aws_lambda_powertools import Logger
 
+from artemis.backend.build.lambdas.api.repo.repo.util.env import APPLICATION
+
 REGION = os.environ.get("REGION", "us-east-1")
 REPO_SCAN_LAMBDA = os.environ.get("HEIMDALL_REPO_SCAN_LAMBDA")
 INVOKE_COUNT = int(os.environ.get("HEIMDALL_INVOKE_COUNT", "10"))
 
-LOG = Logger(__name__, child=True)
+LOG = Logger(APPLICATION, "RepoScanLoop Lambda")
 
 
-def handler(_event=None, _context=None) -> list or None:
+def handler(_event=None, _context=None) -> None:
     aws_lambda = boto3.client("lambda", region_name=REGION)
 
     # Invoke the repo_scan lambda the configured number of times

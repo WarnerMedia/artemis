@@ -3,10 +3,13 @@ import json
 import os
 from collections import namedtuple
 from datetime import datetime
+from typing import Any, Optional
 from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from heimdall_utils.aws_utils import get_analyzer_api_key, send_analyzer_request
 from heimdall_utils.utils import JSONUtils, get_ttl_expiration
+from heimdall_utils.env import APPLICATION
 from repo_scan.aws_connect import (
     batch_update_db,
     delete_processed_messages,
@@ -22,11 +25,14 @@ PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
-log = Logger(__name__, child=True)
+log = Logger(APPLICATION, name="RepoScan Lambda")
 json_utils = JSONUtils(log)
 
 
-def run(_event=None, _context=None, size=100) -> list or None:
+@log.inject_lambda_context
+def run(
+    _event: dict[str, Any] = None, _context: LambdaContext = None, size: int = 100
+) -> Optional[list[dict[str, Any]]]:
     # Get the size of the REPO_QUEUE
     message_num = get_queue_size(REPO_QUEUE)
     if message_num == 0:
@@ -100,7 +106,7 @@ def submit_repos(repos: list, analyzer_url: str, api_key: str) -> list:
     return all_success
 
 
-def requeue_rate_limit_repos(service, repo_lookup, failed_repos):
+def requeue_rate_limit_repos(service: str, repo_lookup: dict[str, Any], failed_repos: list):
     """
     sends repos that hit a rate limit back into the repo_queue SQS queue
     currently only supports Bitbucket

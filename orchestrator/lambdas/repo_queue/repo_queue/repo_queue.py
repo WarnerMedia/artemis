@@ -1,7 +1,7 @@
 # pylint: disable=no-name-in-module, no-member
 import json
 from itertools import zip_longest
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
@@ -19,7 +19,7 @@ log = Logger(service=APPLICATION, name="repo_queue")
 
 
 @log.inject_lambda_context
-def run(event: Dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> None:
+def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> None:
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
     artemis_api_key = get_analyzer_api_key(API_KEY_LOC)
