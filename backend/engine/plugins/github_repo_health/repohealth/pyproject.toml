@@ -3,8 +3,8 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "repo-health-cli"
-version = "0.0.2"
+name = "GithubRepoHealth"
+version = "1.0.0"
 dependencies = [
     "jsonschema",
     "pygithub",
@@ -15,7 +15,7 @@ repo-health = "cli:main"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  "src"
+  "repohealth"
 ]
 
 [tool.black]

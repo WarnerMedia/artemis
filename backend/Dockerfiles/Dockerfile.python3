@@ -64,6 +64,6 @@ RUN echo "$TFLINT_SHA  tflint_linux_amd64.zip" > tflint_checksum.txt && \
     install -b -c -v tflint /usr/bin/ && \
     rm tflint_linux_amd64.zip tflint tflint_checksum.txt
 
-# Install dependencies for github_repo_health
-COPY engine/plugins/github_repo_health/cli/generated_requirements.txt github_repo_health_requirements.txt
-RUN pip install -r github_repo_health_requirements.txt && rm -rf github_repo_health_requirements.txt
+# Install github_repo_health
+COPY engine/plugins/github_repo_health/repohealth/ /github_repo_health
+RUN pip install /github_repo_health && rm -rf /github_repo_health

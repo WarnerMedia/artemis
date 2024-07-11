@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, Mock
 
 from github import GithubException
 
-from ...src.rules import RepoActions
-from ...src.utilities import Github
+from repohealth.rules import RepoActions
+from repohealth.utilities import Github
 
 OWNER = "owner"
 REPO = "repo"

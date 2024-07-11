@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import MagicMock
 
-from ...src.rules import BranchRulesetBypassActors
-from ...src.utilities import Github
+from repohealth.rules import BranchRulesetBypassActors
+from repohealth.utilities import Github
 
 OWNER = "owner"
 REPO = "repo"

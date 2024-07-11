@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from ...src.rules import BranchProtectionCommitSigning
-from ...src.utilities import Github
+from repohealth.rules import BranchProtectionCommitSigning
+from repohealth.utilities import Github
 
 OWNER = "owner"
 REPO = "repo"

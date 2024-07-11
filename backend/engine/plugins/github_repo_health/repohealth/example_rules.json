@@ -1,6 +1,6 @@
 {
     "name": "Example Rules",
-    "version": "0.1.2",
+    "version": "1.0.0",
     "rules": [
         {
             "type": "composite_rule",

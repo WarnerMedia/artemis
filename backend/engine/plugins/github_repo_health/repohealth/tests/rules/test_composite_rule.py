@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
-from ...src.rules import CompositeRule
+from repohealth.rules import CompositeRule
 
 OWNER = "owner"
 REPO = "repo"
