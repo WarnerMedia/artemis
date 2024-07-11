@@ -13,7 +13,7 @@ from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queu
 from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
-log = Logger("ProcessBitbucketRepos", child=True)
+log = Logger(name="ProcessBitbucketRepos", child=True)
 
 
 class ProcessBitbucketRepos:

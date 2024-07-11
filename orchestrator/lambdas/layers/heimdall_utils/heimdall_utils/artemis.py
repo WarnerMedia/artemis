@@ -7,7 +7,7 @@ from aws_lambda_powertools import Logger
 
 from heimdall_utils.env import ARTEMIS_API, DEFAULT_API_TIMEOUT
 
-LOG = Logger(__name__, child=True)
+LOG = Logger(name=__name__, child=True)
 
 
 def redundant_scan_exists(

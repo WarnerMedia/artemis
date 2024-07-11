@@ -19,7 +19,7 @@ from heimdall_utils.github.app import GithubApp
 from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
-log = Logger("ProcessGithubRepos", child=True)
+log = Logger(name="ProcessGithubRepos", child=True)
 
 
 class ProcessGithubRepos:

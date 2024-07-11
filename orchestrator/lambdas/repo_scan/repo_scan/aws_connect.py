@@ -10,7 +10,7 @@ from heimdall_utils.aws_utils import get_dynamodb_connection, get_sqs_connection
 REGION = os.environ.get("REGION", "us-east-2")
 RETRY_EXCEPTIONS = ["ProvisionedThroughputExceededException", "ThrottlingException"]
 
-log = Logger(__name__, child=True)
+log = Logger(name=__name__, child=True)
 
 
 def get_queue_size(repo_queue: str):

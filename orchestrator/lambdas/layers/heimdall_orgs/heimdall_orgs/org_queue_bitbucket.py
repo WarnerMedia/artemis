@@ -9,7 +9,7 @@ from heimdall_orgs.const import TIMEOUT
 from heimdall_utils.aws_utils import GetProxySecret
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
-log = Logger(__name__, child=True)
+log = Logger(name=__name__, child=True)
 
 
 class BitbucketOrgs:

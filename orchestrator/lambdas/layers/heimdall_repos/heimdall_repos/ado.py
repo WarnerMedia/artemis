@@ -18,7 +18,7 @@ PROJECT_PAGE_SIZE = 1
 
 REF_PAGE_SIZE = 50
 
-log = Logger("ADORepoProcessor", child=True)
+log = Logger(name="ADORepoProcessor", child=True)
 
 
 class ADORepoProcessor:

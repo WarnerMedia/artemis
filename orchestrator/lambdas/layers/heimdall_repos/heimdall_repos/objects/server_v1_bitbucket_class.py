@@ -10,7 +10,7 @@ from heimdall_repos.repo_layer_env import (
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
 
-log = Logger("ServerBitbucket", child=True)
+log = Logger(name="ServerBitbucket", child=True)
 
 
 class ServerV1Bitbucket(AbstractBitbucket):

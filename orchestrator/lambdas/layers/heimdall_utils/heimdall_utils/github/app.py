@@ -27,7 +27,7 @@ class GithubApp:
 
         if cls._instance is None:
             cls._instance = super(GithubApp, cls).__new__(cls)
-            cls._instance.log = Logger(__name__, child=True)
+            cls._instance.log = Logger(name=__name__, child=True)
 
             cls._jwt = None
             cls._jwt_expiration = None
