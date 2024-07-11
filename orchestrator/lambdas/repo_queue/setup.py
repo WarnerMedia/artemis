@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     setup_requires=[],
     install_requires=[
-        "requests~=2.31",
+        "aws-lambda-powertools~=2.40.1"
     ],
     tests_require=[],
     classifiers=[
