@@ -3,7 +3,7 @@ import json
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
 from engine.plugins.lib import utils
-from github_repo_health import utilities
+from github_repo_health.utilities import Config, Checker, Github
 
 PLUGIN_NAME = "github_repo_health"
 
@@ -40,7 +40,7 @@ DEFAULT_CONFIG = {
             "type": "repo_security_alerts",
             "id": "github_repo_security_alerts",
         },
-        # Refer to engine/plugins/github_repo_health/cli/src/rules for other rules
+        # Refer to engine/plugins/github_repo_health/lib/src/github_repo_health/rules for other rules
     ],
 }
 
@@ -78,7 +78,7 @@ def run_repo_health(args):
     config = get_config_from_args(args, output, service, owner, repo)
 
     try:
-        utilities.Config.validate(config)
+        Config.validate(config)
     except Exception as err:
         output["errors"].append(str(err))
         return output
@@ -92,8 +92,8 @@ def run_repo_health(args):
         output["errors"].append("Failed to authenticate to Github")
         return output
 
-    github = utilities.Github.get_client_from_token(github_token)
-    checker = utilities.Checker(github, config)
+    github = Github.get_client_from_token(github_token)
+    checker = Checker(github, config)
 
     branch = args.engine_vars["ref"] or github.get_default_branch(owner, repo)
     hash = github.get_branch_hash(owner, repo, branch)  # Get latest hash of default branch for event info
