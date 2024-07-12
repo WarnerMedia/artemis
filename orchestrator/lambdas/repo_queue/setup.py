@@ -21,9 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/orchestrator/lambdas/repo_queue"),
     packages=find_packages(),
     setup_requires=[],
-    install_requires=[
-        "aws-lambda-powertools~=2.40.1"
-    ],
+    install_requires=["aws-lambda-powertools~=2.40.1"],
     tests_require=[],
     classifiers=[
         "Programming Language :: Python :: 3.9",
