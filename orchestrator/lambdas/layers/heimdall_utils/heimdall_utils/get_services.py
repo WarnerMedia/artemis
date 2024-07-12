@@ -1,12 +1,12 @@
 # pylint: disable=no-member
 import json
 import os
+from aws_lambda_powertools import Logger
 
 from heimdall_utils.aws_utils import get_s3_connection
-from heimdall_utils.utils import Logger
 from heimdall_utils.variables import ARTEMIS_S3_BUCKET, REGION, ROOT_DIR
 
-log = Logger(__name__)
+log = Logger(name=__name__, child=True)
 
 
 def _get_services_from_file(service_file):

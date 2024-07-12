@@ -1,4 +1,5 @@
 import copy
+from dataclasses import dataclass
 import json
 import unittest
 from collections import namedtuple
@@ -106,6 +107,14 @@ RESPONSE_TUPLE = namedtuple("response_tuple", ["status_code", "text"])
 TEST_PLUGINS = ["gitsecrets", "base_images"]
 
 
+@dataclass
+class MockLambdaContext:
+    function_name: str = "test"
+    memory_limit_in_mb: int = 128
+    invoked_function_arn: str = "arn:aws:lambda:eu-west-1:809313241:function:test"
+    aws_request_id: str = "52fdfc07-2182-154f-163f-5f0f9a621d72"
+
+
 class TestRepoScan(unittest.TestCase):
     """
     Functions that will not be covered:
@@ -135,7 +144,7 @@ class TestRepoScan(unittest.TestCase):
         self.assertEqual(repo_scan.get_queue_size, queue_mock)
         queue_mock.return_value = 0
 
-        result = repo_scan.run()
+        result = repo_scan.run(context=MockLambdaContext, event={})
 
         self.assertIsNone(result)
 
@@ -150,7 +159,7 @@ class TestRepoScan(unittest.TestCase):
         api_key_mock.return_value = ""
         sqs_mock.return_value = []
 
-        result = repo_scan.run()
+        result = repo_scan.run(context=MockLambdaContext, event={})
 
         self.assertTrue(sqs_mock.called)
         self.assertIsNone(result)
@@ -175,7 +184,7 @@ class TestRepoScan(unittest.TestCase):
 
         expected_result = ANALYZER_QUEUED_RESULT_GITHUB_ESLINT
 
-        result = repo_scan.run()
+        result = repo_scan.run(context=MockLambdaContext, event={})
 
         self.assertTrue(sqs_mock.called)
         self.assertTrue(delete_mock.called)
