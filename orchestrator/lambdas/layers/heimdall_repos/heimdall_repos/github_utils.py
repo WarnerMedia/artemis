@@ -144,7 +144,7 @@ class ProcessGithubRepos:
             return error_response
         if error_response == GITHUB_TIMEOUT_FLAG:
             log.warning("Github query timed out.")
-            return error_response
+            raise requests.HTTPError("Github query timed out")
         log.error("Code: %s - %s", response.status_code, error_response)
         return None
 
