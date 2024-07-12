@@ -3,6 +3,7 @@ import json
 import os
 import unittest
 from unittest.mock import patch
+from dataclasses import dataclass
 
 import pytest
 
@@ -76,7 +77,9 @@ class TestOrgQueue(unittest.TestCase):
     def test_run_private_gitlab_success(self, mock_queue):
         self.assertEqual(org_queue.queue_service_and_org, mock_queue)
         mock_queue.return_value = True
-        queued = org_queue.run(event=ON_DEMAND_GITLAB_WILDCARD_EVENT, services_file=SERVICES_FILE_INTEGRATION)
+        queued = org_queue.run(
+            context=MockLambdaContext, event=ON_DEMAND_GITLAB_WILDCARD_EVENT, services_file=SERVICES_FILE_INTEGRATION
+        )
         print(queued)
         self.assertTrue(mock_queue.called)
         self.assertGreaterEqual(len(json.loads(queued["body"])), 12)
@@ -86,7 +89,11 @@ class TestOrgQueue(unittest.TestCase):
     def test_run_private_bitbucket_success(self, mock_queue):
         self.assertEqual(org_queue.queue_service_and_org, mock_queue)
         mock_queue.return_value = True
-        queued = org_queue.run(event=ON_DEMAND_BITBUCKET_WILDCARD_EVENT, services_file=SERVICES_FILE_INTEGRATION)
+        queued = org_queue.run(
+            context=MockLambdaContext,
+            event=ON_DEMAND_BITBUCKET_WILDCARD_EVENT,
+            services_file=SERVICES_FILE_INTEGRATION,
+        )
         print(queued)
         self.assertTrue(mock_queue.called)
         self.assertGreaterEqual(len(json.loads(queued["body"])), 6)
@@ -100,7 +107,9 @@ class TestOrgQueue(unittest.TestCase):
         mock_queue.return_value = True
         mock_get_services.return_value = self.full_service_dict
 
-        queued = org_queue.run(event=ON_DEMAND_GITHUB_WILDCARD_EVENT, services_file=SERVICES_FILE_INTEGRATION)
+        queued = org_queue.run(
+            context=MockLambdaContext, event=ON_DEMAND_GITHUB_WILDCARD_EVENT, services_file=SERVICES_FILE_INTEGRATION
+        )
 
         self.assertTrue("body" not in queued)
         self.assertFalse(mock_queue.called)
@@ -114,7 +123,7 @@ class TestOrgQueue(unittest.TestCase):
         mock_queue.return_value = True
         mock_get_services.return_value = self.full_service_dict
 
-        queued = org_queue.run(event={}, services_file=SERVICES_FILE_INTEGRATION)
+        queued = org_queue.run(context=MockLambdaContext, event={}, services_file=SERVICES_FILE_INTEGRATION)
 
         self.assertEqual(4, len([x for x in queued if x.startswith("github/")]))
         self.assertGreaterEqual(1, len([x for x in queued if x.startswith("'git.example.com/")]))
@@ -137,7 +146,7 @@ class TestOrgQueue(unittest.TestCase):
 
         mock_batch_id.return_value = TEST_BATCH_ID
 
-        queued = org_queue.run(event=event, services_file=SERVICES_FILE)
+        queued = org_queue.run(context=MockLambdaContext, event=event, services_file=SERVICES_FILE)
 
         expected = {
             "isBase64Encoded": "false",
@@ -174,7 +183,7 @@ class TestOrgQueue(unittest.TestCase):
             "detail": {},
         }
 
-        queued = org_queue.run(event=event, services_file=SERVICES_FILE)
+        queued = org_queue.run(context=MockLambdaContext, event=event, services_file=SERVICES_FILE)
 
         self.assertEqual(self.full_service_dict.get("scan_orgs"), queued)
 
@@ -194,3 +203,11 @@ class MockResponse:
         sublist = self.data[self.current : self.current + self.items_per_list]
         self.current += self.items_per_list
         return sublist
+
+
+@dataclass
+class MockLambdaContext:
+    function_name: str = "test"
+    memory_limit_in_mb: int = 128
+    invoked_function_arn: str = "arn:aws:lambda:eu-west-1:809313241:function:test"
+    aws_request_id: str = "52fdfc07-2182-154f-163f-5f0f9a621d72"

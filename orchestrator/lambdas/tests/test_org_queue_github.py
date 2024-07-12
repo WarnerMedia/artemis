@@ -6,7 +6,6 @@ from copy import deepcopy
 from unittest.mock import patch
 
 from heimdall_orgs.org_queue_private_github import GithubOrgs
-from heimdall_utils.utils import Logger
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 GITHUB_ORG_GRAPHQL_ERROR_RESPONSE = os.path.abspath(os.path.join(TEST_DIR, "data", "github_org_error_response.json"))
@@ -23,8 +22,6 @@ RESPONSE_TEST_RESULT = [
     "testorg8",
     "testorg9",
 ]
-
-log = Logger(__name__)
 
 
 class TestOrgQueueGithub(unittest.TestCase):

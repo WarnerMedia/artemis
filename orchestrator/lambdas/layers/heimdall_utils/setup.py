@@ -26,6 +26,7 @@ setup(
         "awscli",
         "boto3~=1.34",
         "pyjwt~=2.8",
+        "aws-lambda-powertools~=2.40.1",
     ],
     tests_require=[],
     classifiers=[

@@ -2,9 +2,10 @@
 import os
 import unittest
 from unittest.mock import patch
+from aws_lambda_powertools import Logger
 
 from heimdall_orgs import org_queue_bitbucket
-from heimdall_utils.utils import Logger, get_json_from_file
+from heimdall_utils.utils import get_json_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
