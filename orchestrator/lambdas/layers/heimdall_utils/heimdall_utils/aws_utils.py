@@ -5,12 +5,12 @@ import boto3
 import requests
 from botocore.exceptions import ClientError
 from requests import Response
+from aws_lambda_powertools import Logger
 
 from heimdall_utils.env import APPLICATION, DEFAULT_API_TIMEOUT
-from heimdall_utils.utils import Logger
 from heimdall_utils.variables import REGION, REV_PROXY_SECRET, REV_PROXY_SECRET_REGION
 
-log = Logger(__name__)
+log = Logger(name=__name__, child=True)
 
 
 def get_sqs_connection(region):

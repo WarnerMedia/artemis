@@ -4,6 +4,9 @@ from fnmatch import fnmatch
 from http import HTTPStatus
 from typing import Union
 
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
+
 from heimdall_orgs import org_queue_bitbucket, org_queue_gitlab, org_queue_private_github
 from heimdall_utils.aws_utils import (
     get_analyzer_api_key,
@@ -12,19 +15,19 @@ from heimdall_utils.aws_utils import (
     send_analyzer_request,
 )
 from heimdall_utils.datetime import format_timestamp, get_utc_datetime
-from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC
+from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
-from heimdall_utils.utils import Logger
 from org_queue.org_queue_env import ORG_QUEUE
 
-log = Logger(__name__)
+log = Logger(service=APPLICATION, name="org_queue")
 FAILED = {}
 
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
 
 
-def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
+@log.inject_lambda_context
+def run(event: dict = None, context: LambdaContext = None, services_file: str = None) -> Union[list, dict]:
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
     queued = []
@@ -54,6 +57,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
 
     batch_id = generate_batch_id(batch_label)
 
+    log.append_keys(batch_id=batch_id)
     log.info(f"Queueing the following organizations:\n{orgs}")
 
     for org in orgs:
