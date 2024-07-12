@@ -18,15 +18,8 @@ DEFAULT_CONFIG = {
             "name": "Branch - Commit Signing",
             "description": "Branch rule or branch protection rule is enabled to enforce commit signing",
             "subrules": {
-                "any_of": [
-                    {
-                        "type": "branch_protection_commit_signing"
-                    },
-                    {
-                        "type": "branch_rule_commit_signing"
-                    }
-                ]
-            }
+                "any_of": [{"type": "branch_protection_commit_signing"}, {"type": "branch_rule_commit_signing"}]
+            },
         },
         {
             "type": "composite_rule",
@@ -35,16 +28,14 @@ DEFAULT_CONFIG = {
             "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins",
             "subrules": {
                 "all_of": [
-                    {
-                        "type": "branch_protection_enforce_admins"
-                    },
+                    {"type": "branch_protection_enforce_admins"},
                     {
                         "type": "branch_ruleset_bypass_actors",
                         "description": "There are no bypass actors allowed in branch rules",
-                        "allowed_bypass_actor_ids": []
-                    }
+                        "allowed_bypass_actor_ids": [],
+                    },
                 ]
-            }
+            },
         },
         {
             "type": "composite_rule",
@@ -55,22 +46,16 @@ DEFAULT_CONFIG = {
                 "any_of": [
                     {
                         "type": "branch_protection_pull_requests",
-                        "expect": {
-                            "dismiss_stale_reviews": True,
-                            "require_code_owner_reviews": True
-                        },
-                        "min_approvals": 1
+                        "expect": {"dismiss_stale_reviews": True, "require_code_owner_reviews": True},
+                        "min_approvals": 1,
                     },
                     {
                         "type": "branch_rule_pull_requests",
-                        "expect": {
-                            "dismiss_stale_reviews_on_push": True,
-                            "require_code_owner_review": True
-                        },
-                        "min_approvals": 1
-                    }
+                        "expect": {"dismiss_stale_reviews_on_push": True, "require_code_owner_review": True},
+                        "min_approvals": 1,
+                    },
                 ]
-            }
+            },
         },
         {
             "type": "composite_rule",
@@ -79,20 +64,10 @@ DEFAULT_CONFIG = {
             "description": "Branch or branch protection rule is enabled to require strict status checks",
             "subrules": {
                 "any_of": [
-                    {
-                        "type": "branch_protection_status_checks",
-                        "expect": {
-                            "strict": True
-                        }
-                    },
-                    {
-                        "type": "branch_rule_status_checks",
-                        "expect": {
-                            "strict_required_status_checks_policy": True
-                        }
-                    }
+                    {"type": "branch_protection_status_checks", "expect": {"strict": True}},
+                    {"type": "branch_rule_status_checks", "expect": {"strict_required_status_checks_policy": True}},
                 ]
-            }
+            },
         },
         {
             "type": "repo_security_alerts",
