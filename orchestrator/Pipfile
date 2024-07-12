@@ -7,6 +7,7 @@ name = "pypi"
 python_version = "3.9"
 
 [packages]
+aws_lambda_powertools = "==2.40.1"
 awscli = "~=1.32"
 boto3 = "~=1.34"
 cryptography = "~=42.0"
