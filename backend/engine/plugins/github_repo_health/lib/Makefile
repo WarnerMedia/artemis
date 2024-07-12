@@ -1,4 +1,4 @@
-.PHONY: install install-dev test format clean update-requirements
+.PHONY: install install-dev test format update-requirements
 
 install:
 	@python -m pipenv sync
