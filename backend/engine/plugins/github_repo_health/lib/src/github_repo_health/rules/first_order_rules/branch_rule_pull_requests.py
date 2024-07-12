@@ -1,6 +1,6 @@
-from ..helpers import add_metadata, is_subdict_of, severity_schema
-
 from github import GithubException
+
+from ..helpers import add_metadata, is_subdict_of, severity_schema
 
 DESIRED_RULE_TYPE = "pull_request"
 

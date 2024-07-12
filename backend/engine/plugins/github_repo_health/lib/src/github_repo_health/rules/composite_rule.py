@@ -1,6 +1,5 @@
-from .helpers import add_metadata, severity_schema
 from .first_order_rules import first_order_rules_dict
-
+from .helpers import add_metadata, severity_schema
 
 all_rules = list(map(lambda rule: rule.config_schema, first_order_rules_dict.values()))
 all_rules.append({"$ref": "#"})  # Recursive reference, to allow nested composite rules

@@ -1,9 +1,8 @@
 import base64
 import json
 
-from jsonschema import exceptions, validate
-
 from github_repo_health import rules
+from jsonschema import exceptions, validate
 
 default_config = {
     "name": "default",

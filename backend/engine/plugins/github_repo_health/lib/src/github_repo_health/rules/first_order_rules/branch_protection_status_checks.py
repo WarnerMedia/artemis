@@ -1,12 +1,6 @@
-from ..helpers import (
-    add_metadata,
-    array_config_schema,
-    evaluate_array_config,
-    is_subdict_of,
-    severity_schema,
-)
-
 from github import GithubException
+
+from ..helpers import add_metadata, array_config_schema, evaluate_array_config, is_subdict_of, severity_schema
 
 
 class BranchProtectionStatusChecks:

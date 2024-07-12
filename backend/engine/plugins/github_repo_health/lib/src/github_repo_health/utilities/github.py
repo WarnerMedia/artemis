@@ -1,10 +1,11 @@
+import numbers
 from functools import cache
 from urllib.parse import quote
 
-import numbers
 import requests
-
-from github import Auth as GithubAuth, Github as GithubClient, GithubException
+from github import Auth as GithubAuth
+from github import Github as GithubClient
+from github import GithubException
 
 from . import environment
 

@@ -1,6 +1,6 @@
-from ..helpers import add_metadata, severity_schema
-
 from github import GithubException
+
+from ..helpers import add_metadata, severity_schema
 
 
 class BranchProtectionCommitSigning:
