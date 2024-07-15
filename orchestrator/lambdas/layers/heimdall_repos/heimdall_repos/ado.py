@@ -5,7 +5,7 @@ from aws_lambda_powertools import Logger
 
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import queue_service_and_org
-from heimdall_utils.env import DEFAULT_API_TIMEOUT
+from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
 from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
 
 API_VERSION = "6.0"
@@ -18,7 +18,7 @@ PROJECT_PAGE_SIZE = 1
 
 REF_PAGE_SIZE = 50
 
-log = Logger(name="ADORepoProcessor", child=True)
+log = Logger(service=APPLICATION, name="ADORepoProcessor", child=True)
 
 
 class ADORepoProcessor:

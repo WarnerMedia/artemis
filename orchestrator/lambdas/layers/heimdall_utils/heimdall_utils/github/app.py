@@ -7,6 +7,7 @@ from aws_lambda_powertools import Logger
 
 from heimdall_utils.aws_utils import get_key
 from heimdall_utils.datetime import get_utc_datetime
+from heimdall_utils.env import APPLICATION
 
 GITHUB_APP_ID = os.environ.get("HEIMDALL_GITHUB_APP_ID")
 GITHUB_PRIVATE_KEY = os.environ.get("HEIMDALL_GITHUB_PRIVATE_KEY", "heimdall/github-app-private-key")
@@ -27,7 +28,7 @@ class GithubApp:
 
         if cls._instance is None:
             cls._instance = super(GithubApp, cls).__new__(cls)
-            cls._instance.log = Logger(name=__name__, child=True)
+            cls._instance.log = Logger(service=APPLICATION, name=__name__, child=True)
 
             cls._jwt = None
             cls._jwt_expiration = None

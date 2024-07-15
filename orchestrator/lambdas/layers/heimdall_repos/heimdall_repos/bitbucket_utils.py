@@ -10,10 +10,11 @@ from heimdall_repos.objects.cloud_bitbucket_class import CloudBitbucket
 from heimdall_repos.objects.server_v1_bitbucket_class import ServerV1Bitbucket
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
+from heimdall_utils.env import APPLICATION
 from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
-log = Logger(name="ProcessBitbucketRepos", child=True)
+log = Logger(service=APPLICATION, name="ProcessBitbucketRepos", child=True)
 
 
 class ProcessBitbucketRepos:
