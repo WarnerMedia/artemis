@@ -1,0 +1,20 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        # Group together updates from common, official sources.
+        applies-to: version-updates
+        dependency-type: production
+        patterns:
+          - "actions/*"
+          - "aws-actions/*"
+          - "docker/*"
+          - "hashicorp/*"
+        update-types:
+          - minor
+          - patch
