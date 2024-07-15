@@ -14,12 +14,12 @@ from heimdall_repos.repo_layer_env import (
 )
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
-from heimdall_utils.env import DEFAULT_API_TIMEOUT
+from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
 from heimdall_utils.github.app import GithubApp
 from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
-log = Logger(name="ProcessGithubRepos", child=True)
+log = Logger(service=APPLICATION, name="ProcessGithubRepos", child=True)
 
 
 class ProcessGithubRepos:

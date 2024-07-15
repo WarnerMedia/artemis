@@ -9,8 +9,9 @@ from heimdall_repos.repo_layer_env import (
     BITBUCKET_PRIVATE_SINGLE_REPO_QUERY,
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
+from heimdall_utils.env import APPLICATION
 
-log = Logger(name="ServerBitbucket", child=True)
+log = Logger(service=APPLICATION, name="ServerBitbucket", child=True)
 
 
 class ServerV1Bitbucket(AbstractBitbucket):
