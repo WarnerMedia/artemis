@@ -1,6 +1,7 @@
 """
 Utility functions for running git commands
 """
+
 import os
 import shutil
 import subprocess

@@ -98,7 +98,6 @@ class TestParsedEvent(unittest.TestCase):
         self.assertEqual(parsed_event.filters[0]["value"], self.email)
 
     def test_parse_event_valid_filter(self):
-
         # adjust filters for any new added field for testing
         filters = {
             "admin": True,
@@ -144,7 +143,6 @@ class TestParsedEvent(unittest.TestCase):
             self.assertEqual(parsed_event.filters[0]["type"], filter_type)
 
     def test_parse_user_list(self):
-
         self_email_filter = {
             "email": self.email,
         }

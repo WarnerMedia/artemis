@@ -14,7 +14,6 @@ def add_basic_secret_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0044_secrettype"),
     ]

@@ -1,6 +1,7 @@
 """
 shell_check plugin
 """
+
 import json
 import subprocess
 

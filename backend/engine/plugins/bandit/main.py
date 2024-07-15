@@ -1,6 +1,7 @@
 """
 Bandit Plugin
 """
+
 import json
 import subprocess
 

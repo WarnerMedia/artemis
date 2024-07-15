@@ -1,6 +1,7 @@
 """
 trivy output parser
 """
+
 from engine.plugins.lib.utils import setup_logging
 from engine.plugins.lib.trivy_common.parsing_util import convert_type
 

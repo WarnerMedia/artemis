@@ -76,6 +76,5 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
 def allowlisted_configuration(item, allow_list):
     for al_item in allow_list:
         if dict_eq(al_item.value, item, WL_CONFIGURATION_KEYS):
-
             return True
     return False

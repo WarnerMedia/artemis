@@ -172,7 +172,6 @@ class TestGroupsMembersDbCalls(unittest.TestCase):
         self.assertEqual(delete_result["statusCode"], HTTPStatus.NO_CONTENT)
 
     def test_delete_invalid_must_have_group_admin_single(self):
-
         delete_event = {"pathParameters": {"id": self.test_group_1_group_id, "uid": self.test_user.email}}
         delete_result = delete(
             event=delete_event,
@@ -183,7 +182,6 @@ class TestGroupsMembersDbCalls(unittest.TestCase):
         self.assertEqual(response({"message": GROUP_ADMIN_MUST_EXIST_MESSAGE}, HTTPStatus.BAD_REQUEST), delete_result)
 
     def test_delete_invalid_must_have_group_admin_list(self):
-
         delete_event = {
             "pathParameters": {"id": self.test_group_2_group_id},
             "body": json.dumps([{"email": self.test_user3.email}, {"email": self.test_user4.email}]),
