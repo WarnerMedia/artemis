@@ -60,6 +60,20 @@ query getRepos($org: String!, $cursor: String) {
                     }
                 }
                 isPrivate
+                refs(first: 1, refPrefix: "refs/heads/", direction: ASC) {
+                    nodes {
+                        name
+                        target {
+                            ... on Commit {
+                                committedDate
+                            }
+                        }
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
             }
             pageInfo {
                 endCursor
