@@ -2,13 +2,9 @@
 import json
 import logging
 import os
-import sys
 from collections import namedtuple
 from datetime import datetime, timedelta
 from json import JSONDecodeError
-
-DEFAULT_LOG_LEVEL = "INFO"
-LOG_LEVEL = os.environ.get("HEIMDALL_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
 
 LEVEL_MAP = {
     "CRITICAL": logging.CRITICAL,
@@ -19,28 +15,16 @@ LEVEL_MAP = {
     "NOTSET": logging.NOTSET,
 }
 
-DYNAMODB_TTL_DAYS = 60
+DEFAULT_LOG_LEVEL = "INFO"
+LOG_LEVEL = os.environ.get("HEIMDALL_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
+LOG_LEVEL = LEVEL_MAP.get(LOG_LEVEL, DEFAULT_LOG_LEVEL)
+
+# Set log levels for third party
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("botocore").setLevel(logging.WARNING)
 
-
-class Logger:
-    def __new__(cls, name: str, level=LOG_LEVEL):
-        log = logging.getLogger(name.strip())
-        if log.hasHandlers():
-            # The AWS Lambda environment starts with a handler already configured so remove it
-            # to replace it with our own.
-            for handler in log.handlers:
-                log.removeHandler(handler)
-        console = logging.StreamHandler(sys.stderr)
-        formatter = logging.Formatter(
-            fmt="%(asctime)s %(levelname)-8s [%(name)-12s] %(message)s", datefmt="[%Y-%m-%d %H:%M:%S%z]"
-        )
-        console.setFormatter(formatter)
-        log.addHandler(console)
-        log.setLevel(LEVEL_MAP.get(level, DEFAULT_LOG_LEVEL))
-        log.propagate = False
-        return log
+DYNAMODB_TTL_DAYS = 60
 
 
 class ServiceInfo:
