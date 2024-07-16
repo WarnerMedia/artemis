@@ -80,10 +80,6 @@ variable "scanning_enabled" {
   default     = true
 }
 
-variable "log_level" {
-  description = "Logging level"
-  default     = "INFO"
-}
 
 ###############################################################################
 # Environment-agnostic variables
