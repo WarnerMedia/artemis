@@ -80,7 +80,15 @@ variable "scanning_enabled" {
   default     = true
 }
 
+variable "application_log_level" {
+  description = "Application Log Level setting for AWS Lambda"
+  default     = "INFO"
+}
 
+variable "system_log_level" {
+  description = "System Log Level setting for AWS Lambda"
+  default     = "WARN"
+}
 ###############################################################################
 # Environment-agnostic variables
 #

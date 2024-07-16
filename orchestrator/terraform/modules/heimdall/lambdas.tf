@@ -6,7 +6,9 @@ resource "aws_lambda_function" "org-queue" {
   function_name = "${var.app}-org-queue"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -64,7 +66,9 @@ resource "aws_lambda_function" "repo-queue" {
   function_name = "${var.app}-repo-queue"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -122,7 +126,9 @@ resource "aws_lambda_function" "repo-scan" {
   function_name = "${var.app}-repo-scan"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -169,7 +175,9 @@ resource "aws_lambda_function" "repo-scan-loop" {
   function_name = "${var.app}-repo-scan-loop"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
