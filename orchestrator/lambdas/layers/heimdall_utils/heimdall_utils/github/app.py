@@ -73,7 +73,7 @@ class GithubApp:
 
         if r.status_code == 200:
             installation_id = r.json().get("id")
-            self.log.info("Caching GitHub App installation id %s for %s organization", installation_id, org)
+            self.log.debug("Caching GitHub App installation id %s for %s organization", installation_id, org)
             self._installation_id_cache[org] = installation_id
 
         return self._installation_id_cache.get(org)
@@ -101,7 +101,7 @@ class GithubApp:
 
         installation_id = self._get_installation_id(org)
         if installation_id is None:
-            self.log.info("GitHub App is not installed in %s organization", org)
+            self.log.error("GitHub App is not installed in %s organization", org)
             return None
 
         self.log.info("Generating new GitHub App installation token for %s organization", org)
@@ -111,7 +111,7 @@ class GithubApp:
         )
 
         if r.status_code == 201:
-            self.log.info("Caching generated GitHub App installation token for %s organization", org)
+            self.log.debug("Caching generated GitHub App installation token for %s organization", org)
             token = r.json().get("token")
             self._token_cache[org] = {
                 "token": token,
@@ -120,5 +120,5 @@ class GithubApp:
             }
             return token
 
-        self.log.info("Unable to generate GitHub App installation token for %s organization", org)
+        self.log.error("Unable to generate GitHub App installation token for %s organization", org)
         return None

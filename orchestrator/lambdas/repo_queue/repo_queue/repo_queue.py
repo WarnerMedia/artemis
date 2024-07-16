@@ -45,11 +45,11 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
         for repo_group in group(repos, 10):
             i += queue_repo_group(repo_group, plugins, data.get("batch_id"))
             if i >= 100:
-                log.info(f"{i} queued")
+                log.debug(f"{i} queued")
                 i = 0
 
         if i != 0:
-            log.info(f"{i} queued")
+            log.debug(f"{i} queued")
 
 
 def group(iterable, n, fillvalue=None):
