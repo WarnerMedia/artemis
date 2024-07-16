@@ -91,7 +91,6 @@ class ProcessGitlabRepos:
         and compiles them into a list that is returned.
         :return: list of repos to scan
         """
-        log.info("querying gitlab service %s", self.service_info.service)
         repos = []
         log.info(
             "Querying for repos in %s starting at cursor %s",
@@ -111,7 +110,6 @@ class ProcessGitlabRepos:
         nodes = self.json_utils.get_object_from_json_dict(resp, ["data", "group", "projects", "nodes"])
         if not nodes:
             return repos
-        log.info("Processing %s results", len(nodes))
 
         repos_result = self._process_repos(nodes)
         repos.extend(repos_result)
@@ -206,12 +204,6 @@ class ProcessGitlabRepos:
                                 "plugins": self.scan_options.plugins,
                             }
                         )
-        log.info(
-            "%d repos processed and ready to be queued for %s/%s",
-            len(repos),
-            self.service_info.service,
-            self.service_info.org,
-        )
         return repos
 
     def _get_branch_names(self, project_id: str, ref: str = None) -> Tuple[list, dict]:

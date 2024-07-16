@@ -1,5 +1,5 @@
 # pylint: disable=no-member
-from typing import Tuple
+from typing import Tuple, Any
 
 import requests
 from aws_lambda_powertools import Logger
@@ -183,29 +183,18 @@ class ProcessGithubRepos:
         if not resp:
             return []
 
-        nodes = self.json_utils.get_object_from_json_dict(resp, ["data", "organization", "repositories", "nodes"])
-        if not nodes:
-            repo = self.json_utils.get_object_from_json_dict(resp, ["data", "organization", "repository"])
-            if not repo:
-                return []
-            nodes = [repo]
-
-        count = len(nodes)
-        log.info("Processing %s Github results", count)
+        nodes, page_info = self._process_query_response(resp)
 
         repos = self._process_repos(nodes)
 
-        page_info = self.json_utils.get_object_from_json_dict(
-            resp, ["data", "organization", "repositories", "pageInfo"]
-        )
         if not page_info:
-            log.error("Key pageInfo not found for %s. Returning repos found.", self.service_info.org)
             return repos
+
         if page_info.get("hasNextPage"):
             cursor = page_info.get("endCursor")
 
             # Re-queue this org, setting the cursor for the next page of the query
-            log.info("Queueing %s to re-start at cursor %s", self.service_info.org, cursor)
+            log.info("Queuing %s to re-start at cursor %s", self.service_info.org, cursor)
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
@@ -218,6 +207,29 @@ class ProcessGithubRepos:
             )
 
         return repos
+
+    def _process_query_response(self, resp: dict[str, Any]) -> Tuple[list, dict[str, Any]]:
+        """
+        Parses the Github Query response and returns the pageInfo and a list of repositories
+
+        Args:
+            resp (dict[str, Any]): Github query response
+        """
+        data = self.json_utils.get_object_from_json_dict(resp, ["data", "organization"])
+
+        if "repositories" in data:
+            # Parse GITHUB_REPO_QUERY RESPONSE
+            repositories = self.json_utils.get_object_from_json_dict(data, ["repositories", "nodes"])
+            page_info = self.json_utils.get_object_from_json_dict(data, ["repositories", "pageInfo"])
+            return repositories, page_info
+
+        # Parse GITHUB_REPO_REF_QUERY RESPONSE
+        repository = self.json_utils.get_object_from_json_dict(data, ["repository"])
+
+        if not repository:
+            return [], []
+
+        return [repository], []
 
     def _process_repos(self, nodes: list) -> list:
         """
@@ -254,7 +266,7 @@ class ProcessGithubRepos:
         if self.json_utils.get_object_from_json_dict(repo, ["refs", "nodes"]):
             return True
 
-        log.info(f"repo {repo.get('name')} has no branches. Skipping")
+        log.warning(f"repo {repo.get('name')} has no branches. Skipping")
         return False
 
     def _process_branches(self, repo_name: str, default_branch: str, branches: dict) -> list:
@@ -262,7 +274,7 @@ class ProcessGithubRepos:
         Handles processing for all branches in a given repository
         """
         tasks = []
-        log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name)
+        log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name, repo=repo_name)
 
         branch_names, timestamps = self._get_branch_names(repo_name, branches)
         if self.scan_options.default_branch_only:
@@ -329,7 +341,7 @@ class ProcessGithubRepos:
         next_page = page_info.get("hasNextPage")
         if next_page and not self.scan_options.default_branch_only:
             branch_cursor = page_info.get("endCursor")
-            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
+            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor, repo=repo)
             queue_branch_and_repo(
                 self.queue,
                 self.service_info.service,

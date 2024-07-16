@@ -71,7 +71,7 @@ def query(
     repo: str,
 ) -> list:
     """Retrieves a list of repository events to send to the Repo SQS Queue"""
-    log.append_keys(version_control_service=service, org=org, repo=repo, batch_id=batch_id, page=page)
+    log.append_keys(version_control_service=service, org=org, batch_id=batch_id, page=page)
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
         return []

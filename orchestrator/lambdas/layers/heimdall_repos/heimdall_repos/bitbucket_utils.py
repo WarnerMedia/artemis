@@ -182,7 +182,7 @@ class ProcessBitbucketRepos:
         ref_names = set()
         timestamps = dict()
 
-        log.info("Processing branches in repo: %s/%s", self.service_info.org, repo)
+        log.debug("Processing branches in repo: %s/%s", self.service_info.org, repo, repo=repo)
 
         response_text = self._query_bitbucket_api(repo_url)
         response_dict = self.json_utils.get_json_from_response(response_text)
@@ -208,7 +208,7 @@ class ProcessBitbucketRepos:
         if self.service_helper.has_next_page(response_dict) and not self.scan_options.default_branch_only:
             branch_cursor = self.service_helper.get_cursor(response_dict)
 
-            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
+            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor, repo=repo)
             queue_branch_and_repo(
                 self.queue,
                 self.service_info.service,

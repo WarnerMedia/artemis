@@ -90,10 +90,9 @@ def queue_service_and_org(
                 }
             ),
         )
-        log.info(f"Queued {service}/{org_name} for scanning")
         return True
     except ClientError:
-        log.info(f"Unable to queue org: {service}/{org_name}")
+        log.error(f"Unable to queue org: {service}/{org_name}")
         return False
 
 
@@ -123,10 +122,9 @@ def queue_branch_and_repo(
                 }
             ),
         )
-        log.info(f"Queued branches in {service}/{org_name}/{repo} for scanning")
         return True
     except ClientError:
-        log.info(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
+        log.error(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
         return False
 
 
