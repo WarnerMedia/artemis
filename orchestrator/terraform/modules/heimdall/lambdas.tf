@@ -6,7 +6,9 @@ resource "aws_lambda_function" "org-queue" {
   function_name = "${var.app}-org-queue"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -41,7 +43,6 @@ resource "aws_lambda_function" "org-queue" {
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
       ARTEMIS_API                       = var.artemis_api
-      HEIMDALL_LOG_LEVEL                = var.log_level
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
@@ -65,7 +66,9 @@ resource "aws_lambda_function" "repo-queue" {
   function_name = "${var.app}-repo-queue"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -100,7 +103,6 @@ resource "aws_lambda_function" "repo-queue" {
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
       ARTEMIS_API                       = var.artemis_api
-      HEIMDALL_LOG_LEVEL                = var.log_level
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
@@ -124,7 +126,9 @@ resource "aws_lambda_function" "repo-scan" {
   function_name = "${var.app}-repo-scan"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -150,13 +154,12 @@ resource "aws_lambda_function" "repo-scan" {
 
   environment {
     variables = {
-      APPLICATION        = var.app
-      REGION             = var.aws_region
-      ARTEMIS_API        = var.artemis_api
-      ARTEMIS_API_KEY    = aws_secretsmanager_secret.artemis-api-key.name
-      REPO_QUEUE         = aws_sqs_queue.repo-queue.id
-      SCAN_TABLE         = aws_dynamodb_table.repo-scan-id.name
-      HEIMDALL_LOG_LEVEL = var.log_level
+      APPLICATION     = var.app
+      REGION          = var.aws_region
+      ARTEMIS_API     = var.artemis_api
+      ARTEMIS_API_KEY = aws_secretsmanager_secret.artemis-api-key.name
+      REPO_QUEUE      = aws_sqs_queue.repo-queue.id
+      SCAN_TABLE      = aws_dynamodb_table.repo-scan-id.name
     }
   }
 
@@ -172,7 +175,9 @@ resource "aws_lambda_function" "repo-scan-loop" {
   function_name = "${var.app}-repo-scan-loop"
 
   logging_config {
-    log_format = "JSON"
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
 
   s3_bucket = aws_s3_bucket.heimdall_files.id
@@ -202,7 +207,6 @@ resource "aws_lambda_function" "repo-scan-loop" {
       REGION                    = var.aws_region
       HEIMDALL_REPO_SCAN_LAMBDA = aws_lambda_function.repo-scan.function_name,
       HEIMDALL_INVOKE_COUNT     = 10
-      HEIMDALL_LOG_LEVEL        = var.log_level
     }
   }
 

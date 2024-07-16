@@ -73,7 +73,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
         org_list = get_org_list(services, service, org_name)
         if not org_list:
             continue
-        log.info("Queuing %d service orgs for service %s", len(org_list), service)
+        log.info("Queuing %d service orgs for service %s", len(org_list), service, version_control_service=service)
         for org_name_str in org_list:
             org_result_str = f"{service}/{org_name_str}"
             if not fnmatch(org_name_str, org_name):
@@ -121,7 +121,7 @@ def get_org_list(services: dict, service: str, org_name: str) -> Union[list, Non
             api_url = get_service_url(service_dict)
             return org_queue_bitbucket.BitbucketOrgs.get_all_orgs(service, api_url, api_key) or []
         message = f"service {service} of type {service_type} is not supported for wildcard organizations."
-        log.error(message)
+        log.error(message, version_control_service=service)
         FAILED[f"{service}/{org_name}"] = message
         return None
     # Turn a single org name into a list to simplify the queuing logic
@@ -131,12 +131,12 @@ def get_org_list(services: dict, service: str, org_name: str) -> Union[list, Non
 def validate_service(services: dict, service: str, org_name: str) -> bool:
     if service in ["github", "gitlab", "bitbucket"]:
         message = f"public service {service} cannot have a wildcard organization."
-        log.error(message)
+        log.error(message, version_control_service=service)
         FAILED[f"{service}/{org_name}"] = message
         return False
     if service not in services:
         message = f"{service} not located in services.json. Skipping"
-        log.error(message)
+        log.error(message, version_control_service=service)
         FAILED[f"{service}/{org_name}"] = message
         return False
     return True

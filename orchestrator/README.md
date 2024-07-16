@@ -12,18 +12,18 @@ Heimdall is a tool for initiating Artemis scans across a large set of services, 
 
 Heimdall can schedule scans in the following Version control systems:
 
-- [Azure DevOps](https://azure.microsoft.com/en-us/products/devops)
-- [Bitbucket Cloud v2](https://bitbucket.org/product)
-- [Bitbucket Enterprise Server v1](https://www.atlassian.com/software/bitbucket/enterprise)
-- [GitHub](https://github.com/)
-- [GitLab](https://about.gitlab.com/)
+-   [Azure DevOps](https://azure.microsoft.com/en-us/products/devops)
+-   [Bitbucket Cloud v2](https://bitbucket.org/product)
+-   [Bitbucket Enterprise Server v1](https://www.atlassian.com/software/bitbucket/enterprise)
+-   [GitHub](https://github.com/)
+-   [GitLab](https://about.gitlab.com/)
 
 ## Lambdas
 
-- [Repo Scan](./lambdas/repo_scan)
-- [Repo Scan Loop](./lambdas/repo_scan_loop)
-- [Repo-Queue Lambda](./lambdas/repo_queue)
-- [Org-Queue Lambda](./lambdas/org_queue)
+-   [Repo Scan](./lambdas/repo_scan)
+-   [Repo Scan Loop](./lambdas/repo_scan_loop)
+-   [Repo-Queue Lambda](./lambdas/repo_queue)
+-   [Org-Queue Lambda](./lambdas/org_queue)
 
 ### Standard Lambda Configurations
 
@@ -39,13 +39,12 @@ These are Environment Variables that are used in all Heimdall Lambdas
 | `ARTEMIS_S3_BUCKET`                 | The s3 bucket location for Artemis                                                                                                      |
 | `HEIMDALL_GITHUB_APP_ID`            | The APP ID for the Github App used for scanning repositories                                                                            |
 | `HEIMDALL_GITHUB_PRIVATE_KEY`       | This variable stores the private key for the GitHub App. The private Key and the GitHub App are used to make requests to the GitHub API |
-| `HEIMDALL_LOG_LEVEL`                | logging level                                                                                                                           |
 | `REGION`                            | The AWS region where the lambda is deployed                                                                                             |
 
 ## Queues
 
-- [Repo SQS Queue](https://github.com/WarnerMedia/artemis/blob/c529b00c667da5d3c83678f3e279f7a8c41c1b45/orchestrator/terraform/modules/heimdall/messaging.tf#L34-L47)
-- [ORG SQS Queue](https://github.com/WarnerMedia/artemis/blob/c529b00c667da5d3c83678f3e279f7a8c41c1b45/orchestrator/terraform/modules/heimdall/messaging.tf#L5-L19)
+-   [Repo SQS Queue](https://github.com/WarnerMedia/artemis/blob/c529b00c667da5d3c83678f3e279f7a8c41c1b45/orchestrator/terraform/modules/heimdall/messaging.tf#L34-L47)
+-   [ORG SQS Queue](https://github.com/WarnerMedia/artemis/blob/c529b00c667da5d3c83678f3e279f7a8c41c1b45/orchestrator/terraform/modules/heimdall/messaging.tf#L5-L19)
 
 #### `ORG SQS Queue` Message Format:
 
@@ -73,12 +72,12 @@ The messages sent to the `REPO SQS Queue` are in this format:
 
 ```jsonc
 {
-  "service": "github", // Available options: ado, github, bitbucket, gitlab
-  "org": "Warnermedia", // Name of the organization to scan
-  "repo": "artemis", // Name of the repo to scan
-  "branch": "main", // Name of the branch to scan
-  "plugins": ["trufflehog"], // List of plugins to run during the Artemis Scan
-  "batch_id": "BATCH123" // Batch ID for the triggered scan. Helps to identify scans that were triggered at the same time
+    "service": "github", // Available options: ado, github, bitbucket, gitlab
+    "org": "Warnermedia", // Name of the organization to scan
+    "repo": "artemis", // Name of the repo to scan
+    "branch": "main", // Name of the branch to scan
+    "plugins": ["trufflehog"], // List of plugins to run during the Artemis Scan
+    "batch_id": "BATCH123" // Batch ID for the triggered scan. Helps to identify scans that were triggered at the same time
 }
 ```
 

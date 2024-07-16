@@ -1,25 +1,11 @@
 # pylint: disable=no-member
 import json
 import logging
-import os
 from collections import namedtuple
 from datetime import datetime, timedelta
 from json import JSONDecodeError
 
-LEVEL_MAP = {
-    "CRITICAL": logging.CRITICAL,
-    "ERROR": logging.ERROR,
-    "WARNING": logging.WARNING,
-    "INFO": logging.INFO,
-    "DEBUG": logging.DEBUG,
-    "NOTSET": logging.NOTSET,
-}
-
-DEFAULT_LOG_LEVEL = "INFO"
-LOG_LEVEL = os.environ.get("HEIMDALL_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
-LOG_LEVEL = LEVEL_MAP.get(LOG_LEVEL, DEFAULT_LOG_LEVEL)
-
-# Set log levels for third party
+# Set log levels for external packages
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)

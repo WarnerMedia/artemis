@@ -45,11 +45,11 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
         for repo_group in group(repos, 10):
             i += queue_repo_group(repo_group, plugins, data.get("batch_id"))
             if i >= 100:
-                log.info(f"{i} queued")
+                log.debug(f"{i} queued")
                 i = 0
 
         if i != 0:
-            log.info(f"{i} queued")
+            log.debug(f"{i} queued")
 
 
 def group(iterable, n, fillvalue=None):
@@ -71,7 +71,7 @@ def query(
     repo: str,
 ) -> list:
     """Retrieves a list of repository events to send to the Repo SQS Queue"""
-    log.append_keys(version_control_service=service, org=org, repo=repo, batch_id=batch_id, page=page)
+    log.append_keys(version_control_service=service, org=org, batch_id=batch_id, page=page)
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
         return []
