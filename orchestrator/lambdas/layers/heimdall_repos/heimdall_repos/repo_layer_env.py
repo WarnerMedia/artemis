@@ -60,7 +60,7 @@ query getRepos($org: String!, $cursor: String) {
                     }
                 }
                 isPrivate
-                refs(first: 75, refPrefix: "refs/heads/", direction: ASC) {
+                refs(first: 1, refPrefix: "refs/heads/", direction: ASC) {
                     nodes {
                         name
                         target {
