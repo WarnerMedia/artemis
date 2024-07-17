@@ -321,6 +321,7 @@ clean: ## Cleans up the build, dist, venv directories
 	rm -rf ${DIST_DIR}
 	rm -rf venv
 	rm -rf .pytest_cache
+	rm -rf .ruff_cache
 	find . -name "__pycache__" -type d | xargs rm -r
 	find . -name ".eggs" -type d | xargs rm -r
 	find . -name "*.egg-info" -type d | xargs rm -r

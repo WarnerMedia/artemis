@@ -1699,6 +1699,7 @@ clean:  ## Clean all
 	rm -rf ${STAGE_DIR}
 	rm -rf venv
 	rm -rf .pytest_cache
+	rm -rf .ruff_cache
 	rm -rf htmlcov
 	rm -rf .coverage
 	rm -rf .temp
