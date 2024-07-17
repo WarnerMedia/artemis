@@ -20,7 +20,6 @@ resource "aws_lambda_function" "audit-event-handler" {
       APPLICATION           = var.app
       ENVIRONMENT           = var.environment
       ARTEMIS_SPLUNK_KEY    = "artemis/audit-log-hec"
-      ARTEMIS_SCRUB_DETAILS = var.audit_log_scrub_details
       ARTEMIS_SCRUB_NONPROD = "false"
     }
   }
