@@ -3,11 +3,11 @@ from copy import deepcopy
 from http import HTTPStatus
 
 import requests
+from aws_lambda_powertools import Logger
 
-from heimdall_utils.env import ARTEMIS_API, DEFAULT_API_TIMEOUT
-from heimdall_utils.utils import Logger
+from heimdall_utils.env import APPLICATION, ARTEMIS_API, DEFAULT_API_TIMEOUT
 
-LOG = Logger(__name__)
+LOG = Logger(service=APPLICATION, name=__name__, child=True)
 
 
 def redundant_scan_exists(

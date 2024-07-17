@@ -1,4 +1,5 @@
 from string import Template
+from aws_lambda_powertools import Logger
 from heimdall_repos.repo_layer_env import (
     BITBUCKET_PUBLIC_BRANCH_QUERY,
     BITBUCKET_PUBLIC_COMMIT_QUERY,
@@ -8,11 +9,14 @@ from heimdall_repos.repo_layer_env import (
     BITBUCKET_PUBLIC_DEFAULT_BRANCH_QUERY,
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
+from heimdall_utils.env import APPLICATION
+
+log = Logger(service=APPLICATION, name="CloudBitbucket", child=True)
 
 
 class CloudBitbucket(AbstractBitbucket):
     def __init__(self, service):
-        super().__init__(service, "CloudBitbucket")
+        super().__init__(service, log)
 
     def is_public(self, repo: dict) -> bool:
         return not repo.get("is_private")

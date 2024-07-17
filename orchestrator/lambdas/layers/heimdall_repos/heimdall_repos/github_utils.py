@@ -1,7 +1,9 @@
 # pylint: disable=no-member
-from typing import Tuple
+from typing import Tuple, Any
 
 import requests
+from aws_lambda_powertools import Logger
+
 from heimdall_repos.repo_layer_env import (
     GITHUB_RATE_ABUSE_FLAG,
     GITHUB_RATE_ABUSE_KEYWORDS,
@@ -12,10 +14,12 @@ from heimdall_repos.repo_layer_env import (
 )
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
-from heimdall_utils.env import DEFAULT_API_TIMEOUT
+from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
 from heimdall_utils.github.app import GithubApp
-from heimdall_utils.utils import JSONUtils, Logger, ServiceInfo, ScanOptions
+from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
+
+log = Logger(service=APPLICATION, name="ProcessGithubRepos", child=True)
 
 
 class ProcessGithubRepos:
@@ -33,8 +37,7 @@ class ProcessGithubRepos:
         self.service_info = service_info
         self.scan_options = scan_options
         self.external_orgs = external_orgs
-        self.log = Logger("ProcessGithubRepos")
-        self.json_utils = JSONUtils(self.log)
+        self.json_utils = JSONUtils(log)
         self.artemis_api_key = artemis_api_key
         self.redundant_scan_query = redundant_scan_query
 
@@ -137,12 +140,12 @@ class ProcessGithubRepos:
 
     def _report_error_response(self, response, error_response):
         if error_response == GITHUB_RATE_ABUSE_FLAG:
-            self.log.warning("Github abuse limit has been reached.")
+            log.warning("Github abuse limit has been reached.")
             return error_response
         if error_response == GITHUB_TIMEOUT_FLAG:
-            self.log.warning("Github query timed out.")
-            return error_response
-        self.log.error("Code: %s - %s", response.status_code, error_response)
+            log.warning("Github query timed out.")
+            raise requests.HTTPError("Github query timed out")
+        log.error("Code: %s - %s", response.status_code, error_response)
         return None
 
     def query(self) -> list:
@@ -154,12 +157,12 @@ class ProcessGithubRepos:
                 "cursor": self.service_info.branch_cursor,
             }
             query = GITHUB_REPO_REF_QUERY
-            self.log.info("Querying for branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
+            log.info("Querying for branches in repo: %s/%s", self.service_info.org, self.scan_options.repo)
         else:
             # Process all repos in an organization
             variables = {"org": self.service_info.org, "cursor": self.service_info.repo_cursor}
             query = GITHUB_REPO_QUERY
-            self.log.info(
+            log.info(
                 "Querying for repos in %s starting at cursor %s", self.service_info.org, self.service_info.repo_cursor
             )
 
@@ -180,29 +183,18 @@ class ProcessGithubRepos:
         if not resp:
             return []
 
-        nodes = self.json_utils.get_object_from_json_dict(resp, ["data", "organization", "repositories", "nodes"])
-        if not nodes:
-            repo = self.json_utils.get_object_from_json_dict(resp, ["data", "organization", "repository"])
-            if not repo:
-                return []
-            nodes = [repo]
-
-        count = len(nodes)
-        self.log.info("Processing %s Github results", count)
+        nodes, page_info = self._process_query_response(resp)
 
         repos = self._process_repos(nodes)
 
-        page_info = self.json_utils.get_object_from_json_dict(
-            resp, ["data", "organization", "repositories", "pageInfo"]
-        )
         if not page_info:
-            self.log.error("Key pageInfo not found for %s. Returning repos found.", self.service_info.org)
             return repos
+
         if page_info.get("hasNextPage"):
             cursor = page_info.get("endCursor")
 
             # Re-queue this org, setting the cursor for the next page of the query
-            self.log.info("Queueing %s to re-start at cursor %s", self.service_info.org, cursor)
+            log.info("Queuing %s to re-start at cursor %s", self.service_info.org, cursor)
             queue_service_and_org(
                 self.queue,
                 self.service_info.service,
@@ -216,11 +208,34 @@ class ProcessGithubRepos:
 
         return repos
 
+    def _process_query_response(self, resp: dict[str, Any]) -> Tuple[list, dict[str, Any]]:
+        """
+        Parses the Github Query response and returns the pageInfo and a list of repositories
+
+        Args:
+            resp (dict[str, Any]): Github query response
+        """
+        data = self.json_utils.get_object_from_json_dict(resp, ["data", "organization"])
+
+        if "repositories" in data:
+            # Parse GITHUB_REPO_QUERY RESPONSE
+            repositories = self.json_utils.get_object_from_json_dict(data, ["repositories", "nodes"])
+            page_info = self.json_utils.get_object_from_json_dict(data, ["repositories", "pageInfo"])
+            return repositories, page_info
+
+        # Parse GITHUB_REPO_REF_QUERY RESPONSE
+        repository = self.json_utils.get_object_from_json_dict(data, ["repository"])
+
+        if not repository:
+            return [], []
+
+        return [repository], []
+
     def _process_repos(self, nodes: list) -> list:
         """
         Handles processing for a single repository or all repositories in an organization
         """
-        self.log.info("Processing repos in org: %s", self.service_info.org)
+        log.info("Processing repos in org: %s", self.service_info.org)
         repos = []
         for repo in nodes:
             name = repo.get("name")
@@ -229,7 +244,7 @@ class ProcessGithubRepos:
             ):
                 # With an external org we only want to scan the private repos
                 # shared with us any not that org's public repos
-                self.log.info("Skipping public repo %s in external org", name)
+                log.info("Skipping public repo %s in external org", name)
                 continue
 
             if not self._is_repo_valid(repo):
@@ -251,7 +266,7 @@ class ProcessGithubRepos:
         if self.json_utils.get_object_from_json_dict(repo, ["refs", "nodes"]):
             return True
 
-        self.log.info(f"repo {repo.get('name')} has no branches. Skipping")
+        log.warning(f"repo {repo.get('name')} has no branches. Skipping")
         return False
 
     def _process_branches(self, repo_name: str, default_branch: str, branches: dict) -> list:
@@ -259,7 +274,7 @@ class ProcessGithubRepos:
         Handles processing for all branches in a given repository
         """
         tasks = []
-        self.log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name)
+        log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name, repo=repo_name)
 
         branch_names, timestamps = self._get_branch_names(repo_name, branches)
         if self.scan_options.default_branch_only:
@@ -317,7 +332,7 @@ class ProcessGithubRepos:
 
         page_info = refs.get("pageInfo")
         if not page_info:
-            self.log.error("Key pageInfo not found for %s. Returning ref names found.", self.service_info.org)
+            log.error("Key pageInfo not found for %s. Returning ref names found.", self.service_info.org)
             return list(ref_names), timestamps
 
         next_page = page_info.get("hasNextPage")
@@ -326,7 +341,7 @@ class ProcessGithubRepos:
         next_page = page_info.get("hasNextPage")
         if next_page and not self.scan_options.default_branch_only:
             branch_cursor = page_info.get("endCursor")
-            self.log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
+            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor, repo=repo)
             queue_branch_and_repo(
                 self.queue,
                 self.service_info.service,

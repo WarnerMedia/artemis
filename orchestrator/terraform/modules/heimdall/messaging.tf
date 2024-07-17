@@ -7,7 +7,7 @@ resource "aws_sqs_queue" "org-queue" {
   visibility_timeout_seconds = 900
   redrive_policy = jsonencode({
     "deadLetterTargetArn" = aws_sqs_queue.org-deadletter-queue.arn
-    "maxReceiveCount"     = 3
+    "maxReceiveCount"     = 1
   })
 
   tags = merge(
@@ -35,7 +35,7 @@ resource "aws_sqs_queue" "repo-queue" {
   name = "${var.app}-repo-queue"
   redrive_policy = jsonencode({
     "deadLetterTargetArn" = aws_sqs_queue.org-deadletter-queue.arn
-    "maxReceiveCount"     = 3
+    "maxReceiveCount"     = 1
   })
 
   tags = merge(

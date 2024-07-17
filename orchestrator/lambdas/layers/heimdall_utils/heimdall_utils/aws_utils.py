@@ -5,12 +5,12 @@ import boto3
 import requests
 from botocore.exceptions import ClientError
 from requests import Response
+from aws_lambda_powertools import Logger
 
 from heimdall_utils.env import APPLICATION, DEFAULT_API_TIMEOUT
-from heimdall_utils.utils import Logger
 from heimdall_utils.variables import REGION, REV_PROXY_SECRET, REV_PROXY_SECRET_REGION
 
-log = Logger(__name__)
+log = Logger(service=APPLICATION, name=__name__, child=True)
 
 
 def get_sqs_connection(region):
@@ -90,10 +90,9 @@ def queue_service_and_org(
                 }
             ),
         )
-        log.info(f"Queued {service}/{org_name} for scanning")
         return True
     except ClientError:
-        log.info(f"Unable to queue org: {service}/{org_name}")
+        log.error(f"Unable to queue org: {service}/{org_name}")
         return False
 
 
@@ -123,10 +122,9 @@ def queue_branch_and_repo(
                 }
             ),
         )
-        log.info(f"Queued branches in {service}/{org_name}/{repo} for scanning")
         return True
     except ClientError:
-        log.info(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
+        log.error(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
         return False
 
 

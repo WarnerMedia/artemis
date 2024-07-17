@@ -4,6 +4,9 @@ from fnmatch import fnmatch
 from http import HTTPStatus
 from typing import Union
 
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
+
 from heimdall_orgs import org_queue_bitbucket, org_queue_gitlab, org_queue_private_github
 from heimdall_utils.aws_utils import (
     get_analyzer_api_key,
@@ -12,19 +15,19 @@ from heimdall_utils.aws_utils import (
     send_analyzer_request,
 )
 from heimdall_utils.datetime import format_timestamp, get_utc_datetime
-from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC
+from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
-from heimdall_utils.utils import Logger
 from org_queue.org_queue_env import ORG_QUEUE
 
-log = Logger(__name__)
+log = Logger(service=APPLICATION, name="org_queue")
 FAILED = {}
 
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
 
 
-def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
+@log.inject_lambda_context
+def run(event: dict = None, context: LambdaContext = None, services_file: str = None) -> Union[list, dict]:
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
     queued = []
@@ -54,6 +57,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
 
     batch_id = generate_batch_id(batch_label)
 
+    log.append_keys(batch_id=batch_id)
     log.info(f"Queueing the following organizations:\n{orgs}")
 
     for org in orgs:
@@ -69,7 +73,7 @@ def run(event=None, _context=None, services_file=None) -> Union[list, dict]:
         org_list = get_org_list(services, service, org_name)
         if not org_list:
             continue
-        log.info("Queuing %d service orgs for service %s", len(org_list), service)
+        log.info("Queuing %d service orgs for service %s", len(org_list), service, version_control_service=service)
         for org_name_str in org_list:
             org_result_str = f"{service}/{org_name_str}"
             if not fnmatch(org_name_str, org_name):
@@ -117,7 +121,7 @@ def get_org_list(services: dict, service: str, org_name: str) -> Union[list, Non
             api_url = get_service_url(service_dict)
             return org_queue_bitbucket.BitbucketOrgs.get_all_orgs(service, api_url, api_key) or []
         message = f"service {service} of type {service_type} is not supported for wildcard organizations."
-        log.error(message)
+        log.error(message, version_control_service=service)
         FAILED[f"{service}/{org_name}"] = message
         return None
     # Turn a single org name into a list to simplify the queuing logic
@@ -127,12 +131,12 @@ def get_org_list(services: dict, service: str, org_name: str) -> Union[list, Non
 def validate_service(services: dict, service: str, org_name: str) -> bool:
     if service in ["github", "gitlab", "bitbucket"]:
         message = f"public service {service} cannot have a wildcard organization."
-        log.error(message)
+        log.error(message, version_control_service=service)
         FAILED[f"{service}/{org_name}"] = message
         return False
     if service not in services:
         message = f"{service} not located in services.json. Skipping"
-        log.error(message)
+        log.error(message, version_control_service=service)
         FAILED[f"{service}/{org_name}"] = message
         return False
     return True

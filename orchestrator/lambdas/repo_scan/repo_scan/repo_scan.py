@@ -3,9 +3,13 @@ import json
 import os
 from collections import namedtuple
 from datetime import datetime
+from typing import Any, Optional
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from heimdall_utils.aws_utils import get_analyzer_api_key, send_analyzer_request
-from heimdall_utils.utils import JSONUtils, Logger, get_ttl_expiration
+from heimdall_utils.utils import JSONUtils, get_ttl_expiration
+from heimdall_utils.env import APPLICATION
 from repo_scan.aws_connect import (
     batch_update_db,
     delete_processed_messages,
@@ -21,11 +25,12 @@ PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
-log = Logger(__name__)
+log = Logger(service=APPLICATION, name="repo_scan")
 json_utils = JSONUtils(log)
 
 
-def run(_event=None, _context=None, size=100) -> list or None:
+@log.inject_lambda_context
+def run(event: dict[str, Any] = None, context: LambdaContext = None, size: int = 100) -> Optional[list[dict[str, Any]]]:
     # Get the size of the REPO_QUEUE
     message_num = get_queue_size(REPO_QUEUE)
     if message_num == 0:
@@ -99,12 +104,14 @@ def submit_repos(repos: list, analyzer_url: str, api_key: str) -> list:
     return all_success
 
 
-def requeue_rate_limit_repos(service, repo_lookup, failed_repos):
+def requeue_rate_limit_repos(service: str, repo_lookup: dict[str, Any], failed_repos: list):
     """
     sends repos that hit a rate limit back into the repo_queue SQS queue
     currently only supports Bitbucket
     """
+    log.info("There was an error submitting repositories in: %s", service, failed_repos=failed_repos)
     if service not in ["bitbucket"]:
+        log.error("Rate Limit Re-queuing is not supported for: %s", service, failed_repos=failed_repos)
         return
     repos_to_queue = []
     index = 0
@@ -120,7 +127,7 @@ def requeue_rate_limit_repos(service, repo_lookup, failed_repos):
         if index >= 10:
             log.info("Re-queueing %d repos", index)
             if not send_sqs_message(REPO_QUEUE, repos_to_queue):
-                log.error("There was an error re-queueing the repos, aborting.")
+                log.error("There was an error re-queueing the repos, aborting.", failed_repos=repos_to_queue)
                 return
             index = 0
             repos_to_queue = []

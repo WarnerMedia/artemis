@@ -3,14 +3,15 @@ import os
 import time
 
 from botocore.exceptions import ClientError
+from aws_lambda_powertools import Logger
 
 from heimdall_utils.aws_utils import get_dynamodb_connection, get_sqs_connection
-from heimdall_utils.utils import Logger
+from heimdall_utils.env import APPLICATION
 
 REGION = os.environ.get("REGION", "us-east-2")
 RETRY_EXCEPTIONS = ["ProvisionedThroughputExceededException", "ThrottlingException"]
 
-log = Logger(__name__)
+log = Logger(service=APPLICATION, name=__name__, child=True)
 
 
 def get_queue_size(repo_queue: str):
