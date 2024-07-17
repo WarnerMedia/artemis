@@ -125,6 +125,11 @@ variable "repo_queue_lambda_timeout" {
   default     = 900
 }
 
+variable "third_party_api_timeout" {
+  description = "Timeout of third-party API requests in Seconds"
+  default     = 30
+}
+
 variable "repo_scan_lambda_timeout" {
   description = "Timeout of repo_scan Lambda in Seconds"
   default     = 900

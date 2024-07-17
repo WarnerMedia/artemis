@@ -1,18 +1,24 @@
 # pylint: disable=no-name-in-module, no-member
 import json
 from itertools import zip_longest
+from requests import HTTPError
 from typing import Optional, Any
 
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from botocore.exceptions import ClientError
 
-from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection
+from heimdall_utils.aws_utils import (
+    get_analyzer_api_key,
+    get_heimdall_secret,
+    get_sqs_connection,
+    queue_service_and_org,
+)
 from heimdall_utils.env import API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import ServiceInfo, ScanOptions
 from heimdall_utils.variables import REGION
-from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, SERVICE_PROCESSORS
+from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, ORG_DLQ, SERVICE_PROCESSORS
 
 
 log = Logger(service=APPLICATION, name="repo_queue")
@@ -98,7 +104,23 @@ def query(
         redundant_scan_query=redundant_scan_query,
     )
 
-    return service_processor.query()
+    repos = []
+    try:
+        repos = service_processor.query()
+    except HTTPError:
+        log.warning("Unable to Process: %s/%s. Sending to dead-letter queue", service, org)
+        queue_service_and_org(
+            queue=ORG_DLQ,
+            service=service,
+            org_name=org,
+            page=page,
+            default_branch_only=default_branch_only,
+            plugins=plugins,
+            batch_id=batch_id,
+            redundant_scan_query=redundant_scan_query,
+        )
+
+    return repos
 
 
 def queue_repo_group(repo_group: iter, plugins: list, batch_id: str) -> int:

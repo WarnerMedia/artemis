@@ -140,10 +140,10 @@ class ProcessGithubRepos:
 
     def _report_error_response(self, response, error_response):
         if error_response == GITHUB_RATE_ABUSE_FLAG:
-            log.warning("Github abuse limit has been reached.")
-            return error_response
+            log.error("Github abuse limit has been reached.")
+            raise requests.HTTPError("Github abuse limit has been reached.")
         if error_response == GITHUB_TIMEOUT_FLAG:
-            log.warning("Github query timed out.")
+            log.error("Github query timed out.")
             raise requests.HTTPError("Github query timed out")
         log.error("Code: %s - %s", response.status_code, error_response)
         return None
