@@ -446,6 +446,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
                 "branch": scan.ref,
                 "details": results["event_info"][item["id"]],
                 "report_url": scan.report_url,
+                "source": "artemis",
             }
             queue_event(scan.repo.repo, plugin_type, payload)
 
