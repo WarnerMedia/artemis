@@ -23,6 +23,7 @@ __pycache__
 htmlcov
 .pytest_cache
 .temp
+test-report.xml
 
 # VSCode
 .vscode
