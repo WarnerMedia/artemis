@@ -11,6 +11,7 @@ from heimdall_repos.gitlab_utils import ProcessGitlabRepos
 ORG_QUEUE = os.environ.get("ORG_QUEUE")
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
 REGION = os.environ.get("REGION", "us-east-1")
+ORG_DLQ = os.environ.get("ORG_DEAD_LETTER_QUEUE")
 
 SERVICE_PROCESSORS = {
     "github": ProcessGithubRepos,

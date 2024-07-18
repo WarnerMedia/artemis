@@ -283,8 +283,8 @@ class ProcessBitbucketRepos:
                 headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             response = session.get(url=url, headers=headers)
             if response.status_code == 429:
-                log.exception("Error retrieving Bitbucket query. Rate Limit Reached")
-                raise requests.HTTPError("Rate Limit Error")
+                log.error("Error retrieving Bitbucket query. Rate Limit Reached")
+                raise requests.HTTPError("Bitbucket Rate Limit Reached")
             if response.status_code != 200:
                 log.error("Error retrieving Bitbucket query: %s, Error Code: %s", url, response.status_code)
                 return None
