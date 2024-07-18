@@ -148,7 +148,8 @@ def queue_message(payload: dict[str, Any], queue_url: str) -> bool:
             MessageBody=json.dumps(payload),
         )
         return True
-    except ClientError:
+    except ClientError as e:
+        log.exception(e)
         log.error("Unable to send to queue message")
         return False
 

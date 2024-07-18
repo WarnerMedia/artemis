@@ -44,6 +44,7 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
                 data.get("repo"),
             )
         except HTTPError:
+            print(data)
             log.warning("Unable to Process this organization. Sending task to dead-letter queue")
             queue_message(payload=data, queue=ORG_DLQ)
 
