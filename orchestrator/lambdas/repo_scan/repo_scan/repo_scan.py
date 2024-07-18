@@ -23,6 +23,7 @@ API_KEY_LOC = os.environ.get("ARTEMIS_API_KEY")
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]
 PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles"])
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
+REPO_DLQ = os.environ.get("REPO_DEAD_LETTER_QUEUE")
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
 log = Logger(service=APPLICATION, name="repo_scan")
@@ -106,34 +107,28 @@ def submit_repos(repos: list, analyzer_url: str, api_key: str) -> list:
 
 def requeue_rate_limit_repos(service: str, repo_lookup: dict[str, Any], failed_repos: list):
     """
-    sends repos that hit a rate limit back into the repo_queue SQS queue
-    currently only supports Bitbucket
+    Send failed repos to the repo-deadletter SQS queue
     """
-    log.info("There was an error submitting repositories in: %s", service, failed_repos=failed_repos)
-    if service not in ["bitbucket"]:
-        log.error("Rate Limit Re-queuing is not supported for: %s", service, failed_repos=failed_repos)
-        return
+    log.info(f"Sending {len(failed_repos)} repos to the repo-deadletter Queue", service=service)
+
     repos_to_queue = []
     index = 0
     for failed_repo in failed_repos:
-        error_msg = failed_repo.get("error")
-        if not (error_msg and error_msg.startswith("Rate limit")):
-            continue
         repo_info = repo_lookup.get(failed_repo.get("repo", ""))
         if not repo_info:
             continue
         repos_to_queue.append({"Id": str(index), "MessageBody": json.dumps(repo_info)})
         index += 1
         if index >= 10:
-            log.info("Re-queueing %d repos", index)
-            if not send_sqs_message(REPO_QUEUE, repos_to_queue):
-                log.error("There was an error re-queueing the repos, aborting.", failed_repos=repos_to_queue)
+            log.debug("Sending %d repos to dead-letter queue", index, service=service)
+            if not send_sqs_message(REPO_DLQ, repos_to_queue):
+                log.error("There was an error queueing the repos, aborting.", service=service)
                 return
             index = 0
             repos_to_queue = []
     if index > 0:
-        log.info("Re-queueing %d repos", index)
-        send_sqs_message(REPO_QUEUE, repos_to_queue)
+        log.info("Sending %d repos to dead-letter queue", index, service=service)
+        send_sqs_message(REPO_DLQ, repos_to_queue)
 
 
 def get_repo_scan_items(service, response, date=None):
