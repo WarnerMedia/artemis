@@ -2079,6 +2079,7 @@ components:
               - python_code_checker
               - technology_discovery
               - truffle_hog
+              - trufflehog_v3
               - brakeman
               - bundler_audit
               - bandit
