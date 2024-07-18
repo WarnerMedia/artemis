@@ -8,12 +8,7 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from botocore.exceptions import ClientError
 
-from heimdall_utils.aws_utils import (
-    get_analyzer_api_key,
-    get_heimdall_secret,
-    get_sqs_connection,
-    queue_service_and_org,
-)
+from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection, queue_message
 from heimdall_utils.env import API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import ServiceInfo, ScanOptions
@@ -33,19 +28,25 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
         data = json.loads(item["body"])
         plugins = data.get("plugins")
         default_branch_only = data.get("default_branch_only", False)
-        repos = query(
-            data["service"],
-            data["org"],
-            services.get(data["service"]),
-            data["page"],
-            default_branch_only,
-            plugins,
-            full_services_dict["external_orgs"],
-            data.get("batch_id"),
-            artemis_api_key,
-            data.get("redundant_scan_query"),
-            data.get("repo"),
-        )
+
+        try:
+            repos = query(
+                data["service"],
+                data["org"],
+                services.get(data["service"]),
+                data["page"],
+                default_branch_only,
+                plugins,
+                full_services_dict["external_orgs"],
+                data.get("batch_id"),
+                artemis_api_key,
+                data.get("redundant_scan_query"),
+                data.get("repo"),
+            )
+        except HTTPError:
+            log.warning("Unable to Process this organization. Sending task to dead-letter queue")
+            queue_message(payload=data, queue=ORG_DLQ)
+
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
         for repo_group in group(repos, 10):
@@ -104,23 +105,7 @@ def query(
         redundant_scan_query=redundant_scan_query,
     )
 
-    repos = []
-    try:
-        repos = service_processor.query()
-    except HTTPError:
-        log.warning("Unable to Process: %s/%s. Sending to dead-letter queue", service, org)
-        queue_service_and_org(
-            queue=ORG_DLQ,
-            service=service,
-            org_name=org,
-            page=page,
-            default_branch_only=default_branch_only,
-            plugins=plugins,
-            batch_id=batch_id,
-            redundant_scan_query=redundant_scan_query,
-        )
-
-    return repos
+    return service_processor.query()
 
 
 def queue_repo_group(repo_group: iter, plugins: list, batch_id: str) -> int:
