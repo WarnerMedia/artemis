@@ -149,7 +149,7 @@ def queue_message(payload: dict[str, Any], queue_url: str) -> bool:
         )
         return True
     except ClientError:
-        log.error("Unable to send to queue message")
+        log.error("Unable queue message")
         return False
 
 
