@@ -28,6 +28,7 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
         data = json.loads(item["body"])
         plugins = data.get("plugins")
         default_branch_only = data.get("default_branch_only", False)
+        repos = []
 
         try:
             repos = query(
@@ -44,9 +45,8 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
                 data.get("repo"),
             )
         except HTTPError:
-            print(data)
             log.warning("Unable to Process this organization. Sending task to dead-letter queue")
-            queue_message(payload=data, queue=ORG_DLQ)
+            queue_message(payload=data, queue_url=ORG_DLQ)
 
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
