@@ -256,6 +256,11 @@ class ProcessGithubRepos:
             else:
                 default_branch_name = default_branch.get("name", "HEAD")
 
+            # if scan_option is set to default branch only:
+            # Queue only default branch
+            # If its not and we're not processing a repo right now then
+            # Requeue repo and branch to trigger a branch query
+
             repos.extend(self._process_branches(name, default_branch_name, repo.get("refs")))
         return repos
 
@@ -263,11 +268,12 @@ class ProcessGithubRepos:
         """
         Checks if the repo has branches.
         """
-        if self.json_utils.get_object_from_json_dict(repo, ["refs", "nodes"]):
-            return True
+        repo_is_empty = repo.get("isEmpty", False)
+        if repo_is_empty:
+            log.warning(f"repo {repo.get('name')} has no branches. Skipping")
+            return False
 
-        log.warning(f"repo {repo.get('name')} has no branches. Skipping")
-        return False
+        return True
 
     def _process_branches(self, repo_name: str, default_branch: str, branches: dict) -> list:
         """
