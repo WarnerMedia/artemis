@@ -129,6 +129,20 @@ data "aws_iam_policy_document" "repo-queue-receive" {
   }
 }
 
+data "aws_iam_policy_document" "org-deadletter-queue-send" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sqs:SendMessage",
+    ]
+
+    resources = [
+      "${aws_sqs_queue.org-deadletter-queue.arn}",
+    ]
+  }
+}
+
 #######################################
 # Policies
 #######################################
@@ -136,6 +150,10 @@ data "aws_iam_policy_document" "repo-queue-receive" {
 resource "aws_iam_policy" "org-queue-send" {
   name   = "${var.app}-org-queue-send"
   policy = data.aws_iam_policy_document.org-queue-send.json
+}
+resource "aws_iam_policy" "org-deadletter-queue-send" {
+  name   = "${var.app}-org-deadletter-queue-send"
+  policy = data.aws_iam_policy_document.org-deadletter-queue-send.json
 }
 
 resource "aws_iam_policy" "org-queue-receive" {
@@ -165,6 +183,11 @@ resource "aws_iam_role_policy_attachment" "vpc-lambda-org-queue-send" {
 resource "aws_iam_role_policy_attachment" "vpc-lambda-org-queue-receive" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.org-queue-receive.arn
+}
+
+resource "aws_iam_role_policy_attachment" "vpc-lambda-org-deadletter-queue-send" {
+  role       = aws_iam_role.vpc-lambda-assume-role.name
+  policy_arn = aws_iam_policy.org-deadletter-queue-send.arn
 }
 
 resource "aws_iam_role_policy_attachment" "vpc-lambda-repo-queue-send" {

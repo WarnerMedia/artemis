@@ -101,7 +101,7 @@ resource "aws_lambda_function" "repo-queue" {
       ARTEMIS_S3_BUCKET                 = data.aws_s3_bucket.artemis_s3_bucket.bucket
       REPO_QUEUE                        = aws_sqs_queue.repo-queue.id
       ORG_QUEUE                         = aws_sqs_queue.org-queue.id
-      ORG_DEAD_LETTER_QUEUE             = aws_sqs_queue.org-deadletter-queue
+      ORG_DEAD_LETTER_QUEUE             = aws_sqs_queue.org-deadletter-queue.id
       DEFAULT_API_TIMEOUT               = var.third_party_api_timeout
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
