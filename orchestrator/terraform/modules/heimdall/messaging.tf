@@ -77,6 +77,7 @@ data "aws_iam_policy_document" "org-queue-send" {
 
     resources = [
       "${aws_sqs_queue.org-queue.arn}",
+      "${aws_sqs_queue.org-deadletter-queue.arn}",
     ]
   }
 }
