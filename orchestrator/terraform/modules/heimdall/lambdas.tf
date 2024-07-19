@@ -157,12 +157,13 @@ resource "aws_lambda_function" "repo-scan" {
 
   environment {
     variables = {
-      APPLICATION     = var.app
-      REGION          = var.aws_region
-      ARTEMIS_API     = var.artemis_api
-      ARTEMIS_API_KEY = aws_secretsmanager_secret.artemis-api-key.name
-      REPO_QUEUE      = aws_sqs_queue.repo-queue.id
-      SCAN_TABLE      = aws_dynamodb_table.repo-scan-id.name
+      APPLICATION            = var.app
+      REGION                 = var.aws_region
+      ARTEMIS_API            = var.artemis_api
+      ARTEMIS_API_KEY        = aws_secretsmanager_secret.artemis-api-key.name
+      REPO_QUEUE             = aws_sqs_queue.repo-queue.id
+      SCAN_TABLE             = aws_dynamodb_table.repo-scan-id.name
+      REPO_DEAD_LETTER_QUEUE = aws_sqs_queue.repo-deadletter-queue.id
     }
   }
 
