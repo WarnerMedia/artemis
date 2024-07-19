@@ -298,8 +298,8 @@ variable "metadata_events_enabled" {
   default     = false
 }
 
-variable "audit_log_scrub_details" {
-  description = "Whether to scrub details from audit log messages"
+variable "secrets_events_scrub_details" {
+  description = "Whether to scrub details from secrets events"
   default     = false
 }
 

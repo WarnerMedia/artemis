@@ -119,7 +119,12 @@ query getRefs($org: String!, $repo: String!, $cursor: String) {
 
 GITHUB_RATE_ABUSE_FLAG = "rate_abuse"
 # Last key added in an attempt to catch future iterations of the rate limiting.
-GITHUB_RATE_ABUSE_KEYWORDS = ["abuse detection", "rate limit", "Please wait a few minutes before you try again."]
+GITHUB_RATE_ABUSE_KEYWORDS = [
+    "abuse detection",
+    "rate limit",
+    "Please wait a few minutes before you try again.",
+    "Please try resubmitting your request",
+]
 
 GITHUB_TIMEOUT_FLAG = "timeout"
 GITHUB_TIMEOUT_KEYWORDS = ["timeout", "Something went wrong while executing your query."]
