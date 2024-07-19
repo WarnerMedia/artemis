@@ -298,11 +298,6 @@ variable "metadata_events_enabled" {
   default     = false
 }
 
-variable "secrets_events_scrub_details" {
-  description = "Whether to scrub details from secrets events"
-  default     = false
-}
-
 ################################################
 # GitHub App
 ################################################
