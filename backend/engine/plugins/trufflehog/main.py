@@ -30,16 +30,6 @@ def main(in_args=None):
                 "details": cleaned_results["results"],
                 "event_info": cleaned_results["event_info"],
             }
-        ), file=sys.stderr
-    )
-    # Print the results to stdout
-    print(
-        json.dumps(
-            {
-                "success": not cleaned_results["results"],
-                "details": cleaned_results["results"],
-                "event_info": cleaned_results["event_info"],
-            }
         )
     )
 

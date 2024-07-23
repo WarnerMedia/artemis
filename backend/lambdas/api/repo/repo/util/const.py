@@ -32,7 +32,7 @@ PLUGIN_LIST_BY_CATEGORY = {
     "secret": {
         "gitsecrets": None,
         "truffle_hog": None,
-        "trufflehog_v3": None,
+        "trufflehog": None,
     },
     "static_analysis": {
         "brakeman": None,
