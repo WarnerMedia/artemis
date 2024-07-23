@@ -26,14 +26,11 @@ RUN apk --no-cache add \
         python3 \
         unzip
 
-# Upgrade pip
-RUN pip3 install --upgrade pip setuptools
-
-# symlink python3 to python for Analyzer Engine benefit
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
-# Needed for plugin utils
-RUN pip3 install boto3
+# Upgrade pip and install engine dependencies.
+# hadolint ignore=DL3013
+RUN pip3 install --no-cache-dir --upgrade pip setuptools && \
+    pip3 install --no-cache-dir boto3 && \
+    ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /app
 RUN wget https://github.com/find-sec-bugs/find-sec-bugs/releases/download/version-$FSB_VER/findsecbugs-cli-$FSB_VER$FSB_PATCH.zip
