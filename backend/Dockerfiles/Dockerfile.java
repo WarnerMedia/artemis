@@ -42,10 +42,10 @@ WORKDIR /app
 # downloading, update dependency check data so it doesn't have to all be
 # downloaded each scan
 RUN if [ "$OWASP_DC" != "" ] ; then \
-    echo "$OWASP_DC_SHA  dependency-check-$OWASP_DC-release.zip" > owasp_checksum.txt && \
-    wget https://github.com/jeremylong/DependencyCheck/releases/download/v$OWASP_DC/dependency-check-$OWASP_DC-release.zip && \
-    sha256sum -c owasp_checksum.txt && \
-    unzip dependency-check-$OWASP_DC-release.zip -d /app/owasp_dependency-check && \
+    wget -q -O /tmp/dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v$OWASP_DC/dependency-check-$OWASP_DC-release.zip && \
+    echo "$OWASP_DC_SHA  /tmp/dependency-check.zip" | sha256sum -c - && \
+    unzip /tmp/dependency-check.zip -d /app/owasp_dependency-check && \
+    rm /tmp/dependency-check.zip && \
     /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --connectiontimeout 120000 --updateonly ; \
     fi
 
