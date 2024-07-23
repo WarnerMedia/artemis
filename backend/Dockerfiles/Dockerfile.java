@@ -1,6 +1,9 @@
 ARG OPENJDK_VER=7u201-jdk-alpine3.9
 FROM openjdk:$OPENJDK_VER
 
+# We're using Alpine's /bin/sh, so disable pipefail suggestion.
+# hadolint global ignore=DL4006
+
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
