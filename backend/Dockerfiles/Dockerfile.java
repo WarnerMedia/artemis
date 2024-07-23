@@ -33,8 +33,6 @@ RUN pip3 install --no-cache-dir --upgrade pip setuptools && \
     ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /app
-RUN wget https://github.com/find-sec-bugs/find-sec-bugs/releases/download/version-$FSB_VER/findsecbugs-cli-$FSB_VER$FSB_PATCH.zip
-RUN unzip findsecbugs-cli-$FSB_VER$FSB_PATCH.zip -d /app/findsecbugs
 
 # OWASP Dependency Check only runs with certain Java versions so only include
 # if the variable is set, which will happen for those Java versions. After
@@ -48,10 +46,12 @@ RUN if [ "$OWASP_DC" != "" ] ; then \
     /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --connectiontimeout 120000 --updateonly ; \
     fi
 
-WORKDIR /app/findsecbugs
-
-RUN sed -i -e 's/\r$//' findsecbugs.sh
-RUN chmod a+x findsecbugs.sh
+# Install OWASP Find Security Bugs and fix up launcher script.
+RUN wget -q -O /tmp/findsecbugs.zip https://github.com/find-sec-bugs/find-sec-bugs/releases/download/version-$FSB_VER/findsecbugs-cli-$FSB_VER$FSB_PATCH.zip && \
+    unzip /tmp/findsecbugs.zip -d /app/findsecbugs && \
+    sed -i -e 's/\r$//' /app/findsecbugs/findsecbugs.sh && \
+    chmod a+x /app/findsecbugs/findsecbugs.sh && \
+    rm /tmp/findsecbugs.zip
 
 # Install detekt
 RUN wget -q -O /usr/local/bin/detekt.jar \
