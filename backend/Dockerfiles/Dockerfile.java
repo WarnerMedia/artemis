@@ -15,15 +15,16 @@ ENV FSB_PATCH=$FSB_PATCH
 ENV OWASP_DC=$OWASP_DC
 
 # Base apk requirements to execute script
-RUN apk update && \
-    apk add git  && \
-    apk add unzip && \
-    apk add python3 && \
-    apk add py3-pip && \
-    apk add curl && \
-    apk add maven && \
-    apk add bash && \
-    apk add docker
+# hadolint ignore=DL3018
+RUN apk --no-cache add \
+        bash \
+        curl \
+        docker \
+        git \
+        maven \
+        py3-pip \
+        python3 \
+        unzip
 
 # Upgrade pip
 RUN pip3 install --upgrade pip setuptools
