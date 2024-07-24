@@ -87,7 +87,7 @@ variable "application_log_level" {
 
 variable "system_log_level" {
   description = "System Log Level setting for AWS Lambda"
-  default     = "WARN"
+  default     = "INFO"
 }
 ###############################################################################
 # Environment-agnostic variables
