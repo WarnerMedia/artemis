@@ -15,7 +15,7 @@ EXAMPLE_FINDING = {
     "SourceMetadata": {
         "Data": {
             "Git": {
-                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/exampmle.py#L1",
+                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/example.py#L1",
                 "repository": "https://example.com/example/example.git",
                 "commit": "abcdef01234567890abcdef01234567890abcdef",
                 "email": EXAMPLE_EMAIL,
@@ -45,7 +45,7 @@ EXAMPLE_LEGIT_FINDING = {
     "SourceMetadata": {
         "Data": {
             "Git": {
-                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/exampmle.py#L1",
+                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/example.py#L1",
                 "repository": "https://example.com/example/example.git",
                 "commit": "corned_beef_hash",
                 "email": EXAMPLE_EMAIL,
@@ -75,7 +75,7 @@ EXAMPLE_LOCKFILE_FINDING = {
     "SourceMetadata": {
         "Data": {
             "Git": {
-                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/exampmle.py#L1",
+                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/example.py#L1",
                 "repository": "https://example.com/example/example.git",
                 "commit": "1",
                 "email": EXAMPLE_EMAIL,
@@ -105,7 +105,7 @@ EXAMPLE_VENDOR_FINDING = {
     "SourceMetadata": {
         "Data": {
             "Git": {
-                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/exampmle.py#L1",
+                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/example.py#L1",
                 "repository": "https://example.com/example/example.git",
                 "commit": "42",
                 "email": EXAMPLE_EMAIL,
