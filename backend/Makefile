@@ -607,7 +607,7 @@ docker: dist/docker/engine \
 		dist/docker/swift
 .PHONY: docker _docker
 
-docker-java: Dockerfiles/docker-bake.hcl Dockerfiles/Dockerfile.java
+docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 #	Build all images in parallel.
 	MAINTAINER=${MAINTAINER} \
@@ -623,7 +623,7 @@ docker-java: Dockerfiles/docker-bake.hcl Dockerfiles/Dockerfile.java
 	JAVA17_TAG=${JAVA17_TAG} \
 	ECR_URL=${ECR_URL} \
 	LATEST_COMMIT=${LATEST_COMMIT} \
-	${DOCKER} buildx bake -f Dockerfiles/docker-bake.hcl java
+	${DOCKER} buildx bake -f docker-bake.hcl java
 #	Mark images as updated.
 	mkdir -p ${DIST_DIR}/docker
 	touch dist/docker/java7
