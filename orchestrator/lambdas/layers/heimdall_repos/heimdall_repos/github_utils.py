@@ -16,7 +16,7 @@ from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
 from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
 from heimdall_utils.github.app import GithubApp
-from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions
+from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions, parse_timestamp
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 log = Logger(service=APPLICATION, name="ProcessGithubRepos", child=True)
@@ -244,7 +244,7 @@ class ProcessGithubRepos:
             ):
                 # With an external org we only want to scan the private repos
                 # shared with us any not that org's public repos
-                log.info("Skipping public repo %s in external org", name)
+                log.info("Skipping public repo %s in external org", name, repo=name)
                 continue
 
             if not self._is_repo_valid(repo):
@@ -280,7 +280,7 @@ class ProcessGithubRepos:
         if self.scan_options.default_branch_only:
             branch_names = [default_branch]
             if default_branch not in timestamps:
-                timestamps[default_branch] = "1970-01-01T00:00:00Z"
+                timestamps[default_branch] = parse_timestamp()
 
         for branch in branch_names:
             search_branch = branch
@@ -328,7 +328,8 @@ class ProcessGithubRepos:
 
         for node in refs["nodes"]:
             ref_names.add(node.get("name"))
-            timestamps[node.get("name")] = node.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
+            timestamp = node.get("target", {}).get("committedDate")
+            timestamps[node.get("name")] = parse_timestamp(timestamp)
 
         page_info = refs.get("pageInfo")
         if not page_info:
