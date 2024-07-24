@@ -17,11 +17,7 @@ def main(in_args=None):
         in_args,
     )
 
-    error_dict = {
-        "errors": [],
-        "alerts": [],
-        "debug": []
-    } 
+    error_dict = {"errors": [], "alerts": [], "debug": []}
 
     scan_results = run_security_checker(args.path, error_dict, depth=args.engine_vars.get("depth"))
     cleaned_results = scrub_results(scan_results, error_dict)

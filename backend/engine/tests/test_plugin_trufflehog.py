@@ -200,7 +200,7 @@ class TestPluginTrufflehog(unittest.TestCase):
             "alerts": [],
             "debug": [],
         }
-        test = [ 
+        test = [
             {
                 "SourceMetadata": {
                     "This is not an expected field": True,
