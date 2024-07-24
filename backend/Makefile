@@ -542,72 +542,6 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 	touch $@
 	@echo "${OK}"
 
-dist/docker/java7: Dockerfiles/Dockerfile.java
-	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull -t ${JAVA7_TAG} -f Dockerfiles/Dockerfile.java \
-		--no-cache --force-rm \
-		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg OPENJDK_VER=7u201-jdk-alpine3.9 \
-		--build-arg DETEKT_VER=${DETEKT_VER} \
-		--build-arg DETEKT_SHA=${DETEKT_SHA} \
-		--build-arg FSB_VER=${FSB_VER} \
-		--build-arg FSB_PATCH=${FSB_PATCH}
-	mkdir -p ${DIST_DIR}/docker
-	${DOCKER} tag ${JAVA7_TAG} ${ECR_URL}${JAVA7_TAG}
-	${DOCKER} tag ${JAVA7_TAG} ${ECR_URL}${JAVA7_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
-
-dist/docker/java8: Dockerfiles/Dockerfile.java
-	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull -t ${JAVA8_TAG} -f Dockerfiles/Dockerfile.java \
-		--no-cache --force-rm \
-		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg OPENJDK_VER=8u201-jdk-alpine3.9 \
-		--build-arg DETEKT_VER=${DETEKT_VER} \
-		--build-arg DETEKT_SHA=${DETEKT_SHA} \
-		--build-arg FSB_VER=${FSB_VER} \
-		--build-arg FSB_PATCH=${FSB_PATCH} \
-		--build-arg OWASP_DC=${OWASP_DC} \
-		--build-arg OWASP_DC_SHA=${OWASP_DC_SHA}
-	mkdir -p ${DIST_DIR}/docker
-	${DOCKER} tag ${JAVA8_TAG} ${ECR_URL}${JAVA8_TAG}
-	${DOCKER} tag ${JAVA8_TAG} ${ECR_URL}${JAVA8_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
-
-dist/docker/java13: Dockerfiles/Dockerfile.java
-	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull  -t ${JAVA13_TAG} -f Dockerfiles/Dockerfile.java \
-		--no-cache --force-rm \
-		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg OPENJDK_VER=13-ea-14-jdk-alpine3.9 \
-		--build-arg DETEKT_VER=${DETEKT_VER} \
-		--build-arg DETEKT_SHA=${DETEKT_SHA} \
-		--build-arg FSB_VER=${FSB_VER} \
-		--build-arg FSB_PATCH=${FSB_PATCH}
-	mkdir -p ${DIST_DIR}/docker
-	${DOCKER} tag ${JAVA13_TAG} ${ECR_URL}${JAVA13_TAG}
-	${DOCKER} tag ${JAVA13_TAG} ${ECR_URL}${JAVA13_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
-
-dist/docker/java17: Dockerfiles/Dockerfile.java
-	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull -t ${JAVA17_TAG} -f Dockerfiles/Dockerfile.java \
-		--no-cache --force-rm \
-		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg OPENJDK_VER=17-ea-14-jdk-alpine3.12 \
-		--build-arg DETEKT_VER=${DETEKT_VER} \
-		--build-arg DETEKT_SHA=${DETEKT_SHA} \
-		--build-arg FSB_VER=${FSB_VER} \
-		--build-arg FSB_PATCH=${FSB_PATCH}
-	mkdir -p ${DIST_DIR}/docker
-	${DOCKER} tag ${JAVA17_TAG} ${ECR_URL}${JAVA17_TAG}
-	${DOCKER} tag ${JAVA17_TAG} ${ECR_URL}${JAVA17_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
-
 dist/docker/ruby: Dockerfiles/Dockerfile.ruby
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${RUBY_TAG} -f Dockerfiles/Dockerfile.ruby \
@@ -666,15 +600,38 @@ docker: dist/docker/engine \
 		dist/docker/php \
 		dist/docker/dind \
 		dist/docker/golang \
-		dist/docker/java7 \
-		dist/docker/java8 \
-		dist/docker/java13 \
-		dist/docker/java17 \
+		docker-java \
 		dist/docker/ruby \
 		dist/docker/db_maintenance \
 		dist/docker/veracode \
 		dist/docker/swift
 .PHONY: docker _docker
+
+docker-java: Dockerfiles/docker-bake.hcl Dockerfiles/Dockerfile.java
+	@echo "${INFO}Building $@"
+#	Build all images in parallel.
+	MAINTAINER=${MAINTAINER} \
+	DETEKT_VER=${DETEKT_VER} \
+	DETEKT_SHA=${DETEKT_SHA} \
+	FSB_VER=${FSB_VER} \
+	FSB_PATCH=${FSB_PATCH} \
+	OWASP_DC=${OWASP_DC} \
+	OWASP_DC_SHA=${OWASP_DC_SHA} \
+	JAVA7_TAG=${JAVA7_TAG} \
+	JAVA8_TAG=${JAVA8_TAG} \
+	JAVA13_TAG=${JAVA13_TAG} \
+	JAVA17_TAG=${JAVA17_TAG} \
+	ECR_URL=${ECR_URL} \
+	LATEST_COMMIT=${LATEST_COMMIT} \
+	${DOCKER} buildx bake -f Dockerfiles/docker-bake.hcl java
+#	Mark images as updated.
+	mkdir -p ${DIST_DIR}/docker
+	touch dist/docker/java7
+	touch dist/docker/java8
+	touch dist/docker/java13
+	touch dist/docker/java17
+	@echo "${OK}"
+.PHONY: docker-java
 
 ###############################################################################
 # High-level build targets
