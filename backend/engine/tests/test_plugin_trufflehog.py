@@ -22,7 +22,7 @@ EXAMPLE_FINDING = {
                 "file": "example.py",
                 "timestamp": "2021-01-01 00:00:00 +0000",
                 "line": 1,
-                "visibility": 1
+                "visibility": 1,
             }
         }
     },
@@ -38,7 +38,7 @@ EXAMPLE_FINDING = {
     "RawV2": "http://abc123:abc123@example.com:6379",
     "Redacted": "http://abc123:********@example.com:6379",
     "ExtraData": None,
-    "StructuredData": None
+    "StructuredData": None,
 }
 
 EXAMPLE_LEGIT_FINDING = {
@@ -52,7 +52,7 @@ EXAMPLE_LEGIT_FINDING = {
                 "file": "The Pacific Crest Trail",
                 "timestamp": "2021-01-01 00:00:00 +0000",
                 "line": 1,
-                "visibility": 1
+                "visibility": 1,
             }
         }
     },
@@ -68,7 +68,7 @@ EXAMPLE_LEGIT_FINDING = {
     "RawV2": "YER' A STRING 'ARRY",
     "Redacted": "YER A ****** 'ARRY",
     "ExtraData": None,
-    "StructuredData": None
+    "StructuredData": None,
 }
 
 EXAMPLE_LOCKFILE_FINDING = {
@@ -82,7 +82,7 @@ EXAMPLE_LOCKFILE_FINDING = {
                 "file": "package.lock",
                 "timestamp": "2021-01-01 00:00:00 +0000",
                 "line": 1,
-                "visibility": 1
+                "visibility": 1,
             }
         }
     },
@@ -98,7 +98,7 @@ EXAMPLE_LOCKFILE_FINDING = {
     "RawV2": "This is the story of a string, who didn't make it into the output",
     "Redacted": "This is the ***** of a string, who didn't make it into the ******",
     "ExtraData": None,
-    "StructuredData": None
+    "StructuredData": None,
 }
 
 EXAMPLE_VENDOR_FINDING = {
@@ -112,7 +112,7 @@ EXAMPLE_VENDOR_FINDING = {
                 "file": "vendor/home",
                 "timestamp": "2021-01-01 00:00:00 +0000",
                 "line": 1,
-                "visibility": 1
+                "visibility": 1,
             }
         }
     },
@@ -128,8 +128,9 @@ EXAMPLE_VENDOR_FINDING = {
     "RawV2": "an off brand coke",
     "Redacted": "an off brand ****",
     "ExtraData": None,
-    "StructuredData": None
+    "StructuredData": None,
 }
+
 
 class TestPluginTrufflehog(unittest.TestCase):
     @patch("engine.plugins.trufflehog.main.run_security_checker")
@@ -141,26 +142,40 @@ class TestPluginTrufflehog(unittest.TestCase):
         with redirect_stdout(stdout):
             trufflehog.main([])
         actual = stdout.getvalue()
-        expected = '{"success": false, "details": [{"scrubbing": "bubbles"}], "event_info": {}}\n'
+        expected = '{"success": false, "details": [{"scrubbing": "bubbles"}], "event_info": {}, "errors": [], "alerts": [], "debug": []}\n'
 
         self.assertEqual(actual, expected)
 
     @patch("engine.plugins.trufflehog.main.subprocess")
     def test_run_security_checker(self, subproc):
-        test = f"{json.dumps(EXAMPLE_FINDING)}\n".encode('utf-8')
+        test = f"{json.dumps(EXAMPLE_FINDING)}\n".encode("utf-8")
+        errors_dict = {
+            "errors": [],
+            "alerts": [],
+            "debug": [],
+        }
+
         mock_output = MagicMock()
         mock_output.stdout = test
         subproc.run.return_value = mock_output
-        actual = trufflehog.run_security_checker(utils.CODE_DIRECTORY)
-        expected = [ EXAMPLE_FINDING ]
+
+        actual = trufflehog.run_security_checker(utils.CODE_DIRECTORY, errors_dict)
+        expected = [EXAMPLE_FINDING]
+
         self.assertEqual(actual, expected)
 
     @patch("engine.plugins.trufflehog.main.SystemAllowList._load_al")
     def test_run_scrub_results(self, mock_load_al):
         mock_load_al.return_value = []
 
-        test = [ EXAMPLE_LEGIT_FINDING, EXAMPLE_LOCKFILE_FINDING, EXAMPLE_VENDOR_FINDING ]
-        actual = trufflehog.scrub_results(test)
+        errors_dict = {
+            "errors": [],
+            "alerts": [],
+            "debug": [],
+        }
+        test = [EXAMPLE_LEGIT_FINDING, EXAMPLE_LOCKFILE_FINDING, EXAMPLE_VENDOR_FINDING]
+        actual = trufflehog.scrub_results(test, errors_dict)
+
         expected_type = EXAMPLE_LEGIT_FINDING.get("DetectorName").lower()
         expected1 = {
             "id": actual["results"][0]["id"],
@@ -175,3 +190,25 @@ class TestPluginTrufflehog(unittest.TestCase):
         expected = {"results": [expected1], "event_info": expected_event}
 
         self.assertEqual(actual, expected)
+
+    @patch("engine.plugins.trufflehog.main.SystemAllowList._load_al")
+    def test_run_scrub_results_error(self, mock_load_al):
+        mock_load_al.return_value = []
+
+        errors_dict = {
+            "errors": [],
+            "alerts": [],
+            "debug": [],
+        }
+        test = [ 
+            {
+                "SourceMetadata": {
+                    "This is not an expected field": True,
+                }
+            }
+        ]
+        actual = trufflehog.scrub_results(test, errors_dict)
+
+        expected = {"results": [], "event_info": {}}
+        self.assertEqual(actual, expected)
+        self.assertEqual(len(errors_dict["errors"]), 1)
