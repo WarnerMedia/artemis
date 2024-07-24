@@ -1,8 +1,6 @@
 import json
 import subprocess
-import sys
 import uuid
-from copy import copy
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
@@ -11,7 +9,7 @@ ENDS = {"lock", "lock.json", "DEPS"}
 STARTS = {"vendor"}
 
 
-log = utils.setup_logging("trufflehog_v3")
+log = utils.setup_logging("trufflehog")
 
 
 def main(in_args=None):
@@ -85,7 +83,7 @@ def scrub_results(scan_results: list) -> list:
 
 
 def run_security_checker(scan_path: str, depth=None) -> list:
-    log.info("Running trufflehog_v3 (depth limit: %s)", depth)
+    log.info("Running trufflehog (depth limit: %s)", depth)
 
     if depth:
         cmd = [
