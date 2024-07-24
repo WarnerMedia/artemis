@@ -1,9 +1,15 @@
 # pylint: disable=no-member
 import json
 import logging
+import time
 from collections import namedtuple
 from datetime import datetime, timedelta
 from json import JSONDecodeError
+from typing import Optional
+
+from aws_lambda_powertools import Logger
+
+from heimdall_utils.env import APPLICATION
 
 # Set log levels for external packages
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -11,6 +17,8 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)
 
 DYNAMODB_TTL_DAYS = 60
+
+log = Logger(service=APPLICATION, name=__name__, child=True)
 
 
 class ServiceInfo:
@@ -34,7 +42,7 @@ class JSONUtils:
     def __init__(self, logger):
         self.log = logger
 
-    def get_json_from_response(self, response_text: str) -> dict or None:
+    def get_json_from_response(self, response_text: str) -> Optional[dict]:
         try:
             return json.loads(response_text)
         except (JSONDecodeError, TypeError) as e:
@@ -58,3 +66,48 @@ def get_json_from_file(file_path):
 
 def get_ttl_expiration():
     return int((datetime.utcnow().replace(microsecond=0) + timedelta(days=DYNAMODB_TTL_DAYS)).timestamp())
+
+
+def parse_timestamp(timestamp: Optional[str] = None) -> str:
+    """
+    Validates and processes a given timestamp string.
+
+    This function checks if the provided timestamp matches the ISO 8601 format.
+    If valid, it returns the original timestamp. If invalid or not provided,
+    it generates and returns a timestamp for a date exactly 3 months prior to
+    the current date and time.
+
+    Args:
+        timestamp (Optional[str]): A timestamp string in ISO 8601 format.
+            Defaults to None.
+
+    Returns:
+        str: Either the validated input timestamp or a generated timestamp
+             string representing a date 3 months ago, in ISO 8601 format.
+
+    Examples:
+        >>> parse_timestamp()
+        {"level":"WARNING","location":"parse_timestamp","message":"Generating Default timestamp"}
+        "2024-04-24T22:35:36Z"  # Output will vary based on the current date and time
+
+        >>> parse_timestamp("2024-06-24T22:50:00Z")
+        "2024-06-24T22:50:00Z"
+
+    Notes:
+        - The function uses the current system time to calculate the 3-month offset.
+        - All returned timestamps are in UTC (denoted by the 'Z' suffix).
+        - The function logs a warning message when generating a default timestamp.
+    """
+    format = "%Y-%m-%dT%H:%M:%SZ"
+    try:
+        if timestamp and bool(datetime.strptime(timestamp, format)):
+            return timestamp
+    except (TypeError, ValueError):
+        log.error("Timestamp is invalid")
+
+    log.warning("Generating Default timestamp")
+    current_timestamp = datetime.now()
+    three_months_ago = current_timestamp - timedelta(days=90)
+    result = three_months_ago.timestamp()
+
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(result))
