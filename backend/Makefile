@@ -1,4 +1,4 @@
-SpirunnerHELL := /bin/bash
+SHELL := /bin/bash
 
 ###############################################################################
 # Output formatting helpers
