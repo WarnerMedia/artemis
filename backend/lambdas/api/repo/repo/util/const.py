@@ -91,7 +91,7 @@ QUALIFIED_PLUGINS = {
 # to be specified in a scan request as a disabled plugin and not throw an error. Specifying them as
 # an explicitly enabled plugin will return an error but a different error than if a completely unknown
 # plugin name were to be included in the request.
-DISABLED_PLUGINS = [ "trufflehog" ]
+DISABLED_PLUGINS = []
 
 # Add in plugins that can be disabled per-environment and are enabled in this environment
 if AQUA_ENABLED:
