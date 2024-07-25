@@ -209,6 +209,10 @@ PHP_SCANNER_VER := 1.0.0
 TRIVY_COMMIT := 6ccc0a554b07b05fd049f882a1825a0e1e0aabe1
 TRIVY_VER := v0.49.1
 
+# Trufflehog Version
+TRUFFLEHOG_COMMIT := f37f2eff68c31620fd88bc37ff2b7d57ea0c700c
+TRUFFLEHOG_VER := 3.79.0
+
 # Snyk
 SNYK_VER := v1.889.0
 # Context: egrep grabs the terraform line that notes whether Snyk is enabled. sed removes all spacing. Cut grabs the bool.
@@ -519,6 +523,8 @@ dist/docker/dind: Dockerfiles/Dockerfile.dind
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg TRIVY_VER=${TRIVY_VER} \
 		--build-arg TRIVY_COMMIT=${TRIVY_COMMIT} \
+		--build-arg TRUFFLEHOG_VER=${TRUFFLEHOG_VER} \
+		--build-arg TRUFFLEHOG_COMMIT=${TRUFFLEHOG_COMMIT} \
 		--build-arg SNYK_VER=${SNYK_VER} \
 		--build-arg SNYK_FLAG=${SNYK_FLAG}
 	mkdir -p ${DIST_DIR}/docker
