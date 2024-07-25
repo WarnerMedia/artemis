@@ -3,8 +3,8 @@ import json
 import os
 import unittest
 from dataclasses import dataclass
-from unittest.mock import patch
-from operator import itemgetter
+from unittest.mock import patch, MagicMock
+from requests import HTTPError
 
 from heimdall_repos import github_utils
 from heimdall_repos.repo_layer_env import GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG
@@ -150,16 +150,15 @@ class TestGithubUtils(unittest.TestCase):
 
         self.assertEqual(GITHUB_TIMEOUT_FLAG, result)
 
-    @patch.object(github_utils, "queue_service_and_org")
-    @patch.object(github_utils.ProcessGithubRepos, "_query_github_api")
-    def test_query_github_rate_abuse(self, query_mock, queue_mock):
-        self.assertEqual(self.process_github_repos._query_github_api, query_mock)
-        query_mock.return_value = GITHUB_RATE_ABUSE_FLAG
-        self.assertEqual(github_utils.queue_service_and_org, queue_mock)
-
-        self.process_github_repos.query()
-
-        self.assertTrue(queue_mock.called)
+    @patch("requests.post")
+    def test_query_github_rate_abuse(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 429
+        mock_response.text = {"message": "rate limit hit"}
+        mock_post.return_value = mock_response
+        with self.assertRaises(HTTPError):
+            task_list = self.process_github_repos.query()
+            self.assertEqual(task_list, [])
 
     def test_process_repos_repo_no_branches(self):
         expected_response = []
