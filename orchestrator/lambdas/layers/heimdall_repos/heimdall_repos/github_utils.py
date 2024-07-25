@@ -239,7 +239,25 @@ class ProcessGithubRepos:
             if not self._is_repo_valid(repo):
                 continue
 
-            default_branch_ref = repo.get("defaultBranchRef", {})
+            if not self.scan_options.default_branch_only and not self.scan_options.repo:
+                log.info("Queuing first page of branches for repo %s", name, repo=name)
+                queue_branch_and_repo(
+                    self.queue,
+                    self.service_info.service,
+                    self.service_info.org,
+                    "null",
+                    repo,
+                    self.scan_options.plugins,
+                    self.scan_options.batch_id,
+                    self.redundant_scan_query,
+                )
+                continue
+
+            default_branch_ref = repo.get("defaultBranchRef")
+            if not default_branch_ref:
+                log.warning("Could not retrieve timestamp for the Default branch")
+                default_branch_ref = {"name": "HEAD", "target": {"committedDate": parse_timestamp()}}
+
             default_branch_name = default_branch_ref.get("name", "HEAD")
             branch_names, timestamps = self._get_branch_names(name, repo.get("refs"), default_branch_ref)
 
@@ -250,7 +268,7 @@ class ProcessGithubRepos:
         """
         Checks if the repo has branches.
         """
-        if self.json_utils.get_object_from_json_dict(repo, ["refs", "nodes"]):
+        if not repo.get("isEmpty"):
             return True
 
         log.warning(f"repo {repo.get('name')} has no branches. Skipping")
@@ -302,14 +320,20 @@ class ProcessGithubRepos:
 
     def _get_branch_names(self, repo: str, refs: dict, default_branch_ref) -> Tuple[list, dict]:
         """
-        Retrieves the branches and timestamps for a given repository.
+        Retrieves the names of branches and their corresponding commit timestamps for a repository.
+
+        Args:
+            repo (str): The name of the repository.
+            refs (dict): A dictionary containing information for the branches in the repository.
+            default_branch_ref: The reference dict for the default branch.
 
         Returns:
-            A list of branches(refs) for the given repo and
-            a dictionary mapping each branch to the timestamp of the last commit
+            Tuple[list, dict]: A tuple containing:
+                - A list of branch names (refs) for the given repository.
+                - A dictionary mapping each branch name to the timestamp of its last commit.
 
-            For example:
-            ["master"], {"master", "1970-01-01T00:00:00Z"}
+        Example:
+            ["master"], {"master": "1970-01-01T00:00:00Z"}
         """
         ref_names = set()
         timestamps = dict()
@@ -326,7 +350,7 @@ class ProcessGithubRepos:
             for node in refs["nodes"]:
                 branch_name, timestamp = self._get_branch_details(node)
                 ref_names.add(branch_name)
-                timestamps[branch_name] = parse_timestamp(timestamp)
+                timestamps[branch_name] = timestamp
 
             next_page = self.json_utils.get_object_from_json_dict(refs, ["pageInfo", "hasNextPage"])
             if next_page:
