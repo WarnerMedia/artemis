@@ -79,6 +79,7 @@ resource "aws_lambda_function" "repo-queue" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = var.repo_queue_lambda_timeout
+  memory_size   = 1024
 
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
