@@ -97,7 +97,7 @@ msgstr "This should not be a real secret"
 msgid "View in external site"
 msgstr "View in external site"
 
-#: src/pages/UsersPage.tsx:1324
+#: src/pages/UsersPage.tsx:1326
 msgid "No users found. Click the + button to add a new user"
 msgstr "No users found. Click the + button to add a new user"
 
@@ -199,7 +199,7 @@ msgstr "Meta Data Sample1 / Sample2"
 #: src/components/EnhancedTable.tsx:760
 #: src/pages/SearchPage.tsx:1944
 #: src/pages/SearchPage.tsx:4131
-#: src/pages/UsersPage.tsx:1322
+#: src/pages/UsersPage.tsx:1324
 msgid "No results match current filters"
 msgstr "No results match current filters"
 
@@ -275,7 +275,7 @@ msgstr "Remove User"
 msgid "Name must be less than {NAME_LENGTH} characters"
 msgstr "Name must be less than {NAME_LENGTH} characters"
 
-#: src/pages/UsersPage.tsx:1326
+#: src/pages/UsersPage.tsx:1328
 msgid "Fetching users..."
 msgstr "Fetching users..."
 
@@ -285,7 +285,7 @@ msgstr "Component name required"
 
 #: src/pages/ResultsPage.tsx:2004
 #: src/pages/UserSettings.tsx:1839
-#: src/pages/UsersPage.tsx:1175
+#: src/pages/UsersPage.tsx:1177
 msgid "Adding..."
 msgstr "Adding..."
 
@@ -351,7 +351,7 @@ msgid "Artemis - User Management"
 msgstr "Artemis - User Management"
 
 #: src/pages/UserSettings.tsx:1727
-#: src/pages/UsersPage.tsx:1104
+#: src/pages/UsersPage.tsx:1106
 msgid "Add to scope"
 msgstr "Add to scope"
 
@@ -385,8 +385,8 @@ msgid "This scan option was not used"
 msgstr "This scan option was not used"
 
 #: src/app/scanPlugins.ts:62
-#~ msgid "Truffle Hog"
-#~ msgstr "Truffle Hog"
+msgid "Truffle Hog"
+msgstr "Truffle Hog"
 
 #: src/components/StatusCell.tsx:730
 msgid "Failed"
@@ -471,7 +471,7 @@ msgstr "Queued"
 msgid "Report Sections Tabs"
 msgstr "Report Sections Tabs"
 
-#: src/app/scanPlugins.ts:190
+#: src/app/scanPlugins.ts:185
 msgid "Snyk"
 msgstr "Snyk"
 
@@ -481,7 +481,7 @@ msgstr "Snyk"
 msgid "Search"
 msgstr "Search"
 
-#: src/app/scanPlugins.ts:90
+#: src/app/scanPlugins.ts:85
 msgid "Checkov (IaC)"
 msgstr "Checkov (IaC)"
 
@@ -530,7 +530,7 @@ msgstr "Component/commit must be less than {COMPONENT_LENGTH} characters"
 msgid "Must be a past date"
 msgstr "Must be a past date"
 
-#: src/app/scanPlugins.ts:80
+#: src/app/scanPlugins.ts:75
 msgid "Bandit (Python)"
 msgstr "Bandit (Python)"
 
@@ -558,7 +558,7 @@ msgstr "Start a new scan using the same options used in this scan?<0/>Initiating
 msgid "GitHub Advanced Security Secrets"
 msgstr "GitHub Advanced Security Secrets"
 
-#: src/app/scanPlugins.ts:135
+#: src/app/scanPlugins.ts:130
 msgid "Shell Check (Shell)"
 msgstr "Shell Check (Shell)"
 
@@ -682,7 +682,7 @@ msgid "Unknown"
 msgstr "Unknown"
 
 #: src/pages/ResultsPage.tsx:2001
-#: src/pages/UsersPage.tsx:1178
+#: src/pages/UsersPage.tsx:1180
 msgid "Update"
 msgstr "Update"
 
@@ -694,11 +694,11 @@ msgstr "Before"
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 
-#: src/app/scanPlugins.ts:125
+#: src/app/scanPlugins.ts:120
 msgid "NodeJS Scan (NodeJS)"
 msgstr "NodeJS Scan (NodeJS)"
 
-#: src/app/scanPlugins.ts:130
+#: src/app/scanPlugins.ts:125
 msgid "Pylint (Python)"
 msgstr "Pylint (Python)"
 
@@ -723,7 +723,7 @@ msgstr "No matching scans to display"
 #: src/pages/UserSettings.tsx:927
 #: src/pages/UserSettings.tsx:2050
 #: src/pages/UserSettings.tsx:2058
-#: src/pages/UsersPage.tsx:894
+#: src/pages/UsersPage.tsx:896
 msgid "Administrator"
 msgstr "Administrator"
 
@@ -777,11 +777,11 @@ msgstr "Restrict API key to only these repositories. Must be within a user's sca
 msgid "No License"
 msgstr "No License"
 
-#: src/pages/UsersPage.tsx:897
+#: src/pages/UsersPage.tsx:899
 msgid "Administrators can manage all other users and groups"
 msgstr "Administrators can manage all other users and groups"
 
-#: src/app/scanPlugins.ts:145
+#: src/app/scanPlugins.ts:140
 msgid "TFLint (Terraform)"
 msgstr "TFLint (Terraform)"
 
@@ -836,7 +836,7 @@ msgstr "Results may vary compared to scans run with other options. View scan res
 msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
 msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
 
-#: src/app/scanPlugins.ts:192
+#: src/app/scanPlugins.ts:187
 msgid "Trivy Container Image"
 msgstr "Trivy Container Image"
 
@@ -857,11 +857,11 @@ msgid "Unable to get user keys"
 msgstr "Unable to get user keys"
 
 #: src/pages/UserSettings.tsx:1571
-#: src/pages/UsersPage.tsx:958
+#: src/pages/UsersPage.tsx:960
 msgid "Scope {0}"
 msgstr "Scope {0}"
 
-#: src/app/scanPlugins.ts:197
+#: src/app/scanPlugins.ts:192
 msgid "Trivy SCA"
 msgstr "Trivy SCA"
 
@@ -902,7 +902,7 @@ msgid "On-Demand Scan"
 msgstr "On-Demand Scan"
 
 #: src/pages/UserSettings.tsx:1695
-#: src/pages/UsersPage.tsx:1072
+#: src/pages/UsersPage.tsx:1074
 msgid "Click + icon to add this value to the Current Scope list above"
 msgstr "Click + icon to add this value to the Current Scope list above"
 
@@ -992,7 +992,7 @@ msgstr "No secrets found"
 msgid "Linked Accounts"
 msgstr "Linked Accounts"
 
-#: src/app/scanPlugins.ts:166
+#: src/app/scanPlugins.ts:161
 msgid "Aqua CLI Scanner (Docker)"
 msgstr "Aqua CLI Scanner (Docker)"
 
@@ -1047,7 +1047,7 @@ msgid "Allow this key to use additional scan features"
 msgstr "Allow this key to use additional scan features"
 
 #: src/pages/UserSettings.tsx:1476
-#: src/pages/UsersPage.tsx:911
+#: src/pages/UsersPage.tsx:913
 msgid "Current Scope"
 msgstr "Current Scope"
 
@@ -1061,7 +1061,7 @@ msgstr "Vulnerability Match"
 msgid "Found in source file:"
 msgstr "Found in source file:"
 
-#: src/app/scanPlugins.ts:115
+#: src/app/scanPlugins.ts:110
 msgid "FindSecBugs (Java 13)"
 msgstr "FindSecBugs (Java 13)"
 
@@ -1160,7 +1160,7 @@ msgid "After"
 msgstr "After"
 
 #: src/pages/UserSettings.tsx:1683
-#: src/pages/UsersPage.tsx:1060
+#: src/pages/UsersPage.tsx:1062
 msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 
@@ -1186,7 +1186,7 @@ msgstr "{hfCount, plural, one {{hfCount} hidden finding} other {{hfCount} hidden
 
 #: src/pages/UserSettings.tsx:740
 #: src/pages/UsersPage.tsx:542
-#: src/pages/UsersPage.tsx:1254
+#: src/pages/UsersPage.tsx:1256
 msgid "Email"
 msgstr "Email"
 
@@ -1275,7 +1275,7 @@ msgstr "Username:"
 msgid "Resource must be less than {RESOURCE_LENGTH} characters"
 msgstr "Resource must be less than {RESOURCE_LENGTH} characters"
 
-#: src/app/scanPlugins.ts:158
+#: src/app/scanPlugins.ts:153
 msgid "Enry Technology Discovery"
 msgstr "Enry Technology Discovery"
 
@@ -1297,7 +1297,7 @@ msgid "Unable to update hidden finding"
 msgstr "Unable to update hidden finding"
 
 #: src/pages/UserSettings.tsx:1585
-#: src/pages/UsersPage.tsx:972
+#: src/pages/UsersPage.tsx:974
 msgid "Remove scope {0}"
 msgstr "Remove scope {0}"
 
@@ -1331,7 +1331,7 @@ msgid "Components"
 msgstr "Components"
 
 #: src/pages/ResultsPage.tsx:1999
-#: src/pages/UsersPage.tsx:1173
+#: src/pages/UsersPage.tsx:1175
 msgid "Updating..."
 msgstr "Updating..."
 
@@ -1390,7 +1390,7 @@ msgstr "Error"
 msgid "Unable to link user service"
 msgstr "Unable to link user service"
 
-#: src/pages/UsersPage.tsx:1349
+#: src/pages/UsersPage.tsx:1351
 msgid "Users"
 msgstr "Users"
 
@@ -1443,11 +1443,11 @@ msgid "Required"
 msgstr "Required"
 
 #: src/pages/UserSettings.tsx:1731
-#: src/pages/UsersPage.tsx:1108
+#: src/pages/UsersPage.tsx:1110
 msgid "Add this item to scope"
 msgstr "Add this item to scope"
 
-#: src/app/scanPlugins.ts:100
+#: src/app/scanPlugins.ts:95
 msgid "ESlint (JavaScript)"
 msgstr "ESlint (JavaScript)"
 
@@ -1565,16 +1565,16 @@ msgstr "Teal"
 msgid "VCS/Org required"
 msgstr "VCS/Org required"
 
-#: src/app/scanPlugins.ts:176
+#: src/app/scanPlugins.ts:171
 msgid "NPM Audit (NodeJS)"
 msgstr "NPM Audit (NodeJS)"
 
 #: src/pages/UserSettings.tsx:1634
-#: src/pages/UsersPage.tsx:1010
+#: src/pages/UsersPage.tsx:1012
 msgid "Top"
 msgstr "Top"
 
-#: src/app/scanPlugins.ts:85
+#: src/app/scanPlugins.ts:80
 msgid "Brakeman (Ruby)"
 msgstr "Brakeman (Ruby)"
 
@@ -1610,7 +1610,7 @@ msgstr "Invalid date format"
 msgid "Invalid email address"
 msgstr "Invalid email address"
 
-#: src/app/scanPlugins.ts:95
+#: src/app/scanPlugins.ts:90
 msgid "Detekt (Kotlin)"
 msgstr "Detekt (Kotlin)"
 
@@ -1649,10 +1649,6 @@ msgstr "Vulnerability Raw: {count}"
 #: src/pages/SearchPage.tsx:3985
 msgid "Risk"
 msgstr "Risk"
-
-#: src/app/scanPlugins.ts:62
-msgid "Trufflehog (Legacy)"
-msgstr "Trufflehog (Legacy)"
 
 #: src/api/client.ts:174
 msgid "Not authorized"
@@ -1709,7 +1705,7 @@ msgstr "One or more file or directory paths separated by a comma or newline. Sup
 msgid "Include Paths ({0})"
 msgstr "Include Paths ({0})"
 
-#: src/app/scanPlugins.ts:120
+#: src/app/scanPlugins.ts:115
 msgid "GoSec (Golang)"
 msgstr "GoSec (Golang)"
 
@@ -1727,18 +1723,18 @@ msgstr "This will be the only time this key will be displayed! Do not close this
 msgid "Negligible"
 msgstr "Negligible"
 
-#: src/app/scanPlugins.ts:110
+#: src/app/scanPlugins.ts:105
 msgid "FindSecBugs (Java 8)"
 msgstr "FindSecBugs (Java 8)"
 
 #: src/pages/UserSettings.tsx:1096
 #: src/pages/UserSettings.tsx:1991
 #: src/pages/UsersPage.tsx:557
-#: src/pages/UsersPage.tsx:1263
+#: src/pages/UsersPage.tsx:1265
 msgid "Scope"
 msgstr "Scope"
 
-#: src/pages/UsersPage.tsx:786
+#: src/pages/UsersPage.tsx:788
 msgid "{0} {1} Plugin"
 msgstr "{0} {1} Plugin"
 
@@ -1768,8 +1764,8 @@ msgstr "Configuration: {count}"
 
 #: src/pages/UserSettings.tsx:1620
 #: src/pages/UserSettings.tsx:1631
-#: src/pages/UsersPage.tsx:997
-#: src/pages/UsersPage.tsx:1007
+#: src/pages/UsersPage.tsx:999
+#: src/pages/UsersPage.tsx:1009
 msgid "Scroll to top"
 msgstr "Scroll to top"
 
@@ -1825,7 +1821,7 @@ msgstr "{dt} / {elapsed} Elapsed"
 #: src/features/notifications/Notifications.tsx:18
 #: src/pages/ResultsPage.tsx:1215
 #: src/pages/UserSettings.tsx:1411
-#: src/pages/UsersPage.tsx:846
+#: src/pages/UsersPage.tsx:848
 msgid "error"
 msgstr "error"
 
@@ -1849,7 +1845,7 @@ msgstr "Batch Priority"
 #: src/pages/UserSettings.tsx:1852
 #: src/pages/UsersPage.tsx:525
 #: src/pages/UsersPage.tsx:532
-#: src/pages/UsersPage.tsx:1191
+#: src/pages/UsersPage.tsx:1193
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -1871,7 +1867,7 @@ msgstr "No configuration findings detected"
 msgid "Moderate: {count}"
 msgstr "Moderate: {count}"
 
-#: src/app/scanPlugins.ts:105
+#: src/app/scanPlugins.ts:100
 msgid "FindSecBugs (Java 7)"
 msgstr "FindSecBugs (Java 7)"
 
@@ -1940,7 +1936,7 @@ msgstr "Close More Actions Menu"
 msgid "High: {count}"
 msgstr "High: {count}"
 
-#: src/app/scanPlugins.ts:181
+#: src/app/scanPlugins.ts:176
 msgid "OWASP Check (Java)"
 msgstr "OWASP Check (Java)"
 
@@ -2001,7 +1997,7 @@ msgstr "No repositories match current filters"
 msgid "<0><1>Hidden findings are global to this repository. They will be applied to <2>all</2> scan results for this repository (past, present, future, and for all branches), with the exception of \"Secret Raw\" types, that will only apply to future scans</1><3>Findings can be hidden on the applicable finding type scan results tab (\"Vulnerability\", \"Static Analysis\", \"Secrets\", \"Configuration\")</3><4>Once a finding is hidden, it can be viewed or managed (removed/modified) on the \"Hidden Findings\" scan results tab</4><5>Hiding a finding <6>DOES NOT</6> remediate the underlying security issue, it <7>only</7> prevents it from appearing in scan results. Hidden findings allow hiding of false-positive (F+) results or to temporarily hide a finding that does not yet have an upstream vendor fix available</5></0>"
 msgstr "<0><1>Hidden findings are global to this repository. They will be applied to <2>all</2> scan results for this repository (past, present, future, and for all branches), with the exception of \"Secret Raw\" types, that will only apply to future scans</1><3>Findings can be hidden on the applicable finding type scan results tab (\"Vulnerability\", \"Static Analysis\", \"Secrets\", \"Configuration\")</3><4>Once a finding is hidden, it can be viewed or managed (removed/modified) on the \"Hidden Findings\" scan results tab</4><5>Hiding a finding <6>DOES NOT</6> remediate the underlying security issue, it <7>only</7> prevents it from appearing in scan results. Hidden findings allow hiding of false-positive (F+) results or to temporarily hide a finding that does not yet have an upstream vendor fix available</5></0>"
 
-#: src/pages/UsersPage.tsx:869
+#: src/pages/UsersPage.tsx:871
 msgid "Email Address"
 msgstr "Email Address"
 
@@ -2020,7 +2016,7 @@ msgstr "Component license null must be either \"true\" or \"false\""
 
 #: src/pages/SearchPage.tsx:4151
 #: src/pages/UserSettings.tsx:338
-#: src/pages/UsersPage.tsx:1343
+#: src/pages/UsersPage.tsx:1345
 msgid "Back"
 msgstr "Back"
 
@@ -2037,10 +2033,6 @@ msgstr "Last Login"
 #: src/pages/SearchPage.tsx:4130
 msgid "Fetching results..."
 msgstr "Fetching results..."
-
-#: src/app/scanPlugins.ts:67
-msgid "Trufflehog"
-msgstr "Trufflehog"
 
 #: src/pages/SearchPage.tsx:2535
 msgid "License"
@@ -2223,7 +2215,7 @@ msgid "Add New API Key"
 msgstr "Add New API Key"
 
 #: src/pages/UserSettings.tsx:1654
-#: src/pages/UsersPage.tsx:1030
+#: src/pages/UsersPage.tsx:1032
 msgid "Add Scope"
 msgstr "Add Scope"
 
@@ -2266,7 +2258,7 @@ msgstr "Type:"
 msgid "yyyy/MM/dd HH:mm (24-hour)"
 msgstr "yyyy/MM/dd HH:mm (24-hour)"
 
-#: src/pages/UsersPage.tsx:919
+#: src/pages/UsersPage.tsx:921
 msgid "Restrict user to only these repositories. Must be a subset of scopes from groups user is a member of. Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 msgstr "Restrict user to only these repositories. Must be a subset of scopes from groups user is a member of. Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 
@@ -2274,7 +2266,7 @@ msgstr "Restrict user to only these repositories. Must be a subset of scopes fro
 msgid "Remediation Match"
 msgstr "Remediation Match"
 
-#: src/app/scanPlugins.ts:153
+#: src/app/scanPlugins.ts:148
 msgid "Base Images (Docker)"
 msgstr "Base Images (Docker)"
 
@@ -2297,7 +2289,7 @@ msgstr "Any"
 
 #: src/pages/ResultsPage.tsx:2006
 #: src/pages/UserSettings.tsx:1841
-#: src/pages/UsersPage.tsx:1180
+#: src/pages/UsersPage.tsx:1182
 msgid "Add"
 msgstr "Add"
 
@@ -2319,7 +2311,7 @@ msgstr "No Qualified Scans"
 msgid "Reset Filters"
 msgstr "Reset Filters"
 
-#: src/app/scanPlugins.ts:186
+#: src/app/scanPlugins.ts:181
 msgid "Sensio Security Check (PHP)"
 msgstr "Sensio Security Check (PHP)"
 
@@ -2327,7 +2319,7 @@ msgstr "Sensio Security Check (PHP)"
 msgid "Session expired, redirecting to login..."
 msgstr "Session expired, redirecting to login..."
 
-#: src/app/scanPlugins.ts:75
+#: src/app/scanPlugins.ts:70
 msgid "AWS CloudFormation Linter"
 msgstr "AWS CloudFormation Linter"
 
@@ -2392,7 +2384,7 @@ msgstr "Repositories"
 
 #: src/pages/ResultsPage.tsx:1939
 #: src/pages/UserSettings.tsx:1810
-#: src/pages/UsersPage.tsx:1144
+#: src/pages/UsersPage.tsx:1146
 msgid "This form contains unresolved errors. Please resolve these errors"
 msgstr "This form contains unresolved errors. Please resolve these errors"
 
@@ -2401,7 +2393,7 @@ msgstr "This form contains unresolved errors. Please resolve these errors"
 #: src/pages/ResultsPage.tsx:4070
 #: src/pages/ResultsPage.tsx:4360
 #: src/pages/ResultsPage.tsx:5195
-#: src/pages/UsersPage.tsx:1275
+#: src/pages/UsersPage.tsx:1277
 msgid "Clear all filters"
 msgstr "Clear all filters"
 
@@ -2701,7 +2693,7 @@ msgstr "Invalid component version matcher"
 msgid "Status"
 msgstr "Status"
 
-#: src/app/scanPlugins.ts:140
+#: src/app/scanPlugins.ts:135
 msgid "SwiftLint (Swift)"
 msgstr "SwiftLint (Swift)"
 
@@ -2720,7 +2712,7 @@ msgid "Open Table Menu"
 msgstr "Open Table Menu"
 
 #: src/pages/UserSettings.tsx:1331
-#: src/pages/UsersPage.tsx:722
+#: src/pages/UsersPage.tsx:724
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !"
 
@@ -2769,7 +2761,7 @@ msgstr "Remove API key named \"{0}\"?"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
-#: src/app/scanPlugins.ts:202
+#: src/app/scanPlugins.ts:197
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 
@@ -2783,7 +2775,7 @@ msgid "{label}"
 msgstr "{label}"
 
 #: src/pages/UserSettings.tsx:1590
-#: src/pages/UsersPage.tsx:977
+#: src/pages/UsersPage.tsx:979
 msgid "Remove this scope item"
 msgstr "Remove this scope item"
 
@@ -2820,7 +2812,7 @@ msgid "Fetching secrets results..."
 msgstr "Fetching secrets results..."
 
 #: src/pages/UserSettings.tsx:1557
-#: src/pages/UsersPage.tsx:944
+#: src/pages/UsersPage.tsx:946
 msgid "No scope is currently defined"
 msgstr "No scope is currently defined"
 
@@ -2831,8 +2823,8 @@ msgstr "Must be between 1-254 characters"
 
 #: src/pages/UserSettings.tsx:1705
 #: src/pages/UserSettings.tsx:1709
-#: src/pages/UsersPage.tsx:1082
-#: src/pages/UsersPage.tsx:1086
+#: src/pages/UsersPage.tsx:1084
+#: src/pages/UsersPage.tsx:1088
 msgid "Clear"
 msgstr "Clear"
 
@@ -2840,7 +2832,7 @@ msgstr "Clear"
 msgid "End"
 msgstr "End"
 
-#: src/app/scanPlugins.ts:171
+#: src/app/scanPlugins.ts:166
 msgid "Bundler Audit (Ruby)"
 msgstr "Bundler Audit (Ruby)"
 
@@ -2943,7 +2935,7 @@ msgstr "OK"
 msgid "Unable to queue new scan"
 msgstr "Unable to queue new scan"
 
-#: src/pages/UsersPage.tsx:818
+#: src/pages/UsersPage.tsx:820
 msgid "Allow this user to use additional scan features"
 msgstr "Allow this user to use additional scan features"
 

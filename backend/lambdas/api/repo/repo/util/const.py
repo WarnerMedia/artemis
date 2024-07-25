@@ -29,11 +29,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "trivy": None,
         "trivy_sca": None,
     },
-    "secret": {
-        "gitsecrets": None,
-        "truffle_hog": None,
-        "trufflehog": None,
-    },
+    "secret": {"gitsecrets": None, "truffle_hog": None},
     "static_analysis": {
         "brakeman": None,
         "cfn_python_lint": None,

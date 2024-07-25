@@ -59,13 +59,8 @@ export const secretPluginsKeys: ScanPluginKeys = {
 		group: GROUP_SECRETS,
 	},
 	truffle_hog: {
-		displayName: t`Trufflehog (Legacy)`,
+		displayName: t`Truffle Hog`,
 		apiName: "truffle_hog",
-		group: GROUP_SECRETS,
-	},
-	trufflehog: {
-		displayName: t`Trufflehog`,
-		apiName: "trufflehog",
 		group: GROUP_SECRETS,
 	},
 };

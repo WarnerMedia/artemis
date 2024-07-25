@@ -1,5 +1,0 @@
-{
-    "name": "Trufflehog Scanner",
-    "type": "secrets",
-    "image": "$ECR/artemis/dind:latest"
-}
