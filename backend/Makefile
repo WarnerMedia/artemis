@@ -593,23 +593,7 @@ dist/docker/swift: Dockerfiles/Dockerfile.swift
 	touch $@
 	@echo "${OK}"
 
-docker:  ## Build all docker images
-docker: dist/docker/engine \
-		dist/docker/python3 \
-		dist/docker/node14 \
-		dist/docker/php \
-		dist/docker/dind \
-		dist/docker/golang \
-		docker-java \
-		dist/docker/ruby \
-		dist/docker/db_maintenance \
-		dist/docker/veracode \
-		dist/docker/swift
-.PHONY: docker _docker
-
-docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
-	@echo "${INFO}Building $@"
-#	Build all images in parallel.
+define docker-build-java
 	MAINTAINER=${MAINTAINER} \
 	DETEKT_VER=${DETEKT_VER} \
 	DETEKT_SHA=${DETEKT_SHA} \
@@ -623,8 +607,22 @@ docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
 	JAVA17_TAG=${JAVA17_TAG} \
 	ECR_URL=${ECR_URL} \
 	LATEST_COMMIT=${LATEST_COMMIT} \
-	${DOCKER} buildx bake -f docker-bake.hcl java
-#	Mark images as updated.
+	${DOCKER} buildx bake -f docker-bake.hcl $1
+endef
+
+# Build an individual Java image.
+# This is retained for convenience and backwards compatibility with older workflows.
+dist/docker/java%: docker-bake.hcl Dockerfiles/Dockerfile.java
+	@echo "${INFO}Building $@"
+	$(call docker-build-java,$(@F))
+	mkdir -p ${DIST_DIR}/docker
+	touch $@
+	@echo "${OK}"
+
+# Build all Java images in parallel.
+docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
+	@echo "${INFO}Building $@"
+	$(call docker-build-java,java)
 	mkdir -p ${DIST_DIR}/docker
 	touch dist/docker/java7
 	touch dist/docker/java8
@@ -632,6 +630,20 @@ docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
 	touch dist/docker/java17
 	@echo "${OK}"
 .PHONY: docker-java
+
+docker:  ## Build all docker images
+docker: dist/docker/engine \
+		dist/docker/python3 \
+		dist/docker/node14 \
+		dist/docker/php \
+		dist/docker/dind \
+		dist/docker/golang \
+		docker-java \
+		dist/docker/ruby \
+		dist/docker/db_maintenance \
+		dist/docker/veracode \
+		dist/docker/swift
+.PHONY: docker _docker
 
 ###############################################################################
 # High-level build targets
