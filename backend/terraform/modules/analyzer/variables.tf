@@ -298,11 +298,6 @@ variable "metadata_events_enabled" {
   default     = false
 }
 
-variable "audit_log_scrub_details" {
-  description = "Whether to scrub details from audit log messages"
-  default     = false
-}
-
 ################################################
 # GitHub App
 ################################################

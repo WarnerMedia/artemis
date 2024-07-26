@@ -40,6 +40,7 @@ resource "aws_lambda_function" "org-queue" {
       REGION                            = var.aws_region
       ARTEMIS_S3_BUCKET                 = data.aws_s3_bucket.artemis_s3_bucket.bucket
       ORG_QUEUE                         = aws_sqs_queue.org-queue.id
+      DEFAULT_API_TIMEOUT               = var.third_party_api_timeout
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
       ARTEMIS_API                       = var.artemis_api
@@ -78,6 +79,7 @@ resource "aws_lambda_function" "repo-queue" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = var.repo_queue_lambda_timeout
+  memory_size   = 1024
 
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
@@ -100,6 +102,8 @@ resource "aws_lambda_function" "repo-queue" {
       ARTEMIS_S3_BUCKET                 = data.aws_s3_bucket.artemis_s3_bucket.bucket
       REPO_QUEUE                        = aws_sqs_queue.repo-queue.id
       ORG_QUEUE                         = aws_sqs_queue.org-queue.id
+      ORG_DEAD_LETTER_QUEUE             = aws_sqs_queue.org-deadletter-queue.id
+      DEFAULT_API_TIMEOUT               = var.third_party_api_timeout
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
       ARTEMIS_API                       = var.artemis_api
@@ -154,12 +158,13 @@ resource "aws_lambda_function" "repo-scan" {
 
   environment {
     variables = {
-      APPLICATION     = var.app
-      REGION          = var.aws_region
-      ARTEMIS_API     = var.artemis_api
-      ARTEMIS_API_KEY = aws_secretsmanager_secret.artemis-api-key.name
-      REPO_QUEUE      = aws_sqs_queue.repo-queue.id
-      SCAN_TABLE      = aws_dynamodb_table.repo-scan-id.name
+      APPLICATION            = var.app
+      REGION                 = var.aws_region
+      ARTEMIS_API            = var.artemis_api
+      ARTEMIS_API_KEY        = aws_secretsmanager_secret.artemis-api-key.name
+      REPO_QUEUE             = aws_sqs_queue.repo-queue.id
+      SCAN_TABLE             = aws_dynamodb_table.repo-scan-id.name
+      REPO_DEAD_LETTER_QUEUE = aws_sqs_queue.repo-deadletter-queue.id
     }
   }
 

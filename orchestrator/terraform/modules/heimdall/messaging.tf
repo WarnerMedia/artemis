@@ -34,7 +34,7 @@ resource "aws_sqs_queue" "org-deadletter-queue" {
 resource "aws_sqs_queue" "repo-queue" {
   name = "${var.app}-repo-queue"
   redrive_policy = jsonencode({
-    "deadLetterTargetArn" = aws_sqs_queue.org-deadletter-queue.arn
+    "deadLetterTargetArn" = aws_sqs_queue.repo-deadletter-queue.arn
     "maxReceiveCount"     = 1
   })
 
@@ -77,6 +77,7 @@ data "aws_iam_policy_document" "org-queue-send" {
 
     resources = [
       "${aws_sqs_queue.org-queue.arn}",
+      "${aws_sqs_queue.org-deadletter-queue.arn}",
     ]
   }
 }
@@ -108,6 +109,7 @@ data "aws_iam_policy_document" "repo-queue-send" {
 
     resources = [
       "${aws_sqs_queue.repo-queue.arn}",
+      "${aws_sqs_queue.repo-deadletter-queue.arn}",
     ]
   }
 }

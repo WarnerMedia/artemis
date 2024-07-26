@@ -1,5 +1,6 @@
 # pylint: disable=no-name-in-module, no-member
 import json
+from typing import Any
 
 import boto3
 import requests
@@ -125,6 +126,30 @@ def queue_branch_and_repo(
         return True
     except ClientError:
         log.error(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
+        return False
+
+
+def queue_message(payload: dict[str, Any], queue_url: str) -> bool:
+    """
+    Delivers a message to the specified queue
+    TODO: Replace the `queue_branch_and_repo` and `queue_service_and_org` with this function
+
+    Args:
+        payload (dict[str, Any]): The message to send to the queue
+        queue_url (str): The URL of the Amazon SQS queue to which a message is sent
+
+    Returns:
+        bool: True if successful, False if otherwise
+    """
+    try:
+        sqs = get_sqs_connection(REGION)
+        sqs.send_message(
+            QueueUrl=queue_url,
+            MessageBody=json.dumps(payload),
+        )
+        return True
+    except ClientError:
+        log.error("Unable to queue message")
         return False
 
 

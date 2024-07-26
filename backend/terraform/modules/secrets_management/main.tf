@@ -19,8 +19,9 @@ resource "aws_lambda_function" "secrets-handler" {
 
   environment {
     variables = {
-      APPLICATION = var.app
-      ENVIRONMENT = var.environment
+      APPLICATION           = var.app
+      ENVIRONMENT           = var.environment
+      ARTEMIS_SCRUB_DETAILS = var.scrub_details
     }
   }
 

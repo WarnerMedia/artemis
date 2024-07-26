@@ -38,3 +38,8 @@ variable "secrets_queue" {}
 variable "secrets_enabled" {
   description = "Whether to enable the Secrets Management process integration"
 }
+
+variable "scrub_details" {
+  description = "Whether to scrub details from secret events"
+  default     = "false"
+}

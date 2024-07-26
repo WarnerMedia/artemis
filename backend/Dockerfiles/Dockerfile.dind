@@ -5,6 +5,8 @@ LABEL maintainer=$MAINTAINER
 
 ARG TRIVY_VER=v0.49.1
 ARG TRIVY_COMMIT=6ccc0a554b07b05fd049f882a1825a0e1e0aabe1
+ARG TRUFFLEHOG_VER=v3.79.0
+ARG TRUFFLEHOG_COMMIT=f37f2eff68c31620fd88bc37ff2b7d57ea0c700c
 ARG SNYK_VER=v1.889.0
 ARG SNYK_FLAG
 
@@ -28,11 +30,13 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     pip3 install /src/artemisdb && \
     rm -r /src
 
+RUN wget -O - https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_COMMIT/scripts/install.sh | sh -s -- -b /usr/local/bin $TRUFFLEHOG_VER
+
 RUN if [ "${SNYK_FLAG}" = "true" ]; then \
-        wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine && \
-        wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine.sha256 && \
-        sha256sum -c snyk-alpine.sha256 && \
-        rm snyk-alpine.sha256 && \
-        mv snyk-alpine snyk && \
-        install snyk /usr/local/bin/; \
+    wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine && \
+    wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine.sha256 && \
+    sha256sum -c snyk-alpine.sha256 && \
+    rm snyk-alpine.sha256 && \
+    mv snyk-alpine snyk && \
+    install snyk /usr/local/bin/; \
     fi;

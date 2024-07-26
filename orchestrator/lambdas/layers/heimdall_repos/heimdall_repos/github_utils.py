@@ -1,5 +1,5 @@
 # pylint: disable=no-member
-from typing import Tuple, Any
+from typing import Optional, Tuple, Any
 
 import requests
 from aws_lambda_powertools import Logger
@@ -16,7 +16,7 @@ from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
 from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
 from heimdall_utils.github.app import GithubApp
-from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions
+from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions, parse_timestamp
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 log = Logger(service=APPLICATION, name="ProcessGithubRepos", child=True)
@@ -140,10 +140,10 @@ class ProcessGithubRepos:
 
     def _report_error_response(self, response, error_response):
         if error_response == GITHUB_RATE_ABUSE_FLAG:
-            log.warning("Github abuse limit has been reached.")
-            return error_response
+            log.error("Github abuse limit has been reached.")
+            raise requests.HTTPError("Github abuse limit has been reached.")
         if error_response == GITHUB_TIMEOUT_FLAG:
-            log.warning("Github query timed out.")
+            log.error("Github query timed out.")
             raise requests.HTTPError("Github query timed out")
         log.error("Code: %s - %s", response.status_code, error_response)
         return None
@@ -167,18 +167,6 @@ class ProcessGithubRepos:
             )
 
         response_text = self._query_github_api(query, variables)
-        if response_text in [GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG]:
-            queue_service_and_org(
-                self.queue,
-                self.service_info.service,
-                self.service_info.org,
-                {"cursor": self.service_info.repo_cursor},
-                self.scan_options.default_branch_only,
-                self.scan_options.plugins,
-                self.scan_options.batch_id,
-                self.redundant_scan_query,
-            )
-            return []
         resp = self.json_utils.get_json_from_response(response_text)
         if not resp:
             return []
@@ -227,9 +215,9 @@ class ProcessGithubRepos:
         repository = self.json_utils.get_object_from_json_dict(data, ["repository"])
 
         if not repository:
-            return [], []
+            return [], {}
 
-        return [repository], []
+        return [repository], {}
 
     def _process_repos(self, nodes: list) -> list:
         """
@@ -239,52 +227,73 @@ class ProcessGithubRepos:
         repos = []
         for repo in nodes:
             name = repo.get("name")
+            log.debug("Processing branches in repo %s/%s", self.service_info.org, name, repo=name)
             if f"{self.service_info.service}/{self.service_info.org}" in self.external_orgs and not repo.get(
                 "isPrivate"
             ):
                 # With an external org we only want to scan the private repos
                 # shared with us any not that org's public repos
-                log.info("Skipping public repo %s in external org", name)
+                log.info("Skipping public repo %s in external org", name, repo=name)
                 continue
 
             if not self._is_repo_valid(repo):
                 continue
 
-            default_branch = repo.get("defaultBranchRef")
-            if not default_branch:
-                default_branch_name = "HEAD"
-            else:
-                default_branch_name = default_branch.get("name", "HEAD")
+            if not self.scan_options.default_branch_only and not self.scan_options.repo:
+                log.info("Queuing first page of branches for repo %s", name, repo=name)
+                queue_branch_and_repo(
+                    self.queue,
+                    self.service_info.service,
+                    self.service_info.org,
+                    "null",
+                    repo,
+                    self.scan_options.plugins,
+                    self.scan_options.batch_id,
+                    self.redundant_scan_query,
+                )
+                continue
 
-            repos.extend(self._process_branches(name, default_branch_name, repo.get("refs")))
+            default_branch_ref = repo.get("defaultBranchRef")
+            if not default_branch_ref:
+                log.warning("Could not retrieve timestamp for the Default branch", repo=name)
+                default_branch_ref = {"name": "HEAD", "target": {"committedDate": parse_timestamp()}}
+
+            default_branch_name = default_branch_ref.get("name", "HEAD")
+            branch_names, timestamps = self._get_branch_names(name, repo.get("refs"), default_branch_ref)
+
+            repos.extend(self._process_branches(name, default_branch_name, branch_names, timestamps))
         return repos
 
     def _is_repo_valid(self, repo: dict):
         """
         Checks if the repo has branches.
         """
-        if self.json_utils.get_object_from_json_dict(repo, ["refs", "nodes"]):
+        if not repo.get("isEmpty"):
             return True
 
         log.warning(f"repo {repo.get('name')} has no branches. Skipping")
         return False
 
-    def _process_branches(self, repo_name: str, default_branch: str, branches: dict) -> list:
+    def _process_branches(self, repo_name: str, default_branch_name: str, branches: list, timestamps: dict) -> list:
         """
-        Handles processing for all branches in a given repository
+        Creates Heimdall Tasks for each branch listed in the branches variable.
+
+        This method processes the specified branches of a given repository and
+        generates tasks for Heimdall based on the provided scan configurations.
+
+        Args:
+            repo_name (str): The name of the repository being processed.
+            default_branch_name (str): The name of the default branch in the repository.
+            branches (list): A list of branch names to be processed.
+            timestamps (dict): A dictionary mapping branch names to the timestamp of the last commit on that branch
+
+        Returns:
+            list: A list of Heimdall Tasks
         """
         tasks = []
-        log.debug("Processing branches in repo %s/%s", self.service_info.org, repo_name, repo=repo_name)
-
-        branch_names, timestamps = self._get_branch_names(repo_name, branches)
-        if self.scan_options.default_branch_only:
-            branch_names = [default_branch]
-            if default_branch not in timestamps:
-                timestamps[default_branch] = "1970-01-01T00:00:00Z"
-
-        for branch in branch_names:
+        for branch in branches:
             search_branch = branch
-            if branch == default_branch:
+            if branch == default_branch_name:
                 search_branch = None
 
             if not redundant_scan_exists(
@@ -303,55 +312,62 @@ class ProcessGithubRepos:
                     "plugins": self.scan_options.plugins,
                     "branch": branch,
                 }
-                if branch == default_branch:
+                if branch == default_branch_name:
                     task.pop("branch")
 
                 tasks.append(task)
         return tasks
 
-    def _get_branch_names(self, repo: str, refs: dict) -> Tuple[list, dict]:
+    def _get_branch_names(self, repo: str, refs: dict, default_branch_ref) -> Tuple[list, dict]:
         """
-        Retrieves the branches and timestamps for a given repository.
+        Retrieves the names of branches and their corresponding commit timestamps for a repository.
+
+        Args:
+            repo (str): The name of the repository.
+            refs (dict): A dictionary containing information for the branches in the repository.
+            default_branch_ref: The reference dict for the default branch.
 
         Returns:
-            A list of branches(refs) for the given repo and
-            a dictionary mapping each branch to the timestamp of the last commit
+            Tuple[list, dict]: A tuple containing:
+                - A list of branch names (refs) for the given repository.
+                - A dictionary mapping each branch name to the timestamp of its last commit.
 
-            For example:
-            ["master"], {"master", "1970-01-01T00:00:00Z"}
+        Example:
+            ["master"], {"master": "1970-01-01T00:00:00Z"}
         """
         ref_names = set()
         timestamps = dict()
 
-        if not refs:
-            return list(ref_names), timestamps
+        if self.scan_options.default_branch_only:
+            # Process only the default branch
+            _, timestamp = self._get_branch_details(default_branch_ref)
+            default_branch_name = default_branch_ref.get("name", "HEAD")
 
-        for node in refs["nodes"]:
-            ref_names.add(node.get("name"))
-            timestamps[node.get("name")] = node.get("target", {}).get("committedDate", "1970-01-01T00:00:00Z")
+            ref_names.add(default_branch_name)
+            timestamps[default_branch_name] = timestamp
 
-        page_info = refs.get("pageInfo")
-        if not page_info:
-            log.error("Key pageInfo not found for %s. Returning ref names found.", self.service_info.org)
-            return list(ref_names), timestamps
+        if refs and not self.scan_options.default_branch_only:
+            for node in refs["nodes"]:
+                branch_name, timestamp = self._get_branch_details(node)
+                ref_names.add(branch_name)
+                timestamps[branch_name] = timestamp
 
-        next_page = page_info.get("hasNextPage")
-        branch_cursor = page_info.get("endCursor")
-
-        next_page = page_info.get("hasNextPage")
-        if next_page and not self.scan_options.default_branch_only:
-            branch_cursor = page_info.get("endCursor")
-            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor, repo=repo)
-            queue_branch_and_repo(
-                self.queue,
-                self.service_info.service,
-                self.service_info.org,
-                branch_cursor,
-                repo,
-                self.scan_options.plugins,
-                self.scan_options.batch_id,
-                self.redundant_scan_query,
-            )
+            next_page = self.json_utils.get_object_from_json_dict(refs, ["pageInfo", "hasNextPage"])
+            if next_page:
+                branch_cursor = self.json_utils.get_object_from_json_dict(refs, ["pageInfo", "endCursor"])
+                log.info(
+                    "Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor, repo=repo
+                )
+                queue_branch_and_repo(
+                    self.queue,
+                    self.service_info.service,
+                    self.service_info.org,
+                    branch_cursor,
+                    repo,
+                    self.scan_options.plugins,
+                    self.scan_options.batch_id,
+                    self.redundant_scan_query,
+                )
         return list(ref_names), timestamps
 
     def _get_authorization(self) -> str:
@@ -364,3 +380,12 @@ class ProcessGithubRepos:
 
         # Fall back to using the PAT
         return f"bearer {self.service_info.api_key}"
+
+    def _get_branch_details(self, branch_ref: dict) -> Tuple[Optional[str], str]:
+        """
+        Retrieves the branch name and timestamp from a dictionary
+        """
+        branch_name = branch_ref.get("name")
+        timestamp = branch_ref.get("target", {}).get("committedDate")
+        timestamp = parse_timestamp(timestamp)
+        return branch_name, timestamp

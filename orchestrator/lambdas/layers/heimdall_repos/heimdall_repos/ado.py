@@ -6,7 +6,7 @@ from aws_lambda_powertools import Logger
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import queue_service_and_org
 from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
-from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
+from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo, parse_timestamp
 
 API_VERSION = "6.0"
 CONTINUATION_HEADER = "x-ms-continuationtoken"
@@ -177,7 +177,8 @@ class ADORepoProcessor:
     def _get_commit_timestamp(self, project: str, repo: str, commit_id: str) -> str:
         """Get the timestamp for a commit"""
         resp = self._query_api(query=f"{project}/_apis/git/repositories/{repo}/commits/{commit_id}")
-        return resp.get("committer", {}).get("date", "1970-01-01T00:00:00Z")
+        timestamp = resp.get("committer", {}).get("date")
+        return parse_timestamp(timestamp)
 
     def _query_api(self, query: str, params: dict = None) -> dict:
         """Generic Azure API query method"""

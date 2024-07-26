@@ -59,8 +59,13 @@ export const secretPluginsKeys: ScanPluginKeys = {
 		group: GROUP_SECRETS,
 	},
 	truffle_hog: {
-		displayName: t`Truffle Hog`,
+		displayName: t`Trufflehog (Legacy)`,
 		apiName: "truffle_hog",
+		group: GROUP_SECRETS,
+	},
+	trufflehog: {
+		displayName: t`Trufflehog`,
+		apiName: "trufflehog",
 		group: GROUP_SECRETS,
 	},
 };
@@ -206,7 +211,9 @@ export const nonDefaultPlugins: string[] = [];
 // any enabled plugins that should be excluded (not run) by default
 export const excludePlugins: string[] = ["nodejsscan"];
 
-export const pluginsDisabled: { [name: string]: boolean } = {};
+export const pluginsDisabled: { [name: string]: boolean } = {
+	trufflehog: true,
+};
 
 if (!APP_AQUA_ENABLED) {
 	pluginsDisabled["aqua_cli_scanner"] = true;
