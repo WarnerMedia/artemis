@@ -20,7 +20,7 @@ trim_trailing_whitespace = false
 indent_style = tab
 trim_trailing_whitespace = false
 
-[*.{html,json,sh,tf,yaml,yml}]
+[*.{hcl,html,json,sh,tf,yaml,yml}]
 indent_style = space
 indent_size = 2
 
