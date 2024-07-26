@@ -255,7 +255,7 @@ class ProcessGithubRepos:
 
             default_branch_ref = repo.get("defaultBranchRef")
             if not default_branch_ref:
-                log.warning("Could not retrieve timestamp for the Default branch")
+                log.warning("Could not retrieve timestamp for the Default branch", repo=name)
                 default_branch_ref = {"name": "HEAD", "target": {"committedDate": parse_timestamp()}}
 
             default_branch_name = default_branch_ref.get("name", "HEAD")
