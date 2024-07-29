@@ -80,11 +80,15 @@ variable "scanning_enabled" {
   default     = true
 }
 
-variable "log_level" {
-  description = "Logging level"
+variable "application_log_level" {
+  description = "Application Log Level setting for AWS Lambda"
   default     = "INFO"
 }
 
+variable "system_log_level" {
+  description = "System Log Level setting for AWS Lambda"
+  default     = "INFO"
+}
 ###############################################################################
 # Environment-agnostic variables
 #
@@ -119,6 +123,11 @@ variable "org_queue_lambda_timeout" {
 variable "repo_queue_lambda_timeout" {
   description = "Timeout of repo_queue Lambda in Seconds"
   default     = 900
+}
+
+variable "third_party_api_timeout" {
+  description = "Timeout of third-party API requests in Seconds"
+  default     = "500"
 }
 
 variable "repo_scan_lambda_timeout" {

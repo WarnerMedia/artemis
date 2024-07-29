@@ -1,6 +1,7 @@
 """
 AWS CloudFormation Linter plugin
 """
+
 import json
 import subprocess
 from glob import glob

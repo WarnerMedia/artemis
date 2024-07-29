@@ -9,6 +9,9 @@ from heimdall_repos.repo_layer_env import (
     BITBUCKET_PUBLIC_DEFAULT_BRANCH_QUERY,
 )
 from heimdall_repos.objects.abstract_bitbucket_class import AbstractBitbucket
+from heimdall_utils.env import APPLICATION
+
+log = Logger(service=APPLICATION, name="CloudBitbucket", child=True)
 
 log = Logger(name="CloudBitbucket", child=True)
 

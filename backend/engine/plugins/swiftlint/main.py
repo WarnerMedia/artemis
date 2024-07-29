@@ -1,6 +1,7 @@
 """
 SwiftLint Plugin
 """
+
 import json
 import subprocess
 

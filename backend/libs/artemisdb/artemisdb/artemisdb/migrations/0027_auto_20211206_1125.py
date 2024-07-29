@@ -8,7 +8,6 @@ import artemisdb.artemisdb.consts
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0026_scan_qualified"),
     ]

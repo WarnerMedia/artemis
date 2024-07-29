@@ -10,10 +10,11 @@ from heimdall_repos.objects.cloud_bitbucket_class import CloudBitbucket
 from heimdall_repos.objects.server_v1_bitbucket_class import ServerV1Bitbucket
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queue_branch_and_repo
-from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo
+from heimdall_utils.env import APPLICATION
+from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo, parse_timestamp
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
-log = Logger(name="ProcessBitbucketRepos", child=True)
+log = Logger(service=APPLICATION, name="ProcessBitbucketRepos", child=True)
 
 
 class ProcessBitbucketRepos:
@@ -126,7 +127,8 @@ class ProcessBitbucketRepos:
 
         if self.scan_options.default_branch_only:
             branch_names = [default_branch]
-            timestamp = timestamps.get(default_branch, "1970-01-01T00:00:00Z")
+            timestamp = timestamps.get(default_branch)
+            timestamp = parse_timestamp(timestamp)
             timestamps = {default_branch: timestamp}
 
         for branch in branch_names:
@@ -181,13 +183,13 @@ class ProcessBitbucketRepos:
         ref_names = set()
         timestamps = dict()
 
-        log.info("Processing branches in repo: %s/%s", self.service_info.org, repo)
+        log.debug("Processing branches in repo: %s/%s", self.service_info.org, repo, repo=repo)
 
         response_text = self._query_bitbucket_api(repo_url)
         response_dict = self.json_utils.get_json_from_response(response_text)
 
         if not response_dict:
-            log.warning("Unable to process branches in repo %s/%s", self.service_info.org, repo)
+            log.warning("Unable to process branches in repo %s/%s", self.service_info.org, repo, repo=repo)
             return list(ref_names), timestamps
 
         repo_refs = response_dict.get("values", [])
@@ -207,7 +209,7 @@ class ProcessBitbucketRepos:
         if self.service_helper.has_next_page(response_dict) and not self.scan_options.default_branch_only:
             branch_cursor = self.service_helper.get_cursor(response_dict)
 
-            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor)
+            log.info("Queueing next page of branches in %s to re-start at cursor: %s", repo, branch_cursor, repo=repo)
             queue_branch_and_repo(
                 self.queue,
                 self.service_info.service,
@@ -239,7 +241,12 @@ class ProcessBitbucketRepos:
             response = self._query_bitbucket_api(url)
             response = self.json_utils.get_json_from_response(response)
             if not response:
-                log.warning("Unable to retrieve Default Branch for repo: %s/%s", self.service_info.org, repo_name)
+                log.warning(
+                    "Unable to retrieve Default Branch for repo: %s/%s",
+                    self.service_info.org,
+                    repo_name,
+                    repo=repo_name,
+                )
                 default_branch = "HEAD"
                 return default_branch
 
@@ -255,7 +262,7 @@ class ProcessBitbucketRepos:
 
         commit_id = ref.get("latestCommit", None)
         if not commit_id:
-            return "1970-01-01T00:00:00Z"
+            return parse_timestamp()
 
         commit_url = self.service_helper.construct_bitbucket_commit_url(
             self.service_info.url, self.service_info.org, repo, commit_id
@@ -282,8 +289,8 @@ class ProcessBitbucketRepos:
                 headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             response = session.get(url=url, headers=headers)
             if response.status_code == 429:
-                log.exception("Error retrieving Bitbucket query. Rate Limit Reached")
-                raise requests.HTTPError("Rate Limit Error")
+                log.error("Error retrieving Bitbucket query. Rate Limit Reached")
+                raise requests.HTTPError("Bitbucket Rate Limit Reached")
             if response.status_code != 200:
                 log.error("Error retrieving Bitbucket query: %s, Error Code: %s", url, response.status_code)
                 return None

@@ -1,6 +1,7 @@
 """
 python_code_checker plugin
 """
+
 import json
 import subprocess
 from glob import glob
@@ -38,7 +39,6 @@ def check_python_files(path, rcfile):
 
         # Go through the results
         for item in res:
-
             finding = {
                 "filename": item["path"].replace(path, "", 1),
                 "line": item["line"],

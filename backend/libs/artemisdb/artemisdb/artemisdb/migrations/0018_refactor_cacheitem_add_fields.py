@@ -14,7 +14,6 @@ def set_created_before_expires(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0017_alter_cacheitem_expires"),
     ]

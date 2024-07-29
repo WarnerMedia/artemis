@@ -1,18 +1,19 @@
 # pylint: disable=no-name-in-module, no-member
 import json
 from itertools import zip_longest
+from requests import HTTPError
 from typing import Optional, Any
 
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from botocore.exceptions import ClientError
 
-from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection
+from heimdall_utils.aws_utils import get_analyzer_api_key, get_heimdall_secret, get_sqs_connection, queue_message
 from heimdall_utils.env import API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import ServiceInfo, ScanOptions
 from heimdall_utils.variables import REGION
-from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, SERVICE_PROCESSORS
+from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, ORG_DLQ, SERVICE_PROCESSORS
 
 
 log = Logger(service=APPLICATION, name="repo_queue")
@@ -27,29 +28,36 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
         data = json.loads(item["body"])
         plugins = data.get("plugins")
         default_branch_only = data.get("default_branch_only", False)
-        repos = query(
-            data["service"],
-            data["org"],
-            services.get(data["service"]),
-            data["page"],
-            default_branch_only,
-            plugins,
-            full_services_dict["external_orgs"],
-            data.get("batch_id"),
-            artemis_api_key,
-            data.get("redundant_scan_query"),
-            data.get("repo"),
-        )
+        repos = []
+
+        try:
+            repos = query(
+                data["service"],
+                data["org"],
+                services.get(data["service"]),
+                data["page"],
+                default_branch_only,
+                plugins,
+                full_services_dict["external_orgs"],
+                data.get("batch_id"),
+                artemis_api_key,
+                data.get("redundant_scan_query"),
+                data.get("repo"),
+            )
+        except HTTPError:
+            log.warning("Unable to Process this organization. Sending task to dead-letter queue")
+            queue_message(payload=data, queue_url=ORG_DLQ)
+
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
         for repo_group in group(repos, 10):
             i += queue_repo_group(repo_group, plugins, data.get("batch_id"))
             if i >= 100:
-                log.info(f"{i} queued")
+                log.debug(f"{i} queued")
                 i = 0
 
         if i != 0:
-            log.info(f"{i} queued")
+            log.debug(f"{i} queued")
 
 
 def group(iterable, n, fillvalue=None):
@@ -71,7 +79,7 @@ def query(
     repo: str,
 ) -> list:
     """Retrieves a list of repository events to send to the Repo SQS Queue"""
-    log.append_keys(version_control_service=service, org=org, repo=repo, batch_id=batch_id, page=page)
+    log.append_keys(version_control_service=service, org=org, batch_id=batch_id, page=page, repo=repo)
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
         return []

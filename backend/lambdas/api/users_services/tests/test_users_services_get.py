@@ -32,12 +32,11 @@ class TestGet(unittest.TestCase):
             "user_id": EMAIL,
         }
 
-        with patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user, patch(
-            "artemisdb.artemisdb.models.UserService.objects.get"
-        ) as mock_get_users_services, patch(
-            "artemisdb.artemisdb.models.UserService.objects.filter"
-        ) as mock_filter_users_services:
-
+        with (
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.UserService.objects.get") as mock_get_users_services,
+            patch("artemisdb.artemisdb.models.UserService.objects.filter") as mock_filter_users_services,
+        ):
             mock_get_user.return_value = User(email=EMAIL)
 
             mock_get_users_services.return_value = UserService(
@@ -68,12 +67,11 @@ class TestGet(unittest.TestCase):
             "user_id": EMAIL,
         }
 
-        with patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user, patch(
-            "artemisdb.artemisdb.models.UserService.objects.get"
-        ) as mock_get_users_services, patch(
-            "artemisdb.artemisdb.models.UserService.objects.filter"
-        ) as mock_filter_users_services:
-
+        with (
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.UserService.objects.get") as mock_get_users_services,
+            patch("artemisdb.artemisdb.models.UserService.objects.filter") as mock_filter_users_services,
+        ):
             mock_get_user.return_value = User(email=EMAIL)
 
             mock_get_users_services.return_value = UserService(

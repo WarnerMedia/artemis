@@ -7,6 +7,7 @@ from aws_lambda_powertools import Logger
 
 from heimdall_utils.aws_utils import get_key
 from heimdall_utils.datetime import get_utc_datetime
+from heimdall_utils.env import APPLICATION
 
 GITHUB_APP_ID = os.environ.get("HEIMDALL_GITHUB_APP_ID")
 GITHUB_PRIVATE_KEY = os.environ.get("HEIMDALL_GITHUB_PRIVATE_KEY", "heimdall/github-app-private-key")
@@ -27,7 +28,7 @@ class GithubApp:
 
         if cls._instance is None:
             cls._instance = super(GithubApp, cls).__new__(cls)
-            cls._instance.log = Logger(name=__name__, child=True)
+            cls._instance.log = Logger(service=APPLICATION, name=__name__, child=True)
 
             cls._jwt = None
             cls._jwt_expiration = None
@@ -72,7 +73,7 @@ class GithubApp:
 
         if r.status_code == 200:
             installation_id = r.json().get("id")
-            self.log.info("Caching GitHub App installation id %s for %s organization", installation_id, org)
+            self.log.debug("Caching GitHub App installation id %s for %s organization", installation_id, org)
             self._installation_id_cache[org] = installation_id
 
         return self._installation_id_cache.get(org)
@@ -100,7 +101,7 @@ class GithubApp:
 
         installation_id = self._get_installation_id(org)
         if installation_id is None:
-            self.log.info("GitHub App is not installed in %s organization", org)
+            self.log.error("GitHub App is not installed in %s organization", org)
             return None
 
         self.log.info("Generating new GitHub App installation token for %s organization", org)
@@ -110,7 +111,7 @@ class GithubApp:
         )
 
         if r.status_code == 201:
-            self.log.info("Caching generated GitHub App installation token for %s organization", org)
+            self.log.debug("Caching generated GitHub App installation token for %s organization", org)
             token = r.json().get("token")
             self._token_cache[org] = {
                 "token": token,
@@ -119,5 +120,5 @@ class GithubApp:
             }
             return token
 
-        self.log.info("Unable to generate GitHub App installation token for %s organization", org)
+        self.log.error("Unable to generate GitHub App installation token for %s organization", org)
         return None

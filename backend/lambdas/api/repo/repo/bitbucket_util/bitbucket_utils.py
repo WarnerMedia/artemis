@@ -28,7 +28,6 @@ log = Logger(__name__)
 SERVER_BRANCH_PAGE_LIMIT = 150
 RATE_LIMIT_STATUS_CODE = 429
 RATE_LIMIT_RESPONSE = "Rate limit for this resource has been exceeded"
-server_branches = {}
 
 
 class RepoQueueFields:
@@ -283,23 +282,24 @@ def verify_branch_exists_server(branch_url, branch_name, key) -> dict:
     if not branch_name:
         return {"status": True, "response": None}
 
-    if not server_branches.get(branch_url):
-        branch_result = get_server_branches(branch_url, key)
-        if not branch_result["status"]:
-            return branch_result
+    branch_result = get_server_branches(branch_url, key, branch_name)
+    if not branch_result["status"] or not branch_result.get("branches"):
+        return branch_result
 
-    branch_exists = branch_name in server_branches[branch_url]
+    branch_exists = branch_name in branch_result["branches"]
     return {"status": branch_exists, "response": "Branch not found"}
 
 
-def get_server_branches(branch_url, key) -> dict:
-    # Query the BitBucket API for the repo branches
+def get_server_branches(branch_url, key, branch_name) -> dict:
+    # Query the BitBucket API for the repo branches that match the branch_name
     is_last_page = False
     start = 0
-    server_branches[branch_url] = []
+    branch_result = []
     while not is_last_page:
-        # construct url with cursor
-        branch_url_with_cursor = f"{branch_url}?cursor={start}&limit={SERVER_BRANCH_PAGE_LIMIT}"
+        # construct url with cursor & branch_name
+        branch_url_with_cursor = (
+            f"{branch_url}?cursor={start}&limit={SERVER_BRANCH_PAGE_LIMIT}&filterText={branch_name}"
+        )
         branch_response = query_bitbucket_api(branch_url_with_cursor, key)
         if branch_response.status_code != 200:
             log.warning("Branch url returned status code %d", branch_response.status_code)
@@ -312,11 +312,11 @@ def get_server_branches(branch_url, key) -> dict:
             return {"status": False, "response": branch_response.text}
 
         for branch in branch_dict.get("values"):
-            server_branches[branch_url].append(branch.get("displayId"))
+            branch_result.append(branch.get("displayId"))
 
         is_last_page = branch_dict.get("isLastPage")
         start = branch_dict.get("nextPageStart")
-    return {"status": True, "response": None}
+    return {"status": True, "response": None, "branches": branch_result}
 
 
 def _query(

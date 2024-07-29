@@ -1,5 +1,6 @@
 # pylint: disable=no-name-in-module, no-member
 import json
+from typing import Any
 
 import boto3
 import requests
@@ -10,7 +11,7 @@ from aws_lambda_powertools import Logger
 from heimdall_utils.env import APPLICATION, DEFAULT_API_TIMEOUT
 from heimdall_utils.variables import REGION, REV_PROXY_SECRET, REV_PROXY_SECRET_REGION
 
-log = Logger(name=__name__, child=True)
+log = Logger(service=APPLICATION, name=__name__, child=True)
 
 
 def get_sqs_connection(region):
@@ -90,10 +91,9 @@ def queue_service_and_org(
                 }
             ),
         )
-        log.info(f"Queued {service}/{org_name} for scanning")
         return True
     except ClientError:
-        log.info(f"Unable to queue org: {service}/{org_name}")
+        log.error(f"Unable to queue org: {service}/{org_name}")
         return False
 
 
@@ -123,10 +123,33 @@ def queue_branch_and_repo(
                 }
             ),
         )
-        log.info(f"Queued branches in {service}/{org_name}/{repo} for scanning")
         return True
     except ClientError:
-        log.info(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
+        log.error(f"Unable to queue branches for repo {service}/{org_name}/{repo}")
+        return False
+
+
+def queue_message(payload: dict[str, Any], queue_url: str) -> bool:
+    """
+    Delivers a message to the specified queue
+    TODO: Replace the `queue_branch_and_repo` and `queue_service_and_org` with this function
+
+    Args:
+        payload (dict[str, Any]): The message to send to the queue
+        queue_url (str): The URL of the Amazon SQS queue to which a message is sent
+
+    Returns:
+        bool: True if successful, False if otherwise
+    """
+    try:
+        sqs = get_sqs_connection(REGION)
+        sqs.send_message(
+            QueueUrl=queue_url,
+            MessageBody=json.dumps(payload),
+        )
+        return True
+    except ClientError:
+        log.error("Unable to queue message")
         return False
 
 

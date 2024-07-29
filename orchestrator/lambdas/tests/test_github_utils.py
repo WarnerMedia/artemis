@@ -3,8 +3,8 @@ import json
 import os
 import unittest
 from dataclasses import dataclass
-from unittest.mock import patch
-from operator import itemgetter
+from unittest.mock import patch, MagicMock
+from requests import HTTPError
 
 from heimdall_repos import github_utils
 from heimdall_repos.repo_layer_env import GITHUB_RATE_ABUSE_FLAG, GITHUB_TIMEOUT_FLAG
@@ -41,6 +41,7 @@ TEST_EMPTY_NODE = {
     "defaultBranchRef": None,
     "diskUsage": 0,
     "isPrivate": True,
+    "isEmpty": True,
     "refs": {"nodes": [], "pageInfo": {"endCursor": None, "hasNextPage": False}},
 }
 
@@ -80,7 +81,7 @@ class Response:
 class TestGithubUtils(unittest.TestCase):
     def setUp(self) -> None:
         service_info = ServiceInfo(TEST_SERVICE, TEST_SERVICE_DICT, TEST_ORG, TEST_KEY, TEST_CURSOR)
-        scan_options = ScanOptions(False, TEST_PLUGINS, TEST_BATCH_ID, None)
+        scan_options = ScanOptions(False, TEST_PLUGINS, TEST_BATCH_ID, "test-repo")
         self.process_github_repos = github_utils.ProcessGithubRepos(
             queue=None,
             service_info=service_info,
@@ -150,16 +151,15 @@ class TestGithubUtils(unittest.TestCase):
 
         self.assertEqual(GITHUB_TIMEOUT_FLAG, result)
 
-    @patch.object(github_utils, "queue_service_and_org")
-    @patch.object(github_utils.ProcessGithubRepos, "_query_github_api")
-    def test_query_github_rate_abuse(self, query_mock, queue_mock):
-        self.assertEqual(self.process_github_repos._query_github_api, query_mock)
-        query_mock.return_value = GITHUB_RATE_ABUSE_FLAG
-        self.assertEqual(github_utils.queue_service_and_org, queue_mock)
-
-        self.process_github_repos.query()
-
-        self.assertTrue(queue_mock.called)
+    @patch("requests.post")
+    def test_query_github_rate_abuse(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 429
+        mock_response.text = {"message": "rate limit hit"}
+        mock_post.return_value = mock_response
+        with self.assertRaises(HTTPError):
+            task_list = self.process_github_repos.query()
+            self.assertEqual(task_list, [])
 
     def test_process_repos_repo_no_branches(self):
         expected_response = []
@@ -181,20 +181,24 @@ class TestGithubUtils(unittest.TestCase):
         test_repo = copy.deepcopy(TEST_EMPTY_NODE)
         test_repo["refs"]["nodes"] = [{"name": "master"}]
         test_repo["diskUsage"] = 1000
+        test_repo["isEmpty"] = False
         expected_response = True
 
         response = self.process_github_repos._is_repo_valid(test_repo)
 
         self.assertEqual(expected_response, response)
 
+    @patch.object(github_utils, "queue_branch_and_repo")
     @patch.object(github_utils, "queue_service_and_org")
     @patch.object(github_utils.ProcessGithubRepos, "_query_github_api")
-    def test_process_repos_with_branches(self, query_mock, queue_mock):
+    def test_process_repos_with_branches(self, query_mock, queue_mock, branch_queue_mock):
         self.assertEqual(self.process_github_repos._query_github_api, query_mock)
         query_mock.return_value = self.github_repo_response
         self.maxDiff = None
 
         self.assertEqual(github_utils.queue_service_and_org, queue_mock)
+        self.assertEqual(github_utils.queue_branch_and_repo, branch_queue_mock)
+
         result = self.process_github_repos.query()
         result = sorted(result, key=lambda i: i.get("branch", ""))
 

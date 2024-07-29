@@ -1,6 +1,7 @@
 """
 Nodejs plugin
 """
+
 import json
 import subprocess
 

@@ -1,6 +1,7 @@
 """
 snyk plugin
 """
+
 import json
 import subprocess
 from typing import Union

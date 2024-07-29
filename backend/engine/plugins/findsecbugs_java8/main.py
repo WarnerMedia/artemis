@@ -1,6 +1,7 @@
 """
 findsecbugs_java8 plugin
 """
+
 from engine.plugins.lib import utils
 from engine.plugins.lib.findsecbugs_common.main_util import main_util
 

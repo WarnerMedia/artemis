@@ -10,7 +10,6 @@ def set_user_email_lower(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0023_userservice"),
     ]

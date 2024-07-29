@@ -1,6 +1,7 @@
 """
 aqua_cli_scanner plugin
 """
+
 import json
 import logging
 import subprocess
