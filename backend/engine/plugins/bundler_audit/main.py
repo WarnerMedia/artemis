@@ -1,6 +1,7 @@
 """
 Bundler-audit plugin
 """
+
 import glob
 import json
 import os

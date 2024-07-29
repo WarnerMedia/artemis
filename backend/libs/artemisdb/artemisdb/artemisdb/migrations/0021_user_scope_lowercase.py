@@ -9,7 +9,6 @@ def set_user_scope_lower(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0020_scan_application_metadata"),
     ]

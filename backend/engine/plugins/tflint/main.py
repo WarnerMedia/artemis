@@ -1,6 +1,7 @@
 """
 tflint plugin
 """
+
 import json
 import os
 import subprocess

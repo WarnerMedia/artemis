@@ -1,6 +1,7 @@
 """
 technology_discovery plugin
 """
+
 import json
 import subprocess
 

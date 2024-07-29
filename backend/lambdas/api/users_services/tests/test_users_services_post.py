@@ -61,10 +61,11 @@ def _add_user_service(user_services, admin: bool, params: dict):
         "body": json.dumps({"name": SERVICE_ID, "params": params}),
     }
 
-    with patch("users_services.post.get_github_username") as mock_get_github_username, patch(
-        "users_services.post.AWSConnect"
-    ) as mock_aws_connect, patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user:
-
+    with (
+        patch("users_services.post.get_github_username") as mock_get_github_username,
+        patch("users_services.post.AWSConnect") as mock_aws_connect,
+        patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+    ):
         get_obj = deepcopy(EMPTY_OBJECT)
         get_obj.userservice_set = deepcopy(EMPTY_OBJECT)
         get_obj.userservice_set.all = user_services

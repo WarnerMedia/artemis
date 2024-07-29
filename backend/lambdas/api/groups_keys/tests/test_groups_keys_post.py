@@ -38,9 +38,11 @@ class TestGroupsKeysPost(unittest.TestCase):
         self.assertEqual(response(code=HTTPStatus.BAD_REQUEST), resp)
 
     def test_group_keys_post(self):
-        with patch("groups_keys.post.generate_api_key") as mock_generate_api_key, patch(
-            "artemisdb.artemisdb.models.User.objects.get"
-        ) as mock_user_get, patch("artemisdb.artemisdb.models.Group.objects.get") as mock_group_get:
+        with (
+            patch("groups_keys.post.generate_api_key") as mock_generate_api_key,
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_user_get,
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_group_get,
+        ):
             self.assertEqual(groups_keys.post.generate_api_key, mock_generate_api_key)
             mock_user_get.return_value = TEST_USER
             mock_group_get.return_value = TEST_GROUP

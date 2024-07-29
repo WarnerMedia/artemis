@@ -39,13 +39,13 @@ class TestPut(unittest.TestCase):
             "requestContext": {"identity": {"sourceIp": "127.0.0.1"}},
         }
 
-        with patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user, patch(
-            "artemislib.services.get_services_dict"
-        ) as mock_get_dict, patch("artemisdb.artemisdb.models.User.save"), patch(
-            "artemisdb.artemisdb.models.Group.save"
-        ), patch(
-            "artemisdb.artemisdb.models.User.groups", new_callable=PropertyMock
-        ) as mock_groups:
+        with (
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemislib.services.get_services_dict") as mock_get_dict,
+            patch("artemisdb.artemisdb.models.User.save"),
+            patch("artemisdb.artemisdb.models.Group.save"),
+            patch("artemisdb.artemisdb.models.User.groups", new_callable=PropertyMock) as mock_groups,
+        ):
             mock_get_user.return_value = User(email=EMAIL, scope=AUTHZ)
             mock_get_dict.return_value = SERVICES
             mock_groups.return_value.get.return_value = Group(name=EMAIL, scope=AUTHZ, self_group=True)

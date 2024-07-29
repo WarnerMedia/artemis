@@ -5,7 +5,6 @@ import artemisdb.artemisdb.fields.ltree
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0035_alter_scanbatch_created_by"),
     ]

@@ -7,7 +7,6 @@ import artemisdb.artemisdb.fields.ltree
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0024_user_email_lowercase"),
     ]

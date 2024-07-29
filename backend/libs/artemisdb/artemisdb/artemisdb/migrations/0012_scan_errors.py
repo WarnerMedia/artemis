@@ -10,7 +10,6 @@ def migrate_error_msg(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0011_auto_20210322_0843"),
     ]

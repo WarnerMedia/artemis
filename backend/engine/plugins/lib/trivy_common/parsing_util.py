@@ -1,6 +1,7 @@
 """
 trivy output parser
 """
+
 from typing import NamedTuple
 from engine.plugins.lib.utils import setup_logging
 

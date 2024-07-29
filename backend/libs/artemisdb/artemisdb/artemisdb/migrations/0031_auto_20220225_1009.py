@@ -20,7 +20,6 @@ def migrate_metadata(apps, _schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0030_repocomponentscan"),
     ]

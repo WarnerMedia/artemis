@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0002_auto_20201002_1434"),
     ]
