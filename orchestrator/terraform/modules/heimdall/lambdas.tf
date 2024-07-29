@@ -575,13 +575,31 @@ resource "aws_cloudwatch_event_rule" "repo-dlq-redrive" {
   )
 }
 
-resource "aws_cloudwatch_event_target" "redrive" {
+###############################################################################
+# Deadletter Redrive Scheduling
+###############################################################################
+resource "aws_cloudwatch_event_target" "repo-redrive-target" {
   target_id = "${var.app}-redrive"
   rule      = aws_cloudwatch_event_rule.repo-dlq-redrive.name
   arn       = aws_lambda_function.redrive_lambda.arn
+  input = jsonencode({
+    source      = aws_sqs_queue.repo-deadletter-queue.id
+    destination = aws_sqs_queue.repo-queue.id
+  })
 }
+
+resource "aws_cloudwatch_event_target" "org-redrive-target" {
+  target_id = "${var.app}-redrive"
+  rule      = aws_cloudwatch_event_rule.org-dlq-redrive.name
+  arn       = aws_lambda_function.redrive_lambda.arn
+  input = jsonencode({
+    source      = aws_sqs_queue.org-deadletter-queue.id
+    destination = aws_sqs_queue.org-queue.id
+  })
+}
+
 resource "aws_lambda_permission" "org-redrive-allow-cloudwatch" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch1"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.redrive_lambda.function_name
   principal     = "events.amazonaws.com"
@@ -589,7 +607,7 @@ resource "aws_lambda_permission" "org-redrive-allow-cloudwatch" {
 }
 
 resource "aws_lambda_permission" "repo-redrive-allow-cloudwatch" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch2"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.redrive_lambda.function_name
   principal     = "events.amazonaws.com"
