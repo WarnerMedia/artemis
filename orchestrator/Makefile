@@ -51,6 +51,7 @@ ORG_QUEUE_LAMBDA := ${PREFIX}-org-queue
 REPO_QUEUE_LAMBDA := ${PREFIX}-repo-queue
 REPO_SCAN_LAMBDA := ${PREFIX}-repo-scan
 REPO_SCAN_LOOP_LAMBDA := ${PREFIX}-repo-scan-loop
+REDRIVE_LAMBDA := ${PREFIX}-redrive
 HEIMDALL_ORGS := ${PREFIX}-orgs
 HEIMDALL_UTILS := ${PREFIX}-utils
 HEIMDALL_REPOS := ${PREFIX}-repos
@@ -194,6 +195,10 @@ upload_repo_scan_loop: dist/lambdas/repo_scan_loop.zip
 	aws s3 cp dist/lambdas/repo_scan_loop.zip s3://${S3_BUCKET}/lambdas/repo_scan_loop/v${VERSION}/repo_scan_loop.zip
 .PHONY: upload_repo_scan_loop
 
+upload_redrive: dist/lambdas/redrive.zip
+	aws s3 cp dist/lambdas/redrive.zip s3://${S3_BUCKET}/lambdas/redrive/v${VERSION}/redrive.zip
+.PHONY: upload_redrive
+
 upload_heimdall_orgs: dist/lambdas/layers/heimdall_orgs.zip
 	aws s3 cp dist/lambdas/layers/heimdall_orgs.zip s3://${S3_BUCKET}/lambdas/layers/orgs/v${VERSION}/orgs.zip
 .PHONY: upload_heimdall_orgs
@@ -266,6 +271,21 @@ deploy_repo_scan_loop: upload_repo_scan_loop
 	@echo "${OK}"
 .PHONY: deploy_repo_scan_loop
 
+deploy_redrive: upload_redrive
+	@echo "${INFO}Deploying ${REDRIVE_LAMBDA} function code"
+	aws lambda update-function-code \
+		--function-name ${REDRIVE_LAMBDA} \
+		--region ${REGION} \
+		--s3-bucket ${S3_BUCKET} \
+		--s3-key lambdas/redrive/v${VERSION}/redrive.zip
+	@echo "${INFO}Waiting for ${REDRIVE_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${REDRIVE_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${SYSTEM_STATUS_LAMBDA} layer configuration"
+	@${BACKEND}/build_scripts/update_lambda_layers.py --function-name ${REDRIVE_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+.PHONY: deploy_redrive
+
 deploy_heimdall_orgs: upload_heimdall_orgs
 	@echo "${INFO}Deploying ${HEIMDALL_ORGS} lambda layer"
 	aws lambda publish-layer-version \
@@ -299,7 +319,8 @@ upload_lambdas: upload_heimdall_orgs \
 				upload_org_queue \
 				upload_repo_queue \
 				upload_repo_scan \
-				upload_repo_scan_loop
+				upload_repo_scan_loop \
+				upload_redrive
 .PHONY: upload_lambdas
 
 deploy_lambdas: deploy_heimdall_orgs \
@@ -308,7 +329,8 @@ deploy_lambdas: deploy_heimdall_orgs \
 				deploy_org_queue \
 				deploy_repo_queue \
 				deploy_repo_scan \
-				deploy_repo_scan_loop
+				deploy_repo_scan_loop \
+				deploy_redrive
 .PHONY: deploy_lambdas
 
 upload: upload_lambdas ## Uploads all lambdas to S3
