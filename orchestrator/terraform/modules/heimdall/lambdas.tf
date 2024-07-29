@@ -425,6 +425,11 @@ resource "aws_iam_role_policy_attachment" "vpc-write-logs" {
   policy_arn = aws_iam_policy.write-logs.arn
 }
 
+resource "aws_iam_role_policy_attachment" "sqs-redriv-write-logs" {
+  role       = aws_iam_role.sqs-redrive-assume-role.name
+  policy_arn = aws_iam_policy.write-logs.arn
+}
+
 data "aws_iam_policy_document" "batch-write-dynamodb-records" {
   statement {
     effect = "Allow"
