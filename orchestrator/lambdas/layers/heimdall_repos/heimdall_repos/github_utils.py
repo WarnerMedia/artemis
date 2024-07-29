@@ -246,7 +246,7 @@ class ProcessGithubRepos:
                     self.service_info.service,
                     self.service_info.org,
                     "null",
-                    repo,
+                    name,
                     self.scan_options.plugins,
                     self.scan_options.batch_id,
                     self.redundant_scan_query,
