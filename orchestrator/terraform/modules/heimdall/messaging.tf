@@ -131,6 +131,26 @@ data "aws_iam_policy_document" "repo-queue-receive" {
   }
 }
 
+data "aws_iam_policy_document" "dlq-redrive" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sqs:StartMessageMoveTask",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage",
+      "sqs:SendMessage",
+    ]
+
+    resources = [
+      "${aws_sqs_queue.repo-deadletter-queue.arn}",
+      "${aws_sqs_queue.org-deadletter-queue.arn}",
+      "${aws_sqs_queue.repo-queue.arn}",
+      "${aws_sqs_queue.org-queue.arn}",
+    ]
+  }
+}
 #######################################
 # Policies
 #######################################
@@ -153,6 +173,11 @@ resource "aws_iam_policy" "repo-queue-send" {
 resource "aws_iam_policy" "repo-queue-receive" {
   name   = "${var.app}-repo-queue-receive"
   policy = data.aws_iam_policy_document.repo-queue-receive.json
+}
+
+resource "aws_iam_policy" "dlq-redrive" {
+  name   = "${var.app}-dlq-redrive"
+  policy = data.aws_iam_policy_document.dlq-redrive.json
 }
 
 #######################################
@@ -184,6 +209,10 @@ resource "aws_iam_role_policy_attachment" "api-sqs-repo-queue-send" {
   policy_arn = aws_iam_policy.repo-queue-send.arn
 }
 
+resource "aws_iam_role_policy_attachment" "sqs-dlq-redrive" {
+  role       = aws_iam_role.sqs-redrive-assume-role.name
+  policy_arn = aws_iam_policy.dlq-redrive.arn
+}
 
 ###############################################################################
 # Output

@@ -75,6 +75,19 @@ variable "lambda_availability_zone" {
   description = "The AZ in which to deploy VPC Lambdas"
 }
 
+variable "org_dlq_redrive_schedule" {
+  description = "cron expression to schedule a redrive for the org-deadletter-queue"
+}
+
+variable "repo_dlq_redrive_schedule" {
+  description = "cron expression to schedule a redrive for the repo-deadletter-queue"
+}
+
+variable "dlq_redrive_enabled" {
+  description = "Whether Scheduled Deadletter Queue redrives should be enabled"
+  default     = "DISABLED"
+}
+
 variable "scanning_enabled" {
   description = "Whether Heimdall actually initiates Artemis scans"
   default     = true
@@ -139,7 +152,10 @@ variable "repo_scan_loop_lambda_timeout" {
   description = "Timeout of repo_scan_loop Lambda in Seconds"
   default     = 900
 }
-
+variable "redrive_lambda_timeout" {
+  description = "Timeout of redrive Lambda in Seconds"
+  default     = 300
+}
 variable "lambda_runtime" {
   default = "python3.9"
 }

@@ -223,6 +223,50 @@ resource "aws_lambda_function" "repo-scan-loop" {
   )
 }
 
+resource "aws_lambda_function" "redrive_lambda" {
+  function_name = "${var.app}-redrive"
+
+  logging_config {
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
+  }
+
+  s3_bucket = aws_s3_bucket.heimdall_files.id
+  s3_key    = "lambdas/redrive/v${var.ver}/redrive.zip"
+
+  handler       = "handlers.handler"
+  runtime       = var.lambda_runtime
+  architectures = [var.lambda_architecture]
+  timeout       = var.redrive_lambda_timeout
+
+  role = aws_iam_role.sqs-redrive-assume-role.arn
+
+  layers = [
+    aws_lambda_layer_version.lambda_layers_utils.arn
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the Makefile will deploy newer versions
+      layers
+    ]
+  }
+  environment {
+    variables = {
+      APPLICATION = var.app
+      REGION      = var.aws_region
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "Heimdall Deadletter Redrive Lambda"
+    }
+  )
+}
+
 resource "aws_lambda_layer_version" "lambda_layers_orgs" {
   layer_name          = "${var.app}-orgs"
   s3_bucket           = aws_s3_bucket.heimdall_files.id
@@ -264,6 +308,18 @@ data "aws_iam_policy_document" "lambda-assume-policy" {
       ]
     }
   }
+}
+
+resource "aws_iam_role" "sqs-redrive-assume-role" {
+  name               = "${var.app}-sqs-redrive"
+  assume_role_policy = data.aws_iam_policy_document.lambda-assume-policy.json
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "Heimdall Redrive Lambda Role"
+    }
+  )
 }
 
 resource "aws_iam_role" "lambda-assume-role" {
@@ -488,6 +544,56 @@ resource "aws_lambda_permission" "repo-scan-allow-cloudwatch" {
   function_name = aws_lambda_function.repo-scan-loop.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.repo-scan-loop-rate.arn
+}
+
+###############################################################################
+# SQS Redrive Scheduling
+###############################################################################
+resource "aws_cloudwatch_event_rule" "org-dlq-redrive" {
+  name                = "${var.app}-org-dlq-redrive"
+  description         = "Trigger a Redrive Task on the org-dlq"
+  schedule_expression = var.org_dlq_redrive_schedule
+  state               = var.dlq_redrive_enabled
+  tags = merge(
+    var.tags,
+    {
+      "Name" : "Heimdall ORG DeadLetter Queue Redrive"
+    }
+  )
+}
+
+resource "aws_cloudwatch_event_rule" "repo-dlq-redrive" {
+  name                = "${var.app}-repo-dlq-redrive"
+  description         = "Trigger a Redrive Task on the repo-dlq"
+  schedule_expression = var.repo_dlq_redrive_schedule
+  state               = var.dlq_redrive_enabled
+  tags = merge(
+    var.tags,
+    {
+      "Name" : "Heimdall Repo DeadLetter Queue Redrive"
+    }
+  )
+}
+
+resource "aws_cloudwatch_event_target" "redrive" {
+  target_id = "${var.app}-redrive"
+  rule      = aws_cloudwatch_event_rule.repo-dlq-redrive.name
+  arn       = aws_lambda_function.redrive_lambda.arn
+}
+resource "aws_lambda_permission" "org-redrive-allow-cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.redrive_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.org-dlq-redrive.arn
+}
+
+resource "aws_lambda_permission" "repo-redrive-allow-cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.redrive_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.repo-dlq-redrive.arn
 }
 
 ###############################################################################
