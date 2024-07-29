@@ -15,7 +15,7 @@ def post(
     admin: bool = False,
     group_auth: dict = None,
     source_ip: str = None,
-    **kwargs
+    **kwargs,
 ):
     try:
         parsed_event = ParsedEvent(event)

@@ -1,6 +1,7 @@
 """
 php_sensio_security_checker plugin
 """
+
 import json
 import logging
 import os

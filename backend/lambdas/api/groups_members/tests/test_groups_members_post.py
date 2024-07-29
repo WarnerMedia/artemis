@@ -37,11 +37,13 @@ class TestGroupsMembersPost(unittest.TestCase):
         self.assertEqual(response(code=HTTPStatus.FORBIDDEN), resp)
 
     def test_artemis_admin(self):
-        with patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user, patch(
-            "artemisdb.artemisdb.models.Group.objects.get"
-        ) as mock_get_group, patch(
-            "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
-        ) as mock_group_membership:
+        with (
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch(
+                "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
+            ) as mock_group_membership,
+        ):
             mock_get_user.return_value = TEST_USER2
             mock_get_group.return_value = TEST_GROUP
             mock_group_membership.return_value.filter.return_value.exists.return_value = False
@@ -59,11 +61,13 @@ class TestGroupsMembersPost(unittest.TestCase):
             self.assertEqual(response(GROUP_MEMBER_RECORD), resp)
 
     def test_group_membership_exists(self):
-        with patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user, patch(
-            "artemisdb.artemisdb.models.Group.objects.get"
-        ) as mock_get_group, patch(
-            "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
-        ) as mock_group_membership:
+        with (
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch(
+                "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
+            ) as mock_group_membership,
+        ):
             mock_get_user.return_value = TEST_USER2
             mock_get_group.return_value = TEST_GROUP
             mock_group_membership.return_value.filter.return_value.exists.return_value = True
@@ -77,11 +81,13 @@ class TestGroupsMembersPost(unittest.TestCase):
             self.assertEqual(response({"message": USER_ALREADY_MEMBER_MESSAGE}, code=HTTPStatus.CONFLICT), resp)
 
     def test_post_group_member(self):
-        with patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user, patch(
-            "artemisdb.artemisdb.models.Group.objects.get"
-        ) as mock_get_group, patch(
-            "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
-        ) as mock_group_membership:
+        with (
+            patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch(
+                "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
+            ) as mock_group_membership,
+        ):
             mock_get_user.return_value = TEST_USER2
             mock_get_group.return_value = TEST_GROUP
             mock_group_membership.return_value.filter.return_value.exists.return_value = False
@@ -98,13 +104,13 @@ class TestGroupsMembersPost(unittest.TestCase):
             self.assertEqual(response(GROUP_MEMBER_RECORD), resp)
 
     def test_post_group_member_list(self):
-        with patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership, patch(
-            "artemisdb.artemisdb.models.User.objects.filter"
-        ) as mock_filter_user, patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group, patch(
-            "artemisdb.artemisdb.models.GroupMembership.objects.filter"
-        ) as mock_filter_group_membership, patch(
-            "artemisdb.artemisdb.models.GroupMembership.objects.bulk_create"
-        ) as mock_create_group_membership:
+        with (
+            patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership,
+            patch("artemisdb.artemisdb.models.User.objects.filter") as mock_filter_user,
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch("artemisdb.artemisdb.models.GroupMembership.objects.filter") as mock_filter_group_membership,
+            patch("artemisdb.artemisdb.models.GroupMembership.objects.bulk_create") as mock_create_group_membership,
+        ):
             mock_get_group_membership.return_value = GroupMembership(group=TEST_GROUP, user=TEST_USER, group_admin=True)
             mock_filter_user.return_value = [TEST_USER2]
             mock_get_group.return_value = TEST_GROUP

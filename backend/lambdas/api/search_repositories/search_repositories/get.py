@@ -64,6 +64,7 @@ def _get_repos(paging: PageInfo, scope: list[list[list[str]]]):
 # Filter generation methods
 ###############################################################################
 
+
 # Filter generation method for last qualified scan time being null
 def _last_qualified_scan_isnull(qs: QuerySet, filter: Filter) -> QuerySet:
     if filter.value:

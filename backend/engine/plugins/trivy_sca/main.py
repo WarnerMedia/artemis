@@ -1,6 +1,7 @@
 """
 trivy SCA plugin
 """
+
 import json
 import subprocess
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files

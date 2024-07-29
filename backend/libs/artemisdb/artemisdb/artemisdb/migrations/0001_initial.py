@@ -8,7 +8,6 @@ import artemisdb.artemisdb.consts
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []

@@ -27,11 +27,14 @@ GROUP_AUTH_NON_GROUP_ADMIN = {GROUP_ID: False}
 @patch("authorizer.handlers.AuditLogger.group_member_removed", lambda *x, **y: None)
 class TestGroupsMembersDelete(unittest.TestCase):
     def test_only_admins_can_delete(self):
-        with patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership, patch(
-            "artemisdb.artemisdb.models.GroupMembership.delete"
-        ), patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group, patch(
-            "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
-        ) as mock_group_membership:
+        with (
+            patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership,
+            patch("artemisdb.artemisdb.models.GroupMembership.delete"),
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch(
+                "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
+            ) as mock_group_membership,
+        ):
             mock_get_group_membership.return_value = GroupMembership(group=TEST_GROUP, user=TEST_USER)
             mock_get_group.return_value = TEST_GROUP
             mock_group_membership.return_value.filter.return_value.exclude.return_value.count.return_value = 1
@@ -55,11 +58,14 @@ class TestGroupsMembersDelete(unittest.TestCase):
                     self.assertEqual(test_case["expected"], resp)
 
     def test_delete_group_member_list(self):
-        with patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership, patch(
-            "artemisdb.artemisdb.models.GroupMembership.delete"
-        ), patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group, patch(
-            "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
-        ) as mock_group_membership:
+        with (
+            patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership,
+            patch("artemisdb.artemisdb.models.GroupMembership.delete"),
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch(
+                "artemisdb.artemisdb.models.Group.groupmembership_set", new_callable=PropertyMock
+            ) as mock_group_membership,
+        ):
             mock_get_group_membership.return_value = GroupMembership(group=TEST_GROUP, user=TEST_USER)
             mock_get_group.return_value = TEST_GROUP
             mock_group_membership.return_value.filter.return_value.exclude.return_value.count.return_value = 1

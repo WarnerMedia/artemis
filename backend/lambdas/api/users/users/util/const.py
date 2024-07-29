@@ -1,6 +1,7 @@
 """
 Constants file
 """
+
 import os
 
 APPLICATION = os.environ.get("APPLICATION", "artemis")

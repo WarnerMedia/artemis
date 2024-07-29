@@ -144,6 +144,7 @@ def _get_vuln_list(paging: PageInfo, admin: bool = False, scope: dict = False):
 # Filter generation methods
 ###############################################################################
 
+
 # Filter generation method for last qualified scan time being null
 def _last_qualified_scan_isnull(qs: QuerySet, filter: Filter) -> QuerySet:
     if filter.value:

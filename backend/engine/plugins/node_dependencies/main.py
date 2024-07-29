@@ -1,6 +1,7 @@
 """
 node_dependencies plugin
 """
+
 import json
 import os
 from glob import glob
