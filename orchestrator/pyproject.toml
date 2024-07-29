@@ -14,6 +14,6 @@ known_first_party = [
     "repo_queue",
     "repo_scan",
     "repo_scan_loop",
-    "redrive"
+    "redrive",
     "lambdas"
 ]
