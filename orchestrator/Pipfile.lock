@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bf803b8a51d250edfe02e00066b9ceeb362302822d7b9ce8108bcfaf4fdc4aec"
+            "sha256": "e91d29f4ef8479ac3ba44535857cb92ddc424fe3f15225e8bb7073752ae89527"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,14 @@
         ]
     },
     "default": {
+        "aws-lambda-powertools": {
+            "hashes": [
+                "sha256:606feeb4c233d9f2cfbccc44789cf44e0790ddec6ae9d290dff9ca330ae51934",
+                "sha256:d7a1e2fdf4c8089e5d65fc54ac2f0f4e7fc46ae17f806737e6a1bec494095daf"
+            ],
+            "index": "pypi",
+            "version": "==2.40.1"
+        },
         "awscli": {
             "hashes": [
                 "sha256:b3047b2b8ab6d4a8b5bb04e28e4531be8e72fc87e5fb8f2588196eca9dd11dd0",

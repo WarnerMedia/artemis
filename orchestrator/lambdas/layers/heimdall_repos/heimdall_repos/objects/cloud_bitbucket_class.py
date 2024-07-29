@@ -13,8 +13,6 @@ from heimdall_utils.env import APPLICATION
 
 log = Logger(service=APPLICATION, name="CloudBitbucket", child=True)
 
-log = Logger(name="CloudBitbucket", child=True)
-
 
 class CloudBitbucket(AbstractBitbucket):
     def __init__(self, service):
