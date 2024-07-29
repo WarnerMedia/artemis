@@ -82,7 +82,6 @@ class Github:
 
     @cache
     def get_repo_ruleset(self, owner, repo, ruleset_id):
-
         if self._verbose:
             print(
                 f'[GITHUB] Calling "get_repo_ruleset" with owner="{owner}", repo="{repo}", and ruleset_id="{ruleset_id}"'
