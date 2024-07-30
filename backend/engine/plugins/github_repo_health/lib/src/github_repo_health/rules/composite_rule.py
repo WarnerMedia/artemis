@@ -44,7 +44,7 @@ class CompositeRule:
     def check(github, owner, repo, branch, config={}):
         if CompositeRule._checker == None:
             # Loads Checker at first run to avoid circular import
-            from utilities import Checker
+            from github_repo_health.utilities import Checker
 
             CompositeRule._checker = Checker(github, None)
 
