@@ -1,5 +1,3 @@
-import uuid
-
 import simplejson as json
 
 from artemisdb.artemisdb.models import License, Scan

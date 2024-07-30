@@ -6,7 +6,6 @@ import json
 import os
 import subprocess
 
-from typing import Any
 from engine.plugins.lib import utils
 
 log = utils.setup_logging("owasp_dependency_check")
