@@ -226,7 +226,7 @@ RESULTS_DICT = {
         ),
     ],
 )
-@patch("utilities.Checker")
+@patch("github_repo_health.utilities.Checker")
 def test_rule(Checker, config, expected_pass):
     mock_checker = MagicMock()
     mock_checker.run_check = MagicMock(side_effect=_get_checker_result)
@@ -325,7 +325,7 @@ def test_rule(Checker, config, expected_pass):
         ),
     ],
 )
-@patch("utilities.Checker")
+@patch("github_repo_health.utilities.Checker")
 def test_errors(Checker, config, expected_error_message):
     mock_checker = MagicMock()
     mock_checker.run_check = MagicMock(side_effect=_get_checker_result)
