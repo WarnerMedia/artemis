@@ -19,6 +19,7 @@ class TestGithub(unittest.TestCase):
     url
     nameWithOwner
     isPrivate
+    isArchived
     diskUsage
   }
 }"""
