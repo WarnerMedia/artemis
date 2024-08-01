@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Tuple
+from typing import Optional
 
 from artemislib.singleton import Singleton
 
@@ -12,7 +12,7 @@ class DBLookupCache(metaclass=Singleton):
 
             self.cache_item_model = CacheItem
 
-    def lookup(self, key: str) -> Tuple[str, None]:
+    def lookup(self, key: str) -> Optional[str]:
         if self.cache_item_model is None or key is None:
             return None
 
@@ -28,6 +28,6 @@ class DBLookupCache(metaclass=Singleton):
         except self.cache_item_model.DoesNotExist:
             return None
 
-    def store(self, key: str, value: str, expires: datetime = None):
+    def store(self, key: str, value: str, expires: Optional[datetime] = None):
         if self.cache_item_model is not None:
             self.cache_item_model.objects.update_or_create(key=key, defaults={"value": value, "expires": expires})
