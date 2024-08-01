@@ -117,7 +117,7 @@ class AWSConnect:
         Raises ValueError if the bucket is not specified.
         """
         if s3_bucket is None:
-            raise ValueError("Source bucket must be specified")
+            raise ValueError("Target bucket must be specified")
         return self._S3[endpoint_url].Object(s3_bucket, s3_key)
 
     def copy_s3_object(
@@ -208,7 +208,7 @@ class AWSConnect:
         Raises botocore.exceptions.ClientError if the deletion fails.
         """
         if s3_bucket is None:
-            raise ValueError("Source bucket must be specified")
+            raise ValueError("Target bucket must be specified")
         count = 0
         bucket = self._S3[endpoint_url].Bucket(s3_bucket)
         resp = bucket.objects.filter(Prefix=prefix).delete()
@@ -226,7 +226,7 @@ class AWSConnect:
         Raises ValueError if the bucket is not specified.
         """
         if s3_bucket is None:
-            raise ValueError("Source bucket must be specified")
+            raise ValueError("Target bucket must be specified")
         self.log.debug("[get_s3_file_list] prefix=%s, bucket=%s, endpoint=%s", prefix, s3_bucket, endpoint_url)
         bucket = self._S3[endpoint_url].Bucket(s3_bucket)
         return bucket.objects.filter(Prefix=prefix)
