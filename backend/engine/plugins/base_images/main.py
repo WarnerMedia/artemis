@@ -33,7 +33,7 @@ def find_from_lines(path: str) -> list:
             "--recursive",
             "--include",
             "Dockerfile*",
-            "^FROM (--platform=[^\\s+] ){0,1}[^\\s]+( AS .+){0,1}$",
+            "^FROM (--platform=[^\\s+] ){0,1}[-_.:=a-zA-Z0-9]+( AS .+){0,1}$",
             path,
         ],
         capture_output=True,
