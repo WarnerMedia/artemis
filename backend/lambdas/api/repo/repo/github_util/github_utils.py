@@ -71,7 +71,7 @@ def _build_query(org, req_list, service, authz):
                 Argument(name="owner", value=var_defs.get("org")),
                 Argument(name="name", value=var_defs.get(repo_alias)),
             ],
-            fields=["url", "nameWithOwner", "isPrivate", "diskUsage"],
+            fields=["url", "nameWithOwner", "isPrivate", "isArchived", "diskUsage"],
         )
 
         if branch_name:
@@ -164,6 +164,7 @@ def _query(
                 resp["data"][repo]["diskUsage"],
                 service,
                 public=not resp["data"][repo]["isPrivate"],
+                archived=resp["data"][repo]["isArchived"],
                 plugins=options_map[org_repo]["plugins"],
                 depth=options_map[org_repo]["depth"],
                 branch=resp["data"][repo].get("ref", {}).get("name"),

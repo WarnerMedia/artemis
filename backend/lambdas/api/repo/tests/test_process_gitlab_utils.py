@@ -16,6 +16,7 @@ GITLAB_QUERY_WITH_BRANCH_EXPECTED = """query GetRepos(
     httpUrlToRepo
     fullPath
     visibility
+    archived
     statistics {
       repositorySize
     }
@@ -39,6 +40,7 @@ GITLAB_QUERY_NO_BRANCH_EXPECTED = """query GetRepos(
     httpUrlToRepo
     fullPath
     visibility
+    archived
     statistics {
       repositorySize
     }
@@ -53,6 +55,7 @@ GITLAB_QUERY_NO_BRANCH_EXPECTED2 = """query GetRepos(
     httpUrlToRepo
     fullPath
     visibility
+    archived
     statistics {
       repositorySize
     }
@@ -69,6 +72,7 @@ BATCH_GITLAB_QUERY1 = """query GetRepos(
     httpUrlToRepo
     fullPath
     visibility
+    archived
     statistics {
       repositorySize
     }
@@ -89,6 +93,7 @@ BATCH_GITLAB_QUERY1 = """query GetRepos(
     httpUrlToRepo
     fullPath
     visibility
+    archived
     statistics {
       repositorySize
     }
@@ -96,7 +101,7 @@ BATCH_GITLAB_QUERY1 = """query GetRepos(
 }"""
 TEST_SERVICE_URL = None
 TEST_QUERY_LIST = [
-    "query GetRepos(  $repo0: ID!) {  repo0: project(    fullPath: $repo0  ) {    httpUrlToRepo    fullPath    visibility    statistics {      repositorySize    }  }}"
+    "query GetRepos(  $repo0: ID!) {  repo0: project(    fullPath: $repo0  ) {    httpUrlToRepo    fullPath    visibility    archived    statistics {      repositorySize    }  }}"
 ]
 TEST_QUERY_RESPONSE = {
     "data": {
@@ -104,6 +109,7 @@ TEST_QUERY_RESPONSE = {
             "httpUrlToRepo": "https://test_gitlab_instance/test/test_package.git",
             "fullPath": "test/test_package",
             "visibility": "internal",
+            "archived": False,
             "statistics": {"repositorySize": 8787066},
         }
     }

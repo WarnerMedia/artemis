@@ -19,6 +19,7 @@ class TestGithub(unittest.TestCase):
     url
     nameWithOwner
     isPrivate
+    isArchived
     diskUsage
   }
 }"""
@@ -46,6 +47,7 @@ class TestGithub(unittest.TestCase):
     url
     nameWithOwner
     isPrivate
+    isArchived
     diskUsage
     ref(
       qualifiedName: $branch0
@@ -61,6 +63,7 @@ class TestGithub(unittest.TestCase):
     url
     nameWithOwner
     isPrivate
+    isArchived
     diskUsage
   }
 
@@ -71,6 +74,7 @@ class TestGithub(unittest.TestCase):
     url
     nameWithOwner
     isPrivate
+    isArchived
     diskUsage
     ref(
       qualifiedName: $branch2
@@ -86,6 +90,7 @@ class TestGithub(unittest.TestCase):
     url
     nameWithOwner
     isPrivate
+    isArchived
     diskUsage
     ref(
       qualifiedName: $branch3
