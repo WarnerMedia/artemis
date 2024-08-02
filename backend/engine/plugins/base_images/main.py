@@ -34,7 +34,7 @@ def find_from_lines(path: str) -> list:
             "--ignore-case",
             "--include",
             "Dockerfile*",
-            "^FROM (--platform=){0,1}[-_.:\\${} /=a-z0-9]+$",
+            "^([ ]+){0,1}FROM (--platform=){0,1}[-_.:\\${} /=a-z0-9]+$",
             path,
         ],
         capture_output=True,
