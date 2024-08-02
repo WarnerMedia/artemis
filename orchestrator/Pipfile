@@ -19,7 +19,6 @@ requests = "~=2.31"
 
 [dev-packages]
 autopep8 = "~=2.1"
-black = "==22.3.0"  # Pending upgrade later.
 cryptography = "~=42.0"
 flake8 = "~=7.0"
 mock = "~=5.1"
