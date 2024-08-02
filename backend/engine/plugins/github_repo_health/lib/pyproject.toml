@@ -18,6 +18,6 @@ pythonpath = [
   "src/github_repo_health"
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 120
-exclude = '/(\.eggs)/'
+target-version = "py39"
