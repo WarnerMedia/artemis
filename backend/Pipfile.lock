@@ -958,7 +958,7 @@
                 "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d",
                 "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_version < '3.12'",
             "version": "==4.12.2"
         },
         "urllib3": {
@@ -2128,7 +2128,7 @@
                 "sha256:230d388117af870fce5647a3c52401fcf753e94720e6ea6b4197a5355648885e",
                 "sha256:e435dfa75b1d7195c7b8378c3859f0445cd88c6b0375c181ed66823a9ceb7524"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_version >= '3.5'",
             "version": "==2.8.8"
         },
         "packageurl-python": {
@@ -2834,7 +2834,7 @@
                 "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d",
                 "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_version < '3.12'",
             "version": "==4.12.2"
         },
         "update-checker": {
