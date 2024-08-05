@@ -417,8 +417,9 @@ dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
 	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 'boto3~=1.34' 'boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.34' 'pyjwt[crypto]~=2.8' 'requests~=2.31'	mkdir -p ${DIST_DIR}/lambdas/layers/artemislib/python
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 'boto3~=1.34' 'boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.34' 'pyjwt[crypto]~=2.8' 'requests~=2.31'
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} cryptography
+	mkdir -p ${DIST_DIR}/lambdas/layers/artemislib/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/artemislib; zip -r ${DIST_DIR}/lambdas/layers/artemislib.zip *
 	@echo "${OK}"
 
