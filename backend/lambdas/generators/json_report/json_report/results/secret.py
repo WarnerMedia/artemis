@@ -54,7 +54,14 @@ def get_secrets(scan, params):
             # Build the full secrets results
             if s["filename"] not in secrets:
                 secrets[s["filename"]] = []
-            item = {"type": s.get("type"), "line": s.get("line"), "commit": s.get("commit")}
+
+            item = {
+                "type": s.get("type"),
+                "line": s.get("line"),
+                "commit": s.get("commit"),
+                "validity": s.get("validity"),
+            }
+
             if item not in secrets[s["filename"]]:
                 secrets[s["filename"]].append(item)
 

@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from engine.plugins.gitsecrets.secrets_processor import SecretProcessor
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
+from engine.plugins.lib.secrets_common.enums import SecretValidationType
 
 log = utils.setup_logging("gitsecrets")
 
@@ -64,6 +65,7 @@ def run_git_secrets(scan_path: str) -> GIT_SECRETS_RESULT:
             "type": processor.secret_type,
             "author": blame_result.name,
             "author-timestamp": blame_result.timestamp,
+            "validity": SecretValidationType.UNKNOWN,
         }
         results.append(item)
         event_info[item_id] = {"match": processor.secret, "type": item["type"]}
