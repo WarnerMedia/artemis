@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class SecretValidationType(str, Enum):
+class SecretValidity(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     UNKNOWN = "unknown"

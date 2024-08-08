@@ -1,11 +1,13 @@
 import json
 import subprocess
 import uuid
+
 from copy import copy
+from typing import Optional
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
-from engine.plugins.lib.secrets_common.enums import SecretValidationType
+from engine.plugins.lib.secrets_common.enums import SecretValidity
 
 ENDS = {"lock", "lock.json", "DEPS"}
 STARTS = {"vendor"}
@@ -125,14 +127,14 @@ def scrub_results(scan_results: list, scan_path: str) -> dict:
                 "type": secret_type(record["reason"]),
                 "author": author,
                 "author-timestamp": timestamp,
-                "validity": SecretValidationType.UNKNOWN,
+                "validity": SecretValidity.UNKNOWN,
             }
             event_info[item_id] = {"match": matches, "type": record_json["type"]}
             cleaned_records.append(record_json)
     return {"results": cleaned_records, "event_info": event_info}
 
 
-def run_security_checker(scan_path: str, depth=None, rules: str | None = None) -> list:
+def run_security_checker(scan_path: str, depth=None, rules: Optional[str] = None) -> list:
     log.info("Running trufflehog (depth limit: %s)", depth)
     if depth:
         cmd = [

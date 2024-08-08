@@ -4,7 +4,7 @@ import uuid
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
-from engine.plugins.lib.secrets_common.enums import SecretValidationType
+from engine.plugins.lib.secrets_common.enums import SecretValidity
 
 ENDS = {"lock", "lock.json", "DEPS"}
 STARTS = {"vendor"}
@@ -50,12 +50,12 @@ def get_validity(finding):
     verified = finding.get("Verified")
 
     if verified == True:
-        return SecretValidationType.ACTIVE
+        return SecretValidity.ACTIVE
     else:
         # We can't be sure that the secret is invalid if `verified=false`, since there could have
         # been a verification error or Trufflehog did not attempt to verify. So, we set it to
         # unknown
-        return SecretValidationType.UNKNOWN
+        return SecretValidity.UNKNOWN
 
 
 def scrub_results(scan_results: list, error_dict: dict) -> dict:

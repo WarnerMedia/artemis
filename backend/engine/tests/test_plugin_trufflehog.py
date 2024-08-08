@@ -6,6 +6,7 @@ from contextlib import redirect_stdout
 from mock import MagicMock, patch
 
 from engine.plugins.lib import utils
+from engine.plugins.lib.secrets_common.enums import SecretValidity
 from engine.plugins.trufflehog import main as trufflehog
 
 EXAMPLE_EMAIL = "email@example.com"
@@ -185,6 +186,7 @@ class TestPluginTrufflehog(unittest.TestCase):
             "type": expected_type,
             "author": EXAMPLE_EMAIL,
             "author-timestamp": "2021-01-01 00:00:00 +0000",
+            "validity": SecretValidity.UNKNOWN,
         }
         expected_event = {actual["results"][0]["id"]: {"match": ["YER' A STRING 'ARRY"], "type": expected_type}}
         expected = {"results": [expected1], "event_info": expected_event}
