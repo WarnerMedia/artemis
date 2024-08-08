@@ -89,8 +89,3 @@ class ComponentType(Enum):
     GO = "go"
     PHP = "php"
     MAVEN = "maven"
-
-class SecretValidationType(Enum):
-    VALID = "valid"
-    INVALID = "invalid"
-    UNKNOWN = "unknown"
