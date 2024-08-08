@@ -8,7 +8,7 @@ ARG PYTHON_SLIM_IMG_VER=python:3.9-slim-bookworm
 
 ARG PHP_IMG_VER=php:8.2-cli-bookworm
 
-FROM ${PYTHON_IMG_VER} as srcclr-builder
+FROM ${PYTHON_IMG_VER} AS srcclr-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -19,7 +19,7 @@ RUN apt-get update && \
     curl -sSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xdf7dd7a50b746dd4' | gpg --dearmor -o /etc/apt/trusted.gpg.d/veracode-sca-archive.gpg && \
     echo 'deb https://download.sourceclear.com/ubuntu stable/' >/etc/apt/sources.list.d/veracode-sca.list
 
-FROM ${PYTHON_IMG_VER} as golang-builder
+FROM ${PYTHON_IMG_VER} AS golang-builder
 
 ARG GOLANGVER=1.20.10
 ARG GOLANGSHA=80d34f1fd74e382d86c2d6102e0e60d4318461a7c2f457ec1efc4042752d4248
@@ -31,7 +31,7 @@ RUN mkdir -p /golang/go && \
     tar -xzvf /golang/golang.tar.gz -C /golang/go && \
     rm /golang/golang.tar.gz
 
-FROM ${PYTHON_IMG_VER} as gradle-builder
+FROM ${PYTHON_IMG_VER} AS gradle-builder
 
 ARG GRADLEVER=8.2.1
 ARG GRADLESHA=03ec176d388f2aa99defcadc3ac6adf8dd2bce5145a129659537c0874dea5ad1
@@ -44,7 +44,7 @@ RUN mkdir -p /gradle && \
     mv /gradle/gradle-$GRADLEVER /gradle/gradle && \
     rm /gradle/gradle.zip
 
-FROM ${PYTHON_IMG_VER} as ant-builder
+FROM ${PYTHON_IMG_VER} AS ant-builder
 
 ARG ANTVER=1.10.14
 ARG ANTSHA=4e74b382dd8271f9eac9fef69ba94751fb8a8356dbd995c4d642f2dad33de77bd37d4001d6c8f4f0ef6789529754968f0c1b6376668033c8904c6ec84543332a
@@ -57,7 +57,7 @@ RUN mkdir -p /ant && \
     mv /ant/apache-ant-$ANTVER /ant/ant && \
     rm /ant/ant.tar.gz
 
-FROM ${PYTHON_IMG_VER} as maven-builder
+FROM ${PYTHON_IMG_VER} AS maven-builder
 
 ARG MAVENVER=3.9.5
 ARG MAVENSHA=4810523ba025104106567d8a15a8aa19db35068c8c8be19e30b219a1d7e83bcab96124bf86dc424b1cd3c5edba25d69ec0b31751c136f88975d15406cab3842b
@@ -70,7 +70,7 @@ RUN mkdir -p /maven && \
     mv /maven/apache-maven-$MAVENVER /maven/maven && \
     rm /maven/maven.tar.gz
 
-FROM ${PYTHON_IMG_VER} as node-builder
+FROM ${PYTHON_IMG_VER} AS node-builder
 
 ARG NODEVER=18.19.1
 ARG NODESHA=724802c45237477dbe5777923743e6c77906830cae03a82b5653ebd75b301dda
@@ -83,13 +83,13 @@ RUN mkdir -p /node && \
     mv /node/node-v$NODEVER-linux-x64 /node/node && \
     rm /node/node.tar.gz
 
-FROM ${PHP_IMG_VER} as php-builder
+FROM ${PHP_IMG_VER} AS php-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-FROM ${PYTHON_IMG_VER} as java-builder
+FROM ${PYTHON_IMG_VER} AS java-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -106,7 +106,7 @@ RUN mkdir -p /java && \
 ###############################################################################
 # App stage
 ###############################################################################
-FROM ${PYTHON_SLIM_IMG_VER} as app
+FROM ${PYTHON_SLIM_IMG_VER} AS app
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG MAINTAINER
