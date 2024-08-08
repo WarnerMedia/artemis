@@ -293,7 +293,7 @@ get-trivy: ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy
 
 install-plugin-dependencies:
 	@echo "${INFO}Installing plugin dependencies..."
-	${PYTHON} -m pipenv run pip install -r ${ROOT_DIR}/engine/plugins/github_repo_health/cli/generated_requirements.txt
+	${PYTHON} -m pipenv run pip install ${ROOT_DIR}/engine/plugins/github_repo_health/lib
 
 define run-pytest
 	@echo "${INFO}Running $1"
@@ -326,7 +326,7 @@ test: test-deps style-test
 style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
-	${PYTHON} -m pipenv run black --check .
+	${PYTHON} -m pipenv run ruff format --check .
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
@@ -417,7 +417,7 @@ dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
 	@echo "${INFO}Building $@"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests "urllib3<2"
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 'boto3~=1.34' 'boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.34' 'pyjwt[crypto]~=2.8' 'requests~=2.31'
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} cryptography
 	mkdir -p ${DIST_DIR}/lambdas/layers/artemislib/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/artemislib; zip -r ${DIST_DIR}/lambdas/layers/artemislib.zip *
@@ -1674,6 +1674,7 @@ clean:  ## Clean all
 	rm -rf ${STAGE_DIR}
 	rm -rf venv
 	rm -rf .pytest_cache
+	rm -rf .ruff_cache
 	rm -rf htmlcov
 	rm -rf .coverage
 	rm -rf .temp

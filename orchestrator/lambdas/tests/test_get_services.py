@@ -1,8 +1,6 @@
 import os
 import unittest
 
-import pytest
-
 from heimdall_utils import get_services
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))

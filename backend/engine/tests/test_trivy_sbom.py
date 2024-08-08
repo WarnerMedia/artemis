@@ -6,7 +6,6 @@ import secrets
 from docker import builder, remover
 from subprocess import CompletedProcess
 from unittest.mock import patch
-from docker import remover
 from engine.plugins.trivy_sbom import main as Trivy
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install

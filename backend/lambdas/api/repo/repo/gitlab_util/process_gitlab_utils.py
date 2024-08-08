@@ -87,7 +87,13 @@ def build_queries(req_list, authz, service, batch_queries):
             name="project",
             alias=repo_alias,
             arguments=[Argument(name="fullPath", value=repo_variable)],
-            fields=["httpUrlToRepo", "fullPath", "visibility", Field(name="statistics", fields=["repositorySize"])],
+            fields=[
+                "httpUrlToRepo",
+                "fullPath",
+                "visibility",
+                "archived",
+                Field(name="statistics", fields=["repositorySize"]),
+            ],
         )
 
         if branch_name:
@@ -157,6 +163,7 @@ def queue_gitlab_repository(
         int(resp_repo_data["statistics"]["repositorySize"]) / 1024,
         service_type,
         public=(resp_repo_data["visibility"] not in ["private", "internal"]),
+        archived=resp_repo_data["archived"],
         plugins=options_org_repo["plugins"],
         depth=options_org_repo["depth"],
         branch=branch,

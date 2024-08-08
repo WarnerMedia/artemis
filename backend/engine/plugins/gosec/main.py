@@ -1,6 +1,7 @@
 """
 GoSec Plugin
 """
+
 import json
 import subprocess
 

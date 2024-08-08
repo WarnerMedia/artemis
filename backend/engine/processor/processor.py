@@ -397,6 +397,7 @@ class EngineProcessor:
                 "service": self.details.service,
                 "type": "metadata",
                 "application_metadata": scan.application_metadata,
+                "isArchived": self.details.isArchived,
             }
             queue_event(scan.repo.repo, "metadata", payload)
 

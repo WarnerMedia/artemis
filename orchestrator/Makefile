@@ -110,7 +110,7 @@ test: style-test
 style-test:
 	@echo "${INFO}Running code style checks"
 	${PYTHON} -m pipenv sync --dev
-	${PYTHON} -m pipenv run black --check .
+	${PYTHON} -m pipenv run ruff format --check .
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
@@ -321,6 +321,7 @@ clean: ## Cleans up the build, dist, venv directories
 	rm -rf ${DIST_DIR}
 	rm -rf venv
 	rm -rf .pytest_cache
+	rm -rf .ruff_cache
 	find . -name "__pycache__" -type d | xargs rm -r
 	find . -name ".eggs" -type d | xargs rm -r
 	find . -name "*.egg-info" -type d | xargs rm -r

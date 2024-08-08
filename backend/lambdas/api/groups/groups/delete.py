@@ -14,7 +14,7 @@ def delete(
     admin: bool = None,
     group_auth: dict = None,
     source_ip: str = None,
-    **kwargs
+    **kwargs,
 ):
     try:
         parsed_event = ParsedEvent(event, False)

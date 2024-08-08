@@ -1,6 +1,7 @@
 """
 trivy image scanning plugin
 """
+
 import json
 import subprocess
 from engine.plugins.lib.utils import convert_string_to_json

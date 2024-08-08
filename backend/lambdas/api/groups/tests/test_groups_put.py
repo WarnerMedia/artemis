@@ -39,11 +39,12 @@ class TestGroupsPut(unittest.TestCase):
         self.assertEqual(response(code=HTTPStatus.FORBIDDEN), resp)
 
     def test_artemis_admin(self):
-        with patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership, patch(
-            "artemisdb.artemisdb.models.Group.objects.get"
-        ) as mock_get_group, patch("artemisdb.artemisdb.models.Group.save"), patch(
-            "artemisdb.artemisdb.models.Group.to_dict"
-        ) as mock_group_to_dict:
+        with (
+            patch("artemisdb.artemisdb.models.GroupMembership.objects.get") as mock_get_group_membership,
+            patch("artemisdb.artemisdb.models.Group.objects.get") as mock_get_group,
+            patch("artemisdb.artemisdb.models.Group.save"),
+            patch("artemisdb.artemisdb.models.Group.to_dict") as mock_group_to_dict,
+        ):
             mock_get_group_membership.return_value = GroupMembership(group=TEST_GROUP, user=TEST_USER)
             mock_get_group.return_value = deepcopy(GROUP_1)
             mock_group_to_dict.return_value = GROUP_RECORD

@@ -34,7 +34,6 @@ def create_self_groups(apps, _):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0031_auto_20220225_1009"),
     ]

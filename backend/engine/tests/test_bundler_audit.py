@@ -1,6 +1,7 @@
 """
 Testing Bundler-Audit
 """
+
 import unittest
 
 from engine.plugins.bundler_audit import main as bundler

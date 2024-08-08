@@ -7,7 +7,6 @@ import artemisdb.artemisdb.consts
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("artemisdb", "0037_systemallowlistitem"),
     ]

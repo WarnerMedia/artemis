@@ -5,6 +5,7 @@ return code 3 - successful scan. vulns found.
 return code 4 - no rails app found.
 return code 255 - failed scan
 """
+
 import json
 import subprocess
 
