@@ -50,7 +50,7 @@ def get_validity(finding):
     verified = finding.get("Verified")
 
     if verified == True:
-        return SecretValidationType.VALID
+        return SecretValidationType.ACTIVE
     else:
         # We can't be sure that the secret is invalid if `verified=false`, since there could have
         # been a verification error or Trufflehog did not attempt to verify. So, we set it to
