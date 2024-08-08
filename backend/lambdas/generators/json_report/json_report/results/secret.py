@@ -77,7 +77,7 @@ def get_secrets(scan, params):
                 type=finding.get("type"),
                 line=finding.get("line"),
                 commit=finding.get("commit"),
-                validity=finding.get("validity"),
+                validity=finding.get("validity", "unknown"),
             )
 
             key = get_finding_dict_key(item)
