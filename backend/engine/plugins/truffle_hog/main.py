@@ -1,10 +1,13 @@
 import json
 import subprocess
 import uuid
+
 from copy import copy
+from typing import Optional
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
+from engine.plugins.lib.secrets_common.enums import SecretValidity
 
 ENDS = {"lock", "lock.json", "DEPS"}
 STARTS = {"vendor"}
@@ -60,7 +63,7 @@ def secret_type(reason: str) -> str:
     return stype
 
 
-def commit_author(scan_path: str, commit: str) -> str:
+def commit_author(scan_path: str, commit: str) -> tuple:
     author = "Unknown author"
     timestamp = ""
 
@@ -92,7 +95,7 @@ def line_number(diff: str) -> int:
         return -1
 
 
-def scrub_results(scan_results: list, scan_path: str) -> list:
+def scrub_results(scan_results: list, scan_path: str) -> dict:
     cleaned_records = []
     event_info = {}
     allowlist = SystemAllowList(al_type="secret")
@@ -124,13 +127,14 @@ def scrub_results(scan_results: list, scan_path: str) -> list:
                 "type": secret_type(record["reason"]),
                 "author": author,
                 "author-timestamp": timestamp,
+                "validity": SecretValidity.UNKNOWN,
             }
             event_info[item_id] = {"match": matches, "type": record_json["type"]}
             cleaned_records.append(record_json)
     return {"results": cleaned_records, "event_info": event_info}
 
 
-def run_security_checker(scan_path: str, depth=None, rules: str = None) -> list:
+def run_security_checker(scan_path: str, depth=None, rules: Optional[str] = None) -> list:
     log.info("Running trufflehog (depth limit: %s)", depth)
     if depth:
         cmd = [

@@ -4,6 +4,7 @@ import uuid
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
+from engine.plugins.lib.secrets_common.enums import SecretValidity
 
 ENDS = {"lock", "lock.json", "DEPS"}
 STARTS = {"vendor"}
@@ -45,7 +46,19 @@ def get_finding_type(finding):
     return finding.get("DetectorName").lower()
 
 
-def scrub_results(scan_results: list, error_dict: dict) -> list:
+def get_validity(finding):
+    verified = finding.get("Verified")
+
+    if verified == True:
+        return SecretValidity.ACTIVE
+    else:
+        # We can't be sure that the secret is invalid if `verified=false`, since there could have
+        # been a verification error or Trufflehog did not attempt to verify. So, we set it to
+        # unknown
+        return SecretValidity.UNKNOWN
+
+
+def scrub_results(scan_results: list, error_dict: dict) -> dict:
     cleaned_records = []
     event_info = {}
     allowlist = SystemAllowList(al_type="secret")
@@ -85,6 +98,7 @@ def scrub_results(scan_results: list, error_dict: dict) -> list:
                 "type": get_finding_type(record),
                 "author": source_metadata.get("email"),
                 "author-timestamp": source_metadata.get("timestamp"),
+                "validity": get_validity(record),
             }
 
             event_info[item_id] = {"match": [finding_raw], "type": record_json["type"]}

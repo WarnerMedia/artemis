@@ -5,6 +5,7 @@ from contextlib import redirect_stdout
 from mock import MagicMock, patch
 
 from engine.plugins.lib import utils
+from engine.plugins.lib.secrets_common.enums import SecretValidity
 from engine.plugins.truffle_hog import main as truffle_hog
 
 
@@ -77,6 +78,7 @@ class TestPluginTruffle_hog(unittest.TestCase):
             "type": "aws",
             "author": "test@example.com",
             "author-timestamp": "2020-01-01T00:00:00.000000+00:00",
+            "validity": SecretValidity.UNKNOWN,
         }
         expected_event = {actual["results"][0]["id"]: {"match": ["YER' A STRING 'ARRY"], "type": "aws"}}
         expected = {"results": [expected1], "event_info": expected_event}
