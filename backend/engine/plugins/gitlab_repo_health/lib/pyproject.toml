@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "GithubRepoHealth"
+version = "1.0.0"
+dependencies = [
+    "jsonschema",
+    "pygithub",
+]
+
+[project.scripts]
+repo-health = "github_repo_health.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src/github_repo_health"
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
