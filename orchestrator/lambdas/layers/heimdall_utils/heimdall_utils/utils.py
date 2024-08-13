@@ -74,7 +74,7 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
     """
     Validates and processes a given timestamp string.
 
-    A valid timestamp string will match the ISO 8601 format 
+    A valid timestamp string will match the ISO 8601 format
     and have a date that is greater than 90 days.
 
     If valid, it returns the original timestamp. If invalid or not provided,
@@ -113,11 +113,13 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
 
     return time.strftime(TIMESTAMP_FORMAT, time.gmtime(result))
 
+
 def is_valid_timestamp(timestamp: str) -> bool:
     default_timestamp = get_default_datetime()
     current_timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
 
     return current_timestamp > default_timestamp
+
 
 def get_default_datetime() -> datetime:
     current_timestamp = datetime.now()
