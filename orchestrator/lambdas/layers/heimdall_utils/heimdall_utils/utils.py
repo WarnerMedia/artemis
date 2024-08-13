@@ -101,27 +101,24 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
         - The function uses the current system time to calculate the 3-month offset.
         - All returned timestamps are in UTC (denoted by the 'Z' suffix).
     """
-    try:
-        if timestamp and is_valid_timestamp(timestamp):
-            return timestamp
-    except (TypeError, ValueError):
-        log.error("Timestamp is invalid")
+    if timestamp and is_valid_timestamp(timestamp):
+        return timestamp
 
     log.debug("Generating Default timestamp")
-    default_timestamp = get_default_datetime()
+    default_timestamp = get_datetime_from_past(90)
     result = default_timestamp.timestamp()
 
     return time.strftime(TIMESTAMP_FORMAT, time.gmtime(result))
 
 
 def is_valid_timestamp(timestamp: str) -> bool:
-    default_timestamp = get_default_datetime()
+    default_timestamp = get_datetime_from_past(90)
     current_timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
 
     return current_timestamp > default_timestamp
 
 
-def get_default_datetime() -> datetime:
+def get_datetime_from_past(days: int) -> datetime:
     current_timestamp = datetime.now()
-    three_months_ago = current_timestamp - timedelta(days=90)
+    three_months_ago = current_timestamp - timedelta(days=days)
     return three_months_ago
