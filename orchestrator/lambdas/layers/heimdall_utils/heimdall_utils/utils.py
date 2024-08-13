@@ -17,6 +17,8 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)
 
 DYNAMODB_TTL_DAYS = 60
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
 
 log = Logger(service=APPLICATION, name=__name__, child=True)
 
@@ -72,7 +74,9 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
     """
     Validates and processes a given timestamp string.
 
-    This function checks if the provided timestamp matches the ISO 8601 format.
+    A valid timestamp string will match the ISO 8601 format 
+    and have a date that is greater than 90 days.
+
     If valid, it returns the original timestamp. If invalid or not provided,
     it generates and returns a timestamp for a date exactly 3 months prior to
     the current date and time.
@@ -98,16 +102,25 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
         - All returned timestamps are in UTC (denoted by the 'Z' suffix).
         - The function logs a warning message when generating a default timestamp.
     """
-    format = "%Y-%m-%dT%H:%M:%SZ"
     try:
-        if timestamp and bool(datetime.strptime(timestamp, format)):
+        if timestamp and is_valid_timestamp(timestamp):
             return timestamp
     except (TypeError, ValueError):
         log.error("Timestamp is invalid")
 
     log.warning("Generating Default timestamp")
+    default_timestamp = get_default_datetime()
+    result = default_timestamp.timestamp()
+
+    return time.strftime(TIMESTAMP_FORMAT, time.gmtime(result))
+
+def is_valid_timestamp(timestamp: str) -> bool:
+    default_timestamp = get_default_datetime()
+    current_timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
+
+    return current_timestamp > default_timestamp
+
+def get_default_datetime() -> datetime:
     current_timestamp = datetime.now()
     three_months_ago = current_timestamp - timedelta(days=90)
-    result = three_months_ago.timestamp()
-
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(result))
+    return three_months_ago
