@@ -112,10 +112,14 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
 
 
 def is_valid_timestamp(timestamp: str) -> bool:
-    default_timestamp = get_datetime_from_past(90)
-    current_timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
+    try:
+        default_timestamp = get_datetime_from_past(90)
+        current_timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
+        return current_timestamp > default_timestamp
+    except ValueError:
+        log.error("Timestamp is invalid")
 
-    return current_timestamp > default_timestamp
+    return False
 
 
 def get_datetime_from_past(days: int) -> datetime:
