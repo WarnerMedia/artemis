@@ -20,6 +20,12 @@ DYNAMODB_TTL_DAYS = 60
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
+# -- This constant represents the maximum age for a HEIMDALL Scan --
+# > Downstream services have a 90 day retention policy
+# > Setting this to 83 days ensures that Heimdall kicks off a scan
+#   before the data stored in downstream services is deleted
+MAX_HEIMDALL_SCAN_AGE = 83
+
 log = Logger(service=APPLICATION, name=__name__, child=True)
 
 
@@ -105,7 +111,7 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
         return timestamp
 
     log.debug("Generating Default timestamp")
-    default_timestamp = get_datetime_from_past(90)
+    default_timestamp = get_datetime_from_past(MAX_HEIMDALL_SCAN_AGE)
     result = default_timestamp.timestamp()
 
     return time.strftime(TIMESTAMP_FORMAT, time.gmtime(result))
@@ -113,7 +119,7 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
 
 def is_valid_timestamp(timestamp: str) -> bool:
     try:
-        default_timestamp = get_datetime_from_past(90)
+        default_timestamp = get_datetime_from_past(MAX_HEIMDALL_SCAN_AGE)
         current_timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
         return current_timestamp > default_timestamp
     except ValueError:
