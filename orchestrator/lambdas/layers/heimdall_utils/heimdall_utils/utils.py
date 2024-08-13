@@ -91,7 +91,7 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
 
     Examples:
         >>> parse_timestamp()
-        {"level":"WARNING","location":"parse_timestamp","message":"Generating Default timestamp"}
+        {"level":"DEBUG","location":"parse_timestamp","message":"Generating Default timestamp"}
         "2024-04-24T22:35:36Z"  # Output will vary based on the current date and time
 
         >>> parse_timestamp("2024-06-24T22:50:00Z")
@@ -100,7 +100,6 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
     Notes:
         - The function uses the current system time to calculate the 3-month offset.
         - All returned timestamps are in UTC (denoted by the 'Z' suffix).
-        - The function logs a warning message when generating a default timestamp.
     """
     try:
         if timestamp and is_valid_timestamp(timestamp):
@@ -108,7 +107,7 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
     except (TypeError, ValueError):
         log.error("Timestamp is invalid")
 
-    log.warning("Generating Default timestamp")
+    log.debug("Generating Default timestamp")
     default_timestamp = get_default_datetime()
     result = default_timestamp.timestamp()
 

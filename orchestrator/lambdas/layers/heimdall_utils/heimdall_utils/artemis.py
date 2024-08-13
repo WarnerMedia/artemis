@@ -52,10 +52,10 @@ def redundant_scan_exists(
     if r.status_code == HTTPStatus.OK:
         # Return a boolean matching whether any scans were returned
         if r.json().get("count", 0) > 0:
-            LOG.info("Scan of %s/%s/%s:%s exists", service, org, repo, branch, repo=repo)
+            LOG.debug("Scan of %s/%s/%s:%s exists", service, org, repo, branch, repo=repo)
             return True
         else:
-            LOG.info("Scan of %s/%s/%s:%s does not exist", service, org, repo, branch, repo=repo)
+            LOG.debug("Scan of %s/%s/%s:%s does not exist", service, org, repo, branch, repo=repo)
             return False
 
     # Something else happened so default to assuming a redundant scan doesn't exist
