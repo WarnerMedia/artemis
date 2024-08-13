@@ -13,7 +13,7 @@ from heimdall_repos.repo_layer_env import GITLAB_REPO_QUERY
 from heimdall_utils.artemis import redundant_scan_exists
 from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org
 from heimdall_utils.env import DEFAULT_API_TIMEOUT, APPLICATION
-from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions
+from heimdall_utils.utils import JSONUtils, ServiceInfo, ScanOptions, parse_timestamp
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 
@@ -286,5 +286,5 @@ class ProcessGitlabRepos:
         timestamps = {}
         for ref in resp:
             ref_names.add(ref["name"])
-            timestamps[ref["name"]] = ref["commit"]["committed_date"]
+            timestamps[ref["name"]] = parse_timestamp(ref["commit"]["committed_date"])
         return list(ref_names), timestamps
