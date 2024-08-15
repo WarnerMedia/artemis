@@ -163,6 +163,12 @@ variable "revproxy_secret_region" {
   default     = "us-east-2"
 }
 
+variable "datadog_configurations" {
+  description = "Environment variables for datadog"
+  default = {
+    DD_SERVICE = "heimdall"
+  }
+}
 
 ################################################
 # GitHub App
