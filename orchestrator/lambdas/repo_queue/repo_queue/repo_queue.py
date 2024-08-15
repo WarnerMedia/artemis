@@ -13,51 +13,42 @@ from heimdall_utils.env import API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import ServiceInfo, ScanOptions
 from heimdall_utils.variables import REGION
-from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, ORG_DLQ, SERVICE_PROCESSORS
+from heimdall_utils.types import OrgTask, RepoTask
+from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, SERVICE_PROCESSORS
 
 
 log = Logger(service=APPLICATION, name="repo_queue")
 
 
 @log.inject_lambda_context
-def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> None:
-    full_services_dict = get_services_dict(services_file)
-    services = full_services_dict.get("services")
+def run(event: dict, context: LambdaContext) -> list:
+    batch_item_failures = []
+    full_services_dict = get_services_dict()
+    service_dict = full_services_dict.get("services")
     artemis_api_key = get_analyzer_api_key(API_KEY_LOC)
+
     for item in event["Records"]:
         data = json.loads(item["body"])
-        plugins = data.get("plugins")
-        default_branch_only = data.get("default_branch_only", False)
         repos = []
 
         try:
-            repos = query(
-                data["service"],
-                data["org"],
-                services.get(data["service"]),
-                data["page"],
-                default_branch_only,
-                plugins,
-                full_services_dict["external_orgs"],
-                data.get("batch_id"),
-                artemis_api_key,
-                data.get("redundant_scan_query"),
-                data.get("repo"),
-            )
+            service = service_dict.get(data["service"])
+            repos = query(data, artemis_api_key, service, service_dict)
         except HTTPError:
-            log.warning("Unable to Process this organization. Sending task to dead-letter queue")
-            queue_message(payload=data, queue_url=ORG_DLQ)
+            log.warning("Unable to Process this organization. Returning failed task")
+            batch_item_failures.append({"itemIdentifier": item["messageId"]})
 
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
         for repo_group in group(repos, 10):
-            i += queue_repo_group(repo_group, plugins, data.get("batch_id"))
+            i += queue_repo_group(repo_group, data.get("plugins"), data.get("batch_id"))
             if i >= 100:
                 log.debug(f"{i} queued")
                 i = 0
 
         if i != 0:
             log.debug(f"{i} queued")
+    return batch_item_failures
 
 
 def group(iterable, n, fillvalue=None):
@@ -65,20 +56,14 @@ def group(iterable, n, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 
-def query(
-    service,
-    org,
-    service_dict,
-    page,
-    default_branch_only,
-    plugins,
-    external_orgs,
-    batch_id: str,
-    artemis_api_key: str,
-    redundant_scan_query: dict,
-    repo: str,
-) -> list:
-    """Retrieves a list of repository events to send to the Repo SQS Queue"""
+def query(task: OrgTask, artemis_api_key: str, service: str, service_dict: dict) -> list[RepoTask]:
+    """
+    Retrieves a list of Repository Tasks to send to the Repo SQS Queue
+    """
+    org, repo, batch_id, page = task["org"], task["repo"], task["batch_id"], task["page"]
+    plugins, default_branch_only = task["plugins"], task["default_branch_only"]
+    redundant_scan_query, external_orgs = task["redundant_scan_query"], service_dict["external_orgs"]
+
     log.append_keys(version_control_service=service, org=org, batch_id=batch_id, page=page, repo=repo)
     if not service_dict:
         log.error(f"Service {service} was not found and therefore deemed unsupported")
