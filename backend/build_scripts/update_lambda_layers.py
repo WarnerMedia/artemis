@@ -6,7 +6,7 @@ import boto3
 
 # Custom Datadog installation: https://docs.datadoghq.com/serverless/aws_lambda/installation/python/?tab=custom
 DATADOG_LAYERS = [
-    "arn:aws:lambda:<AWS_REGION>:464622532012:layer:Datadog-PYTHON39-ARM:98",
+    "arn:aws:lambda:<AWS_REGION>:464622532012:layer:Datadog-Python39-ARM:98",
     "arn:aws:lambda:<AWS_REGION>:464622532012:layer:Datadog-Extension-ARM:63",
 ]
 
