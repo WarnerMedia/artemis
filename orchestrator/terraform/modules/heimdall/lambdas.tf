@@ -48,6 +48,7 @@ resource "aws_lambda_function" "org-queue" {
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
       DD_LAMBDA_HANDLER                 = "handlers.handler"
+      DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
     }, var.datadog_configurations)
   }
 
@@ -112,6 +113,7 @@ resource "aws_lambda_function" "repo-queue" {
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
       DD_LAMBDA_HANDLER                 = "handlers.handler"
+      DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
     }, var.datadog_configurations)
   }
 
@@ -167,6 +169,8 @@ resource "aws_lambda_function" "repo-scan" {
       REPO_QUEUE             = aws_sqs_queue.repo-queue.id
       SCAN_TABLE             = aws_dynamodb_table.repo-scan-id.name
       REPO_DEAD_LETTER_QUEUE = aws_sqs_queue.repo-deadletter-queue.id
+      DD_LAMBDA_HANDLER      = "handlers.handler"
+      DD_API_KEY_SECRET_ARN  = aws_secretsmanager_secret.datadog-api-key.arn
     }, var.datadog_configurations)
   }
 
@@ -212,8 +216,10 @@ resource "aws_lambda_function" "repo-scan-loop" {
     variables = merge({
       APPLICATION               = var.app
       REGION                    = var.aws_region
-      HEIMDALL_REPO_SCAN_LAMBDA = aws_lambda_function.repo-scan.function_name,
+      HEIMDALL_REPO_SCAN_LAMBDA = aws_lambda_function.repo-scan.function_name
       HEIMDALL_INVOKE_COUNT     = 10
+      DD_LAMBDA_HANDLER         = "handlers.handler"
+      DD_API_KEY_SECRET_ARN     = aws_secretsmanager_secret.datadog-api-key.arn
     }, var.datadog_configurations)
   }
 
