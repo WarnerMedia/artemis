@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 import pytest
 
-from heimdall_utils.get_services import _get_services_from_file
 from org_queue import org_queue
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -67,10 +66,15 @@ TEST_BATCH_ID = "4886eea8-ebca-4bcf-bf22-063ca255067c"
 
 class TestOrgQueue(unittest.TestCase):
     def setUp(self) -> None:
-        self.full_service_dict = _get_services_from_file(SERVICES_FILE)
+        self.full_service_dict = self.load_service_file(SERVICES_FILE)
 
     def test_services_exists(self):
         self.assertTrue(os.path.exists(SERVICES_FILE))
+
+    def load_service_file(self, file_path):
+        with open(file_path, "r") as file:
+            data = json.load(file)
+        return data
 
     @pytest.mark.integtest
     @patch.object(org_queue, "queue_service_and_org")
@@ -105,11 +109,9 @@ class TestOrgQueue(unittest.TestCase):
         self.assertEqual(org_queue.queue_service_and_org, mock_queue)
         self.assertEqual(org_queue.get_services_dict, mock_get_services)
         mock_queue.return_value = True
-        mock_get_services.return_value = self.full_service_dict
+        mock_get_services.return_value = self.load_service_file(SERVICES_FILE_INTEGRATION)
 
-        queued = org_queue.run(
-            context=MockLambdaContext, event=ON_DEMAND_GITHUB_WILDCARD_EVENT, services_file=SERVICES_FILE_INTEGRATION
-        )
+        queued = org_queue.run(context=MockLambdaContext, event=ON_DEMAND_GITHUB_WILDCARD_EVENT)
 
         self.assertTrue("body" not in queued)
         self.assertFalse(mock_queue.called)
@@ -129,9 +131,10 @@ class TestOrgQueue(unittest.TestCase):
         self.assertGreaterEqual(1, len([x for x in queued if x.startswith("'git.example.com/")]))
         self.assertTrue(mock_queue.called)
 
+    @patch.object(org_queue, "get_services_dict")
     @patch.object(org_queue, "generate_batch_id")
     @patch.object(org_queue, "queue_service_and_org")
-    def test_run_on_demand_returns_formatted_response(self, mock_queue, mock_batch_id):
+    def test_run_on_demand_returns_formatted_response(self, mock_queue, mock_batch_id, mock_get_services_dict):
         mock_queue.return_value = True
         event = {
             "body": json.dumps(
@@ -145,8 +148,9 @@ class TestOrgQueue(unittest.TestCase):
         }
 
         mock_batch_id.return_value = TEST_BATCH_ID
+        mock_get_services_dict.return_value = self.full_service_dict
 
-        queued = org_queue.run(context=MockLambdaContext, event=event, services_file=SERVICES_FILE)
+        queued = org_queue.run(context=MockLambdaContext, event=event)
 
         expected = {
             "isBase64Encoded": "false",
@@ -166,11 +170,13 @@ class TestOrgQueue(unittest.TestCase):
             None,
         )
 
+    @patch.object(org_queue, "get_services_dict")
     @patch.object(org_queue, "generate_batch_id")
     @patch.object(org_queue, "queue_service_and_org")
-    def test_run_scheduled_handles_event_contents_correctly(self, mock_queue, mock_batch_id):
+    def test_run_scheduled_handles_event_contents_correctly(self, mock_queue, mock_batch_id, mock_get_services_dict):
         mock_queue.return_value = True
         mock_batch_id.return_value = TEST_BATCH_ID
+        mock_get_services_dict.return_value = self.full_service_dict
         event = {
             "version": "0",
             "id": "e088e102-c847-cfd1-7322-b91e101a5d14",
@@ -183,7 +189,7 @@ class TestOrgQueue(unittest.TestCase):
             "detail": {},
         }
 
-        queued = org_queue.run(context=MockLambdaContext, event=event, services_file=SERVICES_FILE)
+        queued = org_queue.run(context=MockLambdaContext, event=event)
 
         self.assertEqual(self.full_service_dict.get("scan_orgs"), queued)
 
