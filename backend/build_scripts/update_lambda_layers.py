@@ -8,7 +8,9 @@ import boto3
 def main():
     parser = argparse.ArgumentParser(description=f"Lambda Layer Update")
 
-    parser.add_argument("--function-name", required=True, type=str, help="Name of the Lambda to update")
+    parser.add_argument(
+        "--function-name", required=True, type=str, help="Name of the Lambda to update"
+    )
     parser.add_argument("--region", required=True, type=str, help="AWS region name")
     args = parser.parse_args()
 
@@ -18,7 +20,9 @@ def main():
     config = client.get_function_configuration(FunctionName=args.function_name)
     layers = get_layers(config)
     latest = get_latest_layer_versions(layers, client)
-    response = client.update_function_configuration(FunctionName=args.function_name, Layers=latest)
+    response = client.update_function_configuration(
+        FunctionName=args.function_name, Layers=latest
+    )
 
     print(f'Update status: {response["LastUpdateStatus"]}')
 
@@ -29,6 +33,9 @@ def get_layers(config: dict) -> list:
     for layer in config.get("Layers", []):
         print(layer["Arn"])
         arn = layer["Arn"].rsplit(":", maxsplit=1)[0]
+        if "Datadog-Extension" in arn or "Datadog-Python" in arn:
+            # Skip Datadog layers
+            continue
         layers.append(arn)
     return layers
 
