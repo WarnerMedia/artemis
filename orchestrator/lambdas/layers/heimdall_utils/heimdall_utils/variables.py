@@ -2,7 +2,6 @@ import os
 
 REGION = os.environ.get("REGION", "us-east-2")
 ARTEMIS_S3_BUCKET = os.getenv("ARTEMIS_S3_BUCKET")
-ROOT_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, "..", "..", "..", "..", "..", "..")))
 
 # Reverse proxy configuration for when Artemis is using an authenticated reverse proxy to access
 # private VCS instances.

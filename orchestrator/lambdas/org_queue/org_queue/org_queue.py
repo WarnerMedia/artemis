@@ -27,8 +27,8 @@ DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if non
 
 
 @log.inject_lambda_context
-def run(event: dict = None, context: LambdaContext = None, services_file: str = None) -> Union[list, dict]:
-    full_services_dict = get_services_dict(services_file)
+def run(event: dict, context: LambdaContext) -> Union[list, dict]:
+    full_services_dict = get_services_dict()
     services = full_services_dict.get("services")
     queued = []
     on_demand = False
