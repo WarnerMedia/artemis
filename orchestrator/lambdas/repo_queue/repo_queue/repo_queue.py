@@ -20,7 +20,7 @@ log = Logger(service=APPLICATION, name="repo_queue")
 
 
 @log.inject_lambda_context
-def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> list:
+def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> dict:
     batch_item_failures = []
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
@@ -59,7 +59,7 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
 
         if i != 0:
             log.debug(f"{i} queued")
-    return batch_item_failures
+    return {"batchItemFailures" : batch_item_failures}
 
 
 def group(iterable, n, fillvalue=None):
