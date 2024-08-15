@@ -59,7 +59,7 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
 
         if i != 0:
             log.debug(f"{i} queued")
-    return {"batchItemFailures" : batch_item_failures}
+    return {"batchItemFailures": batch_item_failures}
 
 
 def group(iterable, n, fillvalue=None):
