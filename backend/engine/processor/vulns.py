@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from django.db import transaction
 from django.db.models import Q, QuerySet
@@ -82,7 +83,13 @@ def process_vulns(result: Result, scan: Scan, plugin_name: str) -> None:
         else:
             # Only one vuln references any of the advisory IDs so use it
             vuln = vulns.first()
-            LOG.debug("Found existing vuln %s", vuln.vuln_id)
+
+        # This should never happen but just in case.
+        if vuln is None:
+            LOG.error("could not find valid vuln")
+            continue
+
+        LOG.debug("Found existing vuln %s", vuln.vuln_id)
 
         # Update plugin mapping for this vuln, if needed
         if not vuln.plugins.filter(pk=plugin.pk).exists():
@@ -98,6 +105,8 @@ def process_vulns(result: Result, scan: Scan, plugin_name: str) -> None:
             )
             if not vuln.components.filter(pk=component.pk).exists():
                 vuln.components.add(component)
+        else:
+            component = None
 
         if created:
             LOG.debug("Added %s to vuln inventory (%s)", v["id"], vuln.vuln_id)
@@ -141,7 +150,7 @@ def process_vulns(result: Result, scan: Scan, plugin_name: str) -> None:
             del v["inventory"]
 
 
-def _merge_vulns(vulns: QuerySet) -> Vulnerability:
+def _merge_vulns(vulns: QuerySet) -> Optional[Vulnerability]:
     """
     Merge the vulns matching the provided QuerySet into a single vuln, deleting the others.
     """
@@ -209,7 +218,13 @@ def _filter_advisory_ids(full_advisory_ids: list) -> list[str]:
 
 
 def _process_vuln_instance(
-    vuln: Vulnerability, scan: Scan, plugin: Plugin, component: Component, source: list, filename: str, line: int
+    vuln: Vulnerability,
+    scan: Scan,
+    plugin: Plugin,
+    component: Optional[Component],
+    source: list,
+    filename: str,
+    line: int,
 ) -> None:
     """
     Record the vuln instance for this scan
@@ -222,7 +237,7 @@ def _process_vuln_instance(
     vuln_scan, _ = VulnerabilityScanPlugin.objects.get_or_create(vuln_instance=vuln_instance, scan=scan)
     if not vuln_scan.plugins.filter(pk=plugin.pk).exists():
         vuln_scan.plugins.add(plugin)
-    if not vuln_scan.components.filter(pk=component.pk).exists():
+    if component is not None and not vuln_scan.components.filter(pk=component.pk).exists():
         vuln_scan.components.add(component)
 
     # Record the source location for this specific vuln instance
