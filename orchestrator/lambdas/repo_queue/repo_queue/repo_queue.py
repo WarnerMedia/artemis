@@ -20,7 +20,7 @@ log = Logger(service=APPLICATION, name="repo_queue")
 
 
 @log.inject_lambda_context
-def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> None:
+def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> list:
     batch_item_failures = []
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
@@ -45,8 +45,8 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
                 data.get("redundant_scan_query"),
                 data.get("repo"),
             )
-        except HTTPError:
-            log.warning("Unable to Process this organization. Returning task")
+        except Exception as e:
+            log.error("Unable to Process this organization. Error: %s", str(e))
             batch_item_failures.append({"itemIdentifier": item["messageId"]})
 
         log.info(f"Queuing {len(repos)} repos+branches...")
@@ -59,6 +59,7 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
 
         if i != 0:
             log.debug(f"{i} queued")
+    return batch_item_failures
 
 
 def group(iterable, n, fillvalue=None):
