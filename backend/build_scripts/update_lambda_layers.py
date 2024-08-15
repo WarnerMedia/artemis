@@ -29,7 +29,7 @@ def main():
     if "heimdall" in args.function_name:
         print("Adding Datadog Layers")
         dd_layers = get_datadog_layers(args.region)
-        layers.extend(dd_layers)
+        latest.extend(dd_layers)
 
     response = client.update_function_configuration(FunctionName=args.function_name, Layers=latest)
 
