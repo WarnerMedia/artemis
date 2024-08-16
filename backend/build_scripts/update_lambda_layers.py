@@ -29,9 +29,6 @@ def get_layers(config: dict) -> list:
     for layer in config.get("Layers", []):
         print(layer["Arn"])
         arn = layer["Arn"].rsplit(":", maxsplit=1)[0]
-        if "Datadog-Extension" in arn or "Datadog-Python" in arn:
-            # Skip Datadog layers
-            continue
         layers.append(arn)
     return layers
 
