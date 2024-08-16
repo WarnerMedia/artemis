@@ -47,8 +47,10 @@ resource "aws_lambda_function" "org-queue" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
-      DD_LAMBDA_HANDLER                 = "handlers.handler"
-      DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
+
+      DD_LAMBDA_HANDLER     = "handlers.handler"
+      DD_SERVICE            = "${var.app}-lambda"
+      DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
     }, var.datadog_configurations)
   }
 
@@ -112,6 +114,7 @@ resource "aws_lambda_function" "repo-queue" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
+      DD_SERVICE                        = "${var.app}-lambda"
       DD_LAMBDA_HANDLER                 = "handlers.handler"
       DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
     }, var.datadog_configurations)
@@ -171,6 +174,7 @@ resource "aws_lambda_function" "repo-scan" {
       REPO_DEAD_LETTER_QUEUE = aws_sqs_queue.repo-deadletter-queue.id
       DD_LAMBDA_HANDLER      = "handlers.handler"
       DD_API_KEY_SECRET_ARN  = aws_secretsmanager_secret.datadog-api-key.arn
+      DD_SERVICE             = "${var.app}-lambda"
     }, var.datadog_configurations)
   }
 
@@ -220,6 +224,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
       HEIMDALL_INVOKE_COUNT     = 10
       DD_LAMBDA_HANDLER         = "handlers.handler"
       DD_API_KEY_SECRET_ARN     = aws_secretsmanager_secret.datadog-api-key.arn
+      DD_SERVICE                = "${var.app}-scan-loop-lambda"
     }, var.datadog_configurations)
   }
 
