@@ -237,7 +237,7 @@ def _process_vuln_instance(
     vuln_scan, _ = VulnerabilityScanPlugin.objects.get_or_create(vuln_instance=vuln_instance, scan=scan)
     if not vuln_scan.plugins.filter(pk=plugin.pk).exists():
         vuln_scan.plugins.add(plugin)
-    if component is not None and not vuln_scan.components.filter(pk=component.pk).exists():
+    if component and not vuln_scan.components.filter(pk=component.pk).exists():
         vuln_scan.components.add(component)
 
     # Record the source location for this specific vuln instance
