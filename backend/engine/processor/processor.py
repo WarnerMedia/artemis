@@ -474,7 +474,7 @@ def handle_key(key, service_type, service_key) -> str or None:
     return None
 
 
-def allowlist_vuln(vuln: RepoVulnerabilityScan, allow_list: QuerySet, raw_allow_list: list) -> bool:
+def allowlist_vuln(vuln: RepoVulnerabilityScan, allow_list: list, raw_allow_list: set) -> bool:
     """
     Determine whether RepoVulnerabilityScan object should be filtered out by the allowlist
     """
