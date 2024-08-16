@@ -13,14 +13,15 @@ from heimdall_utils.env import API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.utils import ServiceInfo, ScanOptions
 from heimdall_utils.variables import REGION
-from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, ORG_DLQ, SERVICE_PROCESSORS
+from repo_queue.repo_queue_env import ORG_QUEUE, REPO_QUEUE, SERVICE_PROCESSORS
 
 
 log = Logger(service=APPLICATION, name="repo_queue")
 
 
 @log.inject_lambda_context
-def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> None:
+def run(event: dict[str, Any] = None, context: LambdaContext = None, services_file: str = None) -> dict:
+    batch_item_failures = []
     full_services_dict = get_services_dict(services_file)
     services = full_services_dict.get("services")
     artemis_api_key = get_analyzer_api_key(API_KEY_LOC)
@@ -44,9 +45,9 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
                 data.get("redundant_scan_query"),
                 data.get("repo"),
             )
-        except HTTPError:
-            log.warning("Unable to Process this organization. Sending task to dead-letter queue")
-            queue_message(payload=data, queue_url=ORG_DLQ)
+        except Exception as e:
+            log.error("Unable to Process this organization. Error: %s", str(e))
+            batch_item_failures.append({"itemIdentifier": item["messageId"]})
 
         log.info(f"Queuing {len(repos)} repos+branches...")
         i = 0
@@ -58,6 +59,7 @@ def run(event: dict[str, Any] = None, context: LambdaContext = None, services_fi
 
         if i != 0:
             log.debug(f"{i} queued")
+    return {"batchItemFailures": batch_item_failures}
 
 
 def group(iterable, n, fillvalue=None):
