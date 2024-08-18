@@ -341,7 +341,9 @@ describe("api client", () => {
 			);
 			// ensure search parameter format=sbom passed
 			expect(mockRequest.mock.calls[0][0].params.has("format")).toBeTruthy();
-			expect(mockRequest.mock.calls[0][0].params.get("format")).toEqual("sbomm");
+			expect(mockRequest.mock.calls[0][0].params.get("format")).toEqual(
+				"sbomm"
+			);
 		});
 	});
 });
