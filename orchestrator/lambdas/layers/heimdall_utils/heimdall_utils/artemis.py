@@ -4,6 +4,7 @@ from http import HTTPStatus
 
 import requests
 from aws_lambda_powertools import Logger
+from datadog_lambda.metric import lambda_metric
 
 from heimdall_utils.env import APPLICATION, ARTEMIS_API, DEFAULT_API_TIMEOUT
 
@@ -53,6 +54,11 @@ def redundant_scan_exists(
         # Return a boolean matching whether any scans were returned
         if r.json().get("count", 0) > 0:
             LOG.debug("Scan of %s/%s/%s:%s exists", service, org, repo, branch)
+            lambda_metric(
+                "skipped_tasks.count",
+                1,
+                tags=[f"version_control_service:{service}", f"organization_name:{org}", f"repository_name:{repo}"],
+            )
             return True
         else:
             LOG.debug("Scan of %s/%s/%s:%s does not exist", service, org, repo, branch)

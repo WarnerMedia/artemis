@@ -6,6 +6,7 @@ from typing import Union
 
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from datadog_lambda.metric import lambda_metric
 
 from heimdall_orgs import org_queue_bitbucket, org_queue_gitlab, org_queue_private_github
 from heimdall_utils.aws_utils import (
@@ -91,6 +92,15 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
                 batch_id,
                 redundant_scan_query,
             ):
+                lambda_metric(
+                    "queued_organizations.count",
+                    1,
+                    tags=[
+                        f"batch_id:{batch_id}",
+                        f"organization_name:{org_name_str}",
+                        f"version_control_service:{service}",
+                    ],
+                )
                 queued.append(org_result_str)
             else:
                 FAILED[org_result_str] = "ClientError occurred while queueing org"
@@ -100,6 +110,12 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
         return formatted_response(msg=queued)
     log.info(f"Final Queued: {queued}")
     log.info(f"Final Failed: {FAILED}")
+    if FAILED:
+        lambda_metric(
+            "failed_organizations.count",
+            len(FAILED),
+            tags=[f"batch_id:{batch_id}"],
+        )
     return queued
 
 
