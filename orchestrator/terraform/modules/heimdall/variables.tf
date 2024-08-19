@@ -176,6 +176,11 @@ variable "github_private_key" {
 ################################################
 # Datadog Lambda Configurations
 ################################################
+variable "datadog_enabled" {
+  description = "Whether to Enable Datadog monitoring"
+  type        = bool
+  default     = false
+}
 variable "datadog_lambda_variables" {
   description = "Environment variables for the Datadog Serverless Agent"
   type        = map(any)

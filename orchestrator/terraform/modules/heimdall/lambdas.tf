@@ -14,7 +14,7 @@ resource "aws_lambda_function" "org-queue" {
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/org_queue/v${var.ver}/org_queue.zip"
 
-  handler       = "datadog_lambda.handler.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -25,7 +25,7 @@ resource "aws_lambda_function" "org-queue" {
   layers = concat([
     aws_lambda_layer_version.lambda_layers_orgs.arn,
     aws_lambda_layer_version.lambda_layers_utils.arn
-  ], var.datadog_lambda_layers)
+  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
     ignore_changes = [
@@ -47,11 +47,13 @@ resource "aws_lambda_function" "org-queue" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
-
-      DD_LAMBDA_HANDLER     = "handlers.handler"
-      DD_SERVICE            = "${var.app}"
-      DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   vpc_config {
@@ -90,7 +92,7 @@ resource "aws_lambda_function" "repo-queue" {
   layers = concat([
     aws_lambda_layer_version.lambda_layers_utils.arn,
     aws_lambda_layer_version.lambda_layers_repos.arn
-  ], var.datadog_lambda_layers)
+  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
     ignore_changes = [
@@ -113,10 +115,13 @@ resource "aws_lambda_function" "repo-queue" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
-      DD_SERVICE                        = "${var.app}"
-      DD_LAMBDA_HANDLER                 = "handlers.handler"
-      DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   vpc_config {
@@ -153,7 +158,7 @@ resource "aws_lambda_function" "repo-scan" {
 
   layers = concat([
     aws_lambda_layer_version.lambda_layers_utils.arn
-  ], var.datadog_lambda_layers)
+  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
     ignore_changes = [
@@ -171,10 +176,13 @@ resource "aws_lambda_function" "repo-scan" {
       REPO_QUEUE             = aws_sqs_queue.repo-queue.id
       SCAN_TABLE             = aws_dynamodb_table.repo-scan-id.name
       REPO_DEAD_LETTER_QUEUE = aws_sqs_queue.repo-deadletter-queue.id
-      DD_LAMBDA_HANDLER      = "handlers.handler"
-      DD_API_KEY_SECRET_ARN  = aws_secretsmanager_secret.datadog-api-key.arn
-      DD_SERVICE             = "${var.app}"
-    }, var.datadog_lambda_variables)
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(
@@ -206,7 +214,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
 
   layers = concat([
     aws_lambda_layer_version.lambda_layers_utils.arn
-  ], var.datadog_lambda_layers)
+  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
     ignore_changes = [
@@ -221,10 +229,13 @@ resource "aws_lambda_function" "repo-scan-loop" {
       REGION                    = var.aws_region
       HEIMDALL_REPO_SCAN_LAMBDA = aws_lambda_function.repo-scan.function_name
       HEIMDALL_INVOKE_COUNT     = 10
-      DD_LAMBDA_HANDLER         = "handlers.handler"
-      DD_API_KEY_SECRET_ARN     = aws_secretsmanager_secret.datadog-api-key.arn
-      DD_SERVICE                = "${var.app}"
-    }, var.datadog_lambda_variables)
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(
