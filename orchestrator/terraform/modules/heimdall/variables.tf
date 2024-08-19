@@ -163,13 +163,6 @@ variable "revproxy_secret_region" {
   default     = "us-east-2"
 }
 
-variable "datadog_configurations" {
-  description = "Environment variables for datadog"
-  default = {
-    DD_SERVICE = "heimdall"
-  }
-}
-
 ################################################
 # GitHub App
 ################################################
@@ -178,4 +171,20 @@ variable "github_app_id" {}
 variable "github_private_key" {
   description = "Secrets Manager key name containing the GitHub app private key"
   default     = "heimdall/github-app-private-key"
+}
+
+################################################
+# Datadog Lambda Configurations
+################################################
+variable "datadog_lambda_variables" {
+  description = "Environment variables for the Datadog Serverless Agent"
+  type        = map(Any)
+  default = {
+    DD_SERVICE = "heimdall"
+  }
+}
+variable "datadog_lambda_layers" {
+  description = "List of Datadog Lambda Layers"
+  type        = list(str)
+  default     = []
 }
