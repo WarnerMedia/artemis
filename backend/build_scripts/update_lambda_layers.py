@@ -4,6 +4,8 @@ import argparse
 
 import boto3
 
+datadog_layers = []
+
 
 def main():
     parser = argparse.ArgumentParser(description=f"Lambda Layer Update")
@@ -18,7 +20,7 @@ def main():
     config = client.get_function_configuration(FunctionName=args.function_name)
     layers = get_layers(config)
     latest = get_latest_layer_versions(layers, client)
-
+    latest.extend(datadog_layers)
     response = client.update_function_configuration(FunctionName=args.function_name, Layers=latest)
 
     print(f'Update status: {response["LastUpdateStatus"]}')
@@ -30,8 +32,9 @@ def get_layers(config: dict) -> list:
     for layer in config.get("Layers", []):
         print(layer["Arn"])
         arn = layer["Arn"].rsplit(":", maxsplit=1)[0]
-        if "Datadog-Extension" in arn or "Datadog-Python" in arn:
+        if "Datadog" in arn:
             # Skip Updates to Datadog layers
+            datadog_layers.append(layer["Arn"])
             continue
         layers.append(arn)
     return layers
