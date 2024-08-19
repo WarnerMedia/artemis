@@ -95,7 +95,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
                 redundant_scan_query,
             ):
                 metrics.add_metric(
-                    name="queued_organization.count",
+                    name="queued_organizations.count",
                     value=1,
                     batch_id=batch_id,
                     organization_name=org_name_str,
