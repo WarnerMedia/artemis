@@ -6,7 +6,6 @@ from typing import Union
 
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from datadog_lambda.metric import lambda_metric
 
 from heimdall_orgs import org_queue_bitbucket, org_queue_gitlab, org_queue_private_github
 from heimdall_utils.aws_utils import (
@@ -19,14 +18,17 @@ from heimdall_utils.datetime import format_timestamp, get_utc_datetime
 from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
+from heimdall_utils.metrics import get_metrics
 from org_queue.org_queue_env import ORG_QUEUE
 
 log = Logger(service=APPLICATION, name="org_queue")
-FAILED = {}
+metrics = get_metrics()
 
+FAILED = {}
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
 
 
+@metrics.log_metrics
 @log.inject_lambda_context
 def run(event: dict = None, context: LambdaContext = None, services_file: str = None) -> Union[list, dict]:
     full_services_dict = get_services_dict(services_file)
@@ -92,14 +94,12 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
                 batch_id,
                 redundant_scan_query,
             ):
-                lambda_metric(
-                    "queued_organizations.count",
-                    1,
-                    tags=[
-                        f"batch_id:{batch_id}",
-                        f"organization_name:{org_name_str}",
-                        f"version_control_service:{service}",
-                    ],
+                metrics.add_metric(
+                    name="queued_organization.count",
+                    value=1,
+                    batch_id=batch_id,
+                    organization_name=org_name_str,
+                    version_control_service=service,
                 )
                 queued.append(org_result_str)
             else:
@@ -111,11 +111,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
     log.info(f"Final Queued: {queued}")
     log.info(f"Final Failed: {FAILED}")
     if FAILED:
-        lambda_metric(
-            "failed_organizations.count",
-            len(FAILED),
-            tags=[f"batch_id:{batch_id}"],
-        )
+        metrics.add_metric("failed_organizations.count", len(FAILED), batch_id=batch_id)
     return queued
 
 
