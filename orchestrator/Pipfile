@@ -16,7 +16,6 @@ PyGithub = "~=2.1"
 pyjwt = "~=2.8"
 pyyaml = "~=6.0"
 requests = "~=2.31"
-datadog-lambda = "==6.98.0"
 
 [dev-packages]
 autopep8 = "~=2.1"
