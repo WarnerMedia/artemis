@@ -178,13 +178,13 @@ variable "github_private_key" {
 ################################################
 variable "datadog_lambda_variables" {
   description = "Environment variables for the Datadog Serverless Agent"
-  type        = map(Any)
+  type        = map(any)
   default = {
     DD_SERVICE = "heimdall"
   }
 }
 variable "datadog_lambda_layers" {
   description = "List of Datadog Lambda Layers"
-  type        = list(str)
+  type        = list(string)
   default     = []
 }
