@@ -20,7 +20,6 @@ class MetricsFactory:
 
     @classmethod
     def create_metrics_provider(cls, provider: MetricsProviderName, config: MetricsConfig = DEFAULT_CONFIG):
-        print(DATADOG_ENABLED)
         if provider == "Datadog" and DATADOG_ENABLED:
             cls._instances[provider] = DatadogMetricsProvider(config)
             return cls._instances[provider]
