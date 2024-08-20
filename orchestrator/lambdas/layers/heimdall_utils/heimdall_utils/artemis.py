@@ -6,7 +6,7 @@ import requests
 from aws_lambda_powertools import Logger
 
 from heimdall_utils.env import APPLICATION, ARTEMIS_API, DEFAULT_API_TIMEOUT
-from heimdall_utils.metrics import get_metrics
+from heimdall_utils.metrics.factory import get_metrics
 
 metric = get_metrics()
 

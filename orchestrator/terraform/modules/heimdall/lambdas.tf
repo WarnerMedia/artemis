@@ -47,6 +47,7 @@ resource "aws_lambda_function" "org-queue" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
+      DATADOG_ENABLED                   = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER     = "handlers.handler"
@@ -81,7 +82,7 @@ resource "aws_lambda_function" "repo-queue" {
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/repo_queue/v${var.ver}/repo_queue.zip"
 
-  handler       = "datadog_lambda.handler.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = var.repo_queue_lambda_timeout
@@ -115,6 +116,7 @@ resource "aws_lambda_function" "repo-queue" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
+      DATADOG_ENABLED                   = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER     = "handlers.handler"
@@ -149,7 +151,7 @@ resource "aws_lambda_function" "repo-scan" {
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/repo_scan/v${var.ver}/repo_scan.zip"
 
-  handler       = "datadog_lambda.handler.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = var.repo_scan_lambda_timeout
@@ -176,6 +178,7 @@ resource "aws_lambda_function" "repo-scan" {
       REPO_QUEUE             = aws_sqs_queue.repo-queue.id
       SCAN_TABLE             = aws_dynamodb_table.repo-scan-id.name
       REPO_DEAD_LETTER_QUEUE = aws_sqs_queue.repo-deadletter-queue.id
+      DATADOG_ENABLED        = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER     = "handlers.handler"
@@ -205,7 +208,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
   s3_bucket = aws_s3_bucket.heimdall_files.id
   s3_key    = "lambdas/repo_scan_loop/v${var.ver}/repo_scan_loop.zip"
 
-  handler       = "datadog_lambda.handler.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 900
@@ -234,6 +237,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
         DD_LAMBDA_HANDLER     = "handlers.handler"
         DD_SERVICE            = "${var.app}"
         DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+        DATADOG_ENABLED       = var.datadog_enabled
       }, var.datadog_lambda_variables)
     : {})
   }

@@ -18,7 +18,7 @@ from heimdall_utils.datetime import format_timestamp, get_utc_datetime
 from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
-from heimdall_utils.metrics import get_metrics
+from heimdall_utils.metrics.factory import get_metrics
 from org_queue.org_queue_env import ORG_QUEUE
 
 log = Logger(service=APPLICATION, name="org_queue")
