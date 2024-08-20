@@ -6,6 +6,9 @@ import requests
 from aws_lambda_powertools import Logger
 
 from heimdall_utils.env import APPLICATION, ARTEMIS_API, DEFAULT_API_TIMEOUT
+from heimdall_utils.metrics.factory import get_metrics
+
+metric = get_metrics()
 
 LOG = Logger(service=APPLICATION, name=__name__, child=True)
 
@@ -53,6 +56,9 @@ def redundant_scan_exists(
         # Return a boolean matching whether any scans were returned
         if r.json().get("count", 0) > 0:
             LOG.debug("Scan of %s/%s/%s:%s exists", service, org, repo, branch)
+            metric.add_metric(
+                "skipped_tasks.count", 1, version_control_service=service, organization_name=org, repository_name=repo
+            )
             return True
         else:
             LOG.debug("Scan of %s/%s/%s:%s does not exist", service, org, repo, branch)

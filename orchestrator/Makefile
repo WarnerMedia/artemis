@@ -78,7 +78,7 @@ help:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PIPENV_DONT_LOAD_ENV=1; \
+	export PIPENV_DONT_LOAD_ENV=1 DATADOG_ENABLED=True;\
 	$2 \
 	${PYTHON} -m pipenv sync --dev; \
 	${PYTHON} -m pipenv run pytest -c pytest.ini $3 ${PYTEST_EXTRA_ARGS};
