@@ -205,6 +205,7 @@ import {
 	ScanErrors,
 	SecretFinding,
 	SecretFindingResult,
+	SecretValidity,
 	SeverityLevels,
 } from "features/scans/scansSchemas";
 import {
@@ -222,6 +223,7 @@ import formatters, {
 	formatDate,
 	vcsHotLink,
 } from "utils/formatters";
+import { SecretValidityChip } from "components/SecretValidityCell";
 
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
@@ -2841,6 +2843,63 @@ const SeverityFilterField = (props: SeverityFilterFieldProps) => {
 	);
 };
 
+interface SecretValidityFilterFieldProps {
+	value?: string | string[];
+	autoFocus?: boolean;
+	onChange: (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: string,
+		value: string
+	) => void;
+}
+
+const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
+	const { i18n } = useLingui();
+	const { classes } = useStyles();
+	const { value = "", autoFocus = false, onChange } = props;
+
+	const menuItems = Object.values(SecretValidity)
+		.map((value) => {
+			return (
+				<MenuItem value={value}>
+					<SecretValidityChip value={value} tooltipDisabled />
+				</MenuItem>
+			);
+		});
+
+	return (
+		<MuiTextField
+			select
+			id="filter-validity"
+			name="filter-validity"
+			label={i18n._(t`Validity`)}
+			variant="outlined"
+			autoFocus={autoFocus}
+			value={value}
+			size="small"
+			className={classes.selectFilter}
+			onChange={(event) => {
+				onChange(event, "validity", event.target.value);
+			}}
+			InputProps={{
+				className: classes.filterField,
+				startAdornment: (
+					<InputAdornment position="start">
+						<FilterListIcon />
+					</InputAdornment>
+				),
+			}}
+		>
+			<MenuItem value="">
+				<i>
+					<Trans>None</Trans>
+				</i>
+			</MenuItem>
+			{menuItems}
+		</MuiTextField>
+	);
+};
+
 const sourceFiles = (source?: string[]) => {
 	if (source) {
 		return source.map((source: string, index: number) => (
@@ -3809,6 +3868,9 @@ export const SecretsTabContent = (props: {
 				COMMIT_LENGTH,
 				i18n._(t`Commit must be less than ${COMMIT_LENGTH} characters`)
 			),
+		st_validity: Yup.string()
+			.trim()
+			.oneOf(Object.values(SecretValidity))
 	});
 	const [filters, setFilters] = useState<FilterDef>(
 		getResultFilters(schema, hashPrefix, {
@@ -3822,6 +3884,10 @@ export const SecretsTabContent = (props: {
 			resource: {
 				filter: "",
 			},
+			validity: {
+				filter: "",
+				match: "exact",
+			},
 			commit: {
 				filter: "",
 			},
@@ -3832,6 +3898,11 @@ export const SecretsTabContent = (props: {
 		{ field: "filename", headerName: i18n._(t`File`) },
 		{ field: "line", headerName: i18n._(t`Line`) },
 		{ field: "resource", headerName: i18n._(t`Type`) },
+		{
+			field: "validity",
+			headerName: i18n._(t`Validity`),
+			children: SecretValidityChip,
+		},
 		{ field: "commit", headerName: i18n._(t`Commit`) },
 		{
 			field: "hasHiddenFindings",
@@ -3874,6 +3945,7 @@ export const SecretsTabContent = (props: {
 				line: item.line,
 				resource: item.type,
 				commit: item.commit,
+				validity: item.validity ?? SecretValidity.Unknown,
 				repo: scan.repo,
 				service: scan.service,
 				branch: scan.branch,
@@ -3913,6 +3985,21 @@ export const SecretsTabContent = (props: {
 												<SourceCodeHotLink row={selectedRow} addTitle={true} />
 											</>
 										}
+									/>
+								</ListItem>
+								<ListItem key="secret-validity">
+									<ListItemText
+										primary={
+											<>
+												{i18n._(t`Validity`)}
+												{selectedRow?.validity && (
+													<CustomCopyToClipboard
+														copyTarget={selectedRow.validity}
+													/>
+												)}
+											</>
+										}
+										secondary={<SecretValidityChip value={selectedRow?.validity} />}
 									/>
 								</ListItem>
 							</List>
@@ -3962,6 +4049,7 @@ export const SecretsTabContent = (props: {
 					line: item.line,
 					resource: item.type,
 					commit: item.commit,
+					validity: item.validity,
 				});
 			});
 		}
@@ -4052,6 +4140,10 @@ export const SecretsTabContent = (props: {
 								onClear={handleOnClear}
 								onChange={handleOnChange}
 								inputProps={{ maxLength: RESOURCE_LENGTH }}
+							/>
+							<SecretValidityFilterField
+								value={filters["validity"].filter}
+								onChange={handleOnChange}
 							/>
 							<FilterField
 								field="commit"

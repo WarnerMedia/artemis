@@ -27,6 +27,7 @@ import {
 	ScanCategories,
 	ScanHistory,
 	SecretFinding,
+	SecretValidity,
 } from "features/scans/scansSchemas";
 import {
 	VcsService,
@@ -1046,6 +1047,7 @@ export function makeServer() {
 								type: "slack",
 								line: 2,
 								commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+								validity: SecretValidity.Active,
 							},
 							{
 								type: "slack",
@@ -1058,6 +1060,7 @@ export function makeServer() {
 								type: "slack",
 								line: 22,
 								commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
+								validity: SecretValidity.Unknown,
 							},
 						],
 					"/another/very/long/path/string/fully/qualified/path/to/aws.pass": [
@@ -1065,6 +1068,7 @@ export function makeServer() {
 							type: "aws",
 							line: 1,
 							commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
+							validity: SecretValidity.Inactive,
 						},
 					],
 					"/path/postgres.pass": [
@@ -1074,6 +1078,7 @@ export function makeServer() {
 							type: "postgres",
 							line: 2,
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+							validity: SecretValidity.Unknown,
 						},
 						{
 							// @ts-ignore
@@ -1081,6 +1086,7 @@ export function makeServer() {
 							type: "postgres",
 							line: 8,
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+							validity: SecretValidity.Unknown,
 						},
 					],
 					"/path/to/ssh.pass": [
@@ -1088,6 +1094,7 @@ export function makeServer() {
 							type: "ssh",
 							line: 1,
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+							validity: SecretValidity.Unknown,
 						},
 					],
 					"/path/to/file/google.pass": [
@@ -1097,6 +1104,7 @@ export function makeServer() {
 							type: "google",
 							line: 2,
 							commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
+							validity: SecretValidity.Unknown,
 						},
 					],
 				} as SecretFindingRawResult;
