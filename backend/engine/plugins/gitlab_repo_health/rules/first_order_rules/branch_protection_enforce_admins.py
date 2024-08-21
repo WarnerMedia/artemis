@@ -33,5 +33,5 @@ class BranchProtectionEnforceAdmins:
                 error_message=e.data.get("message"),
             )
 
-        passing = protection_config.get("enforce_admins", {}).get("enabled") == True
+        passing = protection_config.get("enforce_admins", {}).get("enabled") is True
         return add_metadata(passing, BranchProtectionEnforceAdmins, config)

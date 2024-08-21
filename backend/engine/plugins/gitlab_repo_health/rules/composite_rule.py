@@ -42,7 +42,7 @@ class CompositeRule:
 
     @staticmethod
     def check(github, owner, repo, branch, config={}):
-        if CompositeRule._checker == None:
+        if CompositeRule._checker is None:
             # Loads Checker at first run to avoid circular import
             from github_repo_health.utilities import Checker
 
@@ -62,25 +62,25 @@ class CompositeRule:
         error_messages.extend(any_of_errors)
         error_messages.extend(none_of_errors)
 
-        all_of_passing = all(all_of_results) or all_of_config == None
-        any_of_passing = any(any_of_results) or any_of_config == None
-        none_of_passing = (not any(none_of_results)) or none_of_config == None
+        all_of_passing = all(all_of_results) or all_of_config is None
+        any_of_passing = any(any_of_results) or any_of_config is None
+        none_of_passing = (not any(none_of_results)) or none_of_config is None
 
         passing = all_of_passing and any_of_passing and none_of_passing
 
-        non_none_error_messages = list(filter(lambda message: message != None, error_messages))
-        combined_error_message = ", ".join(non_none_error_messages)
+        non_none_error_messages = list(filter(lambda message: message is not None, error_messages))
+        combined_error_message = ", ".join(non_none_error_messages)  # type:ignore
 
         return add_metadata(passing, CompositeRule, config, error_message=combined_error_message)
 
 
 def _get_results_and_errors(rules_config, owner, repo, branch):
-    if rules_config == None:
+    if rules_config is None:
         return ([], [])
 
     checks = list(
         map(
-            lambda rule_config: CompositeRule._checker.run_check(rule_config, owner, repo, branch),
+            lambda rule_config: CompositeRule._checker.run_check(rule_config, owner, repo, branch),  # type: ignore
             rules_config,
         )
     )

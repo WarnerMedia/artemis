@@ -1,7 +1,7 @@
 import base64
 import json
 
-from github_repo_health import rules
+from engine.plugins.gitlab_repo_health import rules
 from jsonschema import exceptions, validate
 
 default_config = {
@@ -136,17 +136,17 @@ class Config:
             return config
 
     @staticmethod
-    def from_github(github, repo_and_path, verbose=False):
-        owner, repo, path = _destructure_github_file(repo_and_path)
+    def from_gitlab(gitlab, repo_and_path, verbose=False):
+        owner, repo, path = _destructure_gitlab_file(repo_and_path)
 
         if verbose:
-            print(f'[CONFIG] Getting config from Github repo "{owner}/{repo}", file "{path}"')
+            print(f'[CONFIG] Getting config from Gitlab repo "{owner}/{repo}", file "{path}"')
 
-        contents = github.get_repository_content(owner, repo, path)
+        contents = gitlab.get_repository_content(owner, repo, path)
 
         err_message = contents.get("message")
         if err_message:
-            raise Exception(f"Failed to get Github config: {err_message}")
+            raise Exception(f"Failed to get Gitlab config: {err_message}")
 
         if contents.get("type") == "file":
             if contents.get("encoding") == "base64":
@@ -160,35 +160,36 @@ class Config:
 
                     return result
                 else:
-                    raise Exception("Failed to get Github config, no content returned.")
+                    raise Exception("Failed to get Gitlab config, no content returned.")
             else:
                 raise Exception(
-                    "Failed to get Github config, expected base64 encoding. Github's API might have changed"
+                    "Failed to get Gitlab config, expected base64 encoding. Gitlab's API might have changed"
                 )
         else:
-            raise Exception(f'Failed to get Github config, "{repo_and_path}" - Not a file')
+            raise Exception(f'Failed to get Gitlab config, "{repo_and_path}" - Not a file')
 
     @staticmethod
     def validate(config):
-        if type(config) != dict:
+        if type(config) is not dict:
             raise Exception("Config failed validation. Expected object")
 
         bad_rules_message = 'Config failed validation. Expected "rules" field that is an array of objects'
+        bad_rules_message = 'Config failed validation. Expected "rules" field that is an array of objects'
 
-        if config.get("name") == None:
+        if config.get("name") is None:
             raise Exception('Config failed validation. Expected top-level "name" field')
-        if config.get("version") == None:
+        if config.get("version") is None:
             raise Exception('Config failed validation. Expected top-level "version" field')
 
         rule_configs = config.get("rules")
-        if type(rule_configs) != list:
+        if type(rule_configs) is not list:
             raise Exception(bad_rules_message)
 
         for rule_config in rule_configs:
-            if type(rule_config) != dict:
+            if type(rule_config) is not dict:
                 raise Exception(bad_rules_message)
 
-            rule_type = rule_config.get("type")
+            rule_type = rule_config.get("type", "")
 
             if rule_type not in rules.rules_dict:
                 raise Exception(f'Config failed validation. Unrecognized rule in config, "{rule_type}"')
@@ -196,12 +197,12 @@ class Config:
                 rule = rules.rules_dict.get(rule_type)
 
                 try:
-                    validate(instance=rule_config, schema=rule.config_schema)
+                    validate(instance=rule_config, schema=rule.config_schema)  # type: ignore
                 except exceptions.ValidationError as err:
                     raise Exception(f'Config failed validation for rule, "{rule_type}"') from err
 
 
-def _destructure_github_file(repo_and_path):
+def _destructure_gitlab_file(repo_and_path):
     try:
         owner_and_repo, path = repo_and_path.split(":", 1)
 
@@ -212,5 +213,5 @@ def _destructure_github_file(repo_and_path):
             raise Exception(f'Invalid repo, "{owner_and_repo}. Expected format is <owner>/<repo>') from None
     except ValueError:
         raise Exception(
-            f'Invalid github file, "{repo_and_path}". Expected format is <owner>/<repo>:<path-to-file>'
+            f'Invalid gitlab file, "{repo_and_path}". Expected format is <owner>/<repo>:<path-to-file>'
         ) from None

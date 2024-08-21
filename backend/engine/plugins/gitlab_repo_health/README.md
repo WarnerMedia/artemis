@@ -1,6 +1,6 @@
 # repo-health-cli
 
-Tool for checking that github repositories are configured to meet a security baseline
+Tool for checking that gitlab repositories are configured to meet a security baseline
 
 - [repo-health-cli](#repo-health-cli)
   - [Getting set up](#getting-set-up)
@@ -602,7 +602,7 @@ specified here, the rule will fail. Set this to empty array to accept no bypass 
 There isn't an easy way to discover what the actor id is for a particular actor. It's suggested to set the desired role and then query the API yourself to find it.
 
 ##### `required_bypass_actor_ids`
-Like `allowed_bypass_actor_ids`, but fails if any of these ids are excluded. 
+Like `allowed_bypass_actor_ids`, but fails if any of these ids are excluded.
 
 ##### `allowed_bypass_actor_types`
 An array of strings representing actor types that are allowed. At this time, options exposed by
