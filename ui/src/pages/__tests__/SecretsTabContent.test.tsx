@@ -322,7 +322,7 @@ describe("SecretsTabContent component", () => {
 						"Inactive",
 						"Unknown",
 					],
-					defaultOption: validityValue,
+					defaultOption: "Unknown",
 					disabled: false,
 					user,
 				});
