@@ -3,13 +3,13 @@ import { makeStyles } from "tss-react/mui";
 import { useLingui } from "@lingui/react";
 import { t } from "@lingui/macro";
 
-import {
-	colorHigh,
-	colorLow,
-	colorNegligible,
-} from "app/colors";
+import { colorHigh, colorLow, colorNegligible } from "app/colors";
 import { SecretValidity } from "features/scans/scansSchemas";
-import { DoDisturbOnOutlined, ReportOutlined, WarningAmber } from "@mui/icons-material";
+import {
+	DoDisturbOnOutlined,
+	ReportOutlined,
+	WarningAmber,
+} from "@mui/icons-material";
 
 const useStyles = makeStyles()(() => ({
 	chipActive: {
@@ -38,12 +38,12 @@ const useStyles = makeStyles()(() => ({
 export type SecretValidityChipProps = {
 	readonly value?: SecretValidity;
 	readonly tooltipDisabled?: boolean;
-}
+};
 
 type TooltipChipProps = ChipProps & {
-	readonly tooltipDisabled?: boolean,
-	readonly tooltipText?: string,
-}
+	readonly tooltipDisabled?: boolean;
+	readonly tooltipText?: string;
+};
 
 export const SecretValidityChip = (props: SecretValidityChipProps) => {
 	const { classes } = useStyles();
@@ -101,15 +101,12 @@ const TooltipChip = (props: TooltipChipProps) => {
 	const { tooltipDisabled, tooltipText, ...chipProps } = props;
 
 	if (tooltipDisabled || !tooltipText) {
-		return <Chip {...chipProps} />
+		return <Chip {...chipProps} />;
 	} else {
 		return (
-			<Tooltip
-				describeChild
-				title={tooltipText}
-			>
+			<Tooltip describeChild title={tooltipText}>
 				<Chip {...chipProps} />
 			</Tooltip>
 		);
 	}
-}
+};

@@ -173,7 +173,7 @@ describe("SecretsTabContent component", () => {
 
 				expect(
 					within(filterGroup).getByRole("button", { name: /validity/i })
-				).toBeInTheDocument()
+				).toBeInTheDocument();
 			});
 
 			it("filters add to url hash parameters", async () => {
@@ -223,12 +223,7 @@ describe("SecretsTabContent component", () => {
 				await validateSelect({
 					label: /validity/i,
 					withinElement: filterGroup,
-					options: [
-						"None",
-						"Active",
-						"Inactive",
-						"Unknown",
-					],
+					options: ["None", "Active", "Inactive", "Unknown"],
 					defaultOption: "",
 					disabled: false,
 					selectOption: "Unknown",
@@ -316,12 +311,7 @@ describe("SecretsTabContent component", () => {
 				await validateSelect({
 					label: /validity/i,
 					withinElement: filterGroup,
-					options: [
-						"None",
-						"Active",
-						"Inactive",
-						"Unknown",
-					],
+					options: ["None", "Active", "Inactive", "Unknown"],
 					defaultOption: "Unknown",
 					disabled: false,
 					user,

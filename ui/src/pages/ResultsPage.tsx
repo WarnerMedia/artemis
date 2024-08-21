@@ -2858,14 +2858,13 @@ const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
 	const { classes } = useStyles();
 	const { value = "", autoFocus = false, onChange } = props;
 
-	const menuItems = Object.values(SecretValidity)
-		.map((value) => {
-			return (
-				<MenuItem value={value}>
-					<SecretValidityChip value={value} tooltipDisabled />
-				</MenuItem>
-			);
-		});
+	const menuItems = Object.values(SecretValidity).map((value) => {
+		return (
+			<MenuItem value={value}>
+				<SecretValidityChip value={value} tooltipDisabled />
+			</MenuItem>
+		);
+	});
 
 	return (
 		<MuiTextField
@@ -3868,9 +3867,7 @@ export const SecretsTabContent = (props: {
 				COMMIT_LENGTH,
 				i18n._(t`Commit must be less than ${COMMIT_LENGTH} characters`)
 			),
-		st_validity: Yup.string()
-			.trim()
-			.oneOf(Object.values(SecretValidity))
+		st_validity: Yup.string().trim().oneOf(Object.values(SecretValidity)),
 	});
 	const [filters, setFilters] = useState<FilterDef>(
 		getResultFilters(schema, hashPrefix, {
@@ -3999,7 +3996,9 @@ export const SecretsTabContent = (props: {
 												)}
 											</>
 										}
-										secondary={<SecretValidityChip value={selectedRow?.validity} />}
+										secondary={
+											<SecretValidityChip value={selectedRow?.validity} />
+										}
 									/>
 								</ListItem>
 							</List>
