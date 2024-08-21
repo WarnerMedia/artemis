@@ -1,6 +1,7 @@
 # pylint: disable=no-name-in-module, no-member
 import json
 import os
+import warnings
 from collections import namedtuple
 from datetime import datetime
 from typing import Any, Optional
@@ -19,6 +20,10 @@ from repo_scan.aws_connect import (
     send_sqs_message,
 )
 
+# At the end of the lambda execution, metrics will be published
+# Adding this filter to Ignore warnings for empty metrics
+warnings.filterwarnings("ignore", "No application metrics to publish*")
+
 ARTEMIS_API = os.environ.get("ARTEMIS_API")
 API_KEY_LOC = os.environ.get("ARTEMIS_API_KEY")
 DEFAULT_PLUGINS = ["gitsecrets", "base_images"]
@@ -32,6 +37,7 @@ json_utils = JSONUtils(log)
 metrics = get_metrics()
 
 
+@metrics.log_metrics()
 @log.inject_lambda_context
 def run(event: dict[str, Any] = None, context: LambdaContext = None, size: int = 20) -> Optional[list[dict[str, Any]]]:
     # Get the size of the REPO_QUEUE
@@ -119,6 +125,8 @@ def requeue_failed_repos(service: str, repo_lookup: dict[str, Any], failed_repos
     repos_to_queue = []
     index = 0
     count = 0
+    if failed_repos != None:
+        metrics.add_metric(name="failed_repositories.count", value=len(failed_repos), version_control_service=service)
     for failed_repo in failed_repos:
         error_msg = failed_repo.get("error", "")
         if error_msg.startswith("Could not resolve to a Repository with the name"):
@@ -128,14 +136,6 @@ def requeue_failed_repos(service: str, repo_lookup: dict[str, Any], failed_repos
         repo_info["service"] = service
         if not repo_info:
             continue
-        metrics.add_metric(
-            name="failed_repositories.count",
-            value=1,
-            repository=repo_info.get("repository"),
-            batch_id=repo_info.get("batch_id"),
-            organization_name=repo_info.get("org"),
-            version_control_service=service,
-        )
         repos_to_queue.append({"Id": str(index), "MessageBody": json.dumps(repo_info)})
         index += 1
         if index >= 10:
