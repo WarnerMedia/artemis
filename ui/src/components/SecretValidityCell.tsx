@@ -104,7 +104,7 @@ const TooltipChip = (props: TooltipChipProps) => {
 		return <Chip {...chipProps} />;
 	} else {
 		return (
-			<Tooltip describeChild title={tooltipText}>
+			<Tooltip describeChild title={tooltipText} enterDelay={500}>
 				<Chip {...chipProps} />
 			</Tooltip>
 		);
