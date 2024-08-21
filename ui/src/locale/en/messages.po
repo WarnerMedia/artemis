@@ -105,6 +105,10 @@ msgstr "No users found. Click the + button to add a new user"
 msgid "Loading options..."
 msgstr "Loading options..."
 
+#: src/components/SecretValidityCell.tsx:91
+msgid "Not tested"
+msgstr "Not tested"
+
 #: src/pages/ResultsPage.tsx:1554
 msgid "Source files <0>not</0> covered by this hidden finding ({0}):"
 msgstr "Source files <0>not</0> covered by this hidden finding ({0}):"
@@ -676,6 +680,7 @@ msgstr "Trivy SBOM"
 msgid "None"
 msgstr "None"
 
+#: src/components/SecretValidityCell.tsx:81
 #: src/custom/ResultsMetaField.tsx:24
 #: src/custom/SearchMetaField.tsx:112
 #: src/pages/UserSettings.tsx:751
@@ -698,6 +703,10 @@ msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 #: src/app/scanPlugins.ts:125
 msgid "NodeJS Scan (NodeJS)"
 msgstr "NodeJS Scan (NodeJS)"
+
+#: src/components/SecretValidityCell.tsx:59
+msgid "Active"
+msgstr "Active"
 
 #: src/app/scanPlugins.ts:130
 msgid "Pylint (Python)"
@@ -1164,6 +1173,10 @@ msgstr "After"
 #: src/pages/UsersPage.tsx:1060
 msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
+
+#: src/components/SecretValidityCell.tsx:70
+msgid "Inactive"
+msgstr "Inactive"
 
 #: src/features/hiddenFindings/hiddenFindingsSaga.ts:51
 msgid "Hidden finding removed"
