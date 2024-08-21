@@ -110,8 +110,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
         return formatted_response(msg=queued)
     log.info(f"Final Queued: {queued}")
     log.info(f"Final Failed: {FAILED}")
-    if FAILED:
-        metrics.add_metric("failed_organizations.count", len(FAILED), batch_id=batch_id)
+    metrics.add_metric("failed_organizations.count", len(FAILED), batch_id=batch_id)
     return queued
 
 

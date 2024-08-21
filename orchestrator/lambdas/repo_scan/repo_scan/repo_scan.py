@@ -1,6 +1,7 @@
 # pylint: disable=no-name-in-module, no-member
 import json
 import os
+import warnings
 from collections import namedtuple
 from datetime import datetime
 from typing import Any, Optional
@@ -10,6 +11,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from heimdall_utils.aws_utils import get_analyzer_api_key, send_analyzer_request
 from heimdall_utils.utils import JSONUtils, get_ttl_expiration
 from heimdall_utils.env import APPLICATION
+from heimdall_utils.metrics.factory import get_metrics
 from repo_scan.aws_connect import (
     batch_update_db,
     delete_processed_messages,
@@ -17,6 +19,10 @@ from repo_scan.aws_connect import (
     get_sqs_message,
     send_sqs_message,
 )
+
+# At the end of the lambda execution, metrics will be published
+# Adding this filter to Ignore warnings for empty metrics
+warnings.filterwarnings("ignore", "No application metrics to publish*")
 
 ARTEMIS_API = os.environ.get("ARTEMIS_API")
 API_KEY_LOC = os.environ.get("ARTEMIS_API_KEY")
@@ -28,8 +34,10 @@ SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
 log = Logger(service=APPLICATION, name="repo_scan")
 json_utils = JSONUtils(log)
+metrics = get_metrics()
 
 
+@metrics.log_metrics()
 @log.inject_lambda_context
 def run(event: dict[str, Any] = None, context: LambdaContext = None, size: int = 20) -> Optional[list[dict[str, Any]]]:
     # Get the size of the REPO_QUEUE
@@ -117,6 +125,8 @@ def requeue_failed_repos(service: str, repo_lookup: dict[str, Any], failed_repos
     repos_to_queue = []
     index = 0
     count = 0
+    if failed_repos != None:
+        metrics.add_metric(name="failed_repositories.count", value=len(failed_repos), version_control_service=service)
     for failed_repo in failed_repos:
         error_msg = failed_repo.get("error", "")
         if error_msg.startswith("Could not resolve to a Repository with the name"):
@@ -181,6 +191,14 @@ def construct_repo_requests(repos: list) -> dict:
             "batch_priority": True,
             "batch_id": repo.get("batch_id"),
         }
+        metrics.add_metric(
+            name="queued_repositories.count",
+            value=1,
+            repository=repo["repo"],
+            batch_id=repo.get("batch_id"),
+            organization_name=repo.get("org"),
+            version_control_service=service,
+        )
         if "branch" in repo and repo["branch"] != "HEAD":
             req["branch"] = repo["branch"]
         reqs[service].append(req)
