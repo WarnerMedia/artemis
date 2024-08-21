@@ -10,6 +10,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from heimdall_utils.aws_utils import get_analyzer_api_key, send_analyzer_request
 from heimdall_utils.utils import JSONUtils, get_ttl_expiration
 from heimdall_utils.env import APPLICATION
+from heimdall_utils.metrics.factory import get_metrics
 from repo_scan.aws_connect import (
     batch_update_db,
     delete_processed_messages,
@@ -28,6 +29,7 @@ SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
 log = Logger(service=APPLICATION, name="repo_scan")
 json_utils = JSONUtils(log)
+metrics = get_metrics()
 
 
 @log.inject_lambda_context
@@ -126,6 +128,14 @@ def requeue_failed_repos(service: str, repo_lookup: dict[str, Any], failed_repos
         repo_info["service"] = service
         if not repo_info:
             continue
+        metrics.add_metric(
+            name="failed_repositories.count",
+            value=1,
+            repository=repo_info.get("repository"),
+            batch_id=repo_info.get("batch_id"),
+            organization_name=repo_info.get("org"),
+            version_control_service=service,
+        )
         repos_to_queue.append({"Id": str(index), "MessageBody": json.dumps(repo_info)})
         index += 1
         if index >= 10:
@@ -181,6 +191,14 @@ def construct_repo_requests(repos: list) -> dict:
             "batch_priority": True,
             "batch_id": repo.get("batch_id"),
         }
+        metrics.add_metric(
+            name="queued_repositories.count",
+            value=1,
+            repository=repo["repo"],
+            batch_id=repo.get("batch_id"),
+            organization_name=repo.get("org"),
+            version_control_service=service,
+        )
         if "branch" in repo and repo["branch"] != "HEAD":
             req["branch"] = repo["branch"]
         reqs[service].append(req)
