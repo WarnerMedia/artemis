@@ -3988,7 +3988,7 @@ export const SecretsTabContent = (props: {
 									<ListItemText
 										primary={
 											<>
-												{i18n._(t`Validity`)}
+												<Trans>Validity</Trans>
 												{selectedRow?.validity && (
 													<CustomCopyToClipboard
 														copyTarget={selectedRow.validity}

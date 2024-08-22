@@ -59,7 +59,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					label={i18n._(t`Active`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
-					tooltipText="This finding was tested and determined to be valid and active"
+					tooltipText={i18n._(t`This finding was tested and determined to be valid and active`)}
 				/>
 			);
 		case SecretValidity.Inactive:
@@ -70,7 +70,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					label={i18n._(t`Inactive`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
-					tooltipText="This finding was tested and determined to be inactive"
+					tooltipText={i18n._(t`This finding was tested and determined to be inactive`)}
 				/>
 			);
 		case SecretValidity.Unknown:
@@ -81,7 +81,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					label={i18n._(t`Unknown`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
-					tooltipText="This finding could not be determined to be either active or inactive"
+					tooltipText={i18n._(t`This finding could not be determined to be either active or inactive`)}
 				/>
 			);
 		default:
@@ -91,7 +91,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					label={i18n._(t`Not tested`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
-					tooltipText="This finding was not tested for validity"
+					tooltipText={i18n._(t`This finding was not tested for validity`)}
 				/>
 			);
 	}
