@@ -21,7 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/orchestrator/lambdas/repo_scan"),
     packages=find_packages(),
     setup_requires=[],
-    install_requires=[""],
+    install_requires=[],
     tests_require=[],
     classifiers=[
         "Programming Language :: Python :: 3.9",
