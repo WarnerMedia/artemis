@@ -51,9 +51,7 @@ ORG_QUEUE_LAMBDA := ${PREFIX}-org-queue
 REPO_QUEUE_LAMBDA := ${PREFIX}-repo-queue
 REPO_SCAN_LAMBDA := ${PREFIX}-repo-scan
 REPO_SCAN_LOOP_LAMBDA := ${PREFIX}-repo-scan-loop
-HEIMDALL_ORGS := ${PREFIX}-orgs
-HEIMDALL_UTILS := ${PREFIX}-utils
-HEIMDALL_REPOS := ${PREFIX}-repos
+HEIMDALL_CORE := ${PREFIX}-core
 
 HEIMDALL_ORGS_DIR := lambdas/layers/heimdall_orgs
 HEIMDALL_UTILS_DIR := lambdas/layers/heimdall_utils
@@ -137,42 +135,26 @@ dist/lambdas/%.zip: $$(shell find lambdas/$$* -type f)
 ###############################################################################
 # Lambda Layers
 ###############################################################################
+dist/lambdas/layers/heimdall_core.zip: ${HEIMDALL_ORGS_SRC} ${HEIMDALL_UTILS_SRC} ${HEIMDALL_REPOS_SRC}
+	@echo "{INFO} Building ${HEIMDALL_CORE}"
+	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_ORGS_DIR}
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_UTILS_DIR}
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_REPOS_DIR}
 
-dist/lambdas/layers/heimdall_orgs.zip: ${HEIMDALL_ORGS_SRC}
-	@echo "${INFO}Building $*"
-	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_ORGS_DIR}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: requests "urllib3<2"
-	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_orgs/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_orgs; zip -r ${DIST_DIR}/lambdas/layers/heimdall_orgs.zip *
-	@echo "${OK}"
+	@echo "{INFO} Adding dependencies to Lambda Layer"
+	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
+	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 
 
-dist/lambdas/layers/heimdall_utils.zip: ${HEIMDALL_UTILS_SRC}
-	@echo "${INFO}Building $*"
-	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_UTILS_DIR}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: pyjwt requests "urllib3<2"
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} cryptography
-	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_utils/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_utils; zip -r ${DIST_DIR}/lambdas/layers/heimdall_utils.zip *
-	@echo "${OK}"
-
-dist/lambdas/layers/heimdall_repos.zip: ${HEIMDALL_REPOS_SRC}
-	@echo "${INFO}Building $*"
-	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_REPOS_DIR}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: requests "urllib3<2"
-	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_repos/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_repos; zip -r ${DIST_DIR}/lambdas/layers/heimdall_repos.zip *
+	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_core/python
+	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core; zip -r ${DIST_DIR}/lambdas/layers/heimdall_core.zip *
 	@echo "${OK}"
 
 lambdas: dist/lambdas/org_queue.zip \
 			dist/lambdas/repo_queue.zip \
 			dist/lambdas/repo_scan.zip \
 			dist/lambdas/repo_scan_loop.zip \
-			dist/lambdas/layers/heimdall_orgs.zip \
-			dist/lambdas/layers/heimdall_utils.zip \
-			dist/lambdas/layers/heimdall_repos.zip
+			dist/lambdas/layers/heimdall_core.zip
 .PHONY: lambdas
 
 build: lambdas ## Builds all lambdas
@@ -194,17 +176,9 @@ upload_repo_scan_loop: dist/lambdas/repo_scan_loop.zip
 	aws s3 cp dist/lambdas/repo_scan_loop.zip s3://${S3_BUCKET}/lambdas/repo_scan_loop/v${VERSION}/repo_scan_loop.zip
 .PHONY: upload_repo_scan_loop
 
-upload_heimdall_orgs: dist/lambdas/layers/heimdall_orgs.zip
-	aws s3 cp dist/lambdas/layers/heimdall_orgs.zip s3://${S3_BUCKET}/lambdas/layers/orgs/v${VERSION}/orgs.zip
-.PHONY: upload_heimdall_orgs
-
-upload_heimdall_utils: dist/lambdas/layers/heimdall_utils.zip
-	aws s3 cp dist/lambdas/layers/heimdall_utils.zip s3://${S3_BUCKET}/lambdas/layers/utils/v${VERSION}/utils.zip
-.PHONY: upload_heimdall_utils
-
-upload_heimdall_repos: dist/lambdas/layers/heimdall_repos.zip
-	aws s3 cp dist/lambdas/layers/heimdall_repos.zip s3://${S3_BUCKET}/lambdas/layers/repos/v${VERSION}/repos.zip
-.PHONY: upload_heimdall_repos
+upload_heimdall_core: dist/lambdas/layers/heimdall_core.zip
+	aws s3 cp dist/lambdas/layers/heimdall_core.zip s3://${S3_BUCKET}/lambdas/layers/heimdall_core/v${VERSION}/heimdall_core.zip
+.PHONY: upload_heimdall_core
 
 deploy_org_queue: upload_org_queue
 	@echo "${INFO}Deploying ${ORG_QUEUE_LAMBDA} function code"
@@ -266,45 +240,24 @@ deploy_repo_scan_loop: upload_repo_scan_loop
 	@echo "${OK}"
 .PHONY: deploy_repo_scan_loop
 
-deploy_heimdall_orgs: upload_heimdall_orgs
-	@echo "${INFO}Deploying ${HEIMDALL_ORGS} lambda layer"
+deploy_heimdall_core: upload_heimdall_core
+	@echo "${INFO}Deploying ${HEIMDALL_CORE} lambda layer"
 	aws lambda publish-layer-version \
-		--layer-name ${HEIMDALL_ORGS} \
+		--layer-name ${HEIMDALL_CORE} \
 		--region ${REGION} \
-		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/layers/orgs/v${VERSION}/orgs.zip
+		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/layers/heimdall_core/v${VERSION}/heimdall_core.zip \
+		--compatible-runtimes python${LAMBDA_PYTHON_VER}
 	@echo "${OK}"
-.PHONY: deploy_heimdall_orgs
+.PHONY: deploy_heimdall_core
 
-deploy_heimdall_utils: upload_heimdall_utils
-	@echo "${INFO}Deploying ${HEIMDALL_UTILS} lambda layer"
-	aws lambda publish-layer-version \
-		--layer-name ${HEIMDALL_UTILS} \
-		--region ${REGION} \
-		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/layers/utils/v${VERSION}/utils.zip
-	@echo "${OK}"
-.PHONY: deploy_heimdall_utils
-
-deploy_heimdall_repos: upload_heimdall_repos
-	@echo "${INFO}Deploying ${HEIMDALL_REPOS} lambda layer"
-	aws lambda publish-layer-version \
-		--layer-name ${HEIMDALL_REPOS} \
-		--region ${REGION} \
-		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/layers/repos/v${VERSION}/repos.zip
-	@echo "${OK}"
-.PHONY: deploy_heimdall_repos
-
-upload_lambdas: upload_heimdall_orgs \
-				upload_heimdall_utils \
-				upload_heimdall_repos \
+upload_lambdas: upload_heimdall_core \
 				upload_org_queue \
 				upload_repo_queue \
 				upload_repo_scan \
 				upload_repo_scan_loop
 .PHONY: upload_lambdas
 
-deploy_lambdas: deploy_heimdall_orgs \
-				deploy_heimdall_utils \
-				deploy_heimdall_repos \
+deploy_lambdas: deploy_heimdall_core \
 				deploy_org_queue \
 				deploy_repo_queue \
 				deploy_repo_scan \
