@@ -812,9 +812,12 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-scans-task_queue_metrics \
 				upload_lambda_lambdas-scheduled-update_github_org_users \
 				upload_lambda_lambdas-scheduled-scan_scheduler \
-				upload_lambda_lambdas-scheduled-scheduled_scan_handler \
-				upload_lambda_lambdas-layers-backend_core
+				upload_lambda_lambdas-scheduled-scheduled_scan_handler
 .PHONY: upload_lambdas
+
+upload_lambda_layers: ## Upload All Lambda Layers to S3
+upload_lambda_layers: upload_lambda_lambdas-layers-backend_core
+.PHONY: upload_lambda_layers
 
 stage_scripts: dist/engine_scripts.zip  ## Stage scripts in S3
 	@echo "${INFO}Deploying scripts bundle"
@@ -828,7 +831,7 @@ stage_api_docs:  ## Stage API docs in S3
 	@echo "${OK}"
 .PHONY: upload_api_docs
 
-upload: upload_lambdas stage_scripts docker_push  ## Upload all
+upload: upload_lambdas stage_scripts docker_push upload_lambda_layers## Upload all
 .PHONY: upload
 
 ###############################################################################
