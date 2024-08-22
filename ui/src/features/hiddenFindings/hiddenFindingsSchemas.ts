@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-import { Severities } from "features/scans/scansSchemas";
+import { SecretValidity, Severities } from "features/scans/scansSchemas";
 
 // interfaces
 export const HiddenFindingTypeValues = [
@@ -54,6 +54,7 @@ type HiddenFindingSecret = HiddenFindingBase & {
 		filename: string;
 		line: number;
 		commit: string;
+		validity?: SecretValidity;
 	};
 };
 
