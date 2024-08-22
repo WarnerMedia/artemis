@@ -420,7 +420,7 @@ dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_
 	@echo "${OK}"
 
 lambda_layers:  ## Build lambda layers
-lambda_layers: dist/lamdbas/layers/backend_core.zip
+lambda_layers: dist/lambdas/layers/backend_core.zip
 .PHONY: lambda_layers
 
 ###############################################################################
