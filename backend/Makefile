@@ -404,14 +404,14 @@ lambdas: dist/lambdas/api/authorizer.zip \
 # Lambda Layers
 ###############################################################################
 dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_SRC}
-	@echo "{INFO} Creating ${BACKEND_CORE_LAMBDA_LAYER} Lambda Layer"
+	@echo "${INFO} Creating ${BACKEND_CORE_LAMBDA_LAYER} Lambda Layer"
 	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python
 
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISDB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
 	
-	@echo "{INFO} Adding dependencies to Lambda Layer"
+	@echo "${INFO} Adding dependencies to Lambda Layer"
 	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
 	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 
 
