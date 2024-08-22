@@ -2858,10 +2858,10 @@ const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
 	const { classes } = useStyles();
 	const { value = "", autoFocus = false, onChange } = props;
 
-	const menuItems = Object.values(SecretValidity).map((value) => {
+	const menuItems = Object.values(SecretValidity).map((validityValue) => {
 		return (
-			<MenuItem value={value}>
-				<SecretValidityChip value={value} tooltipDisabled />
+			<MenuItem value={validityValue}>
+				<SecretValidityChip value={validityValue} tooltipDisabled />
 			</MenuItem>
 		);
 	});
