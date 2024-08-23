@@ -37,8 +37,7 @@ module "public_engine_cluster" {
   heimdall_scans_cron = var.heimdall_scans_cron
 
   lambda_layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_engine_scale_down)
 
   lambda_subnet = aws_subnet.lambdas
@@ -100,8 +99,7 @@ module "nat_engine_cluster" {
   heimdall_scans_cron = var.heimdall_scans_cron
 
   lambda_layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_engine_scale_down)
 
   lambda_subnet = aws_subnet.lambdas

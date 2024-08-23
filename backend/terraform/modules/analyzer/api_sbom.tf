@@ -200,9 +200,7 @@ resource "aws_lambda_function" "sbom_components" {
   s3_key    = "lambdas/sbom_components/v${var.ver}/sbom_components.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_sbom_components_handler)
 
   lifecycle {
@@ -252,9 +250,7 @@ resource "aws_lambda_function" "sbom_licenses" {
   s3_key    = "lambdas/sbom_licenses/v${var.ver}/sbom_licenses.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_sbom_licenses_handler)
 
   lifecycle {

@@ -194,9 +194,7 @@ resource "aws_lambda_function" "groups-handler" {
   s3_key    = "lambdas/groups/v${var.ver}/groups.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_groups_handler)
 
   lifecycle {
@@ -245,9 +243,7 @@ resource "aws_lambda_function" "groups-members-handler" {
   s3_key    = "lambdas/groups_members/v${var.ver}/groups_members.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_groups_members_handler)
 
   lifecycle {
@@ -296,9 +292,7 @@ resource "aws_lambda_function" "groups-keys-handler" {
   s3_key    = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_groups_keys_handler)
 
   lifecycle {

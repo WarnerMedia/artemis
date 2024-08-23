@@ -91,9 +91,7 @@ resource "aws_lambda_function" "scans_batch" {
   s3_key    = "lambdas/scans_batch/v${var.ver}/scans_batch.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_scans_batch_handler)
 
   lifecycle {
