@@ -115,24 +115,10 @@ resource "aws_security_group" "lambda-sg" {
 # Lambda Layers
 ###############################################################################
 
-resource "aws_lambda_layer_version" "artemislib" {
-  layer_name          = "${var.app}-artemislib"
+resource "aws_lambda_layer_version" "backend_core" {
+  layer_name          = "${var.app}-backend-core"
   s3_bucket           = var.s3_analyzer_files_id
-  s3_key              = "lambdas/artemislib/v${var.ver}/artemislib.zip"
-  compatible_runtimes = [var.lambda_runtime]
-}
-
-resource "aws_lambda_layer_version" "artemisdb" {
-  layer_name          = "${var.app}-artemisdb"
-  s3_bucket           = var.s3_analyzer_files_id
-  s3_key              = "lambdas/artemisdb/v${var.ver}/artemisdb.zip"
-  compatible_runtimes = [var.lambda_runtime]
-}
-
-resource "aws_lambda_layer_version" "artemisapi" {
-  layer_name          = "${var.app}-artemisapi"
-  s3_bucket           = var.s3_analyzer_files_id
-  s3_key              = "lambdas/artemisapi/v${var.ver}/artemisapi.zip"
+  s3_key              = "lambdas/backend_core/v${var.ver}/backend_core.zip"
   compatible_runtimes = [var.lambda_runtime]
 }
 
@@ -147,9 +133,7 @@ resource "aws_lambda_function" "repo-handler" {
   s3_key    = "lambdas/repo/v${var.ver}/repo.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_repo_handler)
 
   lifecycle {
@@ -219,9 +203,7 @@ resource "aws_lambda_function" "users-handler" {
   s3_key    = "lambdas/users/v${var.ver}/users.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_users_handler)
 
   lifecycle {
@@ -276,9 +258,7 @@ resource "aws_lambda_function" "users-keys-handler" {
   s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_users_keys_handler)
 
   lifecycle {
@@ -331,9 +311,7 @@ resource "aws_lambda_function" "users-services-handler" {
   s3_key    = "lambdas/users_services/v${var.ver}/users_services.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_users_services_handler)
 
   lifecycle {
@@ -384,7 +362,7 @@ resource "aws_lambda_function" "signin-handler" {
   s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_signin_handler)
 
   lifecycle {

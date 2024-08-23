@@ -9,8 +9,7 @@ resource "aws_lambda_function" "update_github_org_users" {
   s3_key    = "lambdas/update_github_org_users/v${var.ver}/update_github_org_users.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_update_github_org_users)
 
   lifecycle {

@@ -15,6 +15,13 @@ resource "aws_lambda_function" "metadata-events-handler" {
   architectures = [var.lambda_architecture]
   timeout       = 30
 
+  layers = [aws_lambda_layer_version.backend_core.arn]
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
   role = aws_iam_role.metadata-events-role.arn
 
   environment {

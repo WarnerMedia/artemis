@@ -23,8 +23,7 @@ resource "aws_lambda_function" "org-queue" {
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
   layers = concat([
-    aws_lambda_layer_version.lambda_layers_orgs.arn,
-    aws_lambda_layer_version.lambda_layers_utils.arn
+    aws_lambda_layer_version.heimdall_core.arn
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
@@ -91,8 +90,7 @@ resource "aws_lambda_function" "repo-queue" {
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
   layers = concat([
-    aws_lambda_layer_version.lambda_layers_utils.arn,
-    aws_lambda_layer_version.lambda_layers_repos.arn
+    aws_lambda_layer_version.heimdall_core.arn,
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
@@ -159,7 +157,7 @@ resource "aws_lambda_function" "repo-scan" {
   role = aws_iam_role.lambda-assume-role.arn
 
   layers = concat([
-    aws_lambda_layer_version.lambda_layers_utils.arn
+    aws_lambda_layer_version.heimdall_core.arn
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
@@ -216,7 +214,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
   role = aws_iam_role.lambda-assume-role.arn
 
   layers = concat([
-    aws_lambda_layer_version.lambda_layers_utils.arn
+    aws_lambda_layer_version.heimdall_core.arn
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
@@ -250,24 +248,10 @@ resource "aws_lambda_function" "repo-scan-loop" {
   )
 }
 
-resource "aws_lambda_layer_version" "lambda_layers_orgs" {
-  layer_name          = "${var.app}-orgs"
+resource "aws_lambda_layer_version" "heimdall_core" {
+  layer_name          = "${var.app}-core"
   s3_bucket           = aws_s3_bucket.heimdall_files.id
-  s3_key              = "lambdas/layers/orgs/v${var.ver}/orgs.zip"
-  compatible_runtimes = [var.lambda_runtime]
-}
-
-resource "aws_lambda_layer_version" "lambda_layers_utils" {
-  layer_name          = "${var.app}-utils"
-  s3_bucket           = aws_s3_bucket.heimdall_files.id
-  s3_key              = "lambdas/layers/utils/v${var.ver}/utils.zip"
-  compatible_runtimes = [var.lambda_runtime]
-}
-
-resource "aws_lambda_layer_version" "lambda_layers_repos" {
-  layer_name          = "${var.app}-repos"
-  s3_bucket           = aws_s3_bucket.heimdall_files.id
-  s3_key              = "lambdas/layers/repos/v${var.ver}/repos.zip"
+  s3_key              = "lambdas/layers/heimdall_core/v${var.ver}/heimdall_core.zip"
   compatible_runtimes = [var.lambda_runtime]
 }
 

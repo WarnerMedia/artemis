@@ -174,9 +174,7 @@ resource "aws_lambda_function" "search_repositories" {
   s3_key    = "lambdas/search_repositories/v${var.ver}/search_repositories.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_search_repositories_handler)
 
   lifecycle {
@@ -227,9 +225,7 @@ resource "aws_lambda_function" "search_scans" {
   s3_key    = "lambdas/search_scans/v${var.ver}/search_scans.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_search_scans_handler)
 
   lifecycle {
@@ -279,9 +275,7 @@ resource "aws_lambda_function" "search_vulnerabilities" {
   s3_key    = "lambdas/search_vulnerabilities/v${var.ver}/search_vulnerabilities.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_search_vulnerabilities_handler)
 
   lifecycle {

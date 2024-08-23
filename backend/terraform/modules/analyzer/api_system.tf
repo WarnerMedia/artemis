@@ -173,9 +173,7 @@ resource "aws_lambda_function" "system_allowlist" {
   s3_key    = "lambdas/system_allowlist/v${var.ver}/system_allowlist.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_system_allowlist_handler)
 
   lifecycle {
@@ -224,9 +222,7 @@ resource "aws_lambda_function" "system_services" {
   s3_key    = "lambdas/system_services/v${var.ver}/system_services.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_system_services_handler)
 
   lifecycle {
@@ -280,9 +276,7 @@ resource "aws_lambda_function" "system_status" {
   s3_key    = "lambdas/system_status/v${var.ver}/system_status.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_system_status_handler)
 
   lifecycle {

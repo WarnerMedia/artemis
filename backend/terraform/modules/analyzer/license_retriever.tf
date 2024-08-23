@@ -9,8 +9,7 @@ resource "aws_lambda_function" "license-retriever" {
   s3_key    = "lambdas/license_retriever/v${var.ver}/license_retriever.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_license_retriever)
 
   lifecycle {

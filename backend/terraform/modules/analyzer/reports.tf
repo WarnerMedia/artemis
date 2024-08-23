@@ -9,8 +9,7 @@ resource "aws_lambda_function" "json_report" {
   s3_key    = "lambdas/json_report/v${var.ver}/json_report.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_json_report)
 
   lifecycle {
@@ -59,8 +58,7 @@ resource "aws_lambda_function" "pdf_report" {
   s3_key    = "lambdas/pdf_report/v${var.ver}/pdf_report.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_pdf_report)
 
   lifecycle {
@@ -110,8 +108,7 @@ resource "aws_lambda_function" "report_cleanup" {
   s3_key    = "lambdas/report_cleanup/v${var.ver}/report_cleanup.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_report_cleanup)
 
   lifecycle {
@@ -161,8 +158,7 @@ resource "aws_lambda_function" "sbom_report" {
   s3_key    = "lambdas/sbom_report/v${var.ver}/sbom_report.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_sbom_report)
 
   lifecycle {

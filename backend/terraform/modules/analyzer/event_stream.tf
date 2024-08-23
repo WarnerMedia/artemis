@@ -12,9 +12,14 @@ resource "aws_lambda_function" "event-dispatch" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
-
-  role = aws_iam_role.event-role.arn
-
+  layers        = [aws_lambda_layer_version.backend_core.arn]
+  role          = aws_iam_role.event-role.arn
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
   environment {
     variables = merge({
       SECRETS_QUEUE                    = var.secrets_queue.id

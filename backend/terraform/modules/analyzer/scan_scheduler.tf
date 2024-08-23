@@ -9,8 +9,7 @@ resource "aws_lambda_function" "scan_scheduler" {
   s3_key    = "lambdas/scan_scheduler/v${var.ver}/scan_scheduler.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_scan_scheduler)
 
   lifecycle {
@@ -59,8 +58,7 @@ resource "aws_lambda_function" "scheduled_scan_handler" {
   s3_key    = "lambdas/scheduled_scan_handler/v${var.ver}/scheduled_scan_handler.zip"
 
   layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_scheduled_scan_handler)
 
   lifecycle {
