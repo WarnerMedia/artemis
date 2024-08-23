@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from github_repo_health.rules import BranchProtectionEnforceAdmins
-from github_repo_health.utilities import Github
+from gitlab_repo_health.rules import BranchProtectionEnforceAdmins
+from gitlab_repo_health.utilities.gitlab import Gitlab
 
 OWNER = "owner"
 REPO = "repo"
@@ -11,11 +11,11 @@ BRANCH = "branch"
 
 class TestBranchProtectionEnforceAdmins(unittest.TestCase):
     def test_enforce_admins_disabled(self):
-        mock_github = Github(None)
+        mock_gitlab = Gitlab("", "")
         mock_response = {
             # No enforce admins
         }
-        mock_github.get_branch_protection = MagicMock(return_value=mock_response)
+        mock_gitlab.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
             "id": BranchProtectionEnforceAdmins.identifier,
@@ -26,13 +26,13 @@ class TestBranchProtectionEnforceAdmins(unittest.TestCase):
 
         self.assertEqual(
             expected,
-            BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH),
+            BranchProtectionEnforceAdmins.check(mock_gitlab, OWNER, REPO, BRANCH),
         )
 
     def test_enforce_admins_enabled(self):
-        mock_github = Github(None)
+        mock_gitlab = Gitlab("", "")
         mock_response = {"enforce_admins": {"enabled": True}}
-        mock_github.get_branch_protection = MagicMock(return_value=mock_response)
+        mock_gitlab.get_branch_protection = MagicMock(return_value=mock_response)
 
         expected = {
             "id": BranchProtectionEnforceAdmins.identifier,
@@ -43,5 +43,5 @@ class TestBranchProtectionEnforceAdmins(unittest.TestCase):
 
         self.assertEqual(
             expected,
-            BranchProtectionEnforceAdmins.check(mock_github, OWNER, REPO, BRANCH),
+            BranchProtectionEnforceAdmins.check(mock_gitlab, OWNER, REPO, BRANCH),
         )

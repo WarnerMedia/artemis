@@ -1,12 +1,11 @@
 from requests import HTTPError
-from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
 from ..helpers import add_metadata, severity_schema
 
 
-class BranchProtectionCommitSigning:
-    identifier = "branch_protection_commit_signing"
-    name = "Branch Protection - Require Commit Signing"
-    description = "Requires that a branch protection rule is enabled to enforce code signing"
+class BranchProtectionCodeOwnerApproval:
+    identifier = "branch_protection_codeowner_approval"
+    name = "Branch Protection - Enforce Codeowner Approval"
+    description = 'Requires that branch protection rule, "Code owner approval" is disabled. This enforces Codeowners to approve Merge Requests.'
 
     config_schema = {
         "type": "object",
@@ -22,17 +21,16 @@ class BranchProtectionCommitSigning:
     }
 
     @staticmethod
-    def check(gitlab: Gitlab, owner: str, repo: str, branch: str, config={}):
+    def check(gitlab, owner, repo, branch, config={}):
         try:
-            branch_rules = gitlab.get_branch_rules(owner, repo, branch)
-
+            protection_config = gitlab.get_branch_protection(owner, repo, branch)
         except HTTPError as e:
             return add_metadata(
                 False,
-                BranchProtectionCommitSigning,
+                BranchProtectionCodeOwnerApproval,
                 config,
                 error_message=str(e),
             )
 
-        passing = branch_rules.get("reject_unsigned_commits", "") is True
-        return add_metadata(passing, BranchProtectionCommitSigning, config)
+        passing = protection_config.get("allow_force_push", True) is False
+        return add_metadata(passing, BranchProtectionCodeOwnerApproval, config)

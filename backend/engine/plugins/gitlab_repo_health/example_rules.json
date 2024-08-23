@@ -1,139 +1,117 @@
 {
-    "name": "Example Rules",
-    "version": "1.0.0",
-    "rules": [
-        {
-            "type": "composite_rule",
-            "id": "branch_commit_signing",
-            "name": "Branch - Commit Signing",
-            "description": "Branch rule or branch protection rule is enabled to enforce commit signing",
-            "subrules": {
-                "any_of": [
-                    {
-                        "type": "branch_protection_commit_signing"
-                    },
-                    {
-                        "type": "branch_rule_commit_signing"
-                    }
-                ]
+  "name": "Example Rules",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "type": "branch_protection_commit_signing",
+      "id": "branch_commit_signing",
+      "name": "Branch - Commit Signing",
+      "description": "Branch rule or branch protection rule is enabled to enforce commit signing"
+    },
+    {
+      "type": "branch_protection_enforce_admins",
+      "id": "branch_enforce_admins",
+      "name": "Branch - Enforce Rules for Admins",
+      "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins"
+    },
+    {
+      "type": "composite_rule",
+      "id": "branch_pull_requests",
+      "name": "Branch - Pull Request",
+      "description": "Branch rule or branch protection rule is enabled to require pull requests",
+      "subrules": {
+        "any_of": [
+          {
+            "type": "branch_protection_pull_requests",
+            "expect": {
+              "dismiss_stale_reviews": true,
+              "require_code_owner_reviews": true
+            },
+            "min_approvals": 1
+          },
+          {
+            "type": "branch_rule_pull_requests",
+            "expect": {
+              "dismiss_stale_reviews_on_push": true,
+              "require_code_owner_review": true
+            },
+            "min_approvals": 1
+          }
+        ]
+      }
+    },
+    {
+      "type": "composite_rule",
+      "id": "branch_status_checks",
+      "name": "Branch - Status Checks",
+      "description": "Branch or branch protection rule is enabled to require strict status checks",
+      "subrules": {
+        "any_of": [
+          {
+            "type": "branch_protection_status_checks",
+            "expect": {
+              "strict": true
             }
-        },
-        {
-            "type": "composite_rule",
-            "id": "branch_enforce_admins",
-            "name": "Branch - Enforce Rules for Admins",
-            "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins",
-            "subrules": {
-                "all_of": [
-                    {
-                        "type": "branch_protection_enforce_admins"
-                    },
-                    {
-                        "type": "branch_ruleset_bypass_actors",
-                        "description": "There are no bypass actors allowed in branch rules",
-                        "allowed_bypass_actor_ids": []
-                    }
-                ]
+          },
+          {
+            "type": "branch_rule_status_checks",
+            "expect": {
+              "strict_required_status_checks_policy": true
             }
-        },
-        {
-            "type": "composite_rule",
-            "id": "branch_pull_requests",
-            "name": "Branch - Pull Request",
-            "description": "Branch rule or branch protection rule is enabled to require pull requests",
-            "subrules": {
-                "any_of": [
-                    {
-                        "type": "branch_protection_pull_requests",
-                        "expect": {
-                            "dismiss_stale_reviews": true,
-                            "require_code_owner_reviews": true
-                        },
-                        "min_approvals": 1
-                    },
-                    {
-                        "type": "branch_rule_pull_requests",
-                        "expect": {
-                            "dismiss_stale_reviews_on_push": true,
-                            "require_code_owner_review": true
-                        },
-                        "min_approvals": 1
-                    }
-                ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "composite_rule",
+      "id": "branch_build_required",
+      "name": "Branch - Require Builds to Pass",
+      "description": "Branch or branch protection rule is enabled to enforce that the 'build' status check passes",
+      "subrules": {
+        "any_of": [
+          {
+            "type": "branch_protection_status_checks",
+            "checks": {
+              "all_of": [
+                "build"
+              ]
             }
-        },
-        {
-            "type": "composite_rule",
-            "id": "branch_status_checks",
-            "name": "Branch - Status Checks",
-            "description": "Branch or branch protection rule is enabled to require strict status checks",
-            "subrules": {
-                "any_of": [
-                    {
-                        "type": "branch_protection_status_checks",
-                        "expect": {
-                            "strict": true
-                        }
-                    },
-                    {
-                        "type": "branch_rule_status_checks",
-                        "expect": {
-                            "strict_required_status_checks_policy": true
-                        }
-                    }
-                ]
+          },
+          {
+            "type": "branch_rule_status_checks",
+            "checks": {
+              "all_of": [
+                "build"
+              ]
             }
-        },
-        {
-            "type": "composite_rule",
-            "id": "branch_build_required",
-            "name": "Branch - Require Builds to Pass",
-            "description": "Branch or branch protection rule is enabled to enforce that the 'build' status check passes",
-            "subrules": {
-                "any_of": [
-                    {
-                        "type": "branch_protection_status_checks",
-                        "checks": {
-                            "all_of": [
-                                "build"
-                            ]
-                        }
-                    },
-                    {
-                        "type": "branch_rule_status_checks",
-                        "checks": {
-                            "all_of": [
-                                "build"
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "repo_code_scanning"
-        },
-        {
-            "type": "repo_files",
-            "enabled": false,
-            "id": "repo_metadata_files_exist",
-            "name": "Repository - Metadata Files Exist",
-            "description": "Repository has a hypothetical 'metadata.yaml' file and a '.github/CODEOWNERS' file",
-            "files": {
-                "any_of": [
-                    "metadata.yaml"
-                ],
-                "all_of": [
-                    ".github/CODEOWNERS"
-                ]
-            }
-        },
-        {
-            "type": "repo_secret_scanning",
-            "require_push_protection": true
-        },
-        {
-            "type": "repo_security_alerts"
-        }
-    ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "repo_code_scanning"
+    },
+    {
+      "type": "repo_files",
+      "enabled": false,
+      "id": "repo_metadata_files_exist",
+      "name": "Repository - Metadata Files Exist",
+      "description": "Repository has a hypothetical 'metadata.yaml' file and a '.gitlab/CODEOWNERS' file",
+      "files": {
+        "any_of": [
+          "metadata.yaml"
+        ],
+        "all_of": [
+          ".gitlab/CODEOWNERS"
+        ]
+      }
+    },
+    {
+      "type": "repo_secret_scanning",
+      "require_push_protection": true
+    },
+    {
+      "type": "repo_security_alerts"
+    }
+  ]
 }

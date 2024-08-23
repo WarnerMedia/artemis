@@ -3,10 +3,10 @@ from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
 from ..helpers import add_metadata, severity_schema
 
 
-class BranchProtectionCommitSigning:
-    identifier = "branch_protection_commit_signing"
-    name = "Branch Protection - Require Commit Signing"
-    description = "Requires that a branch protection rule is enabled to enforce code signing"
+class BranchProtectionPreventSecretFiles:
+    identifier = "branch_protection_prevent_secret_files"
+    name = "Branch Protection - Prevent Secret Files"
+    description = "Requires that a branch protection rule is enabled to prevent pushing secret files"
 
     config_schema = {
         "type": "object",
@@ -29,10 +29,10 @@ class BranchProtectionCommitSigning:
         except HTTPError as e:
             return add_metadata(
                 False,
-                BranchProtectionCommitSigning,
+                BranchProtectionPreventSecretFiles,
                 config,
                 error_message=str(e),
             )
 
-        passing = branch_rules.get("reject_unsigned_commits", "") is True
-        return add_metadata(passing, BranchProtectionCommitSigning, config)
+        passing = branch_rules.get("prevent_secrets", "") is True
+        return add_metadata(passing, BranchProtectionPreventSecretFiles, config)

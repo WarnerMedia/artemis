@@ -9,100 +9,48 @@ default_config = {
     "version": "1.0.0",
     "rules": [
         {
-            "type": rules.CompositeRule.identifier,
+            "type": rules.BranchProtectionCommitSigning.identifier,
             "id": "branch_commit_signing",
             "name": "Branch - Commit Signing",
-            "description": "Branch rule or branch protection rule is enabled to enforce commit signing",
-            "subrules": {
-                "any_of": [
-                    {"type": rules.BranchProtectionCommitSigning.identifier},
-                    {"type": rules.BranchRuleCommitSigning.identifier},
-                ]
-            },
+            "description": "Branch protection rule is enabled to enforce commit signing",
         },
         {
-            "type": rules.CompositeRule.identifier,
+            "type": rules.BranchProtectionPreventSecretFiles.identifier,
+            "id": "branch_prevent_secret_files",
+            "name": "Branch - Prevent Secret Files",
+            "description": "Branch protection rule is enabled to prevent pushing secret files",
+        },
+        {
+            "type": rules.BranchProtectionEnforceAdmins.identifier,
             "id": "branch_enforce_admins",
             "name": "Branch - Enforce Rules for Admins",
-            "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins",
-            "subrules": {
-                "all_of": [
-                    {
-                        "type": rules.BranchProtectionEnforceAdmins.identifier,
-                    },
-                    {
-                        "type": rules.BranchRulesetBypassActors.identifier,
-                        "description": "There are no bypass actors allowed in branch rules",
-                        "allowed_bypass_actor_ids": [],
-                    },
-                ]
-            },
+            "description": "Branch protection rule is enabled to enforce branch rules for admins",
         },
         {
-            "type": rules.CompositeRule.identifier,
+            "type": rules.BranchProtectionCodeOwnerApproval.identifier,
+            "id": "branch_enforce_codeowner_approval",
+            "name": "Branch - Code Owner Approval",
+            "description": "Branch protection rule is enabled to enforce code owner approvals",
+        },
+        {
+            "type": rules.BranchProtectionRequirePullRequests.identifier,
             "id": "branch_pull_requests",
-            "name": "Branch - Pull Request",
-            "description": "Branch rule or branch protection rule is enabled to require pull requests",
-            "subrules": {
-                "any_of": [
-                    {
-                        "type": rules.BranchProtectionPullRequests.identifier,
-                        "expect": {
-                            "dismiss_stale_reviews": True,
-                            "require_code_owner_reviews": True,
-                        },
-                        "min_approvals": 1,
-                    },
-                    {
-                        "type": rules.BranchRulePullRequests.identifier,
-                        "expect": {
-                            "dismiss_stale_reviews_on_push": True,
-                            "require_code_owner_review": True,
-                        },
-                        "min_approvals": 1,
-                    },
-                ]
-            },
+            "name": "Branch - Require Pull Requests",
+            "description": "Branch protection rule is enabled to require pull requests",
         },
         {
-            "type": rules.CompositeRule.identifier,
-            "id": "branch_status_checks",
-            "name": "Branch - Status Checks",
-            "description": "Branch rule or branch protection rule is enabled to require strict status checks",
-            "subrules": {
-                "any_of": [
-                    {
-                        "type": rules.BranchProtectionStatusChecks.identifier,
-                        "expect": {
-                            "strict": True,
-                        },
-                    },
-                    {
-                        "type": rules.BranchRuleStatusChecks.identifier,
-                        "expect": {
-                            "strict_required_status_checks_policy": True,
-                        },
-                    },
-                ]
+            "type": rules.BranchProtectionRequirePullRequestApprovals.identifier,
+            "id": "branch_pull_requests_approvals",
+            "name": "Branch - Pull Request Approvals",
+            "description": "Branch protection rule is enabled to require certain pull requests approvals",
+            "expect": {
+                "merge_requests_author_approval": True,
+                "reset_approvals_on_push": True,
+                "merge_requests_disable_committers_approval": True,
+                "disable_overriding_approvers_per_merge_request": True,
             },
+            "min_approvals": 1,
         },
-        {
-            "type": rules.RepoActions.identifier,
-            "expect_any_of": [
-                {
-                    "enabled": False,
-                },
-                {
-                    "allowed_actions": "local_only",
-                },
-                {
-                    "allowed_actions": "selected",
-                },
-            ],
-        },
-        {"type": rules.RepoCodeScanning.identifier},
-        {"type": rules.RepoSecretScanning.identifier, "require_push_protection": True},
-        {"type": rules.RepoSecurityAlerts.identifier},
     ],
 }
 

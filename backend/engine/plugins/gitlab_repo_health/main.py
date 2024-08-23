@@ -1,11 +1,12 @@
 import json
+from typing import Optional
 
 from artemislib.logging import Logger
 from engine.plugins.lib import utils
 from engine.plugins.gitlab_repo_health.utilities.config import Config
 from engine.plugins.gitlab_repo_health.utilities.checker import Checker
 from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
-from engine.plugins.gitlab_repo_health.constants import PLUGIN_NAME, DEFAULT_CONFIG
+from engine.plugins.gitlab_repo_health.constants import PLUGIN_NAME
 
 log = Logger(PLUGIN_NAME)
 
@@ -39,6 +40,8 @@ def run_repo_health(args):
 
     owner, repo = destructure_repo(args.engine_vars.get("repo"))
     config = get_config_from_args(args, output, service, owner, repo)
+    if config is None:
+        config = Config.default()
 
     try:
         Config.validate(config)
@@ -82,12 +85,12 @@ def are_results_passing(results):
     return all(map(lambda check: check["pass"], results))
 
 
-def get_config_from_args(args, output, service, owner, repo):
+def get_config_from_args(args, output: dict, service: str, owner: str, repo: str) -> Optional[dict]:
     if args.config:
         return args.config
     else:
-        output["alerts"].append(f"No config found for '{service}/{owner}/{repo}'. Using default config")
-        return DEFAULT_CONFIG
+        output["alerts"].append(f"No config found for '{service}/{owner}/{repo}'.")
+        return None
 
 
 if __name__ == "__main__":

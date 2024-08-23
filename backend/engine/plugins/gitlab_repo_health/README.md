@@ -74,7 +74,7 @@ run through `pipenv` during development.
 
 #### Authentication
 
-`repo-health` can authenticate with either a github token or as a Github App.
+`repo-health` can authenticate with either a gitlab token or as a Github App.
 
 **Either `GITHUB_TOKEN` or both `GITHUB_INSTALLATION_ID` and
 *`GITHUB_INSTALLATION_PRIVATE_KEY` are required.**
@@ -161,7 +161,7 @@ For `--ghconfig`, the value should be of the format
 `RH_GITHUB_CONFIG` environment variable. `--config` or `--ghconfig` will take
 precedence over environment variables.
 
-If `--ghconfig` is used, the github credentials used by `repo-health` must have
+If `--ghconfig` is used, the gitlab credentials used by `repo-health` must have
 sufficient permissions on the repo to read the provided file. The repo we check
 against and the repo we get the config from can be different.
 
@@ -711,7 +711,7 @@ Array of paths. Passes if none of the files exist on the default branch
         "Pipfile"
     ],
     "all_of": [
-        ".github/CODEOWNERS"
+        ".gitlab/CODEOWNERS"
     ],
     "none_of": [
         ".env"

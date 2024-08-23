@@ -41,12 +41,12 @@ class CompositeRule:
     _checker = None
 
     @staticmethod
-    def check(github, owner, repo, branch, config={}):
+    def check(gitlab, owner, repo, branch, config={}):
         if CompositeRule._checker is None:
             # Loads Checker at first run to avoid circular import
-            from github_repo_health.utilities import Checker
+            from gitlab_repo_health.utilities.checker import Checker
 
-            CompositeRule._checker = Checker(github, None)
+            CompositeRule._checker = Checker(gitlab, None)
 
         subrules = config.get("subrules", {})
 

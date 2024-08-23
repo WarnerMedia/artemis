@@ -1,4 +1,3 @@
-import numbers
 from functools import cache
 from urllib.parse import quote
 import requests
@@ -31,34 +30,27 @@ class Gitlab:
             self._headers[get_rev_proxy_secret_header()] = get_rev_proxy_secret()
 
     @cache
-    def are_vulnerability_alerts_enabled(self, owner, repo):
+    def get_approvals(self, owner, repo):
         if self._verbose:
-            print(f'[GITLAB] Calling "check vulnerability alerts" with owner="{owner}", repo="{repo}"')
+            print(f'[GITLAB] Calling "get_approvals" with owner="{owner}" and repo="{repo}"')
 
-        return self._github.get_repo(f"{owner}/{repo}").get_vulnerability_alert()
+        repository = self.get_repository(owner, repo)
 
-    @cache
-    def get_actions_permissions_repository(self, owner, repo):
-        if self._verbose:
-            print(f'[GITLAB] Calling "get_actions_permissions_repository" with owner="{owner}", repo="{repo}"')
-
-        owner_escaped = quote(owner)
-        repo_escaped = quote(repo)
-
-        url = f"{self._url}/repos/{owner_escaped}/{repo_escaped}/actions/permissions"
-
+        id = repository.get("id")
+        # For some reason, this URL fails with the project string, must use id.
+        url = f"{self._url}/projects/{id}/approvals"
         return self._authenticated_get(url).json()
 
     @cache
-    def get_selected_actions_repository(self, owner, repo):
+    def get_approval_rules(self, owner, repo, branch):
         if self._verbose:
-            print(f'[GITLAB] Calling "get_selected_actions_repository" with owner="{owner}", repo="{repo}"')
+            print(f'[GITLAB] Calling "get_approval_rules" with owner="{owner}", repo="{repo}", and branch="{branch}"')
 
-        owner_escaped = quote(owner)
-        repo_escaped = quote(repo)
+        repository = self.get_repository(owner, repo)
 
-        url = f"{self._url}/repos/{owner_escaped}/{repo_escaped}/actions/permissions/selected-actions"
-
+        id = repository.get("id")
+        # For some reason, this URL fails with the project string, must use id.
+        url = f"{self._url}/projects/{id}/approval_rules"
         return self._authenticated_get(url).json()
 
     @cache
@@ -80,44 +72,35 @@ class Gitlab:
         if self._verbose:
             print(f'[GITLAB] Calling "get_branch_rules" with owner="{owner}", repo="{repo}", and branch="{branch}"')
 
-        project_escaped = self._quote(f"{owner}/{repo}")
-        branch_escaped = self._quote(branch)
+        repository = self.get_repository(owner, repo)
 
-        url = f"{self._url}/projects/{project_escaped}/protected_branches/{branch_escaped}"
-
-        return self._authenticated_get(url).json()
-
-    @cache
-    def get_repo_ruleset(self, owner, repo, ruleset_id):
-        if self._verbose:
-            print(
-                f'[GITLAB] Calling "get_repo_ruleset" with owner="{owner}", repo="{repo}", and ruleset_id="{ruleset_id}"'
-            )
-
-        owner_escaped = quote(owner)
-        repo_escaped = quote(repo)
-        ruleset_id_escaped = ruleset_id if isinstance(ruleset_id, numbers.Number) else quote(ruleset_id)
-
-        url = f"{self._url}/repos/{owner_escaped}/{repo_escaped}/rulesets/{ruleset_id_escaped}"
-
+        id = repository.get("id")
+        # For some reason, this URL fails with the project string, must use id.
+        url = f"{self._url}/projects/{id}/push_rule"
         return self._authenticated_get(url).json()
 
     @cache
     def get_repository(self, owner, repo):
         if self._verbose:
             print(f'[GITLAB] Calling "get_repository" with owner="{owner}", repo="{repo}"')
-        project_escaped = quote(f"{owner}/{repo}", safe="")
+        project_escaped = self._quote(f"{owner}/{repo}")
 
         url = f"{self._url}/projects/{project_escaped}"
-        print(url)
         return self._authenticated_get(url).json()
 
     @cache
-    def get_repository_content(self, owner, repo, path):
+    def get_repository_content(self, owner, repo, branch, path):
         if self._verbose:
-            print(f'[GITLAB] Calling "get_repository_content" with owner="{owner}", repo="{repo}", and path="{path}"')
+            print(
+                f'[GITLAB] Calling "get_repository_content" with owner="{owner}", repo="{repo}", branch="{branch}", and path="{path}"'
+            )
 
-        return self._github.get_repo(f"{owner}/{repo}").get_contents(path).raw_data
+        project_escaped = self._quote(f"{owner}/{repo}")
+        path_escaped = self._quote(path)
+        branch_escaped = self._quote(branch)
+
+        url = f"{self._url}/projects/{project_escaped}/repository/files{path_escaped}?ref={branch_escaped}"
+        return self._authenticated_get(url).json()
 
     def get_default_branch(self, owner, repo):
         repository = self.get_repository(owner, repo)
@@ -145,11 +128,9 @@ class Gitlab:
 
     def _authenticated_get(self, url):
         response = requests.get(url, headers=self._headers)
+        response.raise_for_status()
 
-        if response.status_code >= 400:
-            raise Exception(response.status_code, response.json(), response.headers)
-        else:
-            return response
+        return response
 
     def _quote(self, string: str) -> str:
         return quote(string, safe="")

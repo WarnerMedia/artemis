@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from github_repo_health.rules import BranchProtectionStatusChecks
-from github_repo_health.utilities import Github
+from engine.plugins.gitlab_repo_health.rules import BranchProtectionStatusChecks
+from engine.plugins.gitlab_repo_health.utilities.gitlab import Github
 
 OWNER = "owner"
 REPO = "repo"

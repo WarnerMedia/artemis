@@ -2,7 +2,10 @@ import argparse
 import json
 import sys
 
-from github_repo_health.utilities import Checker, Config, ErrorCode, Github, environment
+from gitlab_repo_health.utilities.checker import Checker
+from gitlab_repo_health.utilities.config import Config
+from gitlab_repo_health.utilities.environment import environment
+from gitlab_repo_health.utilities.gitlab import Gitlab
 
 LIST_AVAILABLE_RULES = "--list-available-rules"
 JSON_INDENT = 2
@@ -17,14 +20,14 @@ def main():
     parser = _get_parser()
     args = parser.parse_args()
 
-    github = Github.get_authenticated_client(verbose=args.verbose)
-    config = _get_config(args, github)
-    checker = Checker(github, config)
+    gitlab = Gitlab.get_authenticated_client(verbose=args.verbose)
+    config = _get_config(args, gitlab)
+    checker = Checker(gitlab, config)
 
     owner, repo = _destructure_repo(args.repo)
 
     try:
-        branch = args.branch or github.get_default_branch(owner, repo)
+        branch = args.branch or gitlab.get_default_branch(owner, repo)
 
         results = checker.run(owner, repo, branch)
         full_result = _get_full_result(config, owner, repo, branch, results)
@@ -39,7 +42,7 @@ def main():
 
 def _get_parser():
     parser = argparse.ArgumentParser(
-        description="Checks Github repo health against a baseline defined in a configuration"
+        description="Checks Gitlab repo health against a baseline defined in a configuration"
     )
     parser.add_argument(
         "repo",
@@ -57,7 +60,7 @@ def _get_parser():
     parser.add_argument(
         "--ghconfig",
         type=str,
-        help="Github path to file to use as a config. ex: <owner>/<repo>:<path-to-file>",
+        help="Gitlab path to file to use as a config. ex: <owner>/<repo>:<path-to-file>",
     )
     parser.add_argument("--json", action="store_true", help="print output as a json object")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -70,11 +73,11 @@ def _get_parser():
     return parser
 
 
-def _get_config(args, github):
+def _get_config(args, gitlab):
     if args.config:
         return Config.from_file(args.config, verbose=args.verbose)
     elif args.ghconfig:
-        return Config.from_github(github, args.ghconfig, verbose=args.verbose)
+        return Config.from_gitlab(gitlab, args.ghconfig, verbose=args.verbose)
     elif environment.has_config_file():
         config_file = environment.get_config_file()
 
@@ -82,15 +85,15 @@ def _get_config(args, github):
             print(f'[CONFIG] Found "{environment.RH_CONFIG_FILE_VAR}" in environment. Proceeding with "{config_file}"')
 
         return Config.from_file(config_file, verbose=args.verbose)
-    elif environment.has_github_config():
-        github_config = environment.get_github_config()
+    elif environment.has_gitlab_config():
+        gitlab_config = environment.get_gitlab_config()
 
         if args.verbose:
             print(
-                f'[CONFIG] Found "{environment.RH_GITHUB_CONFIG_VAR}" in environment. Proceeding with "{github_config}"'
+                f'[CONFIG] Found "{environment.RH_GITLAB_CONFIG_VAR}" in environment. Proceeding with "{gitlab_config}"'
             )
 
-        return Config.from_github(github, github_config, verbose=args.verbose)
+        return Config.from_gitlab(gitlab, gitlab_config, verbose=args.verbose)
     else:
         return Config.default(verbose=args.verbose)
 

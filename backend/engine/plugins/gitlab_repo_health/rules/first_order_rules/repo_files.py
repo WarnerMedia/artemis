@@ -1,5 +1,4 @@
-from github import GithubException
-
+from requests import HTTPError
 from ..helpers import add_metadata, array_config_schema, evaluate_array_config, severity_schema
 
 
@@ -29,21 +28,21 @@ class RepoFiles:
     }
 
     @staticmethod
-    def check(github, owner, repo, branch, config):
+    def check(gitlab, owner, repo, branch, config):
         files_config = config.get("files", {})
         try:
-            passing = evaluate_array_config(files_config, lambda path: _file_exists(github, owner, repo, path))
+            passing = evaluate_array_config(files_config, lambda path: _file_exists(gitlab, owner, repo, branch, path))
 
             return add_metadata(passing, RepoFiles, config)
-        except GithubException as e:
-            return add_metadata(False, RepoFiles, config, error_message=e.data.get("message"))
+        except HTTPError as e:
+            return add_metadata(False, RepoFiles, config, error_message=str(e))
 
 
-def _file_exists(github, owner, repo, path):
+def _file_exists(gitlab, owner, repo, branch, path):
     try:
-        contents = github.get_repository_content(owner, repo, path)
-    except GithubException as e:
-        if e.status == 404:
+        contents = gitlab.get_repository_content(owner, repo, branch, path)
+    except HTTPError as e:
+        if e.response.status_code == 404:
             return False
         else:
             raise e

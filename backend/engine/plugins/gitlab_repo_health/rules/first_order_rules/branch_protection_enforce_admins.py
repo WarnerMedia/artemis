@@ -1,5 +1,4 @@
-from github import GithubException
-
+from requests import HTTPError
 from ..helpers import add_metadata, severity_schema
 
 
@@ -22,16 +21,16 @@ class BranchProtectionEnforceAdmins:
     }
 
     @staticmethod
-    def check(github, owner, repo, branch, config={}):
+    def check(gitlab, owner, repo, branch, config={}):
         try:
-            protection_config = github.get_branch_protection(owner, repo, branch)
-        except GithubException as e:
+            protection_config = gitlab.get_branch_protection(owner, repo, branch)
+        except HTTPError as e:
             return add_metadata(
                 False,
                 BranchProtectionEnforceAdmins,
                 config,
-                error_message=e.data.get("message"),
+                error_message=str(e),
             )
 
-        passing = protection_config.get("enforce_admins", {}).get("enabled") is True
+        passing = protection_config.get("allow_force_push", True) is False
         return add_metadata(passing, BranchProtectionEnforceAdmins, config)
