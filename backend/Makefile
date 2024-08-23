@@ -107,10 +107,7 @@ SEARCH_VULNERABILITIES_LAMBDA := ${PREFIX}-search-vulnerabilities-handler
 LICENSE_RETRIEVER_LAMBDA := ${PREFIX}-license-retriever
 SYSTEM_SERVICES_LAMBDA := ${PREFIX}-system-services-handler
 
-# Lambda layers
-ARTEMISLIB_LAMBDA_LAYER := ${PREFIX}-artemislib
-ARTEMISDB_LAMBDA_LAYER := ${PREFIX}-artemisdb
-ARTEMISAPI_LAMBDA_LAYER := ${PREFIX}-artemisapi
+BACKEND_CORE_LAMBDA_LAYER := ${PREFIX}-backend-core
 
 ENGINE_PKG := ${PREFIX}/engine
 ENGINE_TAG := ${ENGINE_PKG}:latest
@@ -171,9 +168,6 @@ API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 # Engine base image
 ENGINE_BASE := 3.9-slim-bullseye
 
-# Django version
-DJANGO_VER = 3.2.23
-
 # Enry Info
 ENRYVER := 1.1.0
 ENRYSHA := 9bab0ea9498fd473263f4fc1efc3c710570422771d2c78c837fb3cdc10ec0d79
@@ -221,9 +215,6 @@ SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/en
 # Detekt
 DETEKT_VER := 1.19.0
 DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
-
-# psycopg2
-PSYCOPG2_VER := 2.9.3
 
 # Lambdas
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
@@ -366,7 +357,7 @@ dist/api/index.html: lambdas/api/spec.yaml
 dist/lambdas/%.zip: $$(shell find lambdas/$$* -type f)
 	@echo "${INFO}Building $*"
 	mkdir -p ${BUILD_DIR}/lambdas/$*
-	${PIP} install lambdas/$* -t ${BUILD_DIR}/lambdas/$* --upgrade --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} --python-version ${LAMBDA_PYTHON_VER}
+	${PIP} install lambdas/$* -t ${BUILD_DIR}/lambdas/$* --upgrade --no-deps --python-version ${LAMBDA_PYTHON_VER}
 	cp lambdas/$*/handlers.py ${BUILD_DIR}/lambdas/$*
 	mkdir -p ${DIST_DIR}/lambdas/$*
 	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip *
@@ -412,40 +403,24 @@ lambdas: dist/lambdas/api/authorizer.zip \
 ###############################################################################
 # Lambda Layers
 ###############################################################################
+dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_SRC}
+	@echo "${INFO} Creating ${BACKEND_CORE_LAMBDA_LAYER} Lambda Layer"
+	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python
 
-dist/lambdas/layers/artemislib.zip: ${SHARED_LIB_SRC}
-	@echo "${INFO}Building $@"
-	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 'boto3~=1.34' 'boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.34' 'pyjwt[crypto]~=2.8' 'requests~=2.31'
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemislib/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} cryptography
-	mkdir -p ${DIST_DIR}/lambdas/layers/artemislib/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/artemislib; zip -r ${DIST_DIR}/lambdas/layers/artemislib.zip *
-	@echo "${OK}"
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISDB}
+	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
+	
+	@echo "${INFO} Adding dependencies to Lambda Layer"
+	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
+	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 
 
-dist/lambdas/layers/artemisdb.zip: ${DB_LIB_SRC}
-	@echo "${INFO}Building $@"
-	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISDB}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} psycopg2-binary==${PSYCOPG2_VER}
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} simplejson
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: django==${DJANGO_VER}
-	mkdir -p ${DIST_DIR}/lambdas/layers/artemisdb/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/artemisdb; zip -r ${DIST_DIR}/lambdas/layers/artemisdb.zip *
-	@echo "${OK}"
-
-dist/lambdas/layers/artemisapi.zip: ${API_LIB_SRC}
-	@echo "${INFO}Building $@"
-	mkdir -p ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi/python
-	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
-	mkdir -p ${DIST_DIR}/lambdas/layers/artemisapi/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/artemisapi; zip -r ${DIST_DIR}/lambdas/layers/artemisapi.zip *
+	mkdir -p ${DIST_DIR}/lambdas/layers/backend_core/python
+	cd ${LAMBDA_LAYERS_BUILD_DIR}/backend_core; zip -r ${DIST_DIR}/lambdas/layers/backend_core.zip *
 	@echo "${OK}"
 
 lambda_layers:  ## Build lambda layers
-lambda_layers: dist/lambdas/layers/artemislib.zip \
-			   dist/lambdas/layers/artemisdb.zip \
-			   dist/lambdas/layers/artemisapi.zip
+lambda_layers: dist/lambdas/layers/backend_core.zip
 .PHONY: lambda_layers
 
 ###############################################################################
@@ -837,11 +812,12 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-scans-task_queue_metrics \
 				upload_lambda_lambdas-scheduled-update_github_org_users \
 				upload_lambda_lambdas-scheduled-scan_scheduler \
-				upload_lambda_lambdas-scheduled-scheduled_scan_handler \
-				upload_lambda_lambdas-layers-artemislib \
-				upload_lambda_lambdas-layers-artemisdb \
-				upload_lambda_lambdas-layers-artemisapi
+				upload_lambda_lambdas-scheduled-scheduled_scan_handler
 .PHONY: upload_lambdas
+
+upload_lambda_layers: ## Upload All Lambda Layers to S3
+upload_lambda_layers: upload_lambda_lambdas-layers-backend_core
+.PHONY: upload_lambda_layers
 
 stage_scripts: dist/engine_scripts.zip  ## Stage scripts in S3
 	@echo "${INFO}Deploying scripts bundle"
@@ -855,7 +831,7 @@ stage_api_docs:  ## Stage API docs in S3
 	@echo "${OK}"
 .PHONY: upload_api_docs
 
-upload: upload_lambdas stage_scripts docker_push  ## Upload all
+upload: upload_lambdas stage_scripts docker_push upload_lambda_layers## Upload all
 .PHONY: upload
 
 ###############################################################################
@@ -871,9 +847,7 @@ move_lambda_bundle_%:
 # This make target is not for use as part of the CI process. It is for when updated bundles need
 # to be in the right spot in S3 for a Terraform-based deployment or redeployment of lambdas.
 move_lambda_bundles:  ## Deploy move all staged lambda bundles into place
-move_lambda_bundles: move_lambda_bundle_artemislib \
-					 move_lambda_bundle_artemisdb \
-					 move_lambda_bundle_artemisapi \
+move_lambda_bundles: move_lambda_bundle_backend_core \
 					 move_lambda_bundle_repo \
 					 move_lambda_bundle_users \
 					 move_lambda_bundle_users_keys \
@@ -1403,41 +1377,17 @@ deploy_license_retriever: move_lambda_bundle_license_retriever
 ###############################################################################
 # Lambda Layer Deployment
 ###############################################################################
-
-deploy_artemislib_layer: move_lambda_bundle_artemislib
-	@echo "${INFO}Deploying ${ARTEMISLIB_LAMBDA_LAYER} layer"
+deploy_backend_core_layer: move_lambda_bundle_backend_core
+	@echo "${INFO}Deploying ${BACKEND_CORE_LAMBDA_LAYER} Lambda Layer"
 	aws lambda publish-layer-version \
-		--layer-name ${ARTEMISLIB_LAMBDA_LAYER} \
+		--layer-name ${BACKEND_CORE_LAMBDA_LAYER} \
 		--region ${REGION} \
-		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/artemislib/v${VERSION}/artemislib.zip \
+		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/backend_core/v${VERSION}/backend_core.zip \
 		--compatible-runtimes python${LAMBDA_PYTHON_VER}
 	@echo "${OK}"
-.PHONY: deploy_artemislib_layer
-
-deploy_artemisdb_layer: move_lambda_bundle_artemisdb
-	@echo "${INFO}Deploying artemisdb lambda layer"
-	aws lambda publish-layer-version \
-		--layer-name ${ARTEMISDB_LAMBDA_LAYER} \
-		--region ${REGION} \
-		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/artemisdb/v${VERSION}/artemisdb.zip \
-		--compatible-runtimes python${LAMBDA_PYTHON_VER}
-	@echo "${OK}"
-.PHONY: deploy_artemisdb_layer
-
-deploy_artemisapi_layer: move_lambda_bundle_artemisapi
-	@echo "${INFO}Deploying artemisapi lambda layer"
-	aws lambda publish-layer-version \
-		--layer-name ${ARTEMISAPI_LAMBDA_LAYER} \
-		--region ${REGION} \
-		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/artemisapi/v${VERSION}/artemisapi.zip \
-		--compatible-runtimes python${LAMBDA_PYTHON_VER}
-	@echo "${OK}"
-.PHONY: deploy_artemisapi_layer
 
 deploy_lambda_layers:  ## Deploy lambda layers
-deploy_lambda_layers: deploy_artemislib_layer \
-					  deploy_artemisdb_layer \
-					  deploy_artemisapi_layer
+deploy_lambda_layers: deploy_backend_core_layer
 .PHONY: deploy_lambda_layers
 
 deploy_lambdas:  ## Deploy all lambda functions
