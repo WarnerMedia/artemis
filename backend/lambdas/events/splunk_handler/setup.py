@@ -18,9 +18,7 @@ setup(
     description="Splunk Handler Lambda",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url=(
-        "https://github.com/warnermedia/artemis/backend/lambdas/events/splunk_handler"
-    ),
+    url=("https://github.com/warnermedia/artemis/backend/lambdas/events/splunk_handler"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[],
