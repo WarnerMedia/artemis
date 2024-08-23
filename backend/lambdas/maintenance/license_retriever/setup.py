@@ -21,10 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/lambdas/maintenance/license_retriever"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=[
-        "requests",
-        "urllib3<2",  # https://github.com/boto/botocore/issues/2926
-    ],
+    install_requires=[],
     tests_require=["pytest"],
     entry_points={"console_scripts": ["artemis_license_retriever=license_retriever.handlers:handler"]},
     classifiers=[
