@@ -15,7 +15,7 @@ cwe = "~=1.6"
 django = "~=3.2"
 graphql-query = "~=1.3"
 joserfc = "~=0.11.1"
-packaging = "==21.3" # Must match version in Makefile.
+packaging = "==21.3"    # Must match version in Makefile.
 psycopg2-binary = "~=2.9"
 PyGithub = "~=2.1"
 pyjwt = "~=2.8"
@@ -26,8 +26,8 @@ sqlparse = "~=0.5"
 [dev-packages]
 aiohttp = "~=3.9"
 autopep8 = "~=2.1"
-cfn-lint = "==0.53.0"
-checkov = "==2.0.1065"
+cfn-lint = "==0.53.0"   # Must match version in Makefile.
+checkov = "==2.0.1065"  # Must match version in Makefile.
 debugpy = "~=1.8.2"
 flake8 = "~=7.0"
 isort = "~=5.12"
