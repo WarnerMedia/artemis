@@ -46,6 +46,7 @@ variable "scrub_details" {
 
 variable "datadog_lambda_variables" {
   description = "Environment variables to configure datadog lambda_layers"
+  type        = map(any)
   default     = {}
 }
 
@@ -56,4 +57,5 @@ variable "datadog_lambda_layers" {
 variable "datadog_enabled" {
   description = "Whether Datadog monitoring should be enabled"
   type        = bool
+  default     = false
 }
