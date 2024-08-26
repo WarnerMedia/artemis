@@ -17,7 +17,7 @@ jobs:
           architecture: "x64"
           cache: pipenv
           cache-dependency-path: orchestrator/Pipfile.lock
-      - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # hashicorp/setup-terraform@v3.1.1
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
