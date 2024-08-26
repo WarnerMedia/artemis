@@ -233,7 +233,7 @@ resource "aws_lambda_function" "ci-tools" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/ci_tools/v${var.ver}/ci_tools.zip"
 
-  layers = concat([
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
     aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_ci_tools_handler)
 
@@ -244,7 +244,7 @@ resource "aws_lambda_function" "ci-tools" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -261,9 +261,16 @@ resource "aws_lambda_function" "ci-tools" {
   }
 
   environment {
-    variables = {
-      S3_BUCKET = var.s3_analyzer_files_id
-    }
+    variables = merge({
+      DATADOG_ENABLED = var.datadog_enabled
+      S3_BUCKET       = var.s3_analyzer_files_id
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-api"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(
@@ -485,7 +492,7 @@ resource "aws_lambda_function" "api-authorizer" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/authorizer/v${var.ver}/authorizer.zip"
 
-  layers = concat([
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
     aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_api_authorizer)
 
@@ -496,7 +503,7 @@ resource "aws_lambda_function" "api-authorizer" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -513,7 +520,8 @@ resource "aws_lambda_function" "api-authorizer" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED                      = var.datadog_enabled
       S3_BUCKET                            = var.s3_analyzer_files_id
       ANALYZER_DJANGO_SECRETS_ARN          = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN                = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
@@ -527,7 +535,13 @@ resource "aws_lambda_function" "api-authorizer" {
       ARTEMIS_MAINTENANCE_MODE_RETRY_AFTER = var.maintenance_mode_retry_after
       ARTEMIS_DEFAULT_SCOPE                = jsonencode(var.default_scope)
       EMAIL_DOMAIN_ALIASES                 = jsonencode(var.email_domain_aliases)
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-api"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(

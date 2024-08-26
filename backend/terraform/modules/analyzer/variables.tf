@@ -326,6 +326,20 @@ variable "service-integrations" {
 ################################################
 # Lambda Customization
 ################################################
+variable "datadog_lambda_variables" {
+  description = "Environment variables to configure datadog lambda_layers"
+  type        = map(any)
+}
+
+variable "datadog_lambda_layers" {
+  description = "Datadog Lambda layers"
+  type        = list(string)
+}
+
+variable "datadog_enabled" {
+  description = "Whether Datadog monitoring should be enabled"
+  type        = bool
+}
 
 variable "extra_lambda_layers_json_report" {
   description = "Extra layers that should be applied to the JSON report lambda"

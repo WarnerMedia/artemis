@@ -233,7 +233,7 @@ resource "aws_lambda_function" "scale-down" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scale_down/v${var.ver}/scale_down.zip"
 
-  layers = var.lambda_layers
+  layers = concat(var.lambda_layers, var.datadog_enabled ? var.datadog_lambda_layers : [])
 
   lifecycle {
     ignore_changes = [
@@ -242,7 +242,7 @@ resource "aws_lambda_function" "scale-down" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 60
@@ -260,11 +260,18 @@ resource "aws_lambda_function" "scale-down" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED             = var.datadog_enabled
       S3_BUCKET                   = var.s3_analyzer_files_id
       ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-engine-task"
+        DD_API_KEY_SECRET_ARN = ""
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(

@@ -236,3 +236,16 @@ variable "lambda_layers" {
 variable "lambda_subnet" {}
 
 variable "lambda_sg" {}
+
+variable "datadog_lambda_variables" {
+  description = "Datadog Environment variables to configure the Datadog-Extension and Datadog-Library"
+  type        = map(string)
+}
+variable "datadog_lambda_layers" {
+  description = "Datadog Lambda Layers"
+  type        = list(string)
+}
+variable "datadog_enabled" {
+  description = "Whether Datadog monitoring should be enabled"
+  type        = bool
+}

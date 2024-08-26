@@ -10,26 +10,31 @@ resource "aws_lambda_function" "secrets-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = var.lambda_bundle_s3_key
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
 
-  layers = [aws_lambda_layer_version.backend_core.arn]
+  role = aws_iam_role.secrets-role.arn
   lifecycle {
     ignore_changes = [
       # Ignore changes to the layers as the CI pipline will deploy newer versions
       layers
     ]
   }
-  role = aws_iam_role.secrets-role.arn
-
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED       = var.datadog_enabled
       APPLICATION           = var.app
       ENVIRONMENT           = var.environment
       ARTEMIS_SCRUB_DETAILS = var.scrub_details
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-data-forwarder"
+        DD_API_KEY_SECRET_ARN = ""
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(

@@ -230,12 +230,12 @@ resource "aws_lambda_function" "repo-scan-loop" {
       REGION                    = var.aws_region
       HEIMDALL_REPO_SCAN_LAMBDA = aws_lambda_function.repo-scan.function_name
       HEIMDALL_INVOKE_COUNT     = 10
+      DATADOG_ENABLED           = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER     = "handlers.handler"
         DD_SERVICE            = "${var.app}"
         DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-        DATADOG_ENABLED       = var.datadog_enabled
       }, var.datadog_lambda_variables)
     : {})
   }

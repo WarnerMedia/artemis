@@ -32,3 +32,16 @@ variable "metadata_events_queue" {}
 variable "metadata_events_enabled" {
   description = "Whether to enable the Metadata Events"
 }
+
+variable "datadog_lambda_variables" {
+  description = "Environment variables to configure datadog lambda_layers"
+}
+
+variable "datadog_lambda_layers" {
+  description = "Datadog Lambda layers"
+}
+variable "datadog_enabled" {
+  description = "Whether Datadog monitoring should be enabled"
+  type        = bool
+}
+

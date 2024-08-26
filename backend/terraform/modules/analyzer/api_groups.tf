@@ -193,7 +193,7 @@ resource "aws_lambda_function" "groups-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups/v${var.ver}/groups.zip"
 
-  layers = concat([
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
     aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_groups_handler)
 
@@ -204,7 +204,7 @@ resource "aws_lambda_function" "groups-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -221,11 +221,18 @@ resource "aws_lambda_function" "groups-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-    }
+      DATADOG_ENABLED                 = var.datadog_enabled
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-api"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(
@@ -242,7 +249,7 @@ resource "aws_lambda_function" "groups-members-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_members/v${var.ver}/groups_members.zip"
 
-  layers = concat([
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
     aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_groups_members_handler)
 
@@ -253,7 +260,7 @@ resource "aws_lambda_function" "groups-members-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -270,11 +277,18 @@ resource "aws_lambda_function" "groups-members-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-    }
+      DATADOG_ENABLED                 = var.datadog_enabled
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-api"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(
@@ -291,7 +305,7 @@ resource "aws_lambda_function" "groups-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
 
-  layers = concat([
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
     aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_groups_keys_handler)
 
@@ -302,7 +316,7 @@ resource "aws_lambda_function" "groups-keys-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -319,11 +333,18 @@ resource "aws_lambda_function" "groups-keys-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-    }
+      DATADOG_ENABLED                 = var.datadog_enabled
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-api"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(
