@@ -36,9 +36,7 @@ module "public_engine_cluster" {
 
   heimdall_scans_cron = var.heimdall_scans_cron
 
-  lambda_layers = concat([
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_engine_scale_down)
+  lambda_layers = concat([aws_lambda_layer_version.backend_core.arn], var.extra_lambda_layers_engine_scale_down)
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
@@ -57,6 +55,9 @@ module "public_engine_cluster" {
   configuration_events_enabled = var.configuration_events_enabled
   vulnerability_events_enabled = var.vulnerability_events_enabled
   metadata_events_enabled      = var.metadata_events_enabled
+  datadog_enabled              = var.datadog_enabled
+  datadog_lambda_variables     = var.datadog_lambda_variables
+  datadog_lambda_layers        = var.datadog_lambda_layers
 }
 
 module "nat_engine_cluster" {
@@ -98,9 +99,7 @@ module "nat_engine_cluster" {
 
   heimdall_scans_cron = var.heimdall_scans_cron
 
-  lambda_layers = concat([
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_engine_scale_down)
+  lambda_layers = concat([aws_lambda_layer_version.backend_core.arn], var.extra_lambda_layers_engine_scale_down)
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
@@ -119,4 +118,7 @@ module "nat_engine_cluster" {
   configuration_events_enabled = var.configuration_events_enabled
   vulnerability_events_enabled = var.vulnerability_events_enabled
   metadata_events_enabled      = var.metadata_events_enabled
+  datadog_enabled              = var.datadog_enabled
+  datadog_lambda_variables     = var.datadog_lambda_variables
+  datadog_lambda_layers        = var.datadog_lambda_layers
 }
