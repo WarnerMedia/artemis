@@ -52,6 +52,8 @@ variable "datadog_lambda_variables" {
 
 variable "datadog_lambda_layers" {
   description = "Datadog Lambda layers"
+  type        = list(string)
+  default     = []
 }
 
 variable "datadog_enabled" {
