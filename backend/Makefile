@@ -307,7 +307,7 @@ endef
 test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy install-plugin-dependencies
 .PHONY: test-deps
 
-unit-test:
+unit-test: test-deps
 	$(call run-pytest,unit tests,-m "not integtest and not end2end")
 .PHONY: unit-test
 
