@@ -47,4 +47,4 @@ def _file_exists(gitlab, owner, repo, branch, path):
         else:
             raise e
 
-    return contents.get("type") == "file"
+    return contents.get("ref") == branch
