@@ -55,9 +55,7 @@ resource "aws_lambda_function" "sqs-metrics" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 60
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ])
+  layers        = var.lambda_layers
   lifecycle {
     ignore_changes = [
       # Ignore changes to the layers as the CI pipline will deploy newer versions
@@ -78,10 +76,9 @@ resource "aws_lambda_function" "sqs-metrics" {
       ENGINE_ASG_PUBLIC       = module.public_engine_cluster.engine-asg.name
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-engine-task"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-engine-task"
+      }, var.datadog_environment_variables)
     : {})
   }
 

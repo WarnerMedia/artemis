@@ -44,14 +44,14 @@ variable "scrub_details" {
   default     = "false"
 }
 
-variable "datadog_lambda_variables" {
+variable "datadog_environment_variables" {
   description = "Environment variables to configure datadog lambda_layers"
   type        = map(any)
   default     = {}
 }
 
-variable "datadog_lambda_layers" {
-  description = "Datadog Lambda layers"
+variable "lambda_layers" {
+  description = "List of Lambda layers for the secrets-handler Lambda"
   type        = list(string)
   default     = []
 }

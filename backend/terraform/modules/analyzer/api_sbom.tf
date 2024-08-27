@@ -199,10 +199,7 @@ resource "aws_lambda_function" "sbom_components" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/sbom_components/v${var.ver}/sbom_components.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_sbom_components_handler)
-
+  layers = var.lambda_layers
   lifecycle {
     ignore_changes = [
       # Ignore changes to the layers as the CI pipline will deploy newer versions
@@ -235,10 +232,9 @@ resource "aws_lambda_function" "sbom_components" {
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 
@@ -256,9 +252,7 @@ resource "aws_lambda_function" "sbom_licenses" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/sbom_licenses/v${var.ver}/sbom_licenses.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_sbom_licenses_handler)
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -292,10 +286,9 @@ resource "aws_lambda_function" "sbom_licenses" {
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 

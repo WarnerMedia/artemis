@@ -172,9 +172,7 @@ resource "aws_lambda_function" "system_allowlist" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/system_allowlist/v${var.ver}/system_allowlist.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_system_allowlist_handler)
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -207,10 +205,9 @@ resource "aws_lambda_function" "system_allowlist" {
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 
@@ -228,9 +225,7 @@ resource "aws_lambda_function" "system_services" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/system_services/v${var.ver}/system_services.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_system_services_handler)
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -268,10 +263,9 @@ resource "aws_lambda_function" "system_services" {
       S3_BUCKET                         = var.s3_analyzer_files_id
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 
@@ -289,9 +283,7 @@ resource "aws_lambda_function" "system_status" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/system_status/v${var.ver}/system_status.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_system_status_handler)
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -327,10 +319,9 @@ resource "aws_lambda_function" "system_status" {
       ARTEMIS_DOMAIN_NAME                  = var.domain_name
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 

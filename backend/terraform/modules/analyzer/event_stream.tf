@@ -12,7 +12,7 @@ resource "aws_lambda_function" "event-dispatch" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
-  layers        = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [aws_lambda_layer_version.backend_core.arn])
+  layers        = var.lambda_layers
   role          = aws_iam_role.event-role.arn
   lifecycle {
     ignore_changes = [
@@ -33,8 +33,7 @@ resource "aws_lambda_function" "event-dispatch" {
       ARTEMIS_LOG_LEVEL                = var.log_level
       DD_LAMBDA_HANDLER                = "handlers.handler"
       DD_SERVICE                       = "${var.app}-data-fowarder"
-      DD_API_KEY_SECRET_ARN            = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.extra_env_vars_event_dispatch, var.datadog_lambda_variables)
+    }, var.extra_env_vars_event_dispatch, var.datadog_environment_variables)
   }
 
   tags = merge(

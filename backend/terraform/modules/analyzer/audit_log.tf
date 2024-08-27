@@ -13,9 +13,16 @@ resource "aws_lambda_function" "audit-event-handler" {
   architectures = [var.lambda_architecture]
   timeout       = 30
 
-  layers = var.datadog_enabled ? var.datadog_lambda_layers : []
+  layers = var.lambda_layers
 
   role = aws_iam_role.audit-event-role.arn
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
 
   environment {
     variables = merge({
@@ -26,10 +33,9 @@ resource "aws_lambda_function" "audit-event-handler" {
       DATADOG_ENABLED       = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-data-forwarder"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-data-forwarder"
+      }, var.datadog_environment_variables)
     : {})
   }
 

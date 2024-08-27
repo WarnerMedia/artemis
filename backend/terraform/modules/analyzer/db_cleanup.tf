@@ -8,9 +8,7 @@ resource "aws_lambda_function" "db-cleanup" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/db_cleanup/v${var.ver}/db_cleanup.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_db_cleanup)
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -45,10 +43,9 @@ resource "aws_lambda_function" "db-cleanup" {
       S3_BUCKET                   = var.s3_analyzer_files_id
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-scheduled-events"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-scheduled-events"
+      }, var.datadog_environment_variables)
     : {})
   }
 

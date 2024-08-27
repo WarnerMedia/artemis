@@ -181,7 +181,7 @@ variable "datadog_enabled" {
   type        = bool
   default     = false
 }
-variable "datadog_lambda_variables" {
+variable "datadog_environment_variables" {
   description = "Environment variables for the Datadog Serverless Agent"
   type        = map(any)
   default = {

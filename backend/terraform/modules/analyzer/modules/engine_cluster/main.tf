@@ -267,10 +267,9 @@ resource "aws_lambda_function" "scale-down" {
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-engine-task"
-        DD_API_KEY_SECRET_ARN = ""
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-engine-task"
+      }, var.datadog_environment_variables)
     : {})
   }
 

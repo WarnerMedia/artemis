@@ -14,6 +14,7 @@ resource "aws_lambda_function" "secrets-handler" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  layers        = var.lambda_layers
 
   role = aws_iam_role.secrets-role.arn
   lifecycle {
@@ -30,10 +31,9 @@ resource "aws_lambda_function" "secrets-handler" {
       ARTEMIS_SCRUB_DETAILS = var.scrub_details
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-data-forwarder"
-        DD_API_KEY_SECRET_ARN = ""
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-data-forwarder"
+      }, var.datadog_environment_variables)
     : {})
   }
 

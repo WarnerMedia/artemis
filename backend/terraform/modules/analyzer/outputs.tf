@@ -21,3 +21,11 @@ output "lambda_subnet" {
 output "lambda_security_group" {
   value = aws_security_group.lambda-sg
 }
+
+output "datadog_secret_arn" {
+  value = aws_secretsmanager_secret.datadog-api-key.arn
+}
+
+output "backend_core_lambda_layer" {
+  value = aws_lambda_layer_version.backend_core.arn
+}

@@ -8,9 +8,7 @@ resource "aws_lambda_function" "scan_scheduler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scan_scheduler/v${var.ver}/scan_scheduler.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_scan_scheduler, var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -35,10 +33,9 @@ resource "aws_lambda_function" "scan_scheduler" {
       ARTEMIS_LOG_LEVEL             = var.log_level
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-scheduled-events"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-scheduled-events"
+      }, var.datadog_environment_variables)
     : {})
   }
 
@@ -64,9 +61,7 @@ resource "aws_lambda_function" "scheduled_scan_handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scheduled_scan_handler/v${var.ver}/scheduled_scan_handler.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_scheduled_scan_handler, var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
 
   lifecycle {
     ignore_changes = [
@@ -91,10 +86,9 @@ resource "aws_lambda_function" "scheduled_scan_handler" {
       ARTEMIS_LOG_LEVEL           = var.log_level
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-scheduled-events"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-scheduled-events"
+      }, var.datadog_environment_variables)
     : {})
   }
 
