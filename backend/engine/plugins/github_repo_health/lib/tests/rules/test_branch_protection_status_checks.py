@@ -102,6 +102,22 @@ class TestBranchProtectionStatusChecks(unittest.TestCase):
             BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config),
         )
 
+    def test_single_required_status_checks(self):
+        mock_github = Github(None)
+        mock_github.get_branch_protection = MagicMock(return_value=NO_STATUS_CHECKS_RESPONSE)
+
+        expected = {
+            "id": BranchProtectionStatusChecks.identifier,
+            "name": BranchProtectionStatusChecks.name,
+            "description": BranchProtectionStatusChecks.description,
+            "pass": False,
+        }
+
+        self.assertEqual(
+            expected,
+            BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, SINGLE_CHECK_NO_OVERRIDE_CONFIG),
+        )
+
     def test_single_expected_check_exists(self):
         mock_github = Github(None)
         mock_response = {"required_status_checks": {"contexts": [EXPECTED_CHECK, "junk_check_nobody_cares_about"]}}

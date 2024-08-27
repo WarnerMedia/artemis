@@ -32,7 +32,6 @@ class BranchProtectionPullRequests:
         approvals_config = None
         try:
             protection_config = gitlab.get_branch_protection(owner, repo, branch)
-
             if requirements:
                 approvals_config = gitlab.get_approvals(owner, repo)
 
@@ -61,10 +60,17 @@ class BranchProtectionPullRequests:
             if approval_rules is None:
                 return add_metadata(False, BranchProtectionPullRequests, config)
 
-            print(approval_rules)
-            # get rules for this branch
-            # make sure at least one rule is higher than the required number
-            min_approvals_met = True
+            min_approvals_met = False
+            branch_rules = []
+            for rule in approval_rules:
+                for each_branch in rule.get("protected_branches"):
+                    if (each_branch.get("name")) == branch:
+                        branch_rules.append(rule)
+
+            for rule in branch_rules:
+                if rule.get("approvals_required", 0) >= min_approvals:
+                    min_approvals_met = True
+                    break
 
         requirements_result = is_subdict_of(requirements, approvals_config)
 

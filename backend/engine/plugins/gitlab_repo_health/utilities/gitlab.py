@@ -42,9 +42,9 @@ class Gitlab:
         return self._authenticated_get(url).json()
 
     @cache
-    def get_approval_rules(self, owner, repo, branch):
+    def get_approval_rules(self, owner, repo):
         if self._verbose:
-            print(f'[GITLAB] Calling "get_approval_rules" with owner="{owner}", repo="{repo}", and branch="{branch}"')
+            print(f'[GITLAB] Calling "get_approval_rules" with owner="{owner}" and repo="{repo}"')
 
         repository = self.get_repository(owner, repo)
 

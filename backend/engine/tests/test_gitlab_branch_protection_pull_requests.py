@@ -10,17 +10,15 @@ BRANCH = "branch"
 SERVICE_URL = "atom-git"
 KEY = "test"
 NUM_APPROVALS = 7
+MOCK_BRANCH_PROTECTION_CONFIG = {
+    "push_access_levels": [{"access_level": 0, "access_level_description": "No one", "user_id": None, "group_id": None}]
+}
 
 
 class TestBranchProtectionPullRequests(unittest.TestCase):
     def test_enforce_pull_requests(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
-        mock_response = {
-            "push_access_levels": [
-                {"access_level": 0, "access_level_description": "No one", "user_id": None, "group_id": None}
-            ]
-        }
-        mock_gitlab.get_branch_protection = MagicMock(return_value=mock_response)
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
 
         expected = {
             "id": BranchProtectionPullRequests.identifier,
@@ -98,8 +96,15 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
 
     def test_config_min_approvals_equal(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
-        mock_response = {"required_pull_request_reviews": {"required_approving_review_count": NUM_APPROVALS}}
-        mock_gitlab.get_approvals = MagicMock(return_value=mock_response)
+
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
+        mock_approval_rules_response = [
+            {
+                "approvals_required": NUM_APPROVALS,
+                "protected_branches": [{"name": BRANCH}],
+            }
+        ]
+        mock_gitlab.get_approval_rules = MagicMock(return_value=mock_approval_rules_response)
 
         config = {"min_approvals": NUM_APPROVALS}
 
@@ -117,8 +122,14 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
 
     def test_config_min_approvals_less_than(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
-        mock_response = {"required_pull_request_reviews": {"required_approving_review_count": NUM_APPROVALS}}
-        mock_gitlab.get_approvals = MagicMock(return_value=mock_response)
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
+        mock_response = [
+            {
+                "approvals_required": NUM_APPROVALS,
+                "protected_branches": [{"name": BRANCH}],
+            }
+        ]
+        mock_gitlab.get_approval_rules = MagicMock(return_value=mock_response)
 
         config = {"min_approvals": NUM_APPROVALS + 1}
 
@@ -136,8 +147,14 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
 
     def test_config_min_approvals_greater_than(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
-        mock_response = {"required_pull_request_reviews": {"required_approving_review_count": NUM_APPROVALS}}
-        mock_gitlab.get_approvals = MagicMock(return_value=mock_response)
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
+        mock_response = [
+            {
+                "approvals_required": NUM_APPROVALS,
+                "protected_branches": [{"name": BRANCH}],
+            }
+        ]
+        mock_gitlab.get_approval_rules = MagicMock(return_value=mock_response)
 
         config = {"min_approvals": NUM_APPROVALS - 1}
 
@@ -155,7 +172,8 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
 
     def test_config_expect_field_exists_and_is_equal(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
-        mock_response = {"required_pull_request_reviews": {"exists": "this-should-be-the-same"}}
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
+        mock_response = {"exists": "this-should-be-the-same"}
         mock_gitlab.get_approvals = MagicMock(return_value=mock_response)
 
         config = {"expect": {"exists": "this-should-be-the-same"}}
@@ -175,6 +193,7 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
     def test_config_expect_field_exists_but_is_not_equal(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
         mock_response = {"required_pull_request_reviews": {"exists": "this-is-not-the-same"}}
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
         mock_gitlab.get_approvals = MagicMock(return_value=mock_response)
 
         config = {"expect": {"exists": "this-is-different"}}
@@ -193,8 +212,8 @@ class TestBranchProtectionPullRequests(unittest.TestCase):
 
     def test_config_expect_field_does_not_exist(self):
         mock_gitlab = Gitlab(KEY, SERVICE_URL)
-        mock_response = {"required_pull_request_reviews": {"exists": True}}
-        mock_gitlab.get_approvals = MagicMock(return_value=mock_response)
+        mock_gitlab.get_branch_protection = MagicMock(return_value=MOCK_BRANCH_PROTECTION_CONFIG)
+        mock_gitlab.get_approvals = MagicMock(return_value={})
 
         config = {"expect": {"not-exists": True}}
 
