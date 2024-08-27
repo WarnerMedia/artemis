@@ -34,5 +34,5 @@ class BranchProtectionCommitSigning:
                 error_message=str(e),
             )
 
-        passing = branch_rules.get("reject_unsigned_commits", "") is True
+        passing = branch_rules.get("reject_unsigned_commits", False) is True
         return add_metadata(passing, BranchProtectionCommitSigning, config)

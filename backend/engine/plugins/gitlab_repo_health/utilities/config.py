@@ -33,16 +33,10 @@ default_config = {
             "description": "Branch protection rule is enabled to enforce code owner approvals",
         },
         {
-            "type": rules.BranchProtectionRequirePullRequests.identifier,
+            "type": rules.BranchProtectionPullRequests.identifier,
             "id": "branch_pull_requests",
-            "name": "Branch - Require Pull Requests",
+            "name": "Branch - Pull Requests",
             "description": "Branch protection rule is enabled to require pull requests",
-        },
-        {
-            "type": rules.BranchProtectionRequirePullRequestApprovals.identifier,
-            "id": "branch_pull_requests_approvals",
-            "name": "Branch - Pull Request Approvals",
-            "description": "Branch protection rule is enabled to require certain pull requests approvals",
             "expect": {
                 "merge_requests_author_approval": True,
                 "reset_approvals_on_push": True,

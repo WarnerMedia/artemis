@@ -32,5 +32,5 @@ class BranchProtectionCodeOwnerApproval:
                 error_message=str(e),
             )
 
-        passing = protection_config.get("allow_force_push", True) is False
+        passing = protection_config.get("code_owner_approval_required", False) is True
         return add_metadata(passing, BranchProtectionCodeOwnerApproval, config)
