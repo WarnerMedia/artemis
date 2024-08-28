@@ -233,14 +233,9 @@ resource "aws_lambda_function" "scale-down" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scale_down/v${var.ver}/scale_down.zip"
 
-  layers = concat(var.lambda_layers, var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -267,10 +262,9 @@ resource "aws_lambda_function" "scale-down" {
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-engine-task"
-        DD_API_KEY_SECRET_ARN = ""
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-engine-task"
+      }, var.datadog_environment_variables)
     : {})
   }
 
