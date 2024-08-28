@@ -9,6 +9,7 @@ from engine.plugins.gitlab_repo_health.utilities.environment import (
     get_rev_proxy_secret_header,
     has_rev_proxy_secret_header,
     get_rev_proxy_secret,
+    APPLICATION,
 )
 
 
@@ -122,7 +123,7 @@ class Gitlab:
     @staticmethod
     def get_client_from_config(token_location: str, service_url: str, verbose: bool = True):
         aws = AWSConnect()
-        auth_config = aws.get_secret(token_location)
+        auth_config = aws.get_secret(f"{APPLICATION}/{token_location}")
 
         return Gitlab(auth_config.get("key"), service_url, verbose)
 
