@@ -122,6 +122,10 @@ resource "aws_lambda_layer_version" "backend_core" {
   compatible_runtimes = [var.lambda_runtime]
 }
 
+data "aws_lambda_layer_version" "backend_core_latest" {
+  layer_name = "${var.app}-backend-core"
+}
+
 ###############################################################################
 # Lambdas
 ###############################################################################

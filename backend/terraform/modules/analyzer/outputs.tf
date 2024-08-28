@@ -27,5 +27,6 @@ output "datadog_secret_arn" {
 }
 
 output "backend_core_lambda_layer" {
-  value = aws_lambda_layer_version.backend_core.arn
+  value       = data.aws_lambda_layer_version.backend_core_latest.arn
+  description = "The ARN of the latest version of the Backend Core Lambda Layer"
 }

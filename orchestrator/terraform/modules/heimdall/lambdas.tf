@@ -22,9 +22,7 @@ resource "aws_lambda_function" "org-queue" {
 
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
-  layers = concat([
-    aws_lambda_layer_version.heimdall_core.arn
-  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
 
   environment {
     variables = merge({
@@ -82,9 +80,7 @@ resource "aws_lambda_function" "repo-queue" {
 
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
-  layers = concat([
-    aws_lambda_layer_version.heimdall_core.arn,
-  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = lambda_layers
   environment {
     variables = merge({
       APPLICATION                       = var.app
@@ -141,9 +137,7 @@ resource "aws_lambda_function" "repo-scan" {
 
   role = aws_iam_role.lambda-assume-role.arn
 
-  layers = concat([
-    aws_lambda_layer_version.heimdall_core.arn
-  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
   environment {
     variables = merge({
       APPLICATION            = var.app
@@ -190,9 +184,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
 
   role = aws_iam_role.lambda-assume-role.arn
 
-  layers = concat([
-    aws_lambda_layer_version.heimdall_core.arn
-  ], var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
 
   environment {
     variables = merge({
@@ -218,11 +210,19 @@ resource "aws_lambda_function" "repo-scan-loop" {
   )
 }
 
+###############################################################################
+# Lambda Layers
+###############################################################################
+
 resource "aws_lambda_layer_version" "heimdall_core" {
   layer_name          = "${var.app}-core"
   s3_bucket           = aws_s3_bucket.heimdall_files.id
   s3_key              = "lambdas/layers/heimdall_core/v${var.ver}/heimdall_core.zip"
   compatible_runtimes = [var.lambda_runtime]
+}
+
+data "aws_lambda_layer_version" "heimdall_core" {
+  layer_name = "${var.app}-core"
 }
 
 ###############################################################################
