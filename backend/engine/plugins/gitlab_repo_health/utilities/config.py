@@ -38,7 +38,7 @@ default_config = {
             "name": "Branch - Pull Requests",
             "description": "Branch protection rule is enabled to require pull requests",
             "expect": {
-                "merge_requests_author_approval": True,
+                "merge_requests_author_approval": False,
                 "reset_approvals_on_push": True,
                 "merge_requests_disable_committers_approval": True,
                 "disable_overriding_approvers_per_merge_request": True,
