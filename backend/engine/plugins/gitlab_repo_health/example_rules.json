@@ -3,115 +3,60 @@
   "version": "1.0.0",
   "rules": [
     {
+      "type": "branch_protection_codeowner_approval",
+      "id": "branch_commit_signing",
+      "name": "Branch - Enforce Codeowner Approval",
+      "severity": "medium",
+      "description": "Requires that branch protection rule, \"Code owner approval\" is disabled. This enforces Codeowners to approve Merge Requests"
+    },
+    {
       "type": "branch_protection_commit_signing",
       "id": "branch_commit_signing",
       "name": "Branch - Commit Signing",
-      "description": "Branch rule or branch protection rule is enabled to enforce commit signing"
+      "severity": "medium",
+      "description": "Branch protection rule is enabled to enforce commit signing"
     },
     {
       "type": "branch_protection_enforce_admins",
       "id": "branch_enforce_admins",
       "name": "Branch - Enforce Rules for Admins",
-      "description": "Branch rule or branch protection rule is enabled to enforce branch rules for admins"
+      "severity": "critical",
+      "description": "Branch protection rule is enabled to enforce branch rules for admins"
     },
     {
-      "type": "composite_rule",
+      "type": "branch_protection_prevent_secret_files",
+      "id": "branch_prevent_secret_files",
+      "name": "Branch - Prevent Secret Files",
+      "severity": "critical",
+      "description": "Requires that a branch protection rule is enabled to prevent pushing secret files"
+    },
+    {
+      "type": "branch_protection_pull_requests",
       "id": "branch_pull_requests",
       "name": "Branch - Pull Request",
-      "description": "Branch rule or branch protection rule is enabled to require pull requests",
-      "subrules": {
-        "any_of": [
-          {
-            "type": "branch_protection_pull_requests",
-            "expect": {
-              "dismiss_stale_reviews": true,
-              "require_code_owner_reviews": true
-            },
-            "min_approvals": 1
-          },
-          {
-            "type": "branch_rule_pull_requests",
-            "expect": {
-              "dismiss_stale_reviews_on_push": true,
-              "require_code_owner_review": true
-            },
-            "min_approvals": 1
-          }
-        ]
-      }
-    },
-    {
-      "type": "composite_rule",
-      "id": "branch_status_checks",
-      "name": "Branch - Status Checks",
-      "description": "Branch or branch protection rule is enabled to require strict status checks",
-      "subrules": {
-        "any_of": [
-          {
-            "type": "branch_protection_status_checks",
-            "expect": {
-              "strict": true
-            }
-          },
-          {
-            "type": "branch_rule_status_checks",
-            "expect": {
-              "strict_required_status_checks_policy": true
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "composite_rule",
-      "id": "branch_build_required",
-      "name": "Branch - Require Builds to Pass",
-      "description": "Branch or branch protection rule is enabled to enforce that the 'build' status check passes",
-      "subrules": {
-        "any_of": [
-          {
-            "type": "branch_protection_status_checks",
-            "checks": {
-              "all_of": [
-                "build"
-              ]
-            }
-          },
-          {
-            "type": "branch_rule_status_checks",
-            "checks": {
-              "all_of": [
-                "build"
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "repo_code_scanning"
+      "description": "Branch protection rule is enabled to require pull requests",
+      "severity": "critical",
+      "expect": {
+        "merge_requests_author_approval": false,
+        "reset_approvals_on_push": true,
+        "merge_requests_disable_committers_approval": true,
+        "disable_overriding_approvers_per_merge_request": true
+      },
+      "min_approvals": 1
     },
     {
       "type": "repo_files",
-      "enabled": false,
-      "id": "repo_metadata_files_exist",
-      "name": "Repository - Metadata Files Exist",
-      "description": "Repository has a hypothetical 'metadata.yaml' file and a '.gitlab/CODEOWNERS' file",
+      "id": "gitlab_repo_codeowners_file",
+      "name": "Repository - Require Codeowners File",
+      "description": "Repository has a \"CODEOWNERS\" file",
+      "severity": "negligible",
       "files": {
         "any_of": [
-          "metadata.yaml"
-        ],
-        "all_of": [
-          ".gitlab/CODEOWNERS"
+          ".gitlab/CODEOWNERS",
+          "CODEOWNERS",
+          "docs/CODEOWNERS"
         ]
       }
-    },
-    {
-      "type": "repo_secret_scanning",
-      "require_push_protection": true
-    },
-    {
-      "type": "repo_security_alerts"
     }
   ]
 }

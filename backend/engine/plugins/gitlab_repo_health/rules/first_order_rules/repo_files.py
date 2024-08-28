@@ -1,4 +1,6 @@
 from requests import HTTPError
+
+from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
 from ..helpers import add_metadata, array_config_schema, evaluate_array_config, severity_schema
 
 
@@ -28,7 +30,7 @@ class RepoFiles:
     }
 
     @staticmethod
-    def check(gitlab, owner, repo, branch, config):
+    def check(gitlab: Gitlab, owner: str, repo: str, branch: str, config: dict):
         files_config = config.get("files", {})
         try:
             passing = evaluate_array_config(files_config, lambda path: _file_exists(gitlab, owner, repo, branch, path))
@@ -38,7 +40,7 @@ class RepoFiles:
             return add_metadata(False, RepoFiles, config, error_message=str(e))
 
 
-def _file_exists(gitlab, owner, repo, branch, path):
+def _file_exists(gitlab: Gitlab, owner: str, repo: str, branch: str, path: str) -> bool:
     try:
         contents = gitlab.get_repository_content(owner, repo, branch, path)
     except HTTPError as e:

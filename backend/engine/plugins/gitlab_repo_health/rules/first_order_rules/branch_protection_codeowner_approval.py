@@ -5,7 +5,7 @@ from ..helpers import add_metadata, severity_schema
 class BranchProtectionCodeOwnerApproval:
     identifier = "branch_protection_codeowner_approval"
     name = "Branch Protection - Enforce Codeowner Approval"
-    description = 'Requires that branch protection rule, "Code owner approval" is disabled. This enforces Codeowners to approve Merge Requests.'
+    description = 'Requires that branch protection rule, "Code owner approval" is enabled. This enforces Codeowners to approve Merge Requests.'
 
     config_schema = {
         "type": "object",

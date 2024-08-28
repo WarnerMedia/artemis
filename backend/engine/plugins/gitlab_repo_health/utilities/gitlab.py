@@ -17,7 +17,7 @@ class Gitlab:
     Wrapper class for Gitlab so that we can cache responses and abstract away API calls
     """
 
-    def __init__(self, key, service_url, verbose=True):
+    def __init__(self, key: str, service_url: str, verbose: bool = True):
         self._verbose = verbose
         self._url = f"https://{service_url}/api/v4"
         self._key = key
@@ -25,12 +25,12 @@ class Gitlab:
         if (
             has_rev_proxy_domain_substring()
             and has_rev_proxy_secret_header()
-            and get_rev_proxy_domain_substring() in service_url
+            and get_rev_proxy_domain_substring() in service_url  # type: ignore
         ):
             self._headers[get_rev_proxy_secret_header()] = get_rev_proxy_secret()
 
     @cache
-    def get_approvals(self, owner, repo):
+    def get_approvals(self, owner: str, repo: str):
         if self._verbose:
             print(f'[GITLAB] Calling "get_approvals" with owner="{owner}" and repo="{repo}"')
 
@@ -42,7 +42,7 @@ class Gitlab:
         return self._authenticated_get(url).json()
 
     @cache
-    def get_approval_rules(self, owner, repo):
+    def get_approval_rules(self, owner: str, repo: str):
         if self._verbose:
             print(f'[GITLAB] Calling "get_approval_rules" with owner="{owner}" and repo="{repo}"')
 
@@ -54,7 +54,7 @@ class Gitlab:
         return self._authenticated_get(url).json()
 
     @cache
-    def get_branch_protection(self, owner, repo, branch):
+    def get_branch_protection(self, owner: str, repo: str, branch: str):
         if self._verbose:
             print(
                 f'[GITLAB] Calling "get_branch_protection" with owner="{owner}", repo="{repo}", and branch="{branch}"'
@@ -68,7 +68,7 @@ class Gitlab:
         return self._authenticated_get(url).json()
 
     @cache
-    def get_branch_rules(self, owner, repo, branch):
+    def get_branch_rules(self, owner: str, repo: str, branch: str):
         if self._verbose:
             print(f'[GITLAB] Calling "get_branch_rules" with owner="{owner}", repo="{repo}", and branch="{branch}"')
 
@@ -80,7 +80,7 @@ class Gitlab:
         return self._authenticated_get(url).json()
 
     @cache
-    def get_repository(self, owner, repo):
+    def get_repository(self, owner: str, repo: str):
         if self._verbose:
             print(f'[GITLAB] Calling "get_repository" with owner="{owner}", repo="{repo}"')
         project_escaped = self._quote(f"{owner}/{repo}")
@@ -89,7 +89,7 @@ class Gitlab:
         return self._authenticated_get(url).json()
 
     @cache
-    def get_repository_content(self, owner, repo, branch, path):
+    def get_repository_content(self, owner: str, repo: str, branch: str, path: str):
         if self._verbose:
             print(
                 f'[GITLAB] Calling "get_repository_content" with owner="{owner}", repo="{repo}", branch="{branch}", and path="{path}"'
@@ -99,15 +99,16 @@ class Gitlab:
         path_escaped = self._quote(path)
         branch_escaped = self._quote(branch)
 
-        url = f"{self._url}/projects/{project_escaped}/repository/files{path_escaped}?ref={branch_escaped}"
+        url = f"{self._url}/projects/{project_escaped}/repository/files/{path_escaped}?ref={branch_escaped}"
+        print(url)
         return self._authenticated_get(url).json()
 
-    def get_default_branch(self, owner, repo):
+    def get_default_branch(self, owner: str, repo: str):
         repository = self.get_repository(owner, repo)
 
         return repository.get("default_branch")
 
-    def get_branch_hash(self, owner, repo, branch):
+    def get_branch_hash(self, owner: str, repo: str, branch: str):
         if self._verbose:
             print(f'[GITLAB] Calling "get_branch_hash" with owner="{owner}", repo="{repo}", branch="{branch}"')
 
@@ -116,17 +117,17 @@ class Gitlab:
 
         url = f"{self._url}/projects/{project_escaped}/repository/branches/{branch_escaped}"
 
-        branch = self._authenticated_get(url).json()
-        return branch.get("commit").get("id")
+        branch_hash = self._authenticated_get(url).json()
+        return branch_hash.get("commit").get("id")
 
     @staticmethod
-    def get_client_from_config(token_location, service_url, verbose=True):
+    def get_client_from_config(token_location: str, service_url: str, verbose: bool = True):
         aws = AWSConnect()
         auth_config = aws.get_secret(token_location)
 
         return Gitlab(auth_config.get("key"), service_url, verbose)
 
-    def _authenticated_get(self, url):
+    def _authenticated_get(self, url: str) -> requests.Response:
         response = requests.get(url, headers=self._headers)
         response.raise_for_status()
 

@@ -3,6 +3,25 @@ from artemislib.aws import AWS_DEFAULT_REGION
 
 APPLICATION = os.environ.get("APPLICATION", "artemis")
 
+RH_CONFIG_FILE_VAR = "RH_CONFIG_FILE"
+RH_GITLAB_CONFIG_VAR = "RH_GITLAB_CONFIG"
+
+
+def get_config_file():
+    return os.environ.get(RH_CONFIG_FILE_VAR)
+
+
+def has_config_file():
+    return get_config_file() is not None
+
+
+def get_gitlab_config():
+    return os.environ.get(RH_GITLAB_CONFIG_VAR)
+
+
+def has_gitlab_config():
+    return get_gitlab_config() is not None
+
 
 def get_rev_proxy_domain_substring():
     return os.environ.get("REV_PROXY_DOMAIN_SUBSTRING")

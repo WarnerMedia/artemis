@@ -2,10 +2,11 @@ import argparse
 import json
 import sys
 
-from gitlab_repo_health.utilities.checker import Checker
-from gitlab_repo_health.utilities.config import Config
-from gitlab_repo_health.utilities.environment import environment
-from gitlab_repo_health.utilities.gitlab import Gitlab
+from engine.plugins.gitlab_repo_health.utilities.checker import Checker
+from engine.plugins.gitlab_repo_health.utilities.config import Config
+from engine.plugins.gitlab_repo_health.utilities import environment
+from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
+from engine.plugins.gitlab_repo_health.utilities.errors import ErrorCode
 
 LIST_AVAILABLE_RULES = "--list-available-rules"
 JSON_INDENT = 2
@@ -20,7 +21,7 @@ def main():
     parser = _get_parser()
     args = parser.parse_args()
 
-    gitlab = Gitlab.get_authenticated_client(verbose=args.verbose)
+    gitlab = Gitlab.get_client_from_config(args.secret_token_location, args.service, verbose=args.verbose)
     config = _get_config(args, gitlab)
     checker = Checker(gitlab, config)
 
@@ -44,11 +45,17 @@ def _get_parser():
     parser = argparse.ArgumentParser(
         description="Checks Gitlab repo health against a baseline defined in a configuration"
     )
+    parser.add_argument("service", type=str, help="the domain of the Gitlab instance to run on. ex: git.gitlab.com")
     parser.add_argument(
         "repo",
-        metavar="OWNER/REPO",
+        metavar="SERVICE/OWNER/REPO",
         type=str,
         help="the repo to run on. ex: <owner>/<repo>",
+    )
+    parser.add_argument(
+        "secret_token_location",
+        type=str,
+        help="the location of the token in secrets manager. ex: artemis/gitlab-api-key",
     )
     parser.add_argument(
         "-b",
@@ -84,7 +91,7 @@ def _get_config(args, gitlab):
         if args.verbose:
             print(f'[CONFIG] Found "{environment.RH_CONFIG_FILE_VAR}" in environment. Proceeding with "{config_file}"')
 
-        return Config.from_file(config_file, verbose=args.verbose)
+        return Config.from_file(config_file, verbose=args.verbose)  # type:ignore
     elif environment.has_gitlab_config():
         gitlab_config = environment.get_gitlab_config()
 
@@ -93,7 +100,7 @@ def _get_config(args, gitlab):
                 f'[CONFIG] Found "{environment.RH_GITLAB_CONFIG_VAR}" in environment. Proceeding with "{gitlab_config}"'
             )
 
-        return Config.from_gitlab(gitlab, gitlab_config, verbose=args.verbose)
+        return Config.from_gitlab(gitlab, gitlab_config, verbose=args.verbose)  # type:ignore
     else:
         return Config.default(verbose=args.verbose)
 
@@ -135,7 +142,7 @@ def _pretty_print(full_result, verbose=False):
         print(f"Branch:          {branch}")
         print(f"Ruleset:         {ruleset}")
         print(f"Ruleset Version: {ruleset_version}")
-        print(f"Results:")
+        print("Results:")
 
     for check in full_result.get("results"):
         passing = check.get("pass")

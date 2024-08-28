@@ -1,6 +1,7 @@
 import base64
 import json
 
+from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
 from engine.plugins.gitlab_repo_health import rules
 from jsonschema import exceptions, validate
 
@@ -51,7 +52,7 @@ default_config = {
 
 class Config:
     @staticmethod
-    def default(verbose=False):
+    def default(verbose: bool = False):
         if verbose:
             print("[CONFIG] Getting default config")
 
@@ -63,7 +64,7 @@ class Config:
         return default_config
 
     @staticmethod
-    def from_file(path, verbose=False):
+    def from_file(path: str, verbose: bool = False):
         if verbose:
             print(f'[CONFIG] Getting config from file, "{path}"')
 
@@ -78,13 +79,13 @@ class Config:
             return config
 
     @staticmethod
-    def from_gitlab(gitlab, repo_and_path, verbose=False):
+    def from_gitlab(gitlab: Gitlab, repo_and_path: str, verbose: bool = False):
         owner, repo, path = _destructure_gitlab_file(repo_and_path)
 
         if verbose:
             print(f'[CONFIG] Getting config from Gitlab repo "{owner}/{repo}", file "{path}"')
-
-        contents = gitlab.get_repository_content(owner, repo, path)
+        branch = gitlab.get_default_branch(owner, repo)
+        contents = gitlab.get_repository_content(owner, repo, branch, path)
 
         err_message = contents.get("message")
         if err_message:
@@ -111,7 +112,7 @@ class Config:
             raise Exception(f'Failed to get Gitlab config, "{repo_and_path}" - Not a file')
 
     @staticmethod
-    def validate(config):
+    def validate(config: dict):
         if type(config) is not dict:
             raise Exception("Config failed validation. Expected object")
 
@@ -144,7 +145,7 @@ class Config:
                     raise Exception(f'Config failed validation for rule, "{rule_type}"') from err
 
 
-def _destructure_gitlab_file(repo_and_path):
+def _destructure_gitlab_file(repo_and_path: str):
     try:
         owner_and_repo, path = repo_and_path.split(":", 1)
 
