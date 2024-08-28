@@ -1134,6 +1134,11 @@ deploy_task_queue_metrics: move_lambda_bundle_task_queue_metrics
 		--region ${REGION} \
 		--s3-bucket ${S3_BUCKET} \
 		--s3-key lambdas/task_queue_metrics/v${VERSION}/task_queue_metrics.zip
+	@echo "${INFO}Waiting for ${TASK_QUEUE_METRICS_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${TASK_QUEUE_METRICS_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${TASK_QUEUE_METRICS_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${TASK_QUEUE_METRICS_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_task_queue_metrics
 
@@ -1171,6 +1176,11 @@ deploy_callback: move_lambda_bundle_callback
 		--region ${REGION} \
 		--s3-bucket ${S3_BUCKET} \
 		--s3-key lambdas/callback/v${VERSION}/callback.zip
+	@echo "${INFO}Waiting for ${CALLBACK_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${CALLBACK_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${CALLBACK_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${CALLBACK_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_callback
 
@@ -1181,6 +1191,11 @@ deploy_event_dispatch: move_lambda_bundle_event_dispatch
 		--region ${REGION} \
 		--s3-bucket ${S3_BUCKET} \
 		--s3-key lambdas/event_dispatch/v${VERSION}/event_dispatch.zip
+	@echo "${INFO}Waiting for ${EVENT_DISPATCH_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${EVENT_DISPATCH_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${EVENT_DISPATCH_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${EVENT_DISPATCH_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_event_dispatch
 
@@ -1191,6 +1206,11 @@ deploy_splunk_handler: move_lambda_bundle_splunk_handler
 		--region ${REGION} \
 		--s3-bucket ${S3_BUCKET} \
 		--s3-key lambdas/splunk_handler/v${VERSION}/splunk_handler.zip
+	@echo "${INFO}Waiting for ${AUDIT_EVENT_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${AUDIT_EVENT_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${AUDIT_EVENT_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${AUDIT_EVENT_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_splunk_handler
 
