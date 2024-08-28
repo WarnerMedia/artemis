@@ -10,20 +10,33 @@ resource "aws_lambda_function" "metadata-events-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/metadata_events_handler/v${var.ver}/metadata_events_handler.zip"
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
 
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
   role = aws_iam_role.metadata-events-role.arn
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED       = var.datadog_enabled
       APPLICATION           = var.app
       ENVIRONMENT           = var.environment
       ARTEMIS_SPLUNK_KEY    = aws_secretsmanager_secret.metadata-events-secret.name
       ARTEMIS_SCRUB_NONPROD = "false"
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-data-forwarder"
+        DD_API_KEY_SECRET_ARN = ""
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(

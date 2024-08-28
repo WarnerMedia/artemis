@@ -51,22 +51,38 @@ resource "aws_lambda_function" "sqs-metrics" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/task_queue_metrics/v${var.ver}/task_queue_metrics.zip"
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 60
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
+  ])
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to the layers as the CI pipline will deploy newer versions
+      layers
+    ]
+  }
 
   role = aws_iam_role.metrics-assume-role.arn
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED         = var.datadog_enabled
       TASK_QUEUE              = module.public_engine_cluster.task_queue.id
       PRIORITY_TASK_QUEUE     = module.public_engine_cluster.priority_task_queue.id
       TASK_QUEUE_NAT          = module.nat_engine_cluster.task_queue.id
       PRIORITY_TASK_QUEUE_NAT = module.nat_engine_cluster.priority_task_queue.id
       ENGINE_ASG_NAT          = module.nat_engine_cluster.engine-asg.name
       ENGINE_ASG_PUBLIC       = module.public_engine_cluster.engine-asg.name
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-engine-task"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(

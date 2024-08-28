@@ -21,10 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/backend/lambdas/api/authorizer"),
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    install_requires=[
-        "joserfc~=0.11.1",
-        "requests~=2.31",
-    ],
+    install_requires=[],
     tests_require=["pytest~=8.2"],
     classifiers=[
         "Programming Language :: Python :: 3.9",

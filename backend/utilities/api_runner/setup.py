@@ -1,10 +1,5 @@
 from setuptools import find_packages, setup
-
-# Get the version from the package. This allows the version to be
-# available inside the package for use at runtime.
-__version__ = None  # Will get set in next line
-# pylint: disable=exec-used
-exec(open("api_runner/__version__.py").read())
+from api_runner.__version__ import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

@@ -8,9 +8,8 @@ resource "aws_lambda_function" "update_github_org_users" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/update_github_org_users/v${var.ver}/update_github_org_users.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_update_github_org_users)
 
   lifecycle {
@@ -20,7 +19,7 @@ resource "aws_lambda_function" "update_github_org_users" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -37,12 +36,19 @@ resource "aws_lambda_function" "update_github_org_users" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED             = var.datadog_enabled
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ARTEMIS_GITHUB_APP_ID       = var.github_app_id
       S3_BUCKET                   = var.s3_analyzer_files_id
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER     = "handlers.handler"
+        DD_SERVICE            = "${var.app}-scheduled-events"
+        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+      }, var.datadog_lambda_variables)
+    : {})
   }
 
   tags = merge(

@@ -115,24 +115,10 @@ resource "aws_security_group" "lambda-sg" {
 # Lambda Layers
 ###############################################################################
 
-resource "aws_lambda_layer_version" "artemislib" {
-  layer_name          = "${var.app}-artemislib"
+resource "aws_lambda_layer_version" "backend_core" {
+  layer_name          = "${var.app}-backend-core"
   s3_bucket           = var.s3_analyzer_files_id
-  s3_key              = "lambdas/artemislib/v${var.ver}/artemislib.zip"
-  compatible_runtimes = [var.lambda_runtime]
-}
-
-resource "aws_lambda_layer_version" "artemisdb" {
-  layer_name          = "${var.app}-artemisdb"
-  s3_bucket           = var.s3_analyzer_files_id
-  s3_key              = "lambdas/artemisdb/v${var.ver}/artemisdb.zip"
-  compatible_runtimes = [var.lambda_runtime]
-}
-
-resource "aws_lambda_layer_version" "artemisapi" {
-  layer_name          = "${var.app}-artemisapi"
-  s3_bucket           = var.s3_analyzer_files_id
-  s3_key              = "lambdas/artemisapi/v${var.ver}/artemisapi.zip"
+  s3_key              = "lambdas/backend_core/v${var.ver}/backend_core.zip"
   compatible_runtimes = [var.lambda_runtime]
 }
 
@@ -146,10 +132,8 @@ resource "aws_lambda_function" "repo-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/repo/v${var.ver}/repo.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_repo_handler)
 
   lifecycle {
@@ -176,7 +160,8 @@ resource "aws_lambda_function" "repo-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED                   = var.datadog_enabled
       TASK_QUEUE                        = module.public_engine_cluster.task_queue.id
       PRIORITY_TASK_QUEUE               = module.public_engine_cluster.priority_task_queue.id
       TASK_QUEUE_NAT                    = module.nat_engine_cluster.task_queue.id
@@ -201,7 +186,10 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
-    }
+      DD_LAMBDA_HANDLER                 = "handlers.handler"
+      DD_SERVICE                        = "${var.app}-api"
+      DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
+    }, var.datadog_lambda_variables)
   }
 
   tags = merge(
@@ -218,10 +206,8 @@ resource "aws_lambda_function" "users-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users/v${var.ver}/users.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_users_handler)
 
   lifecycle {
@@ -231,7 +217,7 @@ resource "aws_lambda_function" "users-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -248,7 +234,8 @@ resource "aws_lambda_function" "users-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED                 = var.datadog_enabled
       S3_BUCKET                       = var.s3_analyzer_files_id
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
@@ -258,7 +245,10 @@ resource "aws_lambda_function" "users-handler" {
       ARTEMIS_ENVIRONMENT             = var.environment
       ARTEMIS_DOMAIN_NAME             = var.domain_name
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-    }
+      DD_LAMBDA_HANDLER               = "handlers.handler"
+      DD_SERVICE                      = "${var.app}-api"
+      DD_API_KEY_SECRET_ARN           = aws_secretsmanager_secret.datadog-api-key.arn
+    }, var.datadog_lambda_variables)
   }
 
   tags = merge(
@@ -275,10 +265,8 @@ resource "aws_lambda_function" "users-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_users_keys_handler)
 
   lifecycle {
@@ -288,7 +276,7 @@ resource "aws_lambda_function" "users-keys-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -305,7 +293,8 @@ resource "aws_lambda_function" "users-keys-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED                 = var.datadog_enabled
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_AUDIT_QUEUE             = var.event_queue.id
@@ -313,7 +302,10 @@ resource "aws_lambda_function" "users-keys-handler" {
       ARTEMIS_DOMAIN_NAME             = var.domain_name
       S3_BUCKET                       = var.s3_analyzer_files_id
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-    }
+      DD_LAMBDA_HANDLER               = "handlers.handler"
+      DD_SERVICE                      = "${var.app}-api"
+      DD_API_KEY_SECRET_ARN           = aws_secretsmanager_secret.datadog-api-key.arn
+    }, var.datadog_lambda_variables)
   }
 
   tags = merge(
@@ -330,10 +322,8 @@ resource "aws_lambda_function" "users-services-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_services/v${var.ver}/users_services.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn,
-    aws_lambda_layer_version.artemisapi.arn
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_users_services_handler)
 
   lifecycle {
@@ -343,7 +333,7 @@ resource "aws_lambda_function" "users-services-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
@@ -360,13 +350,17 @@ resource "aws_lambda_function" "users-services-handler" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED                 = var.datadog_enabled
       ANALYZER_DJANGO_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN           = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_LINK_GH_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
       ARTEMIS_DOMAIN_NAME             = var.domain_name
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-    }
+      DD_LAMBDA_HANDLER               = "handlers.handler"
+      DD_SERVICE                      = "${var.app}-api"
+      DD_API_KEY_SECRET_ARN           = aws_secretsmanager_secret.datadog-api-key.arn
+    }, var.datadog_lambda_variables)
   }
 
   tags = merge(
@@ -383,8 +377,8 @@ resource "aws_lambda_function" "signin-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn
+  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
+    aws_lambda_layer_version.backend_core.arn
   ], var.extra_lambda_layers_signin_handler)
 
   lifecycle {
@@ -394,7 +388,7 @@ resource "aws_lambda_function" "signin-handler" {
     ]
   }
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 128
@@ -403,12 +397,16 @@ resource "aws_lambda_function" "signin-handler" {
   role = aws_iam_role.lambda-assume-role.arn
 
   environment {
-    variables = {
-      COGNITO_DOMAIN      = var.cognito_domain
-      CLIENT_ID           = var.cognito_app_id
-      CLIENT_SECRET_ARN   = "${var.app}/cognito-app-secret"
-      ARTEMIS_AUDIT_QUEUE = var.audit_event_queue.id
-    }
+    variables = merge({
+      DATADOG_ENABLED       = var.datadog_enabled
+      COGNITO_DOMAIN        = var.cognito_domain
+      CLIENT_ID             = var.cognito_app_id
+      CLIENT_SECRET_ARN     = "${var.app}/cognito-app-secret"
+      ARTEMIS_AUDIT_QUEUE   = var.audit_event_queue.id
+      DD_LAMBDA_HANDLER     = "handlers.handler"
+      DD_SERVICE            = "${var.app}-api"
+      DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+    }, var.datadog_lambda_variables)
   }
 
   tags = merge(
