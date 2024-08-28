@@ -2908,8 +2908,8 @@ msgid "Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repo
 msgstr "Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 
 #: src/app/scanPlugins.ts:36
-msgid "Gitlab Repo Health Check"
-msgstr "Gitlab Repo Health Check"
+msgid "GitLab Repo Health Check"
+msgstr "GitLab Repo Health Check"
 
 #: src/pages/ResultsPage.tsx:3026
 msgid "Vulnerability must be less than {VULN_ID_LENGTH} characters"

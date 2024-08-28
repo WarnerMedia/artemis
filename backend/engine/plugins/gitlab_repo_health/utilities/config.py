@@ -83,13 +83,13 @@ class Config:
         owner, repo, path = _destructure_gitlab_file(repo_and_path)
 
         if verbose:
-            print(f'[CONFIG] Getting config from Gitlab repo "{owner}/{repo}", file "{path}"')
+            print(f'[CONFIG] Getting config from GitLab repo "{owner}/{repo}", file "{path}"')
         branch = gitlab.get_default_branch(owner, repo)
         contents = gitlab.get_repository_content(owner, repo, branch, path)
 
         err_message = contents.get("message")
         if err_message:
-            raise Exception(f"Failed to get Gitlab config: {err_message}")
+            raise Exception(f"Failed to get GitLab config: {err_message}")
 
         if contents.get("type") == "file":
             if contents.get("encoding") == "base64":
@@ -103,13 +103,13 @@ class Config:
 
                     return result
                 else:
-                    raise Exception("Failed to get Gitlab config, no content returned.")
+                    raise Exception("Failed to get GitLab config, no content returned.")
             else:
                 raise Exception(
-                    "Failed to get Gitlab config, expected base64 encoding. Gitlab's API might have changed"
+                    "Failed to get GitLab config, expected base64 encoding. GitLab's API might have changed"
                 )
         else:
-            raise Exception(f'Failed to get Gitlab config, "{repo_and_path}" - Not a file')
+            raise Exception(f'Failed to get GitLab config, "{repo_and_path}" - Not a file')
 
     @staticmethod
     def validate(config: dict):

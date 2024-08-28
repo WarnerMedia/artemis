@@ -15,7 +15,7 @@ from engine.plugins.gitlab_repo_health.utilities.environment import (
 
 class Gitlab:
     """
-    Wrapper class for Gitlab so that we can cache responses and abstract away API calls
+    Wrapper class for GitLab so that we can cache responses and abstract away API calls
     """
 
     def __init__(self, key: str, service_url: str, verbose: bool = True):

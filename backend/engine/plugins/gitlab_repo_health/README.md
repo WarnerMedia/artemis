@@ -1,6 +1,6 @@
 # gitlab_repo_health
 
-Artemis Plugin for checking that Gitlab repositories are configured to meet a security baseline
+Artemis Plugin for checking that GitLab repositories are configured to meet a security baseline
 
 ## Testing
 

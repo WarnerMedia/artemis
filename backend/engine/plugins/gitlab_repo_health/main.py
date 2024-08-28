@@ -33,7 +33,7 @@ def run_repo_health(args):
     service = args.engine_vars.get("service_type")
 
     if service != "gitlab":
-        # Repo health check only supports Gitlab, but that's not our user's
+        # Repo health check only supports GitLab, but that's not our user's
         # fault, so let's return true
         output["success"] = True
         return output

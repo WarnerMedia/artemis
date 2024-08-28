@@ -33,7 +33,7 @@ export const configPluginsKeys: ScanPluginKeys = {
 		group: GROUP_CONFIG,
 	},
 	gitlab_repo_health: {
-		displayName: t`Gitlab Repo Health Check`,
+		displayName: t`GitLab Repo Health Check`,
 		apiName: "gitlab_repo_health",
 		group: GROUP_CONFIG,
 	},
