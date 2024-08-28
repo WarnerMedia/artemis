@@ -16,6 +16,6 @@ output "datadog_secret_arn" {
 }
 
 output "heimdall_core_lambda_layer" {
-  value       = data.aws_lambda
+  value       = data.aws_lambda_layer_version.heimdall_core.arn
   description = "The ARN for the Latest version of the Heimdall Core Lambda Layer"
 }
