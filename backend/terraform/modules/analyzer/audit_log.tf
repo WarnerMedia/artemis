@@ -17,12 +17,7 @@ resource "aws_lambda_function" "audit-event-handler" {
 
   role = aws_iam_role.audit-event-role.arn
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   environment {
     variables = merge({

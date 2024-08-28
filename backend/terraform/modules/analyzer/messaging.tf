@@ -56,12 +56,7 @@ resource "aws_lambda_function" "sqs-metrics" {
   architectures = [var.lambda_architecture]
   timeout       = 60
   layers        = var.lambda_layers
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   role = aws_iam_role.metrics-assume-role.arn
 

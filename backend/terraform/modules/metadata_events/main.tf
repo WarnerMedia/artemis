@@ -16,12 +16,7 @@ resource "aws_lambda_function" "metadata-events-handler" {
   timeout       = 30
   layers        = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
   role = aws_iam_role.metadata-events-role.arn
 
   environment {

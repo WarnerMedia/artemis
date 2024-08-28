@@ -233,14 +233,9 @@ resource "aws_lambda_function" "scale-down" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scale_down/v${var.ver}/scale_down.zip"
 
-  layers = concat(var.lambda_layers, var.datadog_enabled ? var.datadog_lambda_layers : [])
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime

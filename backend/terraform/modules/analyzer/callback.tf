@@ -16,6 +16,8 @@ resource "aws_lambda_function" "callback" {
 
   role = aws_iam_role.callback-assume-role.arn
 
+
+
   vpc_config {
     subnet_ids         = [aws_subnet.lambdas.id]
     security_group_ids = [aws_security_group.lambda-sg.id]

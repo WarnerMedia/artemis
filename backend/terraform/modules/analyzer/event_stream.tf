@@ -14,12 +14,7 @@ resource "aws_lambda_function" "event-dispatch" {
   timeout       = 30
   layers        = var.lambda_layers
   role          = aws_iam_role.event-role.arn
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   environment {
     variables = merge({

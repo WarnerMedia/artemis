@@ -17,12 +17,7 @@ resource "aws_lambda_function" "secrets-handler" {
   layers        = var.lambda_layers
 
   role = aws_iam_role.secrets-role.arn
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
   environment {
     variables = merge({
       DATADOG_ENABLED       = var.datadog_enabled

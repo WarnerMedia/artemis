@@ -134,12 +134,7 @@ resource "aws_lambda_function" "repo-handler" {
 
   layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
@@ -205,12 +200,7 @@ resource "aws_lambda_function" "users-handler" {
 
   layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -260,12 +250,7 @@ resource "aws_lambda_function" "users-keys-handler" {
   s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
 
   layers = var.lambda_layers
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -314,12 +299,7 @@ resource "aws_lambda_function" "users-services-handler" {
 
   layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -366,12 +346,7 @@ resource "aws_lambda_function" "signin-handler" {
 
   layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime

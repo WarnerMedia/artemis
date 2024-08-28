@@ -26,13 +26,6 @@ resource "aws_lambda_function" "org-queue" {
     aws_lambda_layer_version.heimdall_core.arn
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the Makefile will deploy newer versions
-      layers
-    ]
-  }
-
   environment {
     variables = merge({
       APPLICATION                       = var.app
@@ -92,14 +85,6 @@ resource "aws_lambda_function" "repo-queue" {
   layers = concat([
     aws_lambda_layer_version.heimdall_core.arn,
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
-
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the Makefile will deploy newer versions
-      layers
-    ]
-  }
-
   environment {
     variables = merge({
       APPLICATION                       = var.app
@@ -159,14 +144,6 @@ resource "aws_lambda_function" "repo-scan" {
   layers = concat([
     aws_lambda_layer_version.heimdall_core.arn
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
-
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the Makefile will deploy newer versions
-      layers
-    ]
-  }
-
   environment {
     variables = merge({
       APPLICATION            = var.app
@@ -216,13 +193,6 @@ resource "aws_lambda_function" "repo-scan-loop" {
   layers = concat([
     aws_lambda_layer_version.heimdall_core.arn
   ], var.datadog_enabled ? var.datadog_lambda_layers : [])
-
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the Makefile will deploy newer versions
-      layers
-    ]
-  }
 
   environment {
     variables = merge({

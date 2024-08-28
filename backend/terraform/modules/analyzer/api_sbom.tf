@@ -200,12 +200,7 @@ resource "aws_lambda_function" "sbom_components" {
   s3_key    = "lambdas/sbom_components/v${var.ver}/sbom_components.zip"
 
   layers = var.lambda_layers
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -254,12 +249,7 @@ resource "aws_lambda_function" "sbom_licenses" {
 
   layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
