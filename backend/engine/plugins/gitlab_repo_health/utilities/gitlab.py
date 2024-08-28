@@ -100,7 +100,6 @@ class Gitlab:
         branch_escaped = self._quote(branch)
 
         url = f"{self._url}/projects/{project_escaped}/repository/files/{path_escaped}?ref={branch_escaped}"
-        print(url)
         return self._authenticated_get(url).json()
 
     def get_default_branch(self, owner: str, repo: str):
