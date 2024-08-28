@@ -40,9 +40,8 @@ resource "aws_lambda_function" "org-queue" {
       DATADOG_ENABLED                   = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
   }
@@ -80,7 +79,7 @@ resource "aws_lambda_function" "repo-queue" {
 
   role = aws_iam_role.vpc-lambda-assume-role.arn
 
-  layers = lambda_layers
+  layers = var.lambda_layers
   environment {
     variables = merge({
       APPLICATION                       = var.app
@@ -98,9 +97,8 @@ resource "aws_lambda_function" "repo-queue" {
       DATADOG_ENABLED                   = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
   }
@@ -150,9 +148,8 @@ resource "aws_lambda_function" "repo-scan" {
       DATADOG_ENABLED        = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
   }
@@ -195,9 +192,8 @@ resource "aws_lambda_function" "repo-scan-loop" {
       DATADOG_ENABLED           = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
   }
