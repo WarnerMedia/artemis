@@ -2,10 +2,12 @@ import unittest
 from datetime import datetime, timezone
 
 from artemisdb.artemisdb.models import PluginResult, Scan
+
 from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
 from json_report.results.sbom import get_sbom
+from json_report.results.secret import get_secrets
 from json_report.results.static_analysis import get_static_analysis
 from json_report.util.const import DEFAULT_SCAN_QUERY_PARAMS
 
@@ -247,6 +249,98 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
+SECRET_FILE_1 = "secrets.txt"
+SECRET_FILE_2 = "different-secrets.txt"
+SECRET_COMMIT = "0123456789abcdef0123456789abcdef01234567"
+SECRET_LINE = 1
+SECRET_TYPE_1 = "s1"
+SECRET_TYPE_2 = "s2"
+SECRET_TYPE_3 = "s3"
+SECRET_PARAMS =  {
+    "filter_diff": False,
+    "secret": [
+        SECRET_TYPE_1,
+        SECRET_TYPE_2,
+        SECRET_TYPE_3,
+    ]
+}
+
+TEST_SECRET_DEDUP = PluginResult(
+    plugin_name="Trufflehog",
+    plugin_type="secrets",
+    success=False,
+    details=[
+        {
+            "id": "01234567-89ab-cdef-0123-456789abcd01",
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "unknown"
+        },
+        {
+            "id": "01234567-89ab-cdef-0123-456789abcd02",
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_2,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "active"
+        },
+    ],
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
+TEST_SECRET_MULTIPLE_FILES = PluginResult(
+    plugin_name="Trufflehog",
+    plugin_type="secrets",
+    success=False,
+    details=[
+        {
+            "id": "01234567-89ab-cdef-0123-456789abcd01",
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "unknown"
+        },
+        {
+            "id": "01234567-89ab-cdef-0123-456789abcd02",
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_2,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "active"
+        },
+        {
+            "id": "01234567-89ab-cdef-0123-456789abcd03",
+            "filename": SECRET_FILE_2,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_3,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "inactive"
+        },
+    ],
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
 SBOM_ERROR_MSG = "test error"
 SBOM_ALERT_MSG = "test alert"
 SBOM_DEBUG_MSG = "test debug message"
@@ -423,6 +517,67 @@ class TestGenerateReport(unittest.TestCase):
         mock_scan.diff_base = None
         mock_scan.diff_compare = None
         self.run_static_analysis(mock_scan, expected_report)
+
+    def test_get_secrets_dedup(self):
+        expected_secrets = PLUGIN_RESULTS(
+            {
+                SECRET_FILE_1: [
+                    {
+                        "type": unittest.mock.ANY,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "validity": "active"
+                    }
+                ],
+            },
+            PluginErrors(),
+            False,
+            1
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.repo.allowlistitem_set.filter.return_value = [ ]
+        mock_scan.pluginresult_set.filter.return_value = [ TEST_SECRET_DEDUP ]
+
+        secrets = get_secrets(mock_scan, SECRET_PARAMS)
+        secret_type = secrets.findings[SECRET_FILE_1][0]["type"]
+
+        self.assertEqual(expected_secrets, secrets)
+        self.assertIn(SECRET_TYPE_1, secret_type)
+        self.assertIn(SECRET_TYPE_2, secret_type) 
+
+    def test_get_secrets_do_not_dedup_different_files(self):
+        expected_secrets = PLUGIN_RESULTS(
+            {
+                SECRET_FILE_1: [
+                    {
+                        "type": unittest.mock.ANY,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "validity": "active"
+                    }
+                ],
+                SECRET_FILE_2: [
+                    {
+                        "type": SECRET_TYPE_3,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "validity": "inactive"
+                    }
+                ],
+            },
+            PluginErrors(),
+            False,
+            2
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.repo.allowlistitem_set.filter.return_value = [ ]
+        mock_scan.pluginresult_set.filter.return_value = [ TEST_SECRET_MULTIPLE_FILES ]
+
+        secrets = get_secrets(mock_scan, SECRET_PARAMS)
+
+        self.assertEqual(expected_secrets, secrets)
 
     def test_get_inventory_report_for_technology_discovery(self):
         expected_inventory = PLUGIN_RESULTS(
