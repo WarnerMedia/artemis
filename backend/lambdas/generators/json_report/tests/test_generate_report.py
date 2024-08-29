@@ -261,13 +261,11 @@ SECRET_COMMIT = "0123456789abcdef0123456789abcdef01234567"
 SECRET_LINE = 1
 SECRET_TYPE_1 = "type-1"
 SECRET_TYPE_2 = "type-2"
-SECRET_TYPE_3 = "type-3"
 SECRET_PARAMS =  {
     "filter_diff": False,
     "secret": [
         SECRET_TYPE_1,
         SECRET_TYPE_2,
-        SECRET_TYPE_3,
     ]
 }
 
@@ -350,24 +348,14 @@ TEST_SECRET_MULTIPLE_FILES = PluginResult(
             "type": SECRET_TYPE_1,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "unknown"
-        },
-        {
-            "id": get_secret_id(2),
-            "filename": SECRET_FILE_1,
-            "line": SECRET_LINE,
-            "commit": SECRET_COMMIT,
-            "type": SECRET_TYPE_2,
-            "author": "jon.snow@example.com",
-            "author-timestamp": "2020-01-01T00:00:00Z",
             "validity": "active"
         },
         {
-            "id": get_secret_id(3),
+            "id": get_secret_id(2),
             "filename": SECRET_FILE_2,
             "line": SECRET_LINE,
             "commit": SECRET_COMMIT,
-            "type": SECRET_TYPE_3,
+            "type": SECRET_TYPE_2,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
             "validity": "inactive"
@@ -558,6 +546,9 @@ class TestGenerateReport(unittest.TestCase):
         self.run_static_analysis(mock_scan, expected_report)
 
     def test_get_secrets_dedup(self):
+        # When multiple findings with different types are deduped, the returned type should be a
+        # comma-separated list of the types of the original findings and an action equal to the
+        # highest action of all findings
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
@@ -587,7 +578,8 @@ class TestGenerateReport(unittest.TestCase):
         self.assertIn(SECRET_TYPE_1, secret_type)
         self.assertIn(SECRET_TYPE_2, secret_type) 
 
-    def test_get_secrets_dedup_Same_type(self):
+    def test_get_secrets_dedup_same_type(self):
+        # When multiple findings with the same type are deduped, it should not repeat the type
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
@@ -613,11 +605,12 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(expected_secrets, secrets)
 
     def test_get_secrets_do_not_dedup_different_files(self):
+        # When multiple findings have the same line and commit, but different files, they should not be deduped
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
                     {
-                        "type": unittest.mock.ANY,
+                        "type": SECRET_TYPE_1,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
                         "validity": "active"
@@ -625,7 +618,7 @@ class TestGenerateReport(unittest.TestCase):
                 ],
                 SECRET_FILE_2: [
                     {
-                        "type": SECRET_TYPE_3,
+                        "type": SECRET_TYPE_2,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
                         "validity": "inactive"
