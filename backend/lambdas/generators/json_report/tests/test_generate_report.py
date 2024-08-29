@@ -597,7 +597,8 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(expected_secrets, secrets)
 
     def test_get_secrets_do_not_dedup_different_files(self):
-        # When multiple findings have the same line and commit, but different files, they should not be deduped
+        # When multiple findings have the same line and commit, but different files, they should not
+        # be deduped
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
