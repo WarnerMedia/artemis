@@ -36,7 +36,7 @@ module "public_engine_cluster" {
 
   heimdall_scans_cron = var.heimdall_scans_cron
 
-  lambda_layers = concat([aws_lambda_layer_version.backend_core.arn], var.extra_lambda_layers_engine_scale_down)
+  lambda_layers = var.lambda_layers
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
@@ -50,14 +50,13 @@ module "public_engine_cluster" {
   revproxy_secret           = var.revproxy_secret
   revproxy_secret_region    = var.revproxy_secret_region
 
-  secrets_events_enabled       = var.secrets_events_enabled
-  inventory_events_enabled     = var.inventory_events_enabled
-  configuration_events_enabled = var.configuration_events_enabled
-  vulnerability_events_enabled = var.vulnerability_events_enabled
-  metadata_events_enabled      = var.metadata_events_enabled
-  datadog_enabled              = var.datadog_enabled
-  datadog_lambda_variables     = var.datadog_lambda_variables
-  datadog_lambda_layers        = var.datadog_lambda_layers
+  secrets_events_enabled        = var.secrets_events_enabled
+  inventory_events_enabled      = var.inventory_events_enabled
+  configuration_events_enabled  = var.configuration_events_enabled
+  vulnerability_events_enabled  = var.vulnerability_events_enabled
+  metadata_events_enabled       = var.metadata_events_enabled
+  datadog_enabled               = var.datadog_enabled
+  datadog_environment_variables = var.datadog_environment_variables
 }
 
 module "nat_engine_cluster" {
@@ -99,7 +98,7 @@ module "nat_engine_cluster" {
 
   heimdall_scans_cron = var.heimdall_scans_cron
 
-  lambda_layers = concat([aws_lambda_layer_version.backend_core.arn], var.extra_lambda_layers_engine_scale_down)
+  lambda_layers = var.lambda_layers
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
@@ -113,12 +112,11 @@ module "nat_engine_cluster" {
   revproxy_secret           = var.revproxy_secret
   revproxy_secret_region    = var.revproxy_secret_region
 
-  secrets_events_enabled       = var.secrets_events_enabled
-  inventory_events_enabled     = var.inventory_events_enabled
-  configuration_events_enabled = var.configuration_events_enabled
-  vulnerability_events_enabled = var.vulnerability_events_enabled
-  metadata_events_enabled      = var.metadata_events_enabled
-  datadog_enabled              = var.datadog_enabled
-  datadog_lambda_variables     = var.datadog_lambda_variables
-  datadog_lambda_layers        = var.datadog_lambda_layers
+  secrets_events_enabled        = var.secrets_events_enabled
+  inventory_events_enabled      = var.inventory_events_enabled
+  configuration_events_enabled  = var.configuration_events_enabled
+  vulnerability_events_enabled  = var.vulnerability_events_enabled
+  metadata_events_enabled       = var.metadata_events_enabled
+  datadog_enabled               = var.datadog_enabled
+  datadog_environment_variables = var.datadog_environment_variables
 }

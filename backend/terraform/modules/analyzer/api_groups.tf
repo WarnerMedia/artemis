@@ -193,16 +193,9 @@ resource "aws_lambda_function" "groups-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups/v${var.ver}/groups.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_groups_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -228,10 +221,9 @@ resource "aws_lambda_function" "groups-handler" {
       DATADOG_ENABLED                 = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 
@@ -249,16 +241,9 @@ resource "aws_lambda_function" "groups-members-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_members/v${var.ver}/groups_members.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_groups_members_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -284,10 +269,9 @@ resource "aws_lambda_function" "groups-members-handler" {
       DATADOG_ENABLED                 = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 
@@ -305,16 +289,9 @@ resource "aws_lambda_function" "groups-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_groups_keys_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -340,10 +317,9 @@ resource "aws_lambda_function" "groups-keys-handler" {
       DATADOG_ENABLED                 = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 

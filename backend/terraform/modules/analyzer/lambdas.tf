@@ -122,6 +122,10 @@ resource "aws_lambda_layer_version" "backend_core" {
   compatible_runtimes = [var.lambda_runtime]
 }
 
+data "aws_lambda_layer_version" "backend_core_latest" {
+  layer_name = "${var.app}-backend-core"
+}
+
 ###############################################################################
 # Lambdas
 ###############################################################################
@@ -132,16 +136,9 @@ resource "aws_lambda_function" "repo-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/repo/v${var.ver}/repo.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_repo_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
@@ -188,8 +185,7 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
       DD_LAMBDA_HANDLER                 = "handlers.handler"
       DD_SERVICE                        = "${var.app}-api"
-      DD_API_KEY_SECRET_ARN             = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+    }, var.datadog_environment_variables)
   }
 
   tags = merge(
@@ -206,16 +202,9 @@ resource "aws_lambda_function" "users-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users/v${var.ver}/users.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_users_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -247,8 +236,7 @@ resource "aws_lambda_function" "users-handler" {
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
       DD_LAMBDA_HANDLER               = "handlers.handler"
       DD_SERVICE                      = "${var.app}-api"
-      DD_API_KEY_SECRET_ARN           = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+    }, var.datadog_environment_variables)
   }
 
   tags = merge(
@@ -265,16 +253,8 @@ resource "aws_lambda_function" "users-keys-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_users_keys_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -304,8 +284,7 @@ resource "aws_lambda_function" "users-keys-handler" {
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
       DD_LAMBDA_HANDLER               = "handlers.handler"
       DD_SERVICE                      = "${var.app}-api"
-      DD_API_KEY_SECRET_ARN           = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+    }, var.datadog_environment_variables)
   }
 
   tags = merge(
@@ -322,16 +301,9 @@ resource "aws_lambda_function" "users-services-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/users_services/v${var.ver}/users_services.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_users_services_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -359,8 +331,7 @@ resource "aws_lambda_function" "users-services-handler" {
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
       DD_LAMBDA_HANDLER               = "handlers.handler"
       DD_SERVICE                      = "${var.app}-api"
-      DD_API_KEY_SECRET_ARN           = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+    }, var.datadog_environment_variables)
   }
 
   tags = merge(
@@ -377,16 +348,9 @@ resource "aws_lambda_function" "signin-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
 
-  layers = concat(var.datadog_enabled ? var.datadog_lambda_layers : [], [
-    aws_lambda_layer_version.backend_core.arn
-  ], var.extra_lambda_layers_signin_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
@@ -398,15 +362,14 @@ resource "aws_lambda_function" "signin-handler" {
 
   environment {
     variables = merge({
-      DATADOG_ENABLED       = var.datadog_enabled
-      COGNITO_DOMAIN        = var.cognito_domain
-      CLIENT_ID             = var.cognito_app_id
-      CLIENT_SECRET_ARN     = "${var.app}/cognito-app-secret"
-      ARTEMIS_AUDIT_QUEUE   = var.audit_event_queue.id
-      DD_LAMBDA_HANDLER     = "handlers.handler"
-      DD_SERVICE            = "${var.app}-api"
-      DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-    }, var.datadog_lambda_variables)
+      DATADOG_ENABLED     = var.datadog_enabled
+      COGNITO_DOMAIN      = var.cognito_domain
+      CLIENT_ID           = var.cognito_app_id
+      CLIENT_SECRET_ARN   = "${var.app}/cognito-app-secret"
+      ARTEMIS_AUDIT_QUEUE = var.audit_event_queue.id
+      DD_LAMBDA_HANDLER   = "handlers.handler"
+      DD_SERVICE          = "${var.app}-api"
+    }, var.datadog_environment_variables)
   }
 
   tags = merge(

@@ -14,13 +14,9 @@ resource "aws_lambda_function" "metadata-events-handler" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  layers        = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
   role = aws_iam_role.metadata-events-role.arn
 
   environment {
@@ -32,10 +28,9 @@ resource "aws_lambda_function" "metadata-events-handler" {
       ARTEMIS_SCRUB_NONPROD = "false"
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-data-forwarder"
-        DD_API_KEY_SECRET_ARN = ""
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-data-forwarder"
+      }, var.datadog_environment_variables)
     : {})
   }
 

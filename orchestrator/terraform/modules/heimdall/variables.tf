@@ -163,6 +163,12 @@ variable "revproxy_secret_region" {
   default     = "us-east-2"
 }
 
+variable "lambda_layers" {
+  description = "List of Lambda Layers for the Heimdall Lambda"
+  type        = list(string)
+  default     = []
+}
+
 ################################################
 # GitHub App
 ################################################
@@ -181,15 +187,10 @@ variable "datadog_enabled" {
   type        = bool
   default     = false
 }
-variable "datadog_lambda_variables" {
+variable "datadog_environment_variables" {
   description = "Environment variables for the Datadog Serverless Agent"
   type        = map(any)
   default = {
     DD_SERVICE = "heimdall"
   }
-}
-variable "datadog_lambda_layers" {
-  description = "List of Datadog Lambda Layers"
-  type        = list(string)
-  default     = []
 }
