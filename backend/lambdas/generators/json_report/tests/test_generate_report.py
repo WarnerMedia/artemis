@@ -2,7 +2,6 @@ import unittest
 from datetime import datetime, timezone
 
 from artemisdb.artemisdb.models import PluginResult, Scan
-
 from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
@@ -249,13 +248,20 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
+secret_base_id = "01234567-89ab-cdef-0123-456789abcdef"
+def get_secret_id(id):
+    str_id = str(id)
+    id_len = len(str_id)
+    return f"{secret_base_id[0:-id_len]}{str_id}"
+
+
 SECRET_FILE_1 = "secrets.txt"
 SECRET_FILE_2 = "different-secrets.txt"
 SECRET_COMMIT = "0123456789abcdef0123456789abcdef01234567"
 SECRET_LINE = 1
-SECRET_TYPE_1 = "s1"
-SECRET_TYPE_2 = "s2"
-SECRET_TYPE_3 = "s3"
+SECRET_TYPE_1 = "type-1"
+SECRET_TYPE_2 = "type-2"
+SECRET_TYPE_3 = "type-3"
 SECRET_PARAMS =  {
     "filter_diff": False,
     "secret": [
@@ -271,7 +277,7 @@ TEST_SECRET_DEDUP = PluginResult(
     success=False,
     details=[
         {
-            "id": "01234567-89ab-cdef-0123-456789abcd01",
+            "id": get_secret_id(1),
             "filename": SECRET_FILE_1,
             "line": SECRET_LINE,
             "commit": SECRET_COMMIT,
@@ -281,11 +287,44 @@ TEST_SECRET_DEDUP = PluginResult(
             "validity": "unknown"
         },
         {
-            "id": "01234567-89ab-cdef-0123-456789abcd02",
+            "id": get_secret_id(2),
             "filename": SECRET_FILE_1,
             "line": SECRET_LINE,
             "commit": SECRET_COMMIT,
             "type": SECRET_TYPE_2,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "active"
+        },
+    ],
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
+TEST_SECRET_DEDUP_SAME_TYPE = PluginResult(
+    plugin_name="Trufflehog",
+    plugin_type="secrets",
+    success=False,
+    details=[
+        {
+            "id": get_secret_id(1),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "unknown"
+        },
+        {
+            "id": get_secret_id(2),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
             "validity": "active"
@@ -304,7 +343,7 @@ TEST_SECRET_MULTIPLE_FILES = PluginResult(
     success=False,
     details=[
         {
-            "id": "01234567-89ab-cdef-0123-456789abcd01",
+            "id": get_secret_id(1),
             "filename": SECRET_FILE_1,
             "line": SECRET_LINE,
             "commit": SECRET_COMMIT,
@@ -314,7 +353,7 @@ TEST_SECRET_MULTIPLE_FILES = PluginResult(
             "validity": "unknown"
         },
         {
-            "id": "01234567-89ab-cdef-0123-456789abcd02",
+            "id": get_secret_id(2),
             "filename": SECRET_FILE_1,
             "line": SECRET_LINE,
             "commit": SECRET_COMMIT,
@@ -324,7 +363,7 @@ TEST_SECRET_MULTIPLE_FILES = PluginResult(
             "validity": "active"
         },
         {
-            "id": "01234567-89ab-cdef-0123-456789abcd03",
+            "id": get_secret_id(3),
             "filename": SECRET_FILE_2,
             "line": SECRET_LINE,
             "commit": SECRET_COMMIT,
@@ -543,8 +582,35 @@ class TestGenerateReport(unittest.TestCase):
         secret_type = secrets.findings[SECRET_FILE_1][0]["type"]
 
         self.assertEqual(expected_secrets, secrets)
+
+        # Ensure that both secret types that were deduped show up in the new type
         self.assertIn(SECRET_TYPE_1, secret_type)
         self.assertIn(SECRET_TYPE_2, secret_type) 
+
+    def test_get_secrets_dedup_Same_type(self):
+        expected_secrets = PLUGIN_RESULTS(
+            {
+                SECRET_FILE_1: [
+                    {
+                        "type": SECRET_TYPE_1,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "validity": "active"
+                    }
+                ],
+            },
+            PluginErrors(),
+            False,
+            1
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.repo.allowlistitem_set.filter.return_value = [ ]
+        mock_scan.pluginresult_set.filter.return_value = [ TEST_SECRET_DEDUP_SAME_TYPE ]
+
+        secrets = get_secrets(mock_scan, SECRET_PARAMS)
+
+        self.assertEqual(expected_secrets, secrets)
 
     def test_get_secrets_do_not_dedup_different_files(self):
         expected_secrets = PLUGIN_RESULTS(
