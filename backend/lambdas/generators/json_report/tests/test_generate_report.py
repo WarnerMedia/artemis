@@ -249,6 +249,8 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
 )
 
 secret_base_id = "01234567-89ab-cdef-0123-456789abcdef"
+
+
 def get_secret_id(id):
     str_id = str(id)
     id_len = len(str_id)
@@ -261,12 +263,12 @@ SECRET_COMMIT = "0123456789abcdef0123456789abcdef01234567"
 SECRET_LINE = 1
 SECRET_TYPE_1 = "type-1"
 SECRET_TYPE_2 = "type-2"
-SECRET_PARAMS =  {
+SECRET_PARAMS = {
     "filter_diff": False,
     "secret": [
         SECRET_TYPE_1,
         SECRET_TYPE_2,
-    ]
+    ],
 }
 
 TEST_SECRET_DEDUP = PluginResult(
@@ -282,7 +284,7 @@ TEST_SECRET_DEDUP = PluginResult(
             "type": SECRET_TYPE_1,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "unknown"
+            "validity": "unknown",
         },
         {
             "id": get_secret_id(2),
@@ -292,7 +294,7 @@ TEST_SECRET_DEDUP = PluginResult(
             "type": SECRET_TYPE_2,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "active"
+            "validity": "active",
         },
     ],
     errors=[],
@@ -315,7 +317,7 @@ TEST_SECRET_DEDUP_SAME_TYPE = PluginResult(
             "type": SECRET_TYPE_1,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "unknown"
+            "validity": "unknown",
         },
         {
             "id": get_secret_id(2),
@@ -325,7 +327,7 @@ TEST_SECRET_DEDUP_SAME_TYPE = PluginResult(
             "type": SECRET_TYPE_1,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "active"
+            "validity": "active",
         },
     ],
     errors=[],
@@ -348,7 +350,7 @@ TEST_SECRET_MULTIPLE_FILES = PluginResult(
             "type": SECRET_TYPE_1,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "active"
+            "validity": "active",
         },
         {
             "id": get_secret_id(2),
@@ -358,7 +360,7 @@ TEST_SECRET_MULTIPLE_FILES = PluginResult(
             "type": SECRET_TYPE_2,
             "author": "jon.snow@example.com",
             "author-timestamp": "2020-01-01T00:00:00Z",
-            "validity": "inactive"
+            "validity": "inactive",
         },
     ],
     errors=[],
@@ -552,22 +554,17 @@ class TestGenerateReport(unittest.TestCase):
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
-                    {
-                        "type": unittest.mock.ANY,
-                        "line": SECRET_LINE,
-                        "commit": SECRET_COMMIT,
-                        "validity": "active"
-                    }
+                    {"type": unittest.mock.ANY, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
                 ],
             },
             PluginErrors(),
             False,
-            1
+            1,
         )
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
-        mock_scan.repo.allowlistitem_set.filter.return_value = [ ]
-        mock_scan.pluginresult_set.filter.return_value = [ TEST_SECRET_DEDUP ]
+        mock_scan.repo.allowlistitem_set.filter.return_value = []
+        mock_scan.pluginresult_set.filter.return_value = [TEST_SECRET_DEDUP]
 
         secrets = get_secrets(mock_scan, SECRET_PARAMS)
         secret_type = secrets.findings[SECRET_FILE_1][0]["type"]
@@ -576,29 +573,24 @@ class TestGenerateReport(unittest.TestCase):
 
         # Ensure that both secret types that were deduped show up in the new type
         self.assertIn(SECRET_TYPE_1, secret_type)
-        self.assertIn(SECRET_TYPE_2, secret_type) 
+        self.assertIn(SECRET_TYPE_2, secret_type)
 
     def test_get_secrets_dedup_same_type(self):
         # When multiple findings with the same type are deduped, it should not repeat the type
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
-                    {
-                        "type": SECRET_TYPE_1,
-                        "line": SECRET_LINE,
-                        "commit": SECRET_COMMIT,
-                        "validity": "active"
-                    }
+                    {"type": SECRET_TYPE_1, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
                 ],
             },
             PluginErrors(),
             False,
-            1
+            1,
         )
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
-        mock_scan.repo.allowlistitem_set.filter.return_value = [ ]
-        mock_scan.pluginresult_set.filter.return_value = [ TEST_SECRET_DEDUP_SAME_TYPE ]
+        mock_scan.repo.allowlistitem_set.filter.return_value = []
+        mock_scan.pluginresult_set.filter.return_value = [TEST_SECRET_DEDUP_SAME_TYPE]
 
         secrets = get_secrets(mock_scan, SECRET_PARAMS)
 
@@ -609,30 +601,20 @@ class TestGenerateReport(unittest.TestCase):
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
-                    {
-                        "type": SECRET_TYPE_1,
-                        "line": SECRET_LINE,
-                        "commit": SECRET_COMMIT,
-                        "validity": "active"
-                    }
+                    {"type": SECRET_TYPE_1, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
                 ],
                 SECRET_FILE_2: [
-                    {
-                        "type": SECRET_TYPE_2,
-                        "line": SECRET_LINE,
-                        "commit": SECRET_COMMIT,
-                        "validity": "inactive"
-                    }
+                    {"type": SECRET_TYPE_2, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "inactive"}
                 ],
             },
             PluginErrors(),
             False,
-            2
+            2,
         )
 
         mock_scan = unittest.mock.MagicMock(side_effect=Scan())
-        mock_scan.repo.allowlistitem_set.filter.return_value = [ ]
-        mock_scan.pluginresult_set.filter.return_value = [ TEST_SECRET_MULTIPLE_FILES ]
+        mock_scan.repo.allowlistitem_set.filter.return_value = []
+        mock_scan.pluginresult_set.filter.return_value = [TEST_SECRET_MULTIPLE_FILES]
 
         secrets = get_secrets(mock_scan, SECRET_PARAMS)
 
