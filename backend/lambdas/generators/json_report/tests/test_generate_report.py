@@ -270,9 +270,10 @@ SECRET_PARAMS = {
         SECRET_TYPE_2,
     ],
 }
+SECRET_PLUGIN_NAME = "Trufflehog"
 
 TEST_SECRET_DEDUP = PluginResult(
-    plugin_name="Trufflehog",
+    plugin_name=SECRET_PLUGIN_NAME,
     plugin_type="secrets",
     success=False,
     details=[
@@ -305,7 +306,7 @@ TEST_SECRET_DEDUP = PluginResult(
 )
 
 TEST_SECRET_DEDUP_SAME_TYPE = PluginResult(
-    plugin_name="Trufflehog",
+    plugin_name=SECRET_PLUGIN_NAME,
     plugin_type="secrets",
     success=False,
     details=[
@@ -338,7 +339,7 @@ TEST_SECRET_DEDUP_SAME_TYPE = PluginResult(
 )
 
 TEST_SECRET_MULTIPLE_FILES = PluginResult(
-    plugin_name="Trufflehog",
+    plugin_name=SECRET_PLUGIN_NAME,
     plugin_type="secrets",
     success=False,
     details=[
@@ -554,7 +555,23 @@ class TestGenerateReport(unittest.TestCase):
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
-                    {"type": unittest.mock.ANY, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
+                    {
+                        "type": unittest.mock.ANY,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "details": [
+                            {
+                                "type": SECRET_TYPE_1,
+                                "validity": "unknown",
+                                "source": SECRET_PLUGIN_NAME,
+                            },
+                            {
+                                "type": SECRET_TYPE_2,
+                                "validity": "active",
+                                "source": SECRET_PLUGIN_NAME,
+                            },
+                        ],
+                    }
                 ],
             },
             PluginErrors(),
@@ -580,7 +597,23 @@ class TestGenerateReport(unittest.TestCase):
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
-                    {"type": SECRET_TYPE_1, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
+                    {
+                        "type": SECRET_TYPE_1,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "details": [
+                            {
+                                "type": SECRET_TYPE_1,
+                                "validity": "unknown",
+                                "source": SECRET_PLUGIN_NAME,
+                            },
+                            {
+                                "type": SECRET_TYPE_1,
+                                "validity": "active",
+                                "source": SECRET_PLUGIN_NAME,
+                            },
+                        ],
+                    }
                 ],
             },
             PluginErrors(),
@@ -602,10 +635,32 @@ class TestGenerateReport(unittest.TestCase):
         expected_secrets = PLUGIN_RESULTS(
             {
                 SECRET_FILE_1: [
-                    {"type": SECRET_TYPE_1, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
+                    {
+                        "type": SECRET_TYPE_1,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "details": [
+                            {
+                                "type": SECRET_TYPE_1,
+                                "validity": "active",
+                                "source": SECRET_PLUGIN_NAME,
+                            }
+                        ],
+                    }
                 ],
                 SECRET_FILE_2: [
-                    {"type": SECRET_TYPE_2, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "inactive"}
+                    {
+                        "type": SECRET_TYPE_2,
+                        "line": SECRET_LINE,
+                        "commit": SECRET_COMMIT,
+                        "details": [
+                            {
+                                "type": SECRET_TYPE_2,
+                                "validity": "inactive",
+                                "source": SECRET_PLUGIN_NAME,
+                            }
+                        ],
+                    }
                 ],
             },
             PluginErrors(),
