@@ -7,6 +7,7 @@ import { colorHigh, colorLow, colorNegligible } from "app/colors";
 import { SecretValidity } from "features/scans/scansSchemas";
 import {
 	DoDisturbOnOutlined,
+	FilterNoneOutlined,
 	ReportOutlined,
 	WarningAmber,
 } from "@mui/icons-material";
@@ -33,10 +34,13 @@ const useStyles = makeStyles()(() => ({
 	iconUnknown: {
 		color: "black !important",
 	},
+	iconMixed: {
+		color: "black !important"
+	}
 }));
 
 export type SecretValidityChipProps = {
-	readonly value?: SecretValidity;
+	readonly value?: string;
 	readonly tooltipDisabled?: boolean;
 };
 
@@ -49,6 +53,22 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
 	const { value, tooltipDisabled } = props;
+
+	if (value?.includes(",")) {
+		return (
+			<TooltipChip
+				icon={<FilterNoneOutlined />}
+				label={i18n._(t`Mixed`)}
+				size="small"
+				tooltipDisabled={tooltipDisabled}
+				tooltipText={i18n._(
+					t`This finding has multiple different validities reported`
+				)}
+			/>
+		);
+	}
+
+	console.log(value)
 
 	switch (value) {
 		case SecretValidity.Active:

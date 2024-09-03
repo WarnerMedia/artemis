@@ -223,7 +223,7 @@ import formatters, {
 	formatDate,
 	vcsHotLink,
 } from "utils/formatters";
-import { SecretValidityChip } from "components/SecretValidityCell";
+import { SecretValidityChip, SecretValidityChipProps } from "components/SecretValidityCell";
 
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
@@ -2843,6 +2843,16 @@ const SeverityFilterField = (props: SeverityFilterFieldProps) => {
 	);
 };
 
+const SECRET_VALIDITY_PREFIX = 'validity'
+
+function addValidityPrefix(value: string): string {
+	return `${SECRET_VALIDITY_PREFIX}_${value}`;
+}
+
+function removeValidityPrefix(value: string | undefined): string | undefined {
+	return value?.replace(`${SECRET_VALIDITY_PREFIX}_`, '');
+}
+
 interface SecretValidityFilterFieldProps {
 	value?: string | string[];
 	autoFocus?: boolean;
@@ -2860,7 +2870,10 @@ const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
 
 	const menuItems = Object.values(SecretValidity).map((validityValue) => {
 		return (
-			<MenuItem value={validityValue}>
+			// Prepend a prefix to the value we search on so that "active" does not match "inactive"
+			// For example, if the prefix is "_", the former becomes "_active", which will not match
+			// "_inactive"
+			<MenuItem value={addValidityPrefix(validityValue)}>
 				<SecretValidityChip value={validityValue} tooltipDisabled />
 			</MenuItem>
 		);
@@ -3883,7 +3896,6 @@ export const SecretsTabContent = (props: {
 			},
 			validity: {
 				filter: "",
-				match: "exact",
 			},
 			commit: {
 				filter: "",
@@ -3898,7 +3910,7 @@ export const SecretsTabContent = (props: {
 		{
 			field: "validity",
 			headerName: i18n._(t`Validity`),
-			children: SecretValidityChip,
+			children: (props: SecretValidityChipProps) => <SecretValidityChip {...props} value={removeValidityPrefix(props.value)} />,
 		},
 		{ field: "commit", headerName: i18n._(t`Commit`) },
 		{
@@ -3942,7 +3954,7 @@ export const SecretsTabContent = (props: {
 				line: item.line,
 				resource: item.type,
 				commit: item.commit,
-				validity: item.validity ?? SecretValidity.Unknown,
+				validity: item.details?.map((item) => addValidityPrefix(item.validity)).join(', ') ?? addValidityPrefix(SecretValidity.Unknown),
 				repo: scan.repo,
 				service: scan.service,
 				branch: scan.branch,
@@ -3991,13 +4003,13 @@ export const SecretsTabContent = (props: {
 												<Trans>Validity</Trans>
 												{selectedRow?.validity && (
 													<CustomCopyToClipboard
-														copyTarget={selectedRow.validity}
+														copyTarget={removeValidityPrefix(selectedRow.validity)}
 													/>
 												)}
 											</>
 										}
 										secondary={
-											<SecretValidityChip value={selectedRow?.validity} />
+											<SecretValidityChip value={removeValidityPrefix(selectedRow?.validity)} />
 										}
 									/>
 								</ListItem>
@@ -4048,7 +4060,7 @@ export const SecretsTabContent = (props: {
 					line: item.line,
 					resource: item.type,
 					commit: item.commit,
-					validity: item.validity,
+					details: item.details,
 				});
 			});
 		}

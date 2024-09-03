@@ -150,7 +150,13 @@ export interface SecretFinding {
 	line: number;
 	type: string;
 	commit: string;
-	validity?: SecretValidity;
+	details?: [
+		{
+			type: string;
+			validity: SecretValidity;
+			source: string;
+		}
+	];
 }
 
 export interface SecretFindingResult {
