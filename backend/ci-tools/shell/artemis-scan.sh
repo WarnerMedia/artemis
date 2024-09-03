@@ -88,7 +88,7 @@ fi
 
 # Scan parameters
 ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
-ARTEMIS_API="$ARTEMIS/api/v1"
+ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}"  # Allow Artemis API prefix to be directly specified (e.g. for testing)
 ARTEMIS_RESULTS="$ARTEMIS/results"
 SERVICE=$1
 RESOURCE=$2
