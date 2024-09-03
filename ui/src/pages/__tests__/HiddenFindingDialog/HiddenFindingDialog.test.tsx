@@ -1,13 +1,7 @@
 import { DateTime, Settings } from "luxon";
-import {
-	render,
-	screen,
-	waitFor,
-} from "test-utils";
+import { render, screen, waitFor } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
-import {
-	vulnRow,
-} from "../../../../testData/testMockData";
+import { vulnRow } from "../../../../testData/testMockData";
 
 beforeAll(() => {
 	// ensure consistent timezone for tests

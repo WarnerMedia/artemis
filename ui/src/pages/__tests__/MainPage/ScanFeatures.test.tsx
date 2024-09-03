@@ -1,8 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "test-utils";
 import MainPage from "pages/MainPage";
-import {
-	MAX_PATH_LENGTH,
-} from "features/scans/scansSchemas";
+import { MAX_PATH_LENGTH } from "features/scans/scansSchemas";
 
 jest.mock("react-redux", () => ({
 	...(jest.requireActual("react-redux") as any),
@@ -25,9 +23,7 @@ jest.mock("api/client", () => ({
 import { useSelector, useDispatch } from "react-redux";
 /* eslint-disable */
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-	mockStoreEmpty,
-} from "../../../../testData/testMockData";
+import { mockStoreEmpty } from "../../../../testData/testMockData";
 import { STORAGE_LOCAL_WELCOME } from "app/globals";
 import { pluginCatalog, sbomPlugins } from "app/scanPlugins";
 

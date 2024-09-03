@@ -1,15 +1,7 @@
 import { Settings } from "luxon";
-import {
-	render,
-	screen,
-	waitFor,
-	within,
-} from "test-utils";
+import { render, screen, waitFor, within } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
-import {
-
-	secretRow,
-} from "../../../../testData/testMockData";
+import { secretRow } from "../../../../testData/testMockData";
 import { capitalize } from "utils/formatters";
 
 beforeAll(() => {

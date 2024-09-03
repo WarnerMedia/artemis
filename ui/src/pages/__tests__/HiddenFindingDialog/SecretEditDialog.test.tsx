@@ -58,7 +58,6 @@ describe("HiddenFindingDialog component", () => {
 	});
 
 	describe("specific tests for each finding type", () => {
-
 		it("secret edit dialog", async () => {
 			// wait for dialog to open
 			render(

@@ -1,8 +1,5 @@
 import { startScan } from "pages/MainPage";
-import {
-	AnalysisReport,
-	ScanOptionsForm,
-} from "features/scans/scansSchemas";
+import { AnalysisReport, ScanOptionsForm } from "features/scans/scansSchemas";
 
 jest.mock("react-redux", () => ({
 	...(jest.requireActual("react-redux") as any),
@@ -100,7 +97,7 @@ describe("MainPage component", () => {
 		global.window ??= globalWindow;
 		localStorageSetItemSpy.mockRestore();
 	});
-	
+
 	describe("startScan", () => {
 		const vcsOrg = "goodVcs/goodOrg";
 		const repo = "repo";

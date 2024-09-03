@@ -22,9 +22,7 @@ jest.mock("api/client", () => ({
 import { useSelector, useDispatch } from "react-redux";
 /* eslint-disable */
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-	mockStoreEmpty,
-} from "../../../../testData/testMockData";
+import { mockStoreEmpty } from "../../../../testData/testMockData";
 import { STORAGE_LOCAL_WELCOME } from "app/globals";
 import { getScanHistory } from "features/scans/scansSlice";
 

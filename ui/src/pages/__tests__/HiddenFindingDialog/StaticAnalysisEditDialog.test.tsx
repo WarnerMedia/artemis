@@ -7,9 +7,7 @@ import {
 	within,
 } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
-import {
-	findingAnalysisRow,
-} from "../../../../testData/testMockData";
+import { findingAnalysisRow } from "../../../../testData/testMockData";
 import { formatDate } from "utils/formatters";
 
 beforeAll(() => {
