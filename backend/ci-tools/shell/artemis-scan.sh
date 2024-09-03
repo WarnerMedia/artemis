@@ -90,6 +90,7 @@ fi
 ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
 ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}"  # Allow Artemis API prefix to be directly specified (e.g. for testing)
 ARTEMIS_RESULTS="$ARTEMIS/results"
+ARTEMIS_STATUS_INTERVAL="${ARTEMIS_STATUS_INTERVAL:-10}"  # Time in seconds between status checks.
 SERVICE=$1
 RESOURCE=$2
 BRANCH=$3
@@ -217,7 +218,7 @@ log "Scan started ($SCAN)"
 # Wait for the scan to end
 STATUS="queued"
 while [ "$STATUS" != "completed" ] && [ "$STATUS" != "failed" ] && [ "$STATUS" != "error" ] && [ "$STATUS" != "terminated" ]; do
-  sleep 10
+  sleep "$ARTEMIS_STATUS_INTERVAL"
   RESP=$(curl --silent --write-out "\n%{http_code}" \
     --request GET \
     --url "$ARTEMIS_API/$SERVICE/$SCAN?format=summary&results=vulnerabilities&${SEVERITY_ARGS}results=secrets&results=static_analysis" \
