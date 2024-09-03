@@ -26,7 +26,7 @@ import UserSettings from "pages/UserSettings";
 import {
 	mockStoreApiKeys,
 	mockStoreEmpty,
-} from "../../../testData/testMockData";
+} from "../../../../testData/testMockData";
 import { deleteUserKey } from "features/keys/keysSlice";
 import { STORAGE_LOCAL_WELCOME } from "app/globals";
 import { themeColors } from "app/colors";

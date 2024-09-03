@@ -39,7 +39,7 @@ import {
 	mockStoreScanId,
 	mockStoreEmpty,
 	mockStoreSingleScan,
-} from "../../../testData/testMockData";
+} from "../../../../testData/testMockData";
 import { FilterDef } from "api/client";
 
 let mockAppState: any;
