@@ -75,7 +75,7 @@ def test_missing_opts(httpserver: HTTPServer):
     """
     (out, err, ret) = _run_script(httpserver, args=[])
     assert err == ""
-    assert out.find("Positional arguments:") >= 0
+    assert "Positional arguments:" in out
     assert ret != 0
 
 
@@ -85,7 +85,7 @@ def test_missing_api_key(httpserver: HTTPServer):
     """
     (out, err, ret) = _run_script(httpserver, env={"ARTEMIS_API_KEY": ""})
     assert err == ""
-    assert out.find("environment variable is not set") >= 0
+    assert "environment variable is not set" in out
     assert ret != 0
 
 
@@ -97,7 +97,7 @@ def test_unauthorized(httpserver: HTTPServer):
 
     (out, err, ret) = _run_script(httpserver)
     assert err == ""
-    assert out.find("Scan failed to start")
+    assert "Scan failed to start" in out
     assert ret != 0
 
 
@@ -115,7 +115,7 @@ def test_maintenance_mode(httpserver: HTTPServer, fail_closed: bool, retcode: in
 
     (out, err, ret) = _run_script(httpserver, args=args)
     assert err == ""
-    assert out.find("Artemis is in maintenance mode") >= 0
+    assert "Artemis is in maintenance mode" in out
     assert ret == retcode
 
 
@@ -129,7 +129,7 @@ def test_queue_failed(httpserver: HTTPServer):
 
     (out, err, ret) = _run_script(httpserver)
     assert err == ""
-    assert out.find("Scan failed to start") >= 0
+    assert "Scan failed to start" in out
     assert ret != 0
 
 
@@ -148,7 +148,7 @@ def test_scan_maintenance_mode(httpserver: HTTPServer, fail_closed: bool, retcod
 
     (out, err, ret) = _run_script(httpserver, args=args)
     assert err == ""
-    assert out.find("Artemis is in maintenance mode") >= 0
+    assert "Artemis is in maintenance mode" in out
     assert ret == retcode
 
 
@@ -164,7 +164,7 @@ def test_scan_error(httpserver: HTTPServer):
 
     (out, err, ret) = _run_script(httpserver)
     assert err == ""
-    assert out.find("Scan failed") >= 0
+    assert "Scan failed" in out
     assert ret != 0
 
 
@@ -186,8 +186,8 @@ def test_scan_completed_success(httpserver: HTTPServer):
 
     (out, err, ret) = _run_script(httpserver)
     assert err == ""
-    assert out.find("Scan status: completed") >= 0
-    assert out.find("Analysis result: pass") >= 0
+    assert "Scan status: completed" in out
+    assert "Analysis result: pass" in out
     assert ret == 0
 
 
@@ -226,6 +226,6 @@ def test_scan_completed_failed(httpserver: HTTPServer):
 
     (out, err, ret) = _run_script(httpserver)
     assert err == ""
-    assert out.find("Scan status: completed") >= 0
-    assert out.find("Analysis result: fail") >= 0
+    assert "Scan status: completed" in out
+    assert "Analysis result: fail" in out
     assert ret != 0
