@@ -1,10 +1,7 @@
-import logging
 import pytest
 import subprocess
 from pytest_httpserver import HTTPServer, RequestHandler
 from werkzeug.datastructures import MultiDict
-
-LOGGER = logging.getLogger(__name__)
 
 API_KEY = "test-key"
 DEFAULT_ARGS = ["service", "repo", "main", "critical,high"]
@@ -32,7 +29,6 @@ def _run_script(
         "ARTEMIS_API_KEY": API_KEY,
         "ARTEMIS_STATUS_INTERVAL": "0",  # Don't wait between status checks.
     } | env
-    LOGGER.info(merged_env)
     proc = subprocess.run(args=["ci-tools/shell/artemis-scan.sh", *args], env=merged_env, capture_output=True)
     return (proc.stdout.decode("utf-8"), proc.stderr.decode("utf-8"), proc.returncode)
 
