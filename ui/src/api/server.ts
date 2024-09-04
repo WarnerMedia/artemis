@@ -1044,7 +1044,7 @@ export function makeServer() {
 					"/this/is/a/really/long/path/to/a/file/identified/as/a/secret/filename/is/slack.pass":
 						[
 							{
-								type: "slack",
+								type: "slack, github",
 								line: 2,
 								commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
 								details: [
@@ -1054,9 +1054,9 @@ export function makeServer() {
 										source: "GHAS Secrets",
 									},
 									{
-										type: "slack",
+										type: "github",
 										validity: SecretValidity.Unknown,
-										source: "Trufflehog",
+										source: "Trufflehog (Legacy) Scanner",
 									},
 								],
 							},
@@ -1096,6 +1096,11 @@ export function makeServer() {
 									validity: SecretValidity.Inactive,
 									source: "GHAS Secrets",
 								},
+								{
+									type: "aws",
+									validity: SecretValidity.Unknown,
+									source: "Trufflehog (Legacy) Scanner",
+								},
 							],
 						},
 					],
@@ -1110,7 +1115,7 @@ export function makeServer() {
 								{
 									type: "postgres",
 									validity: SecretValidity.Unknown,
-									source: "Trufflehog",
+									source: "Trufflehog (Legacy) Scanner",
 								},
 							],
 						},
@@ -1136,9 +1141,14 @@ export function makeServer() {
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
 							details: [
 								{
-									type: "ssh",
+									type: "SSH Private Key",
 									validity: SecretValidity.Unknown,
-									source: "Trufflehog",
+									source: "Trufflehog (Legacy) Scanner",
+								},
+								{
+									type: "ssh",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
 								},
 							],
 						},

@@ -4,10 +4,9 @@ import { useLingui } from "@lingui/react";
 import { t } from "@lingui/macro";
 
 import { colorHigh, colorLow, colorNegligible } from "app/colors";
-import { SecretValidity } from "features/scans/scansSchemas";
+import { SecretDetail, SecretValidity } from "features/scans/scansSchemas";
 import {
 	DoDisturbOnOutlined,
-	FilterNoneOutlined,
 	ReportOutlined,
 	WarningAmber,
 } from "@mui/icons-material";
@@ -35,12 +34,13 @@ const useStyles = makeStyles()(() => ({
 		color: "black !important",
 	},
 	iconMixed: {
-		color: "black !important"
-	}
+		color: "black !important",
+	},
 }));
 
 export type SecretValidityChipProps = {
 	readonly value?: string;
+	readonly details?: ReadonlyArray<SecretDetail>;
 	readonly tooltipDisabled?: boolean;
 };
 
@@ -52,30 +52,22 @@ type TooltipChipProps = ChipProps & {
 export const SecretValidityChip = (props: SecretValidityChipProps) => {
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
-	const { value, tooltipDisabled } = props;
+	const { value, details, tooltipDisabled } = props;
 
-	if (value?.includes(",")) {
-		return (
-			<TooltipChip
-				icon={<FilterNoneOutlined />}
-				label={i18n._(t`Mixed`)}
-				size="small"
-				tooltipDisabled={tooltipDisabled}
-				tooltipText={i18n._(
-					t`This finding has multiple different validities reported`
-				)}
-			/>
-		);
+	const activeIcon = <ReportOutlined className={classes.iconActive} />;
+	const inactiveIcon = <DoDisturbOnOutlined className={classes.iconInactive} />;
+	const unknownIcon = <WarningAmber className={classes.iconUnknown} />;
+
+	if (details && details.length > 1 && !areDetailsAllSameValidity(details)) {
+		return getMixedChip(details, tooltipDisabled);
 	}
-
-	console.log(value)
 
 	switch (value) {
 		case SecretValidity.Active:
 			return (
 				<TooltipChip
 					className={classes.chipActive}
-					icon={<ReportOutlined className={classes.iconActive} />}
+					icon={activeIcon}
 					label={i18n._(t`Active`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
@@ -88,7 +80,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 			return (
 				<TooltipChip
 					className={classes.chipInactive}
-					icon={<DoDisturbOnOutlined className={classes.iconInactive} />}
+					icon={inactiveIcon}
 					label={i18n._(t`Inactive`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
@@ -101,7 +93,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 			return (
 				<TooltipChip
 					className={classes.chipUnknown}
-					icon={<WarningAmber className={classes.iconUnknown} />}
+					icon={unknownIcon}
 					label={i18n._(t`Unknown`)}
 					size="small"
 					tooltipDisabled={tooltipDisabled}
@@ -121,6 +113,45 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 				/>
 			);
 	}
+
+	function getMixedChip(
+		details: ReadonlyArray<SecretDetail>,
+		tooltipDisabled: boolean | undefined
+	) {
+		let chipStyle: string;
+		let icon: JSX.Element;
+		let validityText: string;
+
+		const validity = getMixedValidity(details);
+
+		if (validity === SecretValidity.Active) {
+			chipStyle = classes.chipActive;
+			icon = activeIcon;
+			validityText = i18n._(t`Active`);
+		} else if (validity === SecretValidity.Inactive) {
+			chipStyle = classes.chipInactive;
+			icon = inactiveIcon;
+			validityText = i18n._(t`Inactive`);
+		} else {
+			// validity === SecretValidity.Unknown
+			chipStyle = classes.chipUnknown;
+			icon = unknownIcon;
+			validityText = i18n._(t`Unknown`);
+		}
+
+		return (
+			<TooltipChip
+				className={chipStyle}
+				icon={icon}
+				label={`${validityText} (${i18n._(t`Mixed`)})`}
+				size="small"
+				tooltipDisabled={tooltipDisabled}
+				tooltipText={`${i18n._(
+					t`Multiple different validities reported`
+				)}: ${getDetailsSummary(details)}`}
+			/>
+		);
+	}
 };
 
 const TooltipChip = (props: TooltipChipProps) => {
@@ -136,3 +167,87 @@ const TooltipChip = (props: TooltipChipProps) => {
 		);
 	}
 };
+
+function getMixedValidity(
+	details: ReadonlyArray<SecretDetail>
+): SecretValidity {
+	if (areDetailsAllSameType(details)) {
+		// If all services agree on the finding type, finding priority goes Active > Inactive >
+		// Unknown, since we assume "Inactive" determinations were made with more information than
+		// "Unknown" determinations
+		if (details.some((item) => item.validity === SecretValidity.Active)) {
+			return SecretValidity.Active;
+		} else if (
+			details.some((item) => item.validity === SecretValidity.Inactive)
+		) {
+			return SecretValidity.Inactive;
+		} else {
+			return SecretValidity.Unknown;
+		}
+	} else {
+		// If services do not agree on the finding type, finding priority goes Active > Unknown >
+		// Inactive, since it's possible the "Unknown" determination is for a finding type that
+		// cannot be verified
+		if (details.some((item) => item.validity === SecretValidity.Active)) {
+			return SecretValidity.Active;
+		} else if (
+			details.some((item) => item.validity === SecretValidity.Unknown)
+		) {
+			return SecretValidity.Unknown;
+		} else if (
+			details.some((item) => item.validity === SecretValidity.Inactive)
+		) {
+			return SecretValidity.Inactive;
+		} else {
+			// Unexpected validity was received, we'll just say it's unknown
+			return SecretValidity.Unknown;
+		}
+	}
+}
+
+function areDetailsAllSameType(details: ReadonlyArray<SecretDetail>): boolean {
+	const typesSet = new Set<string>(details.map((item) => item.type));
+
+	return typesSet.size === 1;
+}
+
+function areDetailsAllSameValidity(
+	details: ReadonlyArray<SecretDetail>
+): boolean {
+	const validitySet = new Set<string>(details.map((item) => item.validity));
+
+	return validitySet.size === 1;
+}
+
+function getDetailsSummary(details: ReadonlyArray<SecretDetail>): string {
+	const activeTypes = getTypesOfValidity(details, SecretValidity.Active);
+	const inactiveTypes = getTypesOfValidity(details, SecretValidity.Inactive);
+	const unknownTypes = getTypesOfValidity(details, SecretValidity.Unknown);
+
+	const result = [];
+
+	if (activeTypes.length > 0) {
+		result.push(`Active (${activeTypes.join(", ")})`);
+	}
+
+	if (inactiveTypes.length > 0) {
+		result.push(`Inactive (${inactiveTypes.join(", ")})`);
+	}
+
+	if (unknownTypes.length > 0) {
+		result.push(`Unknown (${unknownTypes.join(", ")})`);
+	}
+
+	return result.join(", ");
+}
+
+function getTypesOfValidity(
+	details: ReadonlyArray<SecretDetail>,
+	validity: SecretValidity
+): string[] {
+	const filtered = details
+		.filter((item) => item.validity === validity)
+		.map((item) => item.type);
+
+	return Array.from(new Set(filtered));
+}

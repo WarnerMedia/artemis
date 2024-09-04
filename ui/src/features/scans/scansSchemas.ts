@@ -146,17 +146,17 @@ export enum SecretValidity {
 	Unknown = "unknown",
 }
 
+export interface SecretDetail {
+	readonly type: string;
+	readonly validity: SecretValidity;
+	readonly source: string;
+}
+
 export interface SecretFinding {
 	line: number;
 	type: string;
 	commit: string;
-	details?: [
-		{
-			type: string;
-			validity: SecretValidity;
-			source: string;
-		}
-	];
+	details?: ReadonlyArray<SecretDetail>;
 }
 
 export interface SecretFindingResult {
