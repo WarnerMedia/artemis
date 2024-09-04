@@ -2,7 +2,6 @@ import logging
 import pytest
 import subprocess
 from pytest_httpserver import HTTPServer, RequestHandler
-from typing import Tuple
 from werkzeug.datastructures import MultiDict
 
 LOGGER = logging.getLogger(__name__)
@@ -22,7 +21,7 @@ BASIC_ANALYSIS_REPORT = {
 
 def _run_script(
     httpserver: HTTPServer, args: list[str] = DEFAULT_ARGS, env: dict[str, str] = {}
-) -> Tuple[str, str, int]:
+) -> tuple[str, str, int]:
     """
     Runs the artemis-scan.sh script with the test HTTP server.
 
