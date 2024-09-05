@@ -1114,7 +1114,12 @@ export function makeServer() {
 							details: [
 								{
 									type: "postgres",
-									validity: SecretValidity.Unknown,
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
 									source: "Trufflehog (Legacy) Scanner",
 								},
 							],
@@ -1128,8 +1133,30 @@ export function makeServer() {
 							details: [
 								{
 									type: "postgres",
-									validity: SecretValidity.Unknown,
-									source: "Trufflehog",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "Trufflehog (Legacy) Scanner",
+								},
+							],
+						},
+						{
+							type: "postgres",
+							line: 8,
+							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+							details: [
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "Trufflehog (Legacy) Scanner",
 								},
 							],
 						},

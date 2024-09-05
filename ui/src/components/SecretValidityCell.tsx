@@ -58,7 +58,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 	const inactiveIcon = <DoDisturbOnOutlined className={classes.iconInactive} />;
 	const unknownIcon = <WarningAmber className={classes.iconUnknown} />;
 
-	if (details && details.length > 1 && !areDetailsAllSameValidity(details)) {
+	if (details && details.length > 1 && !allValuesMatch(details, (item) => item.validity)) {
 		return getMixedChip(details, tooltipDisabled);
 	}
 
@@ -171,8 +171,8 @@ const TooltipChip = (props: TooltipChipProps) => {
 function getMixedValidity(
 	details: ReadonlyArray<SecretDetail>
 ): SecretValidity {
-	if (areDetailsAllSameType(details)) {
-		// If all services agree on the finding type, finding priority goes Active > Inactive >
+	if (allValuesMatch(details, (item) => item.type)) {
+		// If all services agree on the finding type, validity priority goes Active > Inactive >
 		// Unknown, since we assume "Inactive" determinations were made with more information than
 		// "Unknown" determinations
 		if (details.some((item) => item.validity === SecretValidity.Active)) {
@@ -185,9 +185,9 @@ function getMixedValidity(
 			return SecretValidity.Unknown;
 		}
 	} else {
-		// If services do not agree on the finding type, finding priority goes Active > Unknown >
+		// If services do not agree on the finding type, validity priority goes Active > Unknown >
 		// Inactive, since it's possible the "Unknown" determination is for a finding type that
-		// cannot be verified
+		// cannot be verified automatically
 		if (details.some((item) => item.validity === SecretValidity.Active)) {
 			return SecretValidity.Active;
 		} else if (
@@ -205,18 +205,25 @@ function getMixedValidity(
 	}
 }
 
-function areDetailsAllSameType(details: ReadonlyArray<SecretDetail>): boolean {
-	const typesSet = new Set<string>(details.map((item) => item.type));
-
-	return typesSet.size === 1;
-}
-
-function areDetailsAllSameValidity(
-	details: ReadonlyArray<SecretDetail>
+function allValuesMatch(
+	details: ReadonlyArray<SecretDetail>,
+	fn: (item: SecretDetail) => string
 ): boolean {
-	const validitySet = new Set<string>(details.map((item) => item.validity));
+	let first: string | undefined;
 
-	return validitySet.size === 1;
+	for (const detail of details) {
+		if (first === undefined) {
+			first = fn(detail);
+		} else {
+			const curr = fn(detail);
+
+			if (curr !== first) {
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 function getDetailsSummary(details: ReadonlyArray<SecretDetail>): string {
