@@ -17,25 +17,25 @@ const DETAIL_ACTIVE: SecretDetail = {
 	type: TYPE_1,
 	validity: SecretValidity.Active,
 	source: SOURCE,
-}
+};
 
 const DETAIL_INACTIVE_1: SecretDetail = {
 	type: TYPE_1,
 	validity: SecretValidity.Inactive,
 	source: SOURCE,
-}
+};
 
 const DETAIL_INACTIVE_2: SecretDetail = {
 	type: TYPE_2,
 	validity: SecretValidity.Inactive,
 	source: SOURCE,
-}
+};
 
 const DETAIL_UNKNOWN: SecretDetail = {
 	type: TYPE_1,
 	validity: SecretValidity.Unknown,
 	source: SOURCE,
-}
+};
 
 describe("SecretValidityCell", () => {
 	it("no args, shows 'not tested'", () => {
@@ -57,7 +57,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("one detail, creates labelled chip", () => {
-		const details = [ DETAIL_ACTIVE ];
+		const details = [DETAIL_ACTIVE];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(validity, "i");
@@ -66,7 +66,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("two details with same validity, creates labelled chip", () => {
-		const details = [ DETAIL_INACTIVE_1, DETAIL_INACTIVE_2 ];
+		const details = [DETAIL_INACTIVE_1, DETAIL_INACTIVE_2];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(validity, "i");
@@ -75,7 +75,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("two details with one active, creates labelled chip with 'Active (Mixed)'", () => {
-		const details = [ DETAIL_ACTIVE, DETAIL_INACTIVE_1 ];
+		const details = [DETAIL_ACTIVE, DETAIL_INACTIVE_1];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(`${SecretValidity.Active} \\(mixed\\)`, "i");
@@ -84,7 +84,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("two details with the same type and one inactive and one unknown, creates labelled chip with 'Inactive (Mixed)'", () => {
-		const details = [ DETAIL_INACTIVE_1, DETAIL_UNKNOWN ];
+		const details = [DETAIL_INACTIVE_1, DETAIL_UNKNOWN];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(`${SecretValidity.Inactive} \\(mixed\\)`, "i");
@@ -93,7 +93,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("two details with different type and one inactive and one unknown, creates labelled chip with 'Unknown (Mixed)'", () => {
-		const details = [ DETAIL_INACTIVE_2, DETAIL_UNKNOWN ];
+		const details = [DETAIL_INACTIVE_2, DETAIL_UNKNOWN];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(`${SecretValidity.Unknown} \\(mixed\\)`, "i");
@@ -102,6 +102,8 @@ describe("SecretValidityCell", () => {
 	});
 });
 
-function getValidityStrFromDetails(details: ReadonlyArray<SecretDetail>): string {
-	return Array.from(new Set(details.map((item) => item.validity))).join(', ');
+function getValidityStrFromDetails(
+	details: ReadonlyArray<SecretDetail>
+): string {
+	return Array.from(new Set(details.map((item) => item.validity))).join(", ");
 }
