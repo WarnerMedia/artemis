@@ -13,6 +13,7 @@ module "public_engine_cluster" {
   vpc_route_table_id = var.vpc_route_table_id
   engine_cidr        = "10.0.4.0/24"
 
+  engine_ami            = var.engine_ami
   engine_size           = var.pub_engine_size
   engine_scale_min      = var.engine_scale_min_public
   engine_scale_max      = var.engine_scale_max_public
@@ -75,6 +76,7 @@ module "nat_engine_cluster" {
   vpc_route_table_id = aws_route_table.lambda_routes.id
   engine_cidr        = "10.0.1.0/24"
 
+  engine_ami            = var.engine_ami
   engine_size           = var.nat_engine_size
   engine_scale_min      = var.engine_scale_min_nat
   engine_scale_max      = var.engine_scale_max_nat

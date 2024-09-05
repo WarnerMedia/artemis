@@ -357,6 +357,21 @@ variable "extra_event_dispatch_queues" {
 }
 
 ################################################
+# Engine Cluster Customization
+################################################
+variable "engine_ami" {
+  description = "The AMI that the engine instances use"
+  default = {
+    # AMI IDs are region-specific
+    # These are the IDs for amzn2-ami-kernel-5.10-hvm-2.0.20230404.0-x86_64-gp2
+    "us-east-1" = "ami-0fa1de1d60de6a97e",
+    "us-east-2" = "ami-0d80c4e4338722fc6",
+    "us-west-1" = "ami-0e5e4bbcbd7349cac",
+    "us-west-2" = "ami-0c252bb9e6b71848e"
+  }
+}
+
+################################################
 # Public Engine Cluster Customization
 ################################################
 
