@@ -37,7 +37,7 @@ msgstr "Invalid scan time matcher"
 msgid "Invalid repository matcher"
 msgstr "Invalid repository matcher"
 
-#: src/components/SecretValidityCell.tsx:146
+#: src/components/SecretValidityCell.tsx:150
 msgid "Mixed"
 msgstr "Mixed"
 
@@ -110,7 +110,7 @@ msgstr "No users found. Click the + button to add a new user"
 msgid "Loading options..."
 msgstr "Loading options..."
 
-#: src/components/SecretValidityCell.tsx:109
+#: src/components/SecretValidityCell.tsx:113
 msgid "Not tested"
 msgstr "Not tested"
 
@@ -603,7 +603,7 @@ msgstr "Link a Version Control System account to scan additional repositories wi
 msgid "User added"
 msgstr "User added"
 
-#: src/components/SecretValidityCell.tsx:88
+#: src/components/SecretValidityCell.tsx:92
 msgid "This finding was tested and determined to be inactive"
 msgstr "This finding was tested and determined to be inactive"
 
@@ -689,8 +689,8 @@ msgstr "Trivy SBOM"
 msgid "None"
 msgstr "None"
 
-#: src/components/SecretValidityCell.tsx:97
-#: src/components/SecretValidityCell.tsx:139
+#: src/components/SecretValidityCell.tsx:101
+#: src/components/SecretValidityCell.tsx:143
 #: src/custom/ResultsMetaField.tsx:24
 #: src/custom/SearchMetaField.tsx:112
 #: src/pages/UserSettings.tsx:751
@@ -714,8 +714,8 @@ msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgid "NodeJS Scan (NodeJS)"
 msgstr "NodeJS Scan (NodeJS)"
 
-#: src/components/SecretValidityCell.tsx:71
-#: src/components/SecretValidityCell.tsx:130
+#: src/components/SecretValidityCell.tsx:75
+#: src/components/SecretValidityCell.tsx:134
 msgid "Active"
 msgstr "Active"
 
@@ -845,7 +845,7 @@ msgstr "Secret: {count}"
 msgid "Invalid category"
 msgstr "Invalid category"
 
-#: src/components/SecretValidityCell.tsx:112
+#: src/components/SecretValidityCell.tsx:116
 msgid "This finding was not tested for validity"
 msgstr "This finding was not tested for validity"
 
@@ -1013,7 +1013,7 @@ msgstr "Generating JSON File..."
 msgid "No secrets found"
 msgstr "No secrets found"
 
-#: src/components/SecretValidityCell.tsx:75
+#: src/components/SecretValidityCell.tsx:79
 msgid "This finding was tested and determined to be valid and active"
 msgstr "This finding was tested and determined to be valid and active"
 
@@ -1193,8 +1193,8 @@ msgstr "After"
 msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 
-#: src/components/SecretValidityCell.tsx:84
-#: src/components/SecretValidityCell.tsx:134
+#: src/components/SecretValidityCell.tsx:88
+#: src/components/SecretValidityCell.tsx:138
 msgid "Inactive"
 msgstr "Inactive"
 
@@ -1630,7 +1630,7 @@ msgstr "REPLACE ME: ADD A WELCOME MESSAGE AND/OR INFORMATION TO GET THE USER STA
 msgid "Discovered By Plugins"
 msgstr "Discovered By Plugins"
 
-#: src/components/SecretValidityCell.tsx:101
+#: src/components/SecretValidityCell.tsx:105
 msgid "This finding could not be determined to be either active or inactive"
 msgstr "This finding could not be determined to be either active or inactive"
 
@@ -2515,7 +2515,7 @@ msgstr "Component/Commit"
 msgid "Component Name"
 msgstr "Component Name"
 
-#: src/components/SecretValidityCell.tsx:150
+#: src/components/SecretValidityCell.tsx:154
 msgid "Multiple different validities reported"
 msgstr "Multiple different validities reported"
 
