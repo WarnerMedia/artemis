@@ -33,9 +33,6 @@ const useStyles = makeStyles()(() => ({
 	iconUnknown: {
 		color: "black !important",
 	},
-	iconMixed: {
-		color: "black !important",
-	},
 }));
 
 export type SecretValidityChipProps = {
@@ -58,11 +55,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 	const inactiveIcon = <DoDisturbOnOutlined className={classes.iconInactive} />;
 	const unknownIcon = <WarningAmber className={classes.iconUnknown} />;
 
-	if (
-		details &&
-		details.length > 1 &&
-		!allValuesMatch(details, (item) => item.validity)
-	) {
+	if (details && details.length > 1 && !allValuesMatch(details, (item) => item.validity)) {
 		return getMixedChip(details, tooltipDisabled);
 	}
 

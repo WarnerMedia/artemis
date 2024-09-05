@@ -4000,7 +4000,7 @@ export const SecretsTabContent = (props: {
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
 				f_validity: getValidities(item.details)
 					.map(addValidityFilterPrefix)
-					.join(","),
+					.join(", "),
 				validity: getValidities(item.details).join(", "),
 				details: item.details,
 				repo: scan.repo,
