@@ -13,14 +13,8 @@ const TYPE_2 = "ssh";
 
 const SOURCE = "Trufflehog";
 
-const DETAIL_ACTIVE_1: SecretDetail = {
+const DETAIL_ACTIVE: SecretDetail = {
 	type: TYPE_1,
-	validity: SecretValidity.Active,
-	source: SOURCE,
-}
-
-const DETAIL_ACTIVE_2: SecretDetail = {
-	type: TYPE_2,
 	validity: SecretValidity.Active,
 	source: SOURCE,
 }
@@ -63,7 +57,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("one detail, creates labelled chip", () => {
-		const details = [ DETAIL_ACTIVE_1 ];
+		const details = [ DETAIL_ACTIVE ];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(validity, "i");
@@ -81,7 +75,7 @@ describe("SecretValidityCell", () => {
 	});
 
 	it("two details with one active, creates labelled chip with 'Active (Mixed)'", () => {
-		const details = [ DETAIL_ACTIVE_1, DETAIL_INACTIVE_1 ];
+		const details = [ DETAIL_ACTIVE, DETAIL_INACTIVE_1 ];
 		const validity = getValidityStrFromDetails(details);
 
 		const re = new RegExp(`${SecretValidity.Active} \\(mixed\\)`, "i");
