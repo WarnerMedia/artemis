@@ -165,6 +165,13 @@ log() {
   echo "$(date -u '+%Y-%m-%dT%H:%M:%S%z')" "$1"
 }
 
+# Attempt to pretty-print a raw body response as JSON for error reporting.
+# If the input is not JSON then it is printed directly without formatting.
+print_body() {
+  local body="$1"
+  jq <<<"$body" 2>/dev/null || echo "$body"
+}
+
 # Parse the vulnerability severity levels and build the API query args for them
 SEVERITY_ARGS=""
 IFS="," read -ra VALUES <<<"$SEVERITY"
@@ -203,13 +210,13 @@ if [ "$HTTP_CODE" -eq "503" ]; then
   fi
 fi
 
-# Extract the scan ID
-SCAN=$(echo "$BODY" | jq -r ".queued[0]")
+# Extract the scan ID.
+SCAN=$(jq -r ".queued[0]" <<<"$BODY" 2>/dev/null || echo 'null')
 
-if [ "$SCAN" = "null" ]; then
-  echo "Scan failed to start"
-  echo "Details:"
-  echo "$BODY" | jq
+if [[ -z $SCAN || $SCAN = 'null' ]]; then
+  log "Scan failed to start"
+  log "Details:"
+  print_body "$BODY"
   exit 1
 fi
 
@@ -236,16 +243,17 @@ while [ "$STATUS" != "completed" ] && [ "$STATUS" != "failed" ] && [ "$STATUS" !
     fi
   fi
 
-  STATUS=$(echo "$SUMMARY" | jq -r ".status")
+  # If the response is not JSON, treat it as an error.
+  STATUS=$(jq -r '.status' <<<"$SUMMARY" 2>/dev/null || echo error)
 
   log "Scan status: $STATUS"
 done
 
 # If the scan is not completed then something went wrong
 if [ "$STATUS" != "completed" ]; then
-  log "Scan failed"
+  log "Scan failed. (Status: $STATUS)"
   log "Details:"
-  log "$SUMMARY" | jq
+  print_body "$SUMMARY"
   exit 1
 fi
 

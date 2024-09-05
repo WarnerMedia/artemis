@@ -1,7 +1,10 @@
+import logging
 import pytest
 import subprocess
 from pytest_httpserver import HTTPServer, RequestHandler
 from werkzeug.datastructures import MultiDict
+
+LOGGER = logging.getLogger(__name__)
 
 API_KEY = "test-key"
 DEFAULT_ARGS = ["service", "repo", "main", "critical,high"]
@@ -115,6 +118,23 @@ def test_maintenance_mode(httpserver: HTTPServer, fail_closed: bool, retcode: in
     assert ret == retcode
 
 
+def test_queue_http_error(httpserver: HTTPServer):
+    """
+    Test when queuing fails due to a generic HTTP error.
+    """
+    _expect_scan_req(httpserver).respond_with_data(
+        status=502,
+        content_type="text/html; charset=utf-8",
+        response_data="<html><body><h1>502 Bad Gateway</h1></body></html>",
+    )
+
+    (out, err, ret) = _run_script(httpserver)
+    assert err == ""
+    assert "Scan failed to start" in out
+    assert "502 Bad Gateway" in out
+    assert ret != 0
+
+
 def test_queue_failed(httpserver: HTTPServer):
     """
     Test when the scan fails to be added to the queue.
@@ -148,19 +168,40 @@ def test_scan_maintenance_mode(httpserver: HTTPServer, fail_closed: bool, retcod
     assert ret == retcode
 
 
-@pytest.mark.xfail(reason="Scan details are not valid JSON")
+def test_scan_http_error(httpserver: HTTPServer):
+    """
+    Test a scan that was aborted due to a generic HTTP error.
+    """
+    _expect_scan_req(httpserver).respond_with_json({"queued": [SCAN_ID], "failed": []})
+    _expect_status_req(httpserver).respond_with_data(
+        status=502,
+        content_type="text/html; charset=utf-8",
+        response_data="<html><body><h1>502 Bad Gateway</h1></body></html>",
+    )
+    (out, err, ret) = _run_script(httpserver)
+    assert err == ""
+    assert "Scan failed. (Status: error)" in out
+    assert "502 Bad Gateway" in out
+    assert ret != 0
+
+
 def test_scan_error(httpserver: HTTPServer):
     """
     Test a scan that was aborted due to an error.
     """
     _expect_scan_req(httpserver).respond_with_json({"queued": [SCAN_ID], "failed": []})
     _expect_status_req(httpserver).respond_with_json(
-        BASIC_ANALYSIS_REPORT | {"status": "error"},
+        BASIC_ANALYSIS_REPORT
+        | {
+            "status": "error",
+            "errors": {"Setup": ["Repo too large (1234 KB)"]},
+        },
     )
 
     (out, err, ret) = _run_script(httpserver)
     assert err == ""
-    assert "Scan failed" in out
+    assert "Scan failed. (Status: error)" in out
+    assert "Repo too large (1234 KB)" in out
     assert ret != 0
 
 
