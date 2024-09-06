@@ -81,7 +81,7 @@
     "build:nonprod": "npm run compile -- strict && env-cmd -f ./.env.nonprod react-scripts build",
     "test": "npm run compile && react-scripts test --reporters=default --reporters=jest-html-reporter",
     "test-debug": "npm run compile && react-scripts --inspect-brk test --runInBand --no-cache",
-    "test-precommit": "react-scripts test --watchAll=false --env=jsdom --coverage --reporters=default --reporters=jest-html-reporter --silent",
+    "test-precommit": "react-scripts test --watchAll=false --env=jsdom --coverage --reporters=default --reporters=jest-html-reporter --silent --maxWorkers=4",
     "extract": "lingui extract",
     "extract-clean": "lingui extract --clean",
     "compile": "lingui compile",
