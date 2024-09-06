@@ -8,15 +8,17 @@ resource "aws_lambda_function" "event-dispatch" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/event_dispatch/v${var.ver}/event_dispatch.zip"
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  layers        = var.lambda_layers
+  role          = aws_iam_role.event-role.arn
 
-  role = aws_iam_role.event-role.arn
 
   environment {
     variables = merge({
+      DATADOG_ENABLED                  = var.datadog_enabled
       SECRETS_QUEUE                    = var.secrets_queue.id
       REGION                           = var.aws_region
       S3_BUCKET                        = var.s3_analyzer_files_id
@@ -24,7 +26,9 @@ resource "aws_lambda_function" "event-dispatch" {
       ARTEMIS_AUDIT_QUEUE              = var.audit_event_queue.id
       ARTEMIS_ADDITIONAL_EVENT_ROUTING = var.additional_event_routing
       ARTEMIS_LOG_LEVEL                = var.log_level
-    }, var.extra_env_vars_event_dispatch)
+      DD_LAMBDA_HANDLER                = "handlers.handler"
+      DD_SERVICE                       = "${var.app}-data-fowarder"
+    }, var.extra_env_vars_event_dispatch, var.datadog_environment_variables)
   }
 
   tags = merge(

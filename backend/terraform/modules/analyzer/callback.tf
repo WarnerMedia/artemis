@@ -8,16 +8,30 @@ resource "aws_lambda_function" "callback" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/callback/v${var.ver}/callback.zip"
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  layers        = var.lambda_layers
 
   role = aws_iam_role.callback-assume-role.arn
+
+
 
   vpc_config {
     subnet_ids         = [aws_subnet.lambdas.id]
     security_group_ids = [aws_security_group.lambda-sg.id]
+  }
+
+  environment {
+    variables = merge({
+      DATADOG_ENABLED = var.datadog_enabled
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(

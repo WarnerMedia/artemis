@@ -140,10 +140,17 @@ export interface AnalysisFinding {
 	severity: Severities;
 }
 
+export enum SecretValidity {
+	Active = "active",
+	Inactive = "inactive",
+	Unknown = "unknown",
+}
+
 export interface SecretFinding {
 	line: number;
 	type: string;
 	commit: string;
+	validity?: SecretValidity;
 }
 
 export interface SecretFindingResult {

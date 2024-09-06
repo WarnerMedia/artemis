@@ -8,19 +8,11 @@ resource "aws_lambda_function" "license-retriever" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/license_retriever/v${var.ver}/license_retriever.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_license_retriever)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
 
-  handler       = "handlers.handler"
+
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 128
@@ -37,12 +29,18 @@ resource "aws_lambda_function" "license-retriever" {
   }
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED             = var.datadog_enabled
       ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       APPLICATION_TAG             = var.app
       ARTEMIS_LOG_LEVEL           = var.log_level
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(

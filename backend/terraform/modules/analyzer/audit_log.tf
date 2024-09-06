@@ -8,20 +8,30 @@ resource "aws_lambda_function" "audit-event-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/splunk_handler/v${var.ver}/splunk_handler.zip"
 
-  handler       = "handlers.handler"
+  handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
 
+  layers = var.lambda_layers
+
   role = aws_iam_role.audit-event-role.arn
 
+
+
   environment {
-    variables = {
+    variables = merge({
       APPLICATION           = var.app
       ENVIRONMENT           = var.environment
       ARTEMIS_SPLUNK_KEY    = "artemis/audit-log-hec"
       ARTEMIS_SCRUB_NONPROD = "false"
-    }
+      DATADOG_ENABLED       = var.datadog_enabled
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-data-forwarder"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(

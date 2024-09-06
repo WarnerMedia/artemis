@@ -8,17 +8,9 @@ resource "aws_lambda_function" "scan_scheduler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scan_scheduler/v${var.ver}/scan_scheduler.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_scan_scheduler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
@@ -28,12 +20,18 @@ resource "aws_lambda_function" "scan_scheduler" {
   role = aws_iam_role.scan-scheduler-role.arn
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED               = var.datadog_enabled
       ANALYZER_DJANGO_SECRETS_ARN   = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN         = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_SCHEDULED_SCANS_QUEUE = var.scheduled_scan_queue.id
       ARTEMIS_LOG_LEVEL             = var.log_level
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-scheduled-events"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   vpc_config {
@@ -58,17 +56,9 @@ resource "aws_lambda_function" "scheduled_scan_handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scheduled_scan_handler/v${var.ver}/scheduled_scan_handler.zip"
 
-  layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_scheduled_scan_handler)
+  layers = var.lambda_layers
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to the layers as the CI pipline will deploy newer versions
-      layers
-    ]
-  }
+
 
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
@@ -78,12 +68,18 @@ resource "aws_lambda_function" "scheduled_scan_handler" {
   role = aws_iam_role.scheduled-scan-handler-role.arn
 
   environment {
-    variables = {
+    variables = merge({
+      DATADOG_ENABLED             = var.datadog_enabled
       ARTEMIS_API                 = "https://${var.domain_name}/api/v1"
       ANALYZER_DJANGO_SECRETS_ARN = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/django-secret-key"
       ANALYZER_DB_CREDS_ARN       = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/db-user"
       ARTEMIS_LOG_LEVEL           = var.log_level
-    }
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-scheduled-events"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   vpc_config {

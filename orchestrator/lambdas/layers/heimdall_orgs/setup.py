@@ -21,10 +21,7 @@ setup(
     url=("https://github.com/warnermedia/artemis/orchestrator/lambdas/layers/heimdall_orgs"),
     packages=find_packages(),
     setup_requires=[],
-    install_requires=[
-        "requests~=2.31",
-        "aws-lambda-powertools~=2.40.1",
-    ],
+    install_requires=[],
     tests_require=[],
     classifiers=[
         "Programming Language :: Python :: 3.9",

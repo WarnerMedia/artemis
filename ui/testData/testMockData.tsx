@@ -263,6 +263,7 @@ export const mockScan001 = {
 					type: "aws",
 					line: 1,
 					commit: "8437582743858d38473872587483",
+					validity: "unknown",
 				},
 			],
 			"mongodb/test_settings1.json": [
@@ -270,11 +271,13 @@ export const mockScan001 = {
 					type: "mongo",
 					line: 1,
 					commit: "89482954839285943892584932849",
+					validity: "unknown",
 				},
 				{
 					type: "mongo",
 					line: 2,
 					commit: "89482954839285943892584932849",
+					validity: "unknown",
 				},
 			],
 			"mongodb/test_settings2.json": [
@@ -282,11 +285,13 @@ export const mockScan001 = {
 					type: "mongo",
 					line: 1,
 					commit: "58437287548302574832750473280570432",
+					validity: "unknown",
 				},
 				{
 					type: "mongo",
 					line: 2,
 					commit: "58437287548302574832750473280570432",
+					validity: "unknown",
 				},
 			],
 			"google/fake_key.json": [
@@ -294,11 +299,13 @@ export const mockScan001 = {
 					type: "google",
 					line: 1,
 					commit: "54837208547382057483275402358493270584320532",
+					validity: "unknown",
 				},
 				{
 					type: "google",
 					line: 2,
 					commit: "54837208547382057483275402358493270584320532",
+					validity: "unknown",
 				},
 			],
 		},

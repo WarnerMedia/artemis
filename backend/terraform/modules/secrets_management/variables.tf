@@ -43,3 +43,21 @@ variable "scrub_details" {
   description = "Whether to scrub details from secret events"
   default     = "false"
 }
+
+variable "datadog_environment_variables" {
+  description = "Environment variables to configure datadog lambda_layers"
+  type        = map(any)
+  default     = {}
+}
+
+variable "lambda_layers" {
+  description = "List of Lambda layers for the secrets-handler Lambda"
+  type        = list(string)
+  default     = []
+}
+
+variable "datadog_enabled" {
+  description = "Whether Datadog monitoring should be enabled"
+  type        = bool
+  default     = false
+}

@@ -31,3 +31,19 @@ resource "aws_secretsmanager_secret_version" "artemis-api-key" {
     "key" : "REPLACEWITHVALUEFROMARTEMIS",
   })
 }
+
+
+###############################################################################
+# Datadog Authentication
+###############################################################################
+resource "aws_secretsmanager_secret" "datadog-api-key" {
+  name        = "${var.app}/datadog-api-key"
+  description = "Datadog API key"
+}
+
+resource "aws_secretsmanager_secret_version" "datadog-api-key" {
+  secret_id = aws_secretsmanager_secret.datadog-api-key.id
+  secret_string = jsonencode({
+    "key" : "REPLACEWITHVALUEFROMDATADOG",
+  })
+}

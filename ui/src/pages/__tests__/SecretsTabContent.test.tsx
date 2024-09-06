@@ -2,8 +2,9 @@ import queryString from "query-string";
 import { render, screen, waitFor, within } from "test-utils";
 import { FILTER_PREFIX_SECRET, SecretsTabContent } from "pages/ResultsPage";
 import { mockCurrentUser, mockScan001 } from "../../../testData/testMockData";
-import { AnalysisReport } from "features/scans/scansSchemas";
+import { AnalysisReport, SecretValidity } from "features/scans/scansSchemas";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
+import { validateSelect } from "pages/SearchPageTestCommon";
 import { act } from "react";
 
 const HASH_PREFIX = FILTER_PREFIX_SECRET;
@@ -169,6 +170,10 @@ describe("SecretsTabContent component", () => {
 				expect(
 					within(filterGroup).getByRole("textbox", { name: /commit/i })
 				).toHaveAttribute("placeholder", "Contains");
+
+				expect(
+					within(filterGroup).getByRole("button", { name: /validity/i })
+				).toBeInTheDocument();
 			});
 
 			it("filters add to url hash parameters", async () => {
@@ -215,6 +220,16 @@ describe("SecretsTabContent component", () => {
 				jest.runOnlyPendingTimers();
 				await waitFor(() => expect(typeFilter).toHaveDisplayValue(typeValue));
 
+				await validateSelect({
+					label: /validity/i,
+					withinElement: filterGroup,
+					options: ["None", "Active", "Inactive", "Unknown"],
+					defaultOption: "",
+					disabled: false,
+					selectOption: "Unknown",
+					user,
+				});
+
 				const commitFilter = await within(filterGroup).findByRole("textbox", {
 					name: /commit/i,
 				});
@@ -233,6 +248,10 @@ describe("SecretsTabContent component", () => {
 					},
 					resource: { filter: typeValue },
 					commit: { filter: commitValue },
+					validity: {
+						filter: SecretValidity.Unknown,
+						match: "exact",
+					},
 				});
 
 				jest.useRealTimers();
@@ -243,12 +262,14 @@ describe("SecretsTabContent component", () => {
 				const lineValue = "1234";
 				const typeValue = "a great type";
 				const commitValue = "hashhashhashhashhashhashhashhashhashhash";
+				const validityValue = "unknown";
 
 				const obj: any = {};
 				obj[`${HASH_PREFIX}filename`] = fileValue;
 				obj[`${HASH_PREFIX}line`] = lineValue;
 				obj[`${HASH_PREFIX}resource`] = typeValue;
 				obj[`${HASH_PREFIX}commit`] = commitValue;
+				obj[`${HASH_PREFIX}validity`] = validityValue;
 				const hash = queryString.stringify(obj);
 
 				// mock window.location.reload
@@ -260,7 +281,7 @@ describe("SecretsTabContent component", () => {
 					},
 				});
 
-				render(
+				const { user } = render(
 					<SecretsTabContent
 						scan={mockScan001 as AnalysisReport}
 						hiddenFindings={hiddenFindings}
@@ -286,6 +307,15 @@ describe("SecretsTabContent component", () => {
 					name: /type/i,
 				});
 				await waitFor(() => expect(typeFilter).toHaveDisplayValue(typeValue));
+
+				await validateSelect({
+					label: /validity/i,
+					withinElement: filterGroup,
+					options: ["None", "Active", "Inactive", "Unknown"],
+					defaultOption: "Unknown",
+					disabled: false,
+					user,
+				});
 
 				const commitFilter = await within(filterGroup).findByRole("textbox", {
 					name: /commit/i,

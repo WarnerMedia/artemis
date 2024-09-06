@@ -13,6 +13,7 @@ module "public_engine_cluster" {
   vpc_route_table_id = var.vpc_route_table_id
   engine_cidr        = "10.0.4.0/24"
 
+  engine_ami            = var.engine_ami
   engine_size           = var.pub_engine_size
   engine_scale_min      = var.engine_scale_min_public
   engine_scale_max      = var.engine_scale_max_public
@@ -36,10 +37,7 @@ module "public_engine_cluster" {
 
   heimdall_scans_cron = var.heimdall_scans_cron
 
-  lambda_layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_engine_scale_down)
+  lambda_layers = var.lambda_layers
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
@@ -53,11 +51,13 @@ module "public_engine_cluster" {
   revproxy_secret           = var.revproxy_secret
   revproxy_secret_region    = var.revproxy_secret_region
 
-  secrets_events_enabled       = var.secrets_events_enabled
-  inventory_events_enabled     = var.inventory_events_enabled
-  configuration_events_enabled = var.configuration_events_enabled
-  vulnerability_events_enabled = var.vulnerability_events_enabled
-  metadata_events_enabled      = var.metadata_events_enabled
+  secrets_events_enabled        = var.secrets_events_enabled
+  inventory_events_enabled      = var.inventory_events_enabled
+  configuration_events_enabled  = var.configuration_events_enabled
+  vulnerability_events_enabled  = var.vulnerability_events_enabled
+  metadata_events_enabled       = var.metadata_events_enabled
+  datadog_enabled               = var.datadog_enabled
+  datadog_environment_variables = var.datadog_environment_variables
 }
 
 module "nat_engine_cluster" {
@@ -76,6 +76,7 @@ module "nat_engine_cluster" {
   vpc_route_table_id = aws_route_table.lambda_routes.id
   engine_cidr        = "10.0.1.0/24"
 
+  engine_ami            = var.engine_ami
   engine_size           = var.nat_engine_size
   engine_scale_min      = var.engine_scale_min_nat
   engine_scale_max      = var.engine_scale_max_nat
@@ -99,10 +100,7 @@ module "nat_engine_cluster" {
 
   heimdall_scans_cron = var.heimdall_scans_cron
 
-  lambda_layers = concat([
-    aws_lambda_layer_version.artemislib.arn,
-    aws_lambda_layer_version.artemisdb.arn
-  ], var.extra_lambda_layers_engine_scale_down)
+  lambda_layers = var.lambda_layers
 
   lambda_subnet = aws_subnet.lambdas
   lambda_sg     = aws_security_group.lambda-sg
@@ -116,9 +114,11 @@ module "nat_engine_cluster" {
   revproxy_secret           = var.revproxy_secret
   revproxy_secret_region    = var.revproxy_secret_region
 
-  secrets_events_enabled       = var.secrets_events_enabled
-  inventory_events_enabled     = var.inventory_events_enabled
-  configuration_events_enabled = var.configuration_events_enabled
-  vulnerability_events_enabled = var.vulnerability_events_enabled
-  metadata_events_enabled      = var.metadata_events_enabled
+  secrets_events_enabled        = var.secrets_events_enabled
+  inventory_events_enabled      = var.inventory_events_enabled
+  configuration_events_enabled  = var.configuration_events_enabled
+  vulnerability_events_enabled  = var.vulnerability_events_enabled
+  metadata_events_enabled       = var.metadata_events_enabled
+  datadog_enabled               = var.datadog_enabled
+  datadog_environment_variables = var.datadog_environment_variables
 }

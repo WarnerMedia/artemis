@@ -6,6 +6,7 @@ from json_report.results.configuration import get_configuration
 from json_report.results.inventory import get_inventory
 from json_report.results.results import PLUGIN_RESULTS, PluginErrors
 from json_report.results.sbom import get_sbom
+from json_report.results.secret import get_secrets
 from json_report.results.static_analysis import get_static_analysis
 from json_report.util.const import DEFAULT_SCAN_QUERY_PARAMS
 
@@ -247,6 +248,128 @@ TEST_GITHUB_REPO_HEALTH = PluginResult(
     end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
 )
 
+secret_base_id = "01234567-89ab-cdef-0123-456789abcdef"
+
+
+def get_secret_id(id):
+    str_id = str(id)
+    id_len = len(str_id)
+    return f"{secret_base_id[0:-id_len]}{str_id}"
+
+
+SECRET_FILE_1 = "secrets.txt"
+SECRET_FILE_2 = "different-secrets.txt"
+SECRET_COMMIT = "0123456789abcdef0123456789abcdef01234567"
+SECRET_LINE = 1
+SECRET_TYPE_1 = "type-1"
+SECRET_TYPE_2 = "type-2"
+SECRET_PARAMS = {
+    "filter_diff": False,
+    "secret": [
+        SECRET_TYPE_1,
+        SECRET_TYPE_2,
+    ],
+}
+
+TEST_SECRET_DEDUP = PluginResult(
+    plugin_name="Trufflehog",
+    plugin_type="secrets",
+    success=False,
+    details=[
+        {
+            "id": get_secret_id(1),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "unknown",
+        },
+        {
+            "id": get_secret_id(2),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_2,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "active",
+        },
+    ],
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
+TEST_SECRET_DEDUP_SAME_TYPE = PluginResult(
+    plugin_name="Trufflehog",
+    plugin_type="secrets",
+    success=False,
+    details=[
+        {
+            "id": get_secret_id(1),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "unknown",
+        },
+        {
+            "id": get_secret_id(2),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "active",
+        },
+    ],
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
+TEST_SECRET_MULTIPLE_FILES = PluginResult(
+    plugin_name="Trufflehog",
+    plugin_type="secrets",
+    success=False,
+    details=[
+        {
+            "id": get_secret_id(1),
+            "filename": SECRET_FILE_1,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_1,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "active",
+        },
+        {
+            "id": get_secret_id(2),
+            "filename": SECRET_FILE_2,
+            "line": SECRET_LINE,
+            "commit": SECRET_COMMIT,
+            "type": SECRET_TYPE_2,
+            "author": "jon.snow@example.com",
+            "author-timestamp": "2020-01-01T00:00:00Z",
+            "validity": "inactive",
+        },
+    ],
+    errors=[],
+    alerts=[],
+    debug=[],
+    start_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=54, tzinfo=timezone.utc),
+    end_time=datetime(year=2020, month=2, day=19, hour=15, minute=1, second=55, tzinfo=timezone.utc),
+)
+
 SBOM_ERROR_MSG = "test error"
 SBOM_ALERT_MSG = "test alert"
 SBOM_DEBUG_MSG = "test debug message"
@@ -423,6 +546,80 @@ class TestGenerateReport(unittest.TestCase):
         mock_scan.diff_base = None
         mock_scan.diff_compare = None
         self.run_static_analysis(mock_scan, expected_report)
+
+    def test_get_secrets_dedup(self):
+        # When multiple findings with different types are deduped, the returned type should be a
+        # comma-separated list of the types of the original findings and an action equal to the
+        # highest action of all findings
+        expected_secrets = PLUGIN_RESULTS(
+            {
+                SECRET_FILE_1: [
+                    {"type": unittest.mock.ANY, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
+                ],
+            },
+            PluginErrors(),
+            False,
+            1,
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.repo.allowlistitem_set.filter.return_value = []
+        mock_scan.pluginresult_set.filter.return_value = [TEST_SECRET_DEDUP]
+
+        secrets = get_secrets(mock_scan, SECRET_PARAMS)
+        secret_type = secrets.findings[SECRET_FILE_1][0]["type"]
+
+        self.assertEqual(expected_secrets, secrets)
+
+        # Ensure that both secret types that were deduped show up in the new type
+        self.assertIn(SECRET_TYPE_1, secret_type)
+        self.assertIn(SECRET_TYPE_2, secret_type)
+
+    def test_get_secrets_dedup_same_type(self):
+        # When multiple findings with the same type are deduped, it should not repeat the type
+        expected_secrets = PLUGIN_RESULTS(
+            {
+                SECRET_FILE_1: [
+                    {"type": SECRET_TYPE_1, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
+                ],
+            },
+            PluginErrors(),
+            False,
+            1,
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.repo.allowlistitem_set.filter.return_value = []
+        mock_scan.pluginresult_set.filter.return_value = [TEST_SECRET_DEDUP_SAME_TYPE]
+
+        secrets = get_secrets(mock_scan, SECRET_PARAMS)
+
+        self.assertEqual(expected_secrets, secrets)
+
+    def test_get_secrets_do_not_dedup_different_files(self):
+        # When multiple findings have the same line and commit, but different files, they should not
+        # be deduped
+        expected_secrets = PLUGIN_RESULTS(
+            {
+                SECRET_FILE_1: [
+                    {"type": SECRET_TYPE_1, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "active"}
+                ],
+                SECRET_FILE_2: [
+                    {"type": SECRET_TYPE_2, "line": SECRET_LINE, "commit": SECRET_COMMIT, "validity": "inactive"}
+                ],
+            },
+            PluginErrors(),
+            False,
+            2,
+        )
+
+        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan.repo.allowlistitem_set.filter.return_value = []
+        mock_scan.pluginresult_set.filter.return_value = [TEST_SECRET_MULTIPLE_FILES]
+
+        secrets = get_secrets(mock_scan, SECRET_PARAMS)
+
+        self.assertEqual(expected_secrets, secrets)
 
     def test_get_inventory_report_for_technology_discovery(self):
         expected_inventory = PLUGIN_RESULTS(
