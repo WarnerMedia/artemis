@@ -32,7 +32,7 @@ let globalWindow: any;
 let mockLocation: any;
 
 let origHideWelcome: string | null;
-g;
+
 beforeAll(() => {
 	// ensure consistent timezone for tests
 	// don't set to UTC so we can check offsets working in tests
