@@ -63,5 +63,5 @@ describe("VulnLink component", () => {
 		expect(
 			screen.queryByRole("button", { name: vulnTitle })
 		).not.toBeInTheDocument();
-	});
+	}); 
 });
