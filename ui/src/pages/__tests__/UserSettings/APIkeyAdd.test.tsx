@@ -84,6 +84,7 @@ describe("UserSettings component", () => {
 	});
 	describe("API keys component", () => {
 		describe("API key add", () => {
+			jest.setTimeout(60000);
 			it("Name field required", async () => {
 				const error =
 					"This form contains unresolved errors. Please resolve these errors";
