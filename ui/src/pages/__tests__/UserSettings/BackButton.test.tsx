@@ -81,28 +81,42 @@ describe("UserSettings component", () => {
 		global.window ??= globalWindow;
 	});
 
-	it("page title should include 'user settings'", async () => {
-		const globalWindow = global.window;
-		global.window ??= Object.create(window);
+	// back button functionality tested more thoroughly in BackButton.test.tsx
+	// this just checks for existence on this page and expected behavior wrt account linking
+	describe("back button", () => {
+		it("page should have a back button", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			render(<UserSettings />);
+			expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+		});
 
-		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
-		render(<UserSettings />);
+		it("back button should not call fromRedirect if an auth code wasn't passed in the page URL", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			const { user } = render(<UserSettings />);
+			const button = screen.getByRole("button", { name: "Back" });
+			expect(button).toBeInTheDocument();
 
-		const resultsTitle = await screen.findByText(/^User Information$/);
-		expect(resultsTitle).toBeInTheDocument();
+			await user.click(button);
+			expect(mockNavigate).toBeCalledWith("/");
+		});
 
-		// check the page title
-		expect(global.window.document.title).toMatch("User Settings");
-		global.window ??= globalWindow;
-	});
+		it("back button should call fromRedirect if an auth code is passed in the page URL", async () => {
+			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+			const pathname = "/settings";
+			mockLocation = {
+				pathname: pathname,
+				search: `?code=abcdef1023456789abcd`,
+			};
+			const { user } = render(<UserSettings />);
+			const button = screen.getByRole("button", { name: "Back" });
+			expect(button).toBeInTheDocument();
 
-	it("page updates location to remove search params", async () => {
-		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
-		const pathname = "/settings";
-		mockLocation = {
-			pathname: pathname,
-		};
-		render(<UserSettings />);
-		expect(mockNavigate).toHaveBeenCalledWith(pathname, { replace: true });
+			await user.click(button);
+			expect(mockNavigate).toHaveBeenCalledTimes(2);
+			expect(mockNavigate).toHaveBeenNthCalledWith(1, pathname, {
+				replace: true,
+			});
+			expect(mockNavigate).toHaveBeenNthCalledWith(2, -2);
+		});
 	});
 });

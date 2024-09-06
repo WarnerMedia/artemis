@@ -14,7 +14,7 @@ import {
 	mockHFRows003,
 	mockHFSummary003,
 	mockHiddenFindingsSummaryNone,
-} from "../../../../testData/testMockData";
+} from "../../../testData/testMockData";
 import { formatDate } from "utils/formatters";
 import { validateSelect } from "pages/SearchPageTestCommon";
 import { act } from "react";
