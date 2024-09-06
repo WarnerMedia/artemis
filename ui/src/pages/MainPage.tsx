@@ -1385,7 +1385,7 @@ export const PluginsSelector = ({
 					</AccordionDetails>
 				</Accordion>
 			</ClickAwayListener>
-		</div>
+		</div> 
 	);
 };
 
