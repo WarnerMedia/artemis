@@ -772,7 +772,7 @@ const MainPage = () => {
 			<WelcomeDialog
 				open={!hideWelcome}
 				onOk={onCloseWelcome}
-				title={i18n._(t`Welcome to Artemis`)}
+				title={i18n._(t`Welcome to Artemiss`)}
 			>
 				<WelcomeDialogContent />
 			</WelcomeDialog>
@@ -1385,7 +1385,7 @@ export const PluginsSelector = ({
 					</AccordionDetails>
 				</Accordion>
 			</ClickAwayListener>
-		</div> 
+		</div>
 	);
 };
 

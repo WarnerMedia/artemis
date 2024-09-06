@@ -113,7 +113,7 @@ describe("MainPage component", () => {
 			render(<MainPage />);
 
 			// wait for welcome dialog
-			await screen.findByRole("heading", { name: /welcome to artemis/i });
+			await screen.findByRole("heading", { name: /welcome to artemiss/i });
 		});
 
 		test("hide-welcome off, should display welcome dialog", async () => {
@@ -122,7 +122,7 @@ describe("MainPage component", () => {
 			render(<MainPage />);
 
 			// wait for welcome dialog
-			await screen.findByRole("heading", { name: /welcome to artemis/i });
+			await screen.findByRole("heading", { name: /welcome to artemiss/i });
 		});
 
 		test("value false if welcome dialog closed with 'don't show' option unchecked", async () => {
@@ -131,7 +131,7 @@ describe("MainPage component", () => {
 			const { user } = render(<MainPage />);
 
 			// wait for welcome dialog
-			await screen.findByRole("heading", { name: /welcome to artemis/i });
+			await screen.findByRole("heading", { name: /welcome to artemiss/i });
 			await user.click(screen.getByRole("button", { name: /ok/i }));
 
 			// no change to hide-welcome setting
@@ -147,7 +147,7 @@ describe("MainPage component", () => {
 			const { user } = render(<MainPage />);
 
 			// wait for welcome dialog
-			await screen.findByRole("heading", { name: /welcome to artemis/i });
+			await screen.findByRole("heading", { name: /welcome to artemiss/i });
 			await user.click(
 				screen.getByRole("checkbox", { name: /don't show this dialog/i })
 			);
@@ -167,7 +167,7 @@ describe("MainPage component", () => {
 
 			// no welcome dialog
 			expect(
-				screen.queryByRole("heading", { name: /welcome to artemis/i })
+				screen.queryByRole("heading", { name: /welcome to artemiss/i })
 			).not.toBeInTheDocument();
 		});
 	});
