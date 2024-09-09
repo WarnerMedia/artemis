@@ -25,7 +25,7 @@ import {
 	mockStoreEmpty,
 	mockSearchVulnerabilities,
 	mockSearchRepos as mockSearchVulnerabilityRepos,
-} from "../../../testData/testMockData";
+} from "../../../../testData/testMockData";
 import {
 	DEFAULT_SEARCH_OPTION,
 	SEARCH_OPTIONS,
@@ -69,7 +69,7 @@ describe("SearchPage component", () => {
 		});
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 
-		// spyOn getComponents, getRepos to ensure they are called and check params
+		// spyOn getVulnerabilities to ensure they are called and check params
 		// but don't mock them since we need them to run to transform the data for the data table
 		// spy and mock axios.request for this
 		mockGetVulnerabilities = jest.spyOn(client, "getVulnerabilities");
