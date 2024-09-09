@@ -1,5 +1,5 @@
 import os
-from artemislib.aws import AWS_DEFAULT_REGION
+from engine.env import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET, REV_PROXY_SECRET_HEADER, REV_PROXY_SECRET_REGION
 
 APPLICATION = os.environ.get("APPLICATION", "artemis")
 
@@ -24,7 +24,7 @@ def has_gitlab_config():
 
 
 def get_rev_proxy_domain_substring():
-    return os.environ.get("ARTEMIS_REVPROXY_DOMAIN_SUBSTRING")
+    return REV_PROXY_DOMAIN_SUBSTRING
 
 
 def has_rev_proxy_domain_substring():
@@ -32,7 +32,7 @@ def has_rev_proxy_domain_substring():
 
 
 def get_rev_proxy_secret_header():
-    return os.environ.get("ARTEMIS_REVPROXY_AUTH_HEADER", "X-Artemis-Proxy")
+    return REV_PROXY_SECRET_HEADER
 
 
 def has_rev_proxy_secret_header():
@@ -40,7 +40,7 @@ def has_rev_proxy_secret_header():
 
 
 def get_rev_proxy_secret():
-    return os.environ.get("ARTEMIS_REVPROXY_SECRET", f"{APPLICATION}/revproxy-api-key")
+    return REV_PROXY_SECRET
 
 
 def has_rev_proxy_secret():
@@ -48,7 +48,7 @@ def has_rev_proxy_secret():
 
 
 def get_rev_proxy_secret_region():
-    return os.environ.get("ARTEMIS_REVPROXY_SECRET_REGION", AWS_DEFAULT_REGION)
+    return REV_PROXY_SECRET_REGION
 
 
 def has_rev_proxy_secret_region():
