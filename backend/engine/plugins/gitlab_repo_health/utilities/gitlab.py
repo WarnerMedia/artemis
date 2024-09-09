@@ -23,6 +23,12 @@ class Gitlab:
         self._url = f"https://{service_url}/api/v4"
         self._key = key
         self._headers = {"Authorization": "Bearer %s" % key, "Content-Type": "application/json"}
+        print(has_rev_proxy_domain_substring())
+        print(has_rev_proxy_secret_header())
+        print(get_rev_proxy_domain_substring())
+        print(service_url)
+        print(get_rev_proxy_secret_header())
+
         if (
             has_rev_proxy_domain_substring()
             and has_rev_proxy_secret_header()
