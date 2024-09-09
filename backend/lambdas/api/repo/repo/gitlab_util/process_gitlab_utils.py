@@ -35,6 +35,8 @@ def _get_query_response(key, service_url, query, vars):
     headers = {"Authorization": "Bearer %s" % key, "Content-Type": "application/json"}
     if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_url:
         headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
+    log.info("headers")
+    log.info(headers)
     response = requests.post(url=service_url, headers=headers, json={"query": query, "variables": vars})
     log.info("Got API response")
     if response.status_code != 200:
