@@ -128,6 +128,7 @@ class Gitlab:
         return Gitlab(auth_config.get("key"), service_url, verbose)
 
     def _authenticated_get(self, url: str) -> requests.Response:
+        print(self._headers)
         response = requests.get(url, headers=self._headers)
         response.raise_for_status()
 
