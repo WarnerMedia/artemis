@@ -80,6 +80,12 @@ import {
 	TextField as MuiTextField,
 	Paper,
 	Tab,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableRow,
+	TableHead,
 	Tabs,
 	Theme,
 	Toolbar,
@@ -203,6 +209,7 @@ import {
 	SbomReport,
 	ScanCategories,
 	ScanErrors,
+	SecretDetail,
 	SecretFinding,
 	SecretFindingResult,
 	SecretValidity,
@@ -223,7 +230,10 @@ import formatters, {
 	formatDate,
 	vcsHotLink,
 } from "utils/formatters";
-import { SecretValidityChip } from "components/SecretValidityCell";
+import {
+	SecretValidityChip,
+	SecretValidityChipProps,
+} from "components/SecretValidityCell";
 
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
@@ -499,6 +509,27 @@ const useStyles = makeStyles()((theme) => ({
 	},
 	scanMessagesAccordionDetails: {
 		padding: 0,
+	},
+	secretDetailsContainer: {
+		marginTop: theme.spacing(1),
+	},
+	secretDetailsPaper: {
+		width: "100%",
+	},
+	secretDetailsTable: {
+		minWidth: 400,
+	},
+	secretDetailsTableRow: {
+		"&.MuiTableRow-hover:hover": {
+			backgroundColor: "rgba(0, 159, 219, 0.10)",
+		},
+		// row selected (clicked)
+		"&.Mui-selected, &.Mui-selected:hover": {
+			backgroundColor: theme.palette.primary.main, // use primary color (blue) instead of secondary (pink)
+			"& > .MuiTableCell-root": {
+				color: "white",
+			},
+		},
 	},
 	selectFilter: {
 		minWidth: "12rem",
@@ -2843,6 +2874,24 @@ const SeverityFilterField = (props: SeverityFilterFieldProps) => {
 	);
 };
 
+// Makes its way to the URL, so we keep it short
+const SECRET_VALIDITY_FILTER_PREFIX = "svf";
+
+function addValidityFilterPrefix(value: string): string {
+	return `${SECRET_VALIDITY_FILTER_PREFIX}_${value}`;
+}
+
+function getValidities(details?: SecretFinding["details"]): string[] {
+	if (details) {
+		const validities = details.map((item) => item.validity);
+		const validities_set = new Set(validities);
+
+		return Array.from(validities_set);
+	} else {
+		return [SecretValidity.Unknown];
+	}
+}
+
 interface SecretValidityFilterFieldProps {
 	value?: string | string[];
 	autoFocus?: boolean;
@@ -2860,7 +2909,10 @@ const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
 
 	const menuItems = Object.values(SecretValidity).map((validityValue) => {
 		return (
-			<MenuItem value={validityValue}>
+			// Prepend a prefix to the value we search on so that "active" does not match "inactive"
+			// For example, if the prefix is "_", the former becomes "_active", which will not match
+			// "_inactive"
+			<MenuItem value={addValidityFilterPrefix(validityValue)}>
 				<SecretValidityChip value={validityValue} tooltipDisabled />
 			</MenuItem>
 		);
@@ -2878,7 +2930,7 @@ const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
 			size="small"
 			className={classes.selectFilter}
 			onChange={(event) => {
-				onChange(event, "validity", event.target.value);
+				onChange(event, "f_validity", event.target.value);
 			}}
 			InputProps={{
 				className: classes.filterField,
@@ -3867,7 +3919,9 @@ export const SecretsTabContent = (props: {
 				COMMIT_LENGTH,
 				i18n._(t`Commit must be less than ${COMMIT_LENGTH} characters`)
 			),
-		st_validity: Yup.string().trim().oneOf(Object.values(SecretValidity)),
+		st_f_validity: Yup.string()
+			.trim()
+			.oneOf(Object.values(SecretValidity).map(addValidityFilterPrefix)),
 	});
 	const [filters, setFilters] = useState<FilterDef>(
 		getResultFilters(schema, hashPrefix, {
@@ -3881,9 +3935,8 @@ export const SecretsTabContent = (props: {
 			resource: {
 				filter: "",
 			},
-			validity: {
+			f_validity: {
 				filter: "",
-				match: "exact",
 			},
 			commit: {
 				filter: "",
@@ -3898,7 +3951,9 @@ export const SecretsTabContent = (props: {
 		{
 			field: "validity",
 			headerName: i18n._(t`Validity`),
-			children: SecretValidityChip,
+			children: (props: SecretValidityChipProps & { row: RowDef }) => (
+				<SecretValidityChip {...props} details={props.row.details} />
+			),
 		},
 		{ field: "commit", headerName: i18n._(t`Commit`) },
 		{
@@ -3942,7 +3997,12 @@ export const SecretsTabContent = (props: {
 				line: item.line,
 				resource: item.type,
 				commit: item.commit,
-				validity: item.validity ?? SecretValidity.Unknown,
+				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
+				f_validity: getValidities(item.details)
+					.map(addValidityFilterPrefix)
+					.join(", "),
+				validity: getValidities(item.details).join(", "),
+				details: item.details,
 				repo: scan.repo,
 				service: scan.service,
 				branch: scan.branch,
@@ -3984,23 +4044,6 @@ export const SecretsTabContent = (props: {
 										}
 									/>
 								</ListItem>
-								<ListItem key="secret-validity">
-									<ListItemText
-										primary={
-											<>
-												<Trans>Validity</Trans>
-												{selectedRow?.validity && (
-													<CustomCopyToClipboard
-														copyTarget={selectedRow.validity}
-													/>
-												)}
-											</>
-										}
-										secondary={
-											<SecretValidityChip value={selectedRow?.validity} />
-										}
-									/>
-								</ListItem>
 							</List>
 						</Grid>
 
@@ -4025,6 +4068,65 @@ export const SecretsTabContent = (props: {
 							</List>
 						</Grid>
 					</Grid>
+					<List>
+						<ListItem key="secret-details">
+							<ListItemText
+								primary={i18n._(t`Finding Details`)}
+								secondary={
+									<div className={classes.secretDetailsContainer}>
+										{selectedRow?.details ? (
+											<Paper className={classes.secretDetailsPaper}>
+												<TableContainer className={classes.secretDetailsTable}>
+													<Table
+														sx={{ width: "100%" }}
+														size="small"
+														aria-label="finding details"
+													>
+														<TableHead>
+															<TableRow>
+																<TableCell>
+																	<Trans>Type</Trans>
+																</TableCell>
+																<TableCell align="right">
+																	<Trans>Validity</Trans>
+																</TableCell>
+																<TableCell align="right">
+																	<Trans>Found By</Trans>
+																</TableCell>
+															</TableRow>
+														</TableHead>
+														<TableBody>
+															{selectedRow.details.map(
+																(item: SecretDetail, index: number) => (
+																	<TableRow
+																		key={index}
+																		hover
+																		className={classes.secretDetailsTableRow}
+																	>
+																		<TableCell>{item.type}</TableCell>
+																		<TableCell align="right">
+																			<SecretValidityChip
+																				value={item.validity}
+																			/>
+																		</TableCell>
+																		<TableCell align="right">
+																			{item.source}
+																		</TableCell>
+																	</TableRow>
+																)
+															)}
+														</TableBody>
+													</Table>
+												</TableContainer>
+											</Paper>
+										) : (
+											<NoResults title={i18n._(t`No details`)} />
+										)}
+									</div>
+								}
+							/>
+						</ListItem>
+					</List>
 				</DialogContent>
 				<FindingDialogActions
 					row={selectedRow}
@@ -4048,7 +4150,7 @@ export const SecretsTabContent = (props: {
 					line: item.line,
 					resource: item.type,
 					commit: item.commit,
-					validity: item.validity,
+					details: item.details,
 				});
 			});
 		}
@@ -4141,7 +4243,7 @@ export const SecretsTabContent = (props: {
 								inputProps={{ maxLength: RESOURCE_LENGTH }}
 							/>
 							<SecretValidityFilterField
-								value={filters["validity"].filter}
+								value={filters["f_validity"].filter}
 								onChange={handleOnChange}
 							/>
 							<FilterField
