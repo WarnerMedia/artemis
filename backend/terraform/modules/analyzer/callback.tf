@@ -12,9 +12,11 @@ resource "aws_lambda_function" "callback" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
-  layers        = var.datadog_enabled ? var.datadog_lambda_layers : []
+  layers        = var.lambda_layers
 
   role = aws_iam_role.callback-assume-role.arn
+
+
 
   vpc_config {
     subnet_ids         = [aws_subnet.lambdas.id]
@@ -26,10 +28,9 @@ resource "aws_lambda_function" "callback" {
       DATADOG_ENABLED = var.datadog_enabled
       },
       var.datadog_enabled ? merge({
-        DD_LAMBDA_HANDLER     = "handlers.handler"
-        DD_SERVICE            = "${var.app}-api"
-        DD_API_KEY_SECRET_ARN = aws_secretsmanager_secret.datadog-api-key.arn
-      }, var.datadog_lambda_variables)
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
     : {})
   }
 

@@ -62,14 +62,6 @@ variable "log_level" {
 
 variable "engine_ami" {
   description = "The AMI that the engine instances use"
-  default = {
-    # AMI IDs are region-specific
-    # These are the IDs for amzn2-ami-kernel-5.10-hvm-2.0.20230404.0-x86_64-gp2
-    "us-east-1" = "ami-0fa1de1d60de6a97e",
-    "us-east-2" = "ami-0d80c4e4338722fc6",
-    "us-west-1" = "ami-0e5e4bbcbd7349cac",
-    "us-west-2" = "ami-0c252bb9e6b71848e"
-  }
 }
 
 variable "engine_scale_min" {
@@ -237,16 +229,12 @@ variable "lambda_subnet" {}
 
 variable "lambda_sg" {}
 
-variable "datadog_lambda_variables" {
+variable "datadog_environment_variables" {
   description = "Datadog Environment variables to configure the Datadog-Extension and Datadog-Library"
   type        = map(any)
   default     = {}
 }
-variable "datadog_lambda_layers" {
-  description = "Datadog Lambda Layers"
-  type        = list(string)
-  default     = []
-}
+
 variable "datadog_enabled" {
   description = "Whether Datadog monitoring should be enabled"
   type        = bool

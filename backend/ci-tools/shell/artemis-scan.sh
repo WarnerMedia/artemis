@@ -88,8 +88,9 @@ fi
 
 # Scan parameters
 ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
-ARTEMIS_API="$ARTEMIS/api/v1"
+ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}"  # Allow Artemis API prefix to be directly specified (e.g. for testing)
 ARTEMIS_RESULTS="$ARTEMIS/results"
+ARTEMIS_STATUS_INTERVAL="${ARTEMIS_STATUS_INTERVAL:-10}"  # Time in seconds between status checks.
 SERVICE=$1
 RESOURCE=$2
 BRANCH=$3
@@ -164,6 +165,13 @@ log() {
   echo "$(date -u '+%Y-%m-%dT%H:%M:%S%z')" "$1"
 }
 
+# Attempt to pretty-print a raw body response as JSON for error reporting.
+# If the input is not JSON then it is printed directly without formatting.
+print_body() {
+  local body="$1"
+  jq <<<"$body" 2>/dev/null || echo "$body"
+}
+
 # Parse the vulnerability severity levels and build the API query args for them
 SEVERITY_ARGS=""
 IFS="," read -ra VALUES <<<"$SEVERITY"
@@ -202,13 +210,13 @@ if [ "$HTTP_CODE" -eq "503" ]; then
   fi
 fi
 
-# Extract the scan ID
-SCAN=$(echo "$BODY" | jq -r ".queued[0]")
+# Extract the scan ID.
+SCAN=$(jq -r ".queued[0]" <<<"$BODY" 2>/dev/null || echo 'null')
 
-if [ "$SCAN" = "null" ]; then
-  echo "Scan failed to start"
-  echo "Details:"
-  echo "$BODY" | jq
+if [[ -z $SCAN || $SCAN = 'null' ]]; then
+  log "Scan failed to start"
+  log "Details:"
+  print_body "$BODY"
   exit 1
 fi
 
@@ -217,7 +225,7 @@ log "Scan started ($SCAN)"
 # Wait for the scan to end
 STATUS="queued"
 while [ "$STATUS" != "completed" ] && [ "$STATUS" != "failed" ] && [ "$STATUS" != "error" ] && [ "$STATUS" != "terminated" ]; do
-  sleep 10
+  sleep "$ARTEMIS_STATUS_INTERVAL"
   RESP=$(curl --silent --write-out "\n%{http_code}" \
     --request GET \
     --url "$ARTEMIS_API/$SERVICE/$SCAN?format=summary&results=vulnerabilities&${SEVERITY_ARGS}results=secrets&results=static_analysis" \
@@ -235,16 +243,17 @@ while [ "$STATUS" != "completed" ] && [ "$STATUS" != "failed" ] && [ "$STATUS" !
     fi
   fi
 
-  STATUS=$(echo "$SUMMARY" | jq -r ".status")
+  # If the response is not JSON, treat it as an error.
+  STATUS=$(jq -r '.status' <<<"$SUMMARY" 2>/dev/null || echo error)
 
   log "Scan status: $STATUS"
 done
 
 # If the scan is not completed then something went wrong
 if [ "$STATUS" != "completed" ]; then
-  log "Scan failed"
+  log "Scan failed. (Status: $STATUS)"
   log "Details:"
-  log "$SUMMARY" | jq
+  print_body "$SUMMARY"
   exit 1
 fi
 
