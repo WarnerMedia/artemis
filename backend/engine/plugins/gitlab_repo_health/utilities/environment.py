@@ -24,7 +24,7 @@ def has_gitlab_config():
 
 
 def get_rev_proxy_domain_substring():
-    return os.environ.get("REV_PROXY_DOMAIN_SUBSTRING")
+    return os.environ.get("ARTEMIS_REVPROXY_DOMAIN_SUBSTRING")
 
 
 def has_rev_proxy_domain_substring():
