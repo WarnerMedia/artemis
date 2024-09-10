@@ -1,7 +1,6 @@
 from functools import cache
 from urllib.parse import quote
 import requests
-import os
 
 from artemislib.aws import AWSConnect
 from engine.plugins.gitlab_repo_health.utilities.environment import (
@@ -24,12 +23,6 @@ class Gitlab:
         self._url = f"https://{service_url}/api/v4"
         self._key = key
         self._headers = {"Authorization": "Bearer %s" % key, "Content-Type": "application/json"}
-        print(os.environ)
-        print(has_rev_proxy_domain_substring())
-        print(has_rev_proxy_secret_header())
-        print(get_rev_proxy_domain_substring())
-        print(service_url)
-        print(get_rev_proxy_secret_header())
 
         if (
             has_rev_proxy_domain_substring()
