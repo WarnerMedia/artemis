@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 
 from artemisdb.artemisdb.consts import PluginType
@@ -11,20 +11,30 @@ from json_report.util.util import dict_eq
 
 
 @dataclass
-class SecretFinding:
-    type: set[str]
-    line: int
-    commit: str
+class FindingDetails:
+    type: str
     validity: str
+    source: str
 
     def to_dict(self):
-        type_str = ", ".join(self.type)
+        return asdict(self)
+
+
+@dataclass
+class SecretFinding:
+    line: int
+    commit: str
+    details: list[FindingDetails]
+
+    def to_dict(self):
+        type_list = [item.type for item in self.details]
+        type_str = ", ".join(set(type_list))
 
         return {
             "type": type_str,
             "line": self.line,
             "commit": self.commit,
-            "validity": self.validity,
+            "details": [item.to_dict() for item in self.details],
         }
 
 
@@ -80,25 +90,26 @@ def get_secrets(scan, params):
                 filename_dict[filename] = {}
             findings_dict = filename_dict[filename]
 
-            finding_type = finding.get("type")
+            item_details = FindingDetails(
+                type=finding.get("type"),
+                validity=finding.get("validity"),
+                source=plugin.plugin_name,
+            )
+
             item = SecretFinding(
-                type={finding_type},
                 line=finding.get("line"),
                 commit=finding.get("commit"),
-                validity=finding.get("validity", "unknown"),
+                details=[item_details],
             )
 
             key = get_finding_dict_key(item)
 
             # Add the new finding if it doesn't exist
-            # If it already exists, add this finding's type and take the higher validity
+            # If it already exists, add this finding's details
             if key in findings_dict:
                 existing_finding = findings_dict[key]
 
-                existing_finding.type.add(finding_type)
-
-                highest_validity = get_highest_validity(existing_finding.validity, item.validity)
-                existing_finding.validity = highest_validity
+                existing_finding.details.append(item_details)
             else:
                 findings_dict[key] = item
                 summary += 1
@@ -126,15 +137,6 @@ def get_finding_dict_key(finding: SecretFinding) -> tuple[int, str]:
     commit = finding.commit
 
     return (line, commit)
-
-
-def get_highest_validity(one: str, two: str) -> str:
-    if one == "active" or two == "active":
-        return "active"
-    elif one == "inactive" or two == "inactive":
-        return "inactive"
-    else:
-        return "unknown"
 
 
 def get_secrets_from_filename_dict(

@@ -2,7 +2,7 @@ import queryString from "query-string";
 import { render, screen, waitFor, within } from "test-utils";
 import { FILTER_PREFIX_SECRET, SecretsTabContent } from "pages/ResultsPage";
 import { mockCurrentUser, mockScan001 } from "../../../testData/testMockData";
-import { AnalysisReport, SecretValidity } from "features/scans/scansSchemas";
+import { AnalysisReport } from "features/scans/scansSchemas";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
 import { validateSelect } from "pages/SearchPageTestCommon";
 import { act } from "react";
@@ -248,9 +248,8 @@ describe("SecretsTabContent component", () => {
 					},
 					resource: { filter: typeValue },
 					commit: { filter: commitValue },
-					validity: {
-						filter: SecretValidity.Unknown,
-						match: "exact",
+					f_validity: {
+						filter: "svf_unknown",
 					},
 				});
 
@@ -262,14 +261,14 @@ describe("SecretsTabContent component", () => {
 				const lineValue = "1234";
 				const typeValue = "a great type";
 				const commitValue = "hashhashhashhashhashhashhashhashhashhash";
-				const validityValue = "unknown";
+				const validityValue = "svf_unknown";
 
 				const obj: any = {};
 				obj[`${HASH_PREFIX}filename`] = fileValue;
 				obj[`${HASH_PREFIX}line`] = lineValue;
 				obj[`${HASH_PREFIX}resource`] = typeValue;
 				obj[`${HASH_PREFIX}commit`] = commitValue;
-				obj[`${HASH_PREFIX}validity`] = validityValue;
+				obj[`${HASH_PREFIX}f_validity`] = validityValue;
 				const hash = queryString.stringify(obj);
 
 				// mock window.location.reload
