@@ -1044,10 +1044,21 @@ export function makeServer() {
 					"/this/is/a/really/long/path/to/a/file/identified/as/a/secret/filename/is/slack.pass":
 						[
 							{
-								type: "slack",
+								type: "slack, github",
 								line: 2,
 								commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-								validity: SecretValidity.Active,
+								details: [
+									{
+										type: "slack",
+										validity: SecretValidity.Active,
+										source: "GHAS Secrets",
+									},
+									{
+										type: "github",
+										validity: SecretValidity.Unknown,
+										source: "Trufflehog (Legacy) Scanner",
+									},
+								],
 							},
 							{
 								type: "slack",
@@ -1060,7 +1071,18 @@ export function makeServer() {
 								type: "slack",
 								line: 22,
 								commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
-								validity: SecretValidity.Unknown,
+								details: [
+									{
+										type: "slack",
+										validity: SecretValidity.Active,
+										source: "GHAS Secrets",
+									},
+									{
+										type: "slack",
+										validity: SecretValidity.Unknown,
+										source: "Trufflehog (Legacy) Scanner",
+									},
+								],
 							},
 						],
 					"/another/very/long/path/string/fully/qualified/path/to/aws.pass": [
@@ -1068,7 +1090,18 @@ export function makeServer() {
 							type: "aws",
 							line: 1,
 							commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
-							validity: SecretValidity.Inactive,
+							details: [
+								{
+									type: "aws",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "aws",
+									validity: SecretValidity.Unknown,
+									source: "Trufflehog (Legacy) Scanner",
+								},
+							],
 						},
 					],
 					"/path/postgres.pass": [
@@ -1078,7 +1111,18 @@ export function makeServer() {
 							type: "postgres",
 							line: 2,
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-							validity: SecretValidity.Unknown,
+							details: [
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "Trufflehog (Legacy) Scanner",
+								},
+							],
 						},
 						{
 							// @ts-ignore
@@ -1086,7 +1130,35 @@ export function makeServer() {
 							type: "postgres",
 							line: 8,
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-							validity: SecretValidity.Unknown,
+							details: [
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "Trufflehog (Legacy) Scanner",
+								},
+							],
+						},
+						{
+							type: "postgres",
+							line: 8,
+							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+							details: [
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+								{
+									type: "postgres",
+									validity: SecretValidity.Inactive,
+									source: "Trufflehog (Legacy) Scanner",
+								},
+							],
 						},
 					],
 					"/path/to/ssh.pass": [
@@ -1094,7 +1166,18 @@ export function makeServer() {
 							type: "ssh",
 							line: 1,
 							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-							validity: SecretValidity.Unknown,
+							details: [
+								{
+									type: "SSH Private Key",
+									validity: SecretValidity.Unknown,
+									source: "Trufflehog (Legacy) Scanner",
+								},
+								{
+									type: "ssh",
+									validity: SecretValidity.Inactive,
+									source: "GHAS Secrets",
+								},
+							],
 						},
 					],
 					"/path/to/file/google.pass": [
@@ -1104,7 +1187,13 @@ export function makeServer() {
 							type: "google",
 							line: 2,
 							commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
-							validity: SecretValidity.Unknown,
+							details: [
+								{
+									type: "google",
+									validity: SecretValidity.Unknown,
+									source: "Trufflehog",
+								},
+							],
 						},
 					],
 				} as SecretFindingRawResult;
