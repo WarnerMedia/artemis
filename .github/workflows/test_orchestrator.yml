@@ -19,8 +19,10 @@ jobs:
           cache-dependency-path: orchestrator/Pipfile.lock
       - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # hashicorp/setup-terraform@v3.1.1
       - name: Install Test Dependencies
+        # Setuptools v74 is incompatible with our version of packaging, so we restrict it
+        # as well as virtualenv which bundles setuptools in new environments.
         run: |
-          pip install --upgrade pipenv wheel
+          pip install --upgrade pipenv wheel 'setuptools<74' 'virtualenv==20.26.3'
       - name: Run code style tests
         run: make -C orchestrator style-test ENV=example
       - name: Run orchestrator tests
