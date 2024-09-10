@@ -126,7 +126,7 @@ class Gitlab:
         return branch_hash.get("commit").get("id")
 
     @staticmethod
-    def get_client_from_config(token_location: str, service_url: str, verbose: bool = True):
+    def get_client_from_config(token_location: str, service_url: str, verbose: bool = False):
         aws = AWSConnect()
         auth_config = aws.get_secret(f"{APPLICATION}/{token_location}")
 
