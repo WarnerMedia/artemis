@@ -36,7 +36,10 @@ class Gitlab:
             and has_rev_proxy_secret_header()
             and get_rev_proxy_domain_substring() in service_url  # type: ignore
         ):
-            self._headers[get_rev_proxy_secret_header()] = get_rev_proxy_secret()
+            aws = AWSConnect()
+            proxy_secret = aws.get_secret(get_rev_proxy_secret())
+
+            self._headers[get_rev_proxy_secret_header()] = proxy_secret
 
     @cache
     def get_approvals(self, owner: str, repo: str):
