@@ -640,6 +640,8 @@ def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plu
             "-e",
             f"ARTEMIS_GITHUB_APP_ID={GITHUB_APP_ID}",
             "-e",
+            f"ARTEMIS_REV_PROXY_DOMAIN_SUBSTRING={REV_PROXY_DOMAIN_SUBSTRING}",
+            "-e",
             f"ARTEMIS_LOG_LEVEL={LOG_LEVEL}",
             image,
             "python",
