@@ -6,6 +6,7 @@ set -euo pipefail
 # ShellCheck will throw a warning if these are not exported
 export "aqua_enabled"
 export "aws_region"
+export "datadog_enabled"
 export "docker_compose_ver"
 export "engine_block_device"
 export "github_app_id"
@@ -100,3 +101,21 @@ sudo --login --set-home --user=ec2-user <<<"$(aws ecr get-login --no-include-ema
 
 # Start the engine as ec2-user
 sudo --login --set-home --user=ec2-user <<<'/usr/local/bin/docker-compose -f docker-compose.aws.yml -p artemis up -d'
+
+# Datadog Configurations:
+if [[ ${datadog_enabled} = "true" ]]; then
+  ## Replace default Datadog configurations
+  rm -f /etc/datadog-agent/datadog.yaml
+  aws s3 cp "s3://${s3_bucket}/datadog/datadog.yaml" "/etc/datadog-agent/datadog.yaml"
+
+  # Update API Key
+  ddog_api_key=$(aws secretsmanager get-secret-value --secret-id "${application}"/datadog-api-key --region "${aws_region}" --query SecretString --output text)
+  sed -i "s/UPDATE_API_KEY/$ddog_api_key/" /etc/datadog-agent/datadog.yaml
+
+  # Add dd-agent to docker users
+  usermod -a -G docker dd-agent
+
+  # Enable Datadog-agent
+  systemctl enable datadog-agent
+  systemctl restart datadog-agent
+fi

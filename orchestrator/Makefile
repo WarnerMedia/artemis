@@ -235,7 +235,7 @@ deploy_repo_scan_loop: upload_repo_scan_loop
 	@echo "${INFO}Waiting for ${REPO_SCAN_LOOP_LAMBDA} update to complete"
 	aws lambda wait function-updated --function-name ${REPO_SCAN_LOOP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
-	@echo "${INFO}Updating ${SYSTEM_STATUS_LAMBDA} layer configuration"
+	@echo "${INFO}Updating ${REPO_SCAN_LOOP_LAMBDA} layer configuration"
 	@${BACKEND}/build_scripts/update_lambda_layers.py --function-name ${REPO_SCAN_LOOP_LAMBDA} --region ${REGION}
 	@echo "${OK}"
 .PHONY: deploy_repo_scan_loop
