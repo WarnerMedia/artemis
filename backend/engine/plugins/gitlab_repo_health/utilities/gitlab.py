@@ -18,7 +18,7 @@ class Gitlab:
     Wrapper class for GitLab so that we can cache responses and abstract away API calls
     """
 
-    def __init__(self, key: str, service_url: str, verbose: bool = True):
+    def __init__(self, key: str, service_url: str, verbose: bool = False):
         self._verbose = verbose
         self._url = f"https://{service_url}/api/v4"
         self._key = key
@@ -133,7 +133,6 @@ class Gitlab:
         return Gitlab(auth_config.get("key"), service_url, verbose)
 
     def _authenticated_get(self, url: str) -> requests.Response:
-        print(self._headers)
         response = requests.get(url, headers=self._headers)
         response.raise_for_status()
 
