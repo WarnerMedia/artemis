@@ -30,6 +30,8 @@ class Gitlab:
             and get_rev_proxy_domain_substring() in service_url  # type: ignore
         ):
             aws = AWSConnect()
+            print("revproxy")
+            print(get_rev_proxy_secret())
             proxy_secret = aws.get_secret(get_rev_proxy_secret())
 
             self._headers[get_rev_proxy_secret_header()] = proxy_secret
