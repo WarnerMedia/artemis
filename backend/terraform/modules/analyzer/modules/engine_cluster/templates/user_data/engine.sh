@@ -111,6 +111,9 @@ aws s3 cp "s3://${s3_bucket}/datadog/datadog.yaml" "/etc/datadog-agent/datadog.y
 ddog_api_key=$(aws secretsmanager get-secret-value --secret-id "${application}"/datadog-api-key --region "${aws_region}" --query SecretString --output text)
 sed -i "s/UPDATE_API_KEY/$ddog_api_key/" /etc/datadog-agent/datadog.yaml
 
+# Add dd-agent to docker users
+usermod -a -G docker dd-agent
+
 # Enable Datadog-agent
 systemctl enable datadog-agent
 systemctl restart datadog-agent
