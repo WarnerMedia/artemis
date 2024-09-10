@@ -1,6 +1,10 @@
 import os
 from artemislib.aws import AWS_DEFAULT_REGION
 
+# These environment variables are almost exclusively used locally.
+# Environments variables are difficult to work with in plugins.
+# See get_plugin_command() in backend/engine/utils/plugin.py
+
 APPLICATION = os.environ.get("APPLICATION", "artemis")
 
 RH_CONFIG_FILE_VAR = "RH_CONFIG_FILE"
