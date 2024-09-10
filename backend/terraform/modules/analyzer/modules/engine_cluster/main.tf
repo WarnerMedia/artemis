@@ -51,6 +51,7 @@ locals {
       configuration_events_enabled = var.configuration_events_enabled
       vulnerability_events_enabled = var.vulnerability_events_enabled
       metadata_events_enabled      = var.metadata_events_enabled
+      datadog_enabled              = var.datadog_enabled
       log_level                    = var.log_level
   })
 }
