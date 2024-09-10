@@ -23,7 +23,7 @@ jobs:
           path: backend/.temp
       - name: Install Test Dependencies
         run: |
-          pip install --upgrade pipenv wheel
+          pip install --upgrade pipenv wheel 'setuptools<74' 'virtualenv==20.26.3'
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests
