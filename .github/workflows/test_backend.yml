@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # actions/checkout@v4.1.7
-      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # actions/setup-python@v5.1.1
+      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # actions/setup-python@v5.2.0
         with:
           python-version: "3.9"
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
-      - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # hashicorp/setup-terraform@v3.1.1
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
       - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # actions/cache@v4.0.2
         with:
           # Tool versions are defined in the Makefile.
