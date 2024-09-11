@@ -1,37 +1,24 @@
-###############################################################################
-# Aurora RDS
-###############################################################################
-
-module "aurora" {
-  source  = "terraform-aws-modules/rds-aurora/aws"
-  version = "2.29.0"
-
-  name = "${var.app}-${var.environment}"
-
+#######################
+# Aurora RDS Cluster ##
+#######################
+resource "aws_rds_cluster" "aurora" {
+  availability_zones              = ["us-east-2a", "us-east-2b", "us-east-2c"]
+  backup_retention_period         = 7
+  cluster_identifier              = local.db_prefix
+  database_name                   = "analyzer"
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.cluster_parameter_group.name
+  deletion_protection             = true
+  enabled_cloudwatch_logs_exports = ["postgresql"]
   engine                          = "aurora-postgresql"
   engine_version                  = var.db_engine_version
-  auto_minor_version_upgrade      = true
-  apply_immediately               = true
-  db_parameter_group_name         = aws_db_parameter_group.db_parameter_group.name
-  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.cluster_parameter_group.name
-  instance_type                   = var.db_instance_type
-  storage_encrypted               = true
   kms_key_id                      = var.db_kms_key
-  preferred_maintenance_window    = "Mon:00:00-Mon:03:00"
+  master_password                 = random_password.rds_master_password.result
+  master_username                 = "artemisadmin"
   preferred_backup_window         = "03:30-06:30"
-  deletion_protection             = true
-  ca_cert_identifier              = var.db_ca_cert_identifier
-
-  database_name = "analyzer"
-  port          = 5432
-
-  username = "artemisadmin"
-
-  enabled_cloudwatch_logs_exports = ["postgresql"]
-
-  vpc_id                 = var.vpc_id
-  subnets                = aws_subnet.database.*.id
-  vpc_security_group_ids = [aws_security_group.db.id]
+  preferred_maintenance_window    = "Mon:00:00-Mon:03:00"
+  storage_encrypted               = true
+  vpc_security_group_ids          = [aws_security_group.db.id]
+  final_snapshot_identifier       = "final-${local.db_prefix}-${random_id.rds_snapshot_identifier.hex}"
 
   tags = merge(
     var.tags,
@@ -48,6 +35,7 @@ locals {
   parameter_group_family = var.db_parameter_group_family == null ? (
     "aurora-postgresql${local.engine_major_version}"
   ) : var.db_parameter_group_family
+  db_prefix = "${var.app}-${var.environment}"
 }
 
 resource "aws_db_parameter_group" "db_parameter_group" {
@@ -62,6 +50,68 @@ resource "aws_rds_cluster_parameter_group" "cluster_parameter_group" {
   family = local.parameter_group_family
 
   tags = var.tags
+}
+
+resource "random_password" "rds_master_password" {
+  length  = 10
+  special = false
+  numeric = true
+}
+
+resource "null_resource" "aurora_db_master_password" {
+  depends_on = [
+    aws_secretsmanager_secret_version.db-master-password
+  ]
+  triggers = {
+    db_host = aws_rds_cluster.aurora.endpoint
+  }
+  provisioner "local-exec" {
+    # Pull the actual DB master password and set it
+    command = "bash -c 'DBPASS=$(aws --region ${var.aws_region} secretsmanager get-secret-value --secret-id ${var.app}/db-master-password | jq -r \".SecretString\"); aws --region ${var.aws_region} rds modify-db-cluster --db-cluster-identifier ${aws_rds_cluster.aurora.id} --master-user-password \"$${DBPASS}\" --apply-immediately'"
+  }
+}
+
+resource "random_id" "rds_snapshot_identifier" {
+  byte_length = 4
+  keepers = {
+    "id" = "${local.db_prefix}"
+  }
+}
+
+############################ 
+# Aurora Cluster Instance ##
+############################
+resource "aws_rds_cluster_instance" "cluster_instance" {
+  count = 1 # Create 1 db instance
+
+  availability_zone  = "us-east-2b"
+  ca_cert_identifier = var.db_ca_cert_identifier
+  cluster_identifier = aws_rds_cluster.aurora.cluster_identifier
+  instance_class     = "db.r6g.2xlarge"
+  engine             = aws_rds_cluster.aurora.engine
+  identifier         = "${aws_rds_cluster.aurora.cluster_identifier}-${count.index + 1}"
+  promotion_tier     = 1
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "Artemis Database"
+    }
+  )
+}
+
+################
+## Networking ##
+################
+resource "aws_db_subnet_group" "db_subnet_group" {
+  subnet_ids = aws_subnet.database.*.id
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "aurora-${local.db_prefix}"
+    }
+  )
 }
 
 resource "aws_security_group" "db" {
@@ -109,15 +159,3 @@ resource "aws_subnet" "database" {
   )
 }
 
-resource "null_resource" "aurora_db_master_password" {
-  depends_on = [
-    aws_secretsmanager_secret_version.db-master-password
-  ]
-  triggers = {
-    db_host = module.aurora.this_rds_cluster_endpoint
-  }
-  provisioner "local-exec" {
-    # Pull the actual DB master password and set it
-    command = "bash -c 'DBPASS=$(aws --region ${var.aws_region} secretsmanager get-secret-value --secret-id ${var.app}/db-master-password | jq -r \".SecretString\"); aws --region ${var.aws_region} rds modify-db-cluster --db-cluster-identifier ${module.aurora.this_rds_cluster_id} --master-user-password \"$${DBPASS}\" --apply-immediately'"
-  }
-}
