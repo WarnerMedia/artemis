@@ -2,6 +2,7 @@
 # Aurora RDS Cluster ##
 #######################
 resource "aws_rds_cluster" "aurora" {
+  apply_immediately               = true
   availability_zones              = ["us-east-2a", "us-east-2b", "us-east-2c"]
   backup_retention_period         = 7
   cluster_identifier              = local.db_prefix
@@ -84,13 +85,15 @@ resource "random_id" "rds_snapshot_identifier" {
 resource "aws_rds_cluster_instance" "cluster_instance" {
   count = 1 # Create 1 db instance
 
-  availability_zone  = "us-east-2b"
-  ca_cert_identifier = var.db_ca_cert_identifier
-  cluster_identifier = aws_rds_cluster.aurora.cluster_identifier
-  instance_class     = "db.r6g.2xlarge"
-  engine             = aws_rds_cluster.aurora.engine
-  identifier         = "${aws_rds_cluster.aurora.cluster_identifier}-${count.index + 1}"
-  promotion_tier     = 1
+  apply_immediately          = true
+  auto_minor_version_upgrade = true
+  availability_zone          = "us-east-2b"
+  ca_cert_identifier         = var.db_ca_cert_identifier
+  cluster_identifier         = aws_rds_cluster.aurora.cluster_identifier
+  instance_class             = "db.r6g.2xlarge"
+  engine                     = aws_rds_cluster.aurora.engine
+  identifier                 = "${aws_rds_cluster.aurora.cluster_identifier}-${count.index + 1}"
+  promotion_tier             = 1
 
   tags = merge(
     var.tags,
