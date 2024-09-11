@@ -29,7 +29,7 @@ LABEL maintainer=$MAINTAINER
 RUN apk update && \
     apk add git==2.26.3-r1 python3==3.8.10-r0 py3-pip==20.1.1-r0 oniguruma==6.9.5-r2 build-base==0.5-r2 bash==5.0.17-r0 --no-cache && \
     # Upgrade pip and install boto3 for plugin utils
-    pip3 install --no-cache-dir --upgrade pip==21.0.1 setuptools==53.0.0 boto3==1.17.14 cwe==1.6 && \
+    pip3 install --no-cache-dir --upgrade pip==21.0.1 setuptools==53.0.0 boto3==1.17.14 cwe2==3.0.0 && \
     # symlink python3 to python for Analyzer Engine benefit
     ln -s /usr/bin/python3 /usr/bin/python && \
     # install enry
