@@ -9,7 +9,7 @@ from cwe2.database import Database, InvalidCWEError
 
 from engine.plugins.lib import utils
 
-from .report import Issue, ReportInfo
+from report import Issue, ReportInfo
 
 LOG = utils.setup_logging("gosec")
 db = Database()
