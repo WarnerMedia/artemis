@@ -4,9 +4,11 @@ Tests GoSec Plugin
 
 import json
 import unittest
+from pydantic import ValidationError
 from unittest.mock import MagicMock, patch
 
 from engine.plugins.gosec.main import amend_rule, get_cwe_reason, parse_scan, run_gosec
+from engine.plugins.gosec.report import Issue, ReportInfo
 from engine.plugins.lib import utils
 
 TEST_GOSEC_OUTPUT = {
@@ -201,36 +203,32 @@ class TestGoSec(unittest.TestCase):
         """
         tests the entire output from run_gosec to make sure
         parsing output is correct
-        :return: list
         """
         expected_output = TEST_PARSE_SCAN_OUTPUT
-        output = parse_scan(TEST_GOSEC_OUTPUT, "/go/golang-examples/")
+        output = parse_scan(ReportInfo(**TEST_GOSEC_OUTPUT), "/go/golang-examples/")
         self.assertEqual(expected_output, output)
 
     def test_amend_rule_G404(self):
         """
         tests amend_rule edits a G404 warning severity to low and amends its details accordingly
         edits a G307 warning severity to low
-        :return: object
         """
         expected_output = TEST_AMEND_G404_OUTPUT
-        output = amend_rule(TEST_AMEND_G404_INPUT, "/go/golang-examples/")
+        output = amend_rule(Issue(**TEST_AMEND_G404_INPUT), "/go/golang-examples/")
         self.assertEqual(expected_output, output)
 
     def test_amend_rule_G307(self):
         """
         tests amend_rule edits a G307 warning severity to low
-        :return: object
         """
         expected_output = TEST_AMEND_G307_OUTPUT
-        output = amend_rule(TEST_AMEND_G307_INPUT, "/go/golang-examples/")
+        output = amend_rule(Issue(**TEST_AMEND_G307_INPUT), "/go/golang-examples/")
         self.assertEqual(expected_output, output)
 
     @patch("engine.plugins.gosec.main.subprocess")
     def test_run_gosec(self, mock_subprocess):
         """
         test run_gosec when returncode will be 1
-        :return: list
         """
         mock_subprocess_output = MagicMock()
         mock_subprocess_output.stdout = TEST_GOSEC_OUTPUT_STRING
@@ -243,7 +241,6 @@ class TestGoSec(unittest.TestCase):
     def test_run_gosec_no_packages_found(self, mock_subprocess):
         """
         test run_gosec when no packages found, returncode will be 1, but stdout will be b''
-        :return: list
         """
         mock_subprocess_output = MagicMock()
         mock_subprocess_output.stdout = b""
@@ -252,10 +249,33 @@ class TestGoSec(unittest.TestCase):
         run_gosec_output = run_gosec(utils.CODE_DIRECTORY)
         self.assertListEqual(run_gosec_output, [])
 
+    @patch("engine.plugins.gosec.main.subprocess")
+    def test_run_gosec_invalid_json(self, mock_subprocess):
+        """
+        Tests gosec returning invalid data instead of JSON.
+        """
+        mock_subprocess_output = MagicMock()
+        mock_subprocess_output.stdout = b']{"issue'
+        mock_subprocess_output.returncode = 1
+        mock_subprocess.run.return_value = mock_subprocess_output
+        with self.assertRaises(ValidationError):
+            run_gosec(utils.CODE_DIRECTORY)
+
+    @patch("engine.plugins.gosec.main.subprocess")
+    def test_run_gosec_unexpected_json(self, mock_subprocess):
+        """
+        Tests gosec returning unexpected JSON.
+        """
+        mock_subprocess_output = MagicMock()
+        mock_subprocess_output.stdout = b'{"foo":null}'
+        mock_subprocess_output.returncode = 1
+        mock_subprocess.run.return_value = mock_subprocess_output
+        with self.assertRaises(ValidationError):
+            run_gosec(utils.CODE_DIRECTORY)
+
     def test_get_cwe_reason(self):
         """
         tests get_cwe_reason id -> name lookup
-        :return: str
         """
         expected_output = "Improper Certificate Validation"
         output = get_cwe_reason("295")
@@ -264,7 +284,6 @@ class TestGoSec(unittest.TestCase):
     def test_get_cwe_reason_noid(self):
         """
         tests for bad cweid/no cweid
-        :return: str
         """
         expected_output = "No Vulnerability Name Available"
         output = get_cwe_reason("")
