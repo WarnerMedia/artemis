@@ -51,8 +51,13 @@ class BranchProtectionPullRequests:
         if len(push_levels) != 1:
             return add_metadata(False, BranchProtectionPullRequests, config)
 
+        access_level = push_levels[0]
+        access_level_met = access_level.get("access_level", 1) == 0
+
         if requirements and approvals_config is None:
             return add_metadata(False, BranchProtectionPullRequests, config)
+
+        requirements_result = is_subdict_of(requirements, approvals_config)
 
         if min_approvals == 0:
             min_approvals_met = True
@@ -71,11 +76,6 @@ class BranchProtectionPullRequests:
                 if rule.get("approvals_required", 0) >= min_approvals:
                     min_approvals_met = True
                     break
-
-        requirements_result = is_subdict_of(requirements, approvals_config)
-
-        access_level = push_levels[0]
-        access_level_met = access_level.get("access_level", 1) == 0
 
         passing = requirements_result and min_approvals_met and access_level_met
         return add_metadata(passing, BranchProtectionPullRequests, config)

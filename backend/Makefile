@@ -300,7 +300,7 @@ test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy install-plugi
 
 unit-test-no-deps:
 	$(call run-pytest,unit tests,-m "not integtest and not end2end")
-.PHONY: unit-test
+.PHONY: unit-test-no-deps
 
 unit-test: test-deps
 	$(call run-pytest,unit tests,-m "not integtest and not end2end")
@@ -414,10 +414,10 @@ dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISLIB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISDB}
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
-	
+
 	@echo "${INFO} Adding dependencies to Lambda Layer"
 	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
-	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 
+	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS}
 
 	mkdir -p ${DIST_DIR}/lambdas/layers/backend_core/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/backend_core; zip -r ${DIST_DIR}/lambdas/layers/backend_core.zip *

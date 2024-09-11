@@ -10,46 +10,46 @@ Tests are included in `artemis/engine/tests`
 
 Configurations are of the following format:
 
-```json
+```jsonc
 {
     "name": "example",
     "description": "An example config. It is not strictly valid as it has comments and placeholders",
     "version": "1.0.0",
     "rules": [
         {
-            # Type is required. Every object in the config must have a type
+            // Type is required. Every object in the config must have a type
             "type": "<rule id>"
         },
         {
             "type": "<rule id>",
 
-            # You can manually set the output `id` that will bubble up to
-            # Artemis. If omitted, the output `id` will just be `type`, so this
-            # is required if multiple rules of the same `type` are run
+            // You can manually set the output `id` that will bubble up to
+            // Artemis. If omitted, the output `id` will just be `type`, so this
+            // is required if multiple rules of the same `type` are run
             "id": "branch_ci_required",
 
-            # You can explicitly set a severity by specifying it here. This will
-            # bubble up to Artemis
+            // You can explicitly set a severity by specifying it here. This will
+            // bubble up to Artemis
             "severity": "critical"
 
-            # You can temporarily stop running a rule by setting 'enabled' to false.
-            # You can also omit the rule altogether to achieve the same effect
+            // You can temporarily stop running a rule by setting 'enabled' to false.
+            // You can also omit the rule altogether to achieve the same effect
             "enabled": false,
         },
         {
             "type": "branch_status_checks",
             "id": "branch_ci_required",
 
-            # 'name' and 'description' are optional and will override the defaults.
-            # They can be useful for adding additional context to rules
-            #
-            # In some cases, it might make sense to run multiple checks with the same type. In those cases,
-            # overriding the id, name, and description is strongly encouraged
+            // 'name' and 'description' are optional and will override the defaults.
+            // They can be useful for adding additional context to rules
+            //
+            // In some cases, it might make sense to run multiple checks with the same type. In those cases,
+            // overriding the id, name, and description is strongly encouraged
             "name": "Branch - Continuous Integration Required",
             "description": "Require that the CI jobs pass before pull requests can be merged",
 
-            # 'required_checks' is a rule-specific configuration. Many rules have these.
-            # You can examine the config schema for rules with `repo-health --list-available-rules`
+            // 'required_checks' is a rule-specific configuration. Many rules have these.
+            // You can examine the config schema for rules with `repo-health --list-available-rules`
             "checks": {
                 "all_of": [
                     "ci/build",
@@ -60,12 +60,12 @@ Configurations are of the following format:
         {
             "type": "branch_pull_requests",
 
-            # 'expect' is a common rule-specific configuration. It allows the config to specify more in-depth
-            # configuration requirements by comparing the included keys and values directly against
-            # the API response from Github.
-            #
-            # To figure out what values can be expected, go to `src/rules/<rule id>.py`.
-            # The comments in that file will specify what Github API response it compares to
+            // 'expect' is a common rule-specific configuration. It allows the config to specify more in-depth
+            // configuration requirements by comparing the included keys and values directly against
+            // the API response from GitLab.
+            //
+            // To figure out what values can be expected, go to `src/rules/<rule id>.py`.
+            // The comments in that file will specify what GitLab API response it compares to
             "expect": {
                 "dismiss_stale_reviews": true,
                 "require_code_owner_reviews": true,
@@ -118,8 +118,8 @@ If an error occurs while running a rule, it will automatically fail. In addition
 
 ### Composite Rules
 
-Composite rules are new in version `1.0.0`. They are rules that are made up of other rules, rather
-than performing a check against GitHub itself.
+Composite rules are rules that are made up of other rules, rather
+than performing a check against GitLab itself.
 
 They are useful for combining other rules into a new rule. For example, it can be used to have a
 single "Branch - Commit Signing" rule that checks for either a branch protection rule or a branch
@@ -162,62 +162,6 @@ Because composite rules do not perform any checks themselves, their default `id`
 }
 ```
 
-##### Nested composite rules example <!-- omit from toc -->
-
-```json
-{
-    "type": "composite_rule",
-    "id": "repo_scanning",
-    "name": "Branch - Secret Scanning and Code Scanning",
-    "description": "Requires either a secret and code scanning status check or for GHAS secret scanning and code scanning to be enabled",
-    "subrules": {
-        "any_of": [
-            {
-                "type": "composite_rule",
-                "id": "repo_ghas_secret_scanning_and_code_scanning",
-                "subrules": {
-                    "all_of": [
-                        {
-                            "type": "repo_secret_scanning",
-                            "require_push_protection": true
-                        },
-                        {
-                            "type": "repo_code_scanning"
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "composite_rule",
-                "id": "branch_checks_secrets_and_static_analysis",
-                "subrules": {
-                    "any_of": [
-                        {
-                            "type": "branch_protection_status_checks",
-                            "checks": {
-                                "all_of": [
-                                    "secrets",
-                                    "static-analysis"
-                                ]
-                            }
-                        },
-                        {
-                            "type": "branch_rule_status_checks",
-                            "checks": {
-                                "all_of": [
-                                    "secrets",
-                                    "static-analysis"
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }
-        ]
-    }
-}
-```
-
 ### Branch Protection Commit Signing
 
 For checking that a branch protection rule is enabled that enforces commit signing.
@@ -230,11 +174,22 @@ For checking that a branch protection rule is enabled that enforces commit signi
 }
 ```
 
+### Branch Protection Prevent Secret Files
+
+For checking that a branch protection rule is enabled to prevent pushing secret files.
+
+#### Example <!-- omit from toc -->
+
+```json
+{
+    "type": "branch_protection_prevent_secret_files"
+}
+```
+
 ### Branch Protection Enforce Admins
 
 Checks that a branch protection rule is enabled that enforces branch protection
-for admins. Mapped to "Do not allow bypassing the above settings" in branch
-protection rules in Github's UI
+for admins. Mapped to "Allowed to force push" in protected branches in GitLab's UI
 
 #### Example <!-- omit from toc -->
 
@@ -257,8 +212,8 @@ Minimum number of approvals that must be configured. This should be a number
 ##### `expect`
 
 Fields to expect in the response. Refer to fields within the
-"required_pull_request_reviews" object in [Github's Get Branch Protection API
-Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-protection).
+response object in [GitLab's Project-level MR approvals API
+Endpoint](https://docs.gitlab.com/ee/api/merge_request_approvals.html#project-level-mr-approvals).
 
 #### Example <!-- omit from toc -->
 
@@ -267,8 +222,8 @@ Endpoint](https://docs.github.com/en/rest/branches/branch-protection#get-branch-
     "type": "branch_protection_pull_requests",
     "min_approvals": 1,
     "expect": {
-        "dismiss_stale_reviews": true,
-        "require_code_owner_reviews": true,
+        "merge_requests_author_approval": true,
+        "reset_approvals_on_push": true,
     }
 }
 ```

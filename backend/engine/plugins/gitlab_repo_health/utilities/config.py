@@ -117,7 +117,6 @@ class Config:
             raise Exception("Config failed validation. Expected object")
 
         bad_rules_message = 'Config failed validation. Expected "rules" field that is an array of objects'
-        bad_rules_message = 'Config failed validation. Expected "rules" field that is an array of objects'
 
         if config.get("name") is None:
             raise Exception('Config failed validation. Expected top-level "name" field')

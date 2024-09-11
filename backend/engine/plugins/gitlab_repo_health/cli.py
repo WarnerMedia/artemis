@@ -65,7 +65,7 @@ def _get_parser():
     )
     parser.add_argument("-c", "--config", type=str, help="path to file to use as a config")
     parser.add_argument(
-        "--ghconfig",
+        "--glconfig",
         type=str,
         help="GitLab path to file to use as a config. ex: <owner>/<repo>:<path-to-file>",
     )
@@ -83,8 +83,8 @@ def _get_parser():
 def _get_config(args, gitlab):
     if args.config:
         return Config.from_file(args.config, verbose=args.verbose)
-    elif args.ghconfig:
-        return Config.from_gitlab(gitlab, args.ghconfig, verbose=args.verbose)
+    elif args.glconfig:
+        return Config.from_gitlab(gitlab, args.glconfig, verbose=args.verbose)
     elif environment.has_config_file():
         config_file = environment.get_config_file()
 
