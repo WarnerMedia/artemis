@@ -87,7 +87,7 @@ resource "aws_rds_cluster_instance" "cluster_instance" {
 
   apply_immediately          = true
   auto_minor_version_upgrade = true
-  availability_zone          = "us-east-2b"
+  availability_zone          = element(var.database_availability_zones, length(var.database_availability_zones) - 1)
   ca_cert_identifier         = var.db_ca_cert_identifier
   cluster_identifier         = aws_rds_cluster.aurora.cluster_identifier
   instance_class             = "db.r6g.2xlarge"
