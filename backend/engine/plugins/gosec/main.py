@@ -5,7 +5,7 @@ GoSec Plugin
 import json
 import subprocess
 
-from cwe import Database
+from cwe2.database import Database
 
 from engine.plugins.lib import utils
 
