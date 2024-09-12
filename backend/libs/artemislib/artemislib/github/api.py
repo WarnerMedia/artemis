@@ -1,4 +1,5 @@
 from time import sleep, time
+from typing import Any
 
 import requests
 
@@ -17,8 +18,12 @@ LOG = Logger(__name__)
 
 class GitHubAPI:
     _instance = None
+    _org = ""
+    _repo = ""
+    _api_url = ""
+    _headers = {}
 
-    def __new__(cls, org: str, github_secret_loc: str, service_hostname: str = None, repo: str = None):
+    def __new__(cls, org: str, github_secret_loc: str, service_hostname: str = "", repo: str = ""):
         if not cls._instance:
             cls._instance = super(GitHubAPI, cls).__new__(cls)
 
@@ -35,32 +40,60 @@ class GitHubAPI:
                 from artemislib.aws import AWSConnect  # pylint: disable=import-outside-toplevel
 
                 aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
-                cls._instance._headers[REV_PROXY_SECRET_HEADER] = aws_connect.get_key(REV_PROXY_SECRET)["SecretString"]
+                proxy_secret = aws_connect.get_secret_raw(REV_PROXY_SECRET)
+                if proxy_secret:
+                    cls._instance._headers[REV_PROXY_SECRET_HEADER] = proxy_secret
 
             # Set the API URL
-            if service_hostname is None:
+            if service_hostname == "" or service_hostname == "api.github.com":
                 cls._instance._api_url = "https://api.github.com"
             else:
                 cls._instance._api_url = f"https://{service_hostname}/api/v3"
 
         return cls._instance
 
-    def get_repo(self, path: str = None, query: dict = None, paged=False):
+    def get_repo(self, path: str = "", query: dict = {}, paged=False) -> Any:
         """Get an API endpoint that is under the /repos/ORG/REPO path"""
         req_path = f"repos/{self._org}/{self._repo}"
-        if path is not None:
+        if path != "":
             req_path += f"/{path}"
         return self.get(req_path, query, paged)
 
-    def get(self, path: str = None, query: dict = None, paged=False):
+    def get(self, path: str = "", query: dict = {}, paged=False):
         """Get an API endpoint from the top level of the API tree"""
-        if query is None:
-            query = {}
-
         # Build the API path
         url = self._api_url
-        if path is not None:
+        if path != "":
             url += f"/{path}"
+
+        if paged:
+            query["page"] = 1
+            ret = []
+            while paged:
+                r = requests.get(url=url, headers=self._headers, params=query)
+                if int(r.headers.get("X-RateLimit-Remaining", 1)) == 0:
+                    LOG.warning("GitHub rate limit reached")
+                    _sleep_until(int(r.headers["X-RateLimit-Reset"]))
+                if r.status_code == 200 and r.json():
+                    ret += r.json()
+                    query["page"] += 1
+                else:
+                    # Either the status code was not 200 or the JSON response was empty.
+                    # When paging is exhaused the API returns 200 with an empty list ("[]") in the body
+                    paged = False
+            return ret
+        else:
+            r = requests.get(url=url, headers=self._headers, params=query)
+            if int(r.headers.get("X-RateLimit-Remaining", 1)) == 0:
+                LOG.warning("GitHub rate limit reached")
+                _sleep_until(int(r.headers["X-RateLimit-Reset"]))
+            if r.status_code != 200:
+                return {}
+            return r.json()
+
+    def get_url(self, url: str, query: dict = {}, paged=False) -> Any:
+        """Get an API endpoint from a fully URL"""
+        # Build the API path
 
         if paged:
             query["page"] = 1
