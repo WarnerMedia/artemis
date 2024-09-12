@@ -158,7 +158,7 @@ def queue_gitlab_repository(
     return aws_connect.queue_repo_for_scan(
         org_repo,
         resp_repo_data["httpUrlToRepo"],
-        # Gitlab repository size is in bytes when other service sizes are in kilobytes.
+        # GitLab repository size is in bytes when other service sizes are in kilobytes.
         # Converting repository size to kilobytes to meet expected size.
         int(resp_repo_data["statistics"]["repositorySize"]) / 1024,
         service_type,

@@ -2073,6 +2073,7 @@ components:
               - findsecbugs_java13
               - gitsecrets
               - github_repo_health
+              - gitlab_repo_health
               - node_dependencies
               - owasp_dependency_check
               - php_sensio_security_checker

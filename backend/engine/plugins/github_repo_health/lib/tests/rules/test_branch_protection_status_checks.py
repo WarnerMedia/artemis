@@ -102,7 +102,7 @@ class TestBranchProtectionStatusChecks(unittest.TestCase):
             BranchProtectionStatusChecks.check(mock_github, OWNER, REPO, BRANCH, config),
         )
 
-    def test_no_required_status_checks(self):
+    def test_single_required_status_checks(self):
         mock_github = Github(None)
         mock_github.get_branch_protection = MagicMock(return_value=NO_STATUS_CHECKS_RESPONSE)
 
