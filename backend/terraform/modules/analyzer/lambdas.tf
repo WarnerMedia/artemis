@@ -44,7 +44,7 @@ resource "aws_subnet" "lambdas" {
 
 # Create a NAT gateway with an EIP for each private subnet to get internet connectivity
 resource "aws_eip" "lambda_nat" {
-  vpc = true
+  domain = "vpc"
 
   tags = merge(
     var.tags,

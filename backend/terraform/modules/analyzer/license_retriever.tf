@@ -84,7 +84,7 @@ resource "aws_cloudwatch_event_rule" "license-retriever-schedule" {
   schedule_expression = "cron(17 9 ? * * *)"
 
   # This rule is disabled when in maintenance mode
-  is_enabled = !var.maintenance_mode
+  state = !var.maintenance_mode ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "license-retriever" {

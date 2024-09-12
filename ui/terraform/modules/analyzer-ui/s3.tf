@@ -6,20 +6,6 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "files" {
   bucket = "${var.app}-${data.aws_caller_identity.current.account_id}"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
 
   tags = merge(
     var.tags,
@@ -27,6 +13,27 @@ resource "aws_s3_bucket" "files" {
       "Name" = "Artemis UI Static Files"
     }
   )
+}
+
+resource "aws_s3_bucket_acl" "files_acl_config" {
+  bucket = aws_s3_bucket.files.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "files_version_config" {
+  bucket = aws_s3_bucket.files.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "files_encryption_config" {
+  bucket = aws_s3_bucket.files.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 ###############################################################################

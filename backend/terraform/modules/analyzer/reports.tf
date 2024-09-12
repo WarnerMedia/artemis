@@ -271,7 +271,7 @@ resource "aws_cloudwatch_event_rule" "every-day" {
   schedule_expression = "cron(0 4 ? * * *)"
 
   # This rule is disabled when in maintenance mode
-  is_enabled = !var.maintenance_mode
+  state = !var.maintenance_mode ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "report-cleanup" {

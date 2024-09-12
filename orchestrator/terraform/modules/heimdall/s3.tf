@@ -4,11 +4,6 @@
 
 resource "aws_s3_bucket" "heimdall_files" {
   bucket = "${var.app}-${data.aws_caller_identity.current.account_id}"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
 
   tags = merge(
     var.tags,
@@ -16,12 +11,25 @@ resource "aws_s3_bucket" "heimdall_files" {
       "Name" = "Heimdall Files"
     }
   )
+}
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+resource "aws_s3_bucket_acl" "heimdall_files_acl" {
+  bucket = aws_s3_bucket.heimdall_files.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "heimdall_files_version" {
+  bucket = aws_s3_bucket.heimdall_files.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "heimdall_files_encryption_config" {
+  bucket = aws_s3_bucket.heimdall_files.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
     }
   }
 }
