@@ -166,12 +166,6 @@ module "analyzer" {
 
   # List of service integration names. These are referenced in the services.json config.
   service-integrations = []
-
-  # Enable Forwarding for detected secrets
-  secrets_enabled = false
-
-  # GHAS config variable
-  ghas_enabled = false
 }
 
 module "metric_alarms" {
