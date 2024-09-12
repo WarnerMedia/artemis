@@ -3,7 +3,7 @@
 #######################
 resource "aws_rds_cluster" "aurora" {
   apply_immediately               = true
-  availability_zones              = ["us-east-2a", "us-east-2b", "us-east-2c"]
+  availability_zones              = var.database_availability_zones
   backup_retention_period         = 7
   cluster_identifier              = local.db_prefix
   database_name                   = "analyzer"
@@ -87,7 +87,7 @@ resource "aws_rds_cluster_instance" "cluster_instance" {
 
   apply_immediately          = true
   auto_minor_version_upgrade = true
-  availability_zone          = element(var.database_availability_zones, length(var.database_availability_zones) - 1)
+  availability_zone          = element(reverse(var.database_availability_zones), count.index)
   ca_cert_identifier         = var.db_ca_cert_identifier
   cluster_identifier         = aws_rds_cluster.aurora.cluster_identifier
   instance_class             = "db.r6g.2xlarge"
