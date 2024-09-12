@@ -434,7 +434,11 @@ module "access-secret-manager-keys" {
     module.public_engine_cluster.scale-down-assume-role.name,
     module.nat_engine_cluster.scale-down-assume-role.name,
     aws_iam_role.db-cleanup-lambda-role.name,
-    aws_iam_role.license-retriever-lambda-role.name
+    aws_iam_role.license-retriever-lambda-role.name,
+    aws_iam_role.scan-scheduler-role.name,
+    aws_iam_role.event-role.name,
+    aws_iam_role.metrics-assume-role.name,
+    aws_iam_role.audit-event-role.name
   ]
   name = "${var.app}-access-secret-manager-keys"
   resources = [
