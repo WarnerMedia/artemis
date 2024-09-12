@@ -201,7 +201,7 @@ resource "aws_cloudwatch_event_rule" "run-scheduled-scans" {
   schedule_expression = "rate(1 minute)"
 
   # This rule is disabled when in maintenance mode
-  is_enabled = !var.maintenance_mode
+  state = !var.maintenance_mode ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "scan-scheduler" {
