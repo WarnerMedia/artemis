@@ -46,36 +46,52 @@ class BranchProtectionPullRequests:
                 error_message=str(e),
             )
 
-        push_levels = protection_config.get("push_access_levels", [])
+        access_level_met = BranchProtectionPullRequests.checkNoPushPermissions(protection_config)
+        requirements_result = BranchProtectionPullRequests.checkFulfillsRequirements(requirements, approvals_config)
+        min_approvals_met = BranchProtectionPullRequests.checkMinApprovalsMet(min_approvals, approval_rules, branch)
 
+        passing = requirements_result and min_approvals_met and access_level_met
+        return add_metadata(passing, BranchProtectionPullRequests, config)
+
+    @staticmethod
+    def checkNoPushPermissions(protection_config: dict) -> bool:
+        push_levels = protection_config.get("push_access_levels", [])
+        # The only access level should be the one that says no one has access.
         if len(push_levels) != 1:
-            return add_metadata(False, BranchProtectionPullRequests, config)
+            return False
 
         access_level = push_levels[0]
-        access_level_met = access_level.get("access_level", 1) == 0
+        return access_level.get("access_level", 1) == 0
 
+    @staticmethod
+    def checkFulfillsRequirements(requirements: dict, approvals_config) -> bool:
+        # If we have requiremnts, but none are set in GitLab, we fail.
         if requirements and approvals_config is None:
-            return add_metadata(False, BranchProtectionPullRequests, config)
+            return False
 
-        requirements_result = is_subdict_of(requirements, approvals_config)
+        return is_subdict_of(requirements, approvals_config)
 
+    @staticmethod
+    def checkMinApprovalsMet(min_approvals: int, approval_rules, branch: str) -> bool:
+        min_approvals_met = False
+        # If no min approvals, we succeed.
         if min_approvals == 0:
-            min_approvals_met = True
+            return True
         else:
+            # If we need min approvals and there are no rules, we fail.
             if approval_rules is None:
-                return add_metadata(False, BranchProtectionPullRequests, config)
+                return False
 
             min_approvals_met = False
             branch_rules = []
+            # Search through approval rules for ones that match this branch.
             for rule in approval_rules:
                 for each_branch in rule.get("protected_branches"):
                     if (each_branch.get("name")) == branch:
                         branch_rules.append(rule)
-
+            # Look through branch approval rules, and make sure at least one exists that meets our rule.
             for rule in branch_rules:
                 if rule.get("approvals_required", 0) >= min_approvals:
                     min_approvals_met = True
                     break
-
-        passing = requirements_result and min_approvals_met and access_level_met
-        return add_metadata(passing, BranchProtectionPullRequests, config)
+        return min_approvals_met
