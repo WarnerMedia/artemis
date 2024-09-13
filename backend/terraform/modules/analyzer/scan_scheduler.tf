@@ -8,14 +8,12 @@ resource "aws_lambda_function" "scan_scheduler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scan_scheduler/v${var.ver}/scan_scheduler.zip"
 
-  layers = var.lambda_layers
-
-
-
+  layers        = var.lambda_layers
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  memory_size   = 256
 
   role = aws_iam_role.scan-scheduler-role.arn
 

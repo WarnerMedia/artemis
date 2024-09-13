@@ -56,9 +56,8 @@ resource "aws_lambda_function" "sqs-metrics" {
   architectures = [var.lambda_architecture]
   timeout       = 60
   layers        = var.lambda_layers
-
-
-  role = aws_iam_role.metrics-assume-role.arn
+  memory_size   = 256
+  role          = aws_iam_role.metrics-assume-role.arn
 
   environment {
     variables = merge({

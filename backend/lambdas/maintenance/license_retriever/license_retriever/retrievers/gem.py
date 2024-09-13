@@ -10,10 +10,10 @@ LOG = Logger(__name__)
 
 def retrieve_gem_licenses(name: str, version: str) -> list:
     package_info = get_package_info(name, version)
-    if not package_info:
+    if not package_info or not package_info.get("licenses"):
         return []
 
-    licenses = [license.lower() for license in package_info.get("licenses", [])]
+    licenses = [license.lower() for license in package_info["licenses"]]
     if not licenses and package_info.get("homepage_uri", "").startswith("https://github.com"):
         repo_license = get_license(package_info["homepage_uri"])
         if repo_license:
