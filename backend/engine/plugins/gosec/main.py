@@ -5,7 +5,7 @@ GoSec Plugin
 import json
 import subprocess
 
-from cwe import Database
+from cwe2.database import Database, InvalidCWEError
 
 from engine.plugins.lib import utils
 
@@ -86,8 +86,10 @@ def get_cwe_reason(id: str) -> str:
     gets the name of the vulnerability from the cwe ID
     :return: str
     """
-    return db.get(id).name if db.get(id) and db.get(id).name else "No Vulnerability Name Available"
-
+    try:
+        return db.get(id).name if db.get(id) and db.get(id).name else "No Vulnerability Name Available"
+    except InvalidCWEError:
+        return "No Vulnerability Name Available"
 
 def convert_line(line: str) -> int:
     ret = 0  # Default value
