@@ -6,20 +6,6 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "analyzer_files" {
   bucket = "${var.app}-${data.aws_caller_identity.current.account_id}"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
   tags = merge(
     var.tags,
     {
@@ -28,22 +14,38 @@ resource "aws_s3_bucket" "analyzer_files" {
   )
 }
 
-resource "aws_s3_bucket" "analyzer_docs" {
-  bucket = "${var.app}-docs-${data.aws_caller_identity.current.account_id}"
-  acl    = "private"
-
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_ownership_controls" "analyzer_s3_controls" {
+  bucket = aws_s3_bucket.analyzer_files.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
   }
+}
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+resource "aws_s3_bucket_acl" "analyzer_files_acl" {
+  acl        = "private"
+  bucket     = aws_s3_bucket.analyzer_files.id
+  depends_on = [aws_s3_bucket_ownership_controls.analyzer_s3_controls]
+}
+
+resource "aws_s3_bucket_versioning" "analyzer_files_version" {
+  bucket = aws_s3_bucket.analyzer_files.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "analyzer_files_encryption_config" {
+  bucket = aws_s3_bucket.analyzer_files.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
     }
   }
+}
 
+
+resource "aws_s3_bucket" "analyzer_docs" {
+  bucket = "${var.app}-docs-${data.aws_caller_identity.current.account_id}"
   tags = merge(
     var.tags,
     {
@@ -51,6 +53,35 @@ resource "aws_s3_bucket" "analyzer_docs" {
       Access = "Public"
     }
   )
+}
+
+resource "aws_s3_bucket_ownership_controls" "analyzer_docs_s3_controls" {
+  bucket = aws_s3_bucket.analyzer_docs.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "analyzer_docs_acl" {
+  acl        = "private"
+  bucket     = aws_s3_bucket.analyzer_docs.id
+  depends_on = [aws_s3_bucket_ownership_controls.analyzer_docs_s3_controls]
+}
+
+resource "aws_s3_bucket_versioning" "analyzer_docs_version" {
+  bucket = aws_s3_bucket.analyzer_docs.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "analyzer_docs_encryption_config" {
+  bucket = aws_s3_bucket.analyzer_docs.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 ###############################################################################
