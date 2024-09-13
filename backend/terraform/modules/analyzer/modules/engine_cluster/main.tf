@@ -239,7 +239,7 @@ resource "aws_lambda_function" "scale-down" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 60
-  memory_size   = 256
+  memory_size   = 512
 
   role = aws_iam_role.scale-down-assume-role.arn
 
