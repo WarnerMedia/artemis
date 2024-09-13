@@ -4,26 +4,16 @@ from artemislib.logging import Logger
 
 LOG = Logger("ghas_secrets")
 
+commit_types = {"commit": True, "wiki_commit": True}
+issue_types = {"issue_title": True, "issue_body": True, "issue_comment": True}
+
 
 def format_secret(
     github: GitHubAPI, item_id: str, location: dict, alert: dict, author: str, author_timestamp: str
 ) -> Any:
-    valid = False
-
-    # Commits
-    if location["type"] == "commit":
+    if location["type"] in commit_types:
         return _format_commit(item_id, location, alert, author, author_timestamp)
-    elif location["type"] == "wiki_commit":
-        return _format_commit(item_id, location, alert, author, author_timestamp)
-    # Issues
-    elif location["type"] == "issue_title":
-        LOG.info("undone")
-        return _format_issue(github, item_id, location, alert)
-    elif location["type"] == "issue_body":
-        LOG.info("undone")
-        return _format_issue(github, item_id, location, alert)
-    elif location["type"] == "issue_comment":
-        LOG.info("undone")
+    elif location["type"] in issue_types:
         return _format_issue(github, item_id, location, alert)
     # Discussions
     elif location["type"] == "discussion_title":
@@ -54,7 +44,7 @@ def format_secret(
 
     else:
         LOG.debug("Unknown location type, ignoring")
-    return valid, author, author_timestamp
+    return {}
 
 
 def _format_commit(item_id, location, alert, author, author_timestamp):
