@@ -62,7 +62,7 @@ print("TASK_QUEUE=%s" % task_queue)
 print("PRIORITY_TASK_QUEUE=%s" % priority_task_queue)
 print("ECR=%s" % ecr)
 # HOST_WORKING_DIR is mapped into the engine/plugin docker containers for holding the cloned repo
-print("HOST_WORKING_DIR=/data/artemis/work")
+print("HOST_WORKING_DIR=/cloned_repos")
 print("INSTANCE_ID=%s" % ident["instanceId"])
 print("DEFAULT_DEPTH=500")
 print("CALLBACK_QUEUE=%s" % callback_queue)

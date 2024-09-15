@@ -38,6 +38,7 @@ locals {
       aws_region                   = var.aws_region
       docker_compose_ver           = var.docker_compose_ver
       engine_block_device          = var.engine_block_device
+      repos_block_device           = var.repos_block_device
       application                  = var.app
       region                       = var.aws_region
       domain_name                  = var.domain_name
@@ -79,6 +80,15 @@ resource "aws_launch_template" "engine-template" {
 
     ebs {
       volume_size = var.engine_volume_size
+      volume_type = "gp3"
+    }
+  }
+
+    block_device_mappings {
+    device_name = var.repos_block_device
+
+    ebs {
+      volume_size = var.repos_volume_size
       volume_type = "gp3"
     }
   }

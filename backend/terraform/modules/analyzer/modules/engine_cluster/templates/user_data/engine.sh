@@ -28,6 +28,12 @@ mkdir -p /data
 mount "${engine_block_device}" /data
 chmod 755 /data
 
+# Format and mount repo volume
+mkfs -t ext4 "${engine_block_device}"
+mkdir -p /cloned_repos
+mount "${engine_block_device}" /cloned_repos
+chmod 755 /cloned_repos
+
 # Make sure packages are up-to-date
 yum -y update
 
