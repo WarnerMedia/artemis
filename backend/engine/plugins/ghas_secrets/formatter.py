@@ -68,7 +68,7 @@ def _format_discussion(github: GitHubAPI, item_id, location, alert):
     return {
         "id": item_id,
         "filename": location["type"],
-        "line": "",
+        "line": 0,
         "commit": "",
         "type": _normalize_secret_type(alert["secret_type"]),
         "author": author,
@@ -107,7 +107,7 @@ def _format_issue(github: GitHubAPI, item_id, location, alert):
     return {
         "id": item_id,
         "filename": location["type"],
-        "line": "",
+        "line": 0,
         "commit": "",
         "type": _normalize_secret_type(alert["secret_type"]),
         "author": author,
@@ -152,7 +152,7 @@ def _format_pull_request(github: GitHubAPI, item_id, location, alert):
     return {
         "id": item_id,
         "filename": location["type"],
-        "line": "",
+        "line": 0,
         "commit": "",
         "type": _normalize_secret_type(alert["secret_type"]),
         "author": author,
