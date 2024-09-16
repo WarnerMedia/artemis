@@ -19,7 +19,7 @@ def setup_logging(name):
     if not log.handlers:
         console = logging.StreamHandler()
         formatter = logging.Formatter(
-            fmt=f"%(asctime)s %(levelname)-8s [{name}] %(message)s", datefmt="[%Y-%m-%dT%H:%M:%S%z]"
+            fmt=f"[%(levelname)-8s] %(asctime)s [{name}] %(message)s", datefmt="[%Y-%m-%dT%H:%M:%S%z]"
         )
         console.setFormatter(formatter)
         log.addHandler(console)
