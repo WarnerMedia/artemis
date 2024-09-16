@@ -45,7 +45,7 @@ class GitHubAPI:
                     cls._instance._headers[REV_PROXY_SECRET_HEADER] = proxy_secret
 
             # Set the API URL
-            if service_hostname == "" or service_hostname == "api.github.com":
+            if service_hostname == "" or service_hostname == "api.github.com" or service_hostname == "none":
                 cls._instance._api_url = "https://api.github.com"
             else:
                 cls._instance._api_url = f"https://{service_hostname}/api/v3"
