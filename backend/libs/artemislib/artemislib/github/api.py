@@ -92,7 +92,7 @@ class GitHubAPI:
             return r.json()
 
     def get_url(self, url: str, query: dict = {}, paged=False) -> Any:
-        """Get an API endpoint from a fully URL"""
+        """Get an API endpoint from a full URL"""
         # Build the API path
 
         if paged:
