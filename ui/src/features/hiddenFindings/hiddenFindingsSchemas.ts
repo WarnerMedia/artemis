@@ -104,7 +104,7 @@ const SeveritySchema = Yup.string().oneOf([
 const hiddenFindingValueAnalysisSchema = Yup.object()
 	.shape({
 		filename: Yup.string().defined(),
-		line: Yup.number().defined().integer().min(0),
+		line: Yup.number().defined().positive().integer(),
 		type: Yup.string().defined(),
 		severity: SeveritySchema,
 	})
@@ -119,7 +119,7 @@ const hiddenFindingValueConfigSchema = Yup.object()
 const hiddenFindingValueSecretSchema = Yup.object()
 	.shape({
 		filename: Yup.string().defined(),
-		line: Yup.number().defined().positive().integer(),
+		line: Yup.number().defined().integer().min(0),
 		commit: Yup.string().defined(),
 	})
 	.defined();
