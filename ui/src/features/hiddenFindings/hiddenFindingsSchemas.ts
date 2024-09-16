@@ -104,7 +104,7 @@ const SeveritySchema = Yup.string().oneOf([
 const hiddenFindingValueAnalysisSchema = Yup.object()
 	.shape({
 		filename: Yup.string().defined(),
-		line: Yup.number().defined().positive().integer(),
+		line: Yup.number().defined().integer().min(0),
 		type: Yup.string().defined(),
 		severity: SeveritySchema,
 	})
