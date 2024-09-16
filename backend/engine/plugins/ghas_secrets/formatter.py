@@ -6,6 +6,14 @@ LOG = Logger("ghas_secrets")
 
 commit_types = {"commit": True, "wiki_commit": True}
 issue_types = {"issue_title": True, "issue_body": True, "issue_comment": True}
+discussion_types = {"discussion_title": True, "discussion_body": True, "discussion_comment": True}
+pull_request_types = {
+    "pull_request_title": True,
+    "pull_request_body": True,
+    "pull_request_comment": True,
+    "pull_request_review": True,
+    "pull_request_review_comment": True,
+}
 
 
 def format_secret(
@@ -15,33 +23,10 @@ def format_secret(
         return _format_commit(item_id, location, alert, author, author_timestamp)
     elif location["type"] in issue_types:
         return _format_issue(github, item_id, location, alert)
-    # Discussions
-    elif location["type"] == "discussion_title":
-        LOG.info("undone")
+    elif location["type"] in discussion_types:
         return _format_discussion(github, item_id, location, alert)
-    elif location["type"] == "discussion_body":
-        LOG.info("undone")
-        return _format_discussion(github, item_id, location, alert)
-    elif location["type"] == "discussion_comment":
-        LOG.info("undone")
-        return _format_discussion(github, item_id, location, alert)
-    # Pull Requests
-    elif location["type"] == "pull_request_title":
-        LOG.info("undone")
+    elif location["type"] in pull_request_types:
         return _format_pull_request(github, item_id, location, alert)
-    elif location["type"] == "pull_request_body":
-        LOG.info("undone")
-        return _format_pull_request(github, item_id, location, alert)
-    elif location["type"] == "pull_request_comment":
-        LOG.info("undone")
-        return _format_pull_request(github, item_id, location, alert)
-    elif location["type"] == "pull_request_review":
-        LOG.info("undone")
-        return _format_pull_request(github, item_id, location, alert)
-    elif location["type"] == "pull_request_review_comment":
-        LOG.info("undone")
-        return _format_pull_request(github, item_id, location, alert)
-
     else:
         LOG.debug("Unknown location type, ignoring")
     return {}
@@ -64,22 +49,22 @@ def _format_commit(item_id, location, alert, author, author_timestamp):
 
 
 def _format_discussion(github: GitHubAPI, item_id, location, alert):
-    LOG.info(location)
-    github.get_repo()
-    return {
-        "id": item_id,
-        "type": _normalize_secret_type(alert["secret_type"]),
-        "author": "",
-        "author-timestamp": "",
-        "validity": alert["validity"],
-        "state": alert["state"],
-        "created_at": alert["created_at"],
-        "location": location["type"],
-    }
+    author = ""
+    author_timestamp = ""
+    url = ""
 
+    # GitHub doesn't have a REST API for Discussions.
+    # We can look into GraphQL in the future if anyone is using Dicussions.
 
-def _format_issue(github: GitHubAPI, item_id, location, alert):
-    print(location)
+    if location["type"] == "discussion_title":
+        url = location["details"]["discussion_title_url"]
+
+    if location["type"] == "discussion_body":
+        url = location["details"]["discussion_body_url"]
+
+    if location["type"] == "discussion_comment":
+        url = location["details"]["discussion_comment_url"]
+
     return {
         "id": item_id,
         "type": _normalize_secret_type(alert["secret_type"]),
@@ -89,23 +74,74 @@ def _format_issue(github: GitHubAPI, item_id, location, alert):
         "state": alert["state"],
         "created_at": alert["created_at"],
         "location": location["type"],
+        "url": url,
+    }
+
+
+def _format_issue(github: GitHubAPI, item_id, location, alert):
+    author = ""
+    author_timestamp = ""
+    url = ""
+
+    if location["type"] == "issue_title":
+        issue = github.get_url(location["details"]["issue_title_url"])
+        author = issue["user"]["login"]
+        author_timestamp = issue["created_at"]
+        url = issue["html_url"]
+
+    if location["type"] == "issue_body":
+        issue = github.get_url(location["details"]["issue_body_url"])
+        author = issue["user"]["login"]
+        author_timestamp = issue["created_at"]
+        url = issue["html_url"]
+
+    if location["type"] == "issue_comment":
+        comment = github.get_url(location["details"]["issue_comment_url"])
+        author = comment["user"]["login"]
+        author_timestamp = comment["created_at"]
+        url = comment["html_url"]
+
+    return {
+        "id": item_id,
+        "type": _normalize_secret_type(alert["secret_type"]),
+        "author": author,
+        "author-timestamp": author_timestamp,
+        "validity": alert["validity"],
+        "state": alert["state"],
+        "created_at": alert["created_at"],
+        "location": location["type"],
+        "url": url,
     }
 
 
 def _format_pull_request(github: GitHubAPI, item_id, location, alert):
     author = ""
     author_timestamp = ""
-    LOG.info(location)
+    url = ""
 
     if location["type"] == "pull_request_comment":
         comment = github.get_url(location["details"]["pull_request_comment_url"])
         author = comment["user"]["login"]
         author_timestamp = comment["created_at"]
+        url = comment["html_url"]
 
-    if location["type"] == "pull_request_comment":
-        comment = github.get_url(location["details"]["pull_request_comment_url"])
-        author = comment["user"]["login"]
-        author_timestamp = comment["created_at"]
+    if location["type"] == "pull_request_title":
+        pull_request = github.get_url(location["details"]["pull_request_title_url"])
+        author = pull_request["user"]["login"]
+        author_timestamp = pull_request["created_at"]
+        url = pull_request["html_url"]
+
+    if location["type"] == "pull_request_review":
+        pull_request = github.get_url(location["details"]["pull_request_review_url"])
+        author = pull_request["user"]["login"]
+        author_timestamp = pull_request["submitted_at"]
+        url = pull_request["html_url"]
+
+    if location["type"] == "pull_request_body":
+        pull_request = github.get_url(location["details"]["pull_request_body_url"])
+        author = pull_request["user"]["login"]
+        author_timestamp = pull_request["created_at"]
+        url = pull_request["html_url"]
 
     return {
         "id": item_id,
@@ -116,6 +152,7 @@ def _format_pull_request(github: GitHubAPI, item_id, location, alert):
         "state": alert["state"],
         "created_at": alert["created_at"],
         "location": location["type"],
+        "url": url,
     }
 
 

@@ -4,43 +4,31 @@ from artemislib.logging import Logger
 
 LOG = Logger("ghas_secrets")
 
+commit_types = {"commit": True, "wiki_commit": True}
+issue_types = {"issue_title": True, "issue_body": True, "issue_comment": True}
+discussion_types = {"discussion_title": True, "discussion_body": True, "discussion_comment": True}
+pull_request_types = {
+    "pull_request_title": True,
+    "pull_request_body": True,
+    "pull_request_comment": True,
+    "pull_request_review": True,
+    "pull_request_review_comment": True,
+}
+
 
 def validate(location: dict, path: str) -> Tuple[bool, str, str]:
     valid = False
     author = ""
     author_timestamp = ""
 
-    # Commits
-    if location["type"] == "commit":
+    if location["type"] in commit_types:
         valid, author, author_timestamp = _validate_commit(location, path)
-    elif location["type"] == "wiki_commit":
-        valid, author, author_timestamp = _validate_commit(location, path)
-    # Issues
-    elif location["type"] == "issue_title":
+    elif location["type"] in issue_types:
         valid = True
-    elif location["type"] == "issue_body":
+    elif location["type"] in discussion_types:
         valid = True
-    elif location["type"] == "issue_comment":
+    elif location["type"] in pull_request_types:
         valid = True
-    # Discussions
-    elif location["type"] == "discussion_title":
-        valid = True
-    elif location["type"] == "discussion_body":
-        valid = True
-    elif location["type"] == "discussion_comment":
-        valid = True
-    # Pull Requests
-    elif location["type"] == "pull_request_title":
-        valid = True
-    elif location["type"] == "pull_request_body":
-        valid = True
-    elif location["type"] == "pull_request_comment":
-        valid = True
-    elif location["type"] == "pull_request_review":
-        valid = True
-    elif location["type"] == "pull_request_review_comment":
-        valid = True
-
     else:
         LOG.debug("Unknown location type, ignoring")
     return valid, author, author_timestamp
