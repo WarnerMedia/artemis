@@ -4,7 +4,6 @@ from artemislib.logging import Logger
 
 LOG = Logger("ghas_secrets")
 
-commit_types = {"commit": True, "wiki_commit": True}
 issue_types = {"issue_title": True, "issue_body": True, "issue_comment": True}
 discussion_types = {"discussion_title": True, "discussion_body": True, "discussion_comment": True}
 pull_request_types = {
@@ -19,12 +18,14 @@ pull_request_types = {
 def format_secret(
     github: GitHubAPI, item_id: str, location: dict, alert: dict, author: str, author_timestamp: str
 ) -> Any:
-    if location["type"] in commit_types:
+    if location["type"] in "commit":
         return _format_commit(item_id, location, alert, author, author_timestamp)
+    elif location["type"] in "wiki_commit":
+        return _format_wiki(item_id, location, alert)
     elif location["type"] in issue_types:
         return _format_issue(github, item_id, location, alert)
     elif location["type"] in discussion_types:
-        return _format_discussion(github, item_id, location, alert)
+        return _format_discussion(item_id, location, alert)
     elif location["type"] in pull_request_types:
         return _format_pull_request(github, item_id, location, alert)
     else:
@@ -32,7 +33,7 @@ def format_secret(
     return {}
 
 
-def _format_commit(item_id, location, alert, author, author_timestamp):
+def _format_commit(item_id: str, location: dict, alert: dict, author: str, author_timestamp: str):
     return {
         "id": item_id,
         "filename": location["details"]["path"],
@@ -48,7 +49,24 @@ def _format_commit(item_id, location, alert, author, author_timestamp):
     }
 
 
-def _format_discussion(github: GitHubAPI, item_id, location, alert):
+def _format_wiki(item_id: str, location: dict, alert: dict):
+    # GitHub doesn't have an API for Wikis, so let's do our best with what we have.
+    return {
+        "id": item_id,
+        "filename": location["details"]["path"],
+        "line": location["details"]["start_line"],
+        "commit": location["details"]["commit_sha"],
+        "type": _normalize_secret_type(alert["secret_type"]),
+        "author": "",
+        "author-timestamp": "",
+        "validity": alert["validity"],
+        "state": alert["state"],
+        "created_at": alert["created_at"],
+        "location": location["type"],
+    }
+
+
+def _format_discussion(item_id: str, location: dict, alert: dict):
     author = ""
     author_timestamp = ""
     url = ""
@@ -81,7 +99,7 @@ def _format_discussion(github: GitHubAPI, item_id, location, alert):
     }
 
 
-def _format_issue(github: GitHubAPI, item_id, location, alert):
+def _format_issue(github: GitHubAPI, item_id: str, location: dict, alert: dict):
     author = ""
     author_timestamp = ""
     url = ""
@@ -120,7 +138,7 @@ def _format_issue(github: GitHubAPI, item_id, location, alert):
     }
 
 
-def _format_pull_request(github: GitHubAPI, item_id, location, alert):
+def _format_pull_request(github: GitHubAPI, item_id: str, location: dict, alert: dict):
     author = ""
     author_timestamp = ""
     url = ""
