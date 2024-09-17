@@ -13,9 +13,17 @@ resource "aws_s3_bucket" "heimdall_files" {
   )
 }
 
-resource "aws_s3_bucket_acl" "heimdall_files_acl" {
+resource "aws_s3_bucket_ownership_controls" "s3_controls" {
   bucket = aws_s3_bucket.heimdall_files.id
-  acl    = "private"
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "heimdall_files_acl" {
+  acl        = "private"
+  bucket     = aws_s3_bucket.heimdall_files.id
+  depends_on = [aws_s3_bucket_ownership_controls.s3_controls]
 }
 
 resource "aws_s3_bucket_versioning" "heimdall_files_version" {

@@ -244,14 +244,12 @@ resource "aws_lambda_function" "scale-down" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/scale_down/v${var.ver}/scale_down.zip"
 
-  layers = var.lambda_layers
-
-
-
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 60
+  memory_size   = 512
 
   role = aws_iam_role.scale-down-assume-role.arn
 

@@ -12,8 +12,15 @@ def retrieve_npm_licenses(name: str, version: str) -> list:
     if not package_info:
         return []
 
-    if package_info.get("license"):
-        return [package_info["license"].lower()]
+    license = package_info.get("license", [])  # license could be a list / string
+    result = []
+
+    if type(license) is str:
+        return [license.lower()]
+
+    for item in license:
+        result.append(item.lower())
+
     return []
 
 

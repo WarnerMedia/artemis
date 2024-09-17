@@ -45,10 +45,10 @@ resource "aws_secretsmanager_secret_version" "db-user" {
     "username" : "artemisuser",
     "password" : random_password.db-user.result,
     "engine" : "postgres",
-    "host" : module.aurora.this_rds_cluster_endpoint,
-    "port" : module.aurora.this_rds_cluster_port,
-    "dbname" : module.aurora.this_rds_cluster_database_name,
-    "dbClusterIdentifier" : module.aurora.this_rds_cluster_id
+    "host" : aws_rds_cluster.aurora.endpoint,
+    "port" : aws_rds_cluster.aurora.port,
+    "dbname" : aws_rds_cluster.aurora.database_name,
+    "dbClusterIdentifier" : aws_rds_cluster.aurora.id
   })
 }
 

@@ -12,6 +12,7 @@ resource "aws_lambda_function" "audit-event-handler" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  memory_size   = 256
 
   layers = var.lambda_layers
 
