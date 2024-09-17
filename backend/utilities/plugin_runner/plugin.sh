@@ -54,6 +54,9 @@ EOD
   fi
   chmod 755 "$plugin_entry" || return 1
 
+  # Install optional config files.
+  [[ -f "$BASEDIR/.env" ]] && cp -L "$BASEDIR/.env" "$TEMPDIR/.env"
+
   echo "--> Generating: $COMPOSEFILE"
   cat <<EOD > "$COMPOSEFILE" || return 1
 name: artemis-run-plugin
