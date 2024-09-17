@@ -4,9 +4,14 @@ from artemislib.logging import Logger
 
 LOG = Logger("ghas_secrets")
 
-issue_types = {"issue_title": True, "issue_body": True, "issue_comment": True}
-discussion_types = {"discussion_title": True, "discussion_body": True, "discussion_comment": True}
-pull_request_types = {
+valid_types = {
+    "wiki_commit": True,
+    "issue_title": True,
+    "issue_body": True,
+    "issue_comment": True,
+    "discussion_title": True,
+    "discussion_body": True,
+    "discussion_comment": True,
     "pull_request_title": True,
     "pull_request_body": True,
     "pull_request_comment": True,
@@ -22,13 +27,7 @@ def validate(location: dict, path: str) -> Tuple[bool, str, str]:
 
     if location["type"] in "commit":
         valid, author, author_timestamp = _validate_commit(location, path)
-    elif location["type"] in "wiki_commit":
-        valid = True
-    elif location["type"] in issue_types:
-        valid = True
-    elif location["type"] in discussion_types:
-        valid = True
-    elif location["type"] in pull_request_types:
+    elif location["type"] in valid_types:
         valid = True
     else:
         LOG.debug("Unknown location type, ignoring")
