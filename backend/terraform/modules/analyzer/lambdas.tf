@@ -44,7 +44,7 @@ resource "aws_subnet" "lambdas" {
 
 # Create a NAT gateway with an EIP for each private subnet to get internet connectivity
 resource "aws_eip" "lambda_nat" {
-  vpc = true
+  domain = "vpc"
 
   tags = merge(
     var.tags,
@@ -183,9 +183,12 @@ resource "aws_lambda_function" "repo-handler" {
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
-      DD_LAMBDA_HANDLER                 = "handlers.handler"
-      DD_SERVICE                        = "${var.app}-api"
-    }, var.datadog_environment_variables)
+      },
+      var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(
@@ -234,9 +237,11 @@ resource "aws_lambda_function" "users-handler" {
       ARTEMIS_ENVIRONMENT             = var.environment
       ARTEMIS_DOMAIN_NAME             = var.domain_name
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-      DD_LAMBDA_HANDLER               = "handlers.handler"
-      DD_SERVICE                      = "${var.app}-api"
-    }, var.datadog_environment_variables)
+      }, var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(
@@ -282,9 +287,11 @@ resource "aws_lambda_function" "users-keys-handler" {
       ARTEMIS_DOMAIN_NAME             = var.domain_name
       S3_BUCKET                       = var.s3_analyzer_files_id
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-      DD_LAMBDA_HANDLER               = "handlers.handler"
-      DD_SERVICE                      = "${var.app}-api"
-    }, var.datadog_environment_variables)
+      }, var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(
@@ -329,9 +336,11 @@ resource "aws_lambda_function" "users-services-handler" {
       ARTEMIS_LINK_GH_SECRETS_ARN     = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/link-github-account-oauth-app"
       ARTEMIS_DOMAIN_NAME             = var.domain_name
       ARTEMIS_CUSTOM_FILTERING_MODULE = var.custom_filtering_module
-      DD_LAMBDA_HANDLER               = "handlers.handler"
-      DD_SERVICE                      = "${var.app}-api"
-    }, var.datadog_environment_variables)
+      }, var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(
@@ -348,14 +357,11 @@ resource "aws_lambda_function" "signin-handler" {
   s3_bucket = var.s3_analyzer_files_id
   s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
 
-  layers = var.lambda_layers
-
-
-
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
-  memory_size   = 128
+  memory_size   = 256
   timeout       = 10
 
   role = aws_iam_role.lambda-assume-role.arn
@@ -367,9 +373,11 @@ resource "aws_lambda_function" "signin-handler" {
       CLIENT_ID           = var.cognito_app_id
       CLIENT_SECRET_ARN   = "${var.app}/cognito-app-secret"
       ARTEMIS_AUDIT_QUEUE = var.audit_event_queue.id
-      DD_LAMBDA_HANDLER   = "handlers.handler"
-      DD_SERVICE          = "${var.app}-api"
-    }, var.datadog_environment_variables)
+      }, var.datadog_enabled ? merge({
+        DD_LAMBDA_HANDLER = "handlers.handler"
+        DD_SERVICE        = "${var.app}-api"
+      }, var.datadog_environment_variables)
+    : {})
   }
 
   tags = merge(
@@ -426,7 +434,11 @@ module "access-secret-manager-keys" {
     module.public_engine_cluster.scale-down-assume-role.name,
     module.nat_engine_cluster.scale-down-assume-role.name,
     aws_iam_role.db-cleanup-lambda-role.name,
-    aws_iam_role.license-retriever-lambda-role.name
+    aws_iam_role.license-retriever-lambda-role.name,
+    aws_iam_role.scan-scheduler-role.name,
+    aws_iam_role.event-role.name,
+    aws_iam_role.metrics-assume-role.name,
+    aws_iam_role.audit-event-role.name
   ]
   name = "${var.app}-access-secret-manager-keys"
   resources = [

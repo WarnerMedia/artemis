@@ -227,10 +227,13 @@ variable "veracode_enabled" {}
 
 variable "snyk_enabled" {}
 
-variable "ghas_enabled" {}
+variable "ghas_enabled" {
+  default = false
+}
 
 variable "secrets_enabled" {
   description = "Whether to enable the Secrets Management process integration"
+  default     = false
 }
 
 variable "private_docker_repos_key" {

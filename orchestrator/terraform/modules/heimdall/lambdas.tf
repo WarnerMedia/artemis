@@ -132,10 +132,9 @@ resource "aws_lambda_function" "repo-scan" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = var.repo_scan_lambda_timeout
-
-  role = aws_iam_role.lambda-assume-role.arn
-
-  layers = var.lambda_layers
+  memory_size   = 256
+  role          = aws_iam_role.lambda-assume-role.arn
+  layers        = var.lambda_layers
   environment {
     variables = merge({
       APPLICATION            = var.app
@@ -178,6 +177,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 900
+  memory_size   = 256
 
   role = aws_iam_role.lambda-assume-role.arn
 
@@ -436,7 +436,7 @@ resource "aws_cloudwatch_event_rule" "repo-scan-loop-rate" {
   name                = "${var.app}-repo-scan-loop-rate"
   description         = "The rate at which repo-scan-loop lambda runs"
   schedule_expression = var.repo_scan_loop_rate
-  is_enabled          = var.scanning_enabled
+  state               = var.scanning_enabled ? "ENABLED" : "DISABLED"
   tags = merge(
     var.tags,
     {

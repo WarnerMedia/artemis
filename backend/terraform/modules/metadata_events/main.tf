@@ -14,8 +14,8 @@ resource "aws_lambda_function" "metadata-events-handler" {
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  memory_size   = 256
   layers        = var.lambda_layers
-
 
   role = aws_iam_role.metadata-events-role.arn
 

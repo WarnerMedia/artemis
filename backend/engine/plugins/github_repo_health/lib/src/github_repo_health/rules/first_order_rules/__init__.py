@@ -14,7 +14,7 @@ from .repo_security_alerts import RepoSecurityAlerts
 
 # First order rules are rules that directly check things and do not contain other rules. This is
 # essentially just non-composite rules. We group these together without CompositeRule so that
-# composite_rules.py can import all other rules without circular imports
+# composite_rule.py can import all other rules without circular imports
 first_order_rules_dict = {
     BranchProtectionCommitSigning.identifier: BranchProtectionCommitSigning,
     BranchProtectionEnforceAdmins.identifier: BranchProtectionEnforceAdmins,

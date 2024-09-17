@@ -1,0 +1,5 @@
+{
+  "name": "GitLab Repo Health Check",
+  "type": "configuration",
+  "image": "$ECR/artemis/python:3-latest"
+}

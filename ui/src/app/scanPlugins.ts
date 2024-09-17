@@ -32,6 +32,11 @@ export const configPluginsKeys: ScanPluginKeys = {
 		apiName: "github_repo_health",
 		group: GROUP_CONFIG,
 	},
+	gitlab_repo_health: {
+		displayName: t`GitLab Repo Health Check`,
+		apiName: "gitlab_repo_health",
+		group: GROUP_CONFIG,
+	},
 };
 
 export const sbomPluginsKeys: ScanPluginKeys = {

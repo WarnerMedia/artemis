@@ -15,8 +15,8 @@ resource "aws_lambda_function" "secrets-handler" {
   architectures = [var.lambda_architecture]
   timeout       = 30
   layers        = var.lambda_layers
-
-  role = aws_iam_role.secrets-role.arn
+  memory_size   = 256
+  role          = aws_iam_role.secrets-role.arn
 
   environment {
     variables = merge({

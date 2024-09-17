@@ -37,7 +37,7 @@ msgstr "Invalid scan time matcher"
 msgid "Invalid repository matcher"
 msgstr "Invalid repository matcher"
 
-#: src/components/SecretValidityCell.tsx:150
+#: src/components/SecretValidityCell.tsx:147
 msgid "Mixed"
 msgstr "Mixed"
 
@@ -110,7 +110,7 @@ msgstr "No users found. Click the + button to add a new user"
 msgid "Loading options..."
 msgstr "Loading options..."
 
-#: src/components/SecretValidityCell.tsx:113
+#: src/components/SecretValidityCell.tsx:110
 msgid "Not tested"
 msgstr "Not tested"
 
@@ -480,7 +480,7 @@ msgstr "Queued"
 msgid "Report Sections Tabs"
 msgstr "Report Sections Tabs"
 
-#: src/app/scanPlugins.ts:190
+#: src/app/scanPlugins.ts:195
 msgid "Snyk"
 msgstr "Snyk"
 
@@ -490,7 +490,7 @@ msgstr "Snyk"
 msgid "Search"
 msgstr "Search"
 
-#: src/app/scanPlugins.ts:90
+#: src/app/scanPlugins.ts:95
 msgid "Checkov (IaC)"
 msgstr "Checkov (IaC)"
 
@@ -539,7 +539,7 @@ msgstr "Component/commit must be less than {COMPONENT_LENGTH} characters"
 msgid "Must be a past date"
 msgstr "Must be a past date"
 
-#: src/app/scanPlugins.ts:80
+#: src/app/scanPlugins.ts:85
 msgid "Bandit (Python)"
 msgstr "Bandit (Python)"
 
@@ -563,11 +563,11 @@ msgstr "Info"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will reload this page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will reload this page to display scan progress."
 
-#: src/app/scanPlugins.ts:52
+#: src/app/scanPlugins.ts:57
 msgid "GitHub Advanced Security Secrets"
 msgstr "GitHub Advanced Security Secrets"
 
-#: src/app/scanPlugins.ts:135
+#: src/app/scanPlugins.ts:140
 msgid "Shell Check (Shell)"
 msgstr "Shell Check (Shell)"
 
@@ -603,7 +603,7 @@ msgstr "Link a Version Control System account to scan additional repositories wi
 msgid "User added"
 msgstr "User added"
 
-#: src/components/SecretValidityCell.tsx:92
+#: src/components/SecretValidityCell.tsx:89
 msgid "This finding was tested and determined to be inactive"
 msgstr "This finding was tested and determined to be inactive"
 
@@ -654,7 +654,7 @@ msgstr "This vulnerability in THIS component"
 msgid "Hidden in source file:"
 msgstr "Hidden in source file:"
 
-#: src/app/scanPlugins.ts:44
+#: src/app/scanPlugins.ts:49
 msgid "Trivy SBOM"
 msgstr "Trivy SBOM"
 
@@ -689,8 +689,8 @@ msgstr "Trivy SBOM"
 msgid "None"
 msgstr "None"
 
-#: src/components/SecretValidityCell.tsx:101
-#: src/components/SecretValidityCell.tsx:143
+#: src/components/SecretValidityCell.tsx:98
+#: src/components/SecretValidityCell.tsx:140
 #: src/custom/ResultsMetaField.tsx:24
 #: src/custom/SearchMetaField.tsx:112
 #: src/pages/UserSettings.tsx:751
@@ -710,16 +710,16 @@ msgstr "Before"
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 
-#: src/app/scanPlugins.ts:125
+#: src/app/scanPlugins.ts:130
 msgid "NodeJS Scan (NodeJS)"
 msgstr "NodeJS Scan (NodeJS)"
 
-#: src/components/SecretValidityCell.tsx:75
-#: src/components/SecretValidityCell.tsx:134
+#: src/components/SecretValidityCell.tsx:72
+#: src/components/SecretValidityCell.tsx:131
 msgid "Active"
 msgstr "Active"
 
-#: src/app/scanPlugins.ts:130
+#: src/app/scanPlugins.ts:135
 msgid "Pylint (Python)"
 msgstr "Pylint (Python)"
 
@@ -728,7 +728,7 @@ msgstr "Pylint (Python)"
 msgid "Theme"
 msgstr "Theme"
 
-#: src/app/scanPlugins.ts:39
+#: src/app/scanPlugins.ts:44
 msgid "Veracode SBOM"
 msgstr "Veracode SBOM"
 
@@ -802,7 +802,7 @@ msgstr "No License"
 msgid "Administrators can manage all other users and groups"
 msgstr "Administrators can manage all other users and groups"
 
-#: src/app/scanPlugins.ts:145
+#: src/app/scanPlugins.ts:150
 msgid "TFLint (Terraform)"
 msgstr "TFLint (Terraform)"
 
@@ -845,7 +845,7 @@ msgstr "Secret: {count}"
 msgid "Invalid category"
 msgstr "Invalid category"
 
-#: src/components/SecretValidityCell.tsx:116
+#: src/components/SecretValidityCell.tsx:113
 msgid "This finding was not tested for validity"
 msgstr "This finding was not tested for validity"
 
@@ -861,7 +861,7 @@ msgstr "Results may vary compared to scans run with other options. View scan res
 msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
 msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
 
-#: src/app/scanPlugins.ts:192
+#: src/app/scanPlugins.ts:197
 msgid "Trivy Container Image"
 msgstr "Trivy Container Image"
 
@@ -886,7 +886,7 @@ msgstr "Unable to get user keys"
 msgid "Scope {0}"
 msgstr "Scope {0}"
 
-#: src/app/scanPlugins.ts:197
+#: src/app/scanPlugins.ts:202
 msgid "Trivy SCA"
 msgstr "Trivy SCA"
 
@@ -942,7 +942,7 @@ msgstr "Click + icon to add this value to the Current Scope list above"
 msgid "Repository"
 msgstr "Repository"
 
-#: src/app/scanPlugins.ts:57
+#: src/app/scanPlugins.ts:62
 msgid "Git Secrets"
 msgstr "Git Secrets"
 
@@ -1013,7 +1013,7 @@ msgstr "Generating JSON File..."
 msgid "No secrets found"
 msgstr "No secrets found"
 
-#: src/components/SecretValidityCell.tsx:79
+#: src/components/SecretValidityCell.tsx:76
 msgid "This finding was tested and determined to be valid and active"
 msgstr "This finding was tested and determined to be valid and active"
 
@@ -1021,7 +1021,7 @@ msgstr "This finding was tested and determined to be valid and active"
 msgid "Linked Accounts"
 msgstr "Linked Accounts"
 
-#: src/app/scanPlugins.ts:166
+#: src/app/scanPlugins.ts:171
 msgid "Aqua CLI Scanner (Docker)"
 msgstr "Aqua CLI Scanner (Docker)"
 
@@ -1090,7 +1090,7 @@ msgstr "Vulnerability Match"
 msgid "Found in source file:"
 msgstr "Found in source file:"
 
-#: src/app/scanPlugins.ts:115
+#: src/app/scanPlugins.ts:120
 msgid "FindSecBugs (Java 13)"
 msgstr "FindSecBugs (Java 13)"
 
@@ -1193,8 +1193,8 @@ msgstr "After"
 msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 
-#: src/components/SecretValidityCell.tsx:88
-#: src/components/SecretValidityCell.tsx:138
+#: src/components/SecretValidityCell.tsx:85
+#: src/components/SecretValidityCell.tsx:135
 msgid "Inactive"
 msgstr "Inactive"
 
@@ -1309,7 +1309,7 @@ msgstr "Username:"
 msgid "Resource must be less than {RESOURCE_LENGTH} characters"
 msgstr "Resource must be less than {RESOURCE_LENGTH} characters"
 
-#: src/app/scanPlugins.ts:158
+#: src/app/scanPlugins.ts:163
 msgid "Enry Technology Discovery"
 msgstr "Enry Technology Discovery"
 
@@ -1481,7 +1481,7 @@ msgstr "Required"
 msgid "Add this item to scope"
 msgstr "Add this item to scope"
 
-#: src/app/scanPlugins.ts:100
+#: src/app/scanPlugins.ts:105
 msgid "ESlint (JavaScript)"
 msgstr "ESlint (JavaScript)"
 
@@ -1599,7 +1599,7 @@ msgstr "Teal"
 msgid "VCS/Org required"
 msgstr "VCS/Org required"
 
-#: src/app/scanPlugins.ts:176
+#: src/app/scanPlugins.ts:181
 msgid "NPM Audit (NodeJS)"
 msgstr "NPM Audit (NodeJS)"
 
@@ -1608,7 +1608,7 @@ msgstr "NPM Audit (NodeJS)"
 msgid "Top"
 msgstr "Top"
 
-#: src/app/scanPlugins.ts:85
+#: src/app/scanPlugins.ts:90
 msgid "Brakeman (Ruby)"
 msgstr "Brakeman (Ruby)"
 
@@ -1630,7 +1630,7 @@ msgstr "REPLACE ME: ADD A WELCOME MESSAGE AND/OR INFORMATION TO GET THE USER STA
 msgid "Discovered By Plugins"
 msgstr "Discovered By Plugins"
 
-#: src/components/SecretValidityCell.tsx:105
+#: src/components/SecretValidityCell.tsx:102
 msgid "This finding could not be determined to be either active or inactive"
 msgstr "This finding could not be determined to be either active or inactive"
 
@@ -1648,7 +1648,7 @@ msgstr "Invalid date format"
 msgid "Invalid email address"
 msgstr "Invalid email address"
 
-#: src/app/scanPlugins.ts:95
+#: src/app/scanPlugins.ts:100
 msgid "Detekt (Kotlin)"
 msgstr "Detekt (Kotlin)"
 
@@ -1688,7 +1688,7 @@ msgstr "Vulnerability Raw: {count}"
 msgid "Risk"
 msgstr "Risk"
 
-#: src/app/scanPlugins.ts:62
+#: src/app/scanPlugins.ts:67
 msgid "Trufflehog (Legacy)"
 msgstr "Trufflehog (Legacy)"
 
@@ -1747,7 +1747,7 @@ msgstr "One or more file or directory paths separated by a comma or newline. Sup
 msgid "Include Paths ({0})"
 msgstr "Include Paths ({0})"
 
-#: src/app/scanPlugins.ts:120
+#: src/app/scanPlugins.ts:125
 msgid "GoSec (Golang)"
 msgstr "GoSec (Golang)"
 
@@ -1765,7 +1765,7 @@ msgstr "This will be the only time this key will be displayed! Do not close this
 msgid "Negligible"
 msgstr "Negligible"
 
-#: src/app/scanPlugins.ts:110
+#: src/app/scanPlugins.ts:115
 msgid "FindSecBugs (Java 8)"
 msgstr "FindSecBugs (Java 8)"
 
@@ -1909,7 +1909,7 @@ msgstr "No configuration findings detected"
 msgid "Moderate: {count}"
 msgstr "Moderate: {count}"
 
-#: src/app/scanPlugins.ts:105
+#: src/app/scanPlugins.ts:110
 msgid "FindSecBugs (Java 7)"
 msgstr "FindSecBugs (Java 7)"
 
@@ -1982,7 +1982,7 @@ msgstr "Close More Actions Menu"
 msgid "High: {count}"
 msgstr "High: {count}"
 
-#: src/app/scanPlugins.ts:181
+#: src/app/scanPlugins.ts:186
 msgid "OWASP Check (Java)"
 msgstr "OWASP Check (Java)"
 
@@ -2080,7 +2080,7 @@ msgstr "Last Login"
 msgid "Fetching results..."
 msgstr "Fetching results..."
 
-#: src/app/scanPlugins.ts:67
+#: src/app/scanPlugins.ts:72
 msgid "Trufflehog"
 msgstr "Trufflehog"
 
@@ -2316,7 +2316,7 @@ msgstr "Restrict user to only these repositories. Must be a subset of scopes fro
 msgid "Remediation Match"
 msgstr "Remediation Match"
 
-#: src/app/scanPlugins.ts:153
+#: src/app/scanPlugins.ts:158
 msgid "Base Images (Docker)"
 msgstr "Base Images (Docker)"
 
@@ -2361,7 +2361,7 @@ msgstr "No Qualified Scans"
 msgid "Reset Filters"
 msgstr "Reset Filters"
 
-#: src/app/scanPlugins.ts:186
+#: src/app/scanPlugins.ts:191
 msgid "Sensio Security Check (PHP)"
 msgstr "Sensio Security Check (PHP)"
 
@@ -2369,7 +2369,7 @@ msgstr "Sensio Security Check (PHP)"
 msgid "Session expired, redirecting to login..."
 msgstr "Session expired, redirecting to login..."
 
-#: src/app/scanPlugins.ts:75
+#: src/app/scanPlugins.ts:80
 msgid "AWS CloudFormation Linter"
 msgstr "AWS CloudFormation Linter"
 
@@ -2515,7 +2515,7 @@ msgstr "Component/Commit"
 msgid "Component Name"
 msgstr "Component Name"
 
-#: src/components/SecretValidityCell.tsx:154
+#: src/components/SecretValidityCell.tsx:151
 msgid "Multiple different validities reported"
 msgstr "Multiple different validities reported"
 
@@ -2748,7 +2748,7 @@ msgstr "Invalid component version matcher"
 msgid "Status"
 msgstr "Status"
 
-#: src/app/scanPlugins.ts:140
+#: src/app/scanPlugins.ts:145
 msgid "SwiftLint (Swift)"
 msgstr "SwiftLint (Swift)"
 
@@ -2792,6 +2792,10 @@ msgstr "{user} (Deleted)"
 msgid "No vulnerabilities detected"
 msgstr "No vulnerabilities detected"
 
+#: src/app/scanPlugins.ts:36
+msgid "GitLab Repo Health Check"
+msgstr "GitLab Repo Health Check"
+
 #: src/pages/UsersPage.tsx:443
 msgid "Modify User"
 msgstr "Modify User"
@@ -2816,7 +2820,7 @@ msgstr "Remove API key named \"{0}\"?"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
-#: src/app/scanPlugins.ts:202
+#: src/app/scanPlugins.ts:207
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 
@@ -2891,7 +2895,7 @@ msgstr "Clear"
 msgid "End"
 msgstr "End"
 
-#: src/app/scanPlugins.ts:171
+#: src/app/scanPlugins.ts:176
 msgid "Bundler Audit (Ruby)"
 msgstr "Bundler Audit (Ruby)"
 

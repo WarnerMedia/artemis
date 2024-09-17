@@ -105,6 +105,7 @@ module "veracode_ecr" {
 module "analyzer" {
   source = "../../modules/analyzer"
 
+  profile                     = "user-profile"
   app                         = local.app
   ver                         = local.version
   environment                 = local.environment
@@ -141,6 +142,7 @@ module "analyzer" {
   report_queue             = module.sqs_queues.report_queue
   audit_event_queue        = module.sqs_queues.audit_event_queue
   scheduled_scan_queue     = module.sqs_queues.scheduled_scan_queue
+  metadata_events_queue    = module.sqs_queues.metadata_events_queue
 
   # Aqua config variables
   aqua_enabled = local.aqua_enabled

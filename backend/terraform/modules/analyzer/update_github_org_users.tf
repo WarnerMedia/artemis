@@ -61,7 +61,7 @@ resource "aws_cloudwatch_event_rule" "update-github-org-users" {
   schedule_expression = "cron(0 * ? * * *)"
 
   # This rule is disabled when in maintenance mode
-  is_enabled = !var.maintenance_mode
+  state = !var.maintenance_mode ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "update-github-org-users" {

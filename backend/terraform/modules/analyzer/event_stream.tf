@@ -14,7 +14,7 @@ resource "aws_lambda_function" "event-dispatch" {
   timeout       = 30
   layers        = var.lambda_layers
   role          = aws_iam_role.event-role.arn
-
+  memory_size   = 256
 
   environment {
     variables = merge({

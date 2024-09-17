@@ -107,7 +107,7 @@ resource "aws_cloudwatch_event_rule" "db-cleanup-schedule" {
   schedule_expression = "rate(15 minutes)" # Lambda has a 15 min max execution so don't run more often than that
 
   # This rule is disabled when in maintenance mode
-  is_enabled = !var.maintenance_mode
+  state = !var.maintenance_mode ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "db-cleanup" {
