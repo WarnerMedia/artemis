@@ -36,7 +36,7 @@ class GitHubAPI:
             cls._instance._headers = {"Authorization": auth, "Accept": "application/vnd.github+json"}
 
             # Set the revproxy auth header, if needed
-            if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_hostname:
+            if service_hostname and REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in service_hostname:
                 from artemislib.aws import AWSConnect  # pylint: disable=import-outside-toplevel
 
                 aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
