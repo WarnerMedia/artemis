@@ -1,0 +1,5 @@
+/.env
+/config.json
+/engine-vars.json
+/images.json
+/tmp
