@@ -66,7 +66,7 @@ python /srv/engine/plugins/$plugin/main.py \
   "\$(cat /opt/artemis-run-plugin/images.json)" \
   "\$(cat /opt/artemis-run-plugin/config.json)"
 exitcode=\$?
-echo -n "==> Plugin exited with status: \$exitcode "
+printf "==> Plugin exited with status: %d " "\$exitcode"
 if [ "\$exitcode" -eq 0 ]; then
   echo '(success)'
 else
