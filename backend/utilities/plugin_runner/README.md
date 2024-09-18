@@ -20,13 +20,19 @@ This script does *not* build the container images since the Makefile is sensitiv
 
 ## Example usage
 
-Run the "gosec" plugin on a local directory, with debug mode (`-d`) enabled:
+Run the "gosec" plugin on a local directory then exit:
 
 > [!NOTE]
 > The local directory must be specified as an absolute path.
 
 ```bash
-./plugin.sh run -d gosec ~/git/my-repo
+./plugin.sh run gosec ~/git/my-repo
+```
+
+Run the "gosec" plugin and start a debug shell in the container:
+
+```bash
+./plugin.sh run gosec ~/git/my-repo /bin/bash
 ```
 
 ```text
@@ -38,28 +44,10 @@ Run the "gosec" plugin on a local directory, with debug mode (`-d`) enabled:
  ✔ Container engine  Started
 [2024-09-17T19:09:28+0000] INFO     [gosec] {'files': 10, 'lines': 512, 'nosec': 0, 'found': 17}
 ==> Plugin exited with status: 0 (success)
---> (Debug mode) Press Ctrl-C to exit
-```
-
-With the `-d` option, after the plugin runs the engine and plugin containers will be kept around for inspection.
-
-In a separate terminal:
-
-```bash
-# Show all containers.
-docker ps -a
-```
-
-```text
-CONTAINER ID   IMAGE                   COMMAND                  CREATED          STATUS                     PORTS     NAMES
-223a6d09ffc8   artemis/golang:latest   "/opt/artemis-run-pl…"   10 seconds ago   Up 9 seconds                         artemis-run-plugin-plugin-run-8b3a64c30150
-b217dc1b15be   artemis/engine:latest   "/bin/true"              11 seconds ago   Exited (0) 9 seconds ago             engine
-```
-
-Look up the plugin container ID from above, athen open a shell into the plugin container:
-
-```bash
-docker exec -it 223a6d09ffc8 /bin/sh
+==> Starting debug shell: /bin/bash
+    To run the plugin again with the same configuration:
+      /opt/artemis-run-plugin/entrypoint.sh
+bash-5.0#
 ```
 
 Stop all containers and release resources:

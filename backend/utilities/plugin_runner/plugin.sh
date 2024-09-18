@@ -14,7 +14,6 @@ Usage: $0 (subcommand)
 
 Available subcommands:
     run - Run a core plugin in local containers.
-            -d - Debug mode, keep container running after exit.
     clean - Stop and clean up all containers.
 EOD
 }
@@ -23,10 +22,10 @@ EOD
 # This always regenerates the files, so we expect that any previous Docker
 # Compose stack will have been shutdown.
 function init_compose {
-  local plugin="$1"
-  local plugin_image="$2"
-  local target="$3"
-  local debug="$4"
+  local plugin="$1"; shift
+  local plugin_image="$1"; shift
+  local target="$1"; shift
+  local debug_shell=("$@")
 
   echo "==> Generating configuration for plugin: $plugin"
 
@@ -47,12 +46,24 @@ else
   echo '(failed)'
 fi
 EOD
-  if [[ $debug -eq 1 ]]; then
-    # Keep container running.
-    echo 'echo "--> (Debug mode) Press Ctrl-C to exit"' >> "$plugin_entry" || return 1
-    echo 'tail -f /dev/null' >> "$plugin_entry" || return 1
-  fi
   chmod 755 "$plugin_entry" || return 1
+
+  local plugin_debug_entry="$plugindir/entrypoint-debug.sh"
+  echo "--> Generating: $plugin_debug_entry"
+  cat <<EOD > "$plugin_debug_entry" || return 1
+#!/bin/sh
+/opt/artemis-run-plugin/entrypoint.sh
+echo "==> Starting debug shell: ${debug_shell[@]}"
+echo '    To run the plugin again with the same configuration:'
+echo '      /opt/artemis-run-plugin/entrypoint.sh'
+exec ${debug_shell[@]}
+EOD
+  chmod 755 "$plugin_debug_entry" || return 1
+
+  local entrypoint='/opt/artemis-run-plugin/entrypoint.sh'
+  if [[ ${#debug_shell[@]} -ne 0 ]]; then
+    entrypoint='/opt/artemis-run-plugin/entrypoint-debug.sh'
+  fi
 
   # Install optional config files.
   [[ -f "$BASEDIR/.env" ]] && cp -L "$BASEDIR/.env" "$TEMPDIR/.env"
@@ -74,7 +85,7 @@ services:
     environment:
       PYTHONPATH: /srv
     command:
-      - /opt/artemis-run-plugin/entrypoint.sh
+      - $entrypoint
     volumes_from:
       - engine:ro
     volumes:
@@ -91,21 +102,12 @@ EOD
 
 # Start the plugin container and any dependent containers.
 function do_run {
-  while getopts 'd' opt; do
-    case "$opt" in
-      d) local DEBUG=1 ;;
-      *)
-        echo "Invalid option: $opt" >&2
-        return 1
-    esac
-  done
-  shift "$((OPTIND-1))"
-
-  local plugin="$1"
-  local target="$2"
+  local plugin="$1"; shift
+  local target="$1"; shift
+  local debug_shell=("$@")
 
   if [[ $plugin = '' || $target = '' ]]; then
-    echo "Usage: $0 run (plugin) (/path/to/scan/target)" >&2
+    echo "Usage: $0 run (plugin) (/path/to/scan/target) [/debug/shell]..." >&2
     return 1
   fi
   local plugindir="$BASEDIR/../../engine/plugins/$plugin"
@@ -134,10 +136,10 @@ function do_run {
     return 1
   fi
 
-  init_compose "$plugin" "$image" "$target" "$DEBUG" || return 1
+  init_compose "$plugin" "$image" "$target" "${debug_shell[@]}" || return 1
 
   #TODO: Run with engine_vars, scan_images, and plugin_config from user-provided files.
-  docker compose -f "$COMPOSEFILE" run --remove-orphans plugin
+  docker compose -f "$COMPOSEFILE" run --rm --remove-orphans plugin
 }
 
 # Stop containers and clean up generated files (best-effort, ignore errors).
