@@ -78,3 +78,9 @@ To configure these arguments, create any of the following files:
 * `config.json`
 
 Examples of these files are provided (e.g. `engine-vars-example.json`).
+
+The script will perform a sanity check on the JSON file. If the file does not contain valid JSON then a warning will be issued:
+
+```text
+*** Warning: Invalid JSON detected (proceeding anyway): ./images.json
+```

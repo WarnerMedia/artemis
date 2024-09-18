@@ -30,6 +30,9 @@ function install_plugin_arg_file {
 
   if [[ -f $src ]]; then
     echo "==> Using arg file: $src"
+    if ! jq empty "$src" > /dev/null 2>&1; then
+      echo "*** Warning: Invalid JSON detected (proceeding anyway): $src" >&2
+    fi
     cp -L "$src" "$dest" || return 1
   else
     echo '{}' > "$dest" || return 1
