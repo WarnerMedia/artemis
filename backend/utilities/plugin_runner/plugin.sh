@@ -18,6 +18,24 @@ Available subcommands:
 EOD
 }
 
+# Install one of the optional JSON files used for plugin arguments.
+# If the file does not exist, a file with an empty JSON object is installed
+# instead.
+function install_plugin_arg_file {
+  local filename="$1"
+  local plugindir="$2"
+
+  local src="$BASEDIR/$filename"
+  local dest="$plugindir/$filename"
+
+  if [[ -f $src ]]; then
+    echo "==> Using arg file: $src"
+    cp -L "$src" "$dest" || return 1
+  else
+    echo '{}' > "$dest" || return 1
+  fi
+}
+
 # Generate the environment and Docker Compose files.
 # This always regenerates the files, so we expect that any previous Docker
 # Compose stack will have been shutdown.
@@ -33,11 +51,17 @@ function init_compose {
   local plugindir="$TEMPDIR/plugin"
   mkdir "$plugindir" || return 1
 
+  # Note: We use /bin/sh for the entrypoint scripts since we don't know
+  #       if the containers have Bash available.
+
   local plugin_entry="$plugindir/entrypoint.sh"
   echo "--> Generating: $plugin_entry"
   cat <<EOD > "$plugin_entry" || return 1
 #!/bin/sh
-python /srv/engine/plugins/$plugin/main.py
+python /srv/engine/plugins/$plugin/main.py \
+  "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
+  "\$(cat /opt/artemis-run-plugin/images.json)" \
+  "\$(cat /opt/artemis-run-plugin/config.json)"
 exitcode=\$?
 echo -n "==> Plugin exited with status: \$exitcode "
 if [ "\$exitcode" -eq 0 ]; then
@@ -66,7 +90,10 @@ EOD
   fi
 
   # Install optional config files.
-  [[ -f "$BASEDIR/.env" ]] && cp -L "$BASEDIR/.env" "$TEMPDIR/.env"
+  [[ -f "$BASEDIR/.env" ]] && cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
+  install_plugin_arg_file engine-vars.json "$plugindir" || return 1
+  install_plugin_arg_file images.json "$plugindir" || return 1
+  install_plugin_arg_file config.json "$plugindir" || return 1
 
   echo "--> Generating: $COMPOSEFILE"
   cat <<EOD > "$COMPOSEFILE" || return 1

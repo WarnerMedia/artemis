@@ -64,3 +64,17 @@ Stop all containers and release resources:
 ### Environment
 
 If an `.env` file exists, then it will be used to set the environment of the plugin container.
+
+### Plugin command-line arguments
+
+The passes three JSON command-line arguments to the plugin: Engine vars, images, and the plugin config.
+
+Be default, this script will pass an empty object (`{}`) for these arguments.
+
+To configure these arguments, create any of the following files:
+
+* `engine-vars.json`
+* `images.json`
+* `config.json`
+
+Examples of these files are provided (e.g. `engine-vars-example.json`).

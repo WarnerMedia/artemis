@@ -1,0 +1,14 @@
+{
+  "scan_id": "77c5aceb-472c-4929-a9a0-23ecb8c1249e",
+  "repo": "",
+  "ref": "",
+  "ecr_url": "",
+  "depth": 1,
+  "include_dev": true,
+  "engine_id": "i-12345678",
+  "java_heap_size": "2g",
+  "service_name": "",
+  "service_type": "",
+  "service_hostname": "",
+  "service_secret_loc": ""
+}
