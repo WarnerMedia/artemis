@@ -21,7 +21,7 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
     :return: True if the available space is greater than the repo size * 2, otherwise False
     """
     if available_space is None:
-        s = os.statvfs("/work")
+        s = os.statvfs(".")
         available_space = (s.f_frsize * s.f_bavail) / 1024
 
     # The worst repo encountered (so far) is twice the size on disk
