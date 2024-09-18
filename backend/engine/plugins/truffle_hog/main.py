@@ -43,24 +43,24 @@ def main(in_args=None):
 
 
 def secret_type(reason: str) -> str:
-    stype = "other"
     if reason.startswith("SSH ") or reason.startswith("RSA ") or reason.startswith("PGP "):
-        stype = "ssh"
+        return "ssh"
     elif reason.startswith("AWS "):
-        stype = "aws"
+        return "aws"
     elif reason.startswith("MongoDB "):
-        stype = "mongo"
+        return "mongo"
     elif reason.startswith("PostgreSQL "):
-        stype = "postgres"
+        return "postgres"
     elif reason.startswith("Google"):
-        stype = "google"
+        return "google"
     elif reason.startswith("Redis "):
-        stype = "redis"
+        return "redis"
     elif reason.startswith("HTTP ") or reason.startswith("HTTPS "):
-        stype = "urlauth"
+        return "urlauth"
     elif reason.startswith("Slack "):
-        stype = "slack"
-    return stype
+        return "slack"
+    else:
+        return reason;
 
 
 def commit_author(scan_path: str, commit: str) -> tuple:
