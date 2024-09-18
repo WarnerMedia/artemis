@@ -29,7 +29,7 @@ function install_plugin_arg_file {
   local dest="$plugindir/$filename"
 
   if [[ -f $src ]]; then
-    echo "==> Using arg file: $src"
+    echo "--> Using arg file: $src"
     if ! jq empty "$src" > /dev/null; then
       echo "*** Warning: Invalid JSON detected (proceeding anyway): $src" >&2
     fi
