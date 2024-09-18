@@ -2,7 +2,7 @@ import json
 import subprocess
 import uuid
 
-from engine.plugins.trufflehog.type_normalization import normalize_type 
+from engine.plugins.trufflehog.type_normalization import normalize_type
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
 from engine.plugins.lib.secrets_common.enums import SecretValidity
@@ -136,7 +136,6 @@ def run_security_checker(scan_path: str, error_dict: dict, depth=None) -> list:
     results = [json.loads(line) for line in lines]
 
     return results
-
 
 
 if __name__ == "__main__":

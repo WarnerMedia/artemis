@@ -231,12 +231,12 @@ class TestPluginTrufflehog(unittest.TestCase):
             "GCP": "google",
             "Redis": "redis",
             "Slack": "slack",
-            "SlackWebhook": "slack"
+            "SlackWebhook": "slack",
         }
 
         for finding_type, expected in type_normalization_table.items():
             finding = _get_finding_from_type(finding_type)
-            test = [ finding ]
+            test = [finding]
 
             errors_dict = {
                 "errors": [],
@@ -249,6 +249,7 @@ class TestPluginTrufflehog(unittest.TestCase):
             actual = result["results"][0].get("type")
 
             self.assertEqual(actual, expected)
+
 
 def _get_finding_from_type(finding_type: str):
     finding = copy.deepcopy(EXAMPLE_FINDING)

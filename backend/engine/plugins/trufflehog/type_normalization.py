@@ -1,11 +1,11 @@
+_SSH_TYPES = ["PrivateKey"]
+_AWS_TYPES = ["AWS", "AWSSessionKey"]
+_MONGO_TYPES = ["MongoDB"]
+_POSTGRES_TYPES = ["Postgres"]
+_GOOGLE_TYPES = ["GoogleOauth2", "GoogleApiKey", "GCPApplicationDefaultCredentials", "GCP"]
+_REDIS_TYPES = ["Redis"]
+_SLACK_TYPES = ["Slack", "SlackWebhook"]
 
-_SSH_TYPES = [ "PrivateKey" ]
-_AWS_TYPES = [ "AWS", "AWSSessionKey" ]
-_MONGO_TYPES = [ "MongoDB" ]
-_POSTGRES_TYPES = [ "Postgres" ]
-_GOOGLE_TYPES = [ "GoogleOauth2", "GoogleApiKey", "GCPApplicationDefaultCredentials", "GCP" ]
-_REDIS_TYPES = [ "Redis" ]
-_SLACK_TYPES = [ "Slack", "SlackWebhook" ]
 
 def get_type_normalization_table() -> dict[str, str]:
     table = {}
@@ -30,10 +30,12 @@ def get_type_normalization_table() -> dict[str, str]:
 
     for name in _SLACK_TYPES:
         table[name] = "slack"
-    
+
     return table
 
+
 _TYPE_NORMALIZATION_TABLE = get_type_normalization_table()
+
 
 def normalize_type(finding_type: str) -> str:
     if finding_type in _TYPE_NORMALIZATION_TABLE:
