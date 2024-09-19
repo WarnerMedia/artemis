@@ -1,0 +1,14 @@
+{
+  "scan_id": "77c5aceb-472c-4929-a9a0-23ecb8c1249e",
+  "repo": "example/org/repo",
+  "ref": "main",
+  "ecr_url": "",
+  "depth": null,
+  "include_dev": true,
+  "engine_id": "i-12345678",
+  "java_heap_size": "2g",
+  "service_name": "example",
+  "service_type": "git",
+  "service_hostname": null,
+  "service_secret_loc": null
+}
