@@ -79,7 +79,11 @@ REGEXES = [
     ),
     SecretRegex(
         finding_type="Heroku API Key",
-        regex=re.compile(str(r"([h|H][e|E][r|R][o|O][k|K][u|U](.){1,64}[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})")),
+        regex=re.compile(
+            str(
+                r"([h|H][e|E][r|R][o|O][k|K][u|U](.){1,64}[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})"
+            )
+        ),
     ),
     SecretRegex(
         finding_type="MailChimp API Key",
@@ -117,10 +121,7 @@ REGEXES = [
         finding_type="Square OAuth Secret",
         regex=re.compile(str(r"(sq0csp-[0-9A-Za-z\-_]{43})")),
     ),
-    SecretRegex(
-        finding_type="Twilio API Key",
-        regex=re.compile(str(r"(SK[0-9a-fA-F]{32})"))
-    ),
+    SecretRegex(finding_type="Twilio API Key", regex=re.compile(str(r"(SK[0-9a-fA-F]{32})"))),
     SecretRegex(
         finding_type="Twitter Access Token",
         regex=re.compile(str(r"([t|T][w|W][i|I][t|T][t|T][e|E][r|R](.){1,64}[1-9][0-9]+-[0-9a-zA-Z]{40})")),
@@ -220,7 +221,7 @@ class SecretProcessor:
 
             match = regex.search(secret)
             if match:
-                return (match.group(0), finding_type) 
+                return (match.group(0), finding_type)
 
         return (secret, "other")
 
