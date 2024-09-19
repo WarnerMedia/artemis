@@ -24,6 +24,8 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
         s = os.statvfs("/work")
         available_space = (s.f_frsize * s.f_bavail) / 1024
 
+    Logger.add_fields(repo_size=repo_size, available_disk_space=available_space)
+
     # The worst repo encountered (so far) is twice the size on disk
     if (repo_size * 2) >= available_space:
         return False

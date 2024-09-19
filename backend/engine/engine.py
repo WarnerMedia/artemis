@@ -18,7 +18,7 @@ from env import (
     SQS_ENDPOINT,
     TASK_QUEUE,
     WORKING_DIR,
-    log_environment,
+    refresh_log_state,
 )
 from processor.processor import EngineProcessor
 from utils.engine import _build_docker_images, check_disk_space, cleanup_images
@@ -68,6 +68,8 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
     repo = details["repo"]
 
     engine_processor = EngineProcessor(services, action, details, manager=manager)
+
+    Logger.add_fields(scan_id=engine_processor.action_details.scan_id, repo=repo, service=service)
 
     log.info("Scan %s of %s starting", engine_processor.action_details.scan_id, repo)
 
@@ -125,6 +127,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
         log.info("Scan %s of %s completed", engine_processor.action_details.scan_id, repo)
     engine_processor.update_scan_status("completed", end_time=get_utc_datetime(), errors=errors, debug=debug)
     engine_processor.queue_callback("completed")
+    refresh_log_state()
 
 
 def cleanup(working_dir, scan_id):
@@ -171,6 +174,7 @@ def main():
             if msg:
                 # The priority queue had a task so process it and then continue
                 # so that the priority queue gets polled again.
+                Logger.add_fields(source_queue=PRIORITY_TASK_QUEUE)
                 process(msg, manager)
                 continue
 
@@ -178,6 +182,7 @@ def main():
             # regular task queue for a task.
             msg = poll(TASK_QUEUE)
             if msg:
+                Logger.add_fields(source_queue=TASK_QUEUE)
                 process(msg, manager)
 
         except Exception as e:  # pylint: disable=broad-except
@@ -191,8 +196,8 @@ def main():
 
 
 if __name__ == "__main__":
+    refresh_log_state()
     log.info("Starting DSO analysis engine")
     log.info("Host ID: %s, Engine ID: %s", INSTANCE_ID, ENGINE_ID)
-    log_environment()
     main()
     log.info("Stopping DSO analysis engine")

@@ -120,6 +120,8 @@ class EngineProcessor:
         error_plugins = []
 
         for plugin in self.action_details.plugins:
+            Logger.add_fields(plugin=plugin)
+
             current_plugin += 1
             logger.info("Running plugin %s against %s:%s", plugin, self.details.repo, self.action_details.branch)
             try:
@@ -190,6 +192,8 @@ class EngineProcessor:
 
         if VULNERABILITY_EVENTS_ENABLED:
             self._process_vuln_events()
+
+        Logger.remove_fields("plugin")
 
     def pull_repo(self):
         logger.info("Pulling repo %s/%s:%s", self.details.service, self.details.repo, self.action_details.branch)

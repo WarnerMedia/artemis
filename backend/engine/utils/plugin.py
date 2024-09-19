@@ -14,7 +14,7 @@ from django.db import transaction
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType
 from artemislib.github.app import GITHUB_APP_ID
-from artemislib.logging import Logger, LOG_LEVEL
+from artemislib.logging import Logger, LOG_LEVEL, inject_plugin_logs
 from artemislib.util import dict_eq
 from env import (
     ECR,
@@ -312,7 +312,10 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
             debug=[],
         )
 
-    log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())  # Inject plugin logs
+    log.info("--- Plugin log start ---")
+
+    inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
+
     log.info("--- Plugin log end ---")
 
     try:
