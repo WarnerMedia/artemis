@@ -38,7 +38,7 @@ class JSONFormatter(Formatter):
         log_record = {
             "timestamp": self.formatTime(record, self.datefmt),
             "level": record.levelname,
-            "location": f"{record.name}:{record.funcName}:{record.lineno}",
+            "location": f"{record.funcName}:{record.lineno}",
             "message": record.getMessage(),
         }
         # Exclude reserved attributes and Add additional_fields
