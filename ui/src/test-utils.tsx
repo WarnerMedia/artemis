@@ -5,7 +5,7 @@
 // see:
 // https://testing-library.com/docs/react-testing-library/setup
 //
-// note: providers should match the providers we include in
+// note: providers should match the providers we include in App.tsx
 
 import React from "react";
 import { render } from "@testing-library/react";
