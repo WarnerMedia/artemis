@@ -312,7 +312,10 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
             debug=[],
         )
 
-    log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())
+    log.info("--- Plugin log start ---")
+
+    inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
+
     log.info("--- Plugin log end ---")
 
     try:
