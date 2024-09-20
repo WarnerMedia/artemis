@@ -469,7 +469,10 @@ def queue_event(repo: str, plugin_type, payload):
 
 def get_secret_raw_wl(scan):
     # Note: scan type is unspecified until we enable typechecking Django models.
-    # Get the non-expired secret_raw whitelist for the repo and convert it into a list of the whitelisted strings
+    """
+    Get the non-expired secret_raw whitelist for the repo and convert it into
+    a list of the whitelisted strings.
+    """
     from artemisdb.artemisdb.consts import (
         AllowListType,  # pylint: disable=import-outside-toplevel
     )
@@ -485,7 +488,9 @@ def get_secret_raw_wl(scan):
 
 def get_secret_al(scan):
     # Note: scan type is unspecified until we enable typechecking Django models.
-    # Get the non-expired secret whitelist for the repo and convert it into a list
+    """
+    Get the non-expired secret whitelist for the repo and convert it into a list.
+    """
     from artemisdb.artemisdb.consts import (
         AllowListType,  # pylint: disable=import-outside-toplevel
     )
@@ -497,7 +502,9 @@ def get_secret_al(scan):
 
 
 def filter_raw_secrets(scan: Scan, plugin_output):
-    # Get the raw secrets whitelists for this repo as a list of strings
+    """
+    Get the raw secrets whitelists for this repo as a list of strings.
+    """
     secret_al = get_secret_raw_wl(scan)
 
     details = plugin_output.get("details", [])
@@ -530,7 +537,9 @@ def filter_raw_secrets(scan: Scan, plugin_output):
 
 
 def filter_secrets(scan: Scan, plugin_output):
-    # Get the secrets whitelists for this repo
+    """
+    Get the secrets whitelists for this repo.
+    """
     secret_al = get_secret_al(scan)
 
     details = plugin_output.get("details", [])
