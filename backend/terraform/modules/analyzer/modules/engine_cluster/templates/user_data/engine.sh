@@ -31,9 +31,9 @@ chmod 755 /data
 
 # Format and mount repo volume
 mkfs -t ext4 "${repos_block_device}"
-mkdir -p /cloned_repos
-mount "${repos_block_device}" /cloned_repos
-chmod 755 /cloned_repos
+mkdir -p /cloned-repos
+mount "${repos_block_device}" /cloned-repos
+chmod 755 /cloned-repos
 
 # Make sure packages are up-to-date
 yum -y update
