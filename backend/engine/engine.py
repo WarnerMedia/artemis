@@ -174,7 +174,7 @@ def main():
             if msg:
                 # The priority queue had a task so process it and then continue
                 # so that the priority queue gets polled again.
-                Logger.add_fields(source_queue=PRIORITY_TASK_QUEUE)
+                Logger.add_fields(priority_queue=True)
                 process(msg, manager)
                 continue
 
@@ -182,7 +182,7 @@ def main():
             # regular task queue for a task.
             msg = poll(TASK_QUEUE)
             if msg:
-                Logger.add_fields(source_queue=TASK_QUEUE)
+                Logger.add_fields(priority_queue=False)
                 process(msg, manager)
 
         except Exception as e:  # pylint: disable=broad-except
