@@ -69,7 +69,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
 
     engine_processor = EngineProcessor(services, action, details, manager=manager)
 
-    Logger.add_fields(scan_id=engine_processor.action_details.scan_id, repo=repo, service=service)
+    Logger.add_fields(scan_id=engine_processor.action_details.scan_id, repo=repo, version_control_service=service)
 
     log.info("Scan %s of %s starting", engine_processor.action_details.scan_id, repo)
 
