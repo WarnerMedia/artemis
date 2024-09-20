@@ -41,4 +41,5 @@ def normalize_type(finding_type: str) -> str:
     if finding_type in _TYPE_NORMALIZATION_TABLE:
         return _TYPE_NORMALIZATION_TABLE[finding_type]
     else:
-        return finding_type
+        # Types must be all lowercase
+        return finding_type.lower()
