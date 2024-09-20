@@ -4,7 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fnmatch import fnmatch
-from typing import Optional
+from typing import Optional, Union
 from urllib.parse import quote_plus
 
 import boto3
@@ -564,7 +564,7 @@ def filter_secrets(scan: Scan, plugin_output: dict):
     return {"details": filtered_details, "event_info": event_info}
 
 
-def match_nonallowlisted_raw_secrets(allowlist: list, matches: tuple[str, list]) -> list:
+def match_nonallowlisted_raw_secrets(allowlist: list, matches: Union[str, list]) -> list:
     if not isinstance(matches, list):
         matches = [matches]
 
