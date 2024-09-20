@@ -111,7 +111,7 @@ variable "engine_block_device" {
 
 variable "repos_block_device" {
   description = "Engine instance volume block device for cloned repos"
-  default     = "/dev/sdf"
+  default     = "/dev/sdg"
 }
 
 variable "engine_log_retention" {
