@@ -241,6 +241,7 @@ def is_plugin_disabled(settings: dict) -> bool:
 
 
 def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, features=None, services=None) -> Result:
+    log.info("--- Plugin log start ---")
     if features is None:
         features = {}
 
@@ -311,8 +312,6 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
             alerts=[],
             debug=[],
         )
-
-    log.info("--- Plugin log start ---")
 
     inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
 
