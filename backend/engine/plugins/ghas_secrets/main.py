@@ -4,10 +4,9 @@ import uuid
 from typing import Tuple
 
 from artemislib.github.api import GitHubAPI
-from artemislib.logging import Logger
 from engine.plugins.lib import utils
 
-LOG = Logger("ghas_secrets")
+LOG = utils.setup_logging("ghas_secrets")
 
 
 def main():
