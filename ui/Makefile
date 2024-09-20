@@ -192,7 +192,7 @@ audit: package.json package-lock.json  ## Audit package dependencies for vulnera
 .PHONY: test
 test:  ## Run tests
 	@echo "${INFO}Running tests"
-	CI=true $(NPM) test -- --env=jsdom --coverage --maxWorkers=100% --silent
+	CI=true $(NPM) test -- --env=jsdom --coverage --silent
 	@echo "${OK}"
 
 # run coding standards check
