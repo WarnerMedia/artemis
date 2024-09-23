@@ -121,7 +121,7 @@ EXAMPLE_VENDOR_FINDING = {
     "SourceType": 7,
     "SourceName": "trufflehog - git",
     "DetectorType": 17,
-    "tetectorName": "pytest",
+    "DetectorName": "pytest",
     "DecoderName": "PLAIN",
     "Verified": False,
     "VerificationError": "i/o timeout",
