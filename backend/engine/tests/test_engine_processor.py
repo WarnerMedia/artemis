@@ -146,10 +146,10 @@ class TestEngineProcessor(unittest.TestCase):
         git_pull_mock.return_value = expected_result
 
         class DummyDBScanObject:
-            def get_scan_object():
+            def get_scan_object(self):
                 return Scan()
 
-        processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, DummyDBScanObject, object)
+        processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, DummyDBScanObject(), object)
         result = processor.pull_repo()
         self.assertTrue(git_pull_mock.called)
         self.assertTrue(get_api_key.called)
