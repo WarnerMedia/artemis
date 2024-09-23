@@ -35,7 +35,7 @@ resource "aws_lambda_function" "license-retriever" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-api"
+        DD_SERVICE        = "${var.app}-maintenance"
       }, var.datadog_environment_variables)
     : {})
   }

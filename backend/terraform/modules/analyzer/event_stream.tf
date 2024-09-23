@@ -27,7 +27,7 @@ resource "aws_lambda_function" "event-dispatch" {
       ARTEMIS_ADDITIONAL_EVENT_ROUTING = var.additional_event_routing
       ARTEMIS_LOG_LEVEL                = var.log_level
       DD_LAMBDA_HANDLER                = "handlers.handler"
-      DD_SERVICE                       = "${var.app}-data-fowarder"
+      DD_SERVICE                       = "${var.app}-events"
     }, var.extra_env_vars_event_dispatch, var.datadog_environment_variables)
   }
 
