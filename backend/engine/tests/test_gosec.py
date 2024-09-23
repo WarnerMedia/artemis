@@ -201,7 +201,6 @@ class TestGoSec(unittest.TestCase):
         """
         tests the entire output from run_gosec to make sure
         parsing output is correct
-        :return: list
         """
         expected_output = TEST_PARSE_SCAN_OUTPUT
         output = parse_scan(TEST_GOSEC_OUTPUT, "/go/golang-examples/")
@@ -211,7 +210,6 @@ class TestGoSec(unittest.TestCase):
         """
         tests amend_rule edits a G404 warning severity to low and amends its details accordingly
         edits a G307 warning severity to low
-        :return: object
         """
         expected_output = TEST_AMEND_G404_OUTPUT
         output = amend_rule(TEST_AMEND_G404_INPUT, "/go/golang-examples/")
@@ -220,7 +218,6 @@ class TestGoSec(unittest.TestCase):
     def test_amend_rule_G307(self):
         """
         tests amend_rule edits a G307 warning severity to low
-        :return: object
         """
         expected_output = TEST_AMEND_G307_OUTPUT
         output = amend_rule(TEST_AMEND_G307_INPUT, "/go/golang-examples/")
@@ -230,7 +227,6 @@ class TestGoSec(unittest.TestCase):
     def test_run_gosec(self, mock_subprocess):
         """
         test run_gosec when returncode will be 1
-        :return: list
         """
         mock_subprocess_output = MagicMock()
         mock_subprocess_output.stdout = TEST_GOSEC_OUTPUT_STRING
@@ -243,7 +239,6 @@ class TestGoSec(unittest.TestCase):
     def test_run_gosec_no_packages_found(self, mock_subprocess):
         """
         test run_gosec when no packages found, returncode will be 1, but stdout will be b''
-        :return: list
         """
         mock_subprocess_output = MagicMock()
         mock_subprocess_output.stdout = b""
@@ -255,7 +250,6 @@ class TestGoSec(unittest.TestCase):
     def test_get_cwe_reason(self):
         """
         tests get_cwe_reason id -> name lookup
-        :return: str
         """
         expected_output = "Improper Certificate Validation"
         output = get_cwe_reason("295")
@@ -264,7 +258,6 @@ class TestGoSec(unittest.TestCase):
     def test_get_cwe_reason_noid(self):
         """
         tests for bad cweid/no cweid
-        :return: str
         """
         expected_output = "No Vulnerability Name Available"
         output = get_cwe_reason("")
