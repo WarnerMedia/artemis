@@ -4,7 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fnmatch import fnmatch
-from typing import Tuple
+from typing import Optional, Union
 from urllib.parse import quote_plus
 
 import boto3
@@ -12,7 +12,7 @@ from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
 
-from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType
+from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
 from artemislib.github.app import GITHUB_APP_ID
 from artemislib.logging import Logger, LOG_LEVEL, inject_plugin_logs
 from artemislib.util import dict_eq
@@ -64,7 +64,7 @@ class PluginSettings:
     timeout: int
 
 
-def get_engine_vars(scan, depth=None, include_dev=False, services=None):
+def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
     """
     Returns a json str that can be converted back to a dict by the plugin.
     The object will container information known to the engine
@@ -92,7 +92,7 @@ def get_engine_vars(scan, depth=None, include_dev=False, services=None):
     )
 
 
-def get_ecr_login_cmd():
+def get_ecr_login_cmd() -> Optional[list[str]]:
     log.info("Logging into ECR")
     login_command_response = subprocess.run(
         [
@@ -113,7 +113,7 @@ def get_ecr_login_cmd():
     return login_command_response.stdout.decode("utf-8").strip().split(" ")
 
 
-def pull_image(image):
+def pull_image(image: str):
     # Try to pull the latest image
     if execute_docker_pull(image, not ECR):
         # Success, return no error
@@ -144,7 +144,7 @@ def pull_image(image):
     return None
 
 
-def execute_docker_pull(image, log_error) -> bool:
+def execute_docker_pull(image: str, log_error: bool) -> bool:
     """
     Executes docker pull [image]
     if the return code is not 0, there was an error.
@@ -240,7 +240,15 @@ def is_plugin_disabled(settings: dict) -> bool:
     return True
 
 
-def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, features=None, services=None) -> Result:
+def run_plugin(
+    plugin: str,
+    scan: Scan,
+    scan_images,
+    depth: Optional[str] = None,
+    include_dev=False,
+    features=None,
+    services=None,
+) -> Result:
     log.info("--- Plugin log start ---")
     if features is None:
         features = {}
@@ -319,6 +327,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
 
     try:
         plugin_output = json.loads(r.stdout)
+        # TODO: Validate plugin output is a dict.
 
         if "event_info" in plugin_output:
             # Process event info by sending them to a locked down SQS queue so that the results can be
@@ -368,7 +377,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
     )
 
 
-def process_event_info(scan, results, plugin_type, plugin_name):
+def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
     if plugin_type == PluginType.SECRETS.value and SECRETS_EVENTS_ENABLED:
@@ -452,7 +461,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
             queue_event(scan.repo.repo, plugin_type, payload)
 
 
-def queue_event(repo, plugin_type, payload):
+def queue_event(repo: str, plugin_type: str, payload: dict):
     log.info("Queuing %s event for %s", plugin_type, repo)
     try:
         sqs = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=REGION)
@@ -462,7 +471,11 @@ def queue_event(repo, plugin_type, payload):
 
 
 def get_secret_raw_wl(scan):
-    # Get the non-expired secret_raw whitelist for the repo and convert it into a list of the whitelisted strings
+    # Note: scan type is unspecified until we enable typechecking Django models.
+    """
+    Get the non-expired secret_raw whitelist for the repo and convert it into
+    a list of the whitelisted strings.
+    """
     from artemisdb.artemisdb.consts import (
         AllowListType,  # pylint: disable=import-outside-toplevel
     )
@@ -477,7 +490,10 @@ def get_secret_raw_wl(scan):
 
 
 def get_secret_al(scan):
-    # Get the non-expired secret whitelist for the repo and convert it into a list
+    # Note: scan type is unspecified until we enable typechecking Django models.
+    """
+    Get the non-expired secret whitelist for the repo and convert it into a list.
+    """
     from artemisdb.artemisdb.consts import (
         AllowListType,  # pylint: disable=import-outside-toplevel
     )
@@ -488,8 +504,10 @@ def get_secret_al(scan):
     )
 
 
-def filter_raw_secrets(scan, plugin_output):
-    # Get the raw secrets whitelists for this repo as a list of strings
+def filter_raw_secrets(scan: Scan, plugin_output: dict) -> dict:
+    """
+    Get the raw secrets whitelists for this repo as a list of strings.
+    """
     secret_al = get_secret_raw_wl(scan)
 
     details = plugin_output.get("details", [])
@@ -521,8 +539,10 @@ def filter_raw_secrets(scan, plugin_output):
     return plugin_output
 
 
-def filter_secrets(scan, plugin_output):
-    # Get the secrets whitelists for this repo
+def filter_secrets(scan: Scan, plugin_output: dict):
+    """
+    Get the secrets whitelists for this repo.
+    """
     secret_al = get_secret_al(scan)
 
     details = plugin_output.get("details", [])
@@ -546,7 +566,7 @@ def filter_secrets(scan, plugin_output):
     return {"details": filtered_details, "event_info": event_info}
 
 
-def match_nonallowlisted_raw_secrets(allowlist: list, matches: Tuple[str, list]) -> list:
+def match_nonallowlisted_raw_secrets(allowlist: list, matches: Union[str, list]) -> list:
     if not isinstance(matches, list):
         matches = [matches]
 
@@ -571,11 +591,20 @@ def match_nonallowlisted_secrets(allow_list, item):
     return True
 
 
-def get_iso_timestamp():
+def get_iso_timestamp() -> str:
     return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
 
 
-def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plugin_config, services):
+def get_plugin_command(
+    scan: Scan,
+    image: str,
+    plugin: str,
+    depth: Optional[str],
+    include_dev: bool,
+    scan_images,
+    plugin_config,
+    services,
+) -> list[str]:
     profile = os.environ.get("AWS_PROFILE")
     cmd = [
         "docker",
@@ -659,7 +688,7 @@ def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plu
     return cmd
 
 
-def get_plugin_list():
+def get_plugin_list() -> list[str]:
     return sorted([e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if e.name != "lib" and e.is_dir()])
 
 

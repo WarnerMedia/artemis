@@ -2,13 +2,13 @@ import json
 import subprocess
 import uuid
 
+from engine.plugins.trufflehog.type_normalization import normalize_type
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
 from engine.plugins.lib.secrets_common.enums import SecretValidity
 
 ENDS = {"lock", "lock.json", "DEPS"}
 STARTS = {"vendor"}
-
 
 log = utils.setup_logging("trufflehog")
 
@@ -43,7 +43,9 @@ def get_source_metadata(finding):
 
 
 def get_finding_type(finding):
-    return finding.get("DetectorName").lower()
+    finding_type = finding.get("DetectorName")
+
+    return normalize_type(finding_type)
 
 
 def get_validity(finding):
