@@ -86,29 +86,29 @@ class TestGitSecrets(unittest.TestCase):
 
     def test_process_secret_type_ssh(self):
         processor = SecretProcessor(base_path=TEST_DIR)
+        secret = "-----BEGIN RSA PRIVATE KEY-----"
 
-        processor._secret = "------"
+        processor.split = [secret]
 
-        processor._process_secret_type()
-
+        self.assertTrue(processor._process_secret())
         self.assertEqual("ssh", processor.secret_type)
 
     def test_process_secret_type_mongo(self):
         processor = SecretProcessor(base_path=TEST_DIR)
+        secret = "mongodb://fakeuser:fakepass@example-db"
 
-        processor._secret = "mongodb://fakeuser:fakepass@example-db"
+        processor.split = [secret]
 
-        processor._process_secret_type()
-
+        self.assertTrue(processor._process_secret())
         self.assertEqual("mongo", processor.secret_type)
 
     def test_process_secret_type_aws(self):
         processor = SecretProcessor(base_path=TEST_DIR)
+        secret = "AKIATHISISNOTREALKEY"
 
-        processor._secret = "AKIATHISISNOTREALKEY"
+        processor.split = [secret]
 
-        processor._process_secret_type()
-
+        self.assertTrue(processor._process_secret())
         self.assertEqual("aws", processor.secret_type)
 
     def test_process_secret_pass(self):
@@ -124,16 +124,17 @@ class TestGitSecrets(unittest.TestCase):
         webhook = "https://hooks.slack.com/services/T01234567/B09876543/thisisnotarealwebhook123"
 
         processor = SecretProcessor(base_path=TEST_DIR)
-        actual = processor._extract_match(webhook)
+        actual_secret, _ = processor._extract_match(webhook)
 
-        self.assertEqual(webhook, actual)
+        self.assertEqual(webhook, actual_secret)
 
     def test_secret_type_slack(self):
         processor = SecretProcessor(base_path=TEST_DIR)
-        processor._secret = "https://hooks.slack.com/services/T01234567/B09876543/thisisnotarealwebhook123"
+        secret = "https://hooks.slack.com/services/T01234567/B09876543/thisisnotarealwebhook123"
 
-        processor._process_secret_type()
+        processor.split = [secret]
 
+        self.assertTrue(processor._process_secret())
         self.assertEqual("slack", processor.secret_type)
 
     def test_property_filename_read_only(self):
@@ -214,5 +215,5 @@ class TestGitSecrets(unittest.TestCase):
         for test_case in test_cases:
             with self.subTest(test_case=test_case):
                 # Test that the regex correctly extracts the secret from surrounding text
-                actual = processor._extract_match(f'{extra}\n{extra}"{test_case}"{extra}\n{extra}')
+                actual, _ = processor._extract_match(f'{extra}\n{extra}"{test_case}"{extra}\n{extra}')
                 self.assertEqual(test_case, actual)
