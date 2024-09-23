@@ -177,7 +177,7 @@ class TestPluginTrufflehog(unittest.TestCase):
         test = [EXAMPLE_LEGIT_FINDING, EXAMPLE_LOCKFILE_FINDING, EXAMPLE_VENDOR_FINDING]
         actual = trufflehog.scrub_results(test, errors_dict)
 
-        expected_type = EXAMPLE_LEGIT_FINDING.get("DetectorName")
+        expected_type = EXAMPLE_LEGIT_FINDING.get("DetectorName", "").lower()
         expected1 = {
             "id": actual["results"][0]["id"],
             "filename": "The Pacific Crest Trail",
