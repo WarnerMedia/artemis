@@ -29,7 +29,7 @@ resource "aws_lambda_function" "metadata-events-handler" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-data-forwarder"
+        DD_SERVICE        = "${var.app}-events"
       }, var.datadog_environment_variables)
     : {})
   }
