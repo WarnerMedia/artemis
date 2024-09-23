@@ -5,6 +5,8 @@ from engine.utils.plugin import is_plugin_disabled, match_nonallowlisted_raw_sec
 from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+SERVICES_FILE = os.path.join(TEST_DIR, "data", "services.json")
+
 EXPECTED_KEYS = [
     "allow_all",
     "api_key_add",
@@ -27,8 +29,10 @@ EXPECTED_KEYS = [
 
 class TestEngineUtils(unittest.TestCase):
     def setUp(self):
-        print("setting up")
-        self.services_dict = _get_services_from_file(os.path.join(TEST_DIR, "data", "services.json")).get("services")
+        svcs = _get_services_from_file(SERVICES_FILE)
+        if svcs is None:
+            raise Exception("Failed to load services for test case")
+        self.services_dict = svcs.get("services")
 
     def test_validate_services_types(self):
         for service, details in self.services_dict.items():

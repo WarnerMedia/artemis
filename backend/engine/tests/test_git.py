@@ -15,7 +15,10 @@ SERVICES_FILE = os.path.join(TEST_DIR, "data", "services.json")
 
 class TestGit(unittest.TestCase):
     def setUp(self) -> None:
-        self.services = _get_services_from_file(SERVICES_FILE).get("services")
+        svcs = _get_services_from_file(SERVICES_FILE)
+        if svcs is None:
+            raise Exception("Failed to load services for test case")
+        self.services = svcs.get("services")
 
     @pytest.mark.integtest
     def test_clone(self):

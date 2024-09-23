@@ -1,3 +1,4 @@
+from typing import Any, Optional
 import json
 import os
 
@@ -10,7 +11,7 @@ from env import REGION, S3_BUCKET
 log = Logger(__name__)
 
 
-def _get_services_from_file(service_file):
+def _get_services_from_file(service_file: str) -> Optional[Any]:
     if os.path.exists(service_file):
         with open(service_file) as services_file:
             return json.load(services_file)
