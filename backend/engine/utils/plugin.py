@@ -56,9 +56,15 @@ class Result:
 
 
 class PluginSettings(BaseModel):
+    """
+    Plugin description, loaded from the settings.json of the plugin.
+
+    Only the "name" field is required, all other fields are optional.
+    """
+
+    name: str
     image: str = ""
     disabled: bool = Field(alias="enabled", default=False)
-    name: str
     plugin_type: str = Field(alias="type", default="misc")
     feature: Optional[str] = None
     timeout: Optional[int] = None
