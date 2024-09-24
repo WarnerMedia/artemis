@@ -129,6 +129,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
 
 def cleanup(working_dir, scan_id):
     try:
+        log.info(f'cleaning up cloned repo at {working_dir, scan_id}')
         shutil.rmtree(os.path.join(working_dir, scan_id))
     except FileNotFoundError:
         # If path doesn't exist our work is done

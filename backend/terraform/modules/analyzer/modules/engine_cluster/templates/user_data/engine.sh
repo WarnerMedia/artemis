@@ -30,18 +30,18 @@ else
   mkfs -t ext4 "${engine_block_device}"
   mkdir -p /data
   mount "${engine_block_device}" /data
+  chmod 755 /data
 fi
-chmod 755 /data  # Ensure permissions are correctly set regardless
 
 # Format and mount repo volume
-if ! mount | grep -q "${repos_block_device}"; then
+if mount | grep -q "${repos_block_device}"; then
+  echo "${repos_block_device} is already mounted. Skipping format and mount." >> /var/log/my-script-log.log
+else
   echo "Formatting ${repos_block_device}..." >> /var/log/my-script-log.log
   mkfs -t ext4 "${repos_block_device}"
   mkdir -p /cloned_repos
   mount "${repos_block_device}" /cloned_repos
   chmod 755 /cloned_repos
-else
-  echo "${repos_block_device} is already mounted or unavailable for formatting." >> /var/log/my-script-log.log
 fi
 
 # Make sure packages are up-to-date
