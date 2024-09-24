@@ -21,7 +21,7 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
     :return: True if the available space is greater than the repo size * 2, otherwise False
     """
     if available_space is None:
-        s = os.statvfs(".")
+        s = os.statvfs("/cloned_repos")
         available_space = (s.f_frsize * s.f_bavail) / 1024
     log.error(f"available space ********: {available_space}")
 
