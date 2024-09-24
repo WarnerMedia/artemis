@@ -84,7 +84,7 @@ resource "aws_launch_template" "engine-template" {
     }
   }
 
-    block_device_mappings {
+  block_device_mappings {
     device_name = var.repos_block_device
 
     ebs {
