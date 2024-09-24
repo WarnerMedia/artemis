@@ -24,16 +24,25 @@ export "ghas_enabled"
 export "revproxy_domain_substring"
 
 # Format and mount data volume
-mkfs -t ext4 "${engine_block_device}"
-mkdir -p /data
-mount "${engine_block_device}" /data
-chmod 755 /data
+if mount | grep -q "${engine_block_device}"; then
+  echo "${engine_block_device} is already mounted. Skipping format and mount." >> /var/log/my-script-log.log
+else
+  mkfs -t ext4 "${engine_block_device}"
+  mkdir -p /data
+  mount "${engine_block_device}" /data
+fi
+chmod 755 /data  # Ensure permissions are correctly set regardless
 
 # Format and mount repo volume
-mkfs -t ext4 "${repos_block_device}"
-mkdir -p /cloned_repos
-mount "${repos_block_device}" /cloned_repos
-chmod 755 /cloned_repos
+if ! mount | grep -q "${repos_block_device}"; then
+  echo "Formatting ${repos_block_device}..." >> /var/log/my-script-log.log
+  mkfs -t ext4 "${repos_block_device}"
+  mkdir -p /cloned_repos
+  mount "${repos_block_device}" /cloned_repos
+  chmod 755 /cloned_repos
+else
+  echo "${repos_block_device} is already mounted or unavailable for formatting." >> /var/log/my-script-log.log
+fi
 
 # Make sure packages are up-to-date
 yum -y update
