@@ -1,4 +1,3 @@
-from typing import Any
 from artemislib.github.api import GitHubAPI
 from artemislib.logging import Logger
 
@@ -24,7 +23,7 @@ valid_types = {
 
 def format_secret(
     github: GitHubAPI, item_id: str, location: dict, alert: dict, author: str, author_timestamp: str
-) -> Any:
+) -> dict:
     if location["type"] not in valid_types:
         LOG.debug("Unknown location type, ignoring")
         return {}
@@ -112,10 +111,12 @@ def format_secret(
 
 
 def _normalize_secret_type(secret_type: str) -> str:
-    # There is a large number of secret types supported by GHAS. Some of them need to be normalized
-    # to be aligned with the types returned by other Artemis plugins.
-    #
-    # https://docs.github.com/en/code-security/secret-scanning/secret-scanning-patterns
+    """
+    There are a large number of secret types supported by GHAS. Some of them need to be normalized
+    to be aligned with the types returned by other Artemis plugins.
+
+    https://docs.github.com/en/code-security/secret-scanning/secret-scanning-patterns
+    """
     if secret_type.startswith("aws"):
         return "aws"
     elif secret_type.startswith("google"):

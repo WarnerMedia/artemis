@@ -1,5 +1,4 @@
 import subprocess
-from typing import Tuple
 from artemislib.logging import Logger
 
 LOG = Logger("ghas_secrets")
@@ -20,7 +19,7 @@ valid_types = {
 }
 
 
-def validate(location: dict, path: str) -> Tuple[bool, str, str]:
+def validate(location: dict, path: str) -> tuple[bool, str, str]:
     valid = False
     author = ""
     author_timestamp = ""

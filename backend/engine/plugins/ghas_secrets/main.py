@@ -66,8 +66,9 @@ def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
                 continue
             item_id = str(uuid.uuid4())
             item = format_secret(gh, item_id, location, alert, author, author_timestamp)
-            results.append(item)
-            event_info[item_id] = {"match": alert["secret"], "type": item["type"]}
+            if item:
+                results.append(item)
+                event_info[item_id] = {"match": alert["secret"], "type": item["type"]}
 
     return results, event_info
 
