@@ -1,11 +1,13 @@
 import os
 import unittest
+from unittest.mock import patch
 
-from engine.utils.plugin import is_plugin_disabled, match_nonallowlisted_raw_secrets
+from engine.utils.plugin import get_plugin_settings, is_plugin_disabled, match_nonallowlisted_raw_secrets
 from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVICES_FILE = os.path.join(TEST_DIR, "data", "services.json")
+PLUGIN_TEST_BASE_DIR = os.path.join(TEST_DIR, "data", "util")
 
 EXPECTED_KEYS = [
     "allow_all",
@@ -82,3 +84,38 @@ class TestEngineUtils(unittest.TestCase):
             with self.subTest(test_case=test_case):
                 actual = match_nonallowlisted_raw_secrets(allowlist, test_case[0])
             self.assertEqual(actual, test_case[1])
+
+    @patch("engine.utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    @patch("engine.utils.plugin.ECR", "test.example.com")
+    def test_get_plugin_settings_normal(self):
+        """
+        Tests loading a fully-specified settings file.
+        """
+        actual = get_plugin_settings("normal")
+        self.assertEqual(actual.image, "test.example.com/normal:latest")
+        self.assertEqual(actual.disabled, False)
+        self.assertEqual(actual.name, "Test Plugin")
+        self.assertEqual(actual.plugin_type, "vulnerability")
+        self.assertEqual(actual.feature, "unit-test")
+        self.assertEqual(actual.timeout, 300)
+
+    @patch("engine.utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_get_plugin_settings_minimal(self):
+        """
+        Tests default values when loading a minimal settings file.
+        """
+        actual = get_plugin_settings("minimal")
+        self.assertEqual(actual.image, "")
+        self.assertEqual(actual.disabled, False)
+        self.assertEqual(actual.name, "Test Minimal Plugin")
+        self.assertEqual(actual.plugin_type, "misc")
+        self.assertIsNone(actual.feature)
+        self.assertIsNone(actual.timeout)
+
+    @patch("engine.utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_get_plugin_settings_nonexistent(self):
+        """
+        Tests an exception is raised when loading a nonexistent settings file.
+        """
+        with self.assertRaises(Exception):
+            get_plugin_settings("nonexistent")

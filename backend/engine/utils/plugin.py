@@ -60,8 +60,8 @@ class PluginSettings:
     disabled: bool
     name: str
     plugin_type: str
-    feature: str
-    timeout: int
+    feature: Optional[str]
+    timeout: Optional[int]
 
 
 def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
