@@ -11,6 +11,7 @@ import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
+from pydantic import BaseModel, Field, field_validator
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
 from artemislib.github.app import GITHUB_APP_ID
@@ -54,14 +55,28 @@ class Result:
     disabled: bool = False
 
 
-@dataclass
-class PluginSettings:
-    image: str
-    disabled: bool
+class PluginSettings(BaseModel):
+    image: str = ""
+    disabled: bool = Field(alias="enabled", default=False)
     name: str
-    plugin_type: str
-    feature: Optional[str]
-    timeout: Optional[int]
+    plugin_type: str = Field(alias="type", default="misc")
+    feature: Optional[str] = None
+    timeout: Optional[int] = None
+
+    @field_validator("image", mode="after")
+    @classmethod
+    def _parse_image(cls, orig: str) -> str:
+        image = orig.replace("$ECR", ECR)
+
+        if image.startswith("/"):
+            image = image[1:]
+
+        return image
+
+    @field_validator("disabled", mode="before")
+    @classmethod
+    def _parse_disabled(cls, orig: Union[str, bool]) -> bool:
+        return is_plugin_disabled({"enabled": orig})
 
 
 def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
@@ -168,26 +183,7 @@ def get_plugin_settings(plugin: str) -> PluginSettings:
     settings_path = os.path.join(plugin_path, "settings.json")
 
     with open(settings_path) as f:
-        settings = json.loads(f.read())
-        image = settings.get("image", "")
-
-        return PluginSettings(
-            image=_fix_image_path(image),
-            disabled=is_plugin_disabled(settings),
-            name=settings.get("name"),
-            plugin_type=settings.get("type", "misc"),
-            feature=settings.get("feature"),
-            timeout=settings.get("timeout"),
-        )
-
-
-def _fix_image_path(image_path: str) -> str:
-    image = image_path.replace("$ECR", ECR)
-
-    if image.startswith("/"):
-        image = image[1:]
-
-    return image
+        return PluginSettings.model_validate_json(f.read())
 
 
 def _get_plugin_config(plugin: str, full_repo: str) -> dict:

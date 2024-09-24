@@ -1,8 +1,14 @@
 import os
+from typing import Any
 import unittest
 from unittest.mock import patch
 
-from engine.utils.plugin import get_plugin_settings, is_plugin_disabled, match_nonallowlisted_raw_secrets
+from engine.utils.plugin import (
+    PluginSettings,
+    get_plugin_settings,
+    is_plugin_disabled,
+    match_nonallowlisted_raw_secrets,
+)
 from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,6 +33,37 @@ EXPECTED_KEYS = [
     "url",
     "use_deploy_key",
 ]
+
+
+@patch("engine.utils.plugin.ECR", "test.example.com")
+class TestPluginSettings(unittest.TestCase):
+    # Note: See test_get_plugin_settings_* below for additional tests.
+
+    def test_image_expand_var(self):
+        """
+        Test that the container image ref expands the "$ECR" variable and trims
+        initial slash.
+        """
+        actual = PluginSettings(name="Test", image="/$ECR/foo/bar:latest")
+        self.assertEqual(actual.image, "test.example.com/foo/bar:latest")
+
+    def test_disabled(self):
+        """
+        Test various allowed inputs on the "enabled" field.
+        """
+        # This is a small subset of the test cases from test_plugin_disabled
+        # below, just to make sure that the validator is calling
+        # is_plugin_disabled correctly.
+        test_cases: list[tuple[Any, bool]] = [
+            (True, False),
+            (False, True),
+            (1, True),
+            ("INVALID", True),
+        ]
+        for test_case in test_cases:
+            with self.subTest(test_case=test_case):
+                actual = PluginSettings(name="Test", enabled=test_case[0])
+                self.assertEqual(actual.disabled, test_case[1])
 
 
 class TestEngineUtils(unittest.TestCase):
