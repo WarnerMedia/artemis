@@ -18,7 +18,7 @@ URL_REGEX = r"://[^/\s:@]{3,64}:[^/\s:@]{3,64}@[a-zA-Z0-9\.-]+(:[0-9]{1,5}){0,1}
 # This regex needs to match the git-secrets regexes in Dockerfiles/data/secret-patterns
 REGEXES = [
     SecretRegex(
-        finding_type="Amazon MWS",
+        finding_type="amazon mws",
         regex=re.compile(str(r"(amzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")),
     ),
     SecretRegex(
@@ -50,11 +50,11 @@ REGEXES = [
         regex=re.compile(str(r"([f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K](.){1,64}['|\"][0-9a-f]{32}['|\"])")),
     ),
     SecretRegex(
-        finding_type="Generic API Key",
+        finding_type="generic api key",
         regex=re.compile(str(r"([a|A][p|P][i|I][_]?[k|K][e|E][y|Y](.){1,64}['|\"][0-9a-zA-Z]{32,45}['|\"])")),
     ),
     SecretRegex(
-        finding_type="Generic Secret",
+        finding_type="generic secret",
         regex=re.compile(str(r"([s|S][e|E][c|C][r|R][e|E][t|T](.){1,64}['|\"][0-9a-zA-Z]{32,45}['|\"])")),
     ),
     SecretRegex(
@@ -78,7 +78,7 @@ REGEXES = [
         regex=re.compile(str(r"((ftp|ftps|http|https)" + URL_REGEX)),
     ),
     SecretRegex(
-        finding_type="Heroku API Key",
+        finding_type="heroku api key",
         regex=re.compile(
             str(
                 r"([h|H][e|E][r|R][o|O][k|K][u|U](.){1,64}[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})"
@@ -86,19 +86,19 @@ REGEXES = [
         ),
     ),
     SecretRegex(
-        finding_type="MailChimp API Key",
+        finding_type="mailchimp api key",
         regex=re.compile(str(r"([0-9a-f]{32}-us[0-9]{1,2})")),
     ),
     SecretRegex(
-        finding_type="Mailgun API Key",
+        finding_type="mailgun api key",
         regex=re.compile(str(r"(key-[0-9a-zA-Z]{32})")),
     ),
     SecretRegex(
-        finding_type="PayPal Braintree Access Token",
+        finding_type="paypal braintree access token",
         regex=re.compile(str(r"(access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32})")),
     ),
     SecretRegex(
-        finding_type="Picatic API Key",
+        finding_type="picatic api key",
         regex=re.compile(str(r"(sk_live_[0-9a-z]{32})")),
     ),
     SecretRegex(
@@ -106,28 +106,28 @@ REGEXES = [
         regex=re.compile(str(r"(xox[p|b|o|a]-[0-9]{12}-[0-9]{12}-[0-9]{12}-[a-z0-9]{32})")),
     ),
     SecretRegex(
-        finding_type="Stripe API Key",
+        finding_type="stripe api key",
         regex=re.compile(str(r"(sk_live_[0-9a-zA-Z]{24})")),
     ),
     SecretRegex(
-        finding_type="Stripe Restricted API Key",
+        finding_type="stripe restricted api key",
         regex=re.compile(str(r"(rk_live_[0-9a-zA-Z]{24})")),
     ),
     SecretRegex(
-        finding_type="Square Access Token",
+        finding_type="square access token",
         regex=re.compile(str(r"(sq0atp-[0-9A-Za-z\-_]{22})")),
     ),
     SecretRegex(
-        finding_type="Square OAuth Secret",
+        finding_type="square oauth secret",
         regex=re.compile(str(r"(sq0csp-[0-9A-Za-z\-_]{43})")),
     ),
-    SecretRegex(finding_type="Twilio API Key", regex=re.compile(str(r"(SK[0-9a-fA-F]{32})"))),
+    SecretRegex(finding_type="twilio api key", regex=re.compile(str(r"(SK[0-9a-fA-F]{32})"))),
     SecretRegex(
-        finding_type="Twitter Access Token",
+        finding_type="twitter access token",
         regex=re.compile(str(r"([t|T][w|W][i|I][t|T][t|T][e|E][r|R](.){1,64}[1-9][0-9]+-[0-9a-zA-Z]{40})")),
     ),
     SecretRegex(
-        finding_type="Twitter Oauth",
+        finding_type="twitter oauth",
         regex=re.compile(str(r"([t|T][w|W][i|I][t|T][t|T][e|E][r|R](.){1,64}['|\"][0-9a-zA-Z]{35,44}['|\"])")),
     ),
     SecretRegex(

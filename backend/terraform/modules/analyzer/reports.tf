@@ -37,7 +37,7 @@ resource "aws_lambda_function" "json_report" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-report-service"
+        DD_SERVICE        = "${var.app}-generators"
       }, var.datadog_environment_variables)
     : {})
   }
@@ -86,7 +86,7 @@ resource "aws_lambda_function" "pdf_report" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-report-service"
+        DD_SERVICE        = "${var.app}-generators"
       }, var.datadog_environment_variables)
     : {})
   }
@@ -135,7 +135,7 @@ resource "aws_lambda_function" "report_cleanup" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-report-service"
+        DD_SERVICE        = "${var.app}-maintenance"
       }, var.datadog_environment_variables)
     : {})
   }
@@ -184,7 +184,7 @@ resource "aws_lambda_function" "sbom_report" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-report-service"
+        DD_SERVICE        = "${var.app}-generators"
       }, var.datadog_environment_variables)
     : {})
   }

@@ -95,7 +95,9 @@ def _normalize_secret_type(secret_type: str) -> str:
         return "ssh"
     elif secret_type in ["slack_incoming_webhook_url", "slack_workflow_webhook_url"]:
         return "slack"
-    return secret_type  # Keep the original type as a fallthrough
+    # Keep the original type as a fallthrough
+    # Type must be lowercase
+    return secret_type.lower()
 
 
 def _get_alerts(gh: GitHubAPI) -> list[dict]:

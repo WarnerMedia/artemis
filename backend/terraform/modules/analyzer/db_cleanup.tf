@@ -39,7 +39,7 @@ resource "aws_lambda_function" "db-cleanup" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-scheduled-events"
+        DD_SERVICE        = "${var.app}-maintenance"
       }, var.datadog_environment_variables)
     : {})
   }

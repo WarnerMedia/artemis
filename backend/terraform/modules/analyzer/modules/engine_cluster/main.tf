@@ -272,7 +272,7 @@ resource "aws_lambda_function" "scale-down" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-engine-task"
+        DD_SERVICE        = "${var.app}-scans"
       }, var.datadog_environment_variables)
     : {})
   }
