@@ -19,6 +19,9 @@ def clean_output_application_sbom(output: list) -> list:
         if item["type"] == "operating-system":
             continue
         bom_ref = item["bom-ref"]
+        if "name" not in item:
+            logger.error("Unable to parse trivy component: %s", item)
+            continue
         if "group" in item:
             name = f'{item["group"]}/{item["name"]}'
         else:
