@@ -66,6 +66,7 @@ class PluginSettings(BaseModel):
     image: str = ""
     disabled: bool = Field(alias="enabled", default=False)
     plugin_type: str = Field(alias="type", default="misc")
+    build_images: bool = False
     feature: Optional[str] = None
     timeout: Optional[int] = None
 

@@ -25,7 +25,7 @@ from processor.vulns import process_vulns, resolve_vulns
 from utils.deploy_key import create_ssh_url, git_clone
 from utils.engine import get_key
 from utils.git import git_clean, git_pull, git_reset
-from utils.plugin import Result, is_plugin_disabled, run_plugin, process_event_info, queue_event
+from utils.plugin import Result, get_plugin_settings, run_plugin, process_event_info, queue_event
 
 logger = Logger(__name__)
 
@@ -238,10 +238,9 @@ class EngineProcessor:
         :return: True/False
         """
         for plugin in self.action_details.plugins:
-            with open(os.path.join(self.action_details.plugin_path, plugin, "settings.json")) as settings_file:
-                settings_dict = json.load(settings_file)
-                if settings_dict.get("build_images", False) and not is_plugin_disabled(settings_dict):
-                    return True
+            settings = get_plugin_settings(plugin)
+            if settings.build_images and not settings.disabled:
+                return True
         return False
 
     def _set_git_diff(self) -> None:

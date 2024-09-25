@@ -134,6 +134,7 @@ class TestEngineUtils(unittest.TestCase):
         self.assertEqual(actual.image, "test.example.com/normal:latest")
         self.assertEqual(actual.disabled, False)
         self.assertEqual(actual.plugin_type, "vulnerability")
+        self.assertEqual(actual.build_images, True)
         self.assertEqual(actual.feature, "unit-test")
         self.assertEqual(actual.timeout, 300)
 
@@ -147,6 +148,7 @@ class TestEngineUtils(unittest.TestCase):
         self.assertEqual(actual.image, "")
         self.assertEqual(actual.disabled, False)
         self.assertEqual(actual.plugin_type, "misc")
+        self.assertEqual(actual.build_images, False)
         self.assertIsNone(actual.feature)
         self.assertIsNone(actual.timeout)
 
