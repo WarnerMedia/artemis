@@ -19,7 +19,10 @@ def clean_output_application_sbom(output: list) -> list:
         if item["type"] == "operating-system":
             continue
         bom_ref = item["bom-ref"]
-        name = item.get("group", "") + item["name"]
+        if "group" in item:
+            name = f'{item["group"]}/{item["name"]}'
+        else:
+            name = item["name"]
         version = item["version"]
         licenses = []
         licenses_list = item.get("licenses", [])
