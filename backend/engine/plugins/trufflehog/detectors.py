@@ -1,6 +1,6 @@
 # Some Trufflehog v3 detectors have overly permissive regular expressions that could lead to creds
-# being sent to unrelated services, so we have an allowlist of detectors that Trufflehog can verify
-# that we have personally audited
+# being sent to unrelated services, so we allowlist the detectors that have been determined to be
+# safe
 verified_detectors_allowlist = [
     "AirbrakeProjectKey",
     "AirbrakeUserKey",
