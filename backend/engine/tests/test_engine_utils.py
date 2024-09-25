@@ -86,17 +86,17 @@ class TestEngineUtils(unittest.TestCase):
         os.environ["TEST_VAR_TRUE"] = "1"
         os.environ["TEST_VAR_FALSE"] = "0"
 
-        test_cases = [
+        test_cases: list[tuple[Any, bool]] = [
             # Test case format: (settings_dict, expected_bool)
-            ({"enabled": True}, False),
-            ({"enabled": False}, True),
-            ({"enabled": "$TEST_VAR_TRUE"}, False),
-            ({"enabled": "$TEST_VAR_FALSE"}, True),
-            ({"enabled": 1}, True),
-            ({"enabled": "string"}, True),
-            ({"enabled": "INVALID"}, True),
-            ({"enabled": "$TEST_VAR_NOT_SET"}, False),
-            ({}, False),
+            (True, False),
+            (False, True),
+            ("$TEST_VAR_TRUE", False),
+            ("$TEST_VAR_FALSE", True),
+            (1, True),
+            ("string", True),
+            ("INVALID", True),
+            ("$TEST_VAR_NOT_SET", False),
+            (None, False),
         ]
 
         for test_case in test_cases:

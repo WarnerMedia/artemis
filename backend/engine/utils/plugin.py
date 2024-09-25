@@ -83,7 +83,7 @@ class PluginSettings(BaseModel):
     @field_validator("disabled", mode="before")
     @classmethod
     def _parse_disabled(cls, orig: Union[str, bool]) -> bool:
-        return is_plugin_disabled({"enabled": orig})
+        return is_plugin_disabled(orig)
 
 
 def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
@@ -215,7 +215,7 @@ def _get_plugin_config(plugin: str, full_repo: str) -> dict:
     return {}
 
 
-def is_plugin_disabled(settings: dict) -> bool:
+def is_plugin_disabled(enabled: Union[str, bool, None]) -> bool:
     """Determines whether the plugin is disabled
 
     The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
@@ -223,8 +223,9 @@ def is_plugin_disabled(settings: dict) -> bool:
     is not set or the ENV VAR is not set the plugin is not disabled. If "enabled" or the ENV VAR is present but set to
     an invalid value the plugin is disabled.
     """
-    # Get the enabled setting, with the plugin enabled by default if not set
-    enabled = settings.get("enabled", True)
+    # Plugin enabled by default if not set
+    if enabled is None:
+        return False
 
     # If already a boolean, return the inverse (enabled -> disabled)
     if isinstance(enabled, bool):
