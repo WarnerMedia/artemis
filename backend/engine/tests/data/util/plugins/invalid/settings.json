@@ -1,0 +1,5 @@
+{
+  "name": null,
+  "type": 1234,
+  "image": ["$ECR/normal:latest"]
+}

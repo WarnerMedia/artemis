@@ -2,6 +2,7 @@ import os
 from typing import Any
 import unittest
 from unittest.mock import patch
+from pydantic import ValidationError
 
 from engine.utils.plugin import (
     PluginSettings,
@@ -154,5 +155,14 @@ class TestEngineUtils(unittest.TestCase):
         """
         Tests an exception is raised when loading a nonexistent settings file.
         """
-        with self.assertRaises(Exception):
+        with self.assertRaises(FileNotFoundError):
             get_plugin_settings("nonexistent")
+
+    @patch("engine.utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_get_plugin_settings_invalid(self):
+        """
+        Tests an exception is raised when loading a malformed settings file.
+        """
+        with self.assertRaises(ValidationError) as ex:
+            get_plugin_settings("invalid")
+        self.assertEqual(ex.exception.error_count(), 3)
