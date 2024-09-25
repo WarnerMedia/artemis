@@ -23,7 +23,7 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
     if available_space is None:
         s = os.statvfs("/cloned_repos")
         available_space = (s.f_frsize * s.f_bavail) / 1024
-    log.error(f"available space ********: {available_space}")
+        log.error(f"available space ********: {available_space} s is,statvfs: {s}")
 
     # The worst repo encountered (so far) is twice the size on disk
     if (repo_size * 2) >= available_space:
