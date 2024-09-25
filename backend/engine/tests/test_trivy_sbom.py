@@ -123,7 +123,7 @@ class TestTrivy(unittest.TestCase):
         cyclone_dx_json = TEST_CHECK_OUTPUT_SBOM_FILE.copy()
         cyclone_dx_json["components"][0]["group"] = "@test-group"
         parsed_json = Trivy.clean_output_application_sbom(cyclone_dx_json)
-        self.assertEqual(parsed_json, cyclone_dx_json)
+        self.assertEqual(parsed_json, TEST_CHECK_OUTPUT_SBOM_FILE_PARSED_WITH_GROUP)
 
 
 @pytest.mark.integtest
