@@ -16,7 +16,7 @@ def retrieve_go_licenses(name: str, _version: str) -> list:
     return extract_licenses(package_info)
 
 
-def get_package_info(name: str) -> dict:
+def get_package_info(name: str) -> str:
     url = f"https://pkg.go.dev/{name}?tab=licenses"
 
     while True:
