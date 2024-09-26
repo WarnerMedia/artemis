@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 from pydantic import ValidationError
 
-from engine.utils.plugin import PluginSettings, get_plugin_settings, match_nonallowlisted_raw_secrets
+from engine.utils.plugin import PluginSettings, Runner, get_plugin_settings, match_nonallowlisted_raw_secrets
 from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -114,6 +114,7 @@ class TestEngineUtils(unittest.TestCase):
         self.assertEqual(actual.disabled, False)
         self.assertEqual(actual.plugin_type, "vulnerability")
         self.assertEqual(actual.build_images, True)
+        self.assertEqual(actual.runner, Runner.CORE)
         self.assertEqual(actual.feature, "unit-test")
         self.assertEqual(actual.timeout, 300)
 
@@ -128,6 +129,7 @@ class TestEngineUtils(unittest.TestCase):
         self.assertEqual(actual.disabled, False)
         self.assertEqual(actual.plugin_type, "misc")
         self.assertEqual(actual.build_images, False)
+        self.assertEqual(actual.runner, Runner.CORE)
         self.assertIsNone(actual.feature)
         self.assertIsNone(actual.timeout)
 
@@ -146,4 +148,4 @@ class TestEngineUtils(unittest.TestCase):
         """
         with self.assertRaises(ValidationError) as ex:
             get_plugin_settings("invalid")
-        self.assertEqual(ex.exception.error_count(), 3)
+        self.assertEqual(ex.exception.error_count(), 4)
