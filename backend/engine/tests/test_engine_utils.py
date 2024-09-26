@@ -4,12 +4,7 @@ import unittest
 from unittest.mock import patch
 from pydantic import ValidationError
 
-from engine.utils.plugin import (
-    PluginSettings,
-    get_plugin_settings,
-    is_plugin_disabled,
-    match_nonallowlisted_raw_secrets,
-)
+from engine.utils.plugin import PluginSettings, get_plugin_settings, match_nonallowlisted_raw_secrets
 from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -52,14 +47,21 @@ class TestPluginSettings(unittest.TestCase):
         """
         Test various allowed inputs on the "enabled" field.
         """
-        # This is a small subset of the test cases from test_plugin_disabled
-        # below, just to make sure that the validator is calling
-        # is_plugin_disabled correctly.
+        # Set the ENV VARs for the test
+        os.environ["TEST_VAR_TRUE"] = "1"
+        os.environ["TEST_VAR_FALSE"] = "0"
+
         test_cases: list[tuple[Any, bool]] = [
+            # input, expected
             (True, False),
             (False, True),
+            ("$TEST_VAR_TRUE", False),
+            ("$TEST_VAR_FALSE", True),
             (1, True),
+            ("string", True),
             ("INVALID", True),
+            ("$TEST_VAR_NOT_SET", False),
+            (None, False),
         ]
         for test_case in test_cases:
             with self.subTest(test_case=test_case):
@@ -80,29 +82,6 @@ class TestEngineUtils(unittest.TestCase):
             keys = list(details.keys())
             keys.sort()
             self.assertEqual(EXPECTED_KEYS, keys)
-
-    def test_plugin_disabled(self):
-        # Set the ENV VARs for the test
-        os.environ["TEST_VAR_TRUE"] = "1"
-        os.environ["TEST_VAR_FALSE"] = "0"
-
-        test_cases: list[tuple[Any, bool]] = [
-            # Test case format: (settings_dict, expected_bool)
-            (True, False),
-            (False, True),
-            ("$TEST_VAR_TRUE", False),
-            ("$TEST_VAR_FALSE", True),
-            (1, True),
-            ("string", True),
-            ("INVALID", True),
-            ("$TEST_VAR_NOT_SET", False),
-            (None, False),
-        ]
-
-        for test_case in test_cases:
-            with self.subTest(test_case=test_case):
-                actual = is_plugin_disabled(test_case[0])
-                self.assertEqual(actual, test_case[1])
 
     def test_match_nonallowlisted_raw_secrets(self):
         allowlist = ["foobar"]

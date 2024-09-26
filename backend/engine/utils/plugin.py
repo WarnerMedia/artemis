@@ -82,8 +82,35 @@ class PluginSettings(BaseModel):
 
     @field_validator("disabled", mode="before")
     @classmethod
-    def _parse_disabled(cls, orig: Union[str, bool]) -> bool:
-        return is_plugin_disabled(orig)
+    def _parse_disabled(cls, enabled: Union[str, bool]) -> bool:
+        """
+        Determines whether the plugin is disabled.
+
+        The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
+        variable (specified by a string starting with $). The environment variable contains either "1" or "0".
+
+        If "enabled" is not set or the ENV VAR is not set the plugin is not disabled.
+        If "enabled" or the ENV VAR is present but set to an invalid value the plugin is disabled.
+        """
+        # Plugin enabled by default if not set
+        if enabled is None:
+            return False
+
+        # If already a boolean, return the inverse (enabled -> disabled)
+        if isinstance(enabled, bool):
+            return not enabled
+
+        # If enabled is an ENV VAR get it
+        if isinstance(enabled, str) and enabled.startswith("$"):
+            # Get the value from the specified ENV VAR and invert it, defaulting to enabled if not set
+            try:
+                return not bool(int(os.environ.get(enabled[1:], "1")))
+            except ValueError:
+                # Invalid value in the ENV VAR so return disabled
+                return True
+
+        # If we get this far then there was an invalid value for the enabled setting and so default to disabled
+        return True
 
 
 def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
@@ -213,35 +240,6 @@ def _get_plugin_config(plugin: str, full_repo: str) -> dict:
 
     # If no match found, return empty dict
     return {}
-
-
-def is_plugin_disabled(enabled: Union[str, bool, None]) -> bool:
-    """Determines whether the plugin is disabled
-
-    The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
-    variable (specified by a string starting with $). The environment variable contains either "1" or "0". If "enabled"
-    is not set or the ENV VAR is not set the plugin is not disabled. If "enabled" or the ENV VAR is present but set to
-    an invalid value the plugin is disabled.
-    """
-    # Plugin enabled by default if not set
-    if enabled is None:
-        return False
-
-    # If already a boolean, return the inverse (enabled -> disabled)
-    if isinstance(enabled, bool):
-        return not enabled
-
-    # If enabled is an ENV VAR get it
-    if isinstance(enabled, str) and enabled.startswith("$"):
-        # Get the value from the specified ENV VAR and invert it, defaulting to enabled if not set
-        try:
-            return not bool(int(os.environ.get(enabled[1:], "1")))
-        except ValueError:
-            # Invalid value in the ENV VAR so return disabled
-            return True
-
-    # If we get this far then there was an invalid value for the enabled setting and so default to disabled
-    return True
 
 
 def run_plugin(
