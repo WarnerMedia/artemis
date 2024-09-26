@@ -2,6 +2,7 @@ import json
 import subprocess
 import uuid
 
+from engine.plugins.trufflehog.detectors import verified_detectors_allowlist
 from engine.plugins.trufflehog.type_normalization import normalize_type
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
@@ -12,6 +13,8 @@ STARTS = {"vendor"}
 
 log = utils.setup_logging("trufflehog")
 
+verified_detectors_allowlist_str = ",".join(verified_detectors_allowlist)
+
 
 def main(in_args=None):
     args = utils.parse_args(
@@ -19,8 +22,12 @@ def main(in_args=None):
     )
 
     error_dict = {"errors": [], "alerts": [], "debug": []}
+    depth = args.engine_vars.get("depth")
 
-    scan_results = run_security_checker(args.path, error_dict, depth=args.engine_vars.get("depth"))
+    verified_results = run_security_checker(args.path, error_dict, verified=True, depth=depth)
+    unverified_results = run_security_checker(args.path, error_dict, verified=False, depth=depth)
+    scan_results = verified_results + unverified_results
+
     cleaned_results = scrub_results(scan_results, error_dict)
 
     # Print the results to stdout
@@ -109,21 +116,32 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
     return {"results": cleaned_records, "event_info": event_info}
 
 
-def run_security_checker(scan_path: str, error_dict: dict, depth=None) -> list:
+def run_security_checker(scan_path: str, error_dict: dict, verified: bool, depth=None) -> list:
     log.info("Running trufflehog (depth limit: %s)", depth)
 
-    if depth:
-        cmd = [
-            "trufflehog",
-            "git",
-            "--json",
-            "--no-update",
-            "--max_depth",
-            str(depth),
-            "file://.",
-        ]
+    cmd = [
+        "trufflehog",
+        "git",
+        "--json",
+        "--no-update",
+    ]
+
+    # We do not want to run the same detector twice, so verified=true runs only the detectors we
+    # want to verify and verified=false runs only the detectors we do not want to verify
+    if verified:
+        cmd.append("--include-detectors")
+        cmd.append(verified_detectors_allowlist_str)
     else:
-        cmd = ["trufflehog", "git", "--json", "--no-update", "file://."]
+        cmd.append("--no-verification")
+
+        cmd.append("--exclude-detectors")
+        cmd.append(verified_detectors_allowlist_str)
+
+    if depth:
+        cmd.append("--max_depth")
+        cmd.append(str(depth))
+
+    cmd.append("file://.")
 
     proc_results = subprocess.run(cmd, cwd=scan_path, capture_output=True, check=False)
 

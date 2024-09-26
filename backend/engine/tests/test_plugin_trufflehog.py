@@ -8,6 +8,7 @@ from mock import MagicMock, patch
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.secrets_common.enums import SecretValidity
+from engine.plugins.trufflehog.detectors import verified_detectors_allowlist
 from engine.plugins.trufflehog import main as trufflehog
 
 EXAMPLE_EMAIL = "email@example.com"
@@ -160,10 +161,60 @@ class TestPluginTrufflehog(unittest.TestCase):
         mock_output.stdout = test
         subproc.run.return_value = mock_output
 
-        actual = trufflehog.run_security_checker(utils.CODE_DIRECTORY, errors_dict)
+        actual = trufflehog.run_security_checker(utils.CODE_DIRECTORY, errors_dict, verified=True)
         expected = [EXAMPLE_FINDING]
 
         self.assertEqual(actual, expected)
+
+    @patch("engine.plugins.trufflehog.main.subprocess")
+    def test_run_security_checker_verified_true(self, subproc):
+        dummy_output = f"{json.dumps(EXAMPLE_FINDING)}\n".encode("utf-8")
+        errors_dict = {
+            "errors": [],
+            "alerts": [],
+            "debug": [],
+        }
+
+        mock_output = MagicMock()
+        mock_output.stdout = dummy_output
+        subproc.run.return_value = mock_output
+
+        expected_param = "--include-detectors"
+        expected_detectors = ",".join(verified_detectors_allowlist)
+
+        trufflehog.run_security_checker(utils.CODE_DIRECTORY, errors_dict, verified=True)
+
+        subproc_args = subproc.run.call_args.args
+        cmd = subproc_args[0]
+
+        self.assertIn(expected_param, cmd)
+        self.assertIn(expected_detectors, cmd)
+
+    @patch("engine.plugins.trufflehog.main.subprocess")
+    def test_run_security_checker_verified_false(self, subproc):
+        dummy_output = f"{json.dumps(EXAMPLE_FINDING)}\n".encode("utf-8")
+        errors_dict = {
+            "errors": [],
+            "alerts": [],
+            "debug": [],
+        }
+
+        mock_output = MagicMock()
+        mock_output.stdout = dummy_output
+        subproc.run.return_value = mock_output
+
+        expected_param_1 = "--no-verification"
+        expected_param_2 = "--exclude-detectors"
+        expected_detectors = ",".join(verified_detectors_allowlist)
+
+        trufflehog.run_security_checker(utils.CODE_DIRECTORY, errors_dict, verified=False)
+
+        subproc_args = subproc.run.call_args.args
+        cmd = subproc_args[0]
+
+        self.assertIn(expected_param_1, cmd)
+        self.assertIn(expected_param_2, cmd)
+        self.assertIn(expected_detectors, cmd)
 
     @patch("engine.plugins.trufflehog.main.SystemAllowList._load_al")
     def test_run_scrub_results(self, mock_load_al):
