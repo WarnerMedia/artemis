@@ -29,7 +29,7 @@ resource "aws_lambda_function" "callback" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-api"
+        DD_SERVICE        = "${var.app}-scans"
       }, var.datadog_environment_variables)
     : {})
   }

@@ -3,11 +3,11 @@ import os
 from base64 import b64decode
 from datetime import datetime, timezone
 from string import Template
-from typing import Tuple
+from typing import Optional, Union
 
 import boto3
 from botocore.exceptions import ClientError
-from django.db.models import Q, QuerySet
+from django.db.models import Q
 
 from artemisdb.artemisdb.consts import AllowListType, PluginType
 from artemisdb.artemisdb.models import RepoVulnerabilityScan
@@ -224,7 +224,7 @@ class EngineProcessor:
             self.action_details.alter_diff_to_default()
         return success
 
-    def _get_metadata(self) -> Tuple[dict, dict]:
+    def _get_metadata(self) -> tuple[dict, dict]:
         return get_all_metadata(
             self.service_dict["application_metadata"],
             self.details.service,
@@ -453,7 +453,7 @@ def use_hostname_or_url(service: str, url: str, service_dict: dict) -> str:
     return url
 
 
-def handle_key(key, service_type, service_key) -> str or None:
+def handle_key(key: Union[str, bytes], service_type: str, service_key: Optional[str]) -> Optional[str]:
     """
     The api key sometimes needs to be altered in order to be accepted by the service.
     :param key: api key for the service
@@ -463,7 +463,7 @@ def handle_key(key, service_type, service_key) -> str or None:
     :return: unaltered or altered key, or None if there was an issue.
     """
     if not service_key:
-        return key
+        return str(key)
     if service_key != "other":
         return Template(service_key).substitute(key=key)
     if service_type == "bitbucket":
