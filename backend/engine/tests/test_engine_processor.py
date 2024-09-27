@@ -18,6 +18,7 @@ from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_METADATA = os.path.join(TEST_DIR, "data/metadata.json")
+PLUGIN_TEST_BASE_DIR = os.path.join(TEST_DIR, "data", "util")
 
 SERVICES_FILE = os.path.join(TEST_DIR, "data", "services.json")
 
@@ -44,18 +45,21 @@ class TestEngineProcessor(unittest.TestCase):
         self.assertIsInstance(processor.details, Details)
         self.assertIsInstance(processor.action_details, ScanDetails)
 
-    def test_engine_processor_docker_image_required_true(self):
-        pytest.xfail("Trivy plugin is temporarily disabled due to unexpected vulns reporting.")
+    @patch("utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    @patch("processor.scan_details.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_engine_processor_docker_images_required_true(self):
         details = deepcopy(TEST_DETAILS)
-        details["plugins"] = ["test", "tslint", "test", "trivy"]
+        details["plugins"] = ["minimal", "normal"]
         processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", details, {}, object)
         expected_result = True
         result = processor.docker_images_required()
         self.assertEqual(expected_result, result)
 
-    def test_engine_processor_docker_image_required_false(self):
+    @patch("utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    @patch("processor.scan_details.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_engine_processor_docker_images_required_false(self):
         details = deepcopy(TEST_DETAILS)
-        details["plugins"] = ["test", "tslint"]
+        details["plugins"] = ["minimal"]
         processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", details, {}, object)
         expected_result = False
         result = processor.docker_images_required()
