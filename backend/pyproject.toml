@@ -35,3 +35,45 @@ known_first_party = [
     "scale_down",
     "json_report"
 ]
+
+[tool.pyright]
+pythonVersion = "3.9"
+typeCheckingMode = "standard"
+include = [
+    "engine",
+    "lambdas",
+    "libs",
+    "utilities",
+]
+exclude = [
+    "**/.eggs",
+    "**/build",
+    "**/dist",
+]
+extraPaths = [
+    "engine",
+    "lambdas/api/authorizer",
+    "lambdas/api/groups",
+    "lambdas/api/groups_keys",
+    "lambdas/api/groups_members",
+    "lambdas/api/repo",
+    "lambdas/api/system_services",
+    "lambdas/api/users",
+    "lambdas/api/users_keys",
+    "lambdas/api/users_services",
+    "lambdas/events/event_dispatch",
+    "lambdas/events/splunk_handler",
+    "lambdas/generators/json_report",
+    "lambdas/generators/sbom_report",
+    "lambdas/scheduled/scan_scheduler",
+    "libs/artemisapi",
+    "libs/artemisdb",
+    "libs/artemislib",
+]
+ignore = [
+    # Type checking for Django models is currently problematic.
+    "libs/artemisdb/artemisdb/artemisdb/models.py",
+]
+executionEnvironments = [
+    { root = "utilities/api_runner", extraPaths = ["lambdas/api"] },
+]
