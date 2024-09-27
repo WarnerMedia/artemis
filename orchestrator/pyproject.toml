@@ -16,3 +16,20 @@ known_first_party = [
     "repo_scan_loop",
     "lambdas"
 ]
+
+[tool.pyright]
+pythonVersion = "3.9"
+typeCheckingMode = "standard"
+include = [
+    "lambdas",
+]
+exclude = [
+    "**/.eggs",
+    "**/build",
+    "**/dist",
+]
+extraPaths = [
+    "lambdas/layers/heimdall_orgs",
+    "lambdas/layers/heimdall_repos",
+    "lambdas/layers/heimdall_utils",
+]
