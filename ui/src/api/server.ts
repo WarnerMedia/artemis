@@ -100,10 +100,10 @@ export function makeServer() {
 		routes() {
 			this.namespace = process.env.REACT_APP_API_NAMESPACE || "/api";
 
-			// add request delay in dev, NOT in test
-			if (process.env.NODE_ENV === "development") {
-				this.timing = AppGlobals.APP_DEV_REQUEST_DELAY; // enable API response delay to slow down ALL the API requests to view UI progress bars, animations
-			}
+			// // add request delay in dev, NOT in test
+			// if (process.env.NODE_ENV === "development") {
+			// 	this.timing = AppGlobals.APP_DEV_REQUEST_DELAY; // enable API response delay to slow down ALL the API requests to view UI progress bars, animations
+			// }
 
 			// passing-in a userIndex will return a (non-random) user from the list
 			// otherwise, a random user will be returned
@@ -654,6 +654,22 @@ export function makeServer() {
 					updated_by: defaultEmail,
 					updated: "2021-02-02T14:02:02Z",
 				},
+				{
+					id: generateId(),
+					type: "secret",
+					value: {
+						filename: "pull_request_title",
+						line: 0,
+						commit: "",
+						location: "pull_request_title"
+					},
+					expires: null,
+					reason: "test secret in pull request",
+					created_by: defaultEmail,
+					created: "2021-01-01T13:01:01Z",
+					updated_by: defaultEmail,
+					updated: "2021-02-02T14:02:02Z",
+				},
 				// expired hidden finding
 				{
 					id: generateId(),
@@ -1103,6 +1119,36 @@ export function makeServer() {
 								},
 							],
 						},
+					],
+					"discussion_comment": [
+						{
+							type: "slack_api_token",
+							line: 0,
+							commit: "",
+							details: [
+								{
+									type: "slack_api_token",
+									validity: "inactive",
+									source: "GitHub Advanced Security Secrets",
+									location: "discussion_comment"
+								}
+							]
+						}
+					],
+					"pull_request_review": [
+						{
+							type: "slack_api_token",
+							line: 0,
+							commit: "",
+							details: [
+								{
+									type: "slack_api_token",
+									validity: "inactive",
+									source: "GitHub Advanced Security Secrets",
+									location: "pull_request_review"
+								}
+							]
+						}
 					],
 					"/path/postgres.pass": [
 						{
