@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 import os
 import subprocess
 from dataclasses import dataclass
@@ -42,6 +43,17 @@ log = Logger(__name__)
 UI_SECRETS_TAB_INDEX = 3
 
 
+class Runner(str, Enum):
+    """
+    Defines which method will be used to run a plugin.
+
+    There is only a single method currently; this is a placeholder for future experiments
+    and is validated to catch accidental incompatibilities.
+    """
+
+    CORE = "core"
+
+
 @dataclass
 class Result:
     name: str
@@ -69,6 +81,7 @@ class PluginSettings(BaseModel):
     build_images: bool = False
     feature: Optional[str] = None
     timeout: Optional[int] = None
+    runner: Runner = Runner.CORE
 
     @field_validator("image", mode="after")
     @classmethod
@@ -302,7 +315,7 @@ def run_plugin(
     plugin_config = _get_plugin_config(plugin, full_repo)
 
     plugin_command = get_plugin_command(
-        scan, settings.image, plugin, depth, include_dev, scan_images, plugin_config, services
+        scan, plugin, settings, depth, include_dev, scan_images, plugin_config, services
     )
 
     try:
@@ -597,8 +610,8 @@ def get_iso_timestamp() -> str:
 
 def get_plugin_command(
     scan: Scan,
-    image: str,
     plugin: str,
+    settings: PluginSettings,
     depth: Optional[str],
     include_dev: bool,
     scan_images,
@@ -676,9 +689,19 @@ def get_plugin_command(
             f"ARTEMIS_REVPROXY_SECRET={REV_PROXY_SECRET}",
             "-e",
             f"ARTEMIS_LOG_LEVEL={LOG_LEVEL}",
-            image,
-            "python",
-            "/srv/engine/plugins/%s/main.py" % plugin,
+            settings.image,
+        ]
+    )
+
+    if settings.runner == Runner.CORE:
+        # Run the plugin using the container's system Python.
+        cmd.extend(["python", f"/srv/engine/plugins/{plugin}/main.py"])
+    else:
+        raise ValueError(f"Runner is not supported: {settings.runner}")
+
+    # Arguments passed to the plugin.
+    cmd.extend(
+        [
             get_engine_vars(scan, depth=depth, include_dev=include_dev, services=services),
             json.dumps(scan_images),
             json.dumps(plugin_config),
