@@ -28,10 +28,8 @@ class ScanDetails:
 def _get_plugins(plugin_path, requested_plugins):
     # get the list of total plugins from this directory, excluding files and
     # lib directory
-
     dirs = os.listdir(plugin_path)
-    plugins = [d for d in dirs if os.path.isdir(os.path.join(plugin_path, d))]
-    plugins.remove("lib")  # skip the lib directory which is not a plugin
+    plugins = [d for d in dirs if os.path.isdir(os.path.join(plugin_path, d)) and d != "lib"]
     plugins = set(plugins)
     # allow users to specify a list of specific plugins to include or (if
     # prepended with a '-') to exclude

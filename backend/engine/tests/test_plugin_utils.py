@@ -4,7 +4,7 @@ from engine.plugins.lib import utils
 logger = utils.setup_logging("test_utils")
 
 
-class TestUtils(unittest.TestCase):
+class TestPluginUtils(unittest.TestCase):
     def test_parse_args(self):
         in_args = ['{"foo": "bar"}', "/work/base", "--test=foo"]
 

@@ -1,0 +1,10 @@
+{
+  "name": "Test Plugin",
+  "type": "vulnerability",
+  "image": "$ECR/normal:latest",
+  "feature": "unit-test",
+  "build_images": true,
+  "runner": "core",
+  "enabled": true,
+  "timeout": 300
+}

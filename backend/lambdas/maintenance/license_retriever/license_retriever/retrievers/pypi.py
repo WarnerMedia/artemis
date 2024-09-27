@@ -152,7 +152,6 @@ PYPI_LICENSE_MAP = {
     "aal": "Attribution Assurance License",
     "bsd": "BSD License",
     "common": "Common Public License",
-    "efl": "Eiffel Forum License",
     "gfdl": "GNU Free Documentation License",
     "gpl": "GNU General Public License",
     "lgpl": "GNU Library or Lesser General Public License",

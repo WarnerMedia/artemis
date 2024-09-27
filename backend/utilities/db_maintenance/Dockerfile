@@ -1,7 +1,7 @@
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.9-bullseye as builder
+FROM python:3.9-bullseye AS builder
 
 WORKDIR /src
 
@@ -14,7 +14,7 @@ ENV PATH="/venv/bin:$PATH"
 # Create the venv
 RUN python -m venv /venv
 
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
