@@ -15,7 +15,7 @@ class FindingDetails:
     type: str
     validity: str
     source: str
-    location: str
+    url: str
 
     def to_dict(self):
         return asdict(self)
@@ -95,7 +95,7 @@ def get_secrets(scan, params):
                 type=finding.get("type"),
                 validity=finding.get("validity"),
                 source=plugin.plugin_name,
-                location=finding.get("location"),
+                url=finding.get("url"),
             )
 
             item = SecretFinding(
