@@ -96,7 +96,7 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
 
             if allowlist.ignore_secret(path, finding_raw):
                 # No matches remaining so skip the finding altogether
-                log.info("Skipping secret that matched system allowlist in file '%s'", record["path"])
+                log.info("Skipping secret that matched system allowlist in file '%s'", path)
                 continue
 
             record_json = {
