@@ -41,7 +41,7 @@ def format_secret(
         if location["type"] == "wiki_commit":
             filename = location["details"]["path"]
             line = location["details"]["start_line"]
-            commit = location["details"]["commit_sha"]
+            url = location["details"]["page_url"]
 
         if location["type"] == "discussion_title":
             url = location["details"]["discussion_title_url"]

@@ -564,13 +564,13 @@ class TestGenerateReport(unittest.TestCase):
                                 "type": SECRET_TYPE_1,
                                 "validity": "unknown",
                                 "source": SECRET_PLUGIN_NAME,
-                                "location": None,
+                                "url": None,
                             },
                             {
                                 "type": SECRET_TYPE_2,
                                 "validity": "active",
                                 "source": SECRET_PLUGIN_NAME,
-                                "location": None,
+                                "url": None,
                             },
                         ],
                     }
@@ -608,13 +608,13 @@ class TestGenerateReport(unittest.TestCase):
                                 "type": SECRET_TYPE_1,
                                 "validity": "unknown",
                                 "source": SECRET_PLUGIN_NAME,
-                                "location": None,
+                                "url": None,
                             },
                             {
                                 "type": SECRET_TYPE_1,
                                 "validity": "active",
                                 "source": SECRET_PLUGIN_NAME,
-                                "location": None,
+                                "url": None,
                             },
                         ],
                     }
@@ -648,7 +648,7 @@ class TestGenerateReport(unittest.TestCase):
                                 "type": SECRET_TYPE_1,
                                 "validity": "active",
                                 "source": SECRET_PLUGIN_NAME,
-                                "location": None,
+                                "url": None,
                             }
                         ],
                     }
@@ -663,7 +663,7 @@ class TestGenerateReport(unittest.TestCase):
                                 "type": SECRET_TYPE_2,
                                 "validity": "inactive",
                                 "source": SECRET_PLUGIN_NAME,
-                                "location": None,
+                                "url": None,
                             }
                         ],
                     }
