@@ -1,18 +1,20 @@
 import json
+from enum import Enum
 import os
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fnmatch import fnmatch
-from typing import Tuple
+from typing import Optional, Union
 from urllib.parse import quote_plus
 
 import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
+from pydantic import BaseModel, Field, field_validator
 
-from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType
+from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
 from artemislib.github.app import GITHUB_APP_ID
 from artemislib.logging import Logger, LOG_LEVEL
 from artemislib.util import dict_eq
@@ -41,6 +43,17 @@ log = Logger(__name__)
 UI_SECRETS_TAB_INDEX = 3
 
 
+class Runner(str, Enum):
+    """
+    Defines which method will be used to run a plugin.
+
+    There is only a single method currently; this is a placeholder for future experiments
+    and is validated to catch accidental incompatibilities.
+    """
+
+    CORE = "core"
+
+
 @dataclass
 class Result:
     name: str
@@ -54,17 +67,66 @@ class Result:
     disabled: bool = False
 
 
-@dataclass
-class PluginSettings:
-    image: str
-    disabled: bool
+class PluginSettings(BaseModel):
+    """
+    Plugin description, loaded from the settings.json of the plugin.
+
+    Only the "name" field is required, all other fields are optional.
+    """
+
     name: str
-    plugin_type: str
-    feature: str
-    timeout: int
+    image: str = ""
+    disabled: bool = Field(alias="enabled", default=False)
+    plugin_type: str = Field(alias="type", default="misc")
+    build_images: bool = False
+    feature: Optional[str] = None
+    timeout: Optional[int] = None
+    runner: Runner = Runner.CORE
+
+    @field_validator("image", mode="after")
+    @classmethod
+    def _parse_image(cls, orig: str) -> str:
+        image = orig.replace("$ECR", ECR)
+
+        if image.startswith("/"):
+            image = image[1:]
+
+        return image
+
+    @field_validator("disabled", mode="before")
+    @classmethod
+    def _parse_disabled(cls, enabled: Union[str, bool]) -> bool:
+        """
+        Determines whether the plugin is disabled.
+
+        The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
+        variable (specified by a string starting with $). The environment variable contains either "1" or "0".
+
+        If "enabled" is not set or the ENV VAR is not set the plugin is not disabled.
+        If "enabled" or the ENV VAR is present but set to an invalid value the plugin is disabled.
+        """
+        # Plugin enabled by default if not set
+        if enabled is None:
+            return False
+
+        # If already a boolean, return the inverse (enabled -> disabled)
+        if isinstance(enabled, bool):
+            return not enabled
+
+        # If enabled is an ENV VAR get it
+        if isinstance(enabled, str) and enabled.startswith("$"):
+            # Get the value from the specified ENV VAR and invert it, defaulting to enabled if not set
+            try:
+                return not bool(int(os.environ.get(enabled[1:], "1")))
+            except ValueError:
+                # Invalid value in the ENV VAR so return disabled
+                return True
+
+        # If we get this far then there was an invalid value for the enabled setting and so default to disabled
+        return True
 
 
-def get_engine_vars(scan, depth=None, include_dev=False, services=None):
+def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
     """
     Returns a json str that can be converted back to a dict by the plugin.
     The object will container information known to the engine
@@ -92,7 +154,7 @@ def get_engine_vars(scan, depth=None, include_dev=False, services=None):
     )
 
 
-def get_ecr_login_cmd():
+def get_ecr_login_cmd() -> Optional[list[str]]:
     log.info("Logging into ECR")
     login_command_response = subprocess.run(
         [
@@ -113,7 +175,7 @@ def get_ecr_login_cmd():
     return login_command_response.stdout.decode("utf-8").strip().split(" ")
 
 
-def pull_image(image):
+def pull_image(image: str):
     # Try to pull the latest image
     if execute_docker_pull(image, not ECR):
         # Success, return no error
@@ -144,7 +206,7 @@ def pull_image(image):
     return None
 
 
-def execute_docker_pull(image, log_error) -> bool:
+def execute_docker_pull(image: str, log_error: bool) -> bool:
     """
     Executes docker pull [image]
     if the return code is not 0, there was an error.
@@ -168,26 +230,7 @@ def get_plugin_settings(plugin: str) -> PluginSettings:
     settings_path = os.path.join(plugin_path, "settings.json")
 
     with open(settings_path) as f:
-        settings = json.loads(f.read())
-        image = settings.get("image", "")
-
-        return PluginSettings(
-            image=_fix_image_path(image),
-            disabled=is_plugin_disabled(settings),
-            name=settings.get("name"),
-            plugin_type=settings.get("type", "misc"),
-            feature=settings.get("feature"),
-            timeout=settings.get("timeout"),
-        )
-
-
-def _fix_image_path(image_path: str) -> str:
-    image = image_path.replace("$ECR", ECR)
-
-    if image.startswith("/"):
-        image = image[1:]
-
-    return image
+        return PluginSettings.model_validate_json(f.read())
 
 
 def _get_plugin_config(plugin: str, full_repo: str) -> dict:
@@ -212,35 +255,15 @@ def _get_plugin_config(plugin: str, full_repo: str) -> dict:
     return {}
 
 
-def is_plugin_disabled(settings: dict) -> bool:
-    """Determines whether the plugin is disabled
-
-    The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
-    variable (specified by a string starting with $). The environment variable contains either "1" or "0". If "enabled"
-    is not set or the ENV VAR is not set the plugin is not disabled. If "enabled" or the ENV VAR is present but set to
-    an invalid value the plugin is disabled.
-    """
-    # Get the enabled setting, with the plugin enabled by default if not set
-    enabled = settings.get("enabled", True)
-
-    # If already a boolean, return the inverse (enabled -> disabled)
-    if isinstance(enabled, bool):
-        return not enabled
-
-    # If enabled is an ENV VAR get it
-    if isinstance(enabled, str) and enabled.startswith("$"):
-        # Get the value from the specified ENV VAR and invert it, defaulting to enabled if not set
-        try:
-            return not bool(int(os.environ.get(enabled[1:], "1")))
-        except ValueError:
-            # Invalid value in the ENV VAR so return disabled
-            return True
-
-    # If we get this far then there was an invalid value for the enabled setting and so default to disabled
-    return True
-
-
-def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, features=None, services=None) -> Result:
+def run_plugin(
+    plugin: str,
+    scan: Scan,
+    scan_images,
+    depth: Optional[str] = None,
+    include_dev=False,
+    features=None,
+    services=None,
+) -> Result:
     if features is None:
         features = {}
 
@@ -292,7 +315,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
     plugin_config = _get_plugin_config(plugin, full_repo)
 
     plugin_command = get_plugin_command(
-        scan, settings.image, plugin, depth, include_dev, scan_images, plugin_config, services
+        scan, plugin, settings, depth, include_dev, scan_images, plugin_config, services
     )
 
     try:
@@ -317,6 +340,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
 
     try:
         plugin_output = json.loads(r.stdout)
+        # TODO: Validate plugin output is a dict.
 
         if "event_info" in plugin_output:
             # Process event info by sending them to a locked down SQS queue so that the results can be
@@ -366,7 +390,7 @@ def run_plugin(plugin, scan, scan_images, depth=None, include_dev=False, feature
     )
 
 
-def process_event_info(scan, results, plugin_type, plugin_name):
+def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
     if plugin_type == PluginType.SECRETS.value and SECRETS_EVENTS_ENABLED:
@@ -450,7 +474,7 @@ def process_event_info(scan, results, plugin_type, plugin_name):
             queue_event(scan.repo.repo, plugin_type, payload)
 
 
-def queue_event(repo, plugin_type, payload):
+def queue_event(repo: str, plugin_type: str, payload: dict):
     log.info("Queuing %s event for %s", plugin_type, repo)
     try:
         sqs = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=REGION)
@@ -460,7 +484,11 @@ def queue_event(repo, plugin_type, payload):
 
 
 def get_secret_raw_wl(scan):
-    # Get the non-expired secret_raw whitelist for the repo and convert it into a list of the whitelisted strings
+    # Note: scan type is unspecified until we enable typechecking Django models.
+    """
+    Get the non-expired secret_raw whitelist for the repo and convert it into
+    a list of the whitelisted strings.
+    """
     from artemisdb.artemisdb.consts import (
         AllowListType,  # pylint: disable=import-outside-toplevel
     )
@@ -475,7 +503,10 @@ def get_secret_raw_wl(scan):
 
 
 def get_secret_al(scan):
-    # Get the non-expired secret whitelist for the repo and convert it into a list
+    # Note: scan type is unspecified until we enable typechecking Django models.
+    """
+    Get the non-expired secret whitelist for the repo and convert it into a list.
+    """
     from artemisdb.artemisdb.consts import (
         AllowListType,  # pylint: disable=import-outside-toplevel
     )
@@ -486,8 +517,10 @@ def get_secret_al(scan):
     )
 
 
-def filter_raw_secrets(scan, plugin_output):
-    # Get the raw secrets whitelists for this repo as a list of strings
+def filter_raw_secrets(scan: Scan, plugin_output: dict) -> dict:
+    """
+    Get the raw secrets whitelists for this repo as a list of strings.
+    """
     secret_al = get_secret_raw_wl(scan)
 
     details = plugin_output.get("details", [])
@@ -519,8 +552,10 @@ def filter_raw_secrets(scan, plugin_output):
     return plugin_output
 
 
-def filter_secrets(scan, plugin_output):
-    # Get the secrets whitelists for this repo
+def filter_secrets(scan: Scan, plugin_output: dict):
+    """
+    Get the secrets whitelists for this repo.
+    """
     secret_al = get_secret_al(scan)
 
     details = plugin_output.get("details", [])
@@ -544,7 +579,7 @@ def filter_secrets(scan, plugin_output):
     return {"details": filtered_details, "event_info": event_info}
 
 
-def match_nonallowlisted_raw_secrets(allowlist: list, matches: Tuple[str, list]) -> list:
+def match_nonallowlisted_raw_secrets(allowlist: list, matches: Union[str, list]) -> list:
     if not isinstance(matches, list):
         matches = [matches]
 
@@ -569,11 +604,20 @@ def match_nonallowlisted_secrets(allow_list, item):
     return True
 
 
-def get_iso_timestamp():
+def get_iso_timestamp() -> str:
     return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
 
 
-def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plugin_config, services):
+def get_plugin_command(
+    scan: Scan,
+    plugin: str,
+    settings: PluginSettings,
+    depth: Optional[str],
+    include_dev: bool,
+    scan_images,
+    plugin_config,
+    services,
+) -> list[str]:
     profile = os.environ.get("AWS_PROFILE")
     cmd = [
         "docker",
@@ -645,9 +689,19 @@ def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plu
             f"ARTEMIS_REVPROXY_SECRET={REV_PROXY_SECRET}",
             "-e",
             f"ARTEMIS_LOG_LEVEL={LOG_LEVEL}",
-            image,
-            "python",
-            "/srv/engine/plugins/%s/main.py" % plugin,
+            settings.image,
+        ]
+    )
+
+    if settings.runner == Runner.CORE:
+        # Run the plugin using the container's system Python.
+        cmd.extend(["python", f"/srv/engine/plugins/{plugin}/main.py"])
+    else:
+        raise ValueError(f"Runner is not supported: {settings.runner}")
+
+    # Arguments passed to the plugin.
+    cmd.extend(
+        [
             get_engine_vars(scan, depth=depth, include_dev=include_dev, services=services),
             json.dumps(scan_images),
             json.dumps(plugin_config),
@@ -657,7 +711,7 @@ def get_plugin_command(scan, image, plugin, depth, include_dev, scan_images, plu
     return cmd
 
 
-def get_plugin_list():
+def get_plugin_list() -> list[str]:
     return sorted([e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if e.name != "lib" and e.is_dir()])
 
 

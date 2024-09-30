@@ -1,0 +1,10 @@
+{
+  "dockerfile_count": 1,
+  "results": [
+    {
+      "status": true,
+      "tag-id": "example-latest-i-12345678",
+      "dockerfile": "Dockerfile"
+    }
+  ]
+}

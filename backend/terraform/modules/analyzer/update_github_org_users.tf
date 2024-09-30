@@ -38,7 +38,7 @@ resource "aws_lambda_function" "update_github_org_users" {
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
-        DD_SERVICE        = "${var.app}-scheduled-events"
+        DD_SERVICE        = "${var.app}-scheduled"
       }, var.datadog_environment_variables)
     : {})
   }
