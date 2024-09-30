@@ -23,12 +23,12 @@ FROM python:$ENGINE_BASE AS app
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-RUN mkdir -p /srv/engine \
-    && mkdir -p /src
+RUN mkdir -p /srv/engine
 
-COPY Pipfile ./
-COPY Pipfile.lock ./
-COPY ./libs/ /src/
+WORKDIR /src
+COPY libs/ .
+COPY Pipfile .
+COPY Pipfile.lock .
 
 # Copy over the apt config from the builder that has the Docker repository
 # already set up.
