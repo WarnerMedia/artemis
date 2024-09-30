@@ -3,9 +3,10 @@ ARG ENGINE_BASE=3.9-slim-bullseye
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.9-bullseye as builder
+FROM python:3.9-bullseye AS builder
 
 # Install the Docker repository
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install lsb-release software-properties-common -y --no-install-recommends \
     && apt-get clean \
@@ -17,7 +18,7 @@ RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python:$ENGINE_BASE as app
+FROM python:$ENGINE_BASE AS app
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -38,7 +39,7 @@ COPY --from=builder /etc/apt /etc/apt
 # - Install Engine prerequisites
 # - Install Pipenv environment
 # - Install Artemis libraries
-# hadolint ignore=DL3013
+# hadolint ignore=DL3008,DL3013
 RUN apt-get update \
     && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
     && apt-get upgrade -y \
