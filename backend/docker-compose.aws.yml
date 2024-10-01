@@ -15,6 +15,7 @@ services:
         awslogs-group: ${LOG_GROUP}
         tag: engine-${INSTANCE_ID}-{{.ID}}
         awslogs-datetime-format: "\\[%Y\\-%m\\-%d %H:%M:%S\\]"
+        awslogs-format: "json"
   db_maint:
     image: "${ECR}/${APPLICATION}/db_maintenance:latest"
     container_name: "db_maint"
