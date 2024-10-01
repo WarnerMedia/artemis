@@ -72,6 +72,16 @@ TEST_CHECK_OUTPUT_SBOM_FILE_PARSED = [
     {"bom-ref": "pkg", "name": "test", "version": "0.16.2", "licenses": [{"id": "MIT", "name": "MIT"}], "type": "npm"}
 ]
 
+TEST_CHECK_OUTPUT_SBOM_FILE_PARSED_WITH_GROUP = [
+    {
+        "bom-ref": "pkg",
+        "name": "@test-group/test",
+        "version": "0.16.2",
+        "licenses": [{"id": "MIT", "name": "MIT"}],
+        "type": "npm",
+    }
+]
+
 TEST_BUILD_SCAN_PARSE_RESULT_DICT = {
     "component": "libcrypto1.1-1.1.1g-r0",
     "source": "/image/test_file_for_docker",
@@ -107,7 +117,13 @@ class TestTrivy(unittest.TestCase):
 
     def test_parser(self):
         check_parsed_output = Trivy.clean_output_application_sbom(TEST_CHECK_OUTPUT_SBOM_FILE)
-        assert check_parsed_output == TEST_CHECK_OUTPUT_SBOM_FILE_PARSED
+        self.assertEqual(check_parsed_output, TEST_CHECK_OUTPUT_SBOM_FILE_PARSED)
+
+    def test_parser_with_group_field(self):
+        cyclone_dx_json = TEST_CHECK_OUTPUT_SBOM_FILE.copy()
+        cyclone_dx_json["components"][0]["group"] = "@test-group"
+        parsed_json = Trivy.clean_output_application_sbom(cyclone_dx_json)
+        self.assertEqual(parsed_json, TEST_CHECK_OUTPUT_SBOM_FILE_PARSED_WITH_GROUP)
 
 
 @pytest.mark.integtest

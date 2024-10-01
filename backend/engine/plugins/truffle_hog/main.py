@@ -60,7 +60,8 @@ def secret_type(reason: str) -> str:
     elif reason.startswith("Slack "):
         return "slack"
     else:
-        return reason
+        # Types must be all lowercase
+        return reason.lower()
 
 
 def commit_author(scan_path: str, commit: str) -> tuple:

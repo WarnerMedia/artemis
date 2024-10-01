@@ -33,17 +33,14 @@ RUN wget -q https://github.com/awslabs/git-secrets/archive/$GIT_SECRETS_VER.tar.
     tar xzf $GIT_SECRETS_VER.tar.gz && \
     cd git-secrets-$GIT_SECRETS_VER && \
     make install && \
-    git secrets --register-aws --global && \
     cd .. && \
     rm -rf git-secrets-$GIT_SECRETS_VER $GIT_SECRETS_VER.tar.gz
 
 # Copy git secret patterns file
 COPY Dockerfiles/data/secret-patterns /app/secret-patterns
 
-# Target the search to just AWS key IDs and secret key banners
 # This assumes that the repo you are testing git secrets is in the /app directory
-RUN git config --unset-all --global secrets.patterns && \
-    git secrets --add-provider --global -- cat secret-patterns
+RUN git secrets --add-provider --global -- cat secret-patterns
 
 # Alpine uses musl instead of glibc at runtime.
 RUN apk -q del gcc

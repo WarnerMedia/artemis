@@ -5,6 +5,7 @@ _POSTGRES_TYPES = ["Postgres"]
 _GOOGLE_TYPES = ["GoogleOauth2", "GoogleApiKey", "GCPApplicationDefaultCredentials", "GCP"]
 _REDIS_TYPES = ["Redis"]
 _SLACK_TYPES = ["Slack", "SlackWebhook"]
+_URLAUTH_TYPES = ["URI"]
 
 
 def get_type_normalization_table() -> dict[str, str]:
@@ -31,6 +32,9 @@ def get_type_normalization_table() -> dict[str, str]:
     for name in _SLACK_TYPES:
         table[name] = "slack"
 
+    for name in _URLAUTH_TYPES:
+        table[name] = "urlauth"
+
     return table
 
 
@@ -41,4 +45,5 @@ def normalize_type(finding_type: str) -> str:
     if finding_type in _TYPE_NORMALIZATION_TABLE:
         return _TYPE_NORMALIZATION_TABLE[finding_type]
     else:
-        return finding_type
+        # Types must be all lowercase
+        return finding_type.lower()

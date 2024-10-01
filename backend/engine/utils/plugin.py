@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 import os
 import subprocess
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
+from pydantic import BaseModel, Field, field_validator
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
 from artemislib.github.app import GITHUB_APP_ID
@@ -41,6 +43,17 @@ log = Logger(__name__)
 UI_SECRETS_TAB_INDEX = 3
 
 
+class Runner(str, Enum):
+    """
+    Defines which method will be used to run a plugin.
+
+    There is only a single method currently; this is a placeholder for future experiments
+    and is validated to catch accidental incompatibilities.
+    """
+
+    CORE = "core"
+
+
 @dataclass
 class Result:
     name: str
@@ -54,14 +67,63 @@ class Result:
     disabled: bool = False
 
 
-@dataclass
-class PluginSettings:
-    image: str
-    disabled: bool
+class PluginSettings(BaseModel):
+    """
+    Plugin description, loaded from the settings.json of the plugin.
+
+    Only the "name" field is required, all other fields are optional.
+    """
+
     name: str
-    plugin_type: str
-    feature: str
-    timeout: int
+    image: str = ""
+    disabled: bool = Field(alias="enabled", default=False)
+    plugin_type: str = Field(alias="type", default="misc")
+    build_images: bool = False
+    feature: Optional[str] = None
+    timeout: Optional[int] = None
+    runner: Runner = Runner.CORE
+
+    @field_validator("image", mode="after")
+    @classmethod
+    def _parse_image(cls, orig: str) -> str:
+        image = orig.replace("$ECR", ECR)
+
+        if image.startswith("/"):
+            image = image[1:]
+
+        return image
+
+    @field_validator("disabled", mode="before")
+    @classmethod
+    def _parse_disabled(cls, enabled: Union[str, bool]) -> bool:
+        """
+        Determines whether the plugin is disabled.
+
+        The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
+        variable (specified by a string starting with $). The environment variable contains either "1" or "0".
+
+        If "enabled" is not set or the ENV VAR is not set the plugin is not disabled.
+        If "enabled" or the ENV VAR is present but set to an invalid value the plugin is disabled.
+        """
+        # Plugin enabled by default if not set
+        if enabled is None:
+            return False
+
+        # If already a boolean, return the inverse (enabled -> disabled)
+        if isinstance(enabled, bool):
+            return not enabled
+
+        # If enabled is an ENV VAR get it
+        if isinstance(enabled, str) and enabled.startswith("$"):
+            # Get the value from the specified ENV VAR and invert it, defaulting to enabled if not set
+            try:
+                return not bool(int(os.environ.get(enabled[1:], "1")))
+            except ValueError:
+                # Invalid value in the ENV VAR so return disabled
+                return True
+
+        # If we get this far then there was an invalid value for the enabled setting and so default to disabled
+        return True
 
 
 def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
@@ -168,26 +230,7 @@ def get_plugin_settings(plugin: str) -> PluginSettings:
     settings_path = os.path.join(plugin_path, "settings.json")
 
     with open(settings_path) as f:
-        settings = json.loads(f.read())
-        image = settings.get("image", "")
-
-        return PluginSettings(
-            image=_fix_image_path(image),
-            disabled=is_plugin_disabled(settings),
-            name=settings.get("name"),
-            plugin_type=settings.get("type", "misc"),
-            feature=settings.get("feature"),
-            timeout=settings.get("timeout"),
-        )
-
-
-def _fix_image_path(image_path: str) -> str:
-    image = image_path.replace("$ECR", ECR)
-
-    if image.startswith("/"):
-        image = image[1:]
-
-    return image
+        return PluginSettings.model_validate_json(f.read())
 
 
 def _get_plugin_config(plugin: str, full_repo: str) -> dict:
@@ -210,34 +253,6 @@ def _get_plugin_config(plugin: str, full_repo: str) -> dict:
 
     # If no match found, return empty dict
     return {}
-
-
-def is_plugin_disabled(settings: dict) -> bool:
-    """Determines whether the plugin is disabled
-
-    The "enabled" key in the plugin's settings.json can be either a boolean value or the name of an environment
-    variable (specified by a string starting with $). The environment variable contains either "1" or "0". If "enabled"
-    is not set or the ENV VAR is not set the plugin is not disabled. If "enabled" or the ENV VAR is present but set to
-    an invalid value the plugin is disabled.
-    """
-    # Get the enabled setting, with the plugin enabled by default if not set
-    enabled = settings.get("enabled", True)
-
-    # If already a boolean, return the inverse (enabled -> disabled)
-    if isinstance(enabled, bool):
-        return not enabled
-
-    # If enabled is an ENV VAR get it
-    if isinstance(enabled, str) and enabled.startswith("$"):
-        # Get the value from the specified ENV VAR and invert it, defaulting to enabled if not set
-        try:
-            return not bool(int(os.environ.get(enabled[1:], "1")))
-        except ValueError:
-            # Invalid value in the ENV VAR so return disabled
-            return True
-
-    # If we get this far then there was an invalid value for the enabled setting and so default to disabled
-    return True
 
 
 def run_plugin(
@@ -301,7 +316,7 @@ def run_plugin(
     plugin_config = _get_plugin_config(plugin, full_repo)
 
     plugin_command = get_plugin_command(
-        scan, settings.image, plugin, depth, include_dev, scan_images, plugin_config, services
+        scan, plugin, settings, depth, include_dev, scan_images, plugin_config, services
     )
 
     try:
@@ -597,8 +612,8 @@ def get_iso_timestamp() -> str:
 
 def get_plugin_command(
     scan: Scan,
-    image: str,
     plugin: str,
+    settings: PluginSettings,
     depth: Optional[str],
     include_dev: bool,
     scan_images,
@@ -676,9 +691,19 @@ def get_plugin_command(
             f"ARTEMIS_REVPROXY_SECRET={REV_PROXY_SECRET}",
             "-e",
             f"ARTEMIS_LOG_LEVEL={LOG_LEVEL}",
-            image,
-            "python",
-            "/srv/engine/plugins/%s/main.py" % plugin,
+            settings.image,
+        ]
+    )
+
+    if settings.runner == Runner.CORE:
+        # Run the plugin using the container's system Python.
+        cmd.extend(["python", f"/srv/engine/plugins/{plugin}/main.py"])
+    else:
+        raise ValueError(f"Runner is not supported: {settings.runner}")
+
+    # Arguments passed to the plugin.
+    cmd.extend(
+        [
             get_engine_vars(scan, depth=depth, include_dev=include_dev, services=services),
             json.dumps(scan_images),
             json.dumps(plugin_config),

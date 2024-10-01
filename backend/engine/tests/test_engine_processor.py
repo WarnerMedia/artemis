@@ -4,6 +4,7 @@ import unittest
 from base64 import b64encode
 from copy import deepcopy
 from tempfile import TemporaryDirectory
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -17,6 +18,7 @@ from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_METADATA = os.path.join(TEST_DIR, "data/metadata.json")
+PLUGIN_TEST_BASE_DIR = os.path.join(TEST_DIR, "data", "util")
 
 SERVICES_FILE = os.path.join(TEST_DIR, "data", "services.json")
 
@@ -30,24 +32,34 @@ TEST_DETAILS = {
 }
 
 
+def _load_services() -> Any:
+    svcs = _get_services_from_file(SERVICES_FILE)
+    if svcs is None:
+        raise Exception("Failed to load services for test case")
+    return svcs.get("services")
+
+
 class TestEngineProcessor(unittest.TestCase):
     def test_engine_processor_create(self):
         processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, {}, object)
         self.assertIsInstance(processor.details, Details)
         self.assertIsInstance(processor.action_details, ScanDetails)
 
-    def test_engine_processor_docker_image_required_true(self):
-        pytest.xfail("Trivy plugin is temporarily disabled due to unexpected vulns reporting.")
+    @patch("utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    @patch("processor.scan_details.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_engine_processor_docker_images_required_true(self):
         details = deepcopy(TEST_DETAILS)
-        details["plugins"] = ["test", "tslint", "test", "trivy"]
+        details["plugins"] = ["minimal", "normal"]
         processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", details, {}, object)
         expected_result = True
         result = processor.docker_images_required()
         self.assertEqual(expected_result, result)
 
-    def test_engine_processor_docker_image_required_false(self):
+    @patch("utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    @patch("processor.scan_details.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
+    def test_engine_processor_docker_images_required_false(self):
         details = deepcopy(TEST_DETAILS)
-        details["plugins"] = ["test", "tslint"]
+        details["plugins"] = ["minimal"]
         processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", details, {}, object)
         expected_result = False
         result = processor.docker_images_required()
@@ -138,10 +150,10 @@ class TestEngineProcessor(unittest.TestCase):
         git_pull_mock.return_value = expected_result
 
         class DummyDBScanObject:
-            def get_scan_object():
+            def get_scan_object(self):
                 return Scan()
 
-        processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, DummyDBScanObject, object)
+        processor = engine_processor.EngineProcessor(TEST_SERVICES, "scan", TEST_DETAILS, DummyDBScanObject(), object)
         result = processor.pull_repo()
         self.assertTrue(git_pull_mock.called)
         self.assertTrue(get_api_key.called)
@@ -154,7 +166,7 @@ class TestEngineProcessor(unittest.TestCase):
         details = deepcopy(TEST_DETAILS)
         details["repo"] = test_repo
         details["url"] = test_url
-        services = _get_services_from_file(SERVICES_FILE).get("services")
+        services = _load_services()
         processor = engine_processor.EngineProcessor(services, "scan", details, {}, object)
         with TemporaryDirectory() as working_dir:
             processor.action_details.scan_working_dir = os.path.join(working_dir, processor.get_scan_id())
@@ -165,7 +177,7 @@ class TestEngineProcessor(unittest.TestCase):
     @pytest.mark.integtest
     def test_create_cache_item(self):
         details = deepcopy(TEST_DETAILS)
-        services = _get_services_from_file(SERVICES_FILE).get("services")
+        services = _load_services()
         processor = engine_processor.EngineProcessor(services, "scan", details, {})
         rand_id = random.randbytes(15)
         cache_item = f"test_item_{rand_id}"
@@ -179,7 +191,7 @@ class TestEngineProcessor(unittest.TestCase):
     @pytest.mark.integtest
     def test_create_cache_item_update(self):
         details = deepcopy(TEST_DETAILS)
-        services = _get_services_from_file(SERVICES_FILE).get("services")
+        services = _load_services()
         processor = engine_processor.EngineProcessor(services, "scan", details, {})
         rand_id = random.randbytes(15)
         cache_item = f"test_item_{rand_id}"

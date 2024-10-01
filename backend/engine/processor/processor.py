@@ -3,11 +3,11 @@ import os
 from base64 import b64decode
 from datetime import datetime, timezone
 from string import Template
-from typing import Tuple
+from typing import Optional, Union
 
 import boto3
 from botocore.exceptions import ClientError
-from django.db.models import Q, QuerySet
+from django.db.models import Q
 
 from artemisdb.artemisdb.consts import AllowListType, PluginType
 from artemisdb.artemisdb.models import RepoVulnerabilityScan
@@ -25,7 +25,7 @@ from processor.vulns import process_vulns, resolve_vulns
 from utils.deploy_key import create_ssh_url, git_clone
 from utils.engine import get_key
 from utils.git import git_clean, git_pull, git_reset
-from utils.plugin import Result, is_plugin_disabled, run_plugin, process_event_info, queue_event
+from utils.plugin import Result, get_plugin_settings, run_plugin, process_event_info, queue_event
 
 logger = Logger(__name__)
 
@@ -228,7 +228,7 @@ class EngineProcessor:
             self.action_details.alter_diff_to_default()
         return success
 
-    def _get_metadata(self) -> Tuple[dict, dict]:
+    def _get_metadata(self) -> tuple[dict, dict]:
         return get_all_metadata(
             self.service_dict["application_metadata"],
             self.details.service,
@@ -242,10 +242,9 @@ class EngineProcessor:
         :return: True/False
         """
         for plugin in self.action_details.plugins:
-            with open(os.path.join(self.action_details.plugin_path, plugin, "settings.json")) as settings_file:
-                settings_dict = json.load(settings_file)
-                if settings_dict.get("build_images", False) and not is_plugin_disabled(settings_dict):
-                    return True
+            settings = get_plugin_settings(plugin)
+            if settings.build_images and not settings.disabled:
+                return True
         return False
 
     def _set_git_diff(self) -> None:
@@ -457,7 +456,7 @@ def use_hostname_or_url(service: str, url: str, service_dict: dict) -> str:
     return url
 
 
-def handle_key(key, service_type, service_key) -> str or None:
+def handle_key(key: Union[str, bytes], service_type: str, service_key: Optional[str]) -> Optional[str]:
     """
     The api key sometimes needs to be altered in order to be accepted by the service.
     :param key: api key for the service
@@ -467,7 +466,7 @@ def handle_key(key, service_type, service_key) -> str or None:
     :return: unaltered or altered key, or None if there was an issue.
     """
     if not service_key:
-        return key
+        return str(key)
     if service_key != "other":
         return Template(service_key).substitute(key=key)
     if service_type == "bitbucket":
