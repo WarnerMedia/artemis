@@ -110,11 +110,11 @@ class Logger:
     Provides options to update log fields that that should persist across all loggers
     """
 
-    def __new__(cls, name: str, level=LOG_LEVEL):
+    def __new__(cls, name: str, level=LOG_LEVEL, stream=sys.stdout):
         log = getLogger(name.strip())
         if not log.hasHandlers():
             json_formatter = JSONFormatter()
-            stdout_handler = StreamHandler(sys.stdout)
+            stdout_handler = StreamHandler(stream)
             stdout_handler.setFormatter(json_formatter)
             log.addHandler(stdout_handler)
 

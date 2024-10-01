@@ -1,4 +1,5 @@
 import os
+import sys
 
 import jwt
 import requests
@@ -18,13 +19,13 @@ class GithubAppException(Exception):
 class GithubApp:
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, log_stream=sys.stdout):
         if GITHUB_APP_ID is None:
             raise GithubAppException("GitHub App ID is not set")
 
         if cls._instance is None:
             cls._instance = super(GithubApp, cls).__new__(cls)
-            cls._instance.log = Logger(__name__)
+            cls._instance.log = Logger(name=__name__, stream=log_stream)
 
             cls._jwt = None
             cls._jwt_expiration = None

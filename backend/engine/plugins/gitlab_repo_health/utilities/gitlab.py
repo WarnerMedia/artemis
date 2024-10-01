@@ -1,6 +1,7 @@
 from functools import cache
 from urllib.parse import quote
 import requests
+import sys
 
 from artemislib.aws import AWSConnect
 from engine.plugins.gitlab_repo_health.utilities.environment import (
@@ -29,7 +30,7 @@ class Gitlab:
             and has_rev_proxy_secret_header()
             and get_rev_proxy_domain_substring() in service_url  # type: ignore
         ):
-            aws = AWSConnect()
+            aws = AWSConnect(stream=sys.stderr)
 
             proxy_secret = aws.get_secret_raw(get_rev_proxy_secret())
             if proxy_secret:
@@ -127,7 +128,7 @@ class Gitlab:
 
     @staticmethod
     def get_client_from_config(token_location: str, service_url: str, verbose: bool = False):
-        aws = AWSConnect()
+        aws = AWSConnect(log_stream=sys.stderr)
         auth_config = aws.get_secret(f"{APPLICATION}/{token_location}")
 
         return Gitlab(auth_config.get("key"), service_url, verbose)

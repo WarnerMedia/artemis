@@ -1,5 +1,6 @@
 import json
-from typing import Any, Optional
+import sys
+from typing import Any, Optional, TextIO
 
 import boto3
 from botocore.exceptions import ClientError
@@ -53,10 +54,15 @@ class AWSConnect:
     _SQS: SQSClient
     log: Logger
 
-    def __new__(cls, region: str = AWS_DEFAULT_REGION, queue: Optional[str] = None):
+    def __new__(
+        cls,
+        region: str = AWS_DEFAULT_REGION,
+        queue: Optional[str] = None,
+        log_stream: Optional[TextIO] = sys.stdout,
+    ):
         if cls._instance is None:
             cls._instance = super(AWSConnect, cls).__new__(cls)
-            cls._instance.log = ArtemisLogger("AWSConnect")
+            cls._instance.log = ArtemisLogger(name="AWSConnect", stream=log_stream)
             cls._instance._LAMBDA = boto3.client("lambda", region_name=region)
             cls._instance._S3 = {DEFAULT_S3_ENDPOINT: boto3.resource("s3", region_name=region)}
             if SCAN_DATA_S3_ENDPOINT != DEFAULT_S3_ENDPOINT:
