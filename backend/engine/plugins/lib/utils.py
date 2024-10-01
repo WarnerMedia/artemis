@@ -1,11 +1,14 @@
 import argparse
 import json
-import logging
 import os
 import subprocess
+import sys
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
+
+from logging import StreamHandler
+from artemislib.logging import Logger
 
 CODE_DIRECTORY = "/work/base"
 CVE_API_URL = "https://services.nvd.nist.gov/rest/json/cve/1.0"
@@ -14,58 +17,9 @@ APPLICATION = os.environ.get("APPLICATION", "artemis")
 REGION = os.environ.get("REGION", "us-east-2")
 
 
-class JSONFormatter(logging.Formatter):
-    """
-    Formats a LogRecord to a JSON encoded string.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.reserved_attrs = set(logging.LogRecord("", 0, "", 0, "", (), None).__dict__.keys())
-
-    def format(self, record: logging.LogRecord) -> str:
-        message = record.__dict__.copy()
-        log_record = {
-            "timestamp": self.formatTime(record, self.datefmt),
-            "level": record.levelname,
-            "location": f"{record.funcName}:{record.lineno}",
-            "message": record.getMessage(),
-        }
-        # Exclude reserved attributes and Add additional_fields
-        for key, value in message.items():
-            if key not in self.reserved_attrs and value:
-                log_record[key] = value
-
-        # Format Exceptions
-        if record.exc_info and record.exc_text is None:
-            record.exc_text = self.formatException(record.exc_info)
-
-        if record.exc_text:
-            log_record["exc_info"] = record.exc_text
-
-        if record.stack_info:
-            log_record["stack_info"] = self.formatStack(record.stack_info)
-
-        log_record = self._prune_null_fields(log_record)
-        return json.dumps(log_record)
-
-    def _prune_null_fields(self, records: dict) -> dict:
-        """
-        Remove any key with Null values
-        """
-        return {k: v for k, v in records.items() if v is not None}
-
-
-def setup_logging(name):
-    log = logging.getLogger(name)
-    if not log.handlers:
-        formatter = JSONFormatter()
-        console = logging.StreamHandler()
-        console.setFormatter(formatter)
-        log.addHandler(console)
-        log.setLevel(logging.INFO)
-
-    return log
+def setup_logging(name: str):
+    stderr = StreamHandler(sys.stderr)
+    return Logger(name=name, stream=stderr)
 
 
 def parse_args(in_args=None, extra_args=None):
