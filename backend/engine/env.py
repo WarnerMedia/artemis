@@ -76,7 +76,7 @@ DB_RETRY_WAIT = int(os.environ.get("ARTEMIS_DB_RETRY_WAIT", 5))  # seconds
 DB_RETRY_LIMIT = int(os.environ.get("ARTEMIS_DB_RETRY_LIMIT", 60))  # 60 retries @ 5 seconds each is 5 minutes
 
 
-def refresh_log_state():
+def reset_log_state():
     """
     Remove existing fields from the Logger & adds the engine context to the logs
     """

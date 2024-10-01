@@ -18,7 +18,7 @@ from env import (
     SQS_ENDPOINT,
     TASK_QUEUE,
     WORKING_DIR,
-    refresh_log_state,
+    reset_log_state,
 )
 from processor.processor import EngineProcessor
 from utils.engine import _build_docker_images, check_disk_space, cleanup_images
@@ -127,7 +127,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
         log.info("Scan %s of %s completed", engine_processor.action_details.scan_id, repo)
     engine_processor.update_scan_status("completed", end_time=get_utc_datetime(), errors=errors, debug=debug)
     engine_processor.queue_callback("completed")
-    refresh_log_state()
+    reset_log_state()
 
 
 def cleanup(working_dir, scan_id):
@@ -196,7 +196,7 @@ def main():
 
 
 if __name__ == "__main__":
-    refresh_log_state()
+    reset_log_state()
     log.info("Starting DSO analysis engine")
     log.info("Host ID: %s, Engine ID: %s", INSTANCE_ID, ENGINE_ID)
     main()
