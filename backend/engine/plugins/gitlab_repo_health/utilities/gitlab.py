@@ -30,7 +30,7 @@ class Gitlab:
             and has_rev_proxy_secret_header()
             and get_rev_proxy_domain_substring() in service_url  # type: ignore
         ):
-            aws = AWSConnect(stream=sys.stderr)
+            aws = AWSConnect(log_stream=sys.stderr)
 
             proxy_secret = aws.get_secret_raw(get_rev_proxy_secret())
             if proxy_secret:

@@ -55,10 +55,7 @@ class AWSConnect:
     log: Logger
 
     def __new__(
-        cls,
-        region: str = AWS_DEFAULT_REGION,
-        queue: Optional[str] = None,
-        log_stream: Optional[TextIO] = sys.stdout,
+        cls, region: str = AWS_DEFAULT_REGION, queue: Optional[str] = None, log_stream: Optional[TextIO] = sys.stdout
     ):
         if cls._instance is None:
             cls._instance = super(AWSConnect, cls).__new__(cls)

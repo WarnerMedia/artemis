@@ -1,6 +1,7 @@
 from time import sleep, time
 
 import requests
+import sys
 
 from artemislib.env import (
     APPLICATION,
@@ -18,7 +19,9 @@ LOG = Logger(__name__)
 class GitHubAPI:
     _instance = None
 
-    def __new__(cls, org: str, github_secret_loc: str, service_hostname: str = None, repo: str = None):
+    def __new__(
+        cls, org: str, github_secret_loc: str, service_hostname: str = None, repo: str = None, log_stream=sys.stdout
+    ):
         if not cls._instance:
             cls._instance = super(GitHubAPI, cls).__new__(cls)
 
@@ -43,6 +46,8 @@ class GitHubAPI:
             else:
                 cls._instance._api_url = f"https://{service_hostname}/api/v3"
 
+            # Update Logger
+            LOG = Logger(name=__name__, stream=log_stream)
         return cls._instance
 
     def get_repo(self, path: str = None, query: dict = None, paged=False):
