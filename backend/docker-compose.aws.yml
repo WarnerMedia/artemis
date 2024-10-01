@@ -13,7 +13,7 @@ services:
       options:
         awslogs-region: ${REGION}
         awslogs-group: ${LOG_GROUP}
-        awslogs-multiline-pattern: '^\\{(?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*\\}$'
+        awslogs-multiline-pattern: '^\\{(?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*\\}$$'
         tag: engine-${INSTANCE_ID}-{{.ID}}
   db_maint:
     image: "${ECR}/${APPLICATION}/db_maintenance:latest"
