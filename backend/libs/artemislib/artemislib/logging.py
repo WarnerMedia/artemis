@@ -162,25 +162,12 @@ class Logger:
 
 
 def inject_plugin_logs(plugin_logs: str, plugin_name: str):
-    """
-    Parses the log messages from an Artemis plugin and Logs each line to stdout
-    """
     logger = Logger(plugin_name)
     logs = plugin_logs.split("\n")
     for line in logs:
-        try:
-            log_entry = json.loads(line)
-            log_message = log_entry.get("message", "")
-            log_level = log_entry.get("level", "INFO").upper()
-
-            if log_level == "ERROR":
-                logger.error(log_message)
-            elif log_level == "WARNING":
-                logger.warning(log_message)
-            else:
-                logger.info(log_message)
-        except json.JSONDecodeError:
-            logger.error(f"Failed to parse log line: {line}")
+        if "ERROR" in line:
+            logger.error(line)
+        logger.info(line)
 
 
 # TODO: Handle uncaught exceptions with sys.excepthook
