@@ -168,21 +168,19 @@ resource "aws_api_gateway_integration" "api_v1_system_status" {
 
 resource "aws_lambda_function" "system_allowlist" {
   function_name = "${var.app}-system-allowlist-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/system_allowlist/v${var.ver}/system_allowlist.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/system_allowlist/v${var.ver}/system_allowlist.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -216,21 +214,19 @@ resource "aws_lambda_function" "system_allowlist" {
 
 resource "aws_lambda_function" "system_services" {
   function_name = "${var.app}-system-services-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/system_services/v${var.ver}/system_services.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/system_services/v${var.ver}/system_services.zip"
+  layers        = var.lambda_layers
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -269,21 +265,19 @@ resource "aws_lambda_function" "system_services" {
 
 resource "aws_lambda_function" "system_status" {
   function_name = "${var.app}-system-status-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/system_status/v${var.ver}/system_status.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/system_status/v${var.ver}/system_status.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [

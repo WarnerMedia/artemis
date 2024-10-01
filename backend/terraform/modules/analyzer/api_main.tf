@@ -229,22 +229,19 @@ resource "aws_api_gateway_integration" "ci-tools-path" {
 
 resource "aws_lambda_function" "ci-tools" {
   function_name = "${var.app}-ci-tools-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/ci_tools/v${var.ver}/ci_tools.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/ci_tools/v${var.ver}/ci_tools.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
-
+  logging_config {
+    log_format = "JSON"
+  }
   vpc_config {
     subnet_ids = [
       aws_subnet.lambdas.id,
@@ -480,21 +477,19 @@ resource "aws_api_gateway_base_path_mapping" "api" {
 
 resource "aws_lambda_function" "api-authorizer" {
   function_name = "${var.app}-api-authorizer"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/authorizer/v${var.ver}/authorizer.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/authorizer/v${var.ver}/authorizer.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 60
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
