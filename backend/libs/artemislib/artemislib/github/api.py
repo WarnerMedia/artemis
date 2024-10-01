@@ -1,7 +1,7 @@
-from time import sleep, time
-
 import requests
 import sys
+from time import sleep, time
+from typing import TextIO
 
 from artemislib.env import (
     APPLICATION,
@@ -20,7 +20,12 @@ class GitHubAPI:
     _instance = None
 
     def __new__(
-        cls, org: str, github_secret_loc: str, service_hostname: str = None, repo: str = None, log_stream=sys.stdout
+        cls,
+        org: str,
+        github_secret_loc: str,
+        service_hostname: str = None,
+        repo: str = None,
+        log_stream: TextIO = sys.stdout,
     ):
         if not cls._instance:
             cls._instance = super(GitHubAPI, cls).__new__(cls)
@@ -30,7 +35,7 @@ class GitHubAPI:
             cls._instance._repo = repo
 
             # Set the auth header
-            auth = _get_authorization(org, github_secret_loc)
+            auth = _get_authorization(org, github_secret_loc, log_stream)
             cls._instance._headers = {"Authorization": auth, "Accept": "application/vnd.github+json"}
 
             # Set the revproxy auth header, if needed
@@ -103,9 +108,9 @@ def _sleep_until(unix_time: int, max_wait: int = 300):
     sleep(wait)
 
 
-def _get_authorization(org: str, github_secret: str) -> str:
+def _get_authorization(org: str, github_secret: str, log_stream: TextIO = sys.stdout) -> str:
     # Attempt to get an app installation token for the organization
-    github_app = GithubApp()
+    github_app = GithubApp(log_stream=log_stream)
     token = github_app.get_installation_token(org)
     if token is not None:
         return f"token {token}"

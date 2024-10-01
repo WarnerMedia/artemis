@@ -4,6 +4,7 @@ import sys
 import jwt
 import requests
 from cryptography.hazmat.primitives import serialization
+from typing import TextIO
 
 from artemislib.aws import AWSConnect
 from artemislib.datetime import get_utc_datetime
@@ -19,7 +20,7 @@ class GithubAppException(Exception):
 class GithubApp:
     _instance = None
 
-    def __new__(cls, log_stream=sys.stdout):
+    def __new__(cls, log_stream: TextIO = sys.stdout):
         if GITHUB_APP_ID is None:
             raise GithubAppException("GitHub App ID is not set")
 
