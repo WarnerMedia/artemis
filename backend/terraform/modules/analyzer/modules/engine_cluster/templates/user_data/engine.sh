@@ -38,15 +38,11 @@ yum -y install docker-25.0.3
 # Allow ec2-user to use docker
 usermod -a -G docker ec2-user
 
-# Create daemon.json if it does not exist
 mkdir -p /data/docker
-if [[ ! -f "/etc/docker/daemon.json" ]]; then
-  echo '{}' >"/etc/docker/daemon.json"
-fi
 
 # Change docker config to put data in /data/docker
-# We need printf to buffer the output of jq before redirecting to a file, otherwise the file will end up blank
-printf "%s" "$(jq -r '."data-root" = "/data/docker"' <'/etc/docker/daemon.json')" >/etc/docker/daemon.json
+# Update log format to json
+echo '{"data-root": "/data/docker", "log-format": "json"}' > /etc/docker/daemon.json
 
 # Set docker to start on boot
 systemctl enable docker
