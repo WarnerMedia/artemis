@@ -13,8 +13,8 @@ services:
       options:
         awslogs-region: ${REGION}
         awslogs-group: ${LOG_GROUP}
+        awslogs-multiline-pattern: '^\\{(?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*\\}$'
         tag: engine-${INSTANCE_ID}-{{.ID}}
-        awslogs-datetime-format: "\\[%Y\\-%m\\-%d %H:%M:%S\\]"
   db_maint:
     image: "${ECR}/${APPLICATION}/db_maintenance:latest"
     container_name: "db_maint"
