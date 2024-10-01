@@ -114,10 +114,8 @@ class Logger:
         log = getLogger(name.strip())
         if not log.hasHandlers():
             json_formatter = JSONFormatter()
-
             stdout_handler = StreamHandler(sys.stdout)
             stdout_handler.setFormatter(json_formatter)
-
             log.addHandler(stdout_handler)
 
         log.setLevel(LEVEL_MAP.get(level, DEFAULT_LOG_LEVEL))
@@ -156,8 +154,8 @@ class Logger:
                 function_memory_size=context.memory_limit_in_mb,
                 function_request_id=context.aws_request_id,
                 function_version=context.function_version,
+                api_gateway_request_id=event.get("requestContext", {}).get("requestID"),
             )
-
             return handler(event, context, *args, **kwargs)
 
         return wrapper
@@ -165,7 +163,7 @@ class Logger:
 
 def inject_plugin_logs(plugin_logs: str, plugin_name: str):
     """
-    Parses the log messages from an Artemis plugins and Logs each line to stdout
+    Parses the log messages from an Artemis plugin and Logs each line to stdout
     """
     logger = Logger(plugin_name)
     logs = plugin_logs.split("\n")
@@ -183,3 +181,6 @@ def inject_plugin_logs(plugin_logs: str, plugin_name: str):
                 logger.info(log_message)
         except json.JSONDecodeError:
             logger.error(f"Failed to parse log line: {line}")
+
+
+# TODO: Handle uncaught exceptions with sys.excepthook
