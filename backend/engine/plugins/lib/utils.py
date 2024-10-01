@@ -1,14 +1,11 @@
 import argparse
 import json
+import logging
 import os
 import subprocess
-import sys
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
-
-from logging import StreamHandler
-from artemislib.logging import Logger
 
 CODE_DIRECTORY = "/work/base"
 CVE_API_URL = "https://services.nvd.nist.gov/rest/json/cve/1.0"
@@ -17,9 +14,18 @@ APPLICATION = os.environ.get("APPLICATION", "artemis")
 REGION = os.environ.get("REGION", "us-east-2")
 
 
-def setup_logging(name: str):
-    stderr = StreamHandler(sys.stderr)
-    return Logger(name=name, stream=stderr)
+def setup_logging(name):
+    log = logging.getLogger(__name__)
+    if not log.handlers:
+        console = logging.StreamHandler()
+        formatter = logging.Formatter(
+            fmt=f"%(asctime)s %(levelname)-8s [{name}] %(message)s", datefmt="[%Y-%m-%dT%H:%M:%S%z]"
+        )
+        console.setFormatter(formatter)
+        log.addHandler(console)
+        log.setLevel(logging.INFO)
+
+    return log
 
 
 def parse_args(in_args=None, extra_args=None):
