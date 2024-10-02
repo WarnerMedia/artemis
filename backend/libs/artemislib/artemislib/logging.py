@@ -72,8 +72,7 @@ class LogRecordFactory:
 
     LogRecord instances are created every time something is logged. They
     contain all the information for the event being logged. This custom
-    factory, adds the ability to add and remove fields that should be visible
-    across all Logs
+    factory, adds the ability to add and remove fields from a LogRecord
     """
 
     def __init__(self):
@@ -139,7 +138,7 @@ class Logger:
     @classmethod
     def inject_lambda_context(cls, handler):
         """
-        Inject lambda context to Log fields
+        Inject lambda context into Log fields
         """
 
         @wraps(handler)
@@ -150,7 +149,9 @@ class Logger:
                 function_memory_size=context.memory_limit_in_mb,
                 function_request_id=context.aws_request_id,
                 function_version=context.function_version,
-                api_gateway_request_id=event.get("requestContext", {}).get("requestID"),
+                api_request_id=event.get("requestContext", {}).get("requestId"),
+                api_path=event.get("requestContext", {}).get("path"),
+                client_ip=event.get("requestContext", {}).get("identity", {}).get("sourceIp"),
             )
             return handler(event, context, *args, **kwargs)
 
@@ -176,5 +177,5 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 # Update the function used to generate a log record
 setLogRecordFactory(LogRecordFactory())
 
-# Log uncaught exceptions with sys.excepthook
+# Log uncaught exceptions
 sys.excepthook = handle_exception
