@@ -3,10 +3,11 @@ import requests
 from graphql_query import Argument, Field, Operation, Query, Variable
 
 from artemislib.github.app import GithubApp
+from artemislib.logging import Logger
 from repo.util.aws import AWSConnect
 from repo.util.const import PROCESS_RESPONSE_TUPLE
 from repo.util.env import DEFAULT_ORG, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
-from repo.util.utils import GetProxySecret, Logger, auth, build_options_map, get_api_key
+from repo.util.utils import GetProxySecret, auth, build_options_map, get_api_key
 
 log = Logger(__name__)
 
@@ -182,7 +183,7 @@ def _query(
                 exclude_paths=options_map[org_repo]["exclude_paths"],
             )
             queued.append(f"{org_repo}/{scan_id}")
-            log.info(f"Queued {org_repo}/{scan_id}", scan_id=scan_id, repo=org_repo)
+            log.info(f"Queued {org_repo}/{scan_id}", extra={"scan_id": scan_id, "repo": org_repo})
 
     # Process all the errors
     for e in resp.get("errors", []):
