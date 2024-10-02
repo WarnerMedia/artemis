@@ -166,7 +166,8 @@ def inject_plugin_logs(plugin_logs: str, plugin_name: str):
             logger.error(line)
         if "CRITICAL" in line:
             logger.critical(line)
-        logger.info(line)
+        else:
+            logger.info(line)
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
