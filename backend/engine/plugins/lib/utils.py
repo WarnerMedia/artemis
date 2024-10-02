@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import subprocess
+import sys
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
@@ -26,6 +27,14 @@ def setup_logging(name):
         log.setLevel(logging.INFO)
 
     return log
+
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    log = logging.getLogger(__name__)
+    log.critical("Uncaught Plugin Exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+sys.excepthook = handle_exception
 
 
 def parse_args(in_args=None, extra_args=None):

@@ -99,10 +99,6 @@ class LogRecordFactory:
         return self.extra_fields
 
 
-# Update the default Log record factory
-setLogRecordFactory(LogRecordFactory())
-
-
 class Logger:
     """
     Factory Class for generating new Loggers
@@ -141,7 +137,7 @@ class Logger:
         return cast(LogRecordFactory, getLogRecordFactory())
 
     @classmethod
-    def add_lambda_context(cls, handler):
+    def inject_lambda_context(cls, handler):
         """
         Inject lambda context to Log fields
         """
@@ -167,7 +163,18 @@ def inject_plugin_logs(plugin_logs: str, plugin_name: str):
     for line in logs:
         if "ERROR" in line:
             logger.error(line)
+        if "CRITICAL" in line:
+            logger.critical(line)
         logger.info(line)
 
 
-# TODO: Handle uncaught exceptions with sys.excepthook
+def handle_exception(exc_type, exc_value, exc_traceback):
+    logger = getLogger(__name__)
+    logger.critical("Uncaught Exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+# Update the function used to generate a log record
+setLogRecordFactory(LogRecordFactory())
+
+# Log uncaught exceptions with sys.excepthook
+sys.excepthook = handle_exception
