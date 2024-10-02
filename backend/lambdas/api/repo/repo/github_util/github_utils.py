@@ -149,7 +149,7 @@ def _query(
                         "error": "Repository returned that was not requested, possibly due to a moved repository.",
                     }
                 )
-                print(f"Repository {org_repo} returned but was not requested. Possible moved repository.")
+                log.info(f"Repository {org_repo} returned but was not requested. Possible moved repository.")
                 continue
             if options_map[org_repo]["diff_base"]:
                 # The scan has a diff base set so check whether it's a valid diff comparison
@@ -182,13 +182,13 @@ def _query(
                 exclude_paths=options_map[org_repo]["exclude_paths"],
             )
             queued.append(f"{org_repo}/{scan_id}")
-            print(f"Queued {org_repo}/{scan_id}")
+            log.info(f"Queued {org_repo}/{scan_id}", scan_id=scan_id, repo=org_repo)
 
     # Process all the errors
     for e in resp.get("errors", []):
         for q in e["path"]:
             failed.append({"repo": query_map[q], "error": e["message"]})
-            print("Error with %s: %s" % (query_map[q], e["message"]))
+            log.info("Error with %s: %s" % (query_map[q], e["message"]))
 
     return queued, failed
 
