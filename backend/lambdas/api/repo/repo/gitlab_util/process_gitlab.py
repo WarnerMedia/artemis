@@ -5,7 +5,8 @@ from repo.gitlab_util.process_gitlab_utils import (
     queue_gitlab_repository,
 )
 from repo.util.const import PROCESS_RESPONSE_TUPLE
-from repo.util.utils import Logger, build_options_map, get_api_key
+from repo.util.utils import build_options_map, get_api_key
+from artemislib.logging import Logger
 
 log = Logger(__name__)
 
