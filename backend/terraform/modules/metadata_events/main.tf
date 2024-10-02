@@ -6,18 +6,19 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_function" "metadata-events-handler" {
   function_name = "${var.app}-metadata-events-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/metadata_events_handler/v${var.ver}/metadata_events_handler.zip"
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/metadata_events_handler/v${var.ver}/metadata_events_handler.zip"
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
   memory_size   = 256
   layers        = var.lambda_layers
+  role          = aws_iam_role.metadata-events-role.arn
 
-  role = aws_iam_role.metadata-events-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   environment {
     variables = merge({

@@ -132,21 +132,19 @@ data "aws_lambda_layer_version" "backend_core_latest" {
 
 resource "aws_lambda_function" "repo-handler" {
   function_name = "${var.app}-repo-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/repo/v${var.ver}/repo.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/repo/v${var.ver}/repo.zip"
+  layers        = var.lambda_layers
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 300
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -201,21 +199,19 @@ resource "aws_lambda_function" "repo-handler" {
 
 resource "aws_lambda_function" "users-handler" {
   function_name = "${var.app}-users-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/users/v${var.ver}/users.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/users/v${var.ver}/users.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 60
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -254,20 +250,19 @@ resource "aws_lambda_function" "users-handler" {
 
 resource "aws_lambda_function" "users-keys-handler" {
   function_name = "${var.app}-users-keys-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/users_keys/v${var.ver}/users_keys.zip"
-
-  layers = var.lambda_layers
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/users_keys/v${var.ver}/users_keys.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 60
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -304,21 +299,19 @@ resource "aws_lambda_function" "users-keys-handler" {
 
 resource "aws_lambda_function" "users-services-handler" {
   function_name = "${var.app}-users-services-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/users_services/v${var.ver}/users_services.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/users_services/v${var.ver}/users_services.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 60
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -353,18 +346,19 @@ resource "aws_lambda_function" "users-services-handler" {
 
 resource "aws_lambda_function" "signin-handler" {
   function_name = "${var.app}-signin-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/signin/v${var.ver}/signin.zip"
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/signin/v${var.ver}/signin.zip"
   layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 256
   timeout       = 10
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   environment {
     variables = merge({

@@ -6,10 +6,8 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_function" "secrets-handler" {
   function_name = "${var.app}-secrets-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = var.lambda_bundle_s3_key
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = var.lambda_bundle_s3_key
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
@@ -17,6 +15,10 @@ resource "aws_lambda_function" "secrets-handler" {
   layers        = var.lambda_layers
   memory_size   = 256
   role          = aws_iam_role.secrets-role.arn
+
+  logging_config {
+    log_format = "JSON"
+  }
 
   environment {
     variables = merge({
