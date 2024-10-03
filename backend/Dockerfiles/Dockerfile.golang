@@ -29,4 +29,4 @@ RUN mkdir -p /enry && \
     mkdir -p /gosec
 COPY --from=verifier /enry/enry /enry
 COPY --from=verifier /gosec/gosec /gosec
-ENV PATH $PATH:/enry:/gosec
+ENV PATH=/enry:/gosec:$PATH
