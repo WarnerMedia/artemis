@@ -17,7 +17,7 @@ from logging import (
 )
 from functools import wraps
 
-from typing import Dict, Any, cast
+from typing import Any, cast
 
 DEFAULT_LOG_LEVEL = "INFO"
 LOG_LEVEL = os.environ.get("ARTEMIS_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
@@ -59,7 +59,7 @@ class JSONFormatter(Formatter):
         log_record = self._prune_null_fields(log_record)
         return json.dumps(log_record)
 
-    def _prune_null_fields(self, records: Dict[str, Any]) -> Dict[str, Any]:
+    def _prune_null_fields(self, records: dict[str, Any]) -> dict[str, Any]:
         """
         Remove any key with a Null value
         """
@@ -94,7 +94,7 @@ class LogRecordFactory:
     def reset_fields(self):
         self.extra_fields = {}
 
-    def get_current_fields(self) -> Dict[str, Any]:
+    def get_current_fields(self) -> dict[str, Any]:
         return self.extra_fields
 
 
