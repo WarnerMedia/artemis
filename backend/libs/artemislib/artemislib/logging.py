@@ -176,6 +176,9 @@ def handle_exception(exc_type: type, exc_value: BaseException, exc_traceback: Tr
     logger.critical("Uncaught Exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
+# TODO: Create a context-manager for modifying fields
+# Follow-up task from: https://github.com/WarnerMedia/artemis/pull/272
+
 # Update the function used to generate a log record
 setLogRecordFactory(LogRecordFactory())
 
