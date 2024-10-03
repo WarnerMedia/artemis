@@ -184,6 +184,8 @@ class EngineProcessor:
                 # investigated.
                 logger.exception("Error running plugin %s: %s", plugin, e)
                 error_plugins.append(plugin)
+            finally:
+                Logger.remove_fields("plugin")
 
         # Now that all the plugins have finished resolve any vulns that were found previously via an equivalent
         # scan but that were not found now. Any plugins that failed to execute successfully are excluded to those
@@ -192,8 +194,6 @@ class EngineProcessor:
 
         if VULNERABILITY_EVENTS_ENABLED:
             self._process_vuln_events()
-
-        Logger.remove_fields("plugin")
 
     def pull_repo(self):
         logger.info("Pulling repo %s/%s:%s", self.details.service, self.details.repo, self.action_details.branch)
