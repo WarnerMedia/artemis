@@ -18,6 +18,7 @@ from logging import (
 from functools import wraps
 
 from typing import Any, cast
+from types import TracebackType
 
 DEFAULT_LOG_LEVEL = "INFO"
 LOG_LEVEL = os.environ.get("ARTEMIS_LOG_LEVEL", DEFAULT_LOG_LEVEL).upper()
@@ -170,7 +171,7 @@ def inject_plugin_logs(plugin_logs: str, plugin_name: str):
             logger.info(line)
 
 
-def handle_exception(exc_type, exc_value, exc_traceback):
+def handle_exception(exc_type: type, exc_value: BaseException, exc_traceback: TracebackType):
     logger = getLogger(__name__)
     logger.critical("Uncaught Exception", exc_info=(exc_type, exc_value, exc_traceback))
 
