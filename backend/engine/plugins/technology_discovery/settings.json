@@ -1,5 +1,6 @@
 {
     "name": "Technology Discovery",
     "type": "inventory",
-    "image": "$ECR/artemis/golang:latest"
+    "image": "$ECR/artemis/golang:latest",
+    "runner": "corebox"
 }
