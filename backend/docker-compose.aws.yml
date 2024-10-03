@@ -13,6 +13,14 @@ services:
       options:
         awslogs-region: ${REGION}
         awslogs-group: ${LOG_GROUP}
+        # This multiline regex is used to detect a JSON string.
+        # It captures any block that starts and ends within two open and closed curly braces `{}`
+        #
+        # The major limitation to this regex is:
+        # - It does not validate the contents of the curly brace. Therefore it can also catch incorrect JSON: {{hello:world}}
+        # - The regex breaks when a JSON string is nested 3 levels deep or more. For example: {"hello": {"x": {"test": {}}} }
+        #   Because of this, Logs should be limited to a maximum of 3 levels.
+        #   This limit can be increased by adding more capturing blocks: (?:[^{}]|\{[^{}]*\})
         awslogs-multiline-pattern: "^\\{(?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*\\}$$"
         tag: engine-${INSTANCE_ID}-{{.ID}}
   db_maint:
