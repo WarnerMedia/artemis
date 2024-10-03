@@ -1,8 +1,8 @@
-from io import StringIO
-from unittest import TestCase
 import json
+import pytest
 import logging
-from artemislib.logging import Logger, inject_plugin_logs
+from artemislib.logging import Logger, JSONFormatter
+from _pytest.logging import LogCaptureFixture
 
 LOG_MESSAGE1 = {"level": "INFO", "message": "Scanning Repository", "repo": "Warnermedia/artemis", "scan_id": "1234"}
 LOG_MESSAGE2 = {"level": "CRITICAL", "message": "Unable To process task", "scan_id": "1234"}
@@ -21,42 +21,51 @@ LAMBDA_LOG_MESSAGE = {
 }
 
 
-class TestLogger(TestCase):
-    def setUp(self):
-        self.buffer = StringIO()
-        self.logger = Logger("test_logger", stream=self.buffer)
-        self.engine_context = {}
-        self.lambda_context = LambdaContext()
-        self.lambda_event = {"requestContext": {"requestId": "456-456", "path": "v1/test/path"}}
+@pytest.fixture(scope="function")
+def custom_caplog(request):
+    logger = logging.getLogger()
+    original_factory = logging.getLogRecordFactory()
 
-        Logger.reset_fields()
+    # Create a new LogCaptureHandler with the custom formatter
+    handler = LogCaptureFixture(request.node)
+    handler.handler.setFormatter(JSONFormatter())
+    logger.addHandler(handler.handler)
 
-    def tearDown(self):
-        for handler in self.logger.handlers[:]:
-            self.logger.removeHandler(handler)
+    yield handler
 
-    def test_add_and_remove_fields_engine(self):
-        Logger.add_fields(repo="Warnermedia/artemis", priority_task_queue=False, scan_id="1234")
-        self.logger.info("Scanning Repository")
-        Logger.remove_fields("repo", "priority_task_queue")
-        self.logger.critical("Unable To process task")
+    # Clean up
+    logger.removeHandler(handler.handler)
+    logging.setLogRecordFactory(original_factory)
+    Logger.reset_fields()
 
-        log_outputs = self.buffer.getvalue().strip().split("\n")
-        log1 = remove_flaky_fields(json.loads(log_outputs[0]))
-        log2 = remove_flaky_fields(json.loads(log_outputs[1]))
-        self.assertEqual(log1, LOG_MESSAGE1)
-        self.assertEqual(log2, LOG_MESSAGE2)
 
-    def test_inject_lambda_context(self):
-        @Logger.inject_lambda_context
-        def handler(event, context):
-            return
+def test_add_and_remove_fields_engine(custom_caplog):
+    logger = Logger("test_logger")
+    Logger.add_fields(repo="Warnermedia/artemis", priority_task_queue=False, scan_id="1234")
+    logger.info("Scanning Repository")
+    Logger.remove_fields("repo", "priority_task_queue")
+    logger.critical("Unable To process task")
 
-        handler(self.lambda_event, self.lambda_context)
-        self.logger.error("Unable to Queue a Scan", extra={"repo": "Warnermedia/artemis"})
-        log_output = self.buffer.getvalue().strip()
-        log_output = remove_flaky_fields(json.loads(log_output))
-        self.assertDictEqual(log_output, LAMBDA_LOG_MESSAGE)
+    log_outputs = custom_caplog.text.strip().split("\n")
+    log1 = remove_flaky_fields(json.loads(log_outputs[0]))
+    log2 = remove_flaky_fields(json.loads(log_outputs[1]))
+    assert log1 == LOG_MESSAGE1
+    assert log2 == LOG_MESSAGE2
+
+
+def test_inject_lambda_context(custom_caplog):
+    @Logger.inject_lambda_context
+    def handler(event, context):
+        return
+
+    logger = Logger("test_logger")
+    lambda_event = {"requestContext": {"requestId": "456-456", "path": "v1/test/path"}}
+    handler(lambda_event, LambdaContext())
+
+    logger.error("Unable to Queue a Scan", extra={"repo": "Warnermedia/artemis"})
+    log_output = custom_caplog.text.strip()
+    log_output = remove_flaky_fields(json.loads(log_output))
+    assert log_output == LAMBDA_LOG_MESSAGE
 
 
 class LambdaContext:
