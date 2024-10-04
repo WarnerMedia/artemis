@@ -52,6 +52,10 @@ class Runner(str, Enum):
     """
 
     CORE = "core"
+    """Run the plugin using the container's system Python."""
+
+    BOXED = "boxed"
+    """Run the self-contained plugin bundle."""
 
 
 @dataclass
@@ -694,8 +698,9 @@ def get_plugin_command(
     )
 
     if settings.runner == Runner.CORE:
-        # Run the plugin using the container's system Python.
         cmd.extend(["python", f"/srv/engine/plugins/{plugin}/main.py"])
+    elif settings.runner == Runner.BOXED:
+        cmd.extend(["/srv/engine/plugins/plugin.sh", "--quiet", "--", plugin])
     else:
         raise ValueError(f"Runner is not supported: {settings.runner}")
 
