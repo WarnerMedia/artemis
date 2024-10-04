@@ -101,7 +101,7 @@ variable "engine_volume_size" {
 
 variable "repos_volume_size" {
   description = "Cloned repos volume size"
-  default     = 15
+  default     = 25
 }
 
 variable "engine_block_device" {

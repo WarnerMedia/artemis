@@ -83,8 +83,6 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
             )
             engine_processor.queue_callback("error")
             return
-        else:
-            log.error("Scan failed because not enough " "disk space (repo size: %d KB)", details["repo_size"])
         # Check if docker images need to be built first
         build_images = engine_processor.docker_images_required()
         images = {}
