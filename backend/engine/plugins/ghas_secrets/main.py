@@ -1,13 +1,13 @@
 import json
 import subprocess
 import uuid
+import sys
 from typing import Tuple
 
 from artemislib.github.api import GitHubAPI
-from artemislib.logging import Logger
 from engine.plugins.lib import utils
 
-LOG = Logger("ghas_secrets")
+LOG = utils.setup_logging("ghas_secrets")
 
 
 def main():
@@ -29,7 +29,9 @@ def main():
 
     org, repo = args.engine_vars["repo"].split("/", 1)
 
-    gh = GitHubAPI(org, args.engine_vars["service_secret_loc"], args.engine_vars["service_hostname"], repo)
+    gh = GitHubAPI(
+        org, args.engine_vars["service_secret_loc"], args.engine_vars["service_hostname"], repo, log_stream=sys.stderr
+    )
 
     if not _ghas_secrets_enabled(gh):
         LOG.info("Repository does not have GitHub Advanced Security Secret Scanning enabled")
