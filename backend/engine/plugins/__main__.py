@@ -1,3 +1,10 @@
+"""
+Entrypoint for boxed core plugins (i.e. plugins with the "boxed" runner).
+
+Takes the plugin name as the first argument, and all remaining arguments are
+passed to the plugin.
+"""
+
 import os
 import re
 import runpy
