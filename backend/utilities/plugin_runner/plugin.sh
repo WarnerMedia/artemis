@@ -60,7 +60,7 @@ function init_compose {
     core)
       plugincmd="python /srv/engine/plugins/$plugin/main.py"
       ;;
-    corebox)
+    boxed)
       plugincmd="/srv/engine/plugins/plugin.sh --quiet -- $plugin"
       ;;
     *)

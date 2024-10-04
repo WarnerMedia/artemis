@@ -2,5 +2,5 @@
     "name": "GoSec",
     "type": "static_analysis",
     "image": "$ECR/artemis/golang:latest",
-    "runner": "corebox"
+    "runner": "boxed"
 }

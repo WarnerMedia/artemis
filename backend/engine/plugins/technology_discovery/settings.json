@@ -2,5 +2,5 @@
     "name": "Technology Discovery",
     "type": "inventory",
     "image": "$ECR/artemis/golang:latest",
-    "runner": "corebox"
+    "runner": "boxed"
 }
