@@ -1,6 +1,5 @@
 import os
 from datetime import datetime, timedelta
-
 import boto3
 from botocore.exceptions import ClientError
 
@@ -23,6 +22,11 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
     if available_space is None:
         s = os.statvfs("/work")
         available_space = (s.f_frsize * s.f_bavail) / 1024
+
+    log.info(
+        f"Available Disk Space: {available_space}, Repository Size: {repo_size}",
+        extra={"repo_size": repo_size, "available_disk_space": available_space},
+    )
 
     # The worst repo encountered (so far) is twice the size on disk
     if repo_size >= available_space:

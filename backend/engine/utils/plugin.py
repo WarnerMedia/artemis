@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
 from artemislib.github.app import GITHUB_APP_ID
-from artemislib.logging import Logger, LOG_LEVEL
+from artemislib.logging import Logger, LOG_LEVEL, inject_plugin_logs
 from artemislib.util import dict_eq
 from env import (
     ECR,
@@ -264,6 +264,7 @@ def run_plugin(
     features=None,
     services=None,
 ) -> Result:
+    log.info("--- Plugin log start ---")
     if features is None:
         features = {}
 
@@ -335,7 +336,8 @@ def run_plugin(
             debug=[],
         )
 
-    log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())  # Inject plugin logs
+    inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
+
     log.info("--- Plugin log end ---")
 
     try:

@@ -3,9 +3,12 @@ import json
 import uuid
 
 from artemisapi.validators import ValidationError
+from artemislib.logging import Logger
 from repo.util.const import DEFAULT_DISABLED_CATEGORIES, PLUGIN_LIST_BY_CATEGORY, RESOURCES, SERVICES_S3_KEY
 from repo.util.services import get_services_dict
 from repo.util.validators import Validator
+
+logger = Logger(__name__)
 
 
 class EventParser:
@@ -58,7 +61,7 @@ class EventParser:
         """
         Parsing the raw_id to get service and repo information
         """
-        print(f"Parsing ID: {raw_id}")
+        logger.info(f"Parsing ID: {raw_id}")
 
         ret = {"service_id": None, "repo_id": None, "scan_id": None, "resource": None, "resource_id": None}
 

@@ -1,7 +1,5 @@
 # pylint: disable=no-member
 import json
-import logging
-import sys
 from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 
@@ -28,26 +26,6 @@ class GetProxySecret:
             aws_connect = AWSConnect(region=REV_PROXY_SECRET_REGION)
             cls._secret = aws_connect.get_key(REV_PROXY_SECRET)["SecretString"]
         return cls._secret
-
-
-class Logger:
-    _instance = None
-
-    def __new__(cls, name: str):
-        if cls._instance is None:
-            cls._instance = logging.getLogger(name.strip())
-            console = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
-                fmt="%(asctime)s %(levelname)-8s [%(name)-12s] %(message)s", datefmt="[%Y-%m-%d %H:%M:%S]"
-            )
-            console.setFormatter(formatter)
-            cls._instance.addHandler(console)
-            cls._instance.setLevel(logging.INFO)
-            cls._instance.propagate = False
-        return cls._instance
-
-
-log = Logger(__name__)
 
 
 def auth(repo: str, service: str, authz: list[list[list[str]]]) -> bool:
