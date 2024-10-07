@@ -1,14 +1,13 @@
 import json
 from typing import Optional
 
-from artemislib.logging import Logger
 from engine.plugins.lib import utils
 from engine.plugins.gitlab_repo_health.utilities.config import Config
 from engine.plugins.gitlab_repo_health.utilities.checker import Checker
 from engine.plugins.gitlab_repo_health.utilities.gitlab import Gitlab
 from engine.plugins.gitlab_repo_health.constants import PLUGIN_NAME
 
-log = Logger(PLUGIN_NAME)
+log = utils.setup_logging(PLUGIN_NAME)
 
 
 def main():

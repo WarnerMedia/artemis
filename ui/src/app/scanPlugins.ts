@@ -216,7 +216,9 @@ export const nonDefaultPlugins: string[] = [];
 // any enabled plugins that should be excluded (not run) by default
 export const excludePlugins: string[] = ["nodejsscan"];
 
-export const pluginsDisabled: { [name: string]: boolean } = {};
+export const pluginsDisabled: { [name: string]: boolean } = {
+	truffle_hog: true,
+};
 
 if (!APP_AQUA_ENABLED) {
 	pluginsDisabled["aqua_cli_scanner"] = true;
