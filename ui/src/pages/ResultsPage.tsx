@@ -1395,67 +1395,67 @@ export const HiddenFindingDialog = (props: {
 						/>
 					);
 				}
-				item.commit && details.push(
-					<FindingListItem
-						key="finding-details-commit"
-						id="finding-details-commit"
-						label={<Trans>Commit:</Trans>}
-						value={item?.commit ?? ""}
-					/>
-				);
-				row?.locationType === "commit" ?
+				item.commit &&
 					details.push(
 						<FindingListItem
-							key="finding-details-fileline"
-							id="finding-details-fileline"
-							label={
-								hiddenFindingCount ? (
-									<Trans>Hidden in source file:</Trans>
-								) : (
-									<Trans>Found in source file:</Trans>
-								)
-							}
-							value={
-								<ul>
-									<li>
-										<span>
-											<Trans>
-												{item?.filename ?? ""} (Line {item?.line ?? ""})
-											</Trans>
-											<SourceCodeHotLink row={row} addTitle={true} />
-										</span>
-									</li>
-								</ul>
-							}
+							key="finding-details-commit"
+							id="finding-details-commit"
+							label={<Trans>Commit:</Trans>}
+							value={item?.commit ?? ""}
 						/>
-					)
-				:
-					details.push(
-						<FindingListItem
-							key="finding-details-fileline"
-							id="finding-details-fileline"
-							label={<Trans>Found in:</Trans>}
-							value={
-								<ul>
-									<li>
-										<span>
-										<Box>
-											<Button
-												startIcon={<OpenInNewIcon />}
-												href={row?.url}
-												target="_blank"
-												rel="noopener noreferrer nofollow"
-												size="small"
-											>
-												{item?.filename}
-											</Button>
-										</Box>
-										</span>
-									</li>
-								</ul>
-							}
-						/>
-					)
+					);
+				row?.locationType === "commit"
+					? details.push(
+							<FindingListItem
+								key="finding-details-fileline"
+								id="finding-details-fileline"
+								label={
+									hiddenFindingCount ? (
+										<Trans>Hidden in source file:</Trans>
+									) : (
+										<Trans>Found in source file:</Trans>
+									)
+								}
+								value={
+									<ul>
+										<li>
+											<span>
+												<Trans>
+													{item?.filename ?? ""} (Line {item?.line ?? ""})
+												</Trans>
+												<SourceCodeHotLink row={row} addTitle={true} />
+											</span>
+										</li>
+									</ul>
+								}
+							/>
+					  )
+					: details.push(
+							<FindingListItem
+								key="finding-details-fileline"
+								id="finding-details-fileline"
+								label={<Trans>Found in:</Trans>}
+								value={
+									<ul>
+										<li>
+											<span>
+												<Box>
+													<Button
+														startIcon={<OpenInNewIcon />}
+														href={row?.url}
+														target="_blank"
+														rel="noopener noreferrer nofollow"
+														size="small"
+													>
+														{item?.filename}
+													</Button>
+												</Box>
+											</span>
+										</li>
+									</ul>
+								}
+							/>
+					  );
 				break;
 			}
 
@@ -4025,7 +4025,7 @@ export const SecretsTabContent = (props: {
 				filename: formatLocationName(filename),
 				location: item?.location ?? "commit",
 
-				line: item.line===0 ? "": item.line,
+				line: item.line === 0 ? "" : item.line,
 				resource: item.type,
 				commit: item.commit,
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
@@ -4041,51 +4041,54 @@ export const SecretsTabContent = (props: {
 		});
 	}
 	let secretSource = <></>;
-	if (!selectedRow?.location || selectedRow?.location === "" || selectedRow?.location === "commit") {
-		secretSource = (<ListItemText
-		primary={
-			<>
-				{i18n._(t`Found in Source File`)}
-				{selectedRow?.filename && selectedRow?.line && (
-					<CustomCopyToClipboard
-						copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
-					/>
-				)}
-			</>
-		}
-		secondary={
-			<>
-				<span>
-					<Trans>
-						{selectedRow?.filename ?? ""} (Line{" "}
-						{selectedRow?.line})
-					</Trans>
-				</span>
-				<SourceCodeHotLink row={selectedRow} addTitle={true} />
-			</>
-		}
-	/>)
+	if (
+		!selectedRow?.location ||
+		selectedRow?.location === "" ||
+		selectedRow?.location === "commit"
+	) {
+		secretSource = (
+			<ListItemText
+				primary={
+					<>
+						{i18n._(t`Found in Source File`)}
+						{selectedRow?.filename && selectedRow?.line && (
+							<CustomCopyToClipboard
+								copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
+							/>
+						)}
+					</>
+				}
+				secondary={
+					<>
+						<span>
+							<Trans>
+								{selectedRow?.filename ?? ""} (Line {selectedRow?.line})
+							</Trans>
+						</span>
+						<SourceCodeHotLink row={selectedRow} addTitle={true} />
+					</>
+				}
+			/>
+		);
 	} else {
-		secretSource = (<ListItemText
-		primary={
-			<>
-				{i18n._(t`Found in ${selectedRow?.filename}`)}
-			</>
-		}
-		secondary={
-			<Box>
-				<Button
-					startIcon={<OpenInNewIcon />}
-					href={selectedRow?.url}
-					target="_blank"
-					rel="noopener noreferrer nofollow"
-					size="small"
-				>
-					{selectedRow?.filename}
-				</Button>
-			</Box>
-		}
-		/>)
+		secretSource = (
+			<ListItemText
+				primary={<>{i18n._(t`Found in ${selectedRow?.filename}`)}</>}
+				secondary={
+					<Box>
+						<Button
+							startIcon={<OpenInNewIcon />}
+							href={selectedRow?.url}
+							target="_blank"
+							rel="noopener noreferrer nofollow"
+							size="small"
+						>
+							{selectedRow?.filename}
+						</Button>
+					</Box>
+				}
+			/>
+		);
 	}
 
 	const secretDialogContent = () => {
@@ -5147,7 +5150,9 @@ export const HiddenFindingsTabContent = (props: {
 			.trim()
 			.max(
 				FILEPATH_LENGTH,
-				i18n._(t`Location/File path must be less than ${FILEPATH_LENGTH} characters`)
+				i18n._(
+					t`Location/File path must be less than ${FILEPATH_LENGTH} characters`
+				)
 			),
 		hf_location: Yup.string()
 			.trim()
@@ -5756,7 +5761,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												</i>
 											)
 										}
-										secondaryTypographyProps={{component:"div"}}
+										secondaryTypographyProps={{ component: "div" }}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -5937,7 +5942,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								<ListItemText
 									primary={i18n._(t`Results`)}
 									secondary={resultsChip}
-									secondaryTypographyProps={{component:"div"}}
+									secondaryTypographyProps={{ component: "div" }}
 								/>
 							</Tooltip>
 						</ListItem>
@@ -6220,12 +6225,11 @@ export const TabContent = (props: {
 				}
 
 				case "secret": {
-
 					row = {
 						...row,
-						source: item.value.filename.replace(/ /g, ''),
+						source: item.value.filename.replace(/ /g, ""),
 						filename: item.value.filename,
-						location: (item.value.line === 0) ? "": item.value.line,
+						location: item.value.line === 0 ? "" : item.value.line,
 						locationType: item?.value?.location ?? "commit",
 						component: item.value.commit,
 						severity: "", // default to "" instead of null so it sorts correctly among other severities

@@ -6,7 +6,6 @@ import { RowDef } from "components/EnhancedTable";
 import { t } from "@lingui/macro";
 import { i18n } from "@lingui/core";
 
-
 // split multiline strings on comma, newline, (& space)
 export const SPLIT_MULTILINE_CSN_REGEX = /\s*[,\s]/gm;
 export const SPLIT_MULTILINE_CN_REGEX = /[,\n]/gm;
@@ -219,36 +218,36 @@ export const exportToCsv = (
 	});
 };
 
-export const formatLocationName = (location: string):string => {
-	switch(location) {
+export const formatLocationName = (location: string): string => {
+	switch (location) {
 		case "wiki_commit":
-			return i18n._(t`Wiki Commit`)
+			return i18n._(t`Wiki Commit`);
 		case "issue_title":
-			return i18n._(t`Issue Title`)
+			return i18n._(t`Issue Title`);
 		case "issue_body":
-			return i18n._(t`Issue Body`)
+			return i18n._(t`Issue Body`);
 		case "issue_comment":
-			return i18n._(t`Issue Comment`)
+			return i18n._(t`Issue Comment`);
 		case "discussion_title":
-			return i18n._(t`Discussion Title`)
+			return i18n._(t`Discussion Title`);
 		case "discussion_body":
-			return i18n._(t`Discussion Body`)
+			return i18n._(t`Discussion Body`);
 		case "discussion_comment":
-			return i18n._(t`Discussion Comment`)
+			return i18n._(t`Discussion Comment`);
 		case "pull_request_title":
-			return i18n._(t`Pull Request Title`)
+			return i18n._(t`Pull Request Title`);
 		case "pull_request_body":
-			return i18n._(t`Pull Request Body`)
+			return i18n._(t`Pull Request Body`);
 		case "pull_request_comment":
-			return i18n._(t`Pull Request Comment`)
+			return i18n._(t`Pull Request Comment`);
 		case "pull_request_review":
-			return i18n._(t`Pull Request Review`)
+			return i18n._(t`Pull Request Review`);
 		case "pull_request_review_comment":
-			return i18n._(t`Pull Request Review Comment`)
+			return i18n._(t`Pull Request Review Comment`);
 		default:
 			return location;
 	}
-}
+};
 
 const formatters = {
 	formatDate: formatDate,
