@@ -1,7 +1,6 @@
 import json
 import uuid
 import sys
-from typing import Tuple
 
 from artemislib.github.api import GitHubAPI
 from engine.plugins.lib import utils
@@ -54,7 +53,7 @@ def _ghas_secrets_enabled(gh: GitHubAPI) -> bool:
     return resp.get("security_and_analysis", {}).get("secret_scanning", {}).get("status") == "enabled"
 
 
-def _ghas_secrets(gh: GitHubAPI, path: str) -> Tuple[list[dict], dict]:
+def _ghas_secrets(gh: GitHubAPI, path: str) -> tuple[list[dict], dict]:
     results = []
     event_info = {}
 
