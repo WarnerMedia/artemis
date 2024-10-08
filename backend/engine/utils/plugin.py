@@ -719,6 +719,8 @@ def get_plugin_command(
 
 
 def get_plugin_list() -> list[str]:
+    # Note: Using engine.plugins.lib.utils.validate_plugin_name() currently
+    #       causes a circular import at runtime.
     return sorted(
         [
             e.name
