@@ -100,7 +100,7 @@ export function makeServer() {
 		routes() {
 			this.namespace = process.env.REACT_APP_API_NAMESPACE || "/api";
 
-			// // add request delay in dev, NOT in test
+			// add request delay in dev, NOT in test
 			if (process.env.NODE_ENV === "development") {
 				this.timing = AppGlobals.APP_DEV_REQUEST_DELAY; // enable API response delay to slow down ALL the API requests to view UI progress bars, animations
 			}
