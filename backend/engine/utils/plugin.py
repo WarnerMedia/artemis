@@ -37,7 +37,6 @@ from env import (
     CONFIGURATION_EVENTS_ENABLED,
     VULNERABILITY_EVENTS_ENABLED,
 )
-from engine.plugins.lib.utils import validate_plugin_name
 
 log = Logger(__name__)
 
@@ -721,7 +720,11 @@ def get_plugin_command(
 
 def get_plugin_list() -> list[str]:
     return sorted(
-        [e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if validate_plugin_name(e.name) and e.is_dir()]
+        [
+            e.name
+            for e in os.scandir(os.path.join(ENGINE_DIR, "plugins"))
+            if e.name != "lib" and not e.name.startswith("_") and e.is_dir()
+        ]
     )
 
 
