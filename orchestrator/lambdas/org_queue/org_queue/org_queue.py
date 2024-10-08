@@ -25,7 +25,7 @@ log = Logger(service=APPLICATION, name="org_queue")
 metrics = get_metrics()
 
 FAILED = {}
-DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
+DEFAULT_PLUGINS = ["gitsecrets", "trufflehog", "base_images"]  # default plugins to use if none are specified
 
 
 @metrics.log_metrics

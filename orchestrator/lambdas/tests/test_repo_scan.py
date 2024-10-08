@@ -107,7 +107,7 @@ RECEIPT_HANDLES = ["jumbledhashyoucantreadthisitstoojumbled"]
 RESPONSE_CODE_PASS = 200
 RESPONSE_CODE_FAIL = 401
 RESPONSE_TUPLE = namedtuple("response_tuple", ["status_code", "text"])
-TEST_PLUGINS = ["gitsecrets", "base_images"]
+TEST_PLUGINS = ["gitsecrets", "trufflehog", "base_images"]
 
 
 @dataclass
