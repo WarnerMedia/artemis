@@ -56,6 +56,7 @@ type HiddenFindingSecret = HiddenFindingBase & {
 		commit: string;
 		validity?: SecretValidity;
 		location?: string;
+		url?: string;
 	};
 };
 

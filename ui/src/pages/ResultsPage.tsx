@@ -1403,7 +1403,7 @@ export const HiddenFindingDialog = (props: {
 						value={item?.commit ?? ""}
 					/>
 				);
-				item?.locationType === "commit" ?
+				row?.locationType === "commit" ?
 					details.push(
 						<FindingListItem
 							key="finding-details-fileline"
@@ -4000,7 +4000,6 @@ export const SecretsTabContent = (props: {
 
 	for (const [filename, items] of Object.entries(scan.results?.secrets ?? {})) {
 		items.forEach((item: SecretFinding) => {
-			console.log(item)
 			// single matching hidden finding
 			const findings = hiddenFindings.find((hf) => {
 				return (
@@ -4017,13 +4016,15 @@ export const SecretsTabContent = (props: {
 					"-"
 				),
 				type: "secret",
-				url: scan.service + "/" + scan.repo,
+				url: item?.url === "" ? scan.service + "/" + scan.repo : item.url,
 				createdBy: currentUser.email,
 				// hidden finding data stored in "hiddenFindings" field
 				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
 				hasHiddenFindings: Boolean(findings),
 				hiddenFindings: findings ? [findings] : undefined,
 				filename: formatLocationName(filename),
+				location: item?.location ?? "commit",
+
 				line: item.line===0 ? "": item.line,
 				resource: item.type,
 				commit: item.commit,
@@ -4040,8 +4041,7 @@ export const SecretsTabContent = (props: {
 		});
 	}
 	let secretSource = <></>;
-	console.log(selectedRow)
-	if (selectedRow?.details?.location === "" || selectedRow?.details?.location === "commit" || selectedRow?.details?.location === "wiki_commit") {
+	if (!selectedRow?.location || selectedRow?.location === "" || selectedRow?.location === "commit") {
 		secretSource = (<ListItemText
 		primary={
 			<>
@@ -4066,7 +4066,6 @@ export const SecretsTabContent = (props: {
 		}
 	/>)
 	} else {
-		console.log("sr", selectedRow)
 		secretSource = (<ListItemText
 		primary={
 			<>
@@ -5757,6 +5756,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												</i>
 											)
 										}
+										secondaryTypographyProps={{component:"div"}}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -5937,6 +5937,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								<ListItemText
 									primary={i18n._(t`Results`)}
 									secondary={resultsChip}
+									secondaryTypographyProps={{component:"div"}}
 								/>
 							</Tooltip>
 						</ListItem>
@@ -6219,18 +6220,18 @@ export const TabContent = (props: {
 				}
 
 				case "secret": {
+
 					row = {
 						...row,
 						source: item.value.filename.replace(/ /g, ''),
 						filename: item.value.filename,
 						location: (item.value.line === 0) ? "": item.value.line,
-						location_type: item?.value?.location ?? "commit",
+						locationType: item?.value?.location ?? "commit",
 						component: item.value.commit,
 						severity: "", // default to "" instead of null so it sorts correctly among other severities
 						hiddenFindings: [{ ...item }],
 						unhiddenFindings,
 					};
-					console.log(row)
 					rows.push(row);
 					summary.secret += 1;
 					break;

@@ -150,13 +150,14 @@ export interface SecretDetail {
 	readonly type: string;
 	readonly validity: SecretValidity;
 	readonly source: string;
-	readonly location?: string;
 }
 
 export interface SecretFinding {
 	line: number;
 	type: string;
 	commit: string;
+	location?: string;
+	url?: string;
 	details?: ReadonlyArray<SecretDetail>;
 }
 
