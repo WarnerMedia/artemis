@@ -65,6 +65,10 @@ Stop all containers and release resources:
 
 If an `.env` file exists, then it will be used to set the environment of the plugin container.
 
+Suggested environment variables:
+
+* `ARTEMIS_PLUGIN_DEBUG` - Set to `1` to enable debug logging in the plugin loader.
+
 ### Plugin command-line arguments
 
 The passes three JSON command-line arguments to the plugin: Engine vars, images, and the plugin config.

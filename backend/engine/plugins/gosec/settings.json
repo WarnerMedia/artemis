@@ -1,5 +1,6 @@
 {
     "name": "GoSec",
     "type": "static_analysis",
-    "image": "$ECR/artemis/golang:latest"
+    "image": "$ECR/artemis/golang:latest",
+    "runner": "boxed"
 }

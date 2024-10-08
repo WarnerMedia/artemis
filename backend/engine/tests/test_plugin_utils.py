@@ -15,3 +15,16 @@ class TestPluginUtils(unittest.TestCase):
         self.assertEqual(args.engine_vars["foo"], "bar")
         self.assertEqual(args.path, "/work/base/")
         self.assertEqual(args.test, "foo")
+
+    def test_validate_plugin_name(self):
+        test_cases: list[tuple[str, bool]] = [
+            ("foo", True),
+            ("bar_baz", True),
+            ("Quux", True),
+            ("__init__", False),
+            ("lib", False),
+        ]
+        for test_case in test_cases:
+            with self.subTest(test_case=test_case):
+                actual = utils.validate_plugin_name(test_case[0])
+                self.assertEqual(actual, test_case[1])

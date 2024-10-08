@@ -46,6 +46,7 @@ function init_compose {
   local plugin="$1"; shift
   local plugin_image="$1"; shift
   local target="$1"; shift
+  local runner="$1"; shift
   local debug_shell=("$@")
 
   echo "==> Generating configuration for plugin: $plugin"
@@ -54,6 +55,19 @@ function init_compose {
   local plugindir="$TEMPDIR/plugin"
   mkdir "$plugindir" || return 1
 
+  local plugincmd
+  case "$runner" in
+    core)
+      plugincmd="python /srv/engine/plugins/$plugin/main.py"
+      ;;
+    boxed)
+      plugincmd="/srv/engine/plugins/plugin.sh --quiet -- $plugin"
+      ;;
+    *)
+      echo "Unsupported plugin runner: $runner" >&2
+      return 1
+  esac
+
   # Note: We use /bin/sh for the entrypoint scripts since we don't know
   #       if the containers have Bash available.
 
@@ -61,7 +75,7 @@ function init_compose {
   echo "--> Generating: $plugin_entry"
   cat <<EOD > "$plugin_entry" || return 1
 #!/bin/sh
-python /srv/engine/plugins/$plugin/main.py \
+$plugincmd \
   "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
   "\$(cat /opt/artemis-run-plugin/images.json)" \
   "\$(cat /opt/artemis-run-plugin/config.json)"
@@ -158,17 +172,21 @@ function do_run {
     do_clean
   fi
 
-  # Determine the local image name for the plugin.
+  # Determine the local image name and runnner for the plugin.
+  { read -r image; read -r runner; } < \
+    <(jq -r '.image,.runner' "$plugindir/settings.json") || return 1
   # shellcheck disable=SC2016
-  image="$(jq -r .image "$plugindir/settings.json" | sed -r 's/^\$ECR\///')" || return 1
+  image="${image#'$ECR/'}"  # Trim repo placeholder (assume images are local).
   if [[ $image = '' || $image = 'null' ]]; then
     echo "Unable to determine image name for plugin: $plugin" >&2
     return 1
   fi
+  if [[ $runner = '' || $runner = 'null' ]]; then
+    runner=core
+  fi
 
-  init_compose "$plugin" "$image" "$target" "${debug_shell[@]}" || return 1
+  init_compose "$plugin" "$image" "$target" "$runner" "${debug_shell[@]}" || return 1
 
-  #TODO: Run with engine_vars, scan_images, and plugin_config from user-provided files.
   docker compose -f "$COMPOSEFILE" run --rm --remove-orphans plugin
 }
 
