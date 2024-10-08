@@ -11,7 +11,7 @@ FAIL_CLOSED=0
 
 # Defaults
 DEFAULT_CATEGORIES="[\"vulnerability\", \"secret\"]"
-DEFAULT_PLUGINS="[\"-truffle_hog\", \"-aqua_cli_scanner\"]"
+DEFAULT_PLUGINS="[\"-trufflehog\", \"-aqua_cli_scanner\"]"
 
 usage() {
   echo "artemis-scan.sh [-h] [-b] [-c] [-P...] [-C...] [-i...] [-e...] <SERVICE> <REPO> <BRANCH> <SEVERITY>"
