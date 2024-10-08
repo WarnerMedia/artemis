@@ -44,7 +44,7 @@ from repo.util.const import (
     WL_VULN_RAW_OPT_KEYS,
 )
 from repo.util.env import DEFAULT_BATCH_PRIORITY, DEFAULT_DEPTH, DEFAULT_INCLUDE_DEV
-from repo.util.utils import Logger
+from artemislib.logging import Logger
 
 log = Logger(__name__)
 

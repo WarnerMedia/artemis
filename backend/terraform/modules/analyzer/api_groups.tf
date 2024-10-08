@@ -189,21 +189,19 @@ resource "aws_api_gateway_integration" "api_v1_groups_id_members_uid" {
 
 resource "aws_lambda_function" "groups-handler" {
   function_name = "${var.app}-groups-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/groups/v${var.ver}/groups.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/groups/v${var.ver}/groups.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 300
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -237,21 +235,19 @@ resource "aws_lambda_function" "groups-handler" {
 
 resource "aws_lambda_function" "groups-members-handler" {
   function_name = "${var.app}-groups-members-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/groups_members/v${var.ver}/groups_members.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/groups_members/v${var.ver}/groups_members.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 300
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -285,21 +281,19 @@ resource "aws_lambda_function" "groups-members-handler" {
 
 resource "aws_lambda_function" "groups-keys-handler" {
   function_name = "${var.app}-groups-keys-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/groups_keys/v${var.ver}/groups_keys.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 300
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [

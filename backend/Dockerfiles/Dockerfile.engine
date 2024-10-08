@@ -3,11 +3,14 @@ ARG ENGINE_BASE=3.9-slim-bullseye
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.9-bullseye as builder
+FROM python:3.9-bullseye AS builder
 
 # Install the Docker repository
+# hadolint ignore=DL3008
 RUN apt-get update \
-    && apt-get install lsb-release software-properties-common -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
+        lsb-release \
+        software-properties-common \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
@@ -17,17 +20,17 @@ RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python:$ENGINE_BASE as app
+FROM python:$ENGINE_BASE AS app
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-RUN mkdir -p /srv/engine \
-    && mkdir -p /src
+RUN mkdir -p /srv/engine
 
-COPY Pipfile ./
-COPY Pipfile.lock ./
-COPY ./libs/ /src/
+WORKDIR /src
+COPY libs/ .
+COPY Pipfile .
+COPY Pipfile.lock .
 
 # Copy over the apt config from the builder that has the Docker repository
 # already set up.
@@ -38,22 +41,23 @@ COPY --from=builder /etc/apt /etc/apt
 # - Install Engine prerequisites
 # - Install Pipenv environment
 # - Install Artemis libraries
-# hadolint ignore=DL3013
+# hadolint ignore=DL3008,DL3013,DL3042
 RUN apt-get update \
     && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
     && apt-get upgrade -y \
     && apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list \
-    && apt-get install \
-    docker-ce-cli \
-    git \
-    openssh-client -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
+        docker-ce-cli \
+        git \
+        openssh-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip install --upgrade setuptools==70.3.0 \
-    && pip install --no-cache-dir pipenv==2024.0.1 \
+    && pip install pipenv==2024.0.1 \
     && pipenv install --system --deploy \
     && pip install /src/artemislib \
     && pip install /src/artemisdb \
+    && rm -rf /root/.cache/pip /root/.cache/pipenv \
     && rm -r /src
 
 WORKDIR /srv/engine

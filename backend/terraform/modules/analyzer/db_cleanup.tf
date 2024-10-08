@@ -4,21 +4,19 @@
 
 resource "aws_lambda_function" "db-cleanup" {
   function_name = "${var.app}-db-cleanup"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/db_cleanup/v${var.ver}/db_cleanup.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/db_cleanup/v${var.ver}/db_cleanup.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 4096
   timeout       = 900
+  role          = aws_iam_role.db-cleanup-lambda-role.arn
 
-  role = aws_iam_role.db-cleanup-lambda-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
