@@ -559,18 +559,18 @@ class TestGenerateReport(unittest.TestCase):
                         "type": unittest.mock.ANY,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_1,
                                 "validity": "unknown",
                                 "source": SECRET_PLUGIN_NAME,
-                                "url": None,
                             },
                             {
                                 "type": SECRET_TYPE_2,
                                 "validity": "active",
                                 "source": SECRET_PLUGIN_NAME,
-                                "url": None,
                             },
                         ],
                     }
@@ -603,18 +603,18 @@ class TestGenerateReport(unittest.TestCase):
                         "type": SECRET_TYPE_1,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_1,
                                 "validity": "unknown",
                                 "source": SECRET_PLUGIN_NAME,
-                                "url": None,
                             },
                             {
                                 "type": SECRET_TYPE_1,
                                 "validity": "active",
                                 "source": SECRET_PLUGIN_NAME,
-                                "url": None,
                             },
                         ],
                     }
@@ -643,12 +643,13 @@ class TestGenerateReport(unittest.TestCase):
                         "type": SECRET_TYPE_1,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_1,
                                 "validity": "active",
                                 "source": SECRET_PLUGIN_NAME,
-                                "url": None,
                             }
                         ],
                     }
@@ -658,12 +659,13 @@ class TestGenerateReport(unittest.TestCase):
                         "type": SECRET_TYPE_2,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_2,
                                 "validity": "inactive",
                                 "source": SECRET_PLUGIN_NAME,
-                                "url": None,
                             }
                         ],
                     }
