@@ -2,12 +2,12 @@ from string import Template
 
 import requests
 
+from artemislib.logging import Logger
 from repo.util.aws import AWSConnect
 from repo.util.const import PROCESS_RESPONSE_TUPLE
 from repo.util.env import DEFAULT_ORG
 from repo.util.identity import Identity
 from repo.util.utils import (
-    Logger,
     auth,
     build_options_map,
     get_api_key,
