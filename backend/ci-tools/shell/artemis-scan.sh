@@ -99,7 +99,7 @@ SEVERITY=$4
 if [ $BASELINE -eq 1 ]; then
   # Baseline scan config
   CATEGORIES="[\"vulnerability\", \"secret\", \"static_analysis\", \"sbom\", \"inventory\", \"configuration\"]"
-  PLUGINS="[\"-truffle_hog\", \"-aqua_cli_scanner\", \"-nodejsscan\"]"
+  PLUGINS="[\"-trufflehog\", \"-aqua_cli_scanner\", \"-nodejsscan\"]"
 else
   # Use user-specified categories, if any
   if [ ${#userCategories[@]} -gt 0 ]; then
@@ -182,7 +182,7 @@ done
 log "Running Artemis scan against $BRANCH branch of $SERVICE/$RESOURCE"
 log "Artemis API endpoint: $ARTEMIS_API"
 
-# Initiate the scan. The default config is to scan for vulnerabilities and secrets but not scan using truffle_hog
+# Initiate the scan. The default config is to scan for vulnerabilities and secrets but not scan using trufflehog
 # because it's long-running and in a CI context we only care about secrets in the current code and not the commit
 # history.
 RESP=$(curl --silent --write-out "\n%{http_code}" \
