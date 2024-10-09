@@ -1404,7 +1404,7 @@ export const HiddenFindingDialog = (props: {
 							value={item?.commit ?? ""}
 						/>
 					);
-				row?.locationType === "commit"
+				!row?.locationType || row?.locationType === "commit"
 					? details.push(
 							<FindingListItem
 								key="finding-details-fileline"
