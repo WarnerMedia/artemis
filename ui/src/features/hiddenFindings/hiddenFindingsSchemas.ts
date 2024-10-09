@@ -55,6 +55,8 @@ type HiddenFindingSecret = HiddenFindingBase & {
 		line: number;
 		commit: string;
 		validity?: SecretValidity;
+		location?: string;
+		url?: string;
 	};
 };
 
@@ -119,7 +121,7 @@ const hiddenFindingValueConfigSchema = Yup.object()
 const hiddenFindingValueSecretSchema = Yup.object()
 	.shape({
 		filename: Yup.string().defined(),
-		line: Yup.number().defined().positive().integer(),
+		line: Yup.number().defined().integer().min(0),
 		commit: Yup.string().defined(),
 	})
 	.defined();

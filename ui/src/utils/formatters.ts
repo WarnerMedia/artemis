@@ -3,6 +3,8 @@ import { browserLanguage } from "App";
 import { APP_EXPORT_CLASSIFICATION } from "app/globals";
 import { serviceMap } from "app/services";
 import { RowDef } from "components/EnhancedTable";
+import { t } from "@lingui/macro";
+import { i18n } from "@lingui/core";
 
 // split multiline strings on comma, newline, (& space)
 export const SPLIT_MULTILINE_CSN_REGEX = /\s*[,\s]/gm;
@@ -216,8 +218,40 @@ export const exportToCsv = (
 	});
 };
 
+export const formatLocationName = (location: string): string => {
+	switch (location) {
+		case "wiki_commit":
+			return i18n._(t`Wiki Commit`);
+		case "issue_title":
+			return i18n._(t`Issue Title`);
+		case "issue_body":
+			return i18n._(t`Issue Body`);
+		case "issue_comment":
+			return i18n._(t`Issue Comment`);
+		case "discussion_title":
+			return i18n._(t`Discussion Title`);
+		case "discussion_body":
+			return i18n._(t`Discussion Body`);
+		case "discussion_comment":
+			return i18n._(t`Discussion Comment`);
+		case "pull_request_title":
+			return i18n._(t`Pull Request Title`);
+		case "pull_request_body":
+			return i18n._(t`Pull Request Body`);
+		case "pull_request_comment":
+			return i18n._(t`Pull Request Comment`);
+		case "pull_request_review":
+			return i18n._(t`Pull Request Review`);
+		case "pull_request_review_comment":
+			return i18n._(t`Pull Request Review Comment`);
+		default:
+			return location;
+	}
+};
+
 const formatters = {
 	formatDate: formatDate,
+	formatLocationName: formatLocationName,
 	capitalize: capitalize,
 	compareButIgnoreLeadingDashes: compareButIgnoreLeadingDashes,
 	vcsHotLink: vcsHotLink,

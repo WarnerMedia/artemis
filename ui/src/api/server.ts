@@ -631,6 +631,7 @@ export function makeServer() {
 						filename: "folder/badfile",
 						line: 17,
 						commit: "q3498tlsdf9834tkjsdfg98u34t",
+						location: "commit",
 					},
 					expires: null,
 					reason: "test existing hidden finding, secret",
@@ -649,6 +650,23 @@ export function makeServer() {
 					},
 					expires: null,
 					reason: "test existing hidden finding, secret",
+					created_by: defaultEmail,
+					created: "2021-01-01T13:01:01Z",
+					updated_by: defaultEmail,
+					updated: "2021-02-02T14:02:02Z",
+				},
+				{
+					id: generateId(),
+					type: "secret",
+					value: {
+						filename: "pull_request_title",
+						line: 0,
+						commit: "",
+						url: "https://github.com/WarnerMedia/artemis/pull/1#issuecomment-000",
+						location: "pull_request_title",
+					},
+					expires: null,
+					reason: "test secret in pull request",
 					created_by: defaultEmail,
 					created: "2021-01-01T13:01:01Z",
 					updated_by: defaultEmail,
@@ -1047,6 +1065,8 @@ export function makeServer() {
 								type: "slack, github",
 								line: 2,
 								commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+								location: "commit",
+								url: "",
 								details: [
 									{
 										type: "slack",
@@ -1071,6 +1091,8 @@ export function makeServer() {
 								type: "slack",
 								line: 22,
 								commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
+								location: "commit",
+								url: "",
 								details: [
 									{
 										type: "slack",
@@ -1090,6 +1112,8 @@ export function makeServer() {
 							type: "aws",
 							line: 1,
 							commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
+							location: "commit",
+							url: "",
 							details: [
 								{
 									type: "aws",
@@ -1100,6 +1124,38 @@ export function makeServer() {
 									type: "aws",
 									validity: SecretValidity.Unknown,
 									source: "Trufflehog (Legacy) Scanner",
+								},
+							],
+						},
+					],
+					discussion_comment: [
+						{
+							type: "slack_api_token",
+							line: 0,
+							commit: "",
+							url: "https://github.com/WarnerMedia/artemis/discussions/1#discussioncomment-000",
+							location: "discussion_comment",
+							details: [
+								{
+									type: "slack_api_token",
+									validity: "inactive",
+									source: "GitHub Advanced Security Secrets",
+								},
+							],
+						},
+					],
+					pull_request_review: [
+						{
+							type: "slack_api_token",
+							line: 0,
+							commit: "",
+							url: "https://github.com/WarnerMedia/artemis/pull/1#pullrequestreview-000",
+							location: "pull_request_review",
+							details: [
+								{
+									type: "slack_api_token",
+									validity: "inactive",
+									source: "GitHub Advanced Security Secrets",
 								},
 							],
 						},
@@ -1152,11 +1208,13 @@ export function makeServer() {
 									type: "postgres",
 									validity: SecretValidity.Inactive,
 									source: "GHAS Secrets",
+									location: "commit",
 								},
 								{
 									type: "postgres",
 									validity: SecretValidity.Inactive,
 									source: "Trufflehog (Legacy) Scanner",
+									location: "",
 								},
 							],
 						},

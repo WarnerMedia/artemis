@@ -228,6 +228,7 @@ import formatters, {
 	compareButIgnoreLeadingDashes,
 	DELETED_REGEX,
 	formatDate,
+	formatLocationName,
 	vcsHotLink,
 } from "utils/formatters";
 import {
@@ -1394,39 +1395,67 @@ export const HiddenFindingDialog = (props: {
 						/>
 					);
 				}
-				details.push(
-					<FindingListItem
-						key="finding-details-commit"
-						id="finding-details-commit"
-						label={<Trans>Commit:</Trans>}
-						value={item?.commit ?? ""}
-					/>
-				);
-				details.push(
-					<FindingListItem
-						key="finding-details-fileline"
-						id="finding-details-fileline"
-						label={
-							hiddenFindingCount ? (
-								<Trans>Hidden in source file:</Trans>
-							) : (
-								<Trans>Found in source file:</Trans>
-							)
-						}
-						value={
-							<ul>
-								<li>
-									<span>
-										<Trans>
-											{item?.filename ?? ""} (Line {item?.line ?? ""})
-										</Trans>
-										<SourceCodeHotLink row={row} addTitle={true} />
-									</span>
-								</li>
-							</ul>
-						}
-					/>
-				);
+				item.commit &&
+					details.push(
+						<FindingListItem
+							key="finding-details-commit"
+							id="finding-details-commit"
+							label={<Trans>Commit:</Trans>}
+							value={item?.commit ?? ""}
+						/>
+					);
+				!row?.locationType || row?.locationType === "commit"
+					? details.push(
+							<FindingListItem
+								key="finding-details-fileline"
+								id="finding-details-fileline"
+								label={
+									hiddenFindingCount ? (
+										<Trans>Hidden in source file:</Trans>
+									) : (
+										<Trans>Found in source file:</Trans>
+									)
+								}
+								value={
+									<ul>
+										<li>
+											<span>
+												<Trans>
+													{item?.filename ?? ""} (Line {item?.line ?? ""})
+												</Trans>
+												<SourceCodeHotLink row={row} addTitle={true} />
+											</span>
+										</li>
+									</ul>
+								}
+							/>
+					  )
+					: details.push(
+							<FindingListItem
+								key="finding-details-fileline"
+								id="finding-details-fileline"
+								label={<Trans>Found in:</Trans>}
+								value={
+									<ul>
+										<li>
+											<span>
+												<Box>
+													<Button
+														startIcon={<OpenInNewIcon />}
+														href={row?.url}
+														target="_blank"
+														rel="noopener noreferrer nofollow"
+														size="small"
+													>
+														{item?.filename}
+													</Button>
+												</Box>
+											</span>
+										</li>
+									</ul>
+								}
+							/>
+					  );
 				break;
 			}
 
@@ -3945,7 +3974,7 @@ export const SecretsTabContent = (props: {
 	);
 
 	const columns: ColDef[] = [
-		{ field: "filename", headerName: i18n._(t`File`) },
+		{ field: "filename", headerName: i18n._(t`Location`) },
 		{ field: "line", headerName: i18n._(t`Line`) },
 		{ field: "resource", headerName: i18n._(t`Type`) },
 		{
@@ -3987,14 +4016,16 @@ export const SecretsTabContent = (props: {
 					"-"
 				),
 				type: "secret",
-				url: scan.service + "/" + scan.repo,
+				url: item?.url === "" ? scan.service + "/" + scan.repo : item.url,
 				createdBy: currentUser.email,
 				// hidden finding data stored in "hiddenFindings" field
 				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
 				hasHiddenFindings: Boolean(findings),
 				hiddenFindings: findings ? [findings] : undefined,
-				filename,
-				line: item.line,
+				filename: formatLocationName(filename),
+				location: item?.location ?? "commit",
+
+				line: item.line === 0 ? "" : item.line,
 				resource: item.type,
 				commit: item.commit,
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
@@ -4009,6 +4040,56 @@ export const SecretsTabContent = (props: {
 			});
 		});
 	}
+	let secretSource = <></>;
+	if (
+		!selectedRow?.location ||
+		selectedRow?.location === "" ||
+		selectedRow?.location === "commit"
+	) {
+		secretSource = (
+			<ListItemText
+				primary={
+					<>
+						{i18n._(t`Found in Source File`)}
+						{selectedRow?.filename && selectedRow?.line && (
+							<CustomCopyToClipboard
+								copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
+							/>
+						)}
+					</>
+				}
+				secondary={
+					<>
+						<span>
+							<Trans>
+								{selectedRow?.filename ?? ""} (Line {selectedRow?.line})
+							</Trans>
+						</span>
+						<SourceCodeHotLink row={selectedRow} addTitle={true} />
+					</>
+				}
+			/>
+		);
+	} else {
+		secretSource = (
+			<ListItemText
+				primary={<>{i18n._(t`Found in ${selectedRow?.filename}`)}</>}
+				secondary={
+					<Box>
+						<Button
+							startIcon={<OpenInNewIcon />}
+							href={selectedRow?.url}
+							target="_blank"
+							rel="noopener noreferrer nofollow"
+							size="small"
+						>
+							{selectedRow?.filename}
+						</Button>
+					</Box>
+				}
+			/>
+		);
+	}
 
 	const secretDialogContent = () => {
 		return (
@@ -4019,31 +4100,7 @@ export const SecretsTabContent = (props: {
 						<Grid item xs={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
-								<ListItem key="secret-source">
-									<ListItemText
-										primary={
-											<>
-												{i18n._(t`Found in Source File`)}
-												{selectedRow?.filename && selectedRow?.line && (
-													<CustomCopyToClipboard
-														copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
-													/>
-												)}
-											</>
-										}
-										secondary={
-											<>
-												<span>
-													<Trans>
-														{selectedRow?.filename ?? ""} (Line{" "}
-														{selectedRow?.line})
-													</Trans>
-												</span>
-												<SourceCodeHotLink row={selectedRow} addTitle={true} />
-											</>
-										}
-									/>
-								</ListItem>
+								<ListItem key="secret-source">{secretSource}</ListItem>
 							</List>
 						</Grid>
 
@@ -4217,7 +4274,7 @@ export const SecretsTabContent = (props: {
 							<FilterField
 								field="filename"
 								autoFocus={true}
-								label={i18n._(t`File`)}
+								label={i18n._(t`Location`)}
 								placeholder={i18n._(t`Contains`)}
 								value={filters["filename"].filter}
 								onClear={handleOnClear}
@@ -5093,7 +5150,9 @@ export const HiddenFindingsTabContent = (props: {
 			.trim()
 			.max(
 				FILEPATH_LENGTH,
-				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`)
+				i18n._(
+					t`Location/File path must be less than ${FILEPATH_LENGTH} characters`
+				)
 			),
 		hf_location: Yup.string()
 			.trim()
@@ -5148,7 +5207,7 @@ export const HiddenFindingsTabContent = (props: {
 		},
 		{
 			field: "source",
-			headerName: i18n._(t`File`),
+			headerName: i18n._(t`Location/File`),
 			children: SourceCell,
 			bodyStyle: {
 				maxWidth: "20rem", // add limits to source file width, otherwise CVE and/or expiration may wrap
@@ -5350,7 +5409,7 @@ export const HiddenFindingsTabContent = (props: {
 							</MuiTextField>
 							<FilterField
 								field="source"
-								label={i18n._(t`File`)}
+								label={i18n._(t`Location/File`)}
 								placeholder={i18n._(t`Contains`)}
 								value={filters["source"].filter}
 								onClear={handleOnClear}
@@ -5702,6 +5761,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												</i>
 											)
 										}
+										secondaryTypographyProps={{ component: "div" }}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -5882,6 +5942,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								<ListItemText
 									primary={i18n._(t`Results`)}
 									secondary={resultsChip}
+									secondaryTypographyProps={{ component: "div" }}
 								/>
 							</Tooltip>
 						</ListItem>
@@ -6166,9 +6227,10 @@ export const TabContent = (props: {
 				case "secret": {
 					row = {
 						...row,
-						source: item.value.filename,
+						source: item.value.filename.replace(/ /g, ""),
 						filename: item.value.filename,
-						location: item.value.line,
+						location: item.value.line === 0 ? "" : item.value.line,
+						locationType: item?.value?.location ?? "commit",
 						component: item.value.commit,
 						severity: "", // default to "" instead of null so it sorts correctly among other severities
 						hiddenFindings: [{ ...item }],
