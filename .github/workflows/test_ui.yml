@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "ui/**"
-      - ".github/workflows/**"
+      - ".github/workflows/test_ui.yml"
 
 jobs:
   test:

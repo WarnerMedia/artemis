@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "orchestrator/**"
-      - ".github/workflows/**"
+      - ".github/workflows/test_orchestrator.yml"
 
 jobs:
   test:
