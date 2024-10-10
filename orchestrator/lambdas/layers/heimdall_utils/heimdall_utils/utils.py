@@ -29,6 +29,10 @@ MAX_HEIMDALL_SCAN_AGE = 83
 log = Logger(service=APPLICATION, name=__name__, child=True)
 
 
+class HeimdallException(Exception):
+    pass
+
+
 class ServiceInfo:
     # pylint: disable=too-many-instance-attributes
     def __init__(self, service, service_dict, org, api_key, repo_cursor=None, branch_cursor=None):
