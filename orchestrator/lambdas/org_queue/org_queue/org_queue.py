@@ -19,6 +19,7 @@ from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
 from heimdall_utils.metrics.factory import get_metrics
+from heimdall_utils.utils import HeimdallException
 from org_queue.org_queue_env import ORG_QUEUE
 
 log = Logger(service=APPLICATION, name="org_queue")
@@ -119,21 +120,26 @@ def get_org_list(services: dict, service: str, org_name: str) -> Union[list, Non
         # Org name has a wildcard pattern so pull all of the orgs from the service
         if not validate_service(services, service, org_name):
             return None
-        service_dict = services.get(service)
+        service_dict = services[service]
         api_key = get_heimdall_secret(service_dict.get("secret_loc")).get("key")
         service_type = service_dict.get("type")
-        if service_type == "github":
-            api_url = get_service_url(service_dict)
-            return org_queue_private_github.GithubOrgs.get_all_orgs(service, api_url, api_key) or []
-        if service_type == "gitlab":
-            api_url = get_service_url(service_dict, False)
-            return org_queue_gitlab.GitlabOrgs.get_groups_and_subgroups(service, api_url, api_key) or []
-        if service_type == "bitbucket":
-            api_url = get_service_url(service_dict)
-            return org_queue_bitbucket.BitbucketOrgs.get_all_orgs(service, api_url, api_key) or []
-        message = f"service {service} of type {service_type} is not supported for wildcard organizations."
-        log.error(message, version_control_service=service)
-        FAILED[f"{service}/{org_name}"] = message
+        error_message = f"service {service} of type {service_type} is not supported for wildcard organizations."
+
+        try:
+            if service_type == "github":
+                api_url = get_service_url(service_dict)
+                return org_queue_private_github.GithubOrgs.get_all_orgs(service, api_url, api_key) or []
+            if service_type == "gitlab":
+                api_url = get_service_url(service_dict, False)
+                return org_queue_gitlab.GitlabOrgs.get_groups_and_subgroups(service, api_url, api_key) or []
+            if service_type == "bitbucket":
+                api_url = get_service_url(service_dict)
+                return org_queue_bitbucket.BitbucketOrgs.get_all_orgs(service, api_url, api_key) or []
+        except HeimdallException as e:
+            error_message = f"Error: {e}"
+
+        log.error(error_message, version_control_service=service)
+        FAILED[f"{service}/{org_name}"] = error_message
         return None
     # Turn a single org name into a list to simplify the queuing logic
     return [org_name]
@@ -167,7 +173,7 @@ def formatted_response(msg=None, code=200):
     return {"isBase64Encoded": "false", "statusCode": code}
 
 
-def generate_batch_id(batch_label: str = None) -> str:
+def generate_batch_id(batch_label: str = None) -> Union[str, None]:
     batch_id = None
     api_key = get_analyzer_api_key(API_KEY_LOC)
     description = f"Heimdall Batch Scan {format_timestamp(get_utc_datetime())}"

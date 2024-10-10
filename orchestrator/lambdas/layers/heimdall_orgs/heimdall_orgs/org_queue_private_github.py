@@ -7,7 +7,7 @@ from aws_lambda_powertools import Logger
 from heimdall_orgs.const import TIMEOUT
 from heimdall_utils.aws_utils import GetProxySecret
 from heimdall_utils.env import APPLICATION
-from heimdall_utils.utils import JSONUtils
+from heimdall_utils.utils import JSONUtils, HeimdallException
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 log = Logger(service=APPLICATION, name=__name__, child=True)
@@ -42,8 +42,7 @@ class GithubOrgs:
         """
         github_orgs = cls(service, api_url, api_key)
         if not github_orgs.get_org_set():
-            log.error("Unexpected error occurred getting %s orgs", service)
-            return None
+            raise HeimdallException(f"Unexpected error occurred getting {service}")
 
         while github_orgs.has_next_page:
             github_orgs.get_org_set()
@@ -112,7 +111,7 @@ class GithubOrgs:
             log.error("Error connecting to %s: %s", self.service, str(e))
             return None
 
-        if response.status_code != 200 or response == None:
+        if response.status_code != 200 or response is None:
             log.info("Error retrieving orgs for %s: %s", self.service, response.text)
             return None
 

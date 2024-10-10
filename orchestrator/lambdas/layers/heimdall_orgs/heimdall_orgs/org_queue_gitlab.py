@@ -81,13 +81,13 @@ class GitlabOrgs:
             for page in range(2, total_pages + 1):
                 page_url = f"{url}&page={page}"
                 page_response = self._query_gitlab_api(page_url)
-                if response:
+                if page_response:
                     page_response = page_response.json()
                     subgroups.extend(page_response)
 
         return subgroups
 
-    def _request_orgs(self, page: int = 1) -> Union[dict, None]:
+    def _request_orgs(self, page: int = 1) -> Union[requests.Response, None]:
         """
         Gets all groups from the service, using the service API.
         NOTE: Current logic only supports private gitlab services.
@@ -104,7 +104,7 @@ class GitlabOrgs:
             return None
         return response
 
-    def _query_gitlab_api(self, url: str):
+    def _query_gitlab_api(self, url: str) -> Union[requests.Response, None]:
         log.debug("GitLab API request: %s", url)
         headers = {"Authorization": "bearer %s" % self.api_key, "Content-Type": "application/json"}
         if REV_PROXY_DOMAIN_SUBSTRING and REV_PROXY_DOMAIN_SUBSTRING in url:
