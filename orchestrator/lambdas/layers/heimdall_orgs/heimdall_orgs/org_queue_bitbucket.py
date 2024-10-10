@@ -6,6 +6,7 @@ import requests
 from aws_lambda_powertools import Logger
 
 from heimdall_orgs.const import TIMEOUT
+from heimdall_utils.utils import HeimdallException
 from heimdall_utils.aws_utils import GetProxySecret
 from heimdall_utils.env import APPLICATION
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
@@ -33,8 +34,7 @@ class BitbucketOrgs:
     def get_all_orgs(cls, service: str, api_url: str, api_key: str):
         bitbucket_orgs = cls(service, api_url, api_key)
         if not bitbucket_orgs.get_org_set():
-            log.error("Unexpected error occurred getting %s orgs", bitbucket_orgs.service)
-            return None
+            raise HeimdallException(f"Unexpected error occurred getting {bitbucket_orgs.service}")
         while not bitbucket_orgs.is_last_page:
             bitbucket_orgs.get_org_set()
 
@@ -55,7 +55,7 @@ class BitbucketOrgs:
         self.next_page_start = response_dict.get("nextPageStart")
         return True
 
-    def request_orgs(self, start: int = 0) -> Union[dict, None]:
+    def request_orgs(self, start: int = 0) -> Union[requests.Response, None]:
         if not self.api_url:
             log.info(
                 "Service %s url was not found and therefore deemed unsupported",
@@ -74,21 +74,19 @@ class BitbucketOrgs:
                 url=f"{self.api_url}/projects?limit=100&start={start}", headers=headers, timeout=TIMEOUT
             )
         except requests.exceptions.Timeout:
-            log.error("Request timed out after %ss retrieving orgs for %s", TIMEOUT, self.service)
-            return None
+            raise HeimdallException(f"Request timed out after {TIMEOUT}s retrieving orgs for {self.service}")
         except requests.ConnectionError as e:
-            log.error("Error connecting to %s: %s", self.service, str(e))
-            return None
+            raise HeimdallException(f"Error connecting to {self.service}: {e}")
 
         if response.status_code != 200:
-            log.info("Error retrieving orgs for %s: %s", self.service, response.text)
+            log.warning("Error retrieving orgs for %s: %s", self.service, response.text)
             return None
         return response
 
 
 def _process_orgs(org_dict: dict) -> set:
     org_output_set = set()
-    org_list = org_dict.get("values")
+    org_list = org_dict["values"]
 
     for org in org_list:
         org_output_set.add(org.get("key"))
