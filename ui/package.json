@@ -23,8 +23,8 @@
     "@mui/material": "^5.13.3",
     "@mui/x-date-pickers": "^5.0.20",
     "@reduxjs/toolkit": "^1.9.7",
-    "@types/node": "^20.16.10",
-    "@types/react": "^18.3.10",
+    "@types/node": "^20.16.11",
+    "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.3.3",
     "autosuggest-highlight": "3.3.4",
@@ -34,7 +34,7 @@
     "formik-mui-lab": "^1.0.0",
     "luxon": "^3.5.0",
     "nanoid": "^5.0.7",
-    "query-string": "^9.1.0",
+    "query-string": "^9.1.1",
     "random-material-color": "^1.0.5",
     "react": "^18.3.1",
     "react-copy-to-clipboard": "^5.1.0",
@@ -52,7 +52,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@babel/types": "^7.25.6",
+    "@babel/types": "^7.25.8",
     "@lingui/cli": "^4.11.4",
     "@lingui/macro": "^4.11.4",
     "@testing-library/jest-dom": "^5.17.0",
