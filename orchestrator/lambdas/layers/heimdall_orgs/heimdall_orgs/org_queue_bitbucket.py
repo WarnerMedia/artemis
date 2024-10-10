@@ -76,7 +76,7 @@ class BitbucketOrgs:
         except requests.exceptions.Timeout:
             raise HeimdallException(f"Request timed out after {TIMEOUT}s retrieving orgs for {self.service}")
         except requests.ConnectionError as e:
-            raise HeimdallException(f"Error connecting to {self.service,}: {e}")
+            raise HeimdallException(f"Error connecting to {self.service}: {e}")
 
         if response.status_code != 200:
             log.warning("Error retrieving orgs for %s: %s", self.service, response.text)
