@@ -56,7 +56,7 @@ Stop all containers and release resources:
 ./plugin.sh clean
 ```
 
-> [!INFO]
+> [!TIP]
 > The `run` command will automatically run `clean` before starting the new containers.
 
 ## Configuration
@@ -71,7 +71,7 @@ Suggested environment variables:
 
 ### Plugin command-line arguments
 
-The passes three JSON command-line arguments to the plugin: Engine vars, images, and the plugin config.
+The engine passes three JSON command-line arguments to the plugin: Engine vars, images, and the plugin config.
 
 Be default, this script will pass an empty object (`{}`) for these arguments.
 
