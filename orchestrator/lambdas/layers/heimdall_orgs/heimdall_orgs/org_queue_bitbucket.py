@@ -79,7 +79,7 @@ class BitbucketOrgs:
             raise HeimdallException(f"Error connecting to {self.service,}: {e}")
 
         if response.status_code != 200:
-            log.info("Error retrieving orgs for %s: %s", self.service, response.text)
+            log.warning("Error retrieving orgs for %s: %s", self.service, response.text)
             return None
         return response
 
