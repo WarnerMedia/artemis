@@ -105,11 +105,9 @@ class GithubOrgs:
                 timeout=TIMEOUT,
             )
         except requests.exceptions.Timeout:
-            log.error("Request timed out after %ss retrieving orgs for %s", TIMEOUT, self.service)
-            return None
+            raise HeimdallException(f"Request timed out after {TIMEOUT}s retrieving orgs for {self.service}")
         except requests.ConnectionError as e:
-            log.error("Error connecting to %s: %s", self.service, str(e))
-            return None
+            raise HeimdallException(f"Error connecting to {self.service,}: {e}")
 
         if response.status_code != 200 or response is None:
             log.info("Error retrieving orgs for %s: %s", self.service, response.text)

@@ -7,6 +7,7 @@ from aws_lambda_powertools import Logger
 from heimdall_orgs.const import TIMEOUT
 from heimdall_utils.aws_utils import GetProxySecret
 from heimdall_utils.env import APPLICATION
+from heimdall_utils.utils import HeimdallException
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 
 log = Logger(service=APPLICATION, name=__name__, child=True)
@@ -112,12 +113,10 @@ class GitlabOrgs:
 
         try:
             response = requests.get(url=url, headers=headers, timeout=TIMEOUT)
-        except requests.Timeout:
-            log.error("Request timed out after %ss retrieving orgs for %s", TIMEOUT, self.service)
-            return None
+        except requests.exceptions.Timeout:
+            raise HeimdallException(f"Request timed out after {TIMEOUT}s retrieving orgs for {self.service}")
         except requests.ConnectionError as e:
-            log.error("Error connecting to %s: %s", self.service, str(e))
-            return None
+            raise HeimdallException(f"Error connecting to {self.service,}: {e}")
 
         if response.status_code != 200:
             log.warning("Error retrieving query: %s", response.text)
