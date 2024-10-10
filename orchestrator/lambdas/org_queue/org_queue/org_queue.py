@@ -62,7 +62,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
     batch_id = generate_batch_id(batch_label)
 
     log.append_keys(batch_id=batch_id)
-    log.info(f"Queueing the following organizations:\n{orgs}")
+    log.info(f"Queuing the following organizations:\n{orgs}")
 
     for org in orgs:
         split = org.split("/", maxsplit=1)
@@ -77,7 +77,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
         org_list = get_org_list(services, service, org_name)
         if not org_list:
             continue
-        log.info("Queuing %d service orgs for service %s", len(org_list), service, version_control_service=service)
+        log.debug("Queuing %d service orgs for service %s", len(org_list), service, version_control_service=service)
         for org_name_str in org_list:
             org_result_str = f"{service}/{org_name_str}"
             if not fnmatch(org_name_str, org_name):
