@@ -18,6 +18,7 @@ ARG PACKAGING_VER
 RUN mkdir -p /src
 COPY ./libs/ /src/
 
+# gitsecrets requires git
 # checkov requires awscli and libffi-dev
 RUN apk add -q --no-cache gcc musl-dev git make bash grep xz libffi-dev && \
     pip install -q --upgrade pip && \
