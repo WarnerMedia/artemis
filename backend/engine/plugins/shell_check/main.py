@@ -36,12 +36,9 @@ def get_files(path):
 
 
 def run_shellcheck(files, path):
-    """Runs Shellcheck across the whole project space.
-    NOTE: During Testing, the Linux shellcheck 0.71 binary did not have the severity argument (-S)
-    If upgrading remedies this, add ["-S", "error"] to the args and remove the level check in parse_output()
-    """
+    """Runs Shellcheck across the whole project space."""
 
-    args = ["shellcheck", "-f", "json"] + files
+    args = ["shellcheck", "-f", "json", "-S", "error"] + files
     proc = subprocess.run(args, cwd=path, capture_output=True, check=False)
 
     if proc.stdout:
@@ -53,8 +50,6 @@ def run_shellcheck(files, path):
 def parse_output(output):
     result = []
     for item in output:
-        if item["level"] != "error":
-            continue
         result.append(
             {
                 "filename": item["file"],
