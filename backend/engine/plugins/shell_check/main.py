@@ -5,6 +5,7 @@ shell_check plugin
 import json
 import pathlib
 import subprocess
+from typing import Any, Optional
 
 from engine.plugins.lib import utils
 
@@ -30,7 +31,7 @@ def get_files(path: str) -> list[str]:
     ]
 
 
-def run_shellcheck(files, path):
+def run_shellcheck(files: list[str], path: str) -> Optional[list[Any]]:
     """Runs Shellcheck across the whole project space."""
 
     args = ["shellcheck", "-f", "json", "-S", "error"] + files
@@ -42,7 +43,7 @@ def run_shellcheck(files, path):
         logger.error(proc.stderr.decode("utf-8"))
 
 
-def parse_output(output):
+def parse_output(output: list[Any]) -> list[dict[str, str]]:
     result = []
     for item in output:
         result.append(
@@ -57,17 +58,17 @@ def parse_output(output):
     return result
 
 
-def main(path=None):
+def main(path: Optional[str] = None):
     logger.info("Executing Shell Check")
     if not path:
         args = utils.parse_args()
-        path = args.path
+        path = str(args.path)
     files = get_files(path)
+    result = []
     if files:
         response = run_shellcheck(files, path)
-        result = parse_output(response)
-    else:
-        result = []
+        if response:
+            result = parse_output(response)
 
     output = {"success": not bool(result), "details": result}
 
