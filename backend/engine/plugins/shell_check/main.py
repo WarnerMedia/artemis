@@ -32,7 +32,7 @@ def get_files(path: str) -> list[str]:
 
 
 def run_shellcheck(files: list[str], path: str) -> Optional[list[Any]]:
-    """Runs Shellcheck across the whole project space."""
+    """Runs ShellCheck across the whole project space."""
 
     args = ["shellcheck", "-f", "json", "-S", "error"] + files
     proc = subprocess.run(args, cwd=path, capture_output=True, check=False)
