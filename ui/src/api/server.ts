@@ -1076,7 +1076,7 @@ export function makeServer() {
 									{
 										type: "github",
 										validity: SecretValidity.Unknown,
-										source: "Trufflehog (Legacy) Scanner",
+										source: "Trufflehog Scanner",
 									},
 								],
 							},
@@ -1102,7 +1102,7 @@ export function makeServer() {
 									{
 										type: "slack",
 										validity: SecretValidity.Unknown,
-										source: "Trufflehog (Legacy) Scanner",
+										source: "Trufflehog Scanner",
 									},
 								],
 							},
@@ -1123,7 +1123,7 @@ export function makeServer() {
 								{
 									type: "aws",
 									validity: SecretValidity.Unknown,
-									source: "Trufflehog (Legacy) Scanner",
+									source: "Trufflehog Scanner",
 								},
 							],
 						},
@@ -1176,7 +1176,7 @@ export function makeServer() {
 								{
 									type: "postgres",
 									validity: SecretValidity.Inactive,
-									source: "Trufflehog (Legacy) Scanner",
+									source: "Trufflehog Scanner",
 								},
 							],
 						},
@@ -1195,7 +1195,7 @@ export function makeServer() {
 								{
 									type: "postgres",
 									validity: SecretValidity.Inactive,
-									source: "Trufflehog (Legacy) Scanner",
+									source: "Trufflehog Scanner",
 								},
 							],
 						},
@@ -1213,7 +1213,7 @@ export function makeServer() {
 								{
 									type: "postgres",
 									validity: SecretValidity.Inactive,
-									source: "Trufflehog (Legacy) Scanner",
+									source: "Trufflehog Scanner",
 									location: "",
 								},
 							],
@@ -1228,7 +1228,7 @@ export function makeServer() {
 								{
 									type: "SSH Private Key",
 									validity: SecretValidity.Unknown,
-									source: "Trufflehog (Legacy) Scanner",
+									source: "Trufflehog Scanner",
 								},
 								{
 									type: "ssh",
