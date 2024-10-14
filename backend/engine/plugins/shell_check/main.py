@@ -3,36 +3,31 @@ shell_check plugin
 """
 
 import json
+import pathlib
 import subprocess
 
 from engine.plugins.lib import utils
 
 logger = utils.setup_logging("shell_check")
 
+# Filename extensions to include in scanning.
+INCLUDE_EXTS = {".sh", ".bash", ".ksh", ".bashrc", ".bash_login", ".bash_logout", ".bash_profile", ".bash"}
 
-def get_files(path):
-    """Gets all files matching what Shell Check can scan.
-    NOTE: This subprocess uses shell. DO NOT add arguments to this subprocess to avoid shell injection vulnerabilities.
-    Reason: the find command is incredibly fast but I was not able to perform globbing outside of a shell.
-    Please periodically check the wiki for any recursion feature improvements in shellcheck:
-    https://github.com/koalaman/shellcheck/wiki/Recursiveness
+
+def get_files(path: str) -> list[str]:
     """
-    proc = subprocess.run(
-        [
-            "find . -type f \\( -name '*.sh' -o -name '*.bash' -o -name '*.ksh' -o -name '*.bashrc' -o -name "
-            "'*.bash_profile' -o -name '*.bash_login' -o -name '*.bash_logout' \\)"
-        ],
-        cwd=path,
-        capture_output=True,
-        check=False,
-        shell=True,
-    )
-    if proc.stdout:
-        files = proc.stdout.decode("utf-8").split("\n")
-        if "" in files:
-            files.remove("")
-        return files
-    return []
+    Recursively finds all files matching what can be scanned, starting from the
+    base path.
+
+    The returned filenames are relative to the base path, with "./" prepended
+    (to match prior versions).
+    """
+    base = pathlib.Path(path)
+    return [
+        f"./{f.relative_to(base)}"
+        for f in base.glob("**/*")
+        if f.is_file() and (f.name in INCLUDE_EXTS or f.suffix in INCLUDE_EXTS)
+    ]
 
 
 def run_shellcheck(files, path):
