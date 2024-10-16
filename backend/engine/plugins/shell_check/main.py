@@ -12,7 +12,7 @@ from engine.plugins.lib import utils
 logger = utils.setup_logging("shell_check")
 
 # Filename extensions to include in scanning.
-INCLUDE_EXTS = {".sh", ".bash", ".ksh", ".bashrc", ".bash_login", ".bash_logout", ".bash_profile", ".bash"}
+INCLUDE_EXTS = {".sh", ".bash", ".ksh", ".bashrc", ".bash_login", ".bash_logout", ".bash_profile"}
 
 
 def get_files(path: str) -> list[str]:
