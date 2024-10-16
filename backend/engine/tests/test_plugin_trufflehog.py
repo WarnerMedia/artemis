@@ -13,7 +13,7 @@ from engine.plugins.trufflehog import main as trufflehog
 
 EXAMPLE_EMAIL = "email@example.com"
 
-EXAMPLE_FINDING = {
+EXAMPLE_UNKNOWN_FINDING = {
     "SourceMetadata": {
         "Data": {
             "Git": {
@@ -32,7 +32,7 @@ EXAMPLE_FINDING = {
     "SourceType": 7,
     "SourceName": "trufflehog - git",
     "DetectorType": 17,
-    "DetectorName": "URI",
+    "DetectorName": "Github",
     "DecoderName": "PLAIN",
     "Verified": False,
     "VerificationError": "i/o timeout",
@@ -43,7 +43,7 @@ EXAMPLE_FINDING = {
     "StructuredData": None,
 }
 
-EXAMPLE_LEGIT_FINDING = {
+EXAMPLE_ACTIVE_FINDING = {
     "SourceMetadata": {
         "Data": {
             "Git": {
@@ -62,16 +62,48 @@ EXAMPLE_LEGIT_FINDING = {
     "SourceType": 7,
     "SourceName": "trufflehog - git",
     "DetectorType": 17,
-    "DetectorName": "DetectorName",
+    "DetectorName": "Github",
     "DecoderName": "PLAIN",
-    "Verified": False,
-    "VerificationError": "i/o timeout",
+    "Verified": True,
     "Raw": "YER' A STRING 'ARRY",
     "RawV2": "YER' A STRING 'ARRY",
     "Redacted": "YER A ****** 'ARRY",
     "ExtraData": None,
     "StructuredData": None,
 }
+
+EXAMPLE_INACTIVE_FINDING = {
+    "SourceMetadata": {
+        "Data": {
+            "Git": {
+                "link": "https://example.com/example/example/blob/abcdef01234567890abcdef01234567890abcdef/example.py#L1",
+                "repository": "https://example.com/example/example.git",
+                "commit": "corned_beef_hash",
+                "email": EXAMPLE_EMAIL,
+                "file": "The Pacific Crest Trail",
+                "timestamp": "2021-01-01 00:00:00 +0000",
+                "line": 1,
+                "visibility": 1,
+            }
+        }
+    },
+    "SourceID": 1,
+    "SourceType": 7,
+    "SourceName": "trufflehog - git",
+    "DetectorType": 17,
+    "DetectorName": "Github",
+    "DecoderName": "PLAIN",
+    "Verified": False,
+    "Raw": "YER' A STRING 'ARRY",
+    "RawV2": "YER' A STRING 'ARRY",
+    "Redacted": "YER A ****** 'ARRY",
+    "ExtraData": None,
+    "StructuredData": None,
+}
+
+EXAMPLE_UNKNOWN_BECAUSE_NEVER_INACTIVE_FINDING = copy.deepcopy(EXAMPLE_INACTIVE_FINDING)
+EXAMPLE_UNKNOWN_BECAUSE_NEVER_INACTIVE_FINDING["DetectorName"] = "PrivateKey"
+
 
 EXAMPLE_LOCKFILE_FINDING = {
     "SourceMetadata": {
@@ -150,7 +182,7 @@ class TestPluginTrufflehog(unittest.TestCase):
 
     @patch("engine.plugins.trufflehog.main.subprocess")
     def test_run_security_checker(self, subproc):
-        test = f"{json.dumps(EXAMPLE_FINDING)}\n".encode("utf-8")
+        test = f"{json.dumps(EXAMPLE_UNKNOWN_FINDING)}\n".encode("utf-8")
         errors_dict = {
             "errors": [],
             "alerts": [],
@@ -162,13 +194,13 @@ class TestPluginTrufflehog(unittest.TestCase):
         subproc.run.return_value = mock_output
 
         actual = trufflehog.run_security_checker(utils.CODE_DIRECTORY, errors_dict, verified=True)
-        expected = [EXAMPLE_FINDING]
+        expected = [EXAMPLE_UNKNOWN_FINDING]
 
         self.assertEqual(actual, expected)
 
     @patch("engine.plugins.trufflehog.main.subprocess")
     def test_run_security_checker_verified_true(self, subproc):
-        dummy_output = f"{json.dumps(EXAMPLE_FINDING)}\n".encode("utf-8")
+        dummy_output = f"{json.dumps(EXAMPLE_UNKNOWN_FINDING)}\n".encode("utf-8")
         errors_dict = {
             "errors": [],
             "alerts": [],
@@ -192,7 +224,7 @@ class TestPluginTrufflehog(unittest.TestCase):
 
     @patch("engine.plugins.trufflehog.main.subprocess")
     def test_run_security_checker_verified_false(self, subproc):
-        dummy_output = f"{json.dumps(EXAMPLE_FINDING)}\n".encode("utf-8")
+        dummy_output = f"{json.dumps(EXAMPLE_UNKNOWN_FINDING)}\n".encode("utf-8")
         errors_dict = {
             "errors": [],
             "alerts": [],
@@ -225,10 +257,10 @@ class TestPluginTrufflehog(unittest.TestCase):
             "alerts": [],
             "debug": [],
         }
-        test = [EXAMPLE_LEGIT_FINDING, EXAMPLE_LOCKFILE_FINDING, EXAMPLE_VENDOR_FINDING]
+        test = [EXAMPLE_ACTIVE_FINDING, EXAMPLE_LOCKFILE_FINDING, EXAMPLE_VENDOR_FINDING]
         actual = trufflehog.scrub_results(test, errors_dict)
 
-        expected_type = EXAMPLE_LEGIT_FINDING.get("DetectorName", "").lower()
+        expected_type = EXAMPLE_ACTIVE_FINDING.get("DetectorName", "").lower()
         expected1 = {
             "id": actual["results"][0]["id"],
             "filename": "The Pacific Crest Trail",
@@ -237,7 +269,7 @@ class TestPluginTrufflehog(unittest.TestCase):
             "type": expected_type,
             "author": EXAMPLE_EMAIL,
             "author-timestamp": "2021-01-01 00:00:00 +0000",
-            "validity": SecretValidity.UNKNOWN,
+            "validity": SecretValidity.ACTIVE,
         }
         expected_event = {actual["results"][0]["id"]: {"match": ["YER' A STRING 'ARRY"], "type": expected_type}}
         expected = {"results": [expected1], "event_info": expected_event}
@@ -301,9 +333,33 @@ class TestPluginTrufflehog(unittest.TestCase):
 
             self.assertEqual(actual, expected)
 
+    def test_get_validity_active(self):
+        expected = SecretValidity.ACTIVE
+        actual = trufflehog.get_validity(EXAMPLE_ACTIVE_FINDING)
+
+        self.assertEqual(actual, expected)
+
+    def test_get_validity_inactive(self):
+        expected = SecretValidity.INACTIVE
+        actual = trufflehog.get_validity(EXAMPLE_INACTIVE_FINDING)
+
+        self.assertEqual(actual, expected)
+
+    def test_get_validity_unknown(self):
+        expected = SecretValidity.UNKNOWN
+        actual = trufflehog.get_validity(EXAMPLE_UNKNOWN_FINDING)
+
+        self.assertEqual(actual, expected)
+
+    def test_get_validity_unknown_because_never_inactive(self):
+        expected = SecretValidity.UNKNOWN
+        actual = trufflehog.get_validity(EXAMPLE_UNKNOWN_BECAUSE_NEVER_INACTIVE_FINDING)
+
+        self.assertEqual(actual, expected)
+
 
 def _get_finding_from_type(finding_type: str):
-    finding = copy.deepcopy(EXAMPLE_FINDING)
+    finding = copy.deepcopy(EXAMPLE_UNKNOWN_FINDING)
     finding["DetectorName"] = finding_type
 
     return finding
