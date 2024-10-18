@@ -79,7 +79,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
 
     if action.lower() == "scan":
         if not check_disk_space(details.get("repo_size", 0)):
-            log.info("Scan failed because not enough " "disk space (repo size: %d KB)", details["repo_size"])
+            log.error("Scan failed because not enough " "disk space (repo size: %d KB)", details["repo_size"])
             engine_processor.update_scan_status(
                 "error", end_time=get_utc_datetime(), errors=["Repo too large (%d KB)" % details["repo_size"]]
             )
@@ -132,6 +132,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
 
 def cleanup(working_dir, scan_id):
     try:
+        log.info(f"cleaning up cloned repo at {working_dir, scan_id}")
         shutil.rmtree(os.path.join(working_dir, scan_id))
     except FileNotFoundError:
         # If path doesn't exist our work is done
