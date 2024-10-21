@@ -1,7 +1,6 @@
 # pylint: disable=no-name-in-module, no-member
 import json
 import os
-import warnings
 from collections import namedtuple
 from datetime import datetime
 from typing import Any, Optional
@@ -11,7 +10,6 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from heimdall_utils.aws_utils import get_analyzer_api_key, send_analyzer_request
 from heimdall_utils.utils import JSONUtils, get_ttl_expiration
 from heimdall_utils.env import APPLICATION
-from heimdall_utils.metrics.factory import get_metrics
 from repo_scan.aws_connect import (
     batch_update_db,
     delete_processed_messages,
@@ -20,25 +18,19 @@ from repo_scan.aws_connect import (
     send_sqs_message,
 )
 
-# At the end of the lambda execution, metrics will be published
-# Adding this filter to Ignore warnings for empty metrics
-warnings.filterwarnings("ignore", "No application metrics to publish*")
-
 ARTEMIS_API = os.environ.get("ARTEMIS_API")
 API_KEY_LOC = os.environ.get("ARTEMIS_API_KEY")
 DEFAULT_PLUGINS = ["gitsecrets", "trufflehog", "base_images"]
 PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles"])
-REPO_QUEUE = os.environ.get("REPO_QUEUE")
-REPO_DLQ = os.environ.get("REPO_DEAD_LETTER_QUEUE")
+REPO_QUEUE = os.environ.get("REPO_QUEUE", "")
+REPO_DLQ = os.environ.get("REPO_DEAD_LETTER_QUEUE", "")
 SCAN_DEPTH = int(os.environ.get("SCAN_DEPTH", 1))
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
 log = Logger(service=APPLICATION, name="repo_scan")
 json_utils = JSONUtils(log)
-metrics = get_metrics()
 
 
-@metrics.log_metrics()
 @log.inject_lambda_context
 def run(event: dict[str, Any] = None, context: LambdaContext = None, size: int = 20) -> Optional[list[dict[str, Any]]]:
     # Get the size of the REPO_QUEUE
@@ -121,13 +113,11 @@ def submit_repos(repos: list, analyzer_url: str, api_key: str) -> list:
 
 def requeue_failed_repos(service: str, repo_lookup: dict[str, Any], failed_repos: list):
     """
-    Send failed repos to the repo-dead-letter SQS queue
+    Send failed repos to the repo-dead-letter SQS queue or the repo SQS queue
     """
-    repos_to_queue = []
-    index = 0
+    failed_repo_lst = []
+    rate_limit_lst = []
     count = 0
-    if failed_repos != None:
-        metrics.add_metric(name="failed_repositories.count", value=len(failed_repos), version_control_service=service)
     for failed_repo in failed_repos:
         error_msg = failed_repo.get("error", "")
         if error_msg.startswith("Could not resolve to a Repository with the name"):
@@ -137,20 +127,28 @@ def requeue_failed_repos(service: str, repo_lookup: dict[str, Any], failed_repos
         repo_info["service"] = service
         if not repo_info:
             continue
-        repos_to_queue.append({"Id": str(index), "MessageBody": json.dumps(repo_info)})
-        index += 1
-        if index >= 10:
-            if not send_sqs_message(REPO_DLQ, repos_to_queue):
-                log.error("There was an error queueing the repos, aborting.")
-                return
-            count += index
-            index = 0
-            repos_to_queue = []
-    if index > 0:
-        count += index
-        send_sqs_message(REPO_DLQ, repos_to_queue)
+
+        sqs_message = {"Id": str(count), "MessageBody": json.dumps(repo_info)}
+        if error_msg.startswith("Rate limit") and service in ["bitbucket"]:
+            rate_limit_lst.append(sqs_message)
+        else:
+            failed_repo_lst.append(sqs_message)
+
+        count += 1
 
     log.info(f"Sending {count} repos to the repo-deadletter Queue")
+    send_to_sqs(REPO_QUEUE, failed_repo_lst)
+    send_to_sqs(REPO_DLQ, rate_limit_lst)
+
+
+def send_to_sqs(queue: str, repos: list):
+    chunk_size = 10  # submit 10 messages at a time
+    if len(repos) == 0:
+        return
+
+    for i in range(0, len(repos), chunk_size):
+        repo_subset = repos[i : i + chunk_size]
+        send_sqs_message(queue, repo_subset)
 
 
 def get_repo_scan_items(service, response, date=None):
@@ -193,14 +191,7 @@ def construct_repo_requests(repos: list) -> dict:
             "batch_id": repo.get("batch_id"),
             "depth": SCAN_DEPTH,
         }
-        metrics.add_metric(
-            name="queued_repositories.count",
-            value=1,
-            repository=repo["repo"],
-            batch_id=repo.get("batch_id"),
-            organization_name=repo.get("org"),
-            version_control_service=service,
-        )
+
         if "branch" in repo and repo["branch"] != "HEAD":
             req["branch"] = repo["branch"]
         reqs[service].append(req)
