@@ -559,6 +559,8 @@ class TestGenerateReport(unittest.TestCase):
                         "type": unittest.mock.ANY,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_1,
@@ -601,6 +603,8 @@ class TestGenerateReport(unittest.TestCase):
                         "type": SECRET_TYPE_1,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_1,
@@ -639,6 +643,8 @@ class TestGenerateReport(unittest.TestCase):
                         "type": SECRET_TYPE_1,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_1,
@@ -653,6 +659,8 @@ class TestGenerateReport(unittest.TestCase):
                         "type": SECRET_TYPE_2,
                         "line": SECRET_LINE,
                         "commit": SECRET_COMMIT,
+                        "url": None,
+                        "location": None,
                         "details": [
                             {
                                 "type": SECRET_TYPE_2,

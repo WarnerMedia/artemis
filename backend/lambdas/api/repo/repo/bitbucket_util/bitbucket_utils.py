@@ -4,6 +4,7 @@ from string import Template
 import requests
 from requests import Response
 
+from artemislib.logging import Logger
 from repo.util.aws import AWSConnect
 from repo.util.const import (
     BITBUCKET_PRIVATE_BRANCH_QUERY,
@@ -15,7 +16,6 @@ from repo.util.const import (
 from repo.util.env import DEFAULT_ORG, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 from repo.util.utils import (
     GetProxySecret,
-    Logger,
     auth,
     build_options_map,
     get_api_key,

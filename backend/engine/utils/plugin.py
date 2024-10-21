@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
 from artemislib.github.app import GITHUB_APP_ID
-from artemislib.logging import Logger, LOG_LEVEL
+from artemislib.logging import Logger, LOG_LEVEL, inject_plugin_logs
 from artemislib.util import dict_eq
 from env import (
     ECR,
@@ -268,6 +268,7 @@ def run_plugin(
     features=None,
     services=None,
 ) -> Result:
+    log.info("--- Plugin log start ---")
     if features is None:
         features = {}
 
@@ -339,7 +340,8 @@ def run_plugin(
             debug=[],
         )
 
-    log.info("--- Plugin log start ---\n%s", r.stderr.decode("utf-8").strip())  # Inject plugin logs
+    inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
+
     log.info("--- Plugin log end ---")
 
     try:
@@ -717,7 +719,15 @@ def get_plugin_command(
 
 
 def get_plugin_list() -> list[str]:
-    return sorted([e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if e.name != "lib" and e.is_dir()])
+    # Note: Using engine.plugins.lib.utils.validate_plugin_name() currently
+    #       causes a circular import at runtime.
+    return sorted(
+        [
+            e.name
+            for e in os.scandir(os.path.join(ENGINE_DIR, "plugins"))
+            if e.name != "lib" and not e.name.startswith("_") and e.is_dir()
+        ]
+    )
 
 
 def _process_secret_types(details: list) -> None:

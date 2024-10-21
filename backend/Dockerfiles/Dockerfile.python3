@@ -18,11 +18,11 @@ ARG PACKAGING_VER
 RUN mkdir -p /src
 COPY ./libs/ /src/
 
-# trufflehog requires git
+# gitsecrets requires git
 # checkov requires awscli and libffi-dev
 RUN apk add -q --no-cache gcc musl-dev git make bash grep xz libffi-dev && \
     pip install -q --upgrade pip && \
-    pip install -q --no-cache-dir awscli pylint packaging==$PACKAGING_VER trufflehog boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
+    pip install -q --no-cache-dir awscli pylint packaging==$PACKAGING_VER boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
     pip install /src/artemislib cryptography && \
     pip install /src/artemisdb && \
     rm -r /src

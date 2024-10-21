@@ -1,16 +1,39 @@
 import os.path
 import unittest
 
-from engine.plugins.shell_check.main import main
+from engine.plugins.shell_check.main import get_files, main
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
-TEST_SHELL_ISSUES = os.path.join(TEST_DIR, "data", "test_shell_check", "issue_dir")
-TEST_SHELL_NO_ISSUES = os.path.join(TEST_DIR, "data", "test_shell_check", "no_issue_dir")
-TEST_SHELL_NO_FILES = os.path.join(TEST_DIR, "data", "test_shell_check", "no_shell_files")
+TEST_BASEDIR = os.path.join(TEST_DIR, "data", "test_shell_check")
+TEST_GET_FILES = os.path.join(TEST_BASEDIR, "files")
+TEST_SHELL_ISSUES = os.path.join(TEST_BASEDIR, "issue_dir")
+TEST_SHELL_NO_ISSUES = os.path.join(TEST_BASEDIR, "no_issue_dir")
+TEST_SHELL_NO_FILES = os.path.join(TEST_BASEDIR, "no_shell_files")
 
 
 class TestShellCheck(unittest.TestCase):
+    def test_get_files(self):
+        """
+        Test only shell scripts are included.
+
+        The order of results is assumed not to matter.
+        """
+        actual = {os.path.normpath(x) for x in get_files(TEST_GET_FILES)}
+        self.assertSetEqual(
+            actual,
+            {
+                "subdir/foo.bashrc",
+                ".bash_login",
+                ".bash_logout",
+                ".bash_profile",
+                ".bashrc",
+                "foo.bash",
+                "foo.ksh",
+                "foo.sh",
+            },
+        )
+
     def test_shell_check_no_issues(self):
         expected_result = {"details": [], "success": True}
 

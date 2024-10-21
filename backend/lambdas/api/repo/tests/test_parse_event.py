@@ -226,7 +226,6 @@ EXPECTED_EVENT_RESULT_1 = {
         "-owasp_dependency_check",
         "-base_images",
         "-node_dependencies",
-        "-truffle_hog",
         "-trufflehog",
         "-bundler_audit",
         "-php_sensio_security_checker",

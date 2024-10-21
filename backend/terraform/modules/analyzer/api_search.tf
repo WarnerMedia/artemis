@@ -169,21 +169,19 @@ resource "aws_api_gateway_integration" "api_v1_search_vulnerabilities_id_resourc
 
 resource "aws_lambda_function" "search_repositories" {
   function_name = "${var.app}-search-repositories-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/search_repositories/v${var.ver}/search_repositories.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/search_repositories/v${var.ver}/search_repositories.zip"
+  layers        = var.lambda_layers
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -219,21 +217,19 @@ resource "aws_lambda_function" "search_repositories" {
 
 resource "aws_lambda_function" "search_scans" {
   function_name = "${var.app}-search-scans-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/search_scans/v${var.ver}/search_scans.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/search_scans/v${var.ver}/search_scans.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -268,21 +264,19 @@ resource "aws_lambda_function" "search_scans" {
 
 resource "aws_lambda_function" "search_vulnerabilities" {
   function_name = "${var.app}-search-vulnerabilities-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/search_vulnerabilities/v${var.ver}/search_vulnerabilities.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/search_vulnerabilities/v${var.ver}/search_vulnerabilities.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 30
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [

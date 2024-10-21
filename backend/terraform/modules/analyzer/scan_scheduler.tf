@@ -4,18 +4,19 @@
 
 resource "aws_lambda_function" "scan_scheduler" {
   function_name = "${var.app}-scan-scheduler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/scan_scheduler/v${var.ver}/scan_scheduler.zip"
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/scan_scheduler/v${var.ver}/scan_scheduler.zip"
   layers        = var.lambda_layers
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
   memory_size   = 256
+  role          = aws_iam_role.scan-scheduler-role.arn
 
-  role = aws_iam_role.scan-scheduler-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   environment {
     variables = merge({
@@ -50,20 +51,18 @@ resource "aws_lambda_function" "scan_scheduler" {
 
 resource "aws_lambda_function" "scheduled_scan_handler" {
   function_name = "${var.app}-scheduled-scan-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/scheduled_scan_handler/v${var.ver}/scheduled_scan_handler.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/scheduled_scan_handler/v${var.ver}/scheduled_scan_handler.zip"
+  layers        = var.lambda_layers
   handler       = "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
+  role          = aws_iam_role.scheduled-scan-handler-role.arn
 
-  role = aws_iam_role.scheduled-scan-handler-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   environment {
     variables = merge({

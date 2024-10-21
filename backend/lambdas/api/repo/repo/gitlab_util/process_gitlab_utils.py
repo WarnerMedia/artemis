@@ -8,7 +8,8 @@ from itertools import chain
 
 from repo.util.aws import AWSConnect
 from repo.util.env import DEFAULT_ORG, REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
-from repo.util.utils import GetProxySecret, Logger, auth
+from repo.util.utils import GetProxySecret, auth
+from artemislib.logging import Logger
 
 log = Logger(__name__)
 

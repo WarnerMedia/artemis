@@ -156,6 +156,8 @@ export interface SecretFinding {
 	line: number;
 	type: string;
 	commit: string;
+	location?: string;
+	url?: string;
 	details?: ReadonlyArray<SecretDetail>;
 }
 

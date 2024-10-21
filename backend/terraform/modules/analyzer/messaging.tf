@@ -47,10 +47,8 @@ module "task-queue-receive" {
 
 resource "aws_lambda_function" "sqs-metrics" {
   function_name = "${var.app}-task-queue-metrics"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/task_queue_metrics/v${var.ver}/task_queue_metrics.zip"
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/task_queue_metrics/v${var.ver}/task_queue_metrics.zip"
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
@@ -58,6 +56,10 @@ resource "aws_lambda_function" "sqs-metrics" {
   layers        = var.lambda_layers
   memory_size   = 256
   role          = aws_iam_role.metrics-assume-role.arn
+
+  logging_config {
+    log_format = "JSON"
+  }
 
   environment {
     variables = merge({

@@ -76,9 +76,17 @@ DB_RETRY_WAIT = int(os.environ.get("ARTEMIS_DB_RETRY_WAIT", 5))  # seconds
 DB_RETRY_LIMIT = int(os.environ.get("ARTEMIS_DB_RETRY_LIMIT", 60))  # 60 retries @ 5 seconds each is 5 minutes
 
 
-def log_environment():
-    log.debug("ARTEMIS_SECRETS_EVENTS_ENABLED: %s", SECRETS_EVENTS_ENABLED)
-    log.debug("ARTEMIS_INVENTORY_EVENTS_ENABLED: %s", INVENTORY_EVENTS_ENABLED)
-    log.debug("ARTEMIS_CONFIGURATION_EVENTS_ENABLED: %s", CONFIGURATION_EVENTS_ENABLED)
-    log.debug("ARTEMIS_VULNERABILITY_EVENTS_ENABLED: %s", VULNERABILITY_EVENTS_ENABLED)
-    log.debug("ARTEMIS_METADATA_EVENTS_ENABLED: %s", METADATA_EVENTS_ENABLED)
+def reset_log_state():
+    """
+    Remove existing fields from the Logger & adds the engine context to the logs
+    """
+    Logger.reset_fields()
+    Logger.add_fields(
+        engine_id=ENGINE_ID,
+        host_id=INSTANCE_ID,
+        metadata_events_enabled=METADATA_EVENTS_ENABLED,
+        vulnerability_events_enabled=VULNERABILITY_EVENTS_ENABLED,
+        configuration_events_enabled=CONFIGURATION_EVENTS_ENABLED,
+        inventory_events_enabled=INVENTORY_EVENTS_ENABLED,
+        secrets_events_enabled=SECRETS_EVENTS_ENABLED,
+    )

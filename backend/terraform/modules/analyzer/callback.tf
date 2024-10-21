@@ -4,19 +4,18 @@
 
 resource "aws_lambda_function" "callback" {
   function_name = "${var.app}-callback"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/callback/v${var.ver}/callback.zip"
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/callback/v${var.ver}/callback.zip"
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   timeout       = 30
   layers        = var.lambda_layers
+  role          = aws_iam_role.callback-assume-role.arn
 
-  role = aws_iam_role.callback-assume-role.arn
-
-
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids         = [aws_subnet.lambdas.id]

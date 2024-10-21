@@ -5,7 +5,7 @@ import os
 from repo.util.aws import AWSConnect
 from repo.util.const import ROOT_DIR
 from repo.util.env import LOCAL_SERVICES_OVERRIDE
-from repo.util.utils import Logger
+from artemislib.logging import Logger
 
 log = Logger(__name__)
 

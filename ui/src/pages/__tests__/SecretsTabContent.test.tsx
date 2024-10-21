@@ -157,7 +157,7 @@ describe("SecretsTabContent component", () => {
 					name: /filter results/i,
 				});
 				const firstFilter = within(filterGroup).getByRole("textbox", {
-					name: /file/i,
+					name: /location/i,
 				});
 				expect(firstFilter).toHaveFocus();
 				expect(firstFilter).toHaveAttribute("placeholder", "Contains");
@@ -195,14 +195,16 @@ describe("SecretsTabContent component", () => {
 				const filterGroup = screen.getByRole("group", {
 					name: /filter results/i,
 				});
-				const fileFilter = within(filterGroup).getByRole("textbox", {
-					name: /file/i,
+				const locationFilter = within(filterGroup).getByRole("textbox", {
+					name: /location/i,
 				});
-				const fileValue = "/path/to/a/new/@library/file-name-1.0.3b6";
-				await act(async () => await user.type(fileFilter, fileValue));
+				const locationValue = "/path/to/a/new/@library/file-name-1.0.3b6";
+				await act(async () => await user.type(locationFilter, locationValue));
 
 				jest.runOnlyPendingTimers();
-				await waitFor(() => expect(fileFilter).toHaveDisplayValue(fileValue));
+				await waitFor(() =>
+					expect(locationFilter).toHaveDisplayValue(locationValue)
+				);
 
 				const lineFilter = await within(filterGroup).findByRole("textbox", {
 					name: /line/i,
@@ -241,7 +243,7 @@ describe("SecretsTabContent component", () => {
 				);
 
 				expect(mockSaveFilters).toHaveBeenLastCalledWith(HASH_PREFIX, {
-					filename: { filter: fileValue },
+					filename: { filter: locationValue },
 					line: {
 						filter: lineValue,
 						match: "exact",
@@ -257,14 +259,14 @@ describe("SecretsTabContent component", () => {
 			});
 
 			it("Url hash params populate filters", async () => {
-				const fileValue = "/path/to/a/new/@library/file-name-1.0.3b6";
+				const locationValue = "/path/to/a/new/@library/file-name-1.0.3b6";
 				const lineValue = "1234";
 				const typeValue = "a great type";
 				const commitValue = "hashhashhashhashhashhashhashhashhashhash";
 				const validityValue = "svf_unknown";
 
 				const obj: any = {};
-				obj[`${HASH_PREFIX}filename`] = fileValue;
+				obj[`${HASH_PREFIX}filename`] = locationValue;
 				obj[`${HASH_PREFIX}line`] = lineValue;
 				obj[`${HASH_PREFIX}resource`] = typeValue;
 				obj[`${HASH_PREFIX}commit`] = commitValue;
@@ -292,10 +294,12 @@ describe("SecretsTabContent component", () => {
 				const filterGroup = screen.getByRole("group", {
 					name: /filter results/i,
 				});
-				const fileFilter = within(filterGroup).getByRole("textbox", {
-					name: /file/i,
+				const locationFilter = within(filterGroup).getByRole("textbox", {
+					name: /location/i,
 				});
-				await waitFor(() => expect(fileFilter).toHaveDisplayValue(fileValue));
+				await waitFor(() =>
+					expect(locationFilter).toHaveDisplayValue(locationValue)
+				);
 
 				const lineFilter = await within(filterGroup).findByRole("textbox", {
 					name: /line/i,

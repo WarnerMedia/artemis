@@ -4,18 +4,19 @@
 
 resource "aws_lambda_function" "license-retriever" {
   function_name = "${var.app}-license-retriever"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/license_retriever/v${var.ver}/license_retriever.zip"
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/license_retriever/v${var.ver}/license_retriever.zip"
   layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 512
   timeout       = 900
+  role          = aws_iam_role.license-retriever-lambda-role.arn
 
-  role = aws_iam_role.license-retriever-lambda-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [

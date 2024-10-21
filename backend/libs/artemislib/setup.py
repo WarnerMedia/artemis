@@ -23,7 +23,7 @@ setup(
     setup_requires=["pytest-runner"],
     install_requires=[
         "boto3~=1.34",
-        "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.34",
+        "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.35",
         # pyjwt requires the cryptography library but it needs to be installed
         # separately because it contains platform-dependent pre-compiled code
         "pyjwt[crypto]~=2.8",

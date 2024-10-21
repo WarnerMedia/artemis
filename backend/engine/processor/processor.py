@@ -120,6 +120,8 @@ class EngineProcessor:
         error_plugins = []
 
         for plugin in self.action_details.plugins:
+            Logger.add_fields(plugin=plugin)
+
             current_plugin += 1
             logger.info("Running plugin %s against %s:%s", plugin, self.details.repo, self.action_details.branch)
             try:
@@ -182,6 +184,8 @@ class EngineProcessor:
                 # investigated.
                 logger.exception("Error running plugin %s: %s", plugin, e)
                 error_plugins.append(plugin)
+            finally:
+                Logger.remove_fields("plugin")
 
         # Now that all the plugins have finished resolve any vulns that were found previously via an equivalent
         # scan but that were not found now. Any plugins that failed to execute successfully are excluded to those

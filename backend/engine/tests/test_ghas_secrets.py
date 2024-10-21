@@ -1,6 +1,6 @@
 import unittest
 
-from engine.plugins.ghas_secrets import main
+from engine.plugins.ghas_secrets.formatter import _normalize_secret_type
 
 
 class TestGHASSecrets(unittest.TestCase):
@@ -15,5 +15,5 @@ class TestGHASSecrets(unittest.TestCase):
         ]
         for test_case in test_cases:
             with self.subTest(test_case=test_case):
-                actual = main._normalize_secret_type(test_case[0])
+                actual = _normalize_secret_type(test_case[0])
                 self.assertEqual(actual, test_case[1])

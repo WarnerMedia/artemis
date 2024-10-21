@@ -19,13 +19,14 @@ from heimdall_utils.env import ARTEMIS_API, API_KEY_LOC, APPLICATION
 from heimdall_utils.get_services import get_services_dict
 from heimdall_utils.service_utils import get_service_url
 from heimdall_utils.metrics.factory import get_metrics
+from heimdall_utils.utils import HeimdallException
 from org_queue.org_queue_env import ORG_QUEUE
 
 log = Logger(service=APPLICATION, name="org_queue")
 metrics = get_metrics()
 
 FAILED = {}
-DEFAULT_PLUGINS = ["gitsecrets", "base_images"]  # default plugins to use if none are specified
+DEFAULT_PLUGINS = ["gitsecrets", "trufflehog", "base_images"]  # default plugins to use if none are specified
 
 
 @metrics.log_metrics
@@ -61,7 +62,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
     batch_id = generate_batch_id(batch_label)
 
     log.append_keys(batch_id=batch_id)
-    log.info(f"Queueing the following organizations:\n{orgs}")
+    log.info(f"Queuing the following organizations:\n{orgs}")
 
     for org in orgs:
         split = org.split("/", maxsplit=1)
@@ -76,7 +77,7 @@ def run(event: dict = None, context: LambdaContext = None, services_file: str = 
         org_list = get_org_list(services, service, org_name)
         if not org_list:
             continue
-        log.info("Queuing %d service orgs for service %s", len(org_list), service, version_control_service=service)
+        log.debug("Queuing %d service orgs for service %s", len(org_list), service, version_control_service=service)
         for org_name_str in org_list:
             org_result_str = f"{service}/{org_name_str}"
             if not fnmatch(org_name_str, org_name):
@@ -119,21 +120,26 @@ def get_org_list(services: dict, service: str, org_name: str) -> Union[list, Non
         # Org name has a wildcard pattern so pull all of the orgs from the service
         if not validate_service(services, service, org_name):
             return None
-        service_dict = services.get(service)
+        service_dict = services[service]
         api_key = get_heimdall_secret(service_dict.get("secret_loc")).get("key")
         service_type = service_dict.get("type")
-        if service_type == "github":
-            api_url = get_service_url(service_dict)
-            return org_queue_private_github.GithubOrgs.get_all_orgs(service, api_url, api_key) or []
-        if service_type == "gitlab":
-            api_url = get_service_url(service_dict, False)
-            return org_queue_gitlab.GitlabOrgs.get_groups_and_subgroups(service, api_url, api_key) or []
-        if service_type == "bitbucket":
-            api_url = get_service_url(service_dict)
-            return org_queue_bitbucket.BitbucketOrgs.get_all_orgs(service, api_url, api_key) or []
-        message = f"service {service} of type {service_type} is not supported for wildcard organizations."
-        log.error(message, version_control_service=service)
-        FAILED[f"{service}/{org_name}"] = message
+        error_message = f"service {service} of type {service_type} is not supported for wildcard organizations."
+
+        try:
+            if service_type == "github":
+                api_url = get_service_url(service_dict)
+                return org_queue_private_github.GithubOrgs.get_all_orgs(service, api_url, api_key) or []
+            if service_type == "gitlab":
+                api_url = get_service_url(service_dict, False)
+                return org_queue_gitlab.GitlabOrgs.get_groups_and_subgroups(service, api_url, api_key) or []
+            if service_type == "bitbucket":
+                api_url = get_service_url(service_dict)
+                return org_queue_bitbucket.BitbucketOrgs.get_all_orgs(service, api_url, api_key) or []
+        except HeimdallException as e:
+            error_message = f"Error: {e}"
+
+        log.error(error_message, version_control_service=service)
+        FAILED[f"{service}/{org_name}"] = error_message
         return None
     # Turn a single org name into a list to simplify the queuing logic
     return [org_name]
@@ -167,7 +173,7 @@ def formatted_response(msg=None, code=200):
     return {"isBase64Encoded": "false", "statusCode": code}
 
 
-def generate_batch_id(batch_label: str = None) -> str:
+def generate_batch_id(batch_label: str = None) -> Union[str, None]:
     batch_id = None
     api_key = get_analyzer_api_key(API_KEY_LOC)
     description = f"Heimdall Batch Scan {format_timestamp(get_utc_datetime())}"

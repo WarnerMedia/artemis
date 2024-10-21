@@ -189,8 +189,8 @@ describe("ResultsPage component", () => {
 			).not.toBeInTheDocument();
 
 			// filter file by "dockerfile""
-			const fileColumn = screen.getByRole("button", { name: "File" });
-			const fileFilterField = screen.getByLabelText("File");
+			const fileColumn = screen.getByRole("button", { name: "Location/File" });
+			const fileFilterField = screen.getByLabelText("Location/File");
 			await user.type(fileFilterField, "dockerfile");
 
 			// check column now has a filter indicator

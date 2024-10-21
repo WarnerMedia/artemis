@@ -73,7 +73,7 @@ import {
 	vcsServicesGetResponseSchema,
 } from "features/vcsServices/vcsServicesSchemas";
 import { DateTime } from "luxon";
-import { SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
+import { formatLocationName, SPLIT_MULTILINE_CN_REGEX } from "utils/formatters";
 import * as Yup from "yup";
 
 // only support filtering by string|string[] field values for now
@@ -1068,6 +1068,9 @@ const adjustHiddenFinding = (response: HiddenFinding) => {
 	}
 	if (response?.updated) {
 		response.updated = addUTCOffset(response.updated);
+	}
+	if (response?.type === "secret") {
+		response.value.filename = formatLocationName(response?.value?.filename);
 	}
 };
 

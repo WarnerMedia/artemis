@@ -6,6 +6,7 @@ from copy import deepcopy
 from unittest.mock import patch
 
 from heimdall_orgs.org_queue_private_github import GithubOrgs
+from heimdall_utils.utils import HeimdallException
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 GITHUB_ORG_GRAPHQL_ERROR_RESPONSE = os.path.abspath(os.path.join(TEST_DIR, "data", "github_org_error_response.json"))
@@ -76,8 +77,9 @@ class TestOrgQueueGithub(unittest.TestCase):
         self.assertEqual(GithubOrgs._query_service, mock_request)
         mock_request.return_value = self.error_response
 
-        org_set = GithubOrgs.get_all_orgs(None, None, None)
-        self.assertEqual(None, org_set)
+        with self.assertRaises(HeimdallException):
+            org_set = GithubOrgs.get_all_orgs(None, None, None)
+            self.assertIsNone(org_set)
 
 
 def get_json_from_file(file_path):

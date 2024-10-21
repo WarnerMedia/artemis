@@ -4,21 +4,19 @@
 
 resource "aws_lambda_function" "json_report" {
   function_name = "${var.app}-json-report"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/json_report/v${var.ver}/json_report.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/json_report/v${var.ver}/json_report.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 300
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -52,21 +50,19 @@ resource "aws_lambda_function" "json_report" {
 
 resource "aws_lambda_function" "pdf_report" {
   function_name = "${var.app}-pdf-report"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/pdf_report/v${var.ver}/pdf_report.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/pdf_report/v${var.ver}/pdf_report.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 900
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -101,21 +97,19 @@ resource "aws_lambda_function" "pdf_report" {
 
 resource "aws_lambda_function" "report_cleanup" {
   function_name = "${var.app}-report-cleanup"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/report_cleanup/v${var.ver}/report_cleanup.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/report_cleanup/v${var.ver}/report_cleanup.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 900
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -150,21 +144,19 @@ resource "aws_lambda_function" "report_cleanup" {
 
 resource "aws_lambda_function" "sbom_report" {
   function_name = "${var.app}-sbom-report"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/sbom_report/v${var.ver}/sbom_report.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/sbom_report/v${var.ver}/sbom_report.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 300
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [

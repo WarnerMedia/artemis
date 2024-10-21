@@ -160,7 +160,6 @@ class TestGitlabUtils(unittest.TestCase):
         query, query_map, variables, _ = process_gitlab_utils.build_queries(
             req_list=request_list, authz=AUTHZ, service=SERVICE, batch_queries=True
         )
-        print(query)
 
         self.assertEqual(query[0], BATCH_GITLAB_QUERY1)
 

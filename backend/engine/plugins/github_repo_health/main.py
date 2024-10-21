@@ -1,7 +1,7 @@
 import json
+import sys
 
 from artemislib.github.app import GithubApp
-from artemislib.logging import Logger
 from engine.plugins.lib import utils
 from github_repo_health.utilities import Config, Checker, Github
 
@@ -77,7 +77,7 @@ DEFAULT_CONFIG = {
     ],
 }
 
-log = Logger(PLUGIN_NAME)
+log = utils.setup_logging(PLUGIN_NAME)
 
 
 def main():
@@ -118,7 +118,7 @@ def run_repo_health(args):
 
     log.info(f"Using config '{config.get('name')}@{config.get('version')}'")
 
-    github_app = GithubApp()
+    github_app = GithubApp(log_stream=sys.stderr)
     github_token = github_app.get_installation_token(owner)
 
     if github_token is None:

@@ -195,20 +195,19 @@ resource "aws_api_gateway_integration" "api_v1_sbom_licenses_id" {
 
 resource "aws_lambda_function" "sbom_components" {
   function_name = "${var.app}-sbom-components-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/sbom_components/v${var.ver}/sbom_components.zip"
-
-  layers = var.lambda_layers
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/sbom_components/v${var.ver}/sbom_components.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 60
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [
@@ -243,22 +242,19 @@ resource "aws_lambda_function" "sbom_components" {
 
 resource "aws_lambda_function" "sbom_licenses" {
   function_name = "${var.app}-sbom-licenses-handler"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/sbom_licenses/v${var.ver}/sbom_licenses.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/sbom_licenses/v${var.ver}/sbom_licenses.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 60
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
-
+  logging_config {
+    log_format = "JSON"
+  }
   vpc_config {
     subnet_ids = [
       aws_subnet.lambdas.id,

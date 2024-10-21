@@ -38,6 +38,7 @@ This file contains the plugin's settings. The settings are:
 - image: The Docker image the plugin runs in. If using a non-public image prefix with `$ECR`. During local development `$ECR` is ignored. When running in AWS, the `$ECR` environment variable is populated with the current account's ECR URL.
 - disabled: Boolean. If true the plugin is skipped. This can also be a string containing the name of an environment variable containing the boolean value, for example "$ARTEMIS_FEATURE_XYZ_ENABLED".
 - timeout: Integer. If set, this is the amount of time, in seconds, to allow the plugin to run before exiting early with an error.
+- runner: (Optional) The method used to run the plugin. May be `core` (default) or `boxed`.  See [Runners](#plugin-runners) below.
 
 ```json
 {
@@ -82,6 +83,26 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+## Plugin runners
+
+The `runner` plugin setting sets how the plugin is run inside a container and what the container is expected to have available.
+
+### `core` (default)
+
+These plugins are run via the system Python in the container.
+
+- The container must have Python 3.9 available as `python` in the PATH.
+- All Python dependencies needed by the plugin must be installed in the system Python.
+
+### `boxed`
+
+These plugins are bundled together with a standalone Python distribution along with all dependencies into a single self-extracting executable.
+
+- The container must be glibc-based (i.e. musl-based distrbutions such as Alpine are *not* supported).
+- The container must have `/bin/sh` available, along with standard tools such as `tar` in the PATH. This may be supplied by BusyBox.
+
+The container does *not* need a system Python or Python dependencies since they are included in the "boxed" plugin bundle.
 
 ## Plugin Types
 

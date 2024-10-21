@@ -2,7 +2,7 @@ import json
 import subprocess
 import uuid
 
-from engine.plugins.trufflehog.detectors import verified_detectors_allowlist
+from engine.plugins.trufflehog.detectors import verified_detectors_allowlist, inactiveable_detectors
 from engine.plugins.trufflehog.type_normalization import normalize_type
 from engine.plugins.lib import utils
 from engine.plugins.lib.common.system.allowlist import SystemAllowList
@@ -14,6 +14,7 @@ STARTS = {"vendor"}
 log = utils.setup_logging("trufflehog")
 
 verified_detectors_allowlist_str = ",".join(verified_detectors_allowlist)
+inactiveable_detectors_set = set(inactiveable_detectors)
 
 
 def main(in_args=None):
@@ -56,15 +57,28 @@ def get_finding_type(finding):
 
 
 def get_validity(finding):
+    # Trufflehog results have two fields relevant to validity determination: `Verified` and
+    # `VerificationError`.
+    # - `Verified` is just a boolean. If it's True, we return `active`
+    # - `VerificationError` occurs when something unexpected happens during verification. If it
+    #   exists, we return `unknown`
+    # - If `Verified` is False and `VerificationError` is None, we return `inactive`
+    #
+    # NOTE: Trufflehog's handling of errors is not exhaustive. It will return with
+    # `VerificationError` in some cases where we could confidently mark a finding `inactive`.
+    # Handling these would be on a detector by detector basis, which seems like too much complexity
+    # for the benefit it gives us.
     verified = finding.get("Verified")
 
     if verified == True:
         return SecretValidity.ACTIVE
     else:
-        # We can't be sure that the secret is invalid if `verified=false`, since there could have
-        # been a verification error or Trufflehog did not attempt to verify. So, we set it to
-        # unknown
-        return SecretValidity.UNKNOWN
+        detector = finding.get("DetectorName")
+
+        if detector in inactiveable_detectors_set and "VerificationError" not in finding:
+            return SecretValidity.INACTIVE
+        else:
+            return SecretValidity.UNKNOWN
 
 
 def scrub_results(scan_results: list, error_dict: dict) -> dict:

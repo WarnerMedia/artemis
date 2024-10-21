@@ -4,21 +4,19 @@
 
 resource "aws_lambda_function" "update_github_org_users" {
   function_name = "${var.app}-update-github-org-users"
-
-  s3_bucket = var.s3_analyzer_files_id
-  s3_key    = "lambdas/update_github_org_users/v${var.ver}/update_github_org_users.zip"
-
-  layers = var.lambda_layers
-
-
-
+  s3_bucket     = var.s3_analyzer_files_id
+  s3_key        = "lambdas/update_github_org_users/v${var.ver}/update_github_org_users.zip"
+  layers        = var.lambda_layers
   handler       = var.datadog_enabled ? "datadog_lambda.handler.handler" : "handlers.handler"
   runtime       = var.lambda_runtime
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 900
+  role          = aws_iam_role.lambda-assume-role.arn
 
-  role = aws_iam_role.lambda-assume-role.arn
+  logging_config {
+    log_format = "JSON"
+  }
 
   vpc_config {
     subnet_ids = [

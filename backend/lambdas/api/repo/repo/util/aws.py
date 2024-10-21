@@ -8,6 +8,7 @@ from django.db import transaction
 from artemisdb.artemisdb.consts import ReportStatus, ScanStatus
 from artemisdb.artemisdb.models import Group, Repo, Report, ScanBatch, ScanScheduleRun, User
 from artemislib.aws import AWS_DEFAULT_REGION
+from artemislib.logging import Logger
 from repo.util.const import DEFAULT_S3_DL_EXPIRATION_SECONDS
 from repo.util.env import (
     DEFAULT_BATCH_PRIORITY,
@@ -20,6 +21,8 @@ from repo.util.env import (
     TASK_QUEUE_NAT,
 )
 from repo.util.utils import get_iso_timestamp, get_ttl_expiration, is_qualified, is_sbom
+
+logger = Logger(__name__)
 
 
 class LambdaError(Exception):
@@ -217,7 +220,7 @@ class AWSConnect:
                 "get_object", Params={"Bucket": s3_bucket, "Key": s3_key}, ExpiresIn=expiration
             )
         except ClientError as e:
-            print(e.response)
+            logger.error(e.response)
         return None
 
     def get_key(self, secret_name):
@@ -232,7 +235,7 @@ class AWSConnect:
                 "ResourceNotFoundException",
             ):
                 raise e
-            print(e.response)
+            logger.error(e.response)
         return None
 
     def get_secret(self, secret_name):
