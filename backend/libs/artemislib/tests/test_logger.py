@@ -2,7 +2,6 @@ import json
 import pytest
 import logging
 from artemislib.logging import Logger, JSONFormatter
-from _pytest.logging import LogCaptureFixture
 
 LOG_MESSAGE1 = {"level": "INFO", "message": "Scanning Repository", "repo": "Warnermedia/artemis", "scan_id": "1234"}
 LOG_MESSAGE2 = {"level": "CRITICAL", "message": "Unable To process task", "scan_id": "1234"}
@@ -22,19 +21,17 @@ LAMBDA_LOG_MESSAGE = {
 
 
 @pytest.fixture(scope="function")
-def custom_caplog(request):
+def custom_caplog(caplog):
     logger = logging.getLogger()
     original_factory = logging.getLogRecordFactory()
 
-    # Create a new LogCaptureHandler with the custom formatter
-    handler = LogCaptureFixture(request.node)
-    handler.handler.setFormatter(JSONFormatter())
-    logger.addHandler(handler.handler)
+    # Use our custom formatter with the capture log handler.
+    caplog.handler.setFormatter(JSONFormatter())
+    logger.addHandler(caplog.handler)
 
-    yield handler
+    yield caplog
 
-    # Clean up
-    logger.removeHandler(handler.handler)
+    logger.removeHandler(caplog.handler)
     logging.setLogRecordFactory(original_factory)
     Logger.reset_fields()
 
