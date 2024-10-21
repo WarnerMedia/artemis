@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 
 from artemisapi.authorizer import check_auth
+from artemislib.logging import Logger
 from repo.util.const import DB_TTL_DAYS, PLUGIN_LIST_BY_CATEGORY, QUALIFIED_PLUGINS
 from repo.util.env import (
     APPLICATION,
@@ -14,6 +15,8 @@ from repo.util.env import (
     REV_PROXY_SECRET,
     REV_PROXY_SECRET_REGION,
 )
+
+log = Logger(__name__)
 
 
 class GetProxySecret:
