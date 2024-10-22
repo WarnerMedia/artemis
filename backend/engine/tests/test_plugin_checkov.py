@@ -66,7 +66,7 @@ class TestCheckov(unittest.TestCase):
         self.assertEqual(response["errors"], [])
 
         details = response["details"]
-        self.assertEqual(len(details), 2)
+        self.assertEqual(len(details), 4)
         self._assertContainsFinding(
             details,
             type="terraform",
