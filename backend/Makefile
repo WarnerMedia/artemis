@@ -148,7 +148,7 @@ SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
 
-CHECKOV_VER := 2.0.1065
+CHECKOV_VER := 3.2.268
 
 FSB_VER := 1.9.0
 FSB_PATCH := -fix2
@@ -187,10 +187,10 @@ TFLINT_VER := 0.20.2
 TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 
 # CFN Python Lint
-CFN_VER = 0.53.0
+CFN_VER = 1.18.1
 
 # Python Packaging Library Version
-PACKAGING_VER = 21.3
+PACKAGING_VER = 23.2
 
 # Artemis test parameters
 BRANCH_NAME := $(shell git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
