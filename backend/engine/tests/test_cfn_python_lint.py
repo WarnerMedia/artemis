@@ -16,14 +16,14 @@ TEMPLATE_EXPECTED_DETAILS = {
         {
             "filename": "example_1.yaml",
             "line": 804,
-            "message": "Duplicate found \"EC2InstanceSGID\" (line 804)",
+            "message": 'Duplicate found "EC2InstanceSGID" (line 804)',
             "severity": "medium",
             "type": "E0000",
         },
         {
             "filename": "example_1.yaml",
             "line": 828,
-            "message": "Duplicate found \"EC2InstanceSGID\" (line 828)",
+            "message": 'Duplicate found "EC2InstanceSGID" (line 828)',
             "severity": "medium",
             "type": "E0000",
         },
