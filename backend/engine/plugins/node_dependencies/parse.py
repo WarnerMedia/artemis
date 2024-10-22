@@ -119,7 +119,7 @@ def _find_versions_v2(lockfile: dict, nodes: list, resolver: LineNumberResolver)
                 "integrity": pkg.get("integrity", ""),
                 "dev": pkg.get("dev", False),
                 "filename": source.get("filename", ""),
-                "line": source.get("line", ""),
+                "line": source.get("line", 0),
             }
         )
     return versions
