@@ -2,44 +2,28 @@
 Testing Bundler-Audit
 """
 
+import textwrap
 import unittest
 
 from engine.plugins.bundler_audit import main as bundler
 
 
 class TestBundlerAudit(unittest.TestCase):
-    def test_parse_stderr(self):
-        data = """
-           /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1/lib
-           /bundler/audit/scanner.rb:46:in
-            `read': No such file or directory @ rb_sysopen - \
-            /src/Gemfile.lock (Errno:
-            :ENOENT)
-           from /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1/lib
-           /bundler/audit/scanner.rb:46:in `initialize'
-           from /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1/lib
-           /bundler/audit/cli.rb:41:in `new'
-           from /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1/lib
-           /bundler/audit/cli.rb:41:in `check'
-           from /Library/Ruby/Gems/2.3.0/gems/thor-0.20.3/lib/thor/
-           command.rb:27:in `run'
-           from /Library/Ruby/Gems/2.3.0/gems/thor-0.20.3/lib/thor/
-           invocation.rb:126:in `invoke_command'
-           from /Library/Ruby/Gems/2.3.0/gems/thor-0.20.3/lib/
-           thor.rb:387:in `dispatch'
-           from /Library/Ruby/Gems/2.3.0/gems/thor-0.20.3/lib/thor/
-           base.rb:466:in `start'
-           from /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1
-           /bin/bundle-audit:10:in `<top (required)>'
-           from /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1/
-           bin/bundler-audit:3:in `load'
-           from /Library/Ruby/Gems/2.3.0/gems/bundler-audit-0.6.1
-           /bin/bundler-audit:3:in `<top (required)>'
-           from /usr/local/bin/bundler-audit:22:in `load'
-           from /usr/local/bin/bundler-audit:22:in `<main>'
-           """
-        expected = "No such file or directory @ rb_sysopen - \
-            /src/Gemfile.lock"
+    def test_parse_stderr_enoent(self):
+        data = textwrap.dedent("""\
+            /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/scanner.rb:43:in `read': No such file or directory @ rb_sysopen - /src/Gemfile.lock (Errno::ENOENT)
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/scanner.rb:43:in `initialize'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/cli.rb:41:in `new'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/cli.rb:41:in `check'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/thor-0.20.3/lib/thor/command.rb:27:in `run'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/thor-0.20.3/lib/thor/invocation.rb:126:in `invoke_command'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/thor-0.20.3/lib/thor.rb:387:in `dispatch'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/thor-0.20.3/lib/thor/base.rb:466:in `start'
+            \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/bin/bundle-audit:10:in `<top (required)>'
+            \tfrom /opt/ruby/2.3.0/bin/bundle-audit:23:in `load'
+            \tfrom /opt/ruby/2.3.0/bin/bundle-audit:23:in `<main>'
+            """)
+        expected = ["No such file or directory @ rb_sysopen - /src/Gemfile.lock"]
         actual = bundler.parse_stderr(data)
         self.assertEqual(actual, expected)
 

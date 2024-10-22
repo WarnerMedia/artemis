@@ -27,11 +27,11 @@ def run_bundler_audit(path: str) -> dict:
     }
 
 
-def parse_stderr(data: str) -> list:
+def parse_stderr(data: str) -> list[str]:
     """
-    builds a list from stderr and parses through to get
-    useable data for output
-    :param data:
+    Reformats the stderr output from the command and generate a more concise
+    error message.
+    :param data: The full stderr output.
     :return: list
     """
     if not data:
@@ -39,7 +39,7 @@ def parse_stderr(data: str) -> list:
     start = data.find("`read':") + 8
     end = data.find("(Errno") - 1
     output = data[start:end]
-    return output
+    return [output]
 
 
 def parse_output(data: str) -> dict:
