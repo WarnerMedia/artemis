@@ -83,23 +83,22 @@ class TestCheckov(unittest.TestCase):
             message="CKV_AWS_55",  # Ensure S3 bucket has ignore public ACLs enabled
             severity="medium",
         )
-        # New findings in Checkov 3.2.
-        # self._assertContainsFinding(
-        #     details,
-        #     type="terraform",
-        #     filename="main.tf",
-        #     line=1,
-        #     message="CKV2_AWS_62",  # Ensure S3 buckets should have event notifications enabled
-        #     severity="low",
-        # )
-        # self._assertContainsFinding(
-        #     details,
-        #     type="terraform",
-        #     filename="main.tf",
-        #     line=1,
-        #     message="CKV2_AWS_61",  # Ensure that an S3 bucket has a lifecycle configuration
-        #     severity="low",
-        # )
+        self._assertContainsFinding(
+            details,
+            type="terraform",
+            filename="main.tf",
+            line=1,
+            message="CKV2_AWS_62",  # Ensure S3 buckets should have event notifications enabled
+            severity="low",
+        )
+        self._assertContainsFinding(
+            details,
+            type="terraform",
+            filename="main.tf",
+            line=1,
+            message="CKV2_AWS_61",  # Ensure that an S3 bucket has a lifecycle configuration
+            severity="low",
+        )
 
     def test_without_findings(self):
         response = run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR2}")
