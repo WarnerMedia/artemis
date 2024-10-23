@@ -9,7 +9,10 @@ from engine.plugins.bundler_audit import main as bundler
 
 
 class TestBundlerAudit(unittest.TestCase):
-    def test_parse_stderr_enoent(self):
+    def test_parse_stderr_stacktrace(self):
+        """
+        Tests parse_stderr extracts the error message from a stacktrace.
+        """
         data = textwrap.dedent("""\
             /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/scanner.rb:43:in `read': No such file or directory @ rb_sysopen - /src/Gemfile.lock (Errno::ENOENT)
             \tfrom /opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/scanner.rb:43:in `initialize'
@@ -23,7 +26,24 @@ class TestBundlerAudit(unittest.TestCase):
             \tfrom /opt/ruby/2.3.0/bin/bundle-audit:23:in `load'
             \tfrom /opt/ruby/2.3.0/bin/bundle-audit:23:in `<main>'
             """)
-        expected = ["No such file or directory @ rb_sysopen - /src/Gemfile.lock"]
+        expected = [
+            "/opt/ruby/2.3.0/lib/ruby/gems/2.3.0/gems/bundler-audit-0.6.0/lib/bundler/audit/scanner.rb:43:in `read': No such file or directory @ rb_sysopen - /src/Gemfile.lock (Errno::ENOENT)"
+        ]
+        actual = bundler.parse_stderr(data)
+        self.assertEqual(actual, expected)
+
+    def test_parse_stderr_simple(self):
+        """
+        Tests parse_stderr passes-through simple error messages.
+        """
+        data = (
+            "Git is not installed!\n"
+            + 'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
+        )
+        expected = [
+            "Git is not installed!",
+            'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"',
+        ]
         actual = bundler.parse_stderr(data)
         self.assertEqual(actual, expected)
 
