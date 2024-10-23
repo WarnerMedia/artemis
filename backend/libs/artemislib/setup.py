@@ -22,6 +22,7 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[
+        "aws-lambda-powertools~=3.2",
         "boto3~=1.34",
         "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.35",
         # pyjwt requires the cryptography library but it needs to be installed
