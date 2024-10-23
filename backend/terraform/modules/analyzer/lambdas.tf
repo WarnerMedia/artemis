@@ -429,6 +429,7 @@ module "access-secret-manager-keys" {
     module.nat_engine_cluster.scale-down-assume-role.name,
     aws_iam_role.db-cleanup-lambda-role.name,
     aws_iam_role.license-retriever-lambda-role.name,
+    aws_iam_role.service-connections-role.name,
     aws_iam_role.scan-scheduler-role.name,
     aws_iam_role.event-role.name,
     aws_iam_role.metrics-assume-role.name,
@@ -469,7 +470,8 @@ module "vpc-lambda-policy" {
     aws_iam_role.scheduled-scan-handler-role.name,
     aws_iam_role.db-cleanup-lambda-role.name,
     aws_iam_role.callback-assume-role.name,
-    aws_iam_role.license-retriever-lambda-role.name
+    aws_iam_role.license-retriever-lambda-role.name,
+    aws_iam_role.service-connections-role.name
   ]
   name      = "${var.app}-lambda-vpc"
   resources = ["*"]

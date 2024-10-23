@@ -141,6 +141,12 @@ variable "email_domain_aliases" {
   default = []
 }
 
+variable "artemis_api_base_url" {
+  description = "Base url for the artemis api"
+  type        = string
+}
+
+
 ###############################################################################
 # Environment-agnostic variables
 #
