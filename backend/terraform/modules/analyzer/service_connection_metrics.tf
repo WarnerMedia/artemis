@@ -75,6 +75,15 @@ resource "aws_cloudwatch_event_target" "service-connection" {
   arn       = aws_lambda_function.service-connection-metrics.arn
 }
 
+resource "aws_lambda_permission" "run-service-connections-lambda-from-cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.service-connection-metrics.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.run-service-connection-metrics.arn
+}
+
+
 module "service-connection-metrics-api-key" {
   source         = "../role_policy_attachment"
   actions        = ["secretsmanager:GetSecretValue"]
