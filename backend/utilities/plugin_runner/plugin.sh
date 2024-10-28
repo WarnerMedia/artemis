@@ -7,6 +7,8 @@ readonly BASEDIR
 readonly TEMPDIR="$BASEDIR/tmp"
 readonly COMPOSEFILE="$TEMPDIR/docker-compose.yml"
 
+workdir_readonly=true
+
 # Print usage info to stderr.
 function usage {
   cat <<EOD >&2
@@ -14,6 +16,7 @@ Usage: $0 (subcommand)
 
 Available subcommands:
     run - Run a core plugin in local containers.
+    run-writable - Same as "run", but mounts target directory as read-write.
     clean - Stop and clean up all containers.
 EOD
 }
@@ -107,7 +110,9 @@ EOD
   fi
 
   # Install optional config files.
-  [[ -f "$BASEDIR/.env" ]] && cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
+  if [[ -f "$BASEDIR/.env" ]]; then
+    cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
+  fi
   install_plugin_arg_file engine-vars.json "$plugindir" || return 1
   install_plugin_arg_file images.json "$plugindir" || return 1
   install_plugin_arg_file config.json "$plugindir" || return 1
@@ -140,7 +145,7 @@ services:
       - type: bind
         source: "$target"
         target: /work/base
-        read_only: true
+        read_only: $workdir_readonly
 EOD
 }
 
@@ -210,6 +215,10 @@ fi
 
 case "$cmd" in
   run)
+    do_run "$@" || exit 1
+    ;;
+  run-writable)
+    workdir_readonly=false
     do_run "$@" || exit 1
     ;;
   clean)

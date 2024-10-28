@@ -50,6 +50,14 @@ Run the "gosec" plugin and start a debug shell in the container:
 bash-5.0#
 ```
 
+By default, the target directory is mounted as read-only to avoid unexpected changes that would change the results from run-to-run.
+This is fine for most plugins, but some plugins expect the target directory to be writable.
+For those plugins, use `run-writable` instead of `run`:
+
+```bash
+./plugin.sh run-writable gosec ~/git/my-repo
+```
+
 Stop all containers and release resources:
 
 ```bash
