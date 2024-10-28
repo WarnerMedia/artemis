@@ -19,7 +19,6 @@ requests = "~=2.32"
 
 [dev-packages]
 autopep8 = "~=2.3"
-cryptography = "~=42.0"
 flake8 = "~=7.1"
 mock = "~=5.1"
 moto = {extras = ["awslambda", "ec2", "s3", "secretsmanager", "sqs"], version = "~=5.0"}
