@@ -107,7 +107,9 @@ EOD
   fi
 
   # Install optional config files.
-  [[ -f "$BASEDIR/.env" ]] && cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
+  if [[ -f "$BASEDIR/.env" ]]; then
+    cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
+  fi
   install_plugin_arg_file engine-vars.json "$plugindir" || return 1
   install_plugin_arg_file images.json "$plugindir" || return 1
   install_plugin_arg_file config.json "$plugindir" || return 1
