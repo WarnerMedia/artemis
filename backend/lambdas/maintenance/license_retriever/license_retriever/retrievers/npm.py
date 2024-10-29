@@ -1,5 +1,7 @@
 from time import sleep
+from typing import Optional, Union
 
+import json
 import requests
 
 from artemislib.logging import Logger
@@ -19,9 +21,15 @@ def retrieve_npm_licenses(name: str, version: str) -> list:
         return [license.lower()]
 
     for item in license:
-        result.append(item.lower())
+        item_type = type(item)
+        if item_type is str:
+            result.append(item.lower())
+        elif item_type is dict and 'type' in item:
+            result.append(item['type'].lower())
+        else:
+            LOG.error(f'Unexpected license format for npm package, "{name}@{version}". Result was: {json.dumps(item)}')
 
-    return []
+    return result
 
 
 def get_package_info(name: str, version: str) -> dict:
