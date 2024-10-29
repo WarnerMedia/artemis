@@ -22,12 +22,13 @@ def retrieve_npm_licenses(name: str, version: str) -> list:
 
     for item in license:
         item_type = type(item)
+
         if item_type is str:
             result.append(item.lower())
         elif item_type is dict and 'type' in item:
             result.append(item['type'].lower())
         else:
-            LOG.error(f'Unexpected license format for npm package, "{name}@{version}". Result was: {json.dumps(item)}')
+            LOG.error(f'Unexpected license format for npm package, "{name}@{version}". License item was: {json.dumps(item)}')
 
     return result
 
