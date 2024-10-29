@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "backend/**"
+      - ".github/workflows/test_backend.yml"
 
 jobs:
   test:
@@ -16,16 +17,14 @@ jobs:
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
-      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # actions/cache@v4.0.2
+      - uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2 # actions/cache@v4.1.0
         with:
           # Tool versions are defined in the Makefile.
           key: backend-unit-test-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/Makefile') }}
           path: backend/.temp
       - name: Install Test Dependencies
-        # Setuptools v74 is incompatible with our version of packaging, so we restrict it
-        # as well as virtualenv which bundles setuptools in new environments.
         run: |
-          pip install --upgrade pipenv wheel 'setuptools<74' 'virtualenv==20.26.3'
+          pip install --upgrade pipenv wheel
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests

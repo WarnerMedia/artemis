@@ -18,7 +18,14 @@ def run_bundler_audit(path: str) -> dict:
     :return: str
     """
     process = subprocess.run(
-        ["bundler-audit", "check", "--update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False
+        ["bundler-audit", "check", "--update"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=path,
+        check=False,
+        # Explicitly disable colorization of messages since we parse
+        # the output.
+        env=dict(os.environ, NO_COLOR="1"),
     )
 
     return {
@@ -27,26 +34,36 @@ def run_bundler_audit(path: str) -> dict:
     }
 
 
-def parse_stderr(data: str) -> list:
+def parse_stderr(data: str) -> list[str]:
     """
-    builds a list from stderr and parses through to get
-    useable data for output
-    :param data:
+    Reformats the stderr output from the command and generate a more concise
+    error message.
+    :param data: The full stderr output.
     :return: list
     """
     if not data:
         return []
-    start = data.find("`read':") + 8
-    end = data.find("(Errno") - 1
-    output = data[start:end]
-    return output
+
+    # Note: Previous versions of this plugin only attempted to detect
+    # "No such file or directory" errors amongst a stack trace.
+    # This meant that other error messages are potentially skipped.
+    #
+    # Newer versions of bundler-audit more clearly format most error messages
+    # without a stack trace, but we can still handle basic trimming of a
+    # stack trace if bundler-audit crashes with one.
+    # To keep things simple, we no longer attempt to trim the first line
+    # of the stack trace.
+
+    return [
+        s.strip()
+        for s in data.splitlines()
+        # Remove Ruby stacktrace lines.
+        if not s.startswith("\tfrom")
+    ]
 
 
 def parse_output(data: str) -> dict:
-    """
-    builds the dict from the
-    :return: dict
-    """
+    """Parse stdout and generate the plugin results."""
     if not data:
         return {}
     return data_splitter(data)
@@ -54,8 +71,9 @@ def parse_output(data: str) -> dict:
 
 def data_splitter(data: str) -> dict:
     """
-    splits data on the double newline character in data output
-    :return: list
+    Parse each finding from the raw text output.
+
+    Each finding is assumed to be separated by a double-newline.
     """
     size = 0
     max_size = 399000
@@ -72,17 +90,25 @@ def data_splitter(data: str) -> dict:
     return {"details": warning_list, "truncated": truncated}
 
 
-def normalize_severity(severity):
+def normalize_severity(severity: str) -> str:
     if severity.lower() == "unknown":
         return ""
     return severity.lower()
 
 
-def convert_dict(my_list: list) -> dict:
-    """
-    formats dictionary correctly
-    :return: dict
-    """
+def convert_dict(my_list: list[str]) -> dict:
+    """Parse each finding."""
+
+    # Example:
+    #   Name: actionmailer
+    #   Version: 4.2.7
+    #   CVE: CVE-2024-47889
+    #   GHSA: GHSA-h47h-mwp9-c6q6
+    #   Criticality: Unknown
+    #   URL: https://github.com/rails/rails/security/advisories/GHSA-h47h-mwp9-c6q6
+    #   Title: Possible ReDoS vulnerability in block_format in Action Mailer
+    #   Solution: upgrade to ~> 6.1.7.9, ~> 7.0.8.5, ~> 7.1.4.1, >= 7.2.1.1
+
     new_dict = {}
     # If item coming from stdout contains the first part of output with no data, skip to the 5th line
     if my_list[0].startswith("Download"):
@@ -114,7 +140,7 @@ def convert_dict(my_list: list) -> dict:
         return {}
 
 
-def find_gemfiles(project_dir: str) -> list:
+def find_gemfiles(project_dir: str) -> list[str]:
     return glob.glob(f"{project_dir}/**/Gemfile.lock", recursive=True)
 
 

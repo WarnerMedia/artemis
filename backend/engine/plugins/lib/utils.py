@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import subprocess
 import sys
 
@@ -36,6 +37,25 @@ def handle_exception(exc_type: type, exc_value: BaseException, exc_traceback: Tr
 
 
 sys.excepthook = handle_exception
+
+
+name_rx = re.compile("^[a-z0-9][_a-z0-9]*$", re.IGNORECASE)
+
+
+def validate_plugin_name(name: str) -> bool:
+    """
+    Check if a plugin name is valid.
+
+    This function only validates whether the name is valid, not whether the
+    plugin exists.
+
+    Plugins may be imported as modules, so we restrict the names to a subset of
+    Python naming conventions that avoids confusion.
+
+    "lib" is disallowed since the package is not actually a plugin, but is
+    bundled with the core plugins to provide the shared utility functions.
+    """
+    return name != "lib" and bool(name_rx.match(name))
 
 
 def parse_args(in_args=None, extra_args=None):

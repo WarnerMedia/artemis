@@ -92,6 +92,22 @@ resource "aws_secretsmanager_secret_version" "origin-header" {
 }
 
 ###############################################################################
+# Service Connections Lambda
+###############################################################################
+
+resource "aws_secretsmanager_secret" "artemis-api-secret" {
+  name        = "${var.app}/service-connection-metrics-api-key"
+  description = "Artemis API Key for the service connection Lambda"
+}
+
+resource "aws_secretsmanager_secret_version" "artemis-api-secret" {
+  secret_id = aws_secretsmanager_secret.artemis-api-secret.id
+  secret_string = jsonencode({
+    "key" : "REPLACEVALUE",
+  })
+}
+
+###############################################################################
 ###############################################################################
 ## --------------------------
 ## Externally-managed secrets

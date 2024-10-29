@@ -17,6 +17,24 @@ RUN apt-get update \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add -
 
+RUN pip install --no-cache-dir \
+    'packaged==0.6.0' \
+    'pipenv~=2024.0' \
+    'setuptools<74' \
+    'virtualenv==20.26.3' \
+    'wheel~=0.44.0'
+
+# Build self-contained core plugin bundle.
+WORKDIR /src
+COPY Pipfile.lock .
+COPY engine/plugins/ engine/plugins
+# hadolint ignore=SC2016
+RUN pipenv requirements > requirements.txt && \
+    packaged --python-version 3.9 plugin.sh \
+        'pip install -r requirements.txt' \
+        'python -m engine.plugins "$@"' \
+        /src
+
 ###############################################################################
 # App stage
 ###############################################################################
@@ -64,6 +82,7 @@ WORKDIR /srv/engine
 
 COPY ./engine/ ./
 COPY ./services.json /srv/engine/
+COPY --from=builder /src/plugin.sh /srv/engine/plugins/plugin.sh
 
 VOLUME ["/srv/engine/plugins"]
 

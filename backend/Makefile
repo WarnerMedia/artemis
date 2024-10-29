@@ -106,6 +106,7 @@ SEARCH_SCANS_LAMBDA := ${PREFIX}-search-scans-handler
 SEARCH_VULNERABILITIES_LAMBDA := ${PREFIX}-search-vulnerabilities-handler
 LICENSE_RETRIEVER_LAMBDA := ${PREFIX}-license-retriever
 SYSTEM_SERVICES_LAMBDA := ${PREFIX}-system-services-handler
+SERVICE_CONNECTION_METRICS_LAMBDA := ${PREFIX}-service-connection-metrics
 
 BACKEND_CORE_LAMBDA_LAYER := ${PREFIX}-backend-core
 
@@ -148,7 +149,7 @@ SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
 
-CHECKOV_VER := 2.0.1065
+CHECKOV_VER := 3.2.268
 
 FSB_VER := 1.9.0
 FSB_PATCH := -fix2
@@ -187,10 +188,10 @@ TFLINT_VER := 0.20.2
 TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 
 # CFN Python Lint
-CFN_VER = 0.53.0
+CFN_VER = 1.18.1
 
 # Python Packaging Library Version
-PACKAGING_VER = 21.3
+PACKAGING_VER = 23.2
 
 # Artemis test parameters
 BRANCH_NAME := $(shell git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
@@ -235,7 +236,7 @@ help:  ## Print this help text
 	@echo " make <target>"
 	@echo
 	@echo "${YELLOW}Targets:${CNone}"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
 ###############################################################################
@@ -395,6 +396,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/maintenance/db_cleanup.zip \
 		 dist/lambdas/maintenance/license_retriever.zip \
 		 dist/lambdas/maintenance/report_cleanup.zip \
+		 dist/lambdas/maintenance/service_connection_metrics.zip \
 		 dist/lambdas/scans/callback.zip \
 		 dist/lambdas/scans/scale_down.zip \
 		 dist/lambdas/scans/task_queue_metrics.zip \
@@ -811,6 +813,7 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-maintenance-db_cleanup \
 				upload_lambda_lambdas-maintenance-license_retriever \
 				upload_lambda_lambdas-maintenance-report_cleanup \
+				upload_lambda_lambdas-maintenance-service_connection_metrics \
 				upload_lambda_lambdas-scans-callback \
 				upload_lambda_lambdas-scans-scale_down \
 				upload_lambda_lambdas-scans-task_queue_metrics \
@@ -884,7 +887,8 @@ move_lambda_bundles: move_lambda_bundle_backend_core \
 					 move_lambda_bundle_scheduled_scan_handler \
 					 move_lambda_bundle_scans_batch \
 					 move_lambda_bundle_db_cleanup \
-					 move_lambda_bundle_license_retriever
+					 move_lambda_bundle_license_retriever \
+					 move_lambda_bundle_service_connection_metrics
 .PHONY: move_lambda_bundles
 
 ###############################################################################
@@ -1398,6 +1402,21 @@ deploy_license_retriever: move_lambda_bundle_license_retriever
 	@echo "${OK}"
 .PHONY: deploy_license_retriever
 
+deploy_service_connection_metrics: move_lambda_bundle_service_connection_metrics
+	@echo "${INFO}Deploying ${SERVICE_CONNECTION_METRICS_LAMBDA} lambda"
+	aws lambda update-function-code \
+		--function-name ${SERVICE_CONNECTION_METRICS_LAMBDA} \
+		--region ${REGION} \
+		--s3-bucket ${S3_BUCKET} \
+		--s3-key lambdas/service_connection_metrics/v${VERSION}/service_connection_metrics.zip
+	@echo "${INFO}Waiting for ${SERVICE_CONNECTION_METRICS_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${SERVICE_CONNECTION_METRICS_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${SERVICE_CONNECTION_METRICS_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${SERVICE_CONNECTION_METRICS_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+.PHONY: deploy_service_connection_metrics
+
 ###############################################################################
 # Lambda Layer Deployment
 ###############################################################################
@@ -1447,7 +1466,8 @@ deploy_lambdas: deploy_repo \
 				deploy_ci_tools \
 				deploy_scans_batch \
 				deploy_db_cleanup \
-				deploy_license_retriever
+				deploy_license_retriever \
+				deploy_service_connection_metrics
 .PHONY: deploy_lambdas
 
 deploy_scripts:  ## Deploy scripts to S3

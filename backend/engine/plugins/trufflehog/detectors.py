@@ -49,7 +49,6 @@ verified_detectors_allowlist = [
     "Flickr",
     "FTP",
     "GCP",
-    "Generic",
     "Github",
     "GitHubApp",
     "GitHubOauth2",
@@ -100,4 +99,14 @@ verified_detectors_allowlist = [
     "Wiz",
     "Workday",
     "WpEngine",
+]
+
+# Some detectors make a best effort to verify, but are not exhaustive. We never want to mark their
+# results as "inactive"
+_never_inactive_detectors = [
+    "PrivateKey",
+]
+
+inactiveable_detectors = [
+    detector for detector in verified_detectors_allowlist if detector not in set(_never_inactive_detectors)
 ]

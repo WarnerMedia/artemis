@@ -16,7 +16,8 @@ module "write-logs" {
     aws_iam_role.scan-scheduler-role.name,
     aws_iam_role.scheduled-scan-handler-role.name,
     aws_iam_role.db-cleanup-lambda-role.name,
-    aws_iam_role.license-retriever-lambda-role.name
+    aws_iam_role.license-retriever-lambda-role.name,
+    aws_iam_role.service-connections-role.name
   ]
   name      = "${var.app}-write-logs"
   resources = ["arn:aws:logs:*:*:*"]

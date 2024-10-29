@@ -55,18 +55,20 @@ GITHUB_CONSTRUCTED_REQUEST = {
         {
             "repo": "eslint-config",
             "org": "adult-swim",
-            "plugins": ["gitsecrets", "base_images"],
+            "plugins": ["gitsecrets", "trufflehog", "base_images"],
             "batch_priority": True,
             "branch": "master",
             "batch_id": TEST_BATCH_ID,
+            "depth": 1,
         },
         {
             "batch_priority": True,
             "branch": "master",
             "org": "cue",
-            "plugins": ["gitsecrets", "base_images"],
+            "plugins": ["gitsecrets", "trufflehog", "base_images"],
             "repo": "graphite",
             "batch_id": TEST_BATCH_ID,
+            "depth": 1,
         },
     ]
 }
@@ -75,10 +77,11 @@ BITBUCKET_CONSTRUCTED_REQUEST = {
         {
             "repo": "portal_web",
             "org": "wbdigital",
-            "plugins": ["gitsecrets", "base_images"],
+            "plugins": ["gitsecrets", "trufflehog", "base_images"],
             "batch_priority": True,
             "branch": "master",
             "batch_id": TEST_BATCH_ID,
+            "depth": 1,
         }
     ]
 }
@@ -104,7 +107,7 @@ RECEIPT_HANDLES = ["jumbledhashyoucantreadthisitstoojumbled"]
 RESPONSE_CODE_PASS = 200
 RESPONSE_CODE_FAIL = 401
 RESPONSE_TUPLE = namedtuple("response_tuple", ["status_code", "text"])
-TEST_PLUGINS = ["gitsecrets", "base_images"]
+TEST_PLUGINS = ["gitsecrets", "trufflehog", "base_images"]
 
 
 @dataclass

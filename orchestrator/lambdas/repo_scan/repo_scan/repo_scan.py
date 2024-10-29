@@ -26,10 +26,11 @@ warnings.filterwarnings("ignore", "No application metrics to publish*")
 
 ARTEMIS_API = os.environ.get("ARTEMIS_API")
 API_KEY_LOC = os.environ.get("ARTEMIS_API_KEY")
-DEFAULT_PLUGINS = ["gitsecrets", "base_images"]
+DEFAULT_PLUGINS = ["gitsecrets", "trufflehog", "base_images"]
 PROCESSED_MESSAGES = namedtuple("processed_messages", ["repos", "receipt_handles"])
 REPO_QUEUE = os.environ.get("REPO_QUEUE")
 REPO_DLQ = os.environ.get("REPO_DEAD_LETTER_QUEUE")
+SCAN_DEPTH = int(os.environ.get("SCAN_DEPTH", 1))
 SCAN_TABLE_NAME = os.environ.get("SCAN_TABLE") or ""
 
 log = Logger(service=APPLICATION, name="repo_scan")
@@ -190,6 +191,7 @@ def construct_repo_requests(repos: list) -> dict:
             "plugins": repo.get("plugins") or DEFAULT_PLUGINS,
             "batch_priority": True,
             "batch_id": repo.get("batch_id"),
+            "depth": SCAN_DEPTH,
         }
         metrics.add_metric(
             name="queued_repositories.count",

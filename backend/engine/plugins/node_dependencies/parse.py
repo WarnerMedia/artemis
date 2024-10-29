@@ -111,15 +111,15 @@ def _find_versions_v2(lockfile: dict, nodes: list, resolver: LineNumberResolver)
     for node in nodes:
         pkg = lockfile["packages"][node]
         path = f"/{node}".replace("/node_modules/", ">")[1:]
-        source = resolver.find(pkg["integrity"]) or resolver.find(path)
+        source = resolver.find(pkg.get("integrity")) or resolver.find(path)
         versions.append(
             {
                 "path": path,
                 "version": pkg["version"],
-                "integrity": pkg["integrity"],
+                "integrity": pkg.get("integrity", ""),
                 "dev": pkg.get("dev", False),
-                "filename": source["filename"],
-                "line": source["line"],
+                "filename": source.get("filename", ""),
+                "line": source.get("line", 0),
             }
         )
     return versions

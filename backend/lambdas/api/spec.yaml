@@ -2079,7 +2079,6 @@ components:
               - php_sensio_security_checker
               - python_code_checker
               - technology_discovery
-              - truffle_hog
               - trufflehog
               - brakeman
               - bundler_audit

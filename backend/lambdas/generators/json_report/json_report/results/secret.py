@@ -25,6 +25,8 @@ class SecretFinding:
     line: int
     commit: str
     details: list[FindingDetails]
+    url: str = ""
+    location: str = ""
 
     def to_dict(self):
         type_list = [item.type for item in self.details]
@@ -34,6 +36,8 @@ class SecretFinding:
             "type": type_str,
             "line": self.line,
             "commit": self.commit,
+            "url": self.url,
+            "location": self.location,
             "details": [item.to_dict() for item in self.details],
         }
 
@@ -100,6 +104,8 @@ def get_secrets(scan, params):
                 line=finding.get("line"),
                 commit=finding.get("commit"),
                 details=[item_details],
+                url=finding.get("url"),
+                location=finding.get("location"),
             )
 
             key = get_finding_dict_key(item)

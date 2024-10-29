@@ -52,6 +52,10 @@ class Runner(str, Enum):
     """
 
     CORE = "core"
+    """Run the plugin using the container's system Python."""
+
+    BOXED = "boxed"
+    """Run the self-contained plugin bundle."""
 
 
 @dataclass
@@ -696,8 +700,9 @@ def get_plugin_command(
     )
 
     if settings.runner == Runner.CORE:
-        # Run the plugin using the container's system Python.
         cmd.extend(["python", f"/srv/engine/plugins/{plugin}/main.py"])
+    elif settings.runner == Runner.BOXED:
+        cmd.extend(["/srv/engine/plugins/plugin.sh", "--quiet", "--", plugin])
     else:
         raise ValueError(f"Runner is not supported: {settings.runner}")
 
@@ -714,7 +719,15 @@ def get_plugin_command(
 
 
 def get_plugin_list() -> list[str]:
-    return sorted([e.name for e in os.scandir(os.path.join(ENGINE_DIR, "plugins")) if e.name != "lib" and e.is_dir()])
+    # Note: Using engine.plugins.lib.utils.validate_plugin_name() currently
+    #       causes a circular import at runtime.
+    return sorted(
+        [
+            e.name
+            for e in os.scandir(os.path.join(ENGINE_DIR, "plugins"))
+            if e.name != "lib" and not e.name.startswith("_") and e.is_dir()
+        ]
+    )
 
 
 def _process_secret_types(details: list) -> None:

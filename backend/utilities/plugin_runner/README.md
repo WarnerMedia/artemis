@@ -50,13 +50,21 @@ Run the "gosec" plugin and start a debug shell in the container:
 bash-5.0#
 ```
 
+By default, the target directory is mounted as read-only to avoid unexpected changes that would change the results from run-to-run.
+This is fine for most plugins, but some plugins expect the target directory to be writable.
+For those plugins, use `run-writable` instead of `run`:
+
+```bash
+./plugin.sh run-writable gosec ~/git/my-repo
+```
+
 Stop all containers and release resources:
 
 ```bash
 ./plugin.sh clean
 ```
 
-> [!INFO]
+> [!TIP]
 > The `run` command will automatically run `clean` before starting the new containers.
 
 ## Configuration
@@ -65,9 +73,13 @@ Stop all containers and release resources:
 
 If an `.env` file exists, then it will be used to set the environment of the plugin container.
 
+Suggested environment variables:
+
+* `ARTEMIS_PLUGIN_DEBUG` - Set to `1` to enable debug logging in the plugin loader.
+
 ### Plugin command-line arguments
 
-The passes three JSON command-line arguments to the plugin: Engine vars, images, and the plugin config.
+The engine passes three JSON command-line arguments to the plugin: Engine vars, images, and the plugin config.
 
 Be default, this script will pass an empty object (`{}`) for these arguments.
 
