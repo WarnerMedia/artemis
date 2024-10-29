@@ -1,7 +1,6 @@
 from time import sleep
 from typing import Optional, Union
 
-import json
 import requests
 
 from artemislib.logging import Logger
@@ -14,23 +13,7 @@ def retrieve_npm_licenses(name: str, version: str) -> list:
     if not package_info:
         return []
 
-    license = package_info.get("license", [])  # license could be a list / string
-    result = []
-
-    if type(license) is str:
-        return [license.lower()]
-
-    for item in license:
-        item_type = type(item)
-
-        if item_type is str:
-            result.append(item.lower())
-        elif item_type is dict and 'type' in item:
-            result.append(item['type'].lower())
-        else:
-            LOG.error(f'Unexpected license format for npm package, "{name}@{version}". License item was: {json.dumps(item)}')
-
-    return result
+    return get_package_license(package_info)
 
 
 def get_package_info(name: str, version: str) -> dict:
@@ -47,3 +30,65 @@ def get_package_info(name: str, version: str) -> dict:
         else:
             LOG.error("Unable to find package info for %s: HTTP %s", name, r.status_code)
             return {}
+
+
+def get_package_license(package_info: dict) -> list[str]:
+    # Official Spec: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#license
+    # We support the official spec, as well as the "deprecated" syntax with objects/arrays in a
+    # `license` or `licenses` property
+    #
+    # So, we should be able to parse all of these:
+    # license: "GPL-3.0"
+    # license: "(GPL-3.0 OR MIT)" # SPDX expression. We will just return the expression whole as a string
+    # license: [
+    #     "GPL-3.0",
+    #     "MIT"
+    # ]
+    # license: {
+    #     type: "GPL-3.0",
+    #     url: "..."
+    # }
+    # licenses: [
+    #     {
+    #         type: "GPL-3.0",
+    #         url: "..."
+    #     },
+    #     {
+    #         type: "MIT",
+    #         url: "..."
+    #     }
+
+    if "license" in package_info:
+        license = package_info["license"]
+    elif "licenses" in package_info:
+        license = package_info["licenses"]
+    else:
+        return []
+
+    if type(license) is list:
+        result = []
+
+        for item in license:
+            item_license = get_license(item)
+
+            if item_license:
+                result.append(item_license)
+
+        return result
+    else:
+        item_license = get_license(license)
+
+        if item_license:
+            return [item_license]
+        else:
+            return []
+
+
+def get_license(item: Union[dict, str]) -> Optional[str]:
+    if type(item) is str:
+        return item.lower()
+    elif type(item) is dict:
+        if "type" in item:
+            return item["type"].lower()
+
+    return None
