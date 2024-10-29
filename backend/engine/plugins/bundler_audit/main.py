@@ -6,16 +6,27 @@ import glob
 import json
 import os
 import subprocess
+from dataclasses import dataclass, field
 
 from engine.plugins.lib import utils
 
 LOG = utils.setup_logging("bundler_audit")
 
 
-def run_bundler_audit(path: str) -> dict:
+@dataclass
+class Results:
+    details: list[dict] = field(default_factory=list)
+    truncated: bool = False
+
+    def empty(self) -> bool:
+        # The list may be empty or contain a single empty object.
+        return not self.details or (len(self.details) == 1 and not self.details[0])
+
+
+def run_bundler_audit(path: str) -> tuple[Results, list[str]]:
     """
-    Runs bundler_audit
-    :return: str
+    Runs bundler_audit on the target path.
+    Returns the findings and list of errors.
     """
     process = subprocess.run(
         ["bundler-audit", "check", "--update"],
@@ -27,11 +38,39 @@ def run_bundler_audit(path: str) -> dict:
         # the output.
         env=dict(os.environ, NO_COLOR="1"),
     )
+    return parse_results(
+        process.returncode,
+        process.stdout.decode("utf-8"),
+        process.stderr.decode("utf-8"),
+    )
 
-    return {
-        "output": parse_output((process.stdout.decode("utf-8"))),
-        "errors": parse_stderr((process.stderr.decode("utf-8"))),
-    }
+
+def parse_results(returncode: int, out: str, err: str) -> tuple[Results, list[str]]:
+    """
+    Process the output of bundler-audit.
+    Returns the findings and list of errors.
+    """
+
+    # Determining the success/fail of bundler-audit using the CLI is tricky:
+    #   - bundler-audit runs git to update the DB, which writes all
+    #     messages to stderr.
+    #   - bundler-audit exits with code 1 if an error occurred *or* there are
+    #     any findings.
+    #
+    # To avoid trying to recognize all potential error messages, we rely on the
+    # exit code as well as whether there are any findings.
+
+    if returncode == 0:
+        # No findings, no errors.
+        return (Results(), [])
+    else:
+        output = parse_output(out)
+        if not output.empty():
+            # Findings present, assume "errors" are normal info messages.
+            return (output, [])
+        else:
+            # No findings, return all info messages as errors.
+            return (Results(), parse_stderr(err))
 
 
 def parse_stderr(data: str) -> list[str]:
@@ -62,14 +101,14 @@ def parse_stderr(data: str) -> list[str]:
     ]
 
 
-def parse_output(data: str) -> dict:
+def parse_output(data: str) -> Results:
     """Parse stdout and generate the plugin results."""
     if not data:
-        return {}
+        return Results()
     return data_splitter(data)
 
 
-def data_splitter(data: str) -> dict:
+def data_splitter(data: str) -> Results:
     """
     Parse each finding from the raw text output.
 
@@ -87,7 +126,7 @@ def data_splitter(data: str) -> dict:
         else:
             truncated = True
             break
-    return {"details": warning_list, "truncated": truncated}
+    return Results(details=warning_list, truncated=truncated)
 
 
 def normalize_severity(severity: str) -> str:
@@ -137,7 +176,7 @@ def convert_dict(my_list: list[str]) -> dict:
         }
     else:
         LOG.error("No unique identifier found")
-        return {}
+        return {}  # TODO: Return None instead.
 
 
 def find_gemfiles(project_dir: str) -> list[str]:
@@ -155,21 +194,22 @@ def main():
     gemfiles = find_gemfiles(gemfile_loc)
 
     if len(gemfiles) == 0:
-        LOG.error("No gemfile.lock files found. Returning")
-        output = {"output": {"info": ["No gemfile.lock file found."], "details": []}, "errors": ""}
+        LOG.warning("No gemfile.lock files found")
+        output = Results()
+        errors = []
     else:
         if len(gemfiles) > 1:
             LOG.warning("More than 1 gemfile.lock was found. This is currently unsupported. Auditing first found file.")
         gemfile_loc = os.path.dirname(gemfiles[0])
-        output = run_bundler_audit(gemfile_loc)
+        (output, errors) = run_bundler_audit(gemfile_loc)
 
     print(
         json.dumps(
             {
-                "success": not output["output"].get("details"),
-                "details": output["output"].get("details", []),
-                "truncated": output["output"].get("truncated", False),
-                "errors": output["errors"],
+                "success": output.empty(),
+                "details": output.details,
+                "truncated": output.truncated,
+                "errors": errors,
             }
         )
     )
