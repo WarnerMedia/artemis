@@ -49,6 +49,16 @@ GPL_OR_MIT_SPDX = f"({GPL} OR {MIT})"
             [GPL.lower(), MIT.lower()],
             id="should return each license if license is an array of objects with 'type' property",
         ),
+        pytest.param(
+            {
+                "licenses": [
+                    {"type": GPL},
+                    {"type": MIT},
+                ]
+            },
+            [GPL.lower(), MIT.lower()],
+            id="should return each license if license is in 'licenses' property with an array of objects with 'type' property",
+        ),
     ],
 )
 @patch("requests.get")
