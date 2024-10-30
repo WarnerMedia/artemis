@@ -59,6 +59,40 @@ class TestBundlerAudit(unittest.TestCase):
         self.assertTrue(results.empty())
         self.assertEqual(errors, ["Failed updating ruby-advisory-db!"])
 
+    def test_parse_results_download_error(self):
+        """
+        Tests parse_results for the "Failed to download" case.
+        """
+        # This is a special case since bundler-audit writes this error to
+        # *stdout* not stderr.
+        out = 'Download ruby-advisory-db ...\nfailed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
+        err = ""
+        (results, errors) = bundler.parse_results(1, out, err)
+        self.assertTrue(results.empty())
+        self.assertEqual(
+            errors,
+            [
+                'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"'
+            ],
+        )
+
+    def test_parse_results_download_error_with_git(self):
+        """
+        Tests parse_results for the "Failed to download" case with an
+        additional error from git.
+        """
+        out = 'Download ruby-advisory-db ...\nfailed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
+        err = "fatal: destination path '/root/.local/share/ruby-advisory-db' already exists and is not an empty directory."
+        (results, errors) = bundler.parse_results(1, out, err)
+        self.assertTrue(results.empty())
+        self.assertEqual(
+            errors,
+            [
+                "fatal: destination path '/root/.local/share/ruby-advisory-db' already exists and is not an empty directory.",
+                'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"',
+            ],
+        )
+
     def test_parse_results_output(self):
         """
         Tests parse_results handles findings.

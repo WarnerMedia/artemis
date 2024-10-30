@@ -63,6 +63,13 @@ def parse_results(returncode: int, out: str, err: str) -> tuple[Results, list[st
     if returncode == 0:
         # No findings, no errors.
         return (Results(), [])
+    elif (lastline := out.splitlines()[-1].strip()).startswith("failed to download "):
+        # Special case: The "failed to download" error is written to
+        # stdout instead of stderr.
+        # This may or may not be accompanied by a git error, which *is*
+        # written to stderr, so we try to capture that as well.
+        LOG.warning(f"bundler-audit error log: {err}")
+        return (Results(), parse_stderr(err) + [lastline])
     else:
         output = parse_output(out)
         if not output.empty():
