@@ -93,7 +93,7 @@ def license_lookup(license, spdx_licenses) -> Tuple[str, str]:
         return license, spdx_licenses[license]
     elif license in PYPI_LICENSE_MAP:
         return license, PYPI_LICENSE_MAP[license]
-    if re.match("^[a-zA-Z0-9_.-]+$", license):
+    if re.match("^[a-zA-Z0-9(): _.+-]+$", license):
         # License contains all valid characters
         return license, license
     LOG.info("Unexpected license ID: %s", license)
