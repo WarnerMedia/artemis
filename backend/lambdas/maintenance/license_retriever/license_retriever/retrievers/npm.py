@@ -27,8 +27,11 @@ def get_package_info(name: str, version: str) -> dict:
             retry = int(r.headers.get("Retry-After", 5))
             LOG.info("Rate limit reached, retrying after %s seconds", retry)
             sleep(retry)
+        elif r.status_code == 404:
+            LOG.warning('Unable to find package info for "%s@%s" on registry.npmjs.org', name, version)
+            return {}
         else:
-            LOG.error("Unable to find package info for %s: HTTP %s", name, r.status_code)
+            LOG.error('Unexpected error for "%s@%s": HTTP %s', name, version, r.status_code)
             return {}
 
 
@@ -58,7 +61,7 @@ def get_package_license(package_info: dict, package_name: str) -> list[str]:
     elif "licenses" in package_info:
         license = package_info["licenses"]
     else:
-        LOG.debug('No license information in package info for "%s"', package_name)
+        LOG.warning('No license information in package info for "%s"', package_name)
         return []
 
     if type(license) is list:
