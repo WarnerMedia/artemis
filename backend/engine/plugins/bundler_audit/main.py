@@ -2,11 +2,12 @@
 Bundler-audit plugin
 """
 
+from dataclasses import dataclass, field
 import glob
 import json
 import os
 import subprocess
-from dataclasses import dataclass, field
+from typing import Optional
 
 from engine.plugins.lib import utils
 
@@ -19,8 +20,7 @@ class Results:
     truncated: bool = False
 
     def empty(self) -> bool:
-        # The list may be empty or contain a single empty object.
-        return not self.details or (len(self.details) == 1 and not self.details[0])
+        return not self.details
 
 
 def run_bundler_audit(path: str) -> tuple[Results, list[str]]:
@@ -118,11 +118,12 @@ def data_splitter(data: str) -> Results:
     max_size = 399000
     truncated = False
     arr = data.split("\n\n")
-    warning_list = []
+    warning_list: list[dict] = []
     for line in arr[:-1]:
         size += len(json.dumps(line).encode("utf-8"))
         if size < max_size:
-            warning_list.append(convert_dict(line.split("\n")))
+            if finding := convert_dict(line.split("\n")):
+                warning_list.append(finding)
         else:
             truncated = True
             break
@@ -135,8 +136,11 @@ def normalize_severity(severity: str) -> str:
     return severity.lower()
 
 
-def convert_dict(my_list: list[str]) -> dict:
-    """Parse each finding."""
+def convert_dict(my_list: list[str]) -> Optional[dict]:
+    """
+    Parse each finding from a block of lines.
+    Returns the finding or None if the block does not contain a finding.
+    """
 
     # Example:
     #   Name: actionmailer
@@ -176,7 +180,7 @@ def convert_dict(my_list: list[str]) -> dict:
         }
     else:
         LOG.error("No unique identifier found")
-        return {}  # TODO: Return None instead.
+        return None
 
 
 def find_gemfiles(project_dir: str) -> list[str]:

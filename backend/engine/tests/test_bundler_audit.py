@@ -366,7 +366,7 @@ class TestBundlerAudit(unittest.TestCase):
             ">= 4.1.14.2, ~> 4.1.14\n\n"
         )
         actual = bundler.parse_output(test)
-        self.assertEqual(actual, bundler.Results(details=[{}]))
+        self.assertEqual(actual, bundler.Results())
 
 
 if __name__ == "__main__":
