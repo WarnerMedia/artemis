@@ -93,12 +93,21 @@ def parse_stderr(data: str) -> list[str]:
     # To keep things simple, we no longer attempt to trim the first line
     # of the stack trace.
 
-    return [
+    errs = [
         s.strip()
         for s in data.splitlines()
         # Remove Ruby stacktrace lines.
         if not s.startswith("\tfrom")
     ]
+    if len(errs) > 0:
+        # bundler-audit runs git which outputs status messages to stderr, which
+        # adds a lot of noise when reporting to the user.
+        # We assume that the last line of stderr (after filtering above) is the
+        # actual error, if any.
+        errs = errs[-1:]
+        # Log the full unfiltered output so we can debug.
+        LOG.warning(f"bundler-audit error log: {data}")
+    return errs
 
 
 def parse_output(data: str) -> Results:

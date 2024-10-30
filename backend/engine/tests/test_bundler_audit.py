@@ -57,13 +57,7 @@ class TestBundlerAudit(unittest.TestCase):
         err = "Cloning into '/root/.local/share/ruby-advisory-db'...\nFailed updating ruby-advisory-db!\n"
         (results, errors) = bundler.parse_results(1, out, err)
         self.assertTrue(results.empty())
-        self.assertEqual(
-            errors,
-            [
-                "Cloning into '/root/.local/share/ruby-advisory-db'...",
-                "Failed updating ruby-advisory-db!",
-            ],
-        )
+        self.assertEqual(errors, ["Failed updating ruby-advisory-db!"])
 
     def test_parse_results_output(self):
         """
@@ -141,7 +135,6 @@ class TestBundlerAudit(unittest.TestCase):
             + 'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
         )
         expected = [
-            "Git is not installed!",
             'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"',
         ]
         actual = bundler.parse_stderr(data)
