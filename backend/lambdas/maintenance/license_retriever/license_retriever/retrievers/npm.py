@@ -13,7 +13,7 @@ def retrieve_npm_licenses(name: str, version: str) -> list:
     if not package_info:
         return []
 
-    return get_package_license(package_info)
+    return get_package_license(package_info, f"{name}@{version}")
 
 
 def get_package_info(name: str, version: str) -> dict:
@@ -32,7 +32,7 @@ def get_package_info(name: str, version: str) -> dict:
             return {}
 
 
-def get_package_license(package_info: dict) -> list[str]:
+def get_package_license(package_info: dict, package_name: str) -> list[str]:
     # Official Spec: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#license
     # We support the official spec, as well as the "deprecated" syntax with objects/arrays in a
     # `license` or `licenses` property
@@ -58,20 +58,21 @@ def get_package_license(package_info: dict) -> list[str]:
     elif "licenses" in package_info:
         license = package_info["licenses"]
     else:
+        LOG.debug('No license information in package info for "%s"', package_name)
         return []
 
     if type(license) is list:
         result = []
 
         for item in license:
-            item_license = get_license(item)
+            item_license = get_license(item, package_name)
 
             if item_license:
                 result.append(item_license)
 
         return result
     else:
-        item_license = get_license(license)
+        item_license = get_license(license, package_name)
 
         if item_license:
             return [item_license]
@@ -79,11 +80,12 @@ def get_package_license(package_info: dict) -> list[str]:
             return []
 
 
-def get_license(item: Union[dict, str]) -> Optional[str]:
+def get_license(item: Union[dict, str], package_name: str) -> Optional[str]:
     if type(item) is str:
         return item.lower()
     elif type(item) is dict:
-        if "type" in item:
+        if "type" in item and type(item["type"]) is str:
             return item["type"].lower()
 
+    LOG.warning('Could not parse a license for "%s". It may be unconventional.', package_name)
     return None
