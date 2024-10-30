@@ -68,7 +68,6 @@ def parse_results(returncode: int, out: str, err: str) -> tuple[Results, list[st
         # stdout instead of stderr.
         # This may or may not be accompanied by a git error, which *is*
         # written to stderr, so we try to capture that as well.
-        LOG.warning(f"bundler-audit error log: {err}")
         return (Results(), parse_stderr(err) + [lastline])
     else:
         output = parse_output(out)
