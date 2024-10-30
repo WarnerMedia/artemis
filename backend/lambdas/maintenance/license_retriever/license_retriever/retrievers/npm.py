@@ -39,7 +39,7 @@ def get_package_license(package_info: dict) -> list[str]:
     #
     # So, we should be able to parse all of these:
     # license: "GPL-3.0"
-    # license: "(GPL-3.0 OR MIT)" # SPDX expression. We will just return the expression whole as a string
+    # license: "(GPL-3.0 OR MIT)" # SPDX expression. We will return the expression whole as a string
     # license: [
     #     "GPL-3.0",
     #     "MIT"
@@ -49,14 +49,9 @@ def get_package_license(package_info: dict) -> list[str]:
     #     url: "..."
     # }
     # licenses: [
-    #     {
-    #         type: "GPL-3.0",
-    #         url: "..."
-    #     },
-    #     {
-    #         type: "MIT",
-    #         url: "..."
-    #     }
+    #     { type: "GPL-3.0", url: "..." },
+    #     { type: "MIT", url: "..." }
+    # ]
 
     if "license" in package_info:
         license = package_info["license"]
