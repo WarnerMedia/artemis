@@ -103,7 +103,10 @@ def parse_stderr(data: str) -> list[str]:
     errs = [
         s.strip()
         for s in data.splitlines()
-        # Remove Ruby stacktrace lines.
+        # Remove Ruby backtrace lines.
+        # This assumes that the backtrace is in pre-Ruby 2.5 format, which
+        # should always be the case since the output is not attached to
+        # a TTY.
         if not s.startswith("\tfrom")
     ]
     if len(errs) > 0:
