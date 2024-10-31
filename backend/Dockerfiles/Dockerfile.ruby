@@ -4,7 +4,7 @@ FROM ruby:${RUBY_VER}
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-# Set the version for bundler audit
+ARG BRAKEMAN_VER=5.0.0
 ARG BUNDLER_VER=0.8.0
 
 # Run all additional config in a single RUN to reduce the layers:
@@ -18,6 +18,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    gem install brakeman --version 5.0.0 && \
+    gem install brakeman --version ${BRAKEMAN_VER} && \
     gem install bundler-audit --version ${BUNDLER_VER} && \
     rm -rf /usr/local/bundle/gems/bundler-audit-${BUNDLER_VER}/spec/
