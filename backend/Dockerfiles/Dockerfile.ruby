@@ -9,7 +9,8 @@ ARG BUNDLER_VER=0.8.0
 
 # Run all additional config in a single RUN to reduce the layers:
 # - Install brakeman and bundler-audit
-# - Remove bundler-audit rspec Gemfiles so that Aqua doesn't generate F+ from them when scanned
+# - Install git as a dependency of bundler-audit.
+# - Remove bundler-audit rspec Gemfiles to avoid false-positives in scans.
 # hadolint ignore=DL3008
 RUN apt-get update && \
     grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
