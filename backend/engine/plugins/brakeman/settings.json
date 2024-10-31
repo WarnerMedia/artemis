@@ -1,5 +1,6 @@
 {
     "name": "Brakeman Scanner",
     "type": "static_analysis",
-    "image": "$ECR/artemis/ruby:latest"
+    "image": "$ECR/artemis/ruby:latest",
+    "runner": "boxed"
 }
