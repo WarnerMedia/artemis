@@ -64,11 +64,7 @@ ifndef ANALYZER_DJANGO_SECRET_KEY
 	export ANALYZER_DB_PORT=5433
 endif
 
-ifeq ($(shell whoami),circleci)
-	SWAGGER_CODEGEN := java -jar swagger-codegen-cli-3.0.11.jar
-else
-	SWAGGER_CODEGEN := swagger-codegen
-endif
+SWAGGER_CODEGEN := swagger-codegen
 
 # Lambdas
 REPO_LAMBDA := ${PREFIX}-repo-handler
