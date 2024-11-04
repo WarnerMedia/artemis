@@ -1,11 +1,11 @@
-ARG RUBY_VER=3.0-slim-bullseye
+ARG RUBY_VER=3.3-slim-bookworm
 FROM ruby:${RUBY_VER}
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-ARG BRAKEMAN_VER=5.0.0
-ARG BUNDLER_VER=0.8.0
+ARG BRAKEMAN_VER=6.2.2
+ARG BUNDLER_VER=0.9.2
 
 # Run all additional config in a single RUN to reduce the layers:
 # - Install brakeman and bundler-audit
@@ -13,9 +13,7 @@ ARG BUNDLER_VER=0.8.0
 # - Remove bundler-audit rspec Gemfiles to avoid false-positives in scans.
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
     apt-get upgrade -y && \
-    apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list && \
     apt-get install -y --no-install-recommends git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
