@@ -7,8 +7,136 @@ import unittest
 
 from engine.plugins.bundler_audit import main as bundler
 
+# Common output from bundler-audit to stdout (when downloading a new database).
+STDOUT_PREAMBLE_DOWNLOAD = textwrap.dedent("""\
+    Download ruby-advisory-db ...
+    ruby-advisory-db:
+      advisories:   945 advisories
+      last updated: 2024-10-29 09:29:46 -0700
+    """)
+
+# Common output from bundler-audit to stdout (when updating existing database).
+STDOUT_PREAMBLE_UPDATE = textwrap.dedent("""\
+    Updating ruby-advisory-db ...
+    Already up to date.
+    Updated ruby-advisory-db
+    ruby-advisory-db:
+      advisories:   945 advisories
+      last updated: 2024-10-29 09:29:46 -0700
+    """)
+
+# Common output from bundler-audit to stderr.
+STDERR_PREAMBLE = textwrap.dedent("""\
+    Download ruby-advisory-db ...
+    Cloning into '/root/.local/share/ruby-advisory-db'...
+    remote: Enumerating objects: 12197, done.
+    remote: Counting objects: 100% (1945/1945), done.
+    remote: Compressing objects: 100% (563/563), done.
+    remote: Total 12197 (delta 1479), reused 1508 (delta 1372), pack-reused 10252 (from 1)
+    Receiving objects: 100% (12197/12197), 1.99 MiB | 16.45 MiB/s, done.
+    Resolving deltas: 100% (6920/6920), done.
+    """)
+
 
 class TestBundlerAudit(unittest.TestCase):
+    def test_parse_results_empty(self):
+        """
+        Tests parse_results handles no findings and no errors.
+        """
+        out = STDOUT_PREAMBLE_DOWNLOAD + "\n\nNo vulnerabilities found"
+        err = STDERR_PREAMBLE
+        (results, errors) = bundler.parse_results(0, out, err)
+        self.assertTrue(results.empty())
+        self.assertEqual(errors, [])
+
+    def test_parse_results_error(self):
+        """
+        Tests parse_results handles errors and no findings.
+        """
+        out = STDOUT_PREAMBLE_DOWNLOAD + "\n\nNo vulnerabilities found"
+        err = "Cloning into '/root/.local/share/ruby-advisory-db'...\nFailed updating ruby-advisory-db!\n"
+        (results, errors) = bundler.parse_results(1, out, err)
+        self.assertTrue(results.empty())
+        self.assertEqual(errors, ["Failed updating ruby-advisory-db!"])
+
+    def test_parse_results_download_error(self):
+        """
+        Tests parse_results for the "Failed to download" case.
+        """
+        # This is a special case since bundler-audit writes this error to
+        # *stdout* not stderr.
+        out = 'Download ruby-advisory-db ...\nfailed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
+        err = ""
+        (results, errors) = bundler.parse_results(1, out, err)
+        self.assertTrue(results.empty())
+        self.assertEqual(
+            errors,
+            [
+                'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"'
+            ],
+        )
+
+    def test_parse_results_download_error_with_git(self):
+        """
+        Tests parse_results for the "Failed to download" case with an
+        additional error from git.
+        """
+        out = 'Download ruby-advisory-db ...\nfailed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
+        err = "fatal: destination path '/root/.local/share/ruby-advisory-db' already exists and is not an empty directory."
+        (results, errors) = bundler.parse_results(1, out, err)
+        self.assertTrue(results.empty())
+        self.assertEqual(
+            errors,
+            [
+                "fatal: destination path '/root/.local/share/ruby-advisory-db' already exists and is not an empty directory.",
+                'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"',
+            ],
+        )
+
+    def test_parse_results_output(self):
+        """
+        Tests parse_results handles findings.
+        """
+        out = (
+            STDOUT_PREAMBLE_DOWNLOAD
+            + "Name: nokogiri\n"
+            + "Version: 1.10.8\n"
+            + "CVE: CVE-2022-23437\n"
+            + "GHSA: GHSA-xxx9-3xcr-gjj3\n"
+            + "Criticality: Medium\n"
+            + "URL: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-xxx9-3xcr-gjj3\n"
+            + "Title: XML Injection in Xerces Java affects Nokogiri\n"
+            + "Solution: upgrade to >= 1.13.4\n\n"
+            + "Vulnerabilities found!\n"
+        )
+        err = STDERR_PREAMBLE
+        (results, errors) = bundler.parse_results(1, out, err)
+        self.assertEqual(
+            results,
+            bundler.Results(
+                details=[
+                    {
+                        "component": "nokogiri-1.10.8",
+                        "source": "Gemfile.lock",
+                        "id": "CVE-2022-23437",
+                        "description": "XML Injection in Xerces Java affects Nokogiri",
+                        "severity": "medium",
+                        "remediation": "upgrade to >= 1.13.4",
+                        "inventory": {
+                            "component": {"name": "nokogiri", "version": "1.10.8", "type": "gem"},
+                            "advisory_ids": [
+                                "CVE-2022-23437",
+                                "GHSA-xxx9-3xcr-gjj3",
+                                "https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-xxx9-3xcr-gjj3",
+                            ],
+                        },
+                    }
+                ],
+                truncated=False,
+            ),
+        )
+        self.assertEqual(errors, [])
+
     def test_parse_stderr_stacktrace(self):
         """
         Tests parse_stderr extracts the error message from a stacktrace.
@@ -41,7 +169,6 @@ class TestBundlerAudit(unittest.TestCase):
             + 'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"\n'
         )
         expected = [
-            "Git is not installed!",
             'failed to download https://github.com/rubysec/ruby-advisory-db.git to "/root/.local/share/ruby-advisory-db"',
         ]
         actual = bundler.parse_stderr(data)
@@ -56,8 +183,7 @@ class TestBundlerAudit(unittest.TestCase):
         """
         test = ""
         actual = bundler.parse_output(test)
-        expected = {}
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual, bundler.Results())
 
     def test_build_dict1(self):
         """
@@ -80,8 +206,8 @@ class TestBundlerAudit(unittest.TestCase):
             "Vulnerablities Found!"
         )
         actual = bundler.parse_output(test)
-        expected = {
-            "details": [
+        expected = bundler.Results(
+            details=[
                 {
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
@@ -98,8 +224,8 @@ class TestBundlerAudit(unittest.TestCase):
                     },
                 }
             ],
-            "truncated": False,
-        }
+            truncated=False,
+        )
         self.assertEqual(actual, expected)
 
     def test_build_dict2(self):
@@ -133,8 +259,8 @@ class TestBundlerAudit(unittest.TestCase):
             "Vulnerablities Found!"
         )
         actual = bundler.parse_output(test)
-        expected = {
-            "details": [
+        expected = bundler.Results(
+            details=[
                 {
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
@@ -168,10 +294,9 @@ class TestBundlerAudit(unittest.TestCase):
                     },
                 },
             ],
-            "truncated": False,
-        }
+            truncated=False,
+        )
         self.assertEqual(actual, expected)
-        self.assertEqual(len(actual), 2)
 
     def test_build_dict3(self):
         """
@@ -215,8 +340,8 @@ class TestBundlerAudit(unittest.TestCase):
         # ">= 6.0.3.1\n\n"
 
         actual = bundler.parse_output(test)
-        expected = {
-            "details": [
+        expected = bundler.Results(
+            details=[
                 {
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
@@ -247,10 +372,9 @@ class TestBundlerAudit(unittest.TestCase):
                     },
                 },
             ],
-            "truncated": False,
-        }
+            truncated=False,
+        )
         self.assertEqual(actual, expected)
-        self.assertEqual(len(actual), 2)
 
     def test_build_dict4(self):
         """
@@ -269,8 +393,7 @@ class TestBundlerAudit(unittest.TestCase):
             ">= 4.1.14.2, ~> 4.1.14\n\n"
         )
         actual = bundler.parse_output(test)
-        expected = {"details": [{}], "truncated": False}
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual, bundler.Results())
 
 
 if __name__ == "__main__":
