@@ -28,7 +28,6 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
         extra={"repo_size": repo_size, "available_disk_space": available_space},
     )
 
-    # The worst repo encountered (so far) is twice the size on disk
     if repo_size >= available_space:
         return False
     return True
