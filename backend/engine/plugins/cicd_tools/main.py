@@ -101,8 +101,8 @@ def main(in_args=None):
     details = get_details(in_use_results)
     event_info = [item["id"] for item in in_use_results]
 
-    # Use raw results instead of in_use only for messages, since there may still be errors when
-    # in_use=False
+    # Use raw `results` instead of `in_use_results` for messages, since there may still be errors
+    # when `in_use=False`
     debug, alerts, errors = get_messages(results)
 
     print(

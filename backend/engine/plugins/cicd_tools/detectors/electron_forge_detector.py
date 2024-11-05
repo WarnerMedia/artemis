@@ -42,7 +42,7 @@ class ElectronForgeDetector(Detector):
                     result["in_use"] = True
                     result["configs"].append(str(package_json.relative_to(path)))
             except json.decoder.JSONDecodeError:
-                result["alerts"].append(f'Failed to parse package.json file: {package_json.relative_to(path)}')
+                result["alerts"].append(f"Failed to parse package.json file: {package_json.relative_to(path)}")
 
         return result
 
