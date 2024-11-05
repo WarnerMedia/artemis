@@ -91,7 +91,7 @@ class TestPluginCICDTools(unittest.TestCase):
         ),
     )
     @patch("pathlib.Path.rglob")
-    def test_main_with_electron_forge_detector(self, mock_rglob):
+    def test_main_with_electron_forge_detector(self, mock_rglob, _mock_open):
         expected_package_json = "package.json"
         expected_file = "forge.config.js"
 
@@ -121,7 +121,7 @@ class TestPluginCICDTools(unittest.TestCase):
         read_data=json.dumps({"this_doesnt_have_config": True}),
     )
     @patch("pathlib.Path.rglob")
-    def test_main_with_electron_forge_detector_package_json_fail(self, mock_rglob):
+    def test_main_with_electron_forge_detector_package_json_fail(self, mock_rglob, _mock_open):
         expected_package_json = "package.json"
         expected_file = "forge.config.js"
 
