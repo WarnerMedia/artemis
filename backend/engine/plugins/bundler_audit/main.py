@@ -2,20 +2,31 @@
 Bundler-audit plugin
 """
 
+from dataclasses import dataclass, field
 import glob
 import json
 import os
 import subprocess
+from typing import Optional
 
 from engine.plugins.lib import utils
 
 LOG = utils.setup_logging("bundler_audit")
 
 
-def run_bundler_audit(path: str) -> dict:
+@dataclass
+class Results:
+    details: list[dict] = field(default_factory=list)
+    truncated: bool = False
+
+    def empty(self) -> bool:
+        return not self.details
+
+
+def run_bundler_audit(path: str) -> tuple[Results, list[str]]:
     """
-    Runs bundler_audit
-    :return: str
+    Runs bundler_audit on the target path.
+    Returns the findings and list of errors.
     """
     process = subprocess.run(
         ["bundler-audit", "check", "--update"],
@@ -27,11 +38,45 @@ def run_bundler_audit(path: str) -> dict:
         # the output.
         env=dict(os.environ, NO_COLOR="1"),
     )
+    return parse_results(
+        process.returncode,
+        process.stdout.decode("utf-8"),
+        process.stderr.decode("utf-8"),
+    )
 
-    return {
-        "output": parse_output((process.stdout.decode("utf-8"))),
-        "errors": parse_stderr((process.stderr.decode("utf-8"))),
-    }
+
+def parse_results(returncode: int, out: str, err: str) -> tuple[Results, list[str]]:
+    """
+    Process the output of bundler-audit.
+    Returns the findings and list of errors.
+    """
+
+    # Determining the success/fail of bundler-audit using the CLI is tricky:
+    #   - bundler-audit runs git to update the DB, which writes all
+    #     messages to stderr.
+    #   - bundler-audit exits with code 1 if an error occurred *or* there are
+    #     any findings.
+    #
+    # To avoid trying to recognize all potential error messages, we rely on the
+    # exit code as well as whether there are any findings.
+
+    if returncode == 0:
+        # No findings, no errors.
+        return (Results(), [])
+    elif (lastline := out.splitlines()[-1].strip()).startswith("failed to download "):
+        # Special case: The "failed to download" error is written to
+        # stdout instead of stderr.
+        # This may or may not be accompanied by a git error, which *is*
+        # written to stderr, so we try to capture that as well.
+        return (Results(), parse_stderr(err) + [lastline])
+    else:
+        output = parse_output(out)
+        if not output.empty():
+            # Findings present, assume "errors" are normal info messages.
+            return (output, [])
+        else:
+            # No findings, return all info messages as errors.
+            return (Results(), parse_stderr(err))
 
 
 def parse_stderr(data: str) -> list[str]:
@@ -54,22 +99,34 @@ def parse_stderr(data: str) -> list[str]:
     # To keep things simple, we no longer attempt to trim the first line
     # of the stack trace.
 
-    return [
+    errs = [
         s.strip()
         for s in data.splitlines()
-        # Remove Ruby stacktrace lines.
+        # Remove Ruby backtrace lines.
+        # This assumes that the backtrace is in pre-Ruby 2.5 format, which
+        # should always be the case since the output is not attached to
+        # a TTY.
         if not s.startswith("\tfrom")
     ]
+    if len(errs) > 0:
+        # bundler-audit runs git which outputs status messages to stderr, which
+        # adds a lot of noise when reporting to the user.
+        # We assume that the last line of stderr (after filtering above) is the
+        # actual error, if any.
+        errs = errs[-1:]
+        # Log the full unfiltered output so we can debug.
+        LOG.warning(f"bundler-audit error log: {data}")
+    return errs
 
 
-def parse_output(data: str) -> dict:
+def parse_output(data: str) -> Results:
     """Parse stdout and generate the plugin results."""
     if not data:
-        return {}
+        return Results()
     return data_splitter(data)
 
 
-def data_splitter(data: str) -> dict:
+def data_splitter(data: str) -> Results:
     """
     Parse each finding from the raw text output.
 
@@ -79,15 +136,16 @@ def data_splitter(data: str) -> dict:
     max_size = 399000
     truncated = False
     arr = data.split("\n\n")
-    warning_list = []
+    warning_list: list[dict] = []
     for line in arr[:-1]:
         size += len(json.dumps(line).encode("utf-8"))
         if size < max_size:
-            warning_list.append(convert_dict(line.split("\n")))
+            if finding := convert_dict(line.split("\n")):
+                warning_list.append(finding)
         else:
             truncated = True
             break
-    return {"details": warning_list, "truncated": truncated}
+    return Results(details=warning_list, truncated=truncated)
 
 
 def normalize_severity(severity: str) -> str:
@@ -96,8 +154,11 @@ def normalize_severity(severity: str) -> str:
     return severity.lower()
 
 
-def convert_dict(my_list: list[str]) -> dict:
-    """Parse each finding."""
+def convert_dict(my_list: list[str]) -> Optional[dict]:
+    """
+    Parse each finding from a block of lines.
+    Returns the finding or None if the block does not contain a finding.
+    """
 
     # Example:
     #   Name: actionmailer
@@ -137,7 +198,7 @@ def convert_dict(my_list: list[str]) -> dict:
         }
     else:
         LOG.error("No unique identifier found")
-        return {}
+        return None
 
 
 def find_gemfiles(project_dir: str) -> list[str]:
@@ -155,21 +216,22 @@ def main():
     gemfiles = find_gemfiles(gemfile_loc)
 
     if len(gemfiles) == 0:
-        LOG.error("No gemfile.lock files found. Returning")
-        output = {"output": {"info": ["No gemfile.lock file found."], "details": []}, "errors": ""}
+        LOG.warning("No gemfile.lock files found")
+        output = Results()
+        errors = []
     else:
         if len(gemfiles) > 1:
             LOG.warning("More than 1 gemfile.lock was found. This is currently unsupported. Auditing first found file.")
         gemfile_loc = os.path.dirname(gemfiles[0])
-        output = run_bundler_audit(gemfile_loc)
+        (output, errors) = run_bundler_audit(gemfile_loc)
 
     print(
         json.dumps(
             {
-                "success": not output["output"].get("details"),
-                "details": output["output"].get("details", []),
-                "truncated": output["output"].get("truncated", False),
-                "errors": output["errors"],
+                "success": output.empty(),
+                "details": output.details,
+                "truncated": output.truncated,
+                "errors": errors,
             }
         )
     )
