@@ -32,11 +32,16 @@ class AWSCodeBuildDetector(Detector):
             "errors": [],
         }
 
-        buildspec_dirs = Path(path).rglob("**/*buildspec*/")
-        buildspec_files = Path(path).rglob("**/*buildspec*.yml")
+        base = Path(path)
+
+        buildspec_dirs = base.rglob("**/*buildspec*/")
+
+        buildspec_files = list(base.rglob("**/*buildspec*.yml"))
+        buildspec_files.extend(base.rglob("**/*buildspec*.yaml"))
 
         for dir in buildspec_dirs:
-            yaml_files = dir.rglob("**/*.yml")
+            yaml_files = list(dir.rglob("**/*.yml"))
+            yaml_files.extend(dir.rglob("**/*.yaml"))
 
             for file in yaml_files:
                 result["in_use"] = True

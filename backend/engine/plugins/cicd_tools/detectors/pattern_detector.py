@@ -8,7 +8,7 @@ ValidatorFn = Callable[[Path], bool]
 
 
 class PatternDetector(Detector):
-    def __init__(self, id: str, name: str, pattern: str, validator: Optional[ValidatorFn] = None):
+    def __init__(self, id: str, name: str, patterns: list[str], validator: Optional[ValidatorFn] = None):
         """
         Detector that searches for a glob pattern and optionally runs a `validator` function on each
         result
@@ -18,7 +18,7 @@ class PatternDetector(Detector):
         """
         self.id = id
         self.name = name
-        self.pattern = pattern
+        self.patterns = patterns
         self.validator = validator
 
     def check(self, path: str) -> DetectorResult:
@@ -32,7 +32,7 @@ class PatternDetector(Detector):
             "errors": [],
         }
 
-        matches = Path(path).rglob(self.pattern)
+        matches = self._get_matches(path)
 
         if self.validator:
             for match in matches:
@@ -45,5 +45,14 @@ class PatternDetector(Detector):
             for match in matches:
                 result["in_use"] = True
                 result["configs"].append(str(match.relative_to(path)))
+
+        return result
+
+    def _get_matches(self, path: str) -> list[Path]:
+        result = []
+        base = Path(path)
+
+        for pattern in self.patterns:
+            result.extend(base.rglob(pattern))
 
         return result

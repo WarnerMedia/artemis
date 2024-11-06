@@ -48,9 +48,12 @@ class ElectronForgeDetector(Detector):
 
 
 def has_forge_config(package_json_path: Path) -> bool:
-    with open(package_json_path, "r") as file:
-        package_json = json.load(file)
+    if package_json_path.is_file():
+        with package_json_path.open() as file:
+            package_json = json.load(file)
 
-        forge_config = package_json.get("config", {}).get("forge", None)
+            forge_config = package_json.get("config", {}).get("forge", None)
 
-        return forge_config is not None
+            return forge_config is not None
+    else:
+        return False

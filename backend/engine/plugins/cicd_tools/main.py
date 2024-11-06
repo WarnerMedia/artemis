@@ -13,7 +13,7 @@ from engine.plugins.cicd_tools.detectors.pattern_detector import PatternDetector
 class PatternDetectorConfig(TypedDict):
     id: str
     name: str
-    pattern: str
+    patterns: list[str]
     validator: Optional[ValidatorFn]
 
 
@@ -31,49 +31,71 @@ pattern_detector_configs: list[PatternDetectorConfig] = [
     {
         "id": "azure_pipelines",
         "name": "Azure Pipelines",
-        "pattern": "**/.azure-pipelines.yml",
+        "patterns": [
+            "**/.azure-pipelines.yml",
+            "**/.azure-pipelines.yaml",
+        ],
         "validator": None,
     },
     {
         "id": "circleci",
         "name": "CircleCI",
-        "pattern": ".circleci/config.yml",
+        "patterns": [
+            ".circleci/config.yml",
+            ".circleci/config.yaml",
+        ],
         "validator": None,
     },
     {
         "id": "github_actions",
         "name": "GitHub Actions",
-        "pattern": ".github/workflows/*.yml",
+        "patterns": [
+            ".github/workflows/*.yml",
+            ".github/workflows/*.yaml",
+        ],
         "validator": None,
     },
     {
         "id": "gitlab_ci",
         "name": "GitLab CI",
-        "pattern": ".gitlab-ci.yaml",
+        "patterns": [
+            ".gitlab-ci.yml",
+            ".gitlab-ci.yaml",
+        ],
         "validator": None,
     },
     {
         "id": "jenkins",
         "name": "Jenkins",
-        "pattern": "**/*Jenkinsfile*",
+        "patterns": [
+            "**/*Jenkinsfile*",
+        ],
         "validator": None,
     },
     {
         "id": "teamcity",
         "name": "TeamCity",
-        "pattern": ".teamcity/",
+        "patterns": [
+            ".teamcity/",
+        ],
         "validator": None,
     },
     {
         "id": "travis_ci",
         "name": "Travis CI",
-        "pattern": ".travis.yml",
+        "patterns": [
+            ".travis.yml",
+            ".travis.yaml",
+        ],
         "validator": None,
     },
     {
         "id": "bitrise",
         "name": "BitRise",
-        "pattern": "**/*bitrise*.yml",
+        "patterns": [
+            "**/*bitrise*.yml",
+            "**/*bitrise*.yaml",
+        ],
         "validator": None,
     },
 ]
@@ -86,7 +108,7 @@ detectors: list[Detector] = [
 ]
 detectors.extend(
     [
-        PatternDetector(config["id"], config["name"], config["pattern"], config["validator"])
+        PatternDetector(config["id"], config["name"], config["patterns"], config["validator"])
         for config in pattern_detector_configs
     ]
 )
