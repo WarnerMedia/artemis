@@ -47,7 +47,9 @@ class TestPluginCICDTools(unittest.TestCase):
         actual = json.loads(actual_raw)
 
         self.assertIn("github_actions", actual.get("details").get("cicd_tools"))
-        self.assertIn(expected_file, actual.get("details").get("cicd_tools").get("github_actions").get("configs"))
+        self.assertIn(
+            {"path": expected_file}, actual.get("details").get("cicd_tools").get("github_actions").get("configs")
+        )
 
     @patch("pathlib.Path.rglob")
     def test_main_with_aws_codebuild_detector(self, mock_rglob):
@@ -72,10 +74,12 @@ class TestPluginCICDTools(unittest.TestCase):
 
         self.assertIn("aws_codebuild", actual.get("details").get("cicd_tools"))
         self.assertIn(
-            f"{expected_dir}/{expected_dir_file}",
+            {"path": f"{expected_dir}/{expected_dir_file}"},
             actual.get("details").get("cicd_tools").get("aws_codebuild").get("configs"),
         )
-        self.assertIn(expected_file, actual.get("details").get("cicd_tools").get("aws_codebuild").get("configs"))
+        self.assertIn(
+            {"path": expected_file}, actual.get("details").get("cicd_tools").get("aws_codebuild").get("configs")
+        )
 
     @patch(
         "pathlib.Path.open",
@@ -113,9 +117,12 @@ class TestPluginCICDTools(unittest.TestCase):
 
         self.assertIn("electron_forge", actual.get("details").get("cicd_tools"))
         self.assertIn(
-            expected_package_json, actual.get("details").get("cicd_tools").get("electron_forge").get("configs")
+            {"path": expected_package_json},
+            actual.get("details").get("cicd_tools").get("electron_forge").get("configs"),
         )
-        self.assertIn(expected_file, actual.get("details").get("cicd_tools").get("electron_forge").get("configs"))
+        self.assertIn(
+            {"path": expected_file}, actual.get("details").get("cicd_tools").get("electron_forge").get("configs")
+        )
 
     @patch(
         "pathlib.Path.open",
@@ -145,6 +152,9 @@ class TestPluginCICDTools(unittest.TestCase):
 
         self.assertIn("electron_forge", actual.get("details").get("cicd_tools"))
         self.assertNotIn(
-            expected_package_json, actual.get("details").get("cicd_tools").get("electron_forge").get("configs")
+            {"path": expected_package_json},
+            actual.get("details").get("cicd_tools").get("electron_forge").get("configs"),
         )
-        self.assertIn(expected_file, actual.get("details").get("cicd_tools").get("electron_forge").get("configs"))
+        self.assertIn(
+            {"path": expected_file}, actual.get("details").get("cicd_tools").get("electron_forge").get("configs")
+        )

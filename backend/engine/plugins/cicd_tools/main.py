@@ -3,7 +3,7 @@ import json
 from typing import Optional, TypedDict
 
 from engine.plugins.lib import utils
-from engine.plugins.cicd_tools.interfaces.detector import Detector, DetectorResult
+from engine.plugins.cicd_tools.interfaces.detector import Detector, DetectorResult, ConfigData
 
 from engine.plugins.cicd_tools.detectors.aws_codebuild_detector import AWSCodeBuildDetector
 from engine.plugins.cicd_tools.detectors.electron_forge_detector import ElectronForgeDetector
@@ -19,7 +19,7 @@ class PatternDetectorConfig(TypedDict):
 
 class CICDToolsDetails(TypedDict):
     display_name: str
-    configs: list[str]
+    configs: list[ConfigData]
 
 
 log = utils.setup_logging("cicd_tools")

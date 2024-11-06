@@ -45,10 +45,10 @@ class AWSCodeBuildDetector(Detector):
 
             for file in yaml_files:
                 result["in_use"] = True
-                result["configs"].append(str(file.relative_to(path)))
+                result["configs"].append({"path": str(file.relative_to(path))})
 
         for config in buildspec_files:
             result["in_use"] = True
-            result["configs"].append(str(config.relative_to(path)))
+            result["configs"].append({"path": str(config.relative_to(path))})
 
         return result

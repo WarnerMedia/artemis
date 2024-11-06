@@ -40,11 +40,11 @@ class PatternDetector(Detector):
 
                 if validator_result:
                     result["in_use"] = True
-                    result["configs"].append(str(match.relative_to(path)))
+                    result["configs"].append({"path": str(match.relative_to(path))})
         else:
             for match in matches:
                 result["in_use"] = True
-                result["configs"].append(str(match.relative_to(path)))
+                result["configs"].append({"path": str(match.relative_to(path))})
 
         return result
 

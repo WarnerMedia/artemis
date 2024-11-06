@@ -34,13 +34,13 @@ class ElectronForgeDetector(Detector):
 
         for config in forge_configs:
             result["in_use"] = True
-            result["configs"].append(str(config.relative_to(path)))
+            result["configs"].append({"path": str(config.relative_to(path))})
 
         for package_json in package_jsons:
             try:
                 if has_forge_config(package_json):
                     result["in_use"] = True
-                    result["configs"].append(str(package_json.relative_to(path)))
+                    result["configs"].append({"path": str(package_json.relative_to(path))})
             except json.decoder.JSONDecodeError:
                 result["alerts"].append(f"Failed to parse package.json file: {package_json.relative_to(path)}")
 
