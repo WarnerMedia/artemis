@@ -1,5 +1,6 @@
 import json
 import subprocess
+from typing import Optional
 
 from engine.plugins.lib import utils
 
@@ -22,7 +23,7 @@ def main(in_args=None):
     print(json.dumps({"success": success, "details": scan_results, "truncated": False, "event_info": event_info}))
 
 
-def find_from_lines(path: str) -> list:
+def find_from_lines(path: str) -> list[str]:
     # Run egrep to look for all of the FROM lines in Dockerfiles.
     r = subprocess.run(
         [
@@ -48,7 +49,7 @@ def find_from_lines(path: str) -> list:
     return r.stdout.decode("UTF-8").strip().split("\n")
 
 
-def process_from_lines(from_lines: list) -> dict:
+def process_from_lines(from_lines: list[str]) -> dict:
     images = {}
 
     # Go through the FROM lines and extract just the image name and tag
@@ -79,7 +80,7 @@ def extract_imagetag(line: str) -> str:
     return split[index]
 
 
-def split_image_and_tag(in_image: str) -> (str, str, bool):
+def split_image_and_tag(in_image: str) -> tuple[Optional[str], str, bool]:
     image = in_image
     tag = "latest"  # If no tag or commit the default is "latest"
     digest = False
@@ -107,8 +108,8 @@ def validate_image_tag(val: str) -> bool:
     return True
 
 
-def build_event_info(scan_results: dict) -> list:
-    event_info = []
+def build_event_info(scan_results: dict) -> list[str]:
+    event_info: list[str] = []
     for image in scan_results:
         for tag in scan_results[image]["tags"]:
             event_info.append(f"{image}:{tag}")
