@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import TypedDict
 
 
@@ -12,6 +13,7 @@ class DetectorResult(TypedDict):
     errors: list[str]
 
 
-class Detector:
+class Detector(ABC):
+    @abstractmethod
     def check(self, path: str) -> DetectorResult:
-        raise NotImplementedError()
+        pass
