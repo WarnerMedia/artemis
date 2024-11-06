@@ -1,10 +1,15 @@
 import json
 import subprocess
-from typing import Optional
+from typing import Optional, TypedDict
 
 from engine.plugins.lib import utils
 
 log = utils.setup_logging("base_images")
+
+
+class Result(TypedDict):
+    tags: list[str]
+    digests: list[str]
 
 
 def main(in_args=None):
@@ -49,8 +54,8 @@ def find_from_lines(path: str) -> list[str]:
     return r.stdout.decode("UTF-8").strip().split("\n")
 
 
-def process_from_lines(from_lines: list[str]) -> dict:
-    images = {}
+def process_from_lines(from_lines: list[str]) -> dict[str, Result]:
+    images: dict[str, Result] = {}
 
     # Go through the FROM lines and extract just the image name and tag
     for line in from_lines:
@@ -115,7 +120,7 @@ def validate_image_tag(val: str) -> bool:
     return True
 
 
-def build_event_info(scan_results: dict) -> list[str]:
+def build_event_info(scan_results: dict[str, Result]) -> list[str]:
     event_info: list[str] = []
     for image in scan_results:
         for tag in scan_results[image]["tags"]:
