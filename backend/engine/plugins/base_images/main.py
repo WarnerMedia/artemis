@@ -55,6 +55,8 @@ def process_from_lines(from_lines: list[str]) -> dict:
     # Go through the FROM lines and extract just the image name and tag
     for line in from_lines:
         imagetag = extract_imagetag(line)
+        if imagetag is None:
+            continue
         image, tag, digest = split_image_and_tag(imagetag)
         if not image:
             # Skip invalid images
@@ -67,7 +69,7 @@ def process_from_lines(from_lines: list[str]) -> dict:
     return images
 
 
-def extract_imagetag(line: str) -> str:
+def extract_imagetag(line: str) -> Optional[str]:
     split = line.split()
     if len(split) == 2:
         index = 1
@@ -76,6 +78,11 @@ def extract_imagetag(line: str) -> str:
             index = 2
         else:
             index = 1
+    else:
+        # This shouldn't happen since find_from_lines should only return
+        # lines starting with "FROM ".
+        log.error(f"Invalid FROM directive: {line}")
+        return None
 
     return split[index]
 
