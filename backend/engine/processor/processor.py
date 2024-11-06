@@ -170,6 +170,7 @@ class EngineProcessor:
 
                     logger.info("Plugin %s results updated", plugin)
 
+                if results.dirty:
                     # Clean and reset the repo in case the plugin wrote any files to disk. This way files created or
                     # modified by one plugin won't pollute the repo for subsequent plugins.
                     git_clean(os.path.join(self.action_details.scan_working_dir, "base"))

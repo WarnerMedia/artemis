@@ -6,5 +6,6 @@
   "build_images": true,
   "runner": "core",
   "enabled": true,
-  "timeout": 300
+  "timeout": 300,
+  "writable": true
 }

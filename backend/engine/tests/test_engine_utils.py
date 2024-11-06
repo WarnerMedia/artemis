@@ -117,6 +117,7 @@ class TestEngineUtils(unittest.TestCase):
         self.assertEqual(actual.runner, Runner.CORE)
         self.assertEqual(actual.feature, "unit-test")
         self.assertEqual(actual.timeout, 300)
+        self.assertEqual(actual.writable, True)
 
     @patch("engine.utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
     def test_get_plugin_settings_minimal(self):
@@ -132,6 +133,7 @@ class TestEngineUtils(unittest.TestCase):
         self.assertEqual(actual.runner, Runner.CORE)
         self.assertIsNone(actual.feature)
         self.assertIsNone(actual.timeout)
+        self.assertEqual(actual.writable, False)
 
     @patch("engine.utils.plugin.ENGINE_DIR", PLUGIN_TEST_BASE_DIR)
     def test_get_plugin_settings_nonexistent(self):
