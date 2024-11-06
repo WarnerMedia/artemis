@@ -78,7 +78,7 @@ class TestPluginCICDTools(unittest.TestCase):
         self.assertIn(expected_file, actual.get("details").get("cicd_tools").get("aws_codebuild").get("configs"))
 
     @patch(
-        "builtins.open",
+        "pathlib.Path.open",
         new_callable=mock_open,
         read_data=json.dumps(
             {
@@ -90,8 +90,9 @@ class TestPluginCICDTools(unittest.TestCase):
             }
         ),
     )
+    @patch("pathlib.Path.is_file")
     @patch("pathlib.Path.rglob")
-    def test_main_with_electron_forge_detector(self, mock_rglob, _mock_open):
+    def test_main_with_electron_forge_detector(self, mock_rglob, mock_is_file, _mock_open):
         expected_package_json = "package.json"
         expected_file = "forge.config.js"
 
@@ -101,6 +102,7 @@ class TestPluginCICDTools(unittest.TestCase):
                 "**/package.json": [Path(f"{BASE}/{expected_package_json}")],
             }
         )
+        mock_is_file.return_value = True
 
         stdout = io.StringIO()
         with redirect_stdout(stdout):
@@ -116,12 +118,13 @@ class TestPluginCICDTools(unittest.TestCase):
         self.assertIn(expected_file, actual.get("details").get("cicd_tools").get("electron_forge").get("configs"))
 
     @patch(
-        "builtins.open",
+        "pathlib.Path.open",
         new_callable=mock_open,
         read_data=json.dumps({"this_doesnt_have_config": True}),
     )
+    @patch("pathlib.Path.is_file")
     @patch("pathlib.Path.rglob")
-    def test_main_with_electron_forge_detector_package_json_fail(self, mock_rglob, _mock_open):
+    def test_main_with_electron_forge_detector_package_json_fail(self, mock_rglob, mock_is_file, _mock_open):
         expected_package_json = "package.json"
         expected_file = "forge.config.js"
 
@@ -131,6 +134,7 @@ class TestPluginCICDTools(unittest.TestCase):
                 "**/package.json": [Path(f"{BASE}/{expected_package_json}")],
             }
         )
+        mock_is_file.return_value = True
 
         stdout = io.StringIO()
         with redirect_stdout(stdout):
