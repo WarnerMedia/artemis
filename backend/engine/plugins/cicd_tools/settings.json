@@ -1,0 +1,5 @@
+{
+    "name": "CI/CD Tool Discovery",
+    "type": "inventory",
+    "image": "$ECR/artemis/python:3-latest"
+}

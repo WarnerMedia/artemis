@@ -225,6 +225,7 @@ EXPECTED_EVENT_RESULT_1 = {
         "-gitsecrets",
         "-owasp_dependency_check",
         "-base_images",
+        "-cicd_tools",
         "-node_dependencies",
         "-trufflehog",
         "-bundler_audit",
