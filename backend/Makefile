@@ -530,7 +530,7 @@ dist/docker/ruby: Dockerfiles/Dockerfile.ruby
 	$(DOCKER) build . --pull -t ${RUBY_TAG} -f Dockerfiles/Dockerfile.ruby \
 		--no-cache --force-rm \
 		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg RUBY_VER=3.0-slim-bullseye
+		--build-arg RUBY_VER=3.3-slim-bookworm
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${RUBY_TAG} ${ECR_URL}${RUBY_TAG}
 	${DOCKER} tag ${RUBY_TAG} ${ECR_URL}${RUBY_TAG}-stage-${LATEST_COMMIT}

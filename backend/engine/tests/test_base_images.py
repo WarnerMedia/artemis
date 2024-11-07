@@ -42,6 +42,8 @@ class TestBaseImages(unittest.TestCase):
             "FROM python:3.7 AS BUILDER": "python:3.7",
             "FROM --platform=noarch python@abc123 AS builder": "python@abc123",
             "FROM $VAR1:$VAR2": "$VAR1:$VAR2",
+            "python": None,
+            "": None,
         }
         for input_str, expected in test_cases.items():
             with self.subTest(input_str=input_str):
