@@ -1,9 +1,15 @@
 import json
 import subprocess
+from typing import Optional, TypedDict
 
 from engine.plugins.lib import utils
 
 log = utils.setup_logging("base_images")
+
+
+class Result(TypedDict):
+    tags: list[str]
+    digests: list[str]
 
 
 def main(in_args=None):
@@ -22,7 +28,7 @@ def main(in_args=None):
     print(json.dumps({"success": success, "details": scan_results, "truncated": False, "event_info": event_info}))
 
 
-def find_from_lines(path: str) -> list:
+def find_from_lines(path: str) -> list[str]:
     # Run egrep to look for all of the FROM lines in Dockerfiles.
     r = subprocess.run(
         [
@@ -48,12 +54,14 @@ def find_from_lines(path: str) -> list:
     return r.stdout.decode("UTF-8").strip().split("\n")
 
 
-def process_from_lines(from_lines: list) -> dict:
-    images = {}
+def process_from_lines(from_lines: list[str]) -> dict[str, Result]:
+    images: dict[str, Result] = {}
 
     # Go through the FROM lines and extract just the image name and tag
     for line in from_lines:
         imagetag = extract_imagetag(line)
+        if imagetag is None:
+            continue
         image, tag, digest = split_image_and_tag(imagetag)
         if not image:
             # Skip invalid images
@@ -66,7 +74,7 @@ def process_from_lines(from_lines: list) -> dict:
     return images
 
 
-def extract_imagetag(line: str) -> str:
+def extract_imagetag(line: str) -> Optional[str]:
     split = line.split()
     if len(split) == 2:
         index = 1
@@ -75,11 +83,16 @@ def extract_imagetag(line: str) -> str:
             index = 2
         else:
             index = 1
+    else:
+        # This shouldn't happen since find_from_lines should only return
+        # lines starting with "FROM ".
+        log.error(f"Invalid FROM directive: {line}")
+        return None
 
     return split[index]
 
 
-def split_image_and_tag(in_image: str) -> (str, str, bool):
+def split_image_and_tag(in_image: str) -> tuple[Optional[str], str, bool]:
     image = in_image
     tag = "latest"  # If no tag or commit the default is "latest"
     digest = False
@@ -107,8 +120,8 @@ def validate_image_tag(val: str) -> bool:
     return True
 
 
-def build_event_info(scan_results: dict) -> list:
-    event_info = []
+def build_event_info(scan_results: dict[str, Result]) -> list[str]:
+    event_info: list[str] = []
     for image in scan_results:
         for tag in scan_results[image]["tags"]:
             event_info.append(f"{image}:{tag}")
