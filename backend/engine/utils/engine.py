@@ -17,7 +17,7 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
     Compares the repo size * 2 to the available disk space.
     :param available_space: For testing: provides the available space in KB
     :param repo_size: size of the repository in KB
-    :return: True if the available space is greater than the repo size * 2, otherwise False
+    :return: True if the available space is greater than the repo size, otherwise False
     """
     if available_space is None:
         s = os.statvfs("/work")
@@ -28,8 +28,7 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
         extra={"repo_size": repo_size, "available_disk_space": available_space},
     )
 
-    # The worst repo encountered (so far) is twice the size on disk
-    if (repo_size * 2) >= available_space:
+    if repo_size >= available_space:
         return False
     return True
 

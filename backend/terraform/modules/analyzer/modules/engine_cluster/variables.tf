@@ -96,12 +96,22 @@ variable "engine_scale_down_threshold" {
 
 variable "engine_volume_size" {
   description = "Engine instance volume size"
-  default     = 45
+  default     = 35
+}
+
+variable "repos_volume_size" {
+  description = "Cloned repos volume size"
+  default     = 25
 }
 
 variable "engine_block_device" {
   description = "Engine instance volume block device"
   default     = "/dev/sdf"
+}
+
+variable "repos_block_device" {
+  description = "Engine instance volume block device for cloned repos"
+  default     = "/dev/sdg"
 }
 
 variable "engine_log_retention" {

@@ -9,6 +9,7 @@ export "aws_region"
 export "datadog_enabled"
 export "docker_compose_ver"
 export "engine_block_device"
+export "repos_block_device"
 export "github_app_id"
 export "plugin_java_heap_size"
 export "private_docker_repos_key"
@@ -23,10 +24,25 @@ export "ghas_enabled"
 export "revproxy_domain_substring"
 
 # Format and mount data volume
-mkfs -t ext4 "${engine_block_device}"
-mkdir -p /data
-mount "${engine_block_device}" /data
-chmod 755 /data
+if mount | grep -q "${engine_block_device}"; then
+  echo "${engine_block_device} is already mounted. Skipping format and mount." >> /var/log/my-script-log.log
+else
+  mkfs -t ext4 "${engine_block_device}"
+  mkdir -p /data
+  mount "${engine_block_device}" /data
+  chmod 755 /data
+fi
+
+# Format and mount repo volume
+if mount | grep -q "${repos_block_device}"; then
+  echo "${repos_block_device} is already mounted. Skipping format and mount." >> /var/log/my-script-log.log
+else
+  echo "Formatting ${repos_block_device}..." >> /var/log/my-script-log.log
+  mkfs -t ext4 "${repos_block_device}"
+  mkdir -p /cloned_repos
+  mount "${repos_block_device}" /cloned_repos
+  chmod 755 /cloned_repos
+fi
 
 # Make sure packages are up-to-date
 yum -y update
