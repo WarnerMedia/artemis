@@ -1,5 +1,6 @@
 {
     "name": "FindSecBugs Scanner Java 8",
     "type": "static_analysis",
-    "image": "$ECR/artemis/java:8-latest"
+    "image": "$ECR/artemis/java:8-latest",
+    "writable": true
 }
