@@ -29,8 +29,12 @@ class ElectronForgeDetector(Detector):
             "errors": [],
         }
 
-        forge_configs = Path(path).rglob("**/forge.config.js")
-        package_jsons = Path(path).rglob("**/package.json")
+        base = Path(path)
+
+        forge_configs = list(base.rglob("**/forge.config.js"))
+        forge_configs.extend(base.rglob("**/forge.config.cjs"))
+
+        package_jsons = base.rglob("**/package.json")
 
         for config in forge_configs:
             result["in_use"] = True
