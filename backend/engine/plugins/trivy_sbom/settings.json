@@ -3,5 +3,6 @@
     "type": "sbom",
     "image": "$ECR/artemis/dind:latest",
     "build_images": true,
-    "enabled": true
+    "enabled": true,
+    "writable": true
 }
