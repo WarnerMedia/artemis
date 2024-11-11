@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6139f0965e9c76da6be651c8e4eed8875809b469115d7f203012afa86de7ece2"
+            "sha256": "fd999fb8023b1f346580b603468f28e0edfe11f095a8ff4c25cec483af35d850"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -629,12 +629,12 @@
         },
         "joserfc": {
             "hashes": [
-                "sha256:229e7e06b1ae4df88c3c7174f5848457b63e7b27a6a968b81dfd0988b8a3fbce",
-                "sha256:d1151cdf9a64241b8cb46e7d67c5bfba10aecf364ef53b3a9109e90e8a621dca"
+                "sha256:1de2c3ac203db8fceb2e84c1e78ba357030b195c21af046a1411711927654a09",
+                "sha256:298a9820c76576f8ca63375d1851cc092f3f225508305c7a36c4632cec38f7bc"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==0.11.1"
+            "version": "==1.0.0"
         },
         "markupsafe": {
             "hashes": [
