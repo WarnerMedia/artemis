@@ -162,7 +162,7 @@ def _query(
             scan_id = aws_connect.queue_repo_for_scan(
                 org_repo,
                 resp["data"][repo]["url"],
-                resp["data"][repo].get("diskUsage", 0),
+                _get_repo_size(resp["data"][repo]),
                 service,
                 public=not resp["data"][repo]["isPrivate"],
                 archived=resp["data"][repo]["isArchived"],
@@ -228,3 +228,13 @@ def _get_authorization(org: str, github_secret: str) -> str:
     # Fall back to getting the PAT
     key = get_api_key(github_secret)
     return f"bearer {key}"
+
+def _get_repo_size(response_data: dict) -> int:
+    # Addresses an edge-case in Github On-Prem where "diskUsage" in response_data is explicitly
+    # None. This prevents us from doing a simple, `response_data.get("diskUsage", 0)`, as it would
+    # still return None
+    if "diskUsage" in response_data and type(response_data["diskUsage"]) is int:
+        return response_data["diskUsage"]
+    else:
+        return 0
+
