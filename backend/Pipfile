@@ -18,7 +18,7 @@ django = "~=3.2"
 graphql-query = "~=1.4"
 joserfc = "~=0.11.1"
 packaging = "==23.2"  # Must match version in Makefile.
-psycopg2-binary = "~=2.9"
+psycopg2-binary = "==2.9.9" # 2.9.10 doesn't support ARM Macs
 pydantic = "~=2.9"
 PyGithub = "~=2.4"
 pyjwt = "~=2.9"
