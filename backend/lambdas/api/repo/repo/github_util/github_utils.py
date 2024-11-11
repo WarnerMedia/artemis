@@ -229,6 +229,7 @@ def _get_authorization(org: str, github_secret: str) -> str:
     key = get_api_key(github_secret)
     return f"bearer {key}"
 
+
 def _get_repo_size(response_data: dict) -> int:
     # Addresses an edge-case in Github On-Prem where "diskUsage" in response_data is explicitly
     # None. This prevents us from doing a simple, `response_data.get("diskUsage", 0)`, as it would
@@ -237,4 +238,3 @@ def _get_repo_size(response_data: dict) -> int:
         return response_data["diskUsage"]
     else:
         return 0
-
