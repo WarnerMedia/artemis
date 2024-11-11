@@ -162,7 +162,7 @@ def _query(
             scan_id = aws_connect.queue_repo_for_scan(
                 org_repo,
                 resp["data"][repo]["url"],
-                resp["data"][repo]["diskUsage"],
+                resp["data"][repo].get("diskUsage", 0),
                 service,
                 public=not resp["data"][repo]["isPrivate"],
                 archived=resp["data"][repo]["isArchived"],
