@@ -10,14 +10,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # actions/checkout@v4.2.0
-      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # actions/setup-python@v5.2.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # actions/checkout@v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # actions/setup-python@v5.3.0
         with:
           python-version: "3.9"
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
-      - uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2 # actions/cache@v4.1.0
+      - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # actions/cache@v4.1.2
         with:
           # Tool versions are defined in the Makefile.
           key: backend-unit-test-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/Makefile') }}

@@ -111,14 +111,16 @@ def main():
     errors.extend(go_mod_errors)
 
     # Scan local lock files
-    application_sbom_output = edit_application_sbom_path(
-        repo, convert_string_to_json(execute_trivy_application_sbom(args.path, include_dev), logger)
-    )
-    application_sbom_output_parsed = clean_output_application_sbom(application_sbom_output)
-    logger.debug(application_sbom_output)
-    if not application_sbom_output:
+    sbom_result_raw = execute_trivy_application_sbom(args.path, include_dev)
+    sbom_result = convert_string_to_json(sbom_result_raw, logger)
+
+    if not sbom_result:
         logger.warning("Application SBOM output is None. Continuing.")
     else:
+        application_sbom_output = edit_application_sbom_path(repo, sbom_result)
+        application_sbom_output_parsed = clean_output_application_sbom(application_sbom_output)
+        logger.debug(application_sbom_output)
+
         logger.info("Application Level SBOM generated. Success: %s", bool(application_sbom_output))
         results.append(application_sbom_output)
         parsed.extend(application_sbom_output_parsed)

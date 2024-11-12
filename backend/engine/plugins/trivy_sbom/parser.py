@@ -5,11 +5,13 @@ trivy output parser
 from engine.plugins.lib.utils import setup_logging
 from engine.plugins.lib.trivy_common.parsing_util import convert_type
 
+from typing import Optional
+
 logger = setup_logging("trivy_sbom")
 
 
 # Gets the scan and formats it to work with the processor
-def clean_output_application_sbom(output: list) -> list:
+def clean_output_application_sbom(output: dict) -> list:
     results = []
     type = None
     for item in output["components"]:
@@ -26,7 +28,7 @@ def clean_output_application_sbom(output: list) -> list:
             name = f'{item["group"]}/{item["name"]}'
         else:
             name = item["name"]
-        version = item["version"]
+        version = item.get("version", "none")
         licenses = []
         licenses_list = item.get("licenses", [])
         for lic in licenses_list:
@@ -44,7 +46,7 @@ def clean_output_application_sbom(output: list) -> list:
 
 
 # Updates the path to be relative to the repo instead of relative to artemis
-def edit_application_sbom_path(repo: str, application_sbom_output: dict):
-    if application_sbom_output and application_sbom_output.get("metadata").get("component").get("name"):
+def edit_application_sbom_path(repo: str, application_sbom_output: dict) -> dict:
+    if application_sbom_output.get("metadata", {}).get("component", {}).get("name"):
         application_sbom_output["metadata"]["component"]["name"] = repo
     return application_sbom_output

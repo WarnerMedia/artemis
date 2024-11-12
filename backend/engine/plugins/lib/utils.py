@@ -9,6 +9,7 @@ import sys
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
 from types import TracebackType
+from typing import Optional
 
 CODE_DIRECTORY = "/work/base"
 CVE_API_URL = "https://services.nvd.nist.gov/rest/json/cve/1.0"
@@ -152,7 +153,7 @@ def get_object_from_json_dict(json_object: dict, traversal_list: list, logger):
     return cur_object
 
 
-def convert_string_to_json(output_str: str, log):
+def convert_string_to_json(output_str: Optional[str], log):
     if not output_str:
         return None
     try:
