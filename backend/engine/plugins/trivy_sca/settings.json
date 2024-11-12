@@ -3,5 +3,6 @@
     "type": "vulnerability",
     "image": "$ECR/artemis/dind:latest",
     "build_images": false,
-    "enabled": true
+    "enabled": true,
+    "writable": true
 }
