@@ -26,7 +26,7 @@ def clean_output_application_sbom(output: list) -> list:
             name = f'{item["group"]}/{item["name"]}'
         else:
             name = item["name"]
-        version = item["version"]
+        version = item.get("version", "none")
         licenses = []
         licenses_list = item.get("licenses", [])
         for lic in licenses_list:
