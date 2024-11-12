@@ -115,7 +115,7 @@ def main():
     trivy_sbom_result = convert_string_to_json(trivy_sbom_result_raw, logger)
 
     if not trivy_sbom_result:
-        logger.warning("Trivy SBOM output is None. Continuing.")
+        logger.warning("Application SBOM output is None. Continuing.")
     else:
         application_sbom_output = edit_application_sbom_path(repo, trivy_sbom_result)
         application_sbom_output_parsed = clean_output_application_sbom(application_sbom_output)
