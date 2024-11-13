@@ -95,7 +95,7 @@ def _run_detekt_command(config_file: str, path: str, report_file: str):
     )
 
 
-def _parse_report(path: str, xml_report: str) -> dict:
+def _parse_report(path: str, xml_report: str) -> list[dict]:
     """
     Parse the XML report producted by detekt into a Python dictionary
     """
