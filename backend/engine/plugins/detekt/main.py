@@ -5,6 +5,7 @@ detekt plugin
 import json
 import os
 import subprocess
+from typing import List
 import xml.etree.ElementTree as ET
 
 from engine.plugins.lib import utils
@@ -96,7 +97,9 @@ def _run_detekt_command(config_file: str, path: str, report_file: str):
     )
 
 
-def _parse_report(path: str, xml_report: str) -> list[dict]:
+# Note: Need to use typing.List here since the java:17 container ships
+#       with Python 3.8.
+def _parse_report(path: str, xml_report: str) -> List[dict]:
     """
     Parse the XML report producted by detekt into a Python dictionary
     """
