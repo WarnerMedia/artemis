@@ -2,6 +2,7 @@
 module running eslint on javascript/typescript files
 """
 
+from dataclasses import dataclass
 import json
 import subprocess
 
@@ -11,7 +12,13 @@ from engine.plugins.lib.lint_severity import convert_severity_from_num
 log = utils.setup_logging("eslint")
 
 
-def run_eslint(path: str, config: str) -> dict:
+@dataclass
+class Result:
+    data: list[str]
+    info: list[str]
+
+
+def run_eslint(path: str, config: str) -> Result:
     """
     function args: path to directory where code is
     and path to where eslint rcfile
@@ -22,7 +29,6 @@ def run_eslint(path: str, config: str) -> dict:
     1 = successful run. linting errors.
     2 = internal error.
     """
-    result = {}
     cmd = ["eslint", "-f", "json", "--config", config, "--ext", ".js,.jsx,.ts,.tsx", "."]
     completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
     info = []
@@ -33,14 +39,10 @@ def run_eslint(path: str, config: str) -> dict:
 
     data = list(filter(None, completed.stdout.decode("utf-8").split("\n")))
 
-    if data:
-        result["data"] = data
-    if info:
-        result["info"] = info
-    return result
+    return Result(data=data, info=info)
 
 
-def parse_details(scan_data: list, path: str) -> list or None:
+def parse_details(scan_data: list[str], path: str) -> list[dict]:
     """
     takes the argument of scan results and returns a list of results. severity does not align with finding
     severity, but tied to exit code. eslint-plugin-security does not have
@@ -83,9 +85,9 @@ def main():
         args.config = args.eslint_config
 
     scan_results = run_eslint(args.path, args.config)
-    details = parse_details(scan_results.get("data"), args.path)
+    details = parse_details(scan_results.data, args.path)
 
-    print(json.dumps({"success": not details, "details": details, "info": scan_results.get("info")}))
+    print(json.dumps({"success": not details, "details": details, "info": scan_results.info}))
 
 
 if __name__ == "__main__":
