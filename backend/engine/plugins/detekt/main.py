@@ -135,6 +135,9 @@ def _parse_severity(detekt_severity: str) -> str:
         severity = "medium"
     elif detekt_severity == "info":
         severity = "low"
+    else:
+        logger.error(f"Unrecognized severity: {detekt_severity}")
+        severity = ""
 
     return severity
 
