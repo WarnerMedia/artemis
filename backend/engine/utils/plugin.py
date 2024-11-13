@@ -4,6 +4,7 @@ import os
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from time import perf_counter
 from fnmatch import fnmatch
 from typing import Optional, Union
 from urllib.parse import quote_plus
@@ -401,7 +402,16 @@ def run_plugin(
     )
 
 
-def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
+def process_event_info(scan: Scan, results: dict, plugin_type: str, plugin_name: str):
+    ts = perf_counter()
+    process_event_info_impl(scan, results, plugin_type, plugin_name)
+    td = perf_counter() - ts
+
+    count = len(results.get("details", []))
+    log.info(f"Processed {count} events in {td}s")
+
+
+def process_event_info_impl(scan: Scan, results, plugin_type: str, plugin_name: str):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
     if plugin_type == PluginType.SECRETS.value and SECRETS_EVENTS_ENABLED:
