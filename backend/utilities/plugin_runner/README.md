@@ -75,7 +75,7 @@ If an `.env` file exists, then it will be used to set the environment of the plu
 
 Suggested environment variables:
 
-* `ARTEMIS_PLUGIN_DEBUG` - Set to `1` to enable debug logging in the plugin loader.
+* `ARTEMIS_PLUGIN_DEBUG` - Set to `1` to enable debug logging in the plugin loader. Only applies to plugins using the `boxed` runner.
 
 ### Plugin command-line arguments
 
@@ -96,3 +96,31 @@ The script will perform a sanity check on the JSON file. If the file does not co
 ```text
 *** Warning: Invalid JSON detected (proceeding anyway): ./images.json
 ```
+
+## Troubleshooting
+
+* Error: Plugin is not a core plugin
+
+Only plugins in [backend/engine/plugins](../../engine/plugins) are supported.
+
+* Error: pull access denied for ... repository does not exist or may require 'docker login'
+
+The container image for the plugin has not been built locally or has been removed.
+
+Re-build the container image for the plugin.
+
+* Error: Read-only filesystem (or similar)
+
+The plugin is attempting to write to the source tree, but does not set the `writable` flag in `settings.json`.
+
+Either set the `"writable": true` in the plugin's `settings.json` or run the plugin with `run-writable` instead of `run`.
+
+* Error: Failed to get django secrets
+
+Localstack integration is not yet supported, so any plugin that relies on `artemisdb` either needs to individually support a "databaseless" mode or needs to be configured to connect to an external database.
+
+## Current limitations
+
+* No built-in localstack integration yet. This mainly affects plugins which use `artemisdb`.
+* stdout and stderr are combined into a single stream -- this is a limitation of `docker compose run`. The workaround is to use the debug shell to examine stdout vs stderr.
+* The debug shell option does not work with container images which lack a shell.
