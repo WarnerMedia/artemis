@@ -1,7 +1,10 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: Artemis REST API
   version: 1.1.0
+  license:
+    name: MIT License
+    identifier: MIT
   contact:
     email: "cso_appsec@warnermedia.com"
 tags:
@@ -21,6 +24,12 @@ tags:
     description: User actions
   - name: whitelist
     description: Whitelist actions
+servers:
+  - url: https://{host}/api/v1
+    variables:
+      host:
+        default: localhost
+        description: API host
 paths:
   "/{service}":
     parameters:
@@ -2122,8 +2131,9 @@ components:
           default: false
         diff_base:
           description: Commit hash or branch name to use for diff-based reporting
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           minLength: 1
           maxLength: 256
         batch_id:
@@ -3227,8 +3237,9 @@ components:
           type: string
         error:
           description: Error encountered when testing connection from Artemis to service
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
 
     SystemServiceStats:
       type: object
