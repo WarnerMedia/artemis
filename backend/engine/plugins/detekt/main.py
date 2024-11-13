@@ -65,6 +65,7 @@ def run_detekt(path=None):
         output["details"] = _parse_report(path, detekt_report)
     # If there was an error
     else:
+        logger.error(f"Detekt exited with code {result.returncode}: {stderr}")
         output["success"] = False
         output["errors"] = ["The detekt plugin encountered a fatal error"]
 
