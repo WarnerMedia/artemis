@@ -68,6 +68,7 @@ class Result:
     errors: list
     alerts: list
     debug: list
+    dirty: bool = False  # Working directory potentially has been modified.
     disabled: bool = False
 
 
@@ -85,6 +86,7 @@ class PluginSettings(BaseModel):
     build_images: bool = False
     feature: Optional[str] = None
     timeout: Optional[int] = None
+    writable: bool = False
     runner: Runner = Runner.CORE
 
     @field_validator("image", mode="after")
@@ -338,6 +340,7 @@ def run_plugin(
             errors=[f"Plugin {settings.name} exceeded maximum runtime ({settings.timeout} seconds)."],
             alerts=[],
             debug=[],
+            dirty=settings.writable,
         )
 
     inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
@@ -374,6 +377,7 @@ def run_plugin(
             errors=plugin_output.get("errors", []),
             alerts=plugin_output.get("alerts", []),
             debug=plugin_output.get("debug", []),
+            dirty=settings.writable,
         )
 
     except json.JSONDecodeError:
@@ -393,6 +397,7 @@ def run_plugin(
         errors=[err] if err else [],
         alerts=[],
         debug=[],
+        dirty=settings.writable,
     )
 
 
@@ -625,6 +630,11 @@ def get_plugin_command(
     services,
 ) -> list[str]:
     profile = os.environ.get("AWS_PROFILE")
+
+    working_mount = os.path.join(HOST_WORKING_DIR, str(scan.scan_id)) + ":/work"
+    if not settings.writable:
+        working_mount += ":ro"
+
     cmd = [
         "docker",
         "run",
@@ -634,7 +644,7 @@ def get_plugin_command(
         "--volumes-from",
         ENGINE_ID,
         "-v",
-        "%s:/work" % os.path.join(HOST_WORKING_DIR, str(scan.scan_id)),
+        working_mount,
     ]
 
     if profile:

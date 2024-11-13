@@ -50,6 +50,7 @@ function init_compose {
   local plugin_image="$1"; shift
   local target="$1"; shift
   local runner="$1"; shift
+  local writable="$1"; shift
   local debug_shell=("$@")
 
   echo "==> Generating configuration for plugin: $plugin"
@@ -117,6 +118,13 @@ EOD
   install_plugin_arg_file images.json "$plugindir" || return 1
   install_plugin_arg_file config.json "$plugindir" || return 1
 
+  # The workdir_readonly flag from "run-writable" overrides the plugin settings.
+  local wro=true
+  if [[ $writable = 'true' || $workdir_readonly = 'false' ]]; then
+    echo "--> WARNING: Mounting writable working directory: $target"
+    wro=false
+  fi
+
   echo "--> Generating: $COMPOSEFILE"
   cat <<EOD > "$COMPOSEFILE" || return 1
 name: artemis-run-plugin
@@ -145,7 +153,7 @@ services:
       - type: bind
         source: "$target"
         target: /work/base
-        read_only: $workdir_readonly
+        read_only: $wro
 EOD
 }
 
@@ -178,8 +186,8 @@ function do_run {
   fi
 
   # Determine the local image name and runnner for the plugin.
-  { read -r image; read -r runner; } < \
-    <(jq -r '.image,.runner' "$plugindir/settings.json") || return 1
+  { read -r image; read -r runner; read -r writable; } < \
+    <(jq -r '.image,.runner,(.writable|not|not)' "$plugindir/settings.json") || return 1
   # shellcheck disable=SC2016
   image="${image#'$ECR/'}"  # Trim repo placeholder (assume images are local).
   if [[ $image = '' || $image = 'null' ]]; then
@@ -190,7 +198,8 @@ function do_run {
     runner=core
   fi
 
-  init_compose "$plugin" "$image" "$target" "$runner" "${debug_shell[@]}" || return 1
+  init_compose "$plugin" "$image" "$target" "$runner" "$writable" \
+    "${debug_shell[@]}" || return 1
 
   docker compose -f "$COMPOSEFILE" run --rm --remove-orphans plugin
 }
