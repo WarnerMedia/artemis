@@ -83,6 +83,7 @@ help:  ## Print this help text
 clean:  ## Remove production build files
 	@echo "${INFO}Removing production build files"
 	rm -rf $(DISTDIR)
+	rm -rf public/api/index.html
 	@echo "${OK}"
 
 .PHONY: distclean
