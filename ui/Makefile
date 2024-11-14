@@ -171,6 +171,12 @@ mdlint: README.md  ## Lint Markdown files
 	$(NPM) run mdlint
 	@echo "${OK}"
 
+.PHONY: redocly-lint
+redocly-lint: api/spec.yaml  ## Lint API specification
+	@echo "${INFO}Linting API specification"
+	$(NPM) run redocly-lint
+	@echo "${OK}"
+
 .PHONY: lint
 lint: $(SRC)  ## Run all linting
 	@echo "${INFO}Running all linting"
