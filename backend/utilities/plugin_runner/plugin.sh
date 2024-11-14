@@ -133,6 +133,8 @@ services:
     image: "artemis/engine:latest"
     container_name: engine
     command: ["/bin/true"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   plugin:
     image: "$plugin_image"
     container_name: "$plugin"
