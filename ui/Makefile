@@ -83,6 +83,7 @@ help:  ## Print this help text
 clean:  ## Remove production build files
 	@echo "${INFO}Removing production build files"
 	rm -rf $(DISTDIR)
+	rm -rf public/api/index.html
 	@echo "${OK}"
 
 .PHONY: distclean
@@ -169,6 +170,12 @@ dockerlint: Dockerfile.dev  ## Lint Docker files
 mdlint: README.md  ## Lint Markdown files
 	@echo "${INFO}Linting Markdown files"
 	$(NPM) run mdlint
+	@echo "${OK}"
+
+.PHONY: redocly-lint
+redocly-lint: api/spec.yaml  ## Lint API specification
+	@echo "${INFO}Linting API specification"
+	$(NPM) run redocly-lint
 	@echo "${OK}"
 
 .PHONY: lint

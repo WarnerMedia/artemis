@@ -75,5 +75,8 @@ engine/tests/data/auth.json
 /ui/src/locale/_build/
 /ui/src/locale/**/*.*js
 
+# generated static files
+/ui/public/api/
+
 # linting
 /ui/hadolint

@@ -64,5 +64,6 @@ ${AWS} s3 cp "s3://${S3_BUCKET}/index.html" "s3://${S3_BUCKET}/results" --conten
 ${AWS} s3 cp "s3://${S3_BUCKET}/index.html" "s3://${S3_BUCKET}/settings" --content-type "text/html" --cache-control "no-cache" &&
 ${AWS} s3 cp "s3://${S3_BUCKET}/index.html" "s3://${S3_BUCKET}/users" --content-type "text/html" --cache-control "no-cache" &&
 ${AWS} s3 cp "s3://${S3_BUCKET}/index.html" "s3://${S3_BUCKET}/search" --content-type "text/html" --cache-control "no-cache" &&
+${AWS} s3 cp "s3://${S3_BUCKET}/api/index.html" "s3://${S3_BUCKET}/api" --content-type "text/html" --cache-control "no-cache" &&
 ${AWS} cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DIST_ID}" --paths "/" &&
 echo -e "${OK}"

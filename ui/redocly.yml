@@ -1,0 +1,16 @@
+extends:
+  - recommended
+
+apis:
+  artemis@v1:
+    root: ./api/spec.yaml
+
+rules:
+  # Known issue; will be addressed in a future update to the spec.
+  operation-4xx-response: off
+
+  # The following paths appear to be ambiguous in the spec, but the value of {id}
+  # cannot be "whitelist" so the path resolves correctly.
+  #   /{service}/{org}/{repo}/whitelist/{id}
+  #   /{service}/{org}/{repo}/{id}/report
+  no-ambiguous-paths: off
