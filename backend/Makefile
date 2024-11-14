@@ -64,8 +64,6 @@ ifndef ANALYZER_DJANGO_SECRET_KEY
 	export ANALYZER_DB_PORT=5433
 endif
 
-SWAGGER_CODEGEN := swagger-codegen
-
 # Lambdas
 REPO_LAMBDA := ${PREFIX}-repo-handler
 USERS_LAMBDA := ${PREFIX}-users-handler
@@ -335,17 +333,6 @@ artemis_scan:
 	@echo "${INFO}Running Artemis scan"
 	$(CURDIR)/ci-tools/shell/artemis-scan.sh ${ARTEMIS_SCAN_ARGS} github ${REPO_NAME} ${BRANCH_NAME} ${SEVERITY_LEVELS}
 .PHONY: artemis_scan
-
-###############################################################################
-# Documentation
-###############################################################################
-
-dist/api/index.html: lambdas/api/spec.yaml
-	@echo "${INFO}Building $@"
-	mkdir -p ${DIST_DIR}/api
-	mkdir -p ${BUILD_DIR}/api
-	${SWAGGER_CODEGEN} generate -i lambdas/api/spec.yaml -o ${DIST_DIR}/api -l html
-	@echo "${OK}"
 
 ###############################################################################
 # Lambdas
@@ -635,8 +622,7 @@ docker: dist/docker/engine \
 build:  ## Build all
 build: lambdas \
 	   docker \
-	   dist/engine_scripts.zip \
-	   dist/api/index.html
+	   dist/engine_scripts.zip
 .PHONY: build
 
 ###############################################################################
