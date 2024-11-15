@@ -13,14 +13,18 @@ logger = Logger(__name__)
 
 
 def process_sbom(result: Result, scan: Scan):
-    results = result.details[0]
-    parsed = result.details[1]
-    # Go through the results
-    for obj in parsed:
-        process_dependency(obj, scan)
+    if result.details:
+        results = result.details[0]
+        parsed = result.details[1]
+        # Go through the results
+        for obj in parsed:
+            process_dependency(obj, scan)
 
-    # Write the dependency information to S3
-    write_sbom_json(scan.scan_id, results)
+        # Write the dependency information to S3
+        write_sbom_json(scan.scan_id, results)
+    else:
+        logger.warning("No results returned from Trivy SBOM Plugin")
+    
 
 
 def process_dependency(dep: dict, scan: Scan):

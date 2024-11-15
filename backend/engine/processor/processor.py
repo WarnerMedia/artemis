@@ -157,6 +157,7 @@ class EngineProcessor:
 
                         # Use the CycloneDX format by default when not using veracode_sbom tool
                     elif results.type == PluginType.SBOM.value and plugin != "veracode_sbom":
+                        logger.warning(f"****** {results.success}*********")
                         process_sbom_cdx(results, self.scan.get_scan_object())
 
                         # SBOM results should not be returned directly in the scan, so clear details
