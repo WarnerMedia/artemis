@@ -93,6 +93,8 @@ def _load_lockfile(lockfile_path: str) -> dict:
     except FileNotFoundError:
         # Unable to load lockfile because it doesn't exist. Maybe it failed to generate for some reason.
         pass
+    except json.decoder.JSONDecodeError:
+        log.error("Unable to parse lockfile: %s", lockfile_path)
     return lockfile
 
 
