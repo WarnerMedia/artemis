@@ -75,7 +75,7 @@ def process_docker_images(images: list) -> tuple[list, list]:
     return outputs, parsed
 
 
-def build_scan_parse_images(images:dict) -> tuple[list, list]:
+def build_scan_parse_images(images: dict) -> tuple[list, list]:
     results = []
     parsed = []
     logger.info("Dockerfiles found: %d", images["dockerfile_count"])

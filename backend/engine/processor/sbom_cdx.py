@@ -24,7 +24,6 @@ def process_sbom(result: Result, scan: Scan) -> None:
         write_sbom_json(scan.scan_id, results)
     else:
         logger.warning("No results returned from Trivy SBOM Plugin")
-    
 
 
 def process_dependency(dep: dict, scan: Scan) -> None:

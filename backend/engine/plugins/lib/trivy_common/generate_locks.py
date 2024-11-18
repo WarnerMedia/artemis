@@ -42,8 +42,8 @@ def check_package_files(path: str, include_dev: bool, npm_install: bool) -> tupl
     # Find and loop through all the package.json files in the path
     all_package_files = glob(f"{path}/**/package.json", recursive=True)
 
-     # Filter out paths that contain 'node_modules'
-    files = [file for file in all_package_files if 'node_modules' not in file]
+    # Filter out paths that contain 'node_modules'
+    files = [file for file in all_package_files if "node_modules" not in file]
 
     logger.info("Found %d package.json files", len(files))
 
