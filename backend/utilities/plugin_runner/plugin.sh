@@ -24,22 +24,35 @@ EOD
 # Install one of the optional JSON files used for plugin arguments.
 # If the file does not exist, a file with an empty JSON object is installed
 # instead.
+# base_json may be specified as a JSON object (serialized as a string) to
+# be merged with the user-provided JSON file.
 function install_plugin_arg_file {
   local filename="$1"
   local plugindir="$2"
+  local base_json="$3"
+
+  if [[ $base_json = '' ]]; then
+    base_json='{}'
+  fi
 
   local src="$BASEDIR/$filename"
   local dest="$plugindir/$filename"
 
+  local src_json='{}'
+  local merged_json
+
   if [[ -f $src ]]; then
     echo "--> Using arg file: $src"
     if ! jq empty "$src" > /dev/null; then
-      echo "*** Warning: Invalid JSON detected (proceeding anyway): $src" >&2
+      echo "*** Error: Invalid JSON detected: $src" >&2
+      return 1
     fi
-    cp -L "$src" "$dest" || return 1
-  else
-    echo '{}' > "$dest" || return 1
+    src_json=$(<"$src")
   fi
+
+  # Merge the JSON objects together.
+  merged_json="$(echo "${base_json}${src_json}" | jq '. + input')" || return 1
+  echo "$merged_json" > "$dest" || return 1
 }
 
 # Generate the environment and Docker Compose files.
@@ -111,11 +124,16 @@ EOD
     entrypoint='/opt/artemis-run-plugin/entrypoint-debug.sh'
   fi
 
+  local temp_vol_name="artemis-plugin-temp-$plugin-$RANDOM"
+
   # Install optional config files.
   if [[ -f "$BASEDIR/.env" ]]; then
     cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
   fi
-  install_plugin_arg_file engine-vars.json "$plugindir" || return 1
+  local basevars
+  basevars="$(jq -n --arg temp_vol_name "$temp_vol_name" \
+    '{temp_vol_name: ("artemis-run-plugin_" + $temp_vol_name)}')" || return 1
+  install_plugin_arg_file engine-vars.json "$plugindir" "$basevars" || return 1
   install_plugin_arg_file images.json "$plugindir" || return 1
   install_plugin_arg_file config.json "$plugindir" || return 1
 
@@ -157,6 +175,15 @@ services:
         source: "$target"
         target: "$target"
         read_only: $wro
+      - type: volume
+        source: $temp_vol_name
+        target: /work/tmp
+        volume:
+          nocopy: true
+volumes:
+  $temp_vol_name:
+    labels:
+      artemis.temp: "1"
 EOD
 }
 
@@ -213,7 +240,9 @@ function do_clean {
   if [[ -d $TEMPDIR ]]; then
     if [[ -f "$COMPOSEFILE" ]]; then
       docker compose -f "$COMPOSEFILE" rm --stop --force --volumes
-      docker compose -f "$COMPOSEFILE" down --remove-orphans
+      docker compose -f "$COMPOSEFILE" down --volumes --remove-orphans
+      # Remove temp volumes leftover from prior aborted runs.
+      docker volume prune --all --force --filter 'label=artemis.temp=1'
     fi
     rm -rf "$TEMPDIR"
   fi
