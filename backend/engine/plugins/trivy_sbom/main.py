@@ -7,7 +7,6 @@ import subprocess
 from typing import Optional
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
-from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
 from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
 from engine.plugins.trivy_sbom.parser import edit_application_sbom_path
 from engine.plugins.lib.utils import convert_string_to_json
@@ -95,11 +94,6 @@ def main():
     parsed = []
     alerts = []
     errors = []
-
-    # Run Yarn Install for license info
-    yarn_install_errors, yarn_install_alerts = yarn_install(args.path)
-    alerts.extend(yarn_install_alerts)
-    errors.extend(yarn_install_errors)
 
     # Generate Lock files (and install npm packages for license info)
     lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
