@@ -32,8 +32,8 @@ pattern_detector_configs: list[PatternDetectorConfig] = [
         "id": "azure_pipelines",
         "name": "Azure Pipelines",
         "patterns": [
-            "**/.azure-pipelines.yml",
-            "**/.azure-pipelines.yaml",
+            "**/*azure-pipelines*.yml",
+            "**/*azure-pipelines*.yaml",
         ],
         "validator": None,
     },
