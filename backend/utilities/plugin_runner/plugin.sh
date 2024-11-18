@@ -82,7 +82,8 @@ function init_compose {
 $plugincmd \
   "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
   "\$(cat /opt/artemis-run-plugin/images.json)" \
-  "\$(cat /opt/artemis-run-plugin/config.json)"
+  "\$(cat /opt/artemis-run-plugin/config.json)" \
+  "$target"
 exitcode=\$?
 printf "==> Plugin exited with status: %d " "\$exitcode"
 if [ "\$exitcode" -eq 0 ]; then
@@ -154,7 +155,7 @@ services:
         read_only: true
       - type: bind
         source: "$target"
-        target: /work/base
+        target: "$target"
         read_only: $wro
 EOD
 }

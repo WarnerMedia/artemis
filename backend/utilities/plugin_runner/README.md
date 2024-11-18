@@ -20,19 +20,23 @@ This script does *not* build the container images since the Makefile is sensitiv
 
 ## Example usage
 
+The local directory must be specified as an absolute path.
+
+> [!WARNING]
+> The local directory will be mounted in the plugin container with the same absolute path as the host.
+> This is to more closely match the way the working volume in the engine container is mounted.
+> To avoid potential directory conflicts and even more closely match the deployed state, we recommend creating a `/work/base` local directory, as used in examples below.
+
 Run the "gosec" plugin on a local directory then exit:
 
-> [!NOTE]
-> The local directory must be specified as an absolute path.
-
 ```bash
-./plugin.sh run gosec ~/git/my-repo
+./plugin.sh run gosec /work/base
 ```
 
 Run the "gosec" plugin and start a debug shell in the container:
 
 ```bash
-./plugin.sh run gosec ~/git/my-repo /bin/bash
+./plugin.sh run gosec /work/base /bin/bash
 ```
 
 ```text
@@ -55,7 +59,7 @@ This is fine for most plugins, but some plugins expect the target directory to b
 For those plugins, either specify `"writable": true` in the plugin's `settings.json`, or use `run-writable` instead of `run`:
 
 ```bash
-./plugin.sh run-writable gosec ~/git/my-repo
+./plugin.sh run-writable gosec /work/base
 ```
 
 Stop all containers and release resources:
