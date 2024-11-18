@@ -156,6 +156,10 @@ class ImageBuilder:
         else:
             return
 
+        if not private_docker_repos_response:
+            # Error already logged in convert_string_to_json.
+            return
+
         for repo in private_docker_repos_response:
             log.info("Checking if any Dockerfiles depend on %s", repo["url"])
             if self.docker_login_needed(files, repo["search"], repo["url"]):
