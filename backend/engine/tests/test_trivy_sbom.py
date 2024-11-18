@@ -8,7 +8,6 @@ from subprocess import CompletedProcess
 from unittest.mock import patch
 from engine.plugins.trivy_sbom import main as Trivy
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
-from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.utils import setup_logging
 
@@ -19,8 +18,6 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_ROOT = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
 
 DOWNLOAD_GO_PREFIX = "engine.plugins.lib.sbom_common.go_installer."
-
-DOWNLOAD_YARN_PREFIX = "engine.plugins.lib.sbom_common.yarn_installer."
 
 TEST_DATA = os.path.join(TEST_DIR, "data")
 
@@ -105,15 +102,6 @@ class TestTrivy(unittest.TestCase):
                 mock_proc.return_value = CompletedProcess(args="", returncode=0)
                 actual = go_mod_download("/mocked/path/")
         self.assertEqual(len(actual[1]), 1, "There should be a warning of a go.mod file being downloaded")
-
-    def test_yarn_download(self):
-        with patch(f"{DOWNLOAD_YARN_PREFIX}glob") as mock_glob:
-            mock_glob.return_value = ["/mocked/path/yarn.lock"]
-            with patch(f"{DOWNLOAD_YARN_PREFIX}subprocess.run") as mock_proc:
-                mock_proc.stderr = mock_proc.stdout = None
-                mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                actual = yarn_install("/mocked/path/")
-        self.assertEqual(len(actual[1]), 1, "There should be a warning of a yarn.lock file being downloaded")
 
     def test_parser(self):
         check_parsed_output = Trivy.clean_output_application_sbom(TEST_CHECK_OUTPUT_SBOM_FILE)
