@@ -4,6 +4,7 @@ trivy SBOM plugin
 
 import json
 import subprocess
+from typing import Optional
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.lib.sbom_common.yarn_installer import yarn_install
@@ -19,7 +20,7 @@ NO_RESULTS_TEXT = "no supported file was detected"
 
 
 # Scan the repo at an application level
-def execute_trivy_application_sbom(path: str, include_dev: bool):
+def execute_trivy_application_sbom(path: str, include_dev: bool) -> Optional[str]:
     logger.info(f"Creating SBOM at an application level. Dev-dependencies: {include_dev}")
     args = ["trivy", "fs", path, "--format", "cyclonedx"]
     if include_dev:
@@ -38,7 +39,7 @@ def execute_trivy_application_sbom(path: str, include_dev: bool):
 
 
 # Scan the images
-def execute_trivy_image_sbom(image: str):
+def execute_trivy_image_sbom(image: str) -> Optional[str]:
     proc = subprocess.run(["trivy", "image", image, "--format", "cyclonedx"], capture_output=True, check=False)
     if proc.returncode != 0:
         logger.warning(proc.stderr.decode("utf-8"))
@@ -49,7 +50,7 @@ def execute_trivy_image_sbom(image: str):
     return None
 
 
-def process_docker_images(images: list):
+def process_docker_images(images: list) -> tuple[list, list]:
     """
     Pulls a list of image information, scans the successful ones, and returns the outputs.
     """
@@ -75,7 +76,7 @@ def process_docker_images(images: list):
     return outputs, parsed
 
 
-def build_scan_parse_images(images) -> list:
+def build_scan_parse_images(images:dict) -> tuple[list, list]:
     results = []
     parsed = []
     logger.info("Dockerfiles found: %d", images["dockerfile_count"])
