@@ -27,7 +27,7 @@ def go_mod_download(path: str) -> tuple:
     alerts = []
 
     # Find and loop through all the package.json files in the path
-    files = glob("%s/**/go.mod" % path, recursive=True)
+    files = glob(f"{path}/**/go.mod", recursive=True)
 
     logger.info("Found %d go.mod files", len(files))
 

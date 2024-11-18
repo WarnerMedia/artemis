@@ -12,18 +12,21 @@ from processor.sbom import convert_string_to_json
 logger = Logger(__name__)
 
 
-def process_sbom(result: Result, scan: Scan):
-    results = result.details[0]
-    parsed = result.details[1]
-    # Go through the results
-    for obj in parsed:
-        process_dependency(obj, scan)
+def process_sbom(result: Result, scan: Scan) -> None:
+    if result.details:
+        results = result.details[0]
+        parsed = result.details[1]
+        # Go through the results
+        for obj in parsed:
+            process_dependency(obj, scan)
 
-    # Write the dependency information to S3
-    write_sbom_json(scan.scan_id, results)
+        # Write the dependency information to S3
+        write_sbom_json(scan.scan_id, results)
+    else:
+        logger.warning("No results returned from Trivy SBOM Plugin")
 
 
-def process_dependency(dep: dict, scan: Scan):
+def process_dependency(dep: dict, scan: Scan) -> None:
     component = get_component(dep["name"], dep["version"], scan, dep["type"])
 
     # Keep a copy of the license objects so they only have to be retrieved from the DB once
@@ -60,7 +63,7 @@ def write_sbom_json(scan_id: str, sbom: str) -> None:
         )
     except Exception as error:
         logger.error(error)
-    if s3_file_data != None:
+    if s3_file_data is not None:
         # if file already exists, add to it
         body = [convert_string_to_json(s3_file_data, logger), sbom]
         try:
