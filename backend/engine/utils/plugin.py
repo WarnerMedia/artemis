@@ -2,16 +2,20 @@ import json
 from enum import Enum
 import os
 import subprocess
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fnmatch import fnmatch
 from typing import Optional, Union
 from urllib.parse import quote_plus
+import uuid
 
 import boto3
 from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
+import docker
+import docker.errors
 from pydantic import BaseModel, Field, field_validator
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
@@ -41,6 +45,11 @@ from env import (
 log = Logger(__name__)
 
 UI_SECRETS_TAB_INDEX = 3
+
+TEMP_VOLUME_NAME_PREFIX = "artemis-plugin-temp-"
+TEMP_VOLUME_LABEL = "artemis.temp"
+
+docker_client = docker.from_env()
 
 
 class Runner(str, Enum):
@@ -132,7 +141,7 @@ class PluginSettings(BaseModel):
         return True
 
 
-def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, services=None):
+def get_engine_vars(scan: Scan, temp_vol_name: str, depth: Optional[str] = None, include_dev=False, services=None):
     """
     Returns a json str that can be converted back to a dict by the plugin.
     The object will container information known to the engine
@@ -151,6 +160,7 @@ def get_engine_vars(scan: Scan, depth: Optional[str] = None, include_dev=False, 
             "depth": depth,
             "include_dev": include_dev,
             "engine_id": ENGINE_ID,
+            "temp_vol_name": temp_vol_name,
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
             "service_name": scan.repo.service,
             "service_type": services[scan.repo.service]["type"],
@@ -261,6 +271,31 @@ def _get_plugin_config(plugin: str, full_repo: str) -> dict:
     return {}
 
 
+@contextmanager
+def temporary_volume(name_prefix: str):
+    """
+    Creates a temporary volume for a plugin.
+    The generated name of the volume is passed to the block.
+    The volume is removed automatically.
+    """
+    name = f"{name_prefix}-{uuid.uuid4()}"
+
+    # If the volume creation fails, we pass through the exception.
+    # The label is set in order to be able to later detect volumes that
+    # failed to be cleaned up.
+    log.info(f"Creating temporary volume: {name}")
+    vol = docker_client.volumes.create(name, labels={TEMP_VOLUME_LABEL: "1"})
+
+    try:
+        yield name
+    finally:
+        try:
+            log.info(f"Removing temporary volume: {name}")
+            vol.remove(True)
+        except docker.errors.APIError as ex:
+            log.error(f"Failed to remove volume: {name}", exc_info=ex)
+
+
 def run_plugin(
     plugin: str,
     scan: Scan,
@@ -321,27 +356,44 @@ def run_plugin(
     full_repo = f"{scan.repo.service}/{scan.repo.repo}"
     plugin_config = _get_plugin_config(plugin, full_repo)
 
-    plugin_command = get_plugin_command(
-        scan, plugin, settings, depth, include_dev, scan_images, plugin_config, services
-    )
-
-    try:
-        # Run the plugin inside the settings.image
-        r = subprocess.run(
-            plugin_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=settings.timeout
+    # The plugin container may want to launch another container via
+    # "docker run" (i.e. the plugin is running a tool provided as a container
+    # image).
+    #
+    # We provide a temporary named volume for the plugin to share (by name),
+    # with any containers it launches. This side-steps two issues:
+    # - Plugin containers can't bind mount from their own filesystem (bind
+    #   mounts are always sourced from the host).
+    # - Plugin containers can't create a volume themselves and mount it into
+    #   their own filesystem.
+    #
+    # The temporary named volume is automatically deleted after the plugin
+    # container exits.
+    with temporary_volume(f"{TEMP_VOLUME_NAME_PREFIX}-{settings.name}") as volname:
+        plugin_command = get_plugin_command(
+            scan, plugin, settings, depth, include_dev, volname, scan_images, plugin_config, services
         )
-    except subprocess.TimeoutExpired:
-        return Result(
-            name=settings.name,
-            type=settings.plugin_type,
-            success=False,
-            truncated=False,
-            details=[],
-            errors=[f"Plugin {settings.name} exceeded maximum runtime ({settings.timeout} seconds)."],
-            alerts=[],
-            debug=[],
-            dirty=settings.writable,
-        )
+        try:
+            # Run the plugin inside the settings.image
+            r = subprocess.run(
+                plugin_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+                timeout=settings.timeout,
+            )
+        except subprocess.TimeoutExpired:
+            return Result(
+                name=settings.name,
+                type=settings.plugin_type,
+                success=False,
+                truncated=False,
+                details=[],
+                errors=[f"Plugin {settings.name} exceeded maximum runtime ({settings.timeout} seconds)."],
+                alerts=[],
+                debug=[],
+                dirty=settings.writable,
+            )
 
     inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
 
@@ -625,6 +677,7 @@ def get_plugin_command(
     settings: PluginSettings,
     depth: Optional[str],
     include_dev: bool,
+    temp_vol_name: str,
     scan_images,
     plugin_config,
     services,
@@ -646,6 +699,11 @@ def get_plugin_command(
         "-v",
         working_mount,
     ]
+
+    # The named temporary volume allows a plugin container to share the
+    # volume with other containers without needing to know anything
+    # about bind-mounted volumes from the host.
+    cmd.extend(["-v", f"{temp_vol_name}:/work/tmp:nocopy"])
 
     if profile:
         # When running locally AWS_PROFILE may be set. If so, pass the credentials and profile name down to the plugin
@@ -719,7 +777,7 @@ def get_plugin_command(
     # Arguments passed to the plugin.
     cmd.extend(
         [
-            get_engine_vars(scan, depth=depth, include_dev=include_dev, services=services),
+            get_engine_vars(scan, temp_vol_name, depth=depth, include_dev=include_dev, services=services),
             json.dumps(scan_images),
             json.dumps(plugin_config),
         ]
