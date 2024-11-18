@@ -19,7 +19,7 @@ from plugins.lib import utils
 #   }
 # ]
 
-log = Logger("docker_builder")
+log = Logger("oci_builder")
 
 
 class ImageBuilder:
