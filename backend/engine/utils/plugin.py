@@ -48,6 +48,7 @@ UI_SECRETS_TAB_INDEX = 3
 
 TEMP_VOLUME_NAME_PREFIX = "artemis-plugin-temp-"
 TEMP_VOLUME_LABEL = "artemis.temp"
+TEMP_VOLUME_MOUNT = "/tmp/work"
 
 docker_client = docker.from_env()
 
@@ -160,7 +161,7 @@ def get_engine_vars(scan: Scan, temp_vol_name: str, depth: Optional[str] = None,
             "depth": depth,
             "include_dev": include_dev,
             "engine_id": ENGINE_ID,
-            "temp_vol_name": temp_vol_name,
+            "temp_vol_name": f"{temp_vol_name}:{TEMP_VOLUME_MOUNT}",
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
             "service_name": scan.repo.service,
             "service_type": services[scan.repo.service]["type"],
@@ -703,7 +704,7 @@ def get_plugin_command(
     # The named temporary volume allows a plugin container to share the
     # volume with other containers without needing to know anything
     # about bind-mounted volumes from the host.
-    cmd.extend(["-v", f"{temp_vol_name}:/work/tmp:nocopy"])
+    cmd.extend(["-v", f"{temp_vol_name}:{TEMP_VOLUME_MOUNT}:nocopy"])
 
     if profile:
         # When running locally AWS_PROFILE may be set. If so, pass the credentials and profile name down to the plugin

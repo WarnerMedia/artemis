@@ -132,7 +132,8 @@ EOD
   fi
   local basevars
   basevars="$(jq -n --arg temp_vol_name "$temp_vol_name" \
-    '{temp_vol_name: ("artemis-run-plugin_" + $temp_vol_name)}')" || return 1
+    '{temp_vol_name:
+      ("artemis-run-plugin_" + $temp_vol_name + ":/tmp/work")}')" || return 1
   install_plugin_arg_file engine-vars.json "$plugindir" "$basevars" || return 1
   install_plugin_arg_file images.json "$plugindir" || return 1
   install_plugin_arg_file config.json "$plugindir" || return 1
@@ -177,7 +178,7 @@ services:
         read_only: $wro
       - type: volume
         source: $temp_vol_name
-        target: /work/tmp
+        target: /tmp/work
         volume:
           nocopy: true
 volumes:
