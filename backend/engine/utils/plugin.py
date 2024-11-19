@@ -370,7 +370,7 @@ def run_plugin(
     #
     # The temporary named volume is automatically deleted after the plugin
     # container exits.
-    with temporary_volume(f"{TEMP_VOLUME_NAME_PREFIX}-{settings.name}") as volname:
+    with temporary_volume(f"{TEMP_VOLUME_NAME_PREFIX}-{plugin}") as volname:
         plugin_command = get_plugin_command(
             scan, plugin, settings, depth, include_dev, volname, scan_images, plugin_config, services
         )
