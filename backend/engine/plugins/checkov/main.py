@@ -86,7 +86,6 @@ def run_checkov(
         output["errors"] = [config_error]
         return output
 
-    # TODO: Write to the temporary volume.
     external_checks_dir = config.get("external_checks_dir")
     if external_checks_dir:
         external_checks_dir = (Path(config_dir) / Path(external_checks_dir)).absolute()
@@ -211,6 +210,8 @@ def get_config_dir(config: dict) -> tuple[Path, Optional[str]]:
     """
     Determine if config directory should be from S3 or default (local)
     """
+    # TODO: Write to the temporary volume instead of the plugin source directory.
+
     # If an s3_config_path exists, download config from S3
     s3_config_path = config.get("s3_config_path")
     config_dir = PLUGIN_DIR
