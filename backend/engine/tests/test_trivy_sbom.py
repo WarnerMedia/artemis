@@ -3,7 +3,7 @@ import os.path
 import unittest
 import pytest
 import secrets
-from docker import builder, remover
+from oci import builder, remover
 from subprocess import CompletedProcess
 from unittest.mock import patch
 from engine.plugins.trivy_sbom import main as Trivy

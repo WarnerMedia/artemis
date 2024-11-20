@@ -19,7 +19,7 @@ from plugins.lib import utils
 #   }
 # ]
 
-log = Logger("docker_builder")
+log = Logger("oci_builder")
 
 
 class ImageBuilder:
@@ -154,6 +154,10 @@ class ImageBuilder:
         if private_docker_repos["status"]:
             private_docker_repos_response = utils.convert_string_to_json(private_docker_repos["response"], log)
         else:
+            return
+
+        if not private_docker_repos_response:
+            # Error already logged in convert_string_to_json.
             return
 
         for repo in private_docker_repos_response:

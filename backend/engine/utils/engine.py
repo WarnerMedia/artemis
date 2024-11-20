@@ -4,8 +4,8 @@ import boto3
 from botocore.exceptions import ClientError
 
 from artemislib.logging import Logger
-from docker import remover
-from docker.builder import ImageBuilder
+from oci import remover
+from oci.builder import ImageBuilder
 from env import APPLICATION, ECR, REGION
 
 DYNAMODB_TTL_DAYS = 60

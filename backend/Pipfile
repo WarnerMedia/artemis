@@ -15,6 +15,7 @@ boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], versio
 cryptography = "~=43.0"
 cwe2 = "~=3.0"
 django = "~=3.2"
+docker = "~=7.1"
 graphql-query = "~=1.4"
 joserfc = "~=1.0"
 packaging = "==23.2"  # Must match version in Makefile.

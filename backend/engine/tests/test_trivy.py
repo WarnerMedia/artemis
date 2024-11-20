@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from docker import builder, remover
+from oci import builder, remover
 from engine.plugins.trivy import main as Trivy
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.utils import setup_logging
