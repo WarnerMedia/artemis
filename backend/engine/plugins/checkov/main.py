@@ -257,8 +257,8 @@ def get_ckv_severities(config_dir: Path, config: dict) -> tuple[dict, Optional[s
             ckv_severities = json.load(f)
     except json.decoder.JSONDecodeError:
         error = "Severities file is not valid JSON. Aborting Checkov scan."
-    except BaseException as e:
-        error = "Could not read the severities file. Aborting Checkov scan."
+    except Exception as e:
+        error = f"Could not read the severities file: {e}"
 
     if error:
         LOG.error(f"error: {error}")
