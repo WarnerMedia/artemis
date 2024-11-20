@@ -20,14 +20,10 @@ This script does *not* build the container images since the Makefile is sensitiv
 
 ## Example usage
 
-The local directory must be specified as an absolute path.
-
-> [!WARNING]
-> The local directory will be mounted in the plugin container with the same absolute path as the host.
-> This is to more closely match the way the working volume in the engine container is mounted.
-> To avoid potential directory conflicts and even more closely match the deployed state, we recommend creating a `/work/base` local directory, as used in examples below.
-
 Run the "gosec" plugin on a local directory then exit:
+
+> [!NOTE]
+> The local directory must be specified as an absolute path.
 
 ```bash
 ./plugin.sh run gosec /work/base

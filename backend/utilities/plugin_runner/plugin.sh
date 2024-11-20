@@ -95,8 +95,7 @@ function init_compose {
 $plugincmd \
   "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
   "\$(cat /opt/artemis-run-plugin/images.json)" \
-  "\$(cat /opt/artemis-run-plugin/config.json)" \
-  "$target"
+  "\$(cat /opt/artemis-run-plugin/config.json)"
 exitcode=\$?
 printf "==> Plugin exited with status: %d " "\$exitcode"
 if [ "\$exitcode" -eq 0 ]; then
@@ -155,6 +154,10 @@ services:
     command: ["/bin/true"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: "$target"
+        target: /work/base
+        read_only: $wro
   plugin:
     image: "$plugin_image"
     container_name: "$plugin"
@@ -172,10 +175,6 @@ services:
         source: ./plugin
         target: /opt/artemis-run-plugin
         read_only: true
-      - type: bind
-        source: "$target"
-        target: "$target"
-        read_only: $wro
       - type: volume
         source: $temp_vol_name
         target: /tmp/work
