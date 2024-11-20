@@ -81,6 +81,7 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
 
     checkov_command += ["--download-external-modules", "False", "-o", "json", "--output-file-path", "/tmp/base/output"]
 
+    # Copy the source tree into the named volume to provide to the container.
     srcdir = f"{temp_vol_mount}/work"
     LOG.info(f"Cloning working tree: {path} -> {srcdir}")
     shutil.copytree(path, srcdir)
@@ -98,8 +99,6 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
             temp_vol_name: {"bind": "/tmp/base", "mode": "rw"},
         },
     ).decode("utf-8")
-
-    LOG.info(f"Checkov stderr: {stderr}")
 
     checkov_file = f"{temp_vol_mount}/output/results_json.json"
 
