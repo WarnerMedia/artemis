@@ -7,7 +7,7 @@ import json
 import os
 import shutil
 import subprocess
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, Union
 from os.path import abspath
 from pathlib import Path
 
@@ -132,6 +132,7 @@ def run_checkov(
     checkov_file = f"{temp_vol_mount}/output/results_json.json"
 
     error = ""
+    checkov_output: Union[list[dict], dict] = []
     try:
         with open(checkov_file) as f:
             checkov_output = json.load(f)
