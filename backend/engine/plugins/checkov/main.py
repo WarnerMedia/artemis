@@ -4,6 +4,7 @@ Checkov Plugin
 
 import docker
 import json
+import shutil
 import subprocess
 from typing import TypedDict
 from os.path import abspath
@@ -60,9 +61,7 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         "errors": [],
     }
 
-    # We assume that the path is mounted with an identical path from the host
-    # so we can mount it directly instead of copying into the temp volume.
-    checkov_command = ["-d", path]
+    checkov_command = ["-d", "/tmp/base/work"]
 
     # Don't return nonzero exit code if findings are detected.
     checkov_command += ["--soft-fail"]
@@ -80,14 +79,11 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         external_checks_dir = (Path(config_dir) / Path(external_checks_dir)).absolute()
         checkov_command += ["--run-all-external-checks", "--external-checks-dir", external_checks_dir]
 
-    checkov_command += [
-        "--download-external-modules",
-        "False",
-        "-o",
-        "json",
-        "--output-file-path",
-        "/tmp/output",
-    ]
+    checkov_command += ["--download-external-modules", "False", "-o", "json", "--output-file-path", "/tmp/base/output"]
+
+    srcdir = f"{temp_vol_mount}/work"
+    LOG.info(f"Cloning working tree: {path} -> {srcdir}")
+    shutil.copytree(path, srcdir)
 
     LOG.info(f"Starting Checkov in container, path: {path}")
 
@@ -98,14 +94,14 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         stdout=True,
         stderr=True,
         volumes={
-            path: {"bind": path, "mode": "ro"},
-            temp_vol_name: {"bind": "/tmp/output", "mode": "rw"},
+            # path: {"bind": path, "mode": "ro"},
+            temp_vol_name: {"bind": "/tmp/base", "mode": "rw"},
         },
     ).decode("utf-8")
 
     LOG.info(f"Checkov stderr: {stderr}")
 
-    checkov_file = f"{temp_vol_mount}/results_json.json"
+    checkov_file = f"{temp_vol_mount}/output/results_json.json"
 
     error = ""
     try:
