@@ -98,11 +98,10 @@ def write_npmrc(logger, npmrc, scope_list: list) -> None:
     with open(npmrc, "a") as f:
         for scope in scope_list:
             logger.info(f"Writing {scope['scope']} config to %s", npmrc)
-            
+
             if "authToken" in scope:
                 npm_config = build_npm_auth_token_config(**scope)
             else:
                 npm_config = build_npm_config(**scope)
-            
+
             f.write(npm_config)
-            
