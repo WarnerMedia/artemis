@@ -78,7 +78,7 @@ def run_checkov(
     # Don't return nonzero exit code if findings are detected.
     checkov_command = ["--soft-fail"]
 
-    config_dir, config_error = get_config_dir(path, config)
+    config_dir, config_error = get_config_dir(config)
 
     # Return unsuccessful if error is encountered getting config directory
     if config_error:
@@ -154,7 +154,7 @@ def run_checkov(
 
     # Checks were performed. Need to parse to figure out if any failed.
     LOG.info("Checks will be performed.")
-    output["details"], parse_error = parse_checkov(checkov_output, path, config_dir, config)
+    output["details"], parse_error = parse_checkov(checkov_output, config_dir, config)
 
     # If error occurred parsing Checkov output, return error
     if parse_error:
@@ -165,11 +165,11 @@ def run_checkov(
     return output
 
 
-def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, config: dict) -> tuple[list, str]:
+def parse_checkov(checkov_output: list[dict], config_dir: Path, config: dict) -> tuple[list[dict], Optional[str]]:
     """
     Parse the output of Checkov
     """
-    findings = []
+    findings: list[dict] = []
     error = None
 
     # Load severities map
@@ -207,7 +207,7 @@ def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, c
     return (findings, error)
 
 
-def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
+def get_config_dir(config: dict) -> tuple[Path, Optional[str]]:
     """
     Determine if config directory should be from S3 or default (local)
     """
@@ -219,7 +219,7 @@ def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
     if s3_config_path:
         config_dir = PLUGIN_DIR / "custom_config"
 
-        # boto3 has no recursive download option, but awscli does
+        # TODO: Reimplement in boto3 so it can be mocked in unit tests.
         output = subprocess.run(
             ["aws", "s3", "cp", f"s3://{s3_config_path}", config_dir, "--recursive"], capture_output=True
         )
@@ -237,7 +237,7 @@ def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
     return (config_dir, error)
 
 
-def get_ckv_severities(config_dir: str, config: dict) -> tuple[dict, str]:
+def get_ckv_severities(config_dir: Path, config: dict) -> tuple[dict, Optional[str]]:
     """
     Read Checkov severities from JSON file, and return them as dict
     """
@@ -246,7 +246,7 @@ def get_ckv_severities(config_dir: str, config: dict) -> tuple[dict, str]:
     severities_file = config.get("severities_file")
 
     if severities_file:
-        severities_file_path = Path(config_dir) / Path(severities_file)
+        severities_file_path = config_dir / Path(severities_file)
     else:
         severities_file_path = PLUGIN_DIR / "ckv_severities.json"
 
