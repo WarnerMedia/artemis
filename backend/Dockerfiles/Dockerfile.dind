@@ -22,7 +22,7 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk add npm && \
     apk add go && \
     pip3 install --upgrade pip setuptools boto3 && \
-    pip3 install boto3 && \
+    pip3 install 'docker~=7.1' && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/$TRIVY_COMMIT/contrib/install.sh | sh -s -- -b /usr/local/bin $TRIVY_VER && \
     pip3 install /src/artemislib && \

@@ -30,7 +30,6 @@ sqlparse = "~=0.5"
 [dev-packages]
 autopep8 = "~=2.3"
 cfn-lint = "==1.18.1"  # Must match version in Makefile.
-checkov = "==3.2.268"  # Must match version in Makefile.
 debugpy = "~=1.8.5"
 flake8 = "~=7.1"
 isort = "~=5.13"
