@@ -67,8 +67,8 @@ class TestCheckov(unittest.TestCase):
         # A temporary directory is used in place of the named volume.
         # Since this directory is shared with the Checkov container, this
         # must be mounted with the same path as the host.
-        with tempfile.TemporaryDirectory("artemis-checkov-test") as tempdir:
-            return run_checkov(path, tempdir, tempdir)
+        with tempfile.TemporaryDirectory(prefix="artemis-checkov-test_") as tempdir:
+            return run_checkov(path, tempdir, tempdir, None)
 
     def test_with_findings(self):
         response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR1}")

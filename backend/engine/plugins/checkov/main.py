@@ -4,9 +4,10 @@ Checkov Plugin
 
 import docker
 import json
+import os
 import shutil
 import subprocess
-from typing import TypedDict
+from typing import Optional, TypedDict
 from os.path import abspath
 from pathlib import Path
 
@@ -35,23 +36,36 @@ def main():
     args = utils.parse_args()
     path = abspath(args.path)
 
+    errors: list[str] = []
+
+    engine_id: Optional[str] = args.engine_vars["engine_id"]
+
     (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
     if not temp_vol_name or not temp_vol_mount:
+        errors.append("Temporary volume not provided")
+
+    if errors:
         output: Results = {
             "success": False,
             "truncated": False,
-            "errors": ["Temporary volume not provided"],
+            "errors": errors,
             "details": [],
         }
     else:
-        output = run_checkov(path, temp_vol_name, temp_vol_mount, args.config)
+        output = run_checkov(path, temp_vol_name, temp_vol_mount, engine_id, args.config)
 
     print(json.dumps(output))
 
 
-def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict = {}) -> Results:
+def run_checkov(
+    path: str, temp_vol_name: str, temp_vol_mount: str, engine_id: Optional[str] = None, config: dict = {}
+) -> Results:
     """
-    Run Checkov and return results
+    Run Checkov and return results.
+
+    The engine_id is optional. If provided, the source tree will be mounted
+    directly into the Checkov container, via inherited volumes. If omitted,
+    then a copy of the source tree will be made in the temporary volume.
     """
     # Output defaults
     output: Results = {
@@ -61,10 +75,8 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         "errors": [],
     }
 
-    checkov_command = ["-d", "/tmp/base/work"]
-
     # Don't return nonzero exit code if findings are detected.
-    checkov_command += ["--soft-fail"]
+    checkov_command = ["--soft-fail"]
 
     config_dir, config_error = get_config_dir(path, config)
 
@@ -74,17 +86,37 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         output["errors"] = [config_error]
         return output
 
+    # TODO: Write to the temporary volume.
     external_checks_dir = config.get("external_checks_dir")
     if external_checks_dir:
         external_checks_dir = (Path(config_dir) / Path(external_checks_dir)).absolute()
         checkov_command += ["--run-all-external-checks", "--external-checks-dir", external_checks_dir]
 
-    checkov_command += ["--download-external-modules", "False", "-o", "json", "--output-file-path", "/tmp/base/output"]
+    # Do not scan third-party Terraform modules, as the findings are likely
+    # not actionable by the user.
+    checkov_command += ["--download-external-modules", "False"]
 
-    # Copy the source tree into the named volume to provide to the container.
-    srcdir = f"{temp_vol_mount}/work"
-    LOG.info(f"Cloning working tree: {path} -> {srcdir}")
-    shutil.copytree(path, srcdir)
+    # Write the output to the temporary volume so we don't need to disambiguate
+    # it from other output, since the container will return stdout and stderr
+    # mixed together.
+    os.mkdir(f"{temp_vol_mount}/output")
+    checkov_command += ["-o", "json", "--output-file-path", "/tmp/base/output"]
+
+    volumes_from: list[str] = []
+    if engine_id:
+        # Mount the source tree directly to avoid copying.
+        # Note that this will inherit all of the mounts, including the docker.sock
+        # which in the future we want to avoid passing to third-party containers.
+        checkov_command += ["-d", path]
+        volumes_from.append(engine_id)
+    else:
+        # Fall back to copying the source tree into the named volume
+        # to provide to the container.
+        # This is mainly used by unit tests.
+        srcdir = f"{temp_vol_mount}/work"
+        LOG.info(f"Cloning working tree: {path} -> {srcdir}")
+        shutil.copytree(path, srcdir)
+        checkov_command += ["-d", "/tmp/base/work"]
 
     LOG.info(f"Starting Checkov in container, path: {path}")
 
@@ -94,10 +126,8 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         remove=True,
         stdout=True,
         stderr=True,
-        volumes={
-            # path: {"bind": path, "mode": "ro"},
-            temp_vol_name: {"bind": "/tmp/base", "mode": "rw"},
-        },
+        volumes={temp_vol_name: {"bind": "/tmp/base", "mode": "rw"}},
+        volumes_from=volumes_from,
     ).decode("utf-8")
 
     checkov_file = f"{temp_vol_mount}/output/results_json.json"
