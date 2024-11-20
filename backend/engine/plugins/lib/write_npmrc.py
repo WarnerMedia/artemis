@@ -72,8 +72,7 @@ def build_npm_config(scope, registry, token, username, email, **kwargs):
     """
     return (
         f"@{scope}:registry=https://{registry}\n"
-        f"//{registry}:_password={token}\n"
-        f"//{registry}:username={username}\n"
+        f"//{registry}:_authToken={token}\n"
         f"//{registry}:email={email}\n"
         f"//{registry}:always-auth=true\n"
     )
