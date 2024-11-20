@@ -117,7 +117,7 @@ def run_checkov(
         shutil.copytree(path, srcdir)
         checkov_command += ["-d", "/tmp/base/work"]
 
-    LOG.info(f"Starting Checkov in container, path: {path}")
+    LOG.info(f"Starting {CHECKOV_IMG_REF} in container, path: {path}")
 
     stderr = docker_client.containers.run(
         CHECKOV_IMG_REF,
