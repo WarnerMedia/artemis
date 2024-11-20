@@ -1,5 +1,3 @@
-# Pinning to Python 3.11 because checkov requires aiohttp, and aiohttp is not yet functional with Python 3.12
-# This issue is tracked here: https://github.com/aio-libs/aiohttp/issues/7739
 FROM python:3.11-alpine
 
 ARG MAINTAINER
@@ -11,7 +9,6 @@ ARG TFLINT_SHA
 ARG SHELL_CHECK_VER
 ARG SHELL_CHECK_SHA
 ARG CFN_VER
-ARG CHECKOV_VER
 ARG PACKAGING_VER
 
 # Copy Artemis libraries into /src for installation
@@ -19,10 +16,9 @@ RUN mkdir -p /src
 COPY ./libs/ /src/
 
 # gitsecrets requires git
-# checkov requires awscli and libffi-dev
-RUN apk add -q --no-cache gcc musl-dev git make bash grep xz libffi-dev && \
+RUN apk add -q --no-cache gcc musl-dev git make bash grep xz && \
     pip install -q --upgrade pip && \
-    pip install -q --no-cache-dir awscli pylint packaging==$PACKAGING_VER boto3 bandit cfn-lint==$CFN_VER checkov==$CHECKOV_VER && \
+    pip install -q --no-cache-dir awscli pylint packaging==$PACKAGING_VER boto3 bandit cfn-lint==$CFN_VER && \
     pip install /src/artemislib cryptography && \
     pip install /src/artemisdb && \
     rm -r /src

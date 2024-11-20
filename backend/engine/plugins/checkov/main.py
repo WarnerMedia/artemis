@@ -2,9 +2,10 @@
 Checkov Plugin
 """
 
+import docker
 import json
 import subprocess
-import tempfile
+from typing import TypedDict
 from os.path import abspath
 from pathlib import Path
 
@@ -12,6 +13,17 @@ from engine.plugins.lib import utils
 
 LOG = utils.setup_logging("checkov")
 PLUGIN_DIR = Path(__file__).parent.absolute()
+
+CHECKOV_IMG_REF = "bridgecrew/checkov:3.2.301"
+
+docker_client = docker.from_env()
+
+
+class Results(TypedDict):
+    success: bool
+    truncated: bool
+    details: list[dict]
+    errors: list[str]
 
 
 def main():
@@ -21,27 +33,39 @@ def main():
     LOG.info("Executing Checkov")
     args = utils.parse_args()
     path = abspath(args.path)
-    output = run_checkov(path, args.config)
+
+    (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
+    if not temp_vol_name or not temp_vol_mount:
+        output: Results = {
+            "success": False,
+            "truncated": False,
+            "errors": ["Temporary volume not provided"],
+            "details": [],
+        }
+    else:
+        output = run_checkov(path, temp_vol_name, temp_vol_mount, args.config)
 
     print(json.dumps(output))
 
 
-def run_checkov(path: str, config: dict = {}) -> dict:
+def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict = {}) -> Results:
     """
-    Run Checkov and return results in dictionary
+    Run Checkov and return results
     """
     # Output defaults
-    output = {}
-    output["success"] = True
-    output["truncated"] = False
-    output["details"] = []
-    output["errors"] = []
+    output: Results = {
+        "success": True,
+        "truncated": False,
+        "details": [],
+        "errors": [],
+    }
 
-    error = False
+    # We assume that the path is mounted with an identical path from the host
+    # so we can mount it directly instead of copying into the temp volume.
+    checkov_command = ["-d", path]
 
-    temp_dir = tempfile.TemporaryDirectory()
-
-    checkov_command = ["checkov", "-d", path]
+    # Don't return nonzero exit code if findings are detected.
+    checkov_command += ["--soft-fail"]
 
     config_dir, config_error = get_config_dir(path, config)
 
@@ -56,34 +80,44 @@ def run_checkov(path: str, config: dict = {}) -> dict:
         external_checks_dir = (Path(config_dir) / Path(external_checks_dir)).absolute()
         checkov_command += ["--run-all-external-checks", "--external-checks-dir", external_checks_dir]
 
-    checkov_command += ["--download-external-modules", "False", "-o", "json", "--output-file-path", temp_dir.name]
+    checkov_command += [
+        "--download-external-modules",
+        "False",
+        "-o",
+        "json",
+        "--output-file-path",
+        "/tmp/output",
+    ]
 
-    process = subprocess.run(
-        checkov_command,
-        capture_output=True,
-        check=False,
-    )
+    stderr = docker_client.containers.run(
+        CHECKOV_IMG_REF,
+        command=checkov_command,
+        remove=True,
+        stdout=True,
+        stderr=True,
+        volumes={
+            path: {"bind": path, "mode": "ro"},
+            temp_vol_name: {"bind": "/tmp/output", "mode": "rw"},
+        },
+    ).decode("utf-8")
 
-    checkov_file = f"{temp_dir.name}/results_json.json"
-    stderr = process.stderr.decode("utf-8")
+    checkov_file = f"{temp_vol_mount}/results_json.json"
 
+    error = ""
     try:
         with open(checkov_file) as f:
             checkov_output = json.load(f)
     except json.decoder.JSONDecodeError:
-        error = True
-        error_description = "Checkov did not return a JSON response"
+        error = "Checkov did not return a JSON response"
     except BaseException as e:
-        error = True
-        error_description = f"Unexpected error - {e}"
-
-    temp_dir.cleanup()
+        error = f"Unexpected error - {e}"
 
     if error:
         output["success"] = False
         output["errors"].append("An unknown error has occurred. Contact Artemis support for assistance.")
-        LOG.error(f"error: {error_description}")
+        LOG.error(f"error: {error}")
         LOG.error(f"stderr: {stderr}")
+        return output
 
     if isinstance(checkov_output, dict):
         # Make output a list of dicts, as this is what is expected by the parsing function
