@@ -45,6 +45,7 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                 name = finding.get("name", "")
                 description = finding.get("description", "")
                 severity = finding.get("severity", "")
+                docs_url = finding.get("docs_url")
 
                 passing = finding.get("pass", False)
 
@@ -54,6 +55,9 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
                     "description": description,
                     "severity": severity,
                 }
+
+                if docs_url:
+                    item["docs_url"] = docs_url
 
                 if (
                     (not passing)

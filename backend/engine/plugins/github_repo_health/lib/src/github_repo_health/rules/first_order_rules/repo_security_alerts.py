@@ -15,6 +15,7 @@ class RepoSecurityAlerts:
             "enabled": {"type": "boolean"},
             "name": {"type": "string"},
             "description": {"type": "string"},
+            "docs_url": {"type": "string"},
             "severity": severity_schema,
         },
     }

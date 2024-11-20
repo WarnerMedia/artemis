@@ -538,6 +538,7 @@ export function makeServer() {
 					description:
 						"Lorem ipsum sit amet justo donec enim diam vulputate ut pharetra sit",
 					severity: "medium",
+					docs_url: "http://example.com",
 				},
 				github_branch_check2: {
 					name: "Branch - Check 2",

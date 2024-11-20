@@ -3496,6 +3496,54 @@ export const VulnTabContent = (props: {
 	);
 };
 
+export const DocumentationHotLink = (props: {
+	url: string;
+	addTitle?: boolean;
+}) => {
+	const { i18n } = useLingui();
+	const { url, addTitle } = props;
+
+	// note: use i18n instead of <Trans> element for tooltip title
+	// otherwise, a11y can't determine the title properly
+	const text = addTitle ? (
+		<Trans>View Documentation</Trans>
+	) : (
+		i18n._(t`View Documentation`)
+	);
+
+	if (addTitle) {
+		return (
+			<Box>
+				<Button
+					startIcon={<OpenInNewIcon />}
+					href={url}
+					target="_blank"
+					rel="noopener noreferrer nofollow"
+					size="small"
+				>
+					{text}
+				</Button>
+			</Box>
+		);
+	} else {
+		return (
+			<Box>
+				<Tooltip title={text}>
+					<span>
+						<Button
+							endIcon={<OpenInNewIcon />}
+							href={url}
+							target="_blank"
+							rel="noopener noreferrer nofollow"
+							size="small"
+						></Button>
+					</span>
+				</Tooltip>
+			</Box>
+		);
+	}
+};
+
 export const SourceCodeHotLink = (props: {
 	row: RowDef | null;
 	addTitle?: boolean;
@@ -4458,6 +4506,7 @@ export const ConfigTabContent = (props: {
 			rule,
 			name: info.name,
 			description: info.description,
+			docs_url: info.docs_url,
 			severity: info.severity,
 			repo: scan.repo,
 			service: scan.service,
@@ -4491,6 +4540,21 @@ export const ConfigTabContent = (props: {
 										secondary={selectedRow?.description ?? ""}
 									/>
 								</ListItem>
+								{ selectedRow?.docs_url && 
+									<ListItem key="config-documentation-link">
+										<ListItemText
+											primary = {
+												<>
+													{i18n._(t`Remediation`)}
+													<CustomCopyToClipboard
+														copyTarget={selectedRow?.docs_url}
+													/>
+												</>
+											}
+											secondary={<DocumentationHotLink url={selectedRow.docs_url} addTitle />}
+										/>
+									</ListItem>
+								}
 							</List>
 						</Grid>
 					</Grid>
@@ -4515,6 +4579,7 @@ export const ConfigTabContent = (props: {
 				id: rule,
 				name: info.name,
 				description: info.description,
+				docs_url: info.docs_url,
 				severity: info.severity,
 			});
 		}
