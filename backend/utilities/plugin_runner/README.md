@@ -26,13 +26,13 @@ Run the "gosec" plugin on a local directory then exit:
 > The local directory must be specified as an absolute path.
 
 ```bash
-./plugin.sh run gosec /work/base
+./plugin.sh run gosec ~/git/my-repo
 ```
 
 Run the "gosec" plugin and start a debug shell in the container:
 
 ```bash
-./plugin.sh run gosec /work/base /bin/bash
+./plugin.sh run gosec ~/git/my-repo /bin/bash
 ```
 
 ```text
@@ -55,7 +55,7 @@ This is fine for most plugins, but some plugins expect the target directory to b
 For those plugins, either specify `"writable": true` in the plugin's `settings.json`, or use `run-writable` instead of `run`:
 
 ```bash
-./plugin.sh run-writable gosec /work/base
+./plugin.sh run-writable gosec ~/git/my-repo
 ```
 
 Stop all containers and release resources:
