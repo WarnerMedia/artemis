@@ -89,6 +89,8 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
         "/tmp/output",
     ]
 
+    LOG.info(f"Starting Checkov in container, path: {path}")
+
     stderr = docker_client.containers.run(
         CHECKOV_IMG_REF,
         command=checkov_command,
@@ -100,6 +102,8 @@ def run_checkov(path: str, temp_vol_name: str, temp_vol_mount: str, config: dict
             temp_vol_name: {"bind": "/tmp/output", "mode": "rw"},
         },
     ).decode("utf-8")
+
+    LOG.info(f"Checkov stderr: {stderr}")
 
     checkov_file = f"{temp_vol_mount}/results_json.json"
 
