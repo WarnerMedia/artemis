@@ -169,6 +169,7 @@ export interface ConfigurationDetails {
 	name: string;
 	description: string;
 	severity: Severities;
+	docs_url?: string;
 }
 
 export interface ResultsConfiguration {

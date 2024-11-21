@@ -238,11 +238,16 @@ Configurations are of the following format:
 
             # You can explicitly set a severity by specifying it here. This will
             # bubble up to Artemis
-            "severity": "critical"
+            "severity": "critical",
+
+            # You can explicitly set a 'docs_url' by specifying it here. This will
+            # bubble up to Artemis and provide users with a link to help with 
+            # remediation
+            "docs_url": "https://example.com/wiki/branch_ci_required",
 
             # You can temporarily stop running a rule by setting 'enabled' to false.
             # You can also omit the rule altogether to achieve the same effect
-            "enabled": false,
+            "enabled": false
         },
         {
             "type": "branch_status_checks",
@@ -276,7 +281,7 @@ Configurations are of the following format:
             # The comments in that file will specify what Github API response it compares to
             "expect": {
                 "dismiss_stale_reviews": true,
-                "require_code_owner_reviews": true,
+                "require_code_owner_reviews": true
             }
         }
     ]
