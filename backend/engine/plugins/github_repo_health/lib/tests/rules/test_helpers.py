@@ -23,7 +23,7 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_add_metadata_should_have_docs_url_if_provided(self):
-        config = { "docs_url": DOCS_URL }
+        config = {"docs_url": DOCS_URL}
         result = add_metadata(True, BranchProtectionCommitSigning, config)
 
         expected = {
