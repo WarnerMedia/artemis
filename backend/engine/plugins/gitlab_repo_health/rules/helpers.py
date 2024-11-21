@@ -40,6 +40,7 @@ def add_metadata(passing, check, config={}, error_message=None):
     id = config.get("id") or check.identifier
     name = config.get("name") or check.name
     description = config.get("description") or check.description
+    docs_url = config.get("docs_url")
     severity = config.get("severity")
 
     result = {
@@ -48,6 +49,10 @@ def add_metadata(passing, check, config={}, error_message=None):
         "description": description,
         "pass": passing,
     }
+
+    if docs_url is not None:
+        # docs_url is optional and should only show up if explicitly set
+        result["docs_url"] = docs_url
 
     if severity is not None:
         # Severity is optional and should only show up if explicitly set
