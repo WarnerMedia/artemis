@@ -44,6 +44,10 @@ def main():
     if not temp_vol_name or not temp_vol_mount:
         errors.append("Temporary volume not provided")
 
+    (working_src, working_mount) = str(args.engine_vars.get("working_mount", "")).split(":")
+    if not working_src or not working_mount:
+        errors.append("Working volume not provided")
+
     if errors:
         output: Results = {
             "success": False,
@@ -52,13 +56,27 @@ def main():
             "details": [],
         }
     else:
-        output = run_checkov(path, temp_vol_name, temp_vol_mount, engine_id, args.config)
+        output = run_checkov(
+            path,
+            temp_vol_name,
+            temp_vol_mount,
+            working_src,
+            working_mount,
+            engine_id,
+            args.config,
+        )
 
     print(json.dumps(output))
 
 
 def run_checkov(
-    path: str, temp_vol_name: str, temp_vol_mount: str, engine_id: Optional[str] = None, config: dict = {}
+    path: str,
+    temp_vol_name: str,
+    temp_vol_mount: str,
+    working_src: str,
+    working_mount: str,
+    engine_id: Optional[str] = None,
+    config: dict = {},
 ) -> Results:
     """
     Run Checkov and return results.
@@ -101,13 +119,14 @@ def run_checkov(
     os.mkdir(f"{temp_vol_mount}/output")
     checkov_command += ["-o", "json", "--output-file-path", "/tmp/base/output"]
 
+    volumes = {temp_vol_name: {"bind": "/tmp/base", "mode": "rw"}}
     volumes_from: list[str] = []
-    if engine_id:
+    if working_src and working_mount:
         # Mount the source tree directly to avoid copying.
         # Note that this will inherit all of the mounts, including the docker.sock
         # which in the future we want to avoid passing to third-party containers.
         checkov_command += ["-d", path]
-        volumes_from.append(engine_id)
+        volumes[working_src] = {"bind": working_mount, "mode": "ro"}
     else:
         # Fall back to copying the source tree into the named volume
         # to provide to the container.
@@ -125,7 +144,7 @@ def run_checkov(
         remove=True,
         stdout=True,
         stderr=True,
-        volumes={temp_vol_name: {"bind": "/tmp/base", "mode": "rw"}},
+        volumes=volumes,
         volumes_from=volumes_from,
     ).decode("utf-8")
 
