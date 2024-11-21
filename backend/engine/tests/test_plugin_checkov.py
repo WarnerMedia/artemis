@@ -68,7 +68,7 @@ class TestCheckov(unittest.TestCase):
         # Since this directory is shared with the Checkov container, this
         # must be mounted with the same path as the host.
         with tempfile.TemporaryDirectory(prefix="artemis-checkov-test_") as tempdir:
-            return run_checkov(path, tempdir, tempdir, path, path, None)
+            return run_checkov(path, tempdir, tempdir, path, path)
 
     def test_with_findings(self):
         response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR1}")

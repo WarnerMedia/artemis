@@ -5,7 +5,6 @@ Checkov Plugin
 import docker
 import json
 import os
-import shutil
 import subprocess
 from typing import Optional, TypedDict, Union
 from os.path import abspath
@@ -38,8 +37,6 @@ def main():
 
     errors: list[str] = []
 
-    engine_id: Optional[str] = args.engine_vars["engine_id"]
-
     (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
     if not temp_vol_name or not temp_vol_mount:
         errors.append("Temporary volume not provided")
@@ -62,7 +59,6 @@ def main():
             temp_vol_mount,
             working_src,
             working_mount,
-            engine_id,
             args.config,
         )
 
@@ -75,15 +71,10 @@ def run_checkov(
     temp_vol_mount: str,
     working_src: str,
     working_mount: str,
-    engine_id: Optional[str] = None,
     config: dict = {},
 ) -> Results:
     """
     Run Checkov and return results.
-
-    The engine_id is optional. If provided, the source tree will be mounted
-    directly into the Checkov container, via inherited volumes. If omitted,
-    then a copy of the source tree will be made in the temporary volume.
     """
     # Output defaults
     output: Results = {
@@ -119,22 +110,8 @@ def run_checkov(
     os.mkdir(f"{temp_vol_mount}/output")
     checkov_command += ["-o", "json", "--output-file-path", "/tmp/base/output"]
 
-    volumes = {temp_vol_name: {"bind": "/tmp/base", "mode": "rw"}}
-    volumes_from: list[str] = []
-    if working_src and working_mount:
-        # Mount the source tree directly to avoid copying.
-        # Note that this will inherit all of the mounts, including the docker.sock
-        # which in the future we want to avoid passing to third-party containers.
-        checkov_command += ["-d", path]
-        volumes[working_src] = {"bind": working_mount, "mode": "ro"}
-    else:
-        # Fall back to copying the source tree into the named volume
-        # to provide to the container.
-        # This is mainly used by unit tests.
-        srcdir = f"{temp_vol_mount}/work"
-        LOG.info(f"Cloning working tree: {path} -> {srcdir}")
-        shutil.copytree(path, srcdir)
-        checkov_command += ["-d", "/tmp/base/work"]
+    # We mount the source tree directly to avoid copying.
+    checkov_command += ["-d", path]
 
     LOG.info(f"Starting {CHECKOV_IMG_REF} in container, path: {path}")
 
@@ -144,8 +121,10 @@ def run_checkov(
         remove=True,
         stdout=True,
         stderr=True,
-        volumes=volumes,
-        volumes_from=volumes_from,
+        volumes={
+            temp_vol_name: {"bind": "/tmp/base", "mode": "rw"},
+            working_src: {"bind": working_mount, "mode": "ro"},
+        },
     ).decode("utf-8")
 
     checkov_file = f"{temp_vol_mount}/output/results_json.json"
