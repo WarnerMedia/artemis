@@ -95,6 +95,20 @@ distclean: clean  ## Remove all build and dev transients
 	@echo "${OK}"
 
 ###############################################################################
+# Maintenance targets
+###############################################################################
+
+.PHONY: upgrade-interactive
+upgrade-interactive:  # CLI tool to review and select packages to upgrade
+#	Filter out dependencies locked to specific versions.
+#	We assume that version specifiers without a prefix are locked.
+	npx npm-check-updates -i --format group \
+		--reject "$$(jq -r '\
+			(.dependencies + .devDependencies) | to_entries | \
+			map(select(.value | test("^[0-9]")))[].key' \
+			package.json)"
+
+###############################################################################
 # Production build targets
 ###############################################################################
 
@@ -115,7 +129,6 @@ build dist: $(SRC) clean  ## Create production build
 #
 ###############################################################################
 
-	
 .PHONY: deploy
 deploy: dist ## Deploy app to S3
 	./deploy.sh
