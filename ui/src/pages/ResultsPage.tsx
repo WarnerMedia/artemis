@@ -4540,10 +4540,10 @@ export const ConfigTabContent = (props: {
 										secondary={selectedRow?.description ?? ""}
 									/>
 								</ListItem>
-								{ selectedRow?.docs_url && 
+								{selectedRow?.docs_url && (
 									<ListItem key="config-documentation-link">
 										<ListItemText
-											primary = {
+											primary={
 												<>
 													{i18n._(t`Remediation`)}
 													<CustomCopyToClipboard
@@ -4551,10 +4551,15 @@ export const ConfigTabContent = (props: {
 													/>
 												</>
 											}
-											secondary={<DocumentationHotLink url={selectedRow.docs_url} addTitle />}
+											secondary={
+												<DocumentationHotLink
+													url={selectedRow.docs_url}
+													addTitle
+												/>
+											}
 										/>
 									</ListItem>
-								}
+								)}
 							</List>
 						</Grid>
 					</Grid>
