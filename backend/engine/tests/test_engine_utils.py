@@ -1,10 +1,18 @@
+import docker
 import os
 from typing import Any
 import unittest
 from unittest.mock import patch
+import docker.errors
 from pydantic import ValidationError
 
-from engine.utils.plugin import PluginSettings, Runner, get_plugin_settings, match_nonallowlisted_raw_secrets
+from engine.utils.plugin import (
+    PluginSettings,
+    Runner,
+    get_plugin_settings,
+    match_nonallowlisted_raw_secrets,
+    temporary_volume,
+)
 from utils.services import _get_services_from_file
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -151,3 +159,26 @@ class TestEngineUtils(unittest.TestCase):
         with self.assertRaises(ValidationError) as ex:
             get_plugin_settings("invalid")
         self.assertEqual(ex.exception.error_count(), 4)
+
+    def test_temporary_volume_normal(self):
+        """
+        Tests a temporary volume is created and automatically cleaned up.
+        """
+        docker_client = docker.from_env()
+        with temporary_volume("test-prefix") as vol_name:
+            self.assertTrue(vol_name.startswith("test-prefix"))
+            docker_client.volumes.get(vol_name)
+        with self.assertRaises(docker.errors.NotFound):
+            docker_client.volumes.get(vol_name)
+
+    def test_temporary_volume_cleanup(self):
+        """
+        Tests a temporary volume is cleaned up even if an exception is raised.
+        """
+        docker_client = docker.from_env()
+        vol_name = ""
+        with self.assertRaises(ValueError):
+            with temporary_volume("test-prefix") as vol_name:
+                raise ValueError("test")
+        with self.assertRaises(docker.errors.NotFound):
+            docker_client.volumes.get(vol_name)

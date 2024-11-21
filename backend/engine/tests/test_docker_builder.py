@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 from artemislib.logging import Logger
-from docker import builder
+from oci import builder
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -24,7 +24,7 @@ TEST_PRIVATE_DOCKER_REPOS_CONFIGS = [
 
 TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT = {"status": True, "response": json.dumps(TEST_PRIVATE_DOCKER_REPOS_CONFIGS)}
 
-TEST_LOGGER = Logger("docker_builder")
+TEST_LOGGER = Logger("oci_builder")
 
 
 class TestDockerUtil(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestDockerUtil(unittest.TestCase):
     def test_private_docker_repos_login(self):
         image_builder = builder.ImageBuilder(os.path.join(TEST_ROOT, "Dockerfiles"), None, None, None)
         with patch("plugins.lib.utils.get_secret_with_status") as mock_get_secret_with_status:
-            with patch("docker.builder.ImageBuilder.docker_login_needed") as mock_docker_login_needed:
+            with patch("oci.builder.ImageBuilder.docker_login_needed") as mock_docker_login_needed:
                 mock_get_secret_with_status.return_value = TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT
 
                 # return true to test docker_login arguments

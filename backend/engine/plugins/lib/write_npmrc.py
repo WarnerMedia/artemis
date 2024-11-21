@@ -79,9 +79,29 @@ def build_npm_config(scope, registry, token, username, email, **kwargs):
     )
 
 
+def build_npm_auth_token_config(scope, registry, authToken, email, **kwargs):
+    """
+    gets the variables necessary to return the npmrc config with _authToken
+    This provides npm the necessary info to get packages from private sources.
+    **kwargs exists at the end to pick up anything extra in the config dictionary that we dont need.
+    """
+    return (
+        f"@{scope}:registry=https://{registry}\n"
+        f"//{registry}:_authToken={authToken}\n"
+        f"//{registry}:email={email}\n"
+        f"//{registry}:always-auth=true\n"
+    )
+
+
 def write_npmrc(logger, npmrc, scope_list: list) -> None:
     # Write the configs for flagged scopes to npmrc
     with open(npmrc, "a") as f:
         for scope in scope_list:
             logger.info(f"Writing {scope['scope']} config to %s", npmrc)
-            f.write(build_npm_config(**scope))
+
+            if "authToken" in scope:
+                npm_config = build_npm_auth_token_config(**scope)
+            else:
+                npm_config = build_npm_config(**scope)
+
+            f.write(npm_config)

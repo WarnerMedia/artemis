@@ -2,7 +2,7 @@ import subprocess
 
 from artemislib.logging import Logger
 
-logger = Logger("docker_remover")
+logger = Logger("oci_remover")
 
 
 def remove_docker_image(image: dict):
