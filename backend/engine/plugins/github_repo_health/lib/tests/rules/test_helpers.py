@@ -1,6 +1,7 @@
 import unittest
 
-from github_repo_health.rules import add_metadata, BranchProtectionCommitSigning
+from github_repo_health.rules import BranchProtectionCommitSigning, helpers
+from github_repo_health.rules.helpers import add_metadata
 
 OWNER = "owner"
 REPO = "repo"
@@ -15,6 +16,7 @@ class TestHelpers(unittest.TestCase):
         result = add_metadata(True, BranchProtectionCommitSigning, config)
 
         expected = {
+            "pass": True,
             "id": BranchProtectionCommitSigning.identifier,
             "name": BranchProtectionCommitSigning.name,
             "description": BranchProtectionCommitSigning.description,
@@ -27,6 +29,7 @@ class TestHelpers(unittest.TestCase):
         result = add_metadata(True, BranchProtectionCommitSigning, config)
 
         expected = {
+            "pass": True,
             "id": BranchProtectionCommitSigning.identifier,
             "name": BranchProtectionCommitSigning.name,
             "description": BranchProtectionCommitSigning.description,
