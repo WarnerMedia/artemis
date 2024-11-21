@@ -130,10 +130,11 @@ EOD
     cp -L "$BASEDIR/.env" "$TEMPDIR/.env" || return 1
   fi
   local basevars
-  basevars="$(jq -n --arg temp_vol_name "$temp_vol_name" \
+  basevars="$(jq -n --arg temp_vol_name "$temp_vol_name" --arg target "$target" \
     '{
       temp_vol_name:
         ("artemis-run-plugin_" + $temp_vol_name + ":/tmp/work"),
+      working_mount: ($target + ":/work/base"),
       engine_id: "engine"
     }')" || return 1
   install_plugin_arg_file engine-vars.json "$plugindir" "$basevars" || return 1
