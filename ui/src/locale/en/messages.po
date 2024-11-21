@@ -1516,8 +1516,8 @@ msgid "Low: {count}"
 msgstr "Low: {count}"
 
 #: src/pages/ResultsPage.tsx:4548
-msgid "Documentation"
-msgstr "Documentation"
+#~ msgid "Documentation"
+#~ msgstr "Documentation"
 
 #: src/pages/UsersPage.tsx:563
 msgid "Admin"
@@ -1676,6 +1676,7 @@ msgid "Scan time can not be in the future"
 msgstr "Scan time can not be in the future"
 
 #: src/pages/ResultsPage.tsx:3185
+#: src/pages/ResultsPage.tsx:4548
 #: src/pages/SearchPage.tsx:2265
 #: src/pages/SearchPage.tsx:2774
 msgid "Remediation"
