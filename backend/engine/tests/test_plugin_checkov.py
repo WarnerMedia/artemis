@@ -1,8 +1,9 @@
 import os
+import tempfile
 import unittest
 from unittest.util import safe_repr
 
-from engine.plugins.checkov.main import run_checkov
+from engine.plugins.checkov.main import Results, run_checkov
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -58,8 +59,19 @@ class TestCheckov(unittest.TestCase):
             )
         )
 
+    def _run_checkov(self, path: str) -> Results:
+        """
+        Call run_checkov on a working path.
+        The working path must be an absolute path.
+        """
+        # A temporary directory is used in place of the named volume.
+        # Since this directory is shared with the Checkov container, this
+        # must be mounted with the same path as the host.
+        with tempfile.TemporaryDirectory(prefix="artemis-checkov-test_") as tempdir:
+            return run_checkov(path, tempdir, tempdir, path, path)
+
     def test_with_findings(self):
-        response = run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR1}")
+        response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR1}")
         self.maxDiff = None
         self.assertTrue(response["success"])
         self.assertFalse(response["truncated"])
@@ -101,9 +113,9 @@ class TestCheckov(unittest.TestCase):
         )
 
     def test_without_findings(self):
-        response = run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR2}")
+        response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR2}")
         self.assertEqual(response, CHECKOV_EMPTY_RESPONSE)
 
     def test_no_checkov(self):
-        response = run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR3}")
+        response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR3}")
         self.assertEqual(response, CHECKOV_EMPTY_RESPONSE)

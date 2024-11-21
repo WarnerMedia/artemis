@@ -1,5 +1,5 @@
 {
   "name": "Checkov",
   "type": "static_analysis",
-  "image": "$ECR/artemis/python:3-latest"
+  "image": "$ECR/artemis/dind:latest"
 }

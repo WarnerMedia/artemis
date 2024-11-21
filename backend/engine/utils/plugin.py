@@ -27,6 +27,7 @@ from env import (
     ENGINE_DIR,
     ENGINE_ID,
     HOST_WORKING_DIR,
+    WORKING_DIR,
     PLUGIN_JAVA_HEAP_SIZE,
     PROCESS_SECRETS_WITH_PATH_EXCLUSIONS,
     REGION,
@@ -142,7 +143,9 @@ class PluginSettings(BaseModel):
         return True
 
 
-def get_engine_vars(scan: Scan, temp_vol_name: str, depth: Optional[str] = None, include_dev=False, services=None):
+def get_engine_vars(
+    scan: Scan, temp_vol_name: str, working_src: str, depth: Optional[str] = None, include_dev=False, services=None
+):
     """
     Returns a json str that can be converted back to a dict by the plugin.
     The object will container information known to the engine
@@ -162,6 +165,7 @@ def get_engine_vars(scan: Scan, temp_vol_name: str, depth: Optional[str] = None,
             "include_dev": include_dev,
             "engine_id": ENGINE_ID,
             "temp_vol_name": f"{temp_vol_name}:{TEMP_VOLUME_MOUNT}",
+            "working_mount": f"{working_src}:{WORKING_DIR}",
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
             "service_name": scan.repo.service,
             "service_type": services[scan.repo.service]["type"],
@@ -685,7 +689,8 @@ def get_plugin_command(
 ) -> list[str]:
     profile = os.environ.get("AWS_PROFILE")
 
-    working_mount = os.path.join(HOST_WORKING_DIR, str(scan.scan_id)) + ":/work"
+    working_src = os.path.join(HOST_WORKING_DIR, str(scan.scan_id))
+    working_mount = f"{working_src}:{WORKING_DIR}"
     if not settings.writable:
         working_mount += ":ro"
 
@@ -778,7 +783,7 @@ def get_plugin_command(
     # Arguments passed to the plugin.
     cmd.extend(
         [
-            get_engine_vars(scan, temp_vol_name, depth=depth, include_dev=include_dev, services=services),
+            get_engine_vars(scan, temp_vol_name, working_src, depth=depth, include_dev=include_dev, services=services),
             json.dumps(scan_images),
             json.dumps(plugin_config),
         ]

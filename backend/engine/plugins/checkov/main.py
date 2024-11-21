@@ -2,9 +2,11 @@
 Checkov Plugin
 """
 
+import docker
 import json
+import os
 import subprocess
-import tempfile
+from typing import Optional, TypedDict, Union
 from os.path import abspath
 from pathlib import Path
 
@@ -12,6 +14,17 @@ from engine.plugins.lib import utils
 
 LOG = utils.setup_logging("checkov")
 PLUGIN_DIR = Path(__file__).parent.absolute()
+
+CHECKOV_IMG_REF = "bridgecrew/checkov:3.2.301"
+
+docker_client = docker.from_env()
+
+
+class Results(TypedDict):
+    success: bool
+    truncated: bool
+    details: list[dict]
+    errors: list[str]
 
 
 def main():
@@ -21,29 +34,60 @@ def main():
     LOG.info("Executing Checkov")
     args = utils.parse_args()
     path = abspath(args.path)
-    output = run_checkov(path, args.config)
+
+    errors: list[str] = []
+
+    (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
+    if not temp_vol_name or not temp_vol_mount:
+        errors.append("Temporary volume not provided")
+
+    (working_src, working_mount) = str(args.engine_vars.get("working_mount", "")).split(":")
+    if not working_src or not working_mount:
+        errors.append("Working volume not provided")
+
+    if errors:
+        output: Results = {
+            "success": False,
+            "truncated": False,
+            "errors": errors,
+            "details": [],
+        }
+    else:
+        output = run_checkov(
+            path,
+            temp_vol_name,
+            temp_vol_mount,
+            working_src,
+            working_mount,
+            args.config,
+        )
 
     print(json.dumps(output))
 
 
-def run_checkov(path: str, config: dict = {}) -> dict:
+def run_checkov(
+    path: str,
+    temp_vol_name: str,
+    temp_vol_mount: str,
+    working_src: str,
+    working_mount: str,
+    config: dict = {},
+) -> Results:
     """
-    Run Checkov and return results in dictionary
+    Run Checkov and return results.
     """
     # Output defaults
-    output = {}
-    output["success"] = True
-    output["truncated"] = False
-    output["details"] = []
-    output["errors"] = []
+    output: Results = {
+        "success": True,
+        "truncated": False,
+        "details": [],
+        "errors": [],
+    }
 
-    error = False
+    # Don't return nonzero exit code if findings are detected.
+    checkov_command = ["--soft-fail"]
 
-    temp_dir = tempfile.TemporaryDirectory()
-
-    checkov_command = ["checkov", "-d", path]
-
-    config_dir, config_error = get_config_dir(path, config)
+    config_dir, config_error = get_config_dir(config)
 
     # Return unsuccessful if error is encountered getting config directory
     if config_error:
@@ -56,34 +100,51 @@ def run_checkov(path: str, config: dict = {}) -> dict:
         external_checks_dir = (Path(config_dir) / Path(external_checks_dir)).absolute()
         checkov_command += ["--run-all-external-checks", "--external-checks-dir", external_checks_dir]
 
-    checkov_command += ["--download-external-modules", "False", "-o", "json", "--output-file-path", temp_dir.name]
+    # Do not scan third-party Terraform modules, as the findings are likely
+    # not actionable by the user.
+    checkov_command += ["--download-external-modules", "False"]
 
-    process = subprocess.run(
-        checkov_command,
-        capture_output=True,
-        check=False,
-    )
+    # Write the output to the temporary volume so we don't need to disambiguate
+    # it from other output, since the container will return stdout and stderr
+    # mixed together.
+    os.mkdir(f"{temp_vol_mount}/output")
+    checkov_command += ["-o", "json", "--output-file-path", "/tmp/base/output"]
 
-    checkov_file = f"{temp_dir.name}/results_json.json"
-    stderr = process.stderr.decode("utf-8")
+    # We mount the source tree directly to avoid copying.
+    checkov_command += ["-d", path]
 
+    LOG.info(f"Starting {CHECKOV_IMG_REF} in container, path: {path}")
+
+    stderr = docker_client.containers.run(
+        CHECKOV_IMG_REF,
+        command=checkov_command,
+        remove=True,
+        stdout=True,
+        stderr=True,
+        volumes={
+            temp_vol_name: {"bind": "/tmp/base", "mode": "rw"},
+            working_src: {"bind": working_mount, "mode": "ro"},
+        },
+    ).decode("utf-8")
+
+    checkov_file = f"{temp_vol_mount}/output/results_json.json"
+
+    error = ""
+    checkov_output: Union[list[dict], dict] = []
     try:
         with open(checkov_file) as f:
             checkov_output = json.load(f)
     except json.decoder.JSONDecodeError:
-        error = True
-        error_description = "Checkov did not return a JSON response"
+        error = "Checkov did not return a JSON response"
     except BaseException as e:
-        error = True
-        error_description = f"Unexpected error - {e}"
-
-    temp_dir.cleanup()
+        error = f"Unexpected error - {e}"
 
     if error:
         output["success"] = False
         output["errors"].append("An unknown error has occurred. Contact Artemis support for assistance.")
-        LOG.error(f"error: {error_description}")
+        LOG.error(f"error: {error}")
         LOG.error(f"stderr: {stderr}")
+        return output
 
     if isinstance(checkov_output, dict):
         # Make output a list of dicts, as this is what is expected by the parsing function
@@ -91,7 +152,7 @@ def run_checkov(path: str, config: dict = {}) -> dict:
 
     # Checks were performed. Need to parse to figure out if any failed.
     LOG.info("Checks will be performed.")
-    output["details"], parse_error = parse_checkov(checkov_output, path, config_dir, config)
+    output["details"], parse_error = parse_checkov(checkov_output, config_dir, config)
 
     # If error occurred parsing Checkov output, return error
     if parse_error:
@@ -102,11 +163,11 @@ def run_checkov(path: str, config: dict = {}) -> dict:
     return output
 
 
-def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, config: dict) -> tuple[list, str]:
+def parse_checkov(checkov_output: list[dict], config_dir: Path, config: dict) -> tuple[list[dict], Optional[str]]:
     """
     Parse the output of Checkov
     """
-    findings = []
+    findings: list[dict] = []
     error = None
 
     # Load severities map
@@ -144,10 +205,12 @@ def parse_checkov(checkov_output: list[dict], repo_path: str, config_dir: str, c
     return (findings, error)
 
 
-def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
+def get_config_dir(config: dict) -> tuple[Path, Optional[str]]:
     """
     Determine if config directory should be from S3 or default (local)
     """
+    # TODO: Write to the temporary volume instead of the plugin source directory.
+
     # If an s3_config_path exists, download config from S3
     s3_config_path = config.get("s3_config_path")
     config_dir = PLUGIN_DIR
@@ -156,7 +219,7 @@ def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
     if s3_config_path:
         config_dir = PLUGIN_DIR / "custom_config"
 
-        # boto3 has no recursive download option, but awscli does
+        # TODO: Reimplement in boto3 so it can be mocked in unit tests.
         output = subprocess.run(
             ["aws", "s3", "cp", f"s3://{s3_config_path}", config_dir, "--recursive"], capture_output=True
         )
@@ -174,7 +237,7 @@ def get_config_dir(repo_path: str, config: dict) -> tuple[str, str]:
     return (config_dir, error)
 
 
-def get_ckv_severities(config_dir: str, config: dict) -> tuple[dict, str]:
+def get_ckv_severities(config_dir: Path, config: dict) -> tuple[dict, Optional[str]]:
     """
     Read Checkov severities from JSON file, and return them as dict
     """
@@ -183,7 +246,7 @@ def get_ckv_severities(config_dir: str, config: dict) -> tuple[dict, str]:
     severities_file = config.get("severities_file")
 
     if severities_file:
-        severities_file_path = Path(config_dir) / Path(severities_file)
+        severities_file_path = config_dir / Path(severities_file)
     else:
         severities_file_path = PLUGIN_DIR / "ckv_severities.json"
 
@@ -192,8 +255,8 @@ def get_ckv_severities(config_dir: str, config: dict) -> tuple[dict, str]:
             ckv_severities = json.load(f)
     except json.decoder.JSONDecodeError:
         error = "Severities file is not valid JSON. Aborting Checkov scan."
-    except BaseException as e:
-        error = "Could not read the severities file. Aborting Checkov scan."
+    except Exception as e:
+        error = f"Could not read the severities file: {e}"
 
     if error:
         LOG.error(f"error: {error}")

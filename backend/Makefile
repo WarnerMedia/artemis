@@ -143,8 +143,6 @@ SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
 
-CHECKOV_VER := 3.2.268
-
 FSB_VER := 1.9.0
 FSB_PATCH := -fix2
 OWASP_DC := 6.1.6
@@ -449,8 +447,7 @@ dist/docker/python3: Dockerfiles/Dockerfile.python3
 		--build-arg TFLINT_VER=${TFLINT_VER} \
 		--build-arg TFLINT_SHA=${TFLINT_SHA} \
 		--build-arg CFN_VER=${CFN_VER} \
-		--build-arg PACKAGING_VER=${PACKAGING_VER} \
-		--build-arg CHECKOV_VER=${CHECKOV_VER}
+		--build-arg PACKAGING_VER=${PACKAGING_VER}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${PYTHON_TAG} ${ECR_URL}${PYTHON_TAG}
 	${DOCKER} tag ${PYTHON_TAG} ${ECR_URL}${PYTHON_TAG}-stage-${LATEST_COMMIT}
