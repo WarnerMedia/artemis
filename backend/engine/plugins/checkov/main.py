@@ -215,6 +215,11 @@ def init_config_dir(config: dict, dest: Path) -> tuple[str, Path]:
     # Note: This aims to preserve the original intent of the
     #       s3_config_path (and related) plugin config options.
 
+    # The config directory will look like:
+    # - ckv_severities.json  <-- Will always be present.
+    # - checks/              <-- Will always be present.
+    #   - files...           <-- Optional, downloaded from S3 bucket.
+
     dest.mkdir(exist_ok=True)
 
     # Install the bundled severities file as the default.
