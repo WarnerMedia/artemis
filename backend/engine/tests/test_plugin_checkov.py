@@ -7,8 +7,6 @@ from unittest.util import safe_repr
 
 from engine.plugins.checkov.main import Results, run_checkov
 
-DEFAULT_REGION = "us-east-1"
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 CHECKOV_TEST_DIR1 = "data/checkov/findings"
