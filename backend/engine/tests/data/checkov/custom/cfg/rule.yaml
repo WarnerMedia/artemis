@@ -1,0 +1,10 @@
+metadata:
+  name: Custom test rule
+  id: ARTEMIS_TEST_RULE_000
+  category: GENERAL_SECURITY
+  severity: CRITICAL
+definition:
+  cond_type: attribute
+  resource_types: [aws_backup_vault]
+  attribute: tags
+  operator: exists
