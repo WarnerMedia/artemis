@@ -88,9 +88,11 @@ def run_checkov(
     # Don't return nonzero exit code if findings are detected.
     checkov_command = ["--soft-fail"]
 
+    config_dir = Path(temp_vol_mount) / "config"
     try:
-        (checks_dir, sev_path) = init_config_dir(config, Path(temp_vol_mount) / "config")
+        (checks_dir, sev_dir) = init_config_dir(config, config_dir)
         checkov_command += ["--run-all-external-checks", "--external-checks-dir", f"/tmp/base/config/{checks_dir}"]
+        sev_path = config_dir / sev_dir
     except Exception as e:
         output["success"] = False
         output["errors"] = [f"Failed to load configuration: {str(e)}"]
@@ -202,15 +204,15 @@ def parse_checkov(checkov_output: list[dict], sev_path: Path) -> tuple[list[dict
     return (findings, error)
 
 
-def init_config_dir(config: dict, dest: Path) -> tuple[str, Path]:
+def init_config_dir(config: dict, dest: Path) -> tuple[Path, Path]:
     """
     Populates the config directory.
 
     If a custom config is specified, then it will be downloaded from S3.
 
     Returns:
-    - The relative path to the external checks dir (from the config dir).
-    - The absolute path to the severities file.
+    - The relative path to the external checks dir.
+    - The relative path to the severities file.
     """
     # Note: This aims to preserve the original intent of the
     #       s3_config_path (and related) plugin config options.
@@ -223,10 +225,11 @@ def init_config_dir(config: dict, dest: Path) -> tuple[str, Path]:
     dest.mkdir(exist_ok=True)
 
     # Install the bundled severities file as the default.
-    sev_path = dest / "ckv_severities.json"
+    rel_sev_dir = Path("ckv_severities.json")
+    sev_path = dest / rel_sev_dir
     shutil.copyfile(PLUGIN_DIR / "ckv_severities.json", sev_path)
 
-    rel_checks_dir = "checks"
+    rel_checks_dir = Path("checks")
     checks_dir = dest / rel_checks_dir
     checks_dir.mkdir(exist_ok=True)
     if s3_config_path := str(config.get("s3_config_path", "")):
@@ -258,7 +261,7 @@ def init_config_dir(config: dict, dest: Path) -> tuple[str, Path]:
             LOG.info(f"Downloading severities file: {key} -> {sev_path}")
             bucket.download_file(key, str(sev_path))
 
-    return (rel_checks_dir, sev_path)
+    return (rel_checks_dir, rel_sev_dir)
 
 
 def get_ckv_severities(sev_path: Path) -> tuple[dict, Optional[str]]:
