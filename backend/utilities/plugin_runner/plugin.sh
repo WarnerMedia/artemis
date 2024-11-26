@@ -91,7 +91,7 @@ function init_compose {
   local plugin_entry="$plugindir/entrypoint.sh"
   echo "--> Generating: $plugin_entry"
   cat <<EOD > "$plugin_entry" || return 1
-#!/bin/sh
+#!/opt/artemis-plugin-toolbox/bin/sh
 $plugincmd \
   "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
   "\$(cat /opt/artemis-run-plugin/images.json)" \
@@ -109,7 +109,7 @@ EOD
   local plugin_debug_entry="$plugindir/entrypoint-debug.sh"
   echo "--> Generating: $plugin_debug_entry"
   cat <<EOD > "$plugin_debug_entry" || return 1
-#!/bin/sh
+#!/opt/artemis-plugin-toolbox/bin/sh
 /opt/artemis-run-plugin/entrypoint.sh
 echo "==> Starting debug shell: ${debug_shell[@]}"
 echo '    To run the plugin again with the same configuration:'
@@ -152,6 +152,10 @@ EOD
   cat <<EOD > "$COMPOSEFILE" || return 1
 name: artemis-run-plugin
 services:
+  toolbox:
+    image: "artemis/plugin-toolbox:latest"
+    build:
+      context: ../toolbox
   engine:
     image: "artemis/engine:latest"
     container_name: engine
@@ -173,6 +177,7 @@ services:
     command:
       - $entrypoint
     volumes_from:
+      - toolbox:ro
       - engine:ro
     volumes:
       - type: bind
@@ -235,7 +240,7 @@ function do_run {
   init_compose "$plugin" "$image" "$target" "$runner" "$writable" \
     "${debug_shell[@]}" || return 1
 
-  docker compose -f "$COMPOSEFILE" run --rm --remove-orphans plugin
+  docker compose -f "$COMPOSEFILE" run --build --rm --remove-orphans plugin
 }
 
 # Stop containers and clean up generated files (best-effort, ignore errors).

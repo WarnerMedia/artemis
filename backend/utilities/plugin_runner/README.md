@@ -35,6 +35,10 @@ Run the "gosec" plugin and start a debug shell in the container:
 ./plugin.sh run gosec ~/git/my-repo /bin/bash
 ```
 
+> [!TIP]
+> If the container does not have a shell, use `/opt/artemis-plugin-toolbox/bin/sh` which is a barebones BusyBox shell provided by the runner.
+> Once launched, don't forget to add `/opt/artemis-plugin-toolbox/bin` to the `PATH`!
+
 ```text
 ==> Generating configuration for plugin: gosec
 [+] Creating 2/2
@@ -119,8 +123,17 @@ Either set the `"writable": true` in the plugin's `settings.json` or run the plu
 
 Localstack integration is not yet supported, so any plugin that relies on `artemisdb` either needs to individually support a "databaseless" mode or needs to be configured to connect to an external database.
 
+* Using the `/opt/artemis-plugin-toolbox/bin/sh` shell, most command-line tools are missing.
+
+Add the toolbox directory to your `PATH`:
+
+```bash
+PATH="/opt/artemis-plugin-toolbox/bin:$PATH"
+```
+
+This directory isn't added to the path by default to avoid interfering with the plugin being run.
+
 ## Current limitations
 
 * No built-in localstack integration yet. This mainly affects plugins which use `artemisdb`.
 * stdout and stderr are combined into a single stream -- this is a limitation of `docker compose run`. The workaround is to use the debug shell to examine stdout vs stderr.
-* The debug shell option does not work with container images which lack a shell.
