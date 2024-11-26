@@ -2,10 +2,11 @@
 Checkov Plugin
 """
 
+import boto3
 import docker
 import json
 import os
-import subprocess
+import shutil
 from typing import Optional, TypedDict, Union
 from os.path import abspath
 from pathlib import Path
@@ -87,18 +88,16 @@ def run_checkov(
     # Don't return nonzero exit code if findings are detected.
     checkov_command = ["--soft-fail"]
 
-    config_dir, config_error = get_config_dir(config)
-
-    # Return unsuccessful if error is encountered getting config directory
-    if config_error:
+    config_dir = Path(temp_vol_mount) / "config"
+    try:
+        (checks_dir, sev_dir) = init_config_dir(config, config_dir)
+        checkov_command += ["--run-all-external-checks", "--external-checks-dir", f"/tmp/base/config/{checks_dir}"]
+        sev_path = config_dir / sev_dir
+    except Exception as e:
         output["success"] = False
-        output["errors"] = [config_error]
+        output["errors"] = [f"Failed to load configuration: {str(e)}"]
+        LOG.error(output["errors"], exc_info=e)
         return output
-
-    external_checks_dir = config.get("external_checks_dir")
-    if external_checks_dir:
-        external_checks_dir = (Path(config_dir) / Path(external_checks_dir)).absolute()
-        checkov_command += ["--run-all-external-checks", "--external-checks-dir", external_checks_dir]
 
     # Do not scan third-party Terraform modules, as the findings are likely
     # not actionable by the user.
@@ -152,7 +151,7 @@ def run_checkov(
 
     # Checks were performed. Need to parse to figure out if any failed.
     LOG.info("Checks will be performed.")
-    output["details"], parse_error = parse_checkov(checkov_output, config_dir, config)
+    output["details"], parse_error = parse_checkov(checkov_output, sev_path)
 
     # If error occurred parsing Checkov output, return error
     if parse_error:
@@ -163,7 +162,7 @@ def run_checkov(
     return output
 
 
-def parse_checkov(checkov_output: list[dict], config_dir: Path, config: dict) -> tuple[list[dict], Optional[str]]:
+def parse_checkov(checkov_output: list[dict], sev_path: Path) -> tuple[list[dict], Optional[str]]:
     """
     Parse the output of Checkov
     """
@@ -171,7 +170,7 @@ def parse_checkov(checkov_output: list[dict], config_dir: Path, config: dict) ->
     error = None
 
     # Load severities map
-    ckv_severities, severities_error = get_ckv_severities(config_dir, config)
+    ckv_severities, severities_error = get_ckv_severities(sev_path)
 
     if severities_error:
         return ([], severities_error)
@@ -205,53 +204,75 @@ def parse_checkov(checkov_output: list[dict], config_dir: Path, config: dict) ->
     return (findings, error)
 
 
-def get_config_dir(config: dict) -> tuple[Path, Optional[str]]:
+def init_config_dir(config: dict, dest: Path) -> tuple[Path, Path]:
     """
-    Determine if config directory should be from S3 or default (local)
+    Populates the config directory.
+
+    If a custom config is specified, then it will be downloaded from S3.
+
+    Returns:
+    - The relative path to the external checks dir.
+    - The relative path to the severities file.
     """
-    # TODO: Write to the temporary volume instead of the plugin source directory.
+    # Note: This aims to preserve the original intent of the
+    #       s3_config_path (and related) plugin config options.
 
-    # If an s3_config_path exists, download config from S3
-    s3_config_path = config.get("s3_config_path")
-    config_dir = PLUGIN_DIR
-    error = None
+    # The config directory will look like:
+    # - ckv_severities.json  <-- Will always be present.
+    # - checks/              <-- Will always be present.
+    #   - files...           <-- Optional, downloaded from S3 bucket.
 
-    if s3_config_path:
-        config_dir = PLUGIN_DIR / "custom_config"
+    dest.mkdir(exist_ok=True)
 
-        # TODO: Reimplement in boto3 so it can be mocked in unit tests.
-        output = subprocess.run(
-            ["aws", "s3", "cp", f"s3://{s3_config_path}", config_dir, "--recursive"], capture_output=True
-        )
+    # Install the bundled severities file as the default.
+    rel_sev_dir = Path("ckv_severities.json")
+    sev_path = dest / rel_sev_dir
+    shutil.copyfile(PLUGIN_DIR / "ckv_severities.json", sev_path)
 
-        stdout = output.stdout.decode("utf-8")
-        stderr = output.stderr.decode("utf-8")
+    rel_checks_dir = Path("checks")
+    checks_dir = dest / rel_checks_dir
+    checks_dir.mkdir(exist_ok=True)
+    if s3_config_path := str(config.get("s3_config_path", "")):
+        # Download the config from S3.
+        # Config path is expected to be "bucket" or "bucket/prefix"
+        (bucket_name, *base) = s3_config_path.split("/", 2)
+        prefix = base[0] if base else ""
 
-        # If we cannot get config from S3, log and return error
-        if output.returncode != 0:
-            error = "Could not download config from S3, aborting Checkov scan."
-            LOG.error(f"error: {error}")
-            LOG.error(f"stdout: {stdout}")
-            LOG.error(f"stderr: {stderr}")
+        checks_prefix = prefix
+        if external_checks_dir := config.get("external_checks_dir"):
+            checks_prefix = f"{prefix}/{external_checks_dir}"
 
-    return (config_dir, error)
+        # This is not recursive, since Checkov will not look for files in
+        # subdirectories.
+        LOG.info(f"Downloading config from S3: s3://{bucket_name}/{checks_prefix}")
+        s3_client = boto3.resource("s3")
+        bucket = s3_client.Bucket(bucket_name)
+        for obj in bucket.objects.filter(Prefix=checks_prefix):
+            rel_key = obj.key[len(checks_prefix) + 1 :]
+            if "/" not in rel_key:
+                dest_file = str(checks_dir / rel_key)
+                LOG.info(f"Downloading: {obj.key} -> {dest_file}")
+                bucket.download_file(obj.key, dest_file)
+
+        # Install the custom severities file from S3, if specified.
+        # This path is relative to the base s3_config_path.
+        if s3_sev_file := str(config.get("severities_file", "")):
+            key = f"{prefix}/{s3_sev_file}"
+            LOG.info(f"Downloading severities file: {key} -> {sev_path}")
+            bucket.download_file(key, str(sev_path))
+
+    return (rel_checks_dir, rel_sev_dir)
 
 
-def get_ckv_severities(config_dir: Path, config: dict) -> tuple[dict, Optional[str]]:
+def get_ckv_severities(sev_path: Path) -> tuple[dict, Optional[str]]:
     """
     Read Checkov severities from JSON file, and return them as dict
     """
     error = None
     ckv_severities = {}
-    severities_file = config.get("severities_file")
-
-    if severities_file:
-        severities_file_path = config_dir / Path(severities_file)
-    else:
-        severities_file_path = PLUGIN_DIR / "ckv_severities.json"
 
     try:
-        with open(severities_file_path) as f:
+        with open(sev_path) as f:
             ckv_severities = json.load(f)
     except json.decoder.JSONDecodeError:
         error = "Severities file is not valid JSON. Aborting Checkov scan."

@@ -1,3 +1,5 @@
+import boto3
+from moto import mock_aws
 import os
 import tempfile
 import unittest
@@ -14,6 +16,7 @@ CHECKOV_TEST_DIR3 = "data/checkov/nocheckov"
 CHECKOV_EMPTY_RESPONSE = {"success": True, "truncated": False, "details": [], "errors": []}
 
 
+@mock_aws
 class TestCheckov(unittest.TestCase):
     def _assertContainsFinding(
         self,
@@ -59,7 +62,7 @@ class TestCheckov(unittest.TestCase):
             )
         )
 
-    def _run_checkov(self, path: str) -> Results:
+    def _run_checkov(self, path: str, config: dict = {}) -> Results:
         """
         Call run_checkov on a working path.
         The working path must be an absolute path.
@@ -68,7 +71,7 @@ class TestCheckov(unittest.TestCase):
         # Since this directory is shared with the Checkov container, this
         # must be mounted with the same path as the host.
         with tempfile.TemporaryDirectory(prefix="artemis-checkov-test_") as tempdir:
-            return run_checkov(path, tempdir, tempdir, path, path)
+            return run_checkov(path, tempdir, tempdir, path, path, config)
 
     def test_with_findings(self):
         response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR1}")
@@ -119,3 +122,41 @@ class TestCheckov(unittest.TestCase):
     def test_no_checkov(self):
         response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR3}")
         self.assertEqual(response, CHECKOV_EMPTY_RESPONSE)
+
+    def test_checkov_custom_config(self):
+        """Tests running Checkov with a custom config"""
+        cfg_dir = f"{SCRIPT_DIR}/data/checkov/custom/cfg"
+
+        s3 = boto3.resource("s3")
+        bucket = s3.create_bucket(Bucket="cfg")
+        bucket.upload_file(f"{cfg_dir}/custom_sev.json", "checkov/custom_sev.json")
+        bucket.upload_file(f"{cfg_dir}/rule.yaml", "checkov/subdir/rule.yaml")
+
+        response = self._run_checkov(
+            f"{SCRIPT_DIR}/data/checkov/custom/src",
+            {
+                "s3_config_path": "cfg/checkov",
+                "severities_file": "custom_sev.json",
+                "external_checks_dir": "subdir",
+            },
+        )
+
+        self.assertEqual(response["errors"], [])
+
+        details = response["details"]
+        self._assertContainsFinding(
+            details,
+            type="terraform",
+            filename="test.tf",
+            line=1,
+            message="ARTEMIS_TEST_RULE_000",
+            severity="critical",
+        )
+        self._assertContainsFinding(
+            details,
+            type="terraform",
+            filename="test.tf",
+            line=1,
+            message="CKV_AWS_166",
+            severity="medium",  # Custom severity.
+        )
