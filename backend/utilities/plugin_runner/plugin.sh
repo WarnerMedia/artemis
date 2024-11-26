@@ -72,37 +72,14 @@ function init_compose {
   local plugindir="$TEMPDIR/plugin"
   mkdir "$plugindir" || return 1
 
-  local plugincmd
-  case "$runner" in
-    core)
-      plugincmd="python /srv/engine/plugins/$plugin/main.py"
-      ;;
-    boxed)
-      plugincmd="/srv/engine/plugins/plugin.sh --quiet -- $plugin"
-      ;;
-    *)
-      echo "Unsupported plugin runner: $runner" >&2
-      return 1
-  esac
-
-  # Note: We use /bin/sh for the entrypoint scripts since we don't know
-  #       if the containers have Bash available.
+  # Note: We use sh from the toolkit since we don't know
+  #       if the containers have a shell available.
 
   local plugin_entry="$plugindir/entrypoint.sh"
   echo "--> Generating: $plugin_entry"
   cat <<EOD > "$plugin_entry" || return 1
 #!/opt/artemis-plugin-toolbox/bin/sh
-$plugincmd \
-  "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
-  "\$(cat /opt/artemis-run-plugin/images.json)" \
-  "\$(cat /opt/artemis-run-plugin/config.json)"
-exitcode=\$?
-printf "==> Plugin exited with status: %d " "\$exitcode"
-if [ "\$exitcode" -eq 0 ]; then
-  echo '(success)'
-else
-  echo '(failed)'
-fi
+exec /opt/artemis-plugin-toolbox/bin/run-plugin $plugin $runner
 EOD
   chmod 755 "$plugin_entry" || return 1
 
