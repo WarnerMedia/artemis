@@ -4,6 +4,7 @@ import os
 import tempfile
 import unittest
 from unittest.util import safe_repr
+import uuid
 
 from engine.plugins.checkov.main import Results, run_checkov
 
@@ -67,11 +68,12 @@ class TestCheckov(unittest.TestCase):
         Call run_checkov on a working path.
         The working path must be an absolute path.
         """
+        container_name = f"plugin-checkov-{uuid.uuid4()}"
         # A temporary directory is used in place of the named volume.
         # Since this directory is shared with the Checkov container, this
         # must be mounted with the same path as the host.
         with tempfile.TemporaryDirectory(prefix="artemis-checkov-test_") as tempdir:
-            return run_checkov(path, tempdir, tempdir, path, path, config)
+            return run_checkov(path, container_name, tempdir, tempdir, path, path, config)
 
     def test_with_findings(self):
         response = self._run_checkov(f"{SCRIPT_DIR}/{CHECKOV_TEST_DIR1}")
