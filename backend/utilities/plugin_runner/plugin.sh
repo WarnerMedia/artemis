@@ -72,7 +72,7 @@ function init_compose {
   local plugindir="$TEMPDIR/plugin"
   mkdir "$plugindir" || return 1
 
-  # Note: We use sh from the toolkit since we don't know
+  # Note: We use sh from the toolbox since we don't know
   #       if the containers have a shell available.
 
   local plugin_entry="$plugindir/entrypoint.sh"
@@ -217,7 +217,7 @@ function do_run {
   init_compose "$plugin" "$image" "$target" "$runner" "$writable" \
     "${debug_shell[@]}" || return 1
 
-  echo "--> Building toolkit"
+  echo "--> Building toolbox"
   docker compose -f "$COMPOSEFILE" build --quiet || return 1
 
   echo "--> Launching plugin"
