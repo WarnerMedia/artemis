@@ -4,9 +4,12 @@ Checkov Plugin
 
 import boto3
 import docker
+import docker.errors
 import json
 import os
 import shutil
+import signal
+import sys
 from typing import Optional, TypedDict, Union
 from os.path import abspath
 from pathlib import Path
@@ -54,8 +57,18 @@ def main():
             "details": [],
         }
     else:
+        # Generate a unique container name so we can reference it in the signal
+        # handler.  We assume the temporary volume name is unique, so we can
+        # use that as a base.
+        # This allows us to install the signal handler early so there's no
+        # potential gap between when the container is started and the signal
+        # handler is installed.
+        container_name = f"plugin-{temp_vol_name}"
+        install_shutdown_handler(container_name)
+
         output = run_checkov(
             path,
+            container_name,
             temp_vol_name,
             temp_vol_mount,
             working_src,
@@ -66,8 +79,28 @@ def main():
     print(json.dumps(output))
 
 
+def install_shutdown_handler(container_name: str):
+    """
+    Installs the signal handlers to gracefully exit.
+    """
+
+    def handle_shutdown(*_):
+        try:
+            LOG.info(f"Stopping container: {container_name}")
+            docker_client.containers.get(container_name).stop()
+        except docker.errors.NotFound:
+            pass
+        except Exception as ex:
+            LOG.warning("Container cleanup failed", exc_info=ex)
+        sys.exit(1)
+
+    for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT]:
+        signal.signal(sig, handle_shutdown)
+
+
 def run_checkov(
     path: str,
+    container_name: str,
     temp_vol_name: str,
     temp_vol_mount: str,
     working_src: str,
@@ -116,8 +149,9 @@ def run_checkov(
 
     stderr = docker_client.containers.run(
         CHECKOV_IMG_REF,
+        name=container_name,
         command=checkov_command,
-        remove=True,
+        auto_remove=True,
         stdout=True,
         stderr=True,
         volumes={
