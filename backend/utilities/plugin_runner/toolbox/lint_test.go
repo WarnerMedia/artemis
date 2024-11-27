@@ -47,6 +47,13 @@ func TestInvalidTypes(t *testing.T) {
 	}
 }
 
+func TestTruncated(t *testing.T) {
+	actual := lint([]byte(`{"truncated": true}`))
+	if !containsErr(actual, "Field truncated", "Must be false") {
+		t.Fatalf("expected value error, got %v", actual)
+	}
+}
+
 func TestRequiredFields(t *testing.T) {
 	actual := lint([]byte(`{}`))
 	if !containsErr(actual, "Field success", "is required") {

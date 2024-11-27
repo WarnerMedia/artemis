@@ -35,13 +35,19 @@ func lint(buf []byte) LintErrors {
 
 	var result struct {
 		Success   *bool    `validations:"type=bool;required=true"`
-		Truncated *bool    `validations:"type=bool;required=true;choices=false"`
+		Truncated *bool    `validations:"type=bool;required=true"`
 		Details   any      `validations:"required=true"`
 		Errors    []string `validations:"type=[]string;required=true"`
 	}
 
 	errs := jsonValidator.Validate(buf, &result)
 	retv = append(retv, errs...)
+
+	if result.Truncated != nil && *result.Truncated {
+		retv = append(retv, jsonValidator.ValidationError{
+			Field: "truncated", Message: "Must be false",
+		})
+	}
 
 	//TODO: Validate details based on plugin type.
 
