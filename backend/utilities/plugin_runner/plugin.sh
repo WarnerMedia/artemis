@@ -217,7 +217,11 @@ function do_run {
   init_compose "$plugin" "$image" "$target" "$runner" "$writable" \
     "${debug_shell[@]}" || return 1
 
-  docker compose -f "$COMPOSEFILE" run --build --rm --remove-orphans plugin
+  echo "--> Building toolkit"
+  docker compose -f "$COMPOSEFILE" build --quiet || return 1
+
+  echo "--> Launching plugin"
+  docker compose -f "$COMPOSEFILE" run --rm --remove-orphans plugin
 }
 
 # Stop containers and clean up generated files (best-effort, ignore errors).
