@@ -19,6 +19,7 @@ WORKDIR /opt/artemis-plugin-toolbox/bin
 COPY --from=busybox:1.37.0-musl /bin/busybox .
 RUN ["./busybox", "--install", "."]
 
+# Install statically-compiled plugin wrapper.
 COPY --from=builder /src/app/run-plugin .
 
 # The container provides the volume; we don't need to run anything.
