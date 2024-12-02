@@ -12,7 +12,7 @@ awscli = "~=1.36"
 aws-lambda-powertools = "~=3.3"
 boto3 = "~=1.35"
 boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.35"}
-cryptography = "~=44.0"
+cryptography = "~=43.0"
 cwe2 = "~=3.0"
 django = "~=3.2"
 docker = "~=7.1"
