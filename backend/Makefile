@@ -321,12 +321,6 @@ style-test:
 	@echo "${OK}"
 .PHONY: style-test
 
-lint_api_spec:
-	@echo "${INFO}Linting API spec"
-	docker run --rm -v $(CURDIR)/lambdas/api/spec.yaml:/project/spec.yaml wework/speccy lint spec.yaml
-	@echo "${OK}"
-.PHONY: lint_api_spec
-
 artemis_scan:
 	@echo "${INFO}Running Artemis scan"
 	$(CURDIR)/ci-tools/shell/artemis-scan.sh ${ARTEMIS_SCAN_ARGS} github ${REPO_NAME} ${BRANCH_NAME} ${SEVERITY_LEVELS}
