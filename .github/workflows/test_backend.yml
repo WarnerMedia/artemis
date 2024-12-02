@@ -28,4 +28,4 @@ jobs:
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests
-        run: make -C backend unit-test ENV=example PYTEST_EXTRA_ARGS='-n auto'
+        run: make -C backend unit-test ENV=example PYTEST_EXTRA_ARGS='-n auto --dist worksteal'
