@@ -24,5 +24,5 @@ trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2
 
-[*.{js,jsx,ts,tsx}]
+[*.{go,js,jsx,ts,tsx}]
 indent_style = tab

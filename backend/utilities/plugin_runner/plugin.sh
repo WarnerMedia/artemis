@@ -72,44 +72,21 @@ function init_compose {
   local plugindir="$TEMPDIR/plugin"
   mkdir "$plugindir" || return 1
 
-  local plugincmd
-  case "$runner" in
-    core)
-      plugincmd="python /srv/engine/plugins/$plugin/main.py"
-      ;;
-    boxed)
-      plugincmd="/srv/engine/plugins/plugin.sh --quiet -- $plugin"
-      ;;
-    *)
-      echo "Unsupported plugin runner: $runner" >&2
-      return 1
-  esac
-
-  # Note: We use /bin/sh for the entrypoint scripts since we don't know
-  #       if the containers have Bash available.
+  # Note: We use sh from the toolbox since we don't know
+  #       if the containers have a shell available.
 
   local plugin_entry="$plugindir/entrypoint.sh"
   echo "--> Generating: $plugin_entry"
   cat <<EOD > "$plugin_entry" || return 1
-#!/bin/sh
-$plugincmd \
-  "\$(cat /opt/artemis-run-plugin/engine-vars.json)" \
-  "\$(cat /opt/artemis-run-plugin/images.json)" \
-  "\$(cat /opt/artemis-run-plugin/config.json)"
-exitcode=\$?
-printf "==> Plugin exited with status: %d " "\$exitcode"
-if [ "\$exitcode" -eq 0 ]; then
-  echo '(success)'
-else
-  echo '(failed)'
-fi
+#!/opt/artemis-plugin-toolbox/bin/sh
+exec /opt/artemis-plugin-toolbox/bin/run-plugin $plugin $runner
 EOD
   chmod 755 "$plugin_entry" || return 1
 
   local plugin_debug_entry="$plugindir/entrypoint-debug.sh"
   echo "--> Generating: $plugin_debug_entry"
   cat <<EOD > "$plugin_debug_entry" || return 1
-#!/bin/sh
+#!/opt/artemis-plugin-toolbox/bin/sh
 /opt/artemis-run-plugin/entrypoint.sh
 echo "==> Starting debug shell: ${debug_shell[@]}"
 echo '    To run the plugin again with the same configuration:'
@@ -152,6 +129,10 @@ EOD
   cat <<EOD > "$COMPOSEFILE" || return 1
 name: artemis-run-plugin
 services:
+  toolbox:
+    image: "artemis/plugin-toolbox:latest"
+    build:
+      context: ../toolbox
   engine:
     image: "artemis/engine:latest"
     container_name: engine
@@ -173,6 +154,7 @@ services:
     command:
       - $entrypoint
     volumes_from:
+      - toolbox:ro
       - engine:ro
     volumes:
       - type: bind
@@ -235,6 +217,10 @@ function do_run {
   init_compose "$plugin" "$image" "$target" "$runner" "$writable" \
     "${debug_shell[@]}" || return 1
 
+  echo "--> Building toolbox"
+  docker compose -f "$COMPOSEFILE" build --quiet || return 1
+
+  echo "--> Launching plugin"
   docker compose -f "$COMPOSEFILE" run --rm --remove-orphans plugin
 }
 
