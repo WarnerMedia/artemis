@@ -28,4 +28,6 @@ jobs:
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests
-        run: make -C backend unit-test ENV=example
+        # Parallelize tests using "worksteal" mode to better distribute our
+        # expensive tests.
+        run: make -C backend unit-test ENV=example PYTEST_EXTRA_ARGS='-n auto --dist worksteal'
