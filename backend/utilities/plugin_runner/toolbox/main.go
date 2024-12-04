@@ -157,14 +157,16 @@ func installTerminateHandler(ctx context.Context) context.Context {
 	return retv
 }
 
-func reportStatus(exitCode int) {
+func reportStatus(exitCode int, outputLen int) {
 	fmt.Print(color.HiCyanString(
 		fmt.Sprintf("==> Plugin exited with status: %d ", exitCode)))
 	if exitCode == 0 {
-		color.HiGreen("(success)")
+		fmt.Print(color.HiGreenString("(success)"))
 	} else {
-		color.HiRed("(failed)")
+		fmt.Print(color.HiRedString("(failed)"))
 	}
+
+	fmt.Printf(" (%d output bytes)\n", outputLen)
 }
 
 func reportLintErrors(errs []error) {
@@ -189,6 +191,6 @@ func main() {
 		log.Fatalf("Error running plugin: %v", err)
 	}
 
-	reportStatus(output.ExitCode)
+	reportStatus(output.ExitCode, len(output.Output))
 	reportLintErrors(output.LintErrors)
 }
