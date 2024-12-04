@@ -3,7 +3,7 @@ import unittest
 from engine.plugins.brakeman import main as brakeman
 
 
-class TestBrakeman(unittest.TestCase):
+class TestPluginBrakeman(unittest.TestCase):
     def test_build_output(self):
         null = None
         data = {

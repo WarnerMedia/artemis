@@ -196,7 +196,7 @@ TEST_AMEND_G307_OUTPUT = {
 }
 
 
-class TestGoSec(unittest.TestCase):
+class TestPluginGoSec(unittest.TestCase):
     def test_parse_scan(self):
         """
         tests the entire output from run_gosec to make sure

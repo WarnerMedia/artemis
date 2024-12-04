@@ -37,7 +37,7 @@ TEST_GIT_BLAME_BYTES = (
 SUBPROCESS_RESPONSE = namedtuple("subprocess_response", ["returncode", "stdout", "stderr"])
 
 
-class TestGitSecrets(unittest.TestCase):
+class TestPluginGitSecretsMain(unittest.TestCase):
     def test_decode_response_invalid_char_1(self):
         result = main.decode_response(TEST_RESPONSE_BYTES_1)
 

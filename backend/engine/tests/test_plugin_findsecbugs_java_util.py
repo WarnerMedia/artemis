@@ -55,7 +55,7 @@ EXPECTED_JSON_OUTPUT_2 = [
 ]
 
 
-class TestJavaUtil(unittest.TestCase):
+class TestPluginFindSecBugsJavaUtil(unittest.TestCase):
     def test_parse_cli_output(self):
         result = parsing_util.parse_cli_output(TEST_JSON_OUTPUT)
         self.assertEqual(EXPECTED_JSON_OUTPUT, result)

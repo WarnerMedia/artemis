@@ -32,7 +32,7 @@ TEMPLATE_EXPECTED_DETAILS = {
 }
 
 
-class TestCfnPythonLint(unittest.TestCase):
+class TestPluginCfnPythonLint(unittest.TestCase):
     def test_cfn_no_templates(self):
         self.maxDiff = None
         expected_result = {"details": [], "success": True}

@@ -26,7 +26,7 @@ SWIFT_RESPONSE1 = {
 SWIFT_RESPONSE2 = {"success": True, "truncated": False, "details": [], "errors": []}
 
 
-class TestSwiftLint(unittest.TestCase):
+class TestPluginSwiftLint(unittest.TestCase):
     def test_with_findings(self):
         response = run_swiftlint(f"{SCRIPT_DIR}/{SWIFT_TEST_DIR1}")
         self.assertEqual(response, SWIFT_RESPONSE1)

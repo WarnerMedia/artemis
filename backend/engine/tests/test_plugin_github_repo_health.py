@@ -120,7 +120,7 @@ EVENT_INFO_ONE_FAIL = copy.deepcopy(EVENT_INFO_ALL_SUCCEED)
 EVENT_INFO_ONE_FAIL["github_branch_commit_signing"]["pass"] = False
 
 
-class TestGithubRepoHealth(unittest.TestCase):
+class TestPluginGithubRepoHealth(unittest.TestCase):
     @patch.object(main.Github, "get_client_from_token")
     @patch.object(main.Config, "validate")
     @patch("engine.plugins.github_repo_health.main.Checker")
