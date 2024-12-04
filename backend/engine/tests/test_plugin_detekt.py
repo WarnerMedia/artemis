@@ -32,7 +32,7 @@ TEST_RESPONSE3 = {
 }
 
 
-class TestDetekt(unittest.TestCase):
+class TestPluginDetekt(unittest.TestCase):
     def test_with_findings(self):
         response = run_detekt(f"{SCRIPT_DIR}/{KOTLIN_TEST_DIR1}")
         self.assertEqual(TEST_RESPONSE1, response)

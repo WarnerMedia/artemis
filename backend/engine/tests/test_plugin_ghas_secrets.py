@@ -3,7 +3,7 @@ import unittest
 from engine.plugins.ghas_secrets.formatter import _normalize_secret_type
 
 
-class TestGHASSecrets(unittest.TestCase):
+class TestPluginGHASSecrets(unittest.TestCase):
     def test_normalize_secret_type(self):
         test_cases = [
             ("aws_access_key_id", "aws"),

@@ -12,7 +12,7 @@ TEST_SHELL_NO_ISSUES = os.path.join(TEST_BASEDIR, "no_issue_dir")
 TEST_SHELL_NO_FILES = os.path.join(TEST_BASEDIR, "no_shell_files")
 
 
-class TestShellCheck(unittest.TestCase):
+class TestPluginShellCheck(unittest.TestCase):
     def test_get_files(self):
         """
         Test only shell scripts are included.

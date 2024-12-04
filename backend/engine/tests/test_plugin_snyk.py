@@ -13,7 +13,7 @@ EXPECTED_DESCRIPTION_1 = (
 )
 
 
-class TestSnyk(unittest.TestCase):
+class TestPluginSnyk(unittest.TestCase):
     def test_get_description(self):
         self.maxDiff = None
         result = _get_description(TEST_DESCRIPTION_1)

@@ -30,7 +30,7 @@ VERACODE_SBOM_RESULT = Result(
 
 @patch("engine.processor.sbom.write_sbom_json", autospec=True)
 @patch("engine.processor.sbom.process_dependency")
-class TestVeracodeSbomParser(unittest.TestCase):
+class TestPluginVeracodeSbomParser(unittest.TestCase):
     def test_sbom_parse(self, _, mock_write_sbom_json):
         with open(TEST_VERACODE_OUTPUT_PATH) as f:
             output = json.load(f, parse_float=Decimal)

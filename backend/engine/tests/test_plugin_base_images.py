@@ -16,7 +16,7 @@ from engine.plugins.base_images.main import (
 from engine.plugins.lib import utils
 
 
-class TestBaseImages(unittest.TestCase):
+class TestPluginBaseImages(unittest.TestCase):
     def test_split_image_and_tag(self):
         test_cases = {
             "python": ("python", "latest", False),

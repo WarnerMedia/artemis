@@ -93,7 +93,7 @@ def create_expected_dict(header_list, value_lists):
     return result
 
 
-class TestNodeDependencyPlugin(unittest.TestCase):
+class TestPluginNodeDependencies(unittest.TestCase):
     def setUp(self) -> None:
         from artemislib.db_cache import DBLookupCache
 

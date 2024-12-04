@@ -18,7 +18,7 @@ CHECKOV_EMPTY_RESPONSE = {"success": True, "truncated": False, "details": [], "e
 
 
 @mock_aws
-class TestCheckov(unittest.TestCase):
+class TestPluginCheckov(unittest.TestCase):
     def _assertContainsFinding(
         self,
         details: list[dict],

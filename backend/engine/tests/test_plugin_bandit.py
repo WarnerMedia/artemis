@@ -7,7 +7,7 @@ import unittest
 from engine.plugins.bandit import main as bandit
 
 
-class TestBandit(unittest.TestCase):
+class TestPluginBandit(unittest.TestCase):
     def test_build_dict(self):
         """
         tests the entire output from run_bandit to make sure

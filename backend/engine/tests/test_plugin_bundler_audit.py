@@ -38,7 +38,7 @@ STDERR_PREAMBLE = textwrap.dedent("""\
     """)
 
 
-class TestBundlerAudit(unittest.TestCase):
+class TestPluginBundlerAudit(unittest.TestCase):
     def test_parse_results_empty(self):
         """
         Tests parse_results handles no findings and no errors.

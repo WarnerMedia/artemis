@@ -34,7 +34,7 @@ TEST_EXPECTED_FINDINGS = [
 ERROR_OUTPUT = "Eslint encountered an internal error"
 
 
-class TestEslint(unittest.TestCase):
+class TestPluginEslint(unittest.TestCase):
     def test_parse_results_empty_list(self):
         eslint_results = []
         output = parse_details(eslint_results, "/work/base/")

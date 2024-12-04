@@ -89,7 +89,7 @@ TEST_BUILD_SCAN_PARSE_RESULT_DICT = {
 }
 
 
-class TestTrivy(unittest.TestCase):
+class TestPluginTrivySBOM(unittest.TestCase):
     def setUp(self) -> None:
         with open(TEST_OUTPUT) as output_file:
             self.demo_results_dict = json.load(output_file)
@@ -115,7 +115,7 @@ class TestTrivy(unittest.TestCase):
 
 
 @pytest.mark.integtest
-class TestTrivyIntegration(unittest.TestCase):
+class TestPluginTrivySBOMIntegration(unittest.TestCase):
     def setUp(self) -> None:
         image_builder = builder.ImageBuilder(".", "trivy-test", None, "00000")
         results = [image_builder.build_local_image(TEST_IMAGE, secrets.token_hex(16))]
