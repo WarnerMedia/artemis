@@ -18,7 +18,7 @@ TEST_FULL_RESPONSE = TEST_FILE_PATH_1 + TEST_LINE_NUM_AND_SSH
 TEST_FULL_RESPONSE_EDGE = TEST_FILE_PATH_2 + TEST_LINE_NUM_AND_SSH
 
 
-class TestGitSecrets(unittest.TestCase):
+class TestPluginGitSecretsProcessor(unittest.TestCase):
     def test_process_response_success(self):
         processor = SecretProcessor(base_path=TEST_DIR)
 
