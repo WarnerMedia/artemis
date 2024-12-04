@@ -30,11 +30,17 @@ type PluginOutput struct {
 }
 
 func NewPluginOutput(output []byte, exitCode int) *PluginOutput {
+	// Skip lint checks if the plugin process failed.
+	var lintErrors []error
+	if exitCode == 0 {
+		lintErrors = lint(output)
+	}
+
 	return &PluginOutput{
 		Output:   output,
 		ExitCode: exitCode,
 
-		LintErrors: lint(output),
+		LintErrors: lintErrors,
 	}
 }
 
