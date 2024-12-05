@@ -14,6 +14,3 @@ venv/
 
 Makefile
 README.md
-
-# Allow .temp directory
-!/.temp
