@@ -53,15 +53,14 @@ class TestGet(unittest.TestCase):
         with (
             patch("artemisdb.artemisdb.models.UserService.objects.filter") as mock_filter_userservice,
             patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.User.scan_orgs", USER_RECORD["scan_orgs"]),
             patch("artemisdb.artemisdb.models.UserService.objects.get") as mock_get_userservice,
             patch("artemislib.services.get_services_dict") as mock_get_dict,
-            patch("artemisdb.artemisdb.models.User.groups", new_callable=PropertyMock) as mock_groups,
         ):
             mock_filter_userservice.return_value = []
             mock_get_dict.return_value = SERVICES
             mock_get_user.return_value = User(email=EMAIL1, scope=AUTHZ)
             mock_get_userservice.return_value = UserService()
-            mock_groups.return_value.filter.return_value = [Group(scope=AUTHZ)]
 
             resp = get(event, email=EMAIL1, authz=AUTHZ)
 
@@ -75,15 +74,14 @@ class TestGet(unittest.TestCase):
         with (
             patch("artemisdb.artemisdb.models.UserService.objects.filter") as mock_filter_userservice,
             patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.User.scan_orgs", USER_RECORD["scan_orgs"]),
             patch("artemisdb.artemisdb.models.UserService.objects.get") as mock_get_userservice,
             patch("artemislib.services.get_services_dict") as mock_get_dict,
-            patch("artemisdb.artemisdb.models.User.groups", new_callable=PropertyMock) as mock_groups,
         ):
             mock_filter_userservice.return_value = []
             mock_get_dict.return_value = SERVICES
             mock_get_user.return_value = User(email=EMAIL1, scope=AUTHZ)
             mock_get_userservice.return_value = UserService()
-            mock_groups.return_value.filter.return_value = [Group(scope=AUTHZ)]
 
             resp = get(event, email=EMAIL1, authz=AUTHZ)
 
@@ -97,15 +95,14 @@ class TestGet(unittest.TestCase):
         with (
             patch("artemisdb.artemisdb.models.UserService.objects.filter") as mock_filter_userservice,
             patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.User.scan_orgs", LIMITED_USER_RECORD["scan_orgs"]),
             patch("artemisdb.artemisdb.models.UserService.objects.get") as mock_get_userservice,
             patch("artemislib.services.get_services_dict") as mock_get_dict,
-            patch("artemisdb.artemisdb.models.User.groups", new_callable=PropertyMock) as mock_groups,
         ):
             mock_filter_userservice.return_value = []
             mock_get_dict.return_value = SERVICES
             mock_get_user.return_value = User(email=EMAIL1, scope=LIMITED_AUTHZ)
             mock_get_userservice.return_value = UserService()
-            mock_groups.return_value.filter.return_value = [Group(scope=LIMITED_AUTHZ)]
 
             resp = get(event, email=EMAIL1, authz=LIMITED_AUTHZ)
 
