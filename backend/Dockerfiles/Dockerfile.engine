@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG ENGINE_BASE=3.9-slim-bullseye
 
 ###############################################################################
@@ -7,7 +8,8 @@ FROM python:3.9-bullseye AS builder
 
 # Install the Docker repository
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update \
     && apt-get install -y --no-install-recommends \
         lsb-release \
         software-properties-common \
@@ -17,19 +19,20 @@ RUN apt-get update \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add -
 
-RUN pip install --no-cache-dir \
+# hadolint ignore=DL3042
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
     'packaged==0.6.0' \
-    'pipenv~=2024.0' \
-    'setuptools<74' \
-    'virtualenv==20.26.3' \
-    'wheel~=0.44.0'
+    'pipenv~=2024.0'
 
 # Build self-contained core plugin bundle.
 WORKDIR /src
 COPY Pipfile.lock .
 COPY engine/plugins/ engine/plugins
 # hadolint ignore=SC2016
-RUN pipenv requirements > requirements.txt && \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=cache,target=/root/.cache/pipenv \
+    pipenv requirements > requirements.txt && \
     packaged --python-version 3.9 plugin.sh \
         'pip install -r requirements.txt' \
         'python -m engine.plugins "$@"' \
@@ -60,7 +63,10 @@ COPY --from=builder /etc/apt /etc/apt
 # - Install Pipenv environment
 # - Install Artemis libraries
 # hadolint ignore=DL3008,DL3013,DL3042
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=cache,target=/root/.cache/pipenv \
+    apt-get update \
     && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
     && apt-get upgrade -y \
     && apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list \
@@ -75,7 +81,6 @@ RUN apt-get update \
     && pipenv install --system --deploy \
     && pip install /src/artemislib \
     && pip install /src/artemisdb \
-    && rm -rf /root/.cache/pip /root/.cache/pipenv \
     && rm -r /src
 
 WORKDIR /srv/engine
