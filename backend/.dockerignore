@@ -8,6 +8,8 @@ build/
 build_scripts/
 dist/
 end_to_end_tests/
+htmlcov/
+images/
 k8s/
 localstack/
 venv/
