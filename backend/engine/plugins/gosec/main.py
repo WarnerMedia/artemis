@@ -3,14 +3,19 @@ GoSec Plugin
 """
 
 import json
+from pathlib import Path
 import subprocess
-
-from cwe2.database import Database, InvalidCWEError
 
 from engine.plugins.lib import utils
 
 LOG = utils.setup_logging("gosec")
-db = Database()
+
+PLUGIN_DIR = Path(__file__).parent.absolute()
+
+# Load mapping of CWE IDs to names.
+cwe_mapping: dict[str, str] = {}
+with (PLUGIN_DIR / "cwe.json").open() as f:
+    cwe_mapping = json.load(f)
 
 
 def run_gosec(path: str) -> list:
@@ -86,10 +91,7 @@ def get_cwe_reason(id: str) -> str:
     gets the name of the vulnerability from the cwe ID
     :return: str
     """
-    try:
-        return db.get(id).name if db.get(id) and db.get(id).name else "No Vulnerability Name Available"
-    except InvalidCWEError:
-        return "No Vulnerability Name Available"
+    return cwe_mapping.get(id, "No Vulnerability Name Available")
 
 
 def convert_line(line: str) -> int:
