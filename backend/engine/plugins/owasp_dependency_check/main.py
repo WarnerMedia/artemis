@@ -5,6 +5,7 @@ owasp dep check plugin
 import json
 import os
 import subprocess
+import sys
 
 from engine.plugins.lib import utils
 
@@ -220,14 +221,13 @@ def main():
                 "info": ["Java build failed"],
             }
 
-    print(
-        json.dumps(
-            {
-                "success": owasp_results["success"],
-                "details": owasp_results.get("output", []),
-                "errors": owasp_results.get("errors", []),
-            }
-        )
+    json.dump(
+        {
+            "success": owasp_results["success"],
+            "details": owasp_results.get("output", []),
+            "errors": owasp_results.get("errors", []),
+        },
+        sys.stdout,
     )
 
 
