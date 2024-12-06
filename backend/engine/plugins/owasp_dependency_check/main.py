@@ -159,13 +159,13 @@ def parse_vulnerabilities(data: dict) -> list:
     return results
 
 
-def parse_errors(data: list) -> list:
+def parse_errors(data: dict) -> list:
     """
     Parse errors reported by owasp-dependency-check in JSON report
     :return: list of strings
     """
     errors = []
-    owasp_errors = data["scanInfo"].get("analysisExceptions", [])
+    owasp_errors = data.get("scanInfo", {}).get("analysisExceptions", [])
 
     for error in owasp_errors:
         errors.append(error["exception"]["message"])
