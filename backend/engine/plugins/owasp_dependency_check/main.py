@@ -179,21 +179,7 @@ def pom_exists(repo_path: str) -> bool:
     :return: bool
     """
     log.info("Searching for pom file in: %s", repo_path)
-    r = subprocess.run(
-        [
-            "find",
-            ".",
-            "-name",
-            "pom.xml",
-            "-maxdepth",
-            "1",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        cwd=repo_path,
-        check=False,
-    )
-    return len(r.stdout) > 0 and r.returncode == 0
+    return os.path.isfile(f"{repo_path}/pom.xml")
 
 
 def main():
