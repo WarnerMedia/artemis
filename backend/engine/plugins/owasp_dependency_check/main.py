@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 
 from engine.plugins.lib import utils
 
@@ -74,12 +75,13 @@ def git_clean_repo(path: str) -> bool:
     return r.returncode == 0
 
 
-def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict:
+def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str, temp_path: str) -> dict:
     """
     Run the dependency-check.sh script against each built jar
     :param repo_path: path to work directory
     :param owasp_path: base directory of unzipped owasp cli
     :param repo_name: name of the git repo being analyzed
+    :param temp_path: Temporary directory
     :todo --failOnCVSS <score> Specifies if the build should be failed
     :return: dict scan results
     """
@@ -90,6 +92,8 @@ def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict
             f"{repo_name}",
             "-f",
             "JSON",
+            "--out",
+            temp_path,
             "--disableNodeAudit",
             "--disableBundleAudit",
             "--disableNodeJS",
@@ -106,10 +110,10 @@ def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict
         log.error(r.stdout.decode("utf-8"))
         log.error(r.stderr.decode("utf-8"))
 
-    return parse_scanner_output_json(repo_path, r.returncode)
+    return parse_scanner_output_json(f"{temp_path}/dependency-check-report.json", r.returncode)
 
 
-def parse_scanner_output_json(repo_path: str, returncode: int) -> dict:
+def parse_scanner_output_json(report_path: str, returncode: int) -> dict:
     """
     Parse json output from dependency-check.sh.
     Limit output to filename, score and severity.
@@ -119,13 +123,13 @@ def parse_scanner_output_json(repo_path: str, returncode: int) -> dict:
     success = returncode == 0
     errors = []
 
-    if not os.path.exists(f"{repo_path}dependency-check-report.json"):
-        return {"output": [], "errors": ["No report file found"], "success": success}
-
-    with open(f"{repo_path}dependency-check-report.json") as json_file:
-        data = json.load(json_file)
-        results = parse_vulnerabilities(data)
-        errors = parse_errors(data)
+    try:
+        with open(report_path) as json_file:
+            data = json.load(json_file)
+            results = parse_vulnerabilities(data)
+            errors = parse_errors(data)
+    except FileNotFoundError:
+        return {"output": [], "errors": [f"No report file found: {report_path}"], "success": success}
 
     success = success & len(results) == 0
     return {"output": results, "errors": errors, "success": success}
@@ -214,7 +218,10 @@ def main():
             args.engine_vars.get("engine_id", ""),
         )
         if java_build_results["build_status"]:
-            owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
+            with tempfile.TemporaryDirectory() as temp_dir:
+                owasp_results = run_owasp_dep_check(
+                    args.path, args.cli_path, args.engine_vars.get("repo", ""), temp_dir
+                )
         else:
             owasp_results = {
                 "success": True,
