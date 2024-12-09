@@ -4064,7 +4064,12 @@ export const SecretsTabContent = (props: {
 					"-"
 				),
 				type: "secret",
-				url: item?.url === "" ? scan.service + "/" + scan.repo : item.url,
+				// Typically, the url field is expected to be an empty string,
+				// but in some cases may be null.
+				url:
+					item?.url === "" || item?.url === null
+						? scan.service + "/" + scan.repo
+						: item.url,
 				createdBy: currentUser.email,
 				// hidden finding data stored in "hiddenFindings" field
 				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
