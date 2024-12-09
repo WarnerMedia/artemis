@@ -30,11 +30,17 @@ type PluginOutput struct {
 }
 
 func NewPluginOutput(output []byte, exitCode int) *PluginOutput {
+	// Skip lint checks if the plugin process failed.
+	var lintErrors []error
+	if exitCode == 0 {
+		lintErrors = lint(output)
+	}
+
 	return &PluginOutput{
 		Output:   output,
 		ExitCode: exitCode,
 
-		LintErrors: lint(output),
+		LintErrors: lintErrors,
 	}
 }
 
@@ -96,28 +102,28 @@ func run(ctx context.Context, name string, args []string) (*PluginOutput, error)
 	// lines are written sequentially and not on top of each other.
 	// Initial capacity of the output buffer is anticipating a large
 	// result.
-	output := make([]byte, 0, 128*1024)
+	output := make([]byte, 0, 2*1024*1024)
 	outchan := make(chan string)
 	var wg sync.WaitGroup
 	wg.Add(2)
-	go func() {
-		scanner := bufio.NewScanner(outPipe)
-		for scanner.Scan() {
-			// Capture JSON for processing.
-			buf := scanner.Bytes()
-			output = append(output, buf...)
-
-			outchan <- string(buf)
+	onFinish := func(err error) {
+		if err != nil {
+			errStr := err.Error()
+			if errors.Is(err, bufio.ErrTooLong) {
+				errStr = fmt.Sprintf("Output line exceeds maximum (%d bytes)",
+					maxLineBufSize)
+			}
+			outchan <- color.HiYellowString(errStr)
 		}
 		wg.Done()
-	}()
-	go func() {
-		scanner := bufio.NewScanner(errPipe)
-		for scanner.Scan() {
-			outchan <- color.RedString(scanner.Text())
-		}
-		wg.Done()
-	}()
+	}
+	go scanPipe(outPipe, func(buf []byte) {
+		output = append(output, buf...) // Capture JSON for processing.
+		outchan <- string(buf)
+	}, onFinish)
+	go scanPipe(errPipe, func(buf []byte) {
+		outchan <- color.RedString(string(buf))
+	}, onFinish)
 	go func() {
 		wg.Wait()
 		close(outchan)
@@ -157,14 +163,16 @@ func installTerminateHandler(ctx context.Context) context.Context {
 	return retv
 }
 
-func reportStatus(exitCode int) {
+func reportStatus(exitCode int, outputLen int) {
 	fmt.Print(color.HiCyanString(
 		fmt.Sprintf("==> Plugin exited with status: %d ", exitCode)))
 	if exitCode == 0 {
-		color.HiGreen("(success)")
+		fmt.Print(color.HiGreenString("(success)"))
 	} else {
-		color.HiRed("(failed)")
+		fmt.Print(color.HiRedString("(failed)"))
 	}
+
+	fmt.Printf(" (%d output bytes)\n", outputLen)
 }
 
 func reportLintErrors(errs []error) {
@@ -189,6 +197,6 @@ func main() {
 		log.Fatalf("Error running plugin: %v", err)
 	}
 
-	reportStatus(output.ExitCode)
+	reportStatus(output.ExitCode, len(output.Output))
 	reportLintErrors(output.LintErrors)
 }
