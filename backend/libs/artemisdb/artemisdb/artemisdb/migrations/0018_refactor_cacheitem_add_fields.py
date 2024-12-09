@@ -3,7 +3,6 @@
 import datetime
 
 from django.db import migrations, models
-from django.utils.timezone import utc
 
 
 def set_created_before_expires(apps, schema_editor):
@@ -32,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="cacheitem",
             name="created",
-            field=models.DateTimeField(default=datetime.datetime.fromtimestamp(0, tz=utc)),
+            field=models.DateTimeField(default=datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)),
             preserve_default=False,
         ),
         migrations.AddField(
