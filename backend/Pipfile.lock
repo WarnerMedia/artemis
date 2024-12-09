@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "346414541fa1b0760644686d8c6009f8ed2a62f1c8526f84e5cb6cdd761ac4ac"
+            "sha256": "372ffb2532a641ed237ff4317092564f388f2349307110aadf63d93033cd3f60"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -458,12 +458,12 @@
         },
         "django": {
             "hashes": [
-                "sha256:7ca38a78654aee72378594d63e51636c04b8e28574f5505dff630895b5472777",
-                "sha256:a52ea7fcf280b16f7b739cec38fa6d3f8953a5456986944c3ca97e79882b4e38"
+                "sha256:3a93350214ba25f178d4045c0786c61573e7dbfa3c509b3551374f1e11ba8de0",
+                "sha256:6b56d834cc94c8b21a8f4e775064896be3b4a4ca387f2612d4406a5927cd2fdc"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.6'",
-            "version": "==3.2.25"
+            "markers": "python_version >= '3.8'",
+            "version": "==4.2.17"
         },
         "docker": {
             "hashes": [

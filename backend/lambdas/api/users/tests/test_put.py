@@ -41,6 +41,7 @@ class TestPut(unittest.TestCase):
 
         with (
             patch("artemisdb.artemisdb.models.User.objects.get") as mock_get_user,
+            patch("artemisdb.artemisdb.models.User.scan_orgs", USER_RECORD["scan_orgs"]),
             patch("artemislib.services.get_services_dict") as mock_get_dict,
             patch("artemisdb.artemisdb.models.User.save"),
             patch("artemisdb.artemisdb.models.Group.save"),

@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[
-        "django~=3.2",
+        "django~=4.2",
         "psycopg2-binary~=2.9",
         "simplejson~=3.19",
     ],
