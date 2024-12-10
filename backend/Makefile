@@ -421,7 +421,7 @@ dist/engine_scripts.zip: docker-compose.aws.yml aws_env.py
 dist/docker/engine: Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . -t ${ENGINE_TAG} -f Dockerfiles/Dockerfile.engine \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg ENGINE_BASE=${ENGINE_BASE}
 	mkdir -p ${DIST_DIR}/docker
@@ -433,7 +433,7 @@ dist/docker/engine: Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_
 dist/docker/python3: Dockerfiles/Dockerfile.python3
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${PYTHON_TAG} -f Dockerfiles/Dockerfile.python3 \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg GIT_SECRETS_VER=${GIT_SECRETS_VER} \
 		--build-arg SHELL_CHECK_VER=${SHELLCHECKVER} \
@@ -451,7 +451,7 @@ dist/docker/python3: Dockerfiles/Dockerfile.python3
 dist/docker/node14: Dockerfiles/Dockerfile.node14
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${NODE_TAG} -f Dockerfiles/Dockerfile.node14 \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${NODE_TAG} ${ECR_URL}${NODE_TAG}
@@ -462,7 +462,7 @@ dist/docker/node14: Dockerfiles/Dockerfile.node14
 dist/docker/php: Dockerfiles/Dockerfile.php
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${PHP_TAG} -f Dockerfiles/Dockerfile.php \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg PHP_SCANNER_VER=${PHP_SCANNER_VER}
 	mkdir -p ${DIST_DIR}/docker
@@ -474,7 +474,7 @@ dist/docker/php: Dockerfiles/Dockerfile.php
 dist/docker/dind: Dockerfiles/Dockerfile.dind
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${DIND_TAG} -f Dockerfiles/Dockerfile.dind \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg TRIVY_VER=${TRIVY_VER} \
 		--build-arg TRIVY_COMMIT=${TRIVY_COMMIT} \
@@ -491,7 +491,7 @@ dist/docker/dind: Dockerfiles/Dockerfile.dind
 dist/docker/golang: Dockerfiles/Dockerfile.golang
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${GOLANG_TAG} -f Dockerfiles/Dockerfile.golang \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg ENRYVER=${ENRYVER} \
 		--build-arg ENRYSHA=${ENRYSHA} \
@@ -506,7 +506,7 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 dist/docker/ruby: Dockerfiles/Dockerfile.ruby
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${RUBY_TAG} -f Dockerfiles/Dockerfile.ruby \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg RUBY_VER=3.3-slim-bookworm
 	mkdir -p ${DIST_DIR}/docker
@@ -518,7 +518,7 @@ dist/docker/ruby: Dockerfiles/Dockerfile.ruby
 dist/docker/db_maintenance: libs/* utilities/db_maintenance/*
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${DB_MAINT_TAG} -f utilities/db_maintenance/Dockerfile \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${DB_MAINT_TAG} ${ECR_URL}${DB_MAINT_TAG}
@@ -531,7 +531,7 @@ dist/docker/veracode: Dockerfiles/Dockerfile.veracode
 ifeq (${VERACODE_FLAG}, true)
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${VERACODE_TAG} -f Dockerfiles/Dockerfile.veracode \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${VERACODE_TAG} ${ECR_URL}${VERACODE_TAG}
@@ -543,7 +543,7 @@ endif
 dist/docker/swift: Dockerfiles/Dockerfile.swift
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull  -t ${SWIFT_TAG} -f Dockerfiles/Dockerfile.swift \
-		--no-cache --force-rm \
+		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
 		--build-arg SWIFTLINT_VER=${SWIFTLINT_VER}
 	mkdir -p ${DIST_DIR}/docker
