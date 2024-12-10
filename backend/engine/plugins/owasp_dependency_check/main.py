@@ -2,18 +2,33 @@
 owasp dep check plugin
 """
 
+from dataclasses import dataclass
+import docker
+import docker.errors
 import json
 import os
 import subprocess
 import sys
 import tempfile
+from typing import Optional
 
 from engine.plugins.lib import utils
 
 log = utils.setup_logging("owasp_dependency_check")
 
+docker_client = docker.from_env()
 
-def attempt_maven_build(repo_path: str, scan_working_dir: str, java_versions: list, engine_id: str) -> dict:
+
+@dataclass
+class MavenBuildResult:
+    build_status: bool
+    build_debug: Optional[dict[str, str]] = None
+    java_version: Optional[str] = None
+
+
+def attempt_maven_build(
+    repo_path: str, scan_working_dir: str, java_versions: list[str], engine_id: str
+) -> MavenBuildResult:
     """
     Blindly cycle through the versions of java available.
     :param repo_path: path mounted from engine
@@ -26,41 +41,32 @@ def attempt_maven_build(repo_path: str, scan_working_dir: str, java_versions: li
         git_clean_repo(repo_path)
 
         log.info("Attempting build using Java %s", version)
-        build_res = subprocess.run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "--volumes-from",
-                engine_id,
-                "-v",
-                "/var/run/docker.sock:/var/run/docker.sock",
-                "-w",
-                scan_working_dir,
+        try:
+            build_res = docker_client.containers.run(
                 f"maven:3-jdk-{version}",
-                "mvn",
-                "-q",
-                "-DskipTests",
-                "clean",
-                "package",
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=repo_path,
-            check=False,
+                command=["mvn", "-q", "-DskipTests", "clean", "package"],
+                working_dir=scan_working_dir,
+                volumes_from=[engine_id],
+                auto_remove=True,
+                stdout=True,
+                stderr=True,
+            )
+        except docker.errors.ContainerError:
+            log.info("Build failed using Java %s", version)
+            continue
+        except Exception as ex:
+            log.error("Failed to build in Maven continer", exc_info=ex)
+            continue
+
+        log.info("Build succeeded using Java %s", version)
+        return MavenBuildResult(
+            build_status=True,
+            build_debug={"java_version": version, "build_res": build_res.decode("utf-8").rstrip()},
+            java_version=version,
         )
 
-        if build_res.returncode == 0:
-            log.info("Build succeeded using Java %s", version)
-            return {
-                "build_status": True,
-                "build_debug": {"java_version": version, "build_res": str(build_res).rstrip()},
-                "java_version": version,
-            }
-        log.info("Build failed using Java %s", version)
-
     log.info("Build failed using all versions of Java")
-    return {"build_status": False, "build_debug": None, "java_version": None}
+    return MavenBuildResult(build_status=False)
 
 
 def git_clean_repo(path: str) -> bool:
@@ -219,7 +225,7 @@ def main():
             json.loads(args.java_versions)["version_list"],
             args.engine_vars.get("engine_id", ""),
         )
-        if java_build_results["build_status"]:
+        if java_build_results.build_status:
             with tempfile.TemporaryDirectory() as temp_dir:
                 owasp_results = run_owasp_dep_check(
                     args.path, args.cli_path, args.engine_vars.get("repo", ""), temp_dir
