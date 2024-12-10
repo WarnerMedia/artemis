@@ -8,7 +8,7 @@ FROM python:3.9-bullseye AS builder
 
 # Install the Docker repository
 # hadolint ignore=DL3008
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update \
     && apt-get install -y --no-install-recommends \
         lsb-release \
@@ -31,7 +31,7 @@ COPY Pipfile.lock .
 COPY engine/plugins/ engine/plugins
 # hadolint ignore=SC2016
 RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=cache,target=/root/.cache/pipenv \
+    --mount=type=cache,target=/root/.cache/pipenv,sharing=locked \
     pipenv requirements > requirements.txt && \
     packaged --python-version 3.9 plugin.sh \
         'pip install -r requirements.txt' \
@@ -63,9 +63,9 @@ COPY --from=builder /etc/apt /etc/apt
 # - Install Pipenv environment
 # - Install Artemis libraries
 # hadolint ignore=DL3008,DL3013,DL3042
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=cache,target=/root/.cache/pipenv \
+    --mount=type=cache,target=/root/.cache/pipenv,sharing=locked \
     apt-get update \
     && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
     && apt-get upgrade -y \
