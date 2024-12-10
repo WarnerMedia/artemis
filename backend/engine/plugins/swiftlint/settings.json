@@ -1,5 +1,6 @@
 {
   "name": "SwiftLint",
   "type": "static_analysis",
-  "image": "$ECR/artemis/swift:latest"
+  "image": "$ECR/artemis/swift:latest",
+  "runner": "boxed"
 }
