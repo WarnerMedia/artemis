@@ -142,6 +142,7 @@ VERACODE_FLAG := $(shell egrep "veracode_enabled\s+=\s+(true|false)" ${TERRAFORM
 SWIFT_PKG := ${PREFIX}/swift
 SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
+SWIFTLINT_SHA := 3b5075a5cdf17fc5aaf03636b81d96b29ff5040ee24ca11e1fafc3b43e0fb9e4
 
 FSB_VER := 1.9.0
 FSB_PATCH := -fix2
@@ -545,7 +546,8 @@ dist/docker/swift: Dockerfiles/Dockerfile.swift
 	$(DOCKER) build . --pull  -t ${SWIFT_TAG} -f Dockerfiles/Dockerfile.swift \
 		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg SWIFTLINT_VER=${SWIFTLINT_VER}
+		--build-arg SWIFTLINT_VER=${SWIFTLINT_VER} \
+		--build-arg SWIFTLINT_SHA=${SWIFTLINT_SHA}
 	mkdir -p ${DIST_DIR}/docker
 	if [ ! -z ${ACCOUNT_ID} ]; then \
 		${DOCKER} tag ${SWIFT_TAG} ${ECR_URL}${SWIFT_TAG} ; \
