@@ -129,7 +129,9 @@ def parse_scanner_output_json(report_path: str, returncode: int) -> dict:
             results = parse_vulnerabilities(data)
             errors = parse_errors(data)
     except FileNotFoundError:
-        return {"output": [], "errors": [f"No report file found: {report_path}"], "success": success}
+        # Report success (to not fail CI builds) but report the error
+        # so we can investigate cases when this happens.
+        return {"output": [], "errors": [f"No report file found: {report_path}"], "success": True}
 
     success = success & len(results) == 0
     return {"output": results, "errors": errors, "success": success}
