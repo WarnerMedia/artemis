@@ -5,6 +5,8 @@ owasp dep check plugin
 import json
 import os
 import subprocess
+import sys
+import tempfile
 
 from engine.plugins.lib import utils
 
@@ -30,11 +32,11 @@ def attempt_maven_build(repo_path: str, scan_working_dir: str, java_versions: li
                 "run",
                 "--rm",
                 "--volumes-from",
-                f"{engine_id}",
+                engine_id,
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
                 "-w",
-                f"{scan_working_dir}",
+                scan_working_dir,
                 f"maven:3-jdk-{version}",
                 "mvn",
                 "-q",
@@ -73,12 +75,13 @@ def git_clean_repo(path: str) -> bool:
     return r.returncode == 0
 
 
-def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict:
+def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str, temp_path: str) -> dict:
     """
     Run the dependency-check.sh script against each built jar
     :param repo_path: path to work directory
     :param owasp_path: base directory of unzipped owasp cli
     :param repo_name: name of the git repo being analyzed
+    :param temp_path: Temporary directory
     :todo --failOnCVSS <score> Specifies if the build should be failed
     :return: dict scan results
     """
@@ -86,15 +89,17 @@ def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict
         [
             f"{owasp_path}bin/dependency-check.sh",
             "--project",
-            f"{repo_name}",
+            repo_name,
             "-f",
             "JSON",
+            "--out",
+            temp_path,
             "--disableNodeAudit",
             "--disableBundleAudit",
             "--disableNodeJS",
             "--disableYarnAudit",
             "--scan",
-            f"{repo_path}",
+            repo_path,
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -105,10 +110,10 @@ def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str) -> dict
         log.error(r.stdout.decode("utf-8"))
         log.error(r.stderr.decode("utf-8"))
 
-    return parse_scanner_output_json(repo_path, r.returncode)
+    return parse_scanner_output_json(f"{temp_path}/dependency-check-report.json", r.returncode)
 
 
-def parse_scanner_output_json(repo_path: str, returncode: int) -> dict:
+def parse_scanner_output_json(report_path: str, returncode: int) -> dict:
     """
     Parse json output from dependency-check.sh.
     Limit output to filename, score and severity.
@@ -118,13 +123,15 @@ def parse_scanner_output_json(repo_path: str, returncode: int) -> dict:
     success = returncode == 0
     errors = []
 
-    if not os.path.exists(f"{repo_path}dependency-check-report.json"):
-        return {"output": [], "errors": ["No report file found"], "success": success}
-
-    with open(f"{repo_path}dependency-check-report.json") as json_file:
-        data = json.load(json_file)
-        results = parse_vulnerabilities(data)
-        errors = parse_errors(data)
+    try:
+        with open(report_path) as json_file:
+            data = json.load(json_file)
+            results = parse_vulnerabilities(data)
+            errors = parse_errors(data)
+    except FileNotFoundError:
+        # Report success (to not fail CI builds) but report the error
+        # so we can investigate cases when this happens.
+        return {"output": [], "errors": [f"No report file found: {report_path}"], "success": True}
 
     success = success & len(results) == 0
     return {"output": results, "errors": errors, "success": success}
@@ -158,13 +165,13 @@ def parse_vulnerabilities(data: dict) -> list:
     return results
 
 
-def parse_errors(data: list) -> list:
+def parse_errors(data: dict) -> list:
     """
     Parse errors reported by owasp-dependency-check in JSON report
     :return: list of strings
     """
     errors = []
-    owasp_errors = data["scanInfo"].get("analysisExceptions", [])
+    owasp_errors = data.get("scanInfo", {}).get("analysisExceptions", [])
 
     for error in owasp_errors:
         errors.append(error["exception"]["message"])
@@ -179,21 +186,7 @@ def pom_exists(repo_path: str) -> bool:
     :return: bool
     """
     log.info("Searching for pom file in: %s", repo_path)
-    r = subprocess.run(
-        [
-            "find",
-            ".",
-            "-name",
-            "pom.xml",
-            "-maxdepth",
-            "1",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        cwd=repo_path,
-        check=False,
-    )
-    return len(r.stdout) > 0 and r.returncode == 0
+    return os.path.isfile(f"{repo_path}/pom.xml")
 
 
 def main():
@@ -227,21 +220,23 @@ def main():
             args.engine_vars.get("engine_id", ""),
         )
         if java_build_results["build_status"]:
-            owasp_results = run_owasp_dep_check(args.path, args.cli_path, args.engine_vars.get("repo", ""))
+            with tempfile.TemporaryDirectory() as temp_dir:
+                owasp_results = run_owasp_dep_check(
+                    args.path, args.cli_path, args.engine_vars.get("repo", ""), temp_dir
+                )
         else:
             owasp_results = {
                 "success": True,
                 "info": ["Java build failed"],
             }
 
-    print(
-        json.dumps(
-            {
-                "success": owasp_results["success"],
-                "details": owasp_results.get("output", []),
-                "errors": owasp_results.get("errors", []),
-            }
-        )
+    json.dump(
+        {
+            "success": owasp_results["success"],
+            "details": owasp_results.get("output", []),
+            "errors": owasp_results.get("errors", []),
+        },
+        sys.stdout,
     )
 
 
