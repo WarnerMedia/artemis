@@ -54,8 +54,8 @@ target "engine" {
   }
 
   args = {
-      MAINTAINER = MAINTAINER
-      ENGINE_BASE = ENGINE_BASE
+    MAINTAINER = MAINTAINER
+    ENGINE_BASE = ENGINE_BASE
   }
 }
 
