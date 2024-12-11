@@ -418,15 +418,15 @@ dist/engine_scripts.zip: docker-compose.aws.yml aws_env.py
 # Docker images
 ###############################################################################
 
-dist/docker/engine: Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
+dist/docker/engine: docker-bake.hcl Dockerfiles/Dockerfile.boxed Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
 	@echo "${INFO}Building $@"
-	$(DOCKER) build . -t ${ENGINE_TAG} -f Dockerfiles/Dockerfile.engine \
-		${DOCKER_BUILD_EXTRA_ARGS} \
-		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg ENGINE_BASE=${ENGINE_BASE}
+	MAINTAINER=${MAINTAINER} \
+	ENGINE_BASE=${ENGINE_BASE} \
+	ENGINE_TAG=${ENGINE_TAG} \
+	ECR_URL=${ECR_URL} \
+	LATEST_COMMIT=${LATEST_COMMIT} \
+	${DOCKER} buildx bake -f docker-bake.hcl engine ${DOCKER_BUILD_EXTRA_ARGS}
 	mkdir -p ${DIST_DIR}/docker
-	${DOCKER} tag ${ENGINE_TAG} ${ECR_URL}${ENGINE_TAG}
-	${DOCKER} tag ${ENGINE_TAG} ${ECR_URL}${ENGINE_TAG}-stage-${LATEST_COMMIT}
 	touch $@
 	@echo "${OK}"
 

@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1
+
+# Builder for boxed core plugins.
+
+ARG PYTHON_VER=3.9-bookworm
+
+FROM python:$PYTHON_VER
+
+# hadolint ignore=DL3042
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+        'packaged==0.6.0' \
+        'pipenv~=2024.0'
+
+WORKDIR /src
+COPY Pipfile.lock .
+COPY engine/plugins/ engine/plugins
+
+# Generate requirements.txt from lockfile so the standalone Python distribution
+# doesn't need pipenv installed.
+RUN pipenv requirements > requirements.txt
+
+# Build the self-contained bundle.
+RUN --mount=type=cache,target=/root/.cache/pip \
+    packaged --python-version 3.9 plugin.sh \
+        'pip install -r requirements.txt' \
+        'python -m engine.plugins "$@"' \
+        /src
+
+# Pre-extract the plugin bundle to improve startup times.
+RUN ./plugin.sh --noexec --target .boxed/glibc

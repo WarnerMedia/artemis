@@ -7,6 +7,9 @@ variable "FSB_PATCH" {}
 variable "OWASP_DC" {}
 variable "OWASP_DC_SHA" {}
 
+variable "ENGINE_BASE" {}
+
+variable "ENGINE_TAG" {}
 variable "JAVA7_TAG" {}
 variable "JAVA8_TAG" {}
 variable "JAVA13_TAG" {}
@@ -32,6 +35,28 @@ function "full_tags" {
     "${ECR_URL}${base_tag}",
     "${ECR_URL}${base_tag}-stage-${LATEST_COMMIT}",
   ]
+}
+
+target "boxed-glibc" {
+  dockerfile = "Dockerfiles/Dockerfile.boxed"
+
+  args = {
+    PYTHON_VER = "3.9-bookworm"
+  }
+}
+
+target "engine" {
+  dockerfile = "Dockerfiles/Dockerfile.engine"
+  tags = full_tags(ENGINE_TAG)
+
+  contexts = {
+    boxed-glibc = "target:boxed-glibc"
+  }
+
+  args = {
+      MAINTAINER = MAINTAINER
+      ENGINE_BASE = ENGINE_BASE
+  }
 }
 
 # Standard build args for all Java targets.
