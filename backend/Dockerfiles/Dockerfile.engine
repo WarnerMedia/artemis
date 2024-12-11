@@ -19,24 +19,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add -
 
-# hadolint ignore=DL3042
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install \
-    'packaged==0.6.0' \
-    'pipenv~=2024.0'
-
-# Build self-contained core plugin bundle.
-WORKDIR /src
-COPY Pipfile.lock .
-COPY engine/plugins/ engine/plugins
-# hadolint ignore=SC2016
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=cache,target=/root/.cache/pipenv,sharing=locked \
-    pipenv requirements > requirements.txt && \
-    packaged --python-version 3.9 plugin.sh \
-        'pip install -r requirements.txt' \
-        'python -m engine.plugins "$@"' \
-        /src
+# Libc-specific boxed plugin bundle builders.
+# Built from Dockerfile.boxed by context in the bakefile.
+# hadolint ignore=DL3006
+FROM boxed-glibc AS boxed-glibc
 
 ###############################################################################
 # App stage
@@ -87,7 +73,8 @@ WORKDIR /srv/engine
 
 COPY ./engine/ ./
 COPY ./services.json /srv/engine/
-COPY --from=builder /src/plugin.sh /srv/engine/plugins/plugin.sh
+COPY boxed-plugin.sh /srv/engine/plugins/plugin.sh
+COPY --from=boxed-glibc /src/_boxed/glibc/ /srv/engine/plugins/_boxed/glibc/
 
 VOLUME ["/srv/engine/plugins"]
 
