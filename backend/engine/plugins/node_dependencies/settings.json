@@ -2,5 +2,6 @@
     "name": "NPM Audit Scanner",
     "type": "vulnerability",
     "image": "$ECR/artemis/node:14-latest",
+    "runner": "boxed",
     "writable": true
 }
