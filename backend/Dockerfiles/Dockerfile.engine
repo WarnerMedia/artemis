@@ -74,7 +74,7 @@ WORKDIR /srv/engine
 COPY ./engine/ ./
 COPY ./services.json /srv/engine/
 COPY boxed-plugin.sh /srv/engine/plugins/plugin.sh
-COPY --from=boxed-glibc /src/.boxed/glibc/ /srv/engine/plugins/.boxed/glibc/
+COPY --from=boxed-glibc /src/_boxed/glibc/ /srv/engine/plugins/_boxed/glibc/
 
 VOLUME ["/srv/engine/plugins"]
 

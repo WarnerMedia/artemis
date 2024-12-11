@@ -15,7 +15,7 @@ for opt in "$@"; do
 done
 
 # We assume we are in a glibc-based distribution.
-PACKAGED_ROOT="$(dirname "$0")/.boxed/glibc"
+PACKAGED_ROOT="$(dirname "$0")/_boxed/glibc"
 
 export PATH="$PACKAGED_ROOT/.packaged_python/python/bin:$PATH"
 cd "$PACKAGED_ROOT" || exit 1

@@ -28,4 +28,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         /src
 
 # Pre-extract the plugin bundle to improve startup times.
-RUN ./plugin.sh --noexec --target .boxed/glibc
+RUN ./plugin.sh --noexec --target _boxed/glibc
