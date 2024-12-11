@@ -1,20 +1,26 @@
+# syntax=docker/dockerfile:1
+
+FROM alpine:3.20 AS common
+
+# We're using Alpine's /bin/sh, so disable pipefail suggestion.
+# hadolint global ignore=DL4006
+
+ARG SWIFTLINT_VER
+ARG SWIFTLINT_SHA
+
+RUN wget -q -O /tmp/swiftlint.zip "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VER}/swiftlint_linux.zip" && \
+    echo "$SWIFTLINT_SHA  /tmp/swiftlint.zip" | sha256sum -c - && \
+    unzip /tmp/swiftlint.zip -d /opt/swiftlint && \
+    chmod a+x /opt/swiftlint/swiftlint
+
+
 FROM swift:5.5.2-focal
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-ARG SWIFTLINT_VER
-
-# Dependencies
-RUN apt-get update
-RUN apt-get -y install curl busybox python3-pip
-
-# Engine requires python3 and boto3 module be installed
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-RUN pip3 install -U pip
-RUN pip3 install -U boto3
-
 # Install swiftlint
-RUN curl -sL "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VER}/swiftlint_linux.zip" | busybox unzip - swiftlint -d /usr/local/bin/
-RUN chmod a+x /usr/local/bin/swiftlint
+COPY --from=common /opt/swiftlint/ /opt/swiftlint/
 COPY ./engine/plugins/swiftlint/swiftlint.yml /etc/swiftlint.yml
+
+ENV PATH=/opt/swiftlint:$PATH
