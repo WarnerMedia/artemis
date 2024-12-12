@@ -1,7 +1,5 @@
-from django.db.models.query import QuerySet
-
 from artemisapi.const import SearchRepositoriesAPIIdentifier
-from artemisdb.artemisdb.models import Repo, Scan
+from artemisdb.artemisdb.models import Repo
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
 
 
@@ -46,7 +44,7 @@ def _get_repos(paging: PageInfo, query: dict[str, str], scope: list[list[list[st
 
     if CICD_TOOLS_CONTAINS_QUERY in query:
         search_phrase = query[CICD_TOOLS_CONTAINS_QUERY]
-        cicd_tools_qs = _get_cicd_tool_qs(search_phrase)
+        cicd_tools_qs = Repo.get_cicd_tool_repos(search_phrase)
 
         qs = in_scope_qs & cicd_tools_qs
     else:
@@ -83,10 +81,3 @@ def _last_qualified_scan_isnull(qs: QuerySet, filter: Filter) -> QuerySet:
     else:
         qs = qs.filter(scan__qualified=True)
     return qs
-
-
-def _get_cicd_tool_qs(search_phrase: str) -> QuerySet:
-    scans = Scan.objects.filter(pluginresult__details__cicd_tools__has_key=search_phrase)
-    repos = Repo.objects.filter(id__in=scans.values('repo_id'))
-
-    return repos

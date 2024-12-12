@@ -233,6 +233,13 @@ class Repo(models.Model):
             # No filter was built up (no scopes?) so return nothing
             return cls.objects.none()
 
+    @classmethod
+    def get_cicd_tool_repos(cls, tool_name: str) -> models.QuerySet:
+        scans = Scan.objects.filter(pluginresult__details__cicd_tools__has_key=tool_name)
+        repos = Repo.objects.filter(id__in=scans.values('repo_id'))
+
+        return repos
+
     def formatted_application_metadata(self):
         # If a custom metadata formatter is configured use it
         if METADATA_FORMATTER is not None:
