@@ -459,6 +459,7 @@ dist/docker/node: Dockerfiles/Dockerfile.node
 	${DOCKER} tag ${NODE_TAG} ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT}
 	touch $@
 	@echo "${OK}"
+dist/docker/node14: dist/docker/node
 
 dist/docker/php: Dockerfiles/Dockerfile.php
 	@echo "${INFO}Building $@"
@@ -645,6 +646,7 @@ stage/docker/node: dist/docker/node
 	${DOCKER} push ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT}
 	touch $@
 	@echo "${OK}"
+stage/docker/node14: stage/docker/node
 
 stage/docker/php: dist/docker/php
 	@echo "${INFO}Staging $@ in ECR"
@@ -1492,6 +1494,9 @@ deploy_node_image:
 	docker push ${ECR_URL}${NODE_TAG}
 	@echo "${OK}"
 .PHONY: deploy_node_image
+
+deploy_node14_image: deploy_node_image
+.PHONY: deploy_node14_image
 
 deploy_php_image:
 	@echo "${INFO}Moving staged php image into place"
