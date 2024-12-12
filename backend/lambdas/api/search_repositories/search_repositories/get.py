@@ -1,9 +1,11 @@
+from django.db.models.query import QuerySet
+
 from artemisapi.const import SearchRepositoriesAPIIdentifier
 from artemisdb.artemisdb.models import Repo
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
 
 
-CICD_TOOLS_CONTAINS_QUERY = "cicd_tool"
+CICD_TOOL_PARAM = "cicd_tool"
 
 
 def get(parsed_event, scope):
@@ -42,8 +44,8 @@ def _get_repos(paging: PageInfo, query: dict[str, str], scope: list[list[list[st
 
     in_scope_qs = Repo.in_scope(scope)
 
-    if CICD_TOOLS_CONTAINS_QUERY in query:
-        search_phrase = query[CICD_TOOLS_CONTAINS_QUERY]
+    if CICD_TOOL_PARAM in query:
+        search_phrase = query[CICD_TOOL_PARAM]
         cicd_tools_qs = Repo.get_cicd_tool_repos(search_phrase)
 
         qs = in_scope_qs & cicd_tools_qs
