@@ -10,7 +10,7 @@ from artemisdb.artemisdb.env import API_PATH, CUSTOM_FILTERING_MODULE
 from artemislib.datetime import from_iso_timestamp
 from artemislib.logging import Logger
 
-IGNORED_FIELDS = ["cicdtools__contains"]
+IGNORED_FIELDS = ["cicd_tool"]
 
 try:
     # If the Artemis API library is present load the response method and validation exception

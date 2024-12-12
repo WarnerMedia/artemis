@@ -1,13 +1,11 @@
 from django.db.models.query import QuerySet
 
 from artemisapi.const import SearchRepositoriesAPIIdentifier
-from artemisdb.artemisdb.models import PluginResult, Repo, Scan
+from artemisdb.artemisdb.models import Repo, Scan
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
 
-from typing import Optional
 
-
-CICD_TOOLS_CONTAINS_QUERY = "cicdtools__contains"
+CICD_TOOLS_CONTAINS_QUERY = "cicd_tool"
 
 
 def get(parsed_event, scope):
