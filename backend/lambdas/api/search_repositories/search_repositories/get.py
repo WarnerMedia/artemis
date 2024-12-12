@@ -1,8 +1,13 @@
 from django.db.models.query import QuerySet
 
 from artemisapi.const import SearchRepositoriesAPIIdentifier
-from artemisdb.artemisdb.models import Repo
+from artemisdb.artemisdb.models import PluginResult, Repo, Scan
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
+
+from typing import Optional
+
+
+CICD_TOOLS_CONTAINS_QUERY = "cicdtools__contains"
 
 
 def get(parsed_event, scope):
@@ -15,10 +20,10 @@ def get(parsed_event, scope):
     # Endpoints:
     #   /search/repositories
     # Returns the paged list of repositories
-    return _get_repos(parsed_event.paging, scope)
+    return _get_repos(parsed_event.paging, parsed_event.query, scope)
 
 
-def _get_repos(paging: PageInfo, scope: list[list[list[str]]]):
+def _get_repos(paging: PageInfo, query: dict[str, str], scope: list[list[list[str]]]):
     map = FilterMap()
     map.add_string("repo")
     map.add_string("service")
@@ -39,7 +44,15 @@ def _get_repos(paging: PageInfo, scope: list[list[list[str]]]):
         item=FilterMapItem("last_qualified_scan", generator=_last_qualified_scan_isnull),
     )
 
-    qs = Repo.in_scope(scope)
+    in_scope_qs = Repo.in_scope(scope)
+
+    if CICD_TOOLS_CONTAINS_QUERY in query:
+        search_phrase = query[CICD_TOOLS_CONTAINS_QUERY]
+        cicd_tools_qs = _get_cicd_tool_qs(search_phrase)
+
+        qs = in_scope_qs & cicd_tools_qs
+    else:
+        qs = in_scope_qs
 
     qs = apply_filters(
         qs,
@@ -72,3 +85,8 @@ def _last_qualified_scan_isnull(qs: QuerySet, filter: Filter) -> QuerySet:
     else:
         qs = qs.filter(scan__qualified=True)
     return qs
+
+
+def _get_cicd_tool_qs(search_phrase: str) -> QuerySet:
+    scans = Scan.objects.filter(pluginresult__details__cicd_tools__has_key=search_phrase)
+    return Repo.objects.filter(id__in=scans)
