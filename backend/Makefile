@@ -111,7 +111,7 @@ PYTHON_PKG := ${PREFIX}/python
 PYTHON_TAG := ${PYTHON_PKG}:3-latest
 
 NODE_PKG := ${PREFIX}/node
-NODE_TAG := ${NODE_PKG}:14-latest
+NODE_TAG := ${NODE_PKG}:latest
 
 PHP_PKG := ${PREFIX}/php
 PHP_TAG := ${PHP_PKG}:latest
@@ -449,9 +449,9 @@ dist/docker/python3: Dockerfiles/Dockerfile.python3
 	touch $@
 	@echo "${OK}"
 
-dist/docker/node14: Dockerfiles/Dockerfile.node14
+dist/docker/node: Dockerfiles/Dockerfile.node
 	@echo "${INFO}Building $@"
-	$(DOCKER) build . --pull -t ${NODE_TAG} -f Dockerfiles/Dockerfile.node14 \
+	$(DOCKER) build . --pull -t ${NODE_TAG} -f Dockerfiles/Dockerfile.node \
 		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER}
 	mkdir -p ${DIST_DIR}/docker
@@ -597,7 +597,7 @@ docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
 docker:  ## Build all docker images
 docker: dist/docker/engine \
 		dist/docker/python3 \
-		dist/docker/node14 \
+		dist/docker/node \
 		dist/docker/php \
 		dist/docker/dind \
 		dist/docker/golang \
@@ -638,7 +638,7 @@ stage/docker/python3: dist/docker/python3
 	touch $@
 	@echo "${OK}"
 
-stage/docker/node14: dist/docker/node14
+stage/docker/node: dist/docker/node
 	@echo "${INFO}Staging $@ in ECR"
 	mkdir -p ${STAGE_DIR}/docker
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
@@ -739,7 +739,7 @@ stage/docker/swift: dist/docker/swift
 docker_push:  ## Stage all docker images in ECR
 docker_push: stage/docker/engine \
 			 stage/docker/python3 \
-			 stage/docker/node14 \
+			 stage/docker/node \
 			 stage/docker/php \
 			 stage/docker/dind \
 			 stage/docker/golang \
@@ -1484,7 +1484,7 @@ deploy_python_image:
 	@echo "${OK}"
 .PHONY: deploy_python_image
 
-deploy_node14_image:
+deploy_node_image:
 	@echo "${INFO}Moving staged node image into place"
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
 	docker pull ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT}
@@ -1596,7 +1596,7 @@ deploy_swift_image:
 
 deploy_images: deploy_engine_image \
         	   deploy_python_image \
-        	   deploy_node14_image \
+        	   deploy_node_image \
         	   deploy_php_image \
         	   deploy_dind_image \
         	   deploy_golang_image \

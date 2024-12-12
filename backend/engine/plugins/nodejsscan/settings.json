@@ -1,6 +1,6 @@
 {
     "name": "Nodejsscan",
     "type": "static_analysis",
-    "image": "$ECR/artemis/node:14-latest",
+    "image": "$ECR/artemis/node:latest",
     "runner": "boxed"
 }
