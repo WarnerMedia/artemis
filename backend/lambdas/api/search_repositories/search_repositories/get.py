@@ -87,4 +87,6 @@ def _last_qualified_scan_isnull(qs: QuerySet, filter: Filter) -> QuerySet:
 
 def _get_cicd_tool_qs(search_phrase: str) -> QuerySet:
     scans = Scan.objects.filter(pluginresult__details__cicd_tools__has_key=search_phrase)
-    return Repo.objects.filter(id__in=scans)
+    repos = Repo.objects.filter(id__in=scans.values('repo_id'))
+
+    return repos
