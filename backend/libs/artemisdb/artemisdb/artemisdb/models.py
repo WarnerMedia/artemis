@@ -236,7 +236,7 @@ class Repo(models.Model):
     @classmethod
     def get_cicd_tool_repos(cls, tool_name: str) -> models.QuerySet:
         scans = Scan.objects.filter(pluginresult__details__cicd_tools__has_key=tool_name)
-        repos = Repo.objects.filter(id__in=scans.values("repo_id"))
+        repos = cls.objects.filter(id__in=scans.values("repo_id"))
 
         return repos
 
