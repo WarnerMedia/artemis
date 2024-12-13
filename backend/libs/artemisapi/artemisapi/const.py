@@ -7,6 +7,8 @@ DEFAULT_RESPONSE_MESSAGE_OVERRIDES = {
     HTTPStatus.FORBIDDEN: "Unauthorized",
 }
 
+REPO_SEARCH_CICD_TOOL_PARAM = "cicd_tool"
+
 ###############################################################################
 # API Identifiers
 ###############################################################################

@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 
-from artemisapi.const import SearchRepositoriesAPIIdentifier
+from artemisapi.const import SearchRepositoriesAPIIdentifier, REPO_SEARCH_CICD_TOOL_PARAM
 from artemisdb.artemisdb.models import Repo
 from artemisdb.artemisdb.paging import Filter, FilterMap, FilterMapItem, FilterType, PageInfo, apply_filters, page
 
@@ -15,10 +15,10 @@ def get(parsed_event, scope):
     # Endpoints:
     #   /search/repositories
     # Returns the paged list of repositories
-    return _get_repos(parsed_event.paging, scope)
+    return _get_repos(parsed_event.paging, parsed_event.query, scope)
 
 
-def _get_repos(paging: PageInfo, scope: list[list[list[str]]]):
+def _get_repos(paging: PageInfo, query: dict[str, str], scope: list[list[list[str]]]):
     map = FilterMap()
     map.add_string("repo")
     map.add_string("service")
@@ -39,7 +39,15 @@ def _get_repos(paging: PageInfo, scope: list[list[list[str]]]):
         item=FilterMapItem("last_qualified_scan", generator=_last_qualified_scan_isnull),
     )
 
-    qs = Repo.in_scope(scope)
+    in_scope_qs = Repo.in_scope(scope)
+
+    if REPO_SEARCH_CICD_TOOL_PARAM in query:
+        search_phrase = query[REPO_SEARCH_CICD_TOOL_PARAM]
+        cicd_tools_qs = Repo.get_cicd_tool_repos(search_phrase)
+
+        qs = in_scope_qs & cicd_tools_qs
+    else:
+        qs = in_scope_qs
 
     qs = apply_filters(
         qs,

@@ -9,6 +9,9 @@ from artemisdb.artemisdb.consts import DEFAULT_PAGE_SIZE
 from artemisdb.artemisdb.env import API_PATH, CUSTOM_FILTERING_MODULE
 from artemislib.datetime import from_iso_timestamp
 from artemislib.logging import Logger
+from artemisapi.const import REPO_SEARCH_CICD_TOOL_PARAM
+
+IGNORED_FIELDS = [REPO_SEARCH_CICD_TOOL_PARAM]
 
 try:
     # If the Artemis API library is present load the response method and validation exception
@@ -362,6 +365,8 @@ def parse_paging_event(
     )
     supported_fields += [f"{f}__isnull" for f in nullable_filters or []]
     supported_fields += boolean_filters or []
+
+    supported_fields += IGNORED_FIELDS
 
     # Check that there are no unsupported fields in the query args
     for field in query.keys():
