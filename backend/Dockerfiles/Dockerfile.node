@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+FROM node:22-bookworm-slim
+
+ARG MAINTAINER
+LABEL maintainer=$MAINTAINER
+
+# hadolint ignore=DL3008,DL3016
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install python3 python3-pip git -y --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Upgrade npm for the node_dependencies plugin.
+# Install eslint and dependencies for eslint plugin.
+WORKDIR /opt/eslint
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+    npm install -g npm@10.9.2 && \
+    npm install \
+        eslint@8.57.1 \
+        eslint-plugin-security@3.0.1 \
+        typescript@5.7.2 \
+        @typescript-eslint/parser@8.18.0
+
+# Provide our own eslint wrapper to set the plugin search directory.
+# We assume that eslint will always be called with absolute paths.
+RUN printf "#!/bin/sh\ncd /opt/eslint\n"'npx eslint --resolve-plugins-relative-to=/opt/eslint "$@"' > /usr/local/bin/eslint && \
+    chmod 755 /usr/local/bin/eslint
+
+# Install nodejsscan for the nodejsscan plugin.
+# hadolint ignore=DL3013,DL3042
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --break-system-packages --upgrade pip setuptools && \
+    pip install --break-system-packages \
+        nodejsscan

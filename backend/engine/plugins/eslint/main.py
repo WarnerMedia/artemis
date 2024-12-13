@@ -3,6 +3,7 @@ module running eslint on javascript/typescript files
 """
 
 from dataclasses import dataclass
+from pathlib import Path
 import json
 import subprocess
 
@@ -29,7 +30,11 @@ def run_eslint(path: str, config: str) -> Result:
     1 = successful run. linting errors.
     2 = internal error.
     """
-    cmd = ["eslint", "-f", "json", "--config", config, "--ext", ".js,.jsx,.ts,.tsx", "."]
+    # The ESLint wrapper in the container may switch the working directory
+    # to resolve plugin dependencies, so specify all paths as absolute.
+    config_path = Path(config).absolute()
+    target_path = Path(path).absolute() / "**" / "*.{js,jsx,ts,tsx}"
+    cmd = ["eslint", "-f", "json", "--config", str(config_path), str(target_path)]
     completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
     info = []
     if completed.returncode == 2:
