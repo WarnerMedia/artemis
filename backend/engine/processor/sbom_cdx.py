@@ -51,7 +51,7 @@ def process_dependency(dep: dict, scan: Scan) -> None:
 
     # Logging when a component has more than 15 licenses, as that is usually caused by a bug by Trivy
     if len(licenses) > 15:
-        logger.error(f"{component} potentially contains incorrect license information")
+        logger.warning(f"{component} potentially contains incorrect license information")
     # Update the component's set of licenses
     if licenses:
         component.licenses.set(licenses)
