@@ -40,7 +40,7 @@ def process_dependency(dep: dict, scan: Scan) -> None:
             license_obj_cache[license_id], created = License.objects.get_or_create(
                 license_id=license_id, defaults={"name": license["name"]}
             )
-            if not created:
+            if created:
                 logger.error(f'LICENSE TOO LONG: {license_id}')
 
         # Add the license object to the list for this component
