@@ -56,7 +56,7 @@ def process_dependency(dep: dict, scan: Scan) -> None:
         # Add the license object to the list for this component
         licenses.append(license_obj_cache[license_id])
 
-    # Check if the component's license count exceeds the threshold of what is deemed suspiciousg
+    # Check if the component's license count exceeds the threshold of what is deemed suspicious
     if len(licenses) > MAX_LICENCE_COUNT:
         logger.warning(f"{component} potentially contains incorrect license information")
     # Update the component's set of licenses
