@@ -36,12 +36,14 @@ def process_dependency(dep: dict, scan: Scan) -> None:
     for license in dep["licenses"]:
         license_id = license.get("id").lower()
         if license_id not in license_obj_cache:
-            # If we don't have a local copy of the license object get it from the DB
-            license_obj_cache[license_id],_ = License.objects.get_or_create(
-                license_id=license_id, defaults={"name": license["name"]}
-            )
-            if len(license_id) > 250:
-                logger.error(f'LICENSE TOO LONG: {license_id}')
+            try:
+                # If we don't have a local copy of the license object get it from the DB
+                license_obj_cache[license_id],_ = License.objects.get_or_create(
+                    license_id=license_id, defaults={"name": license["name"]}
+                )
+            except Exception as e:
+                logger.error(f'LICENSE TOO LONG: {license_id}, {license.get("name")}')
+                logger.error(e)
 
         # Add the license object to the list for this component
         licenses.append(license_obj_cache[license_id])
