@@ -38,7 +38,7 @@ def process_dependency(dep: dict, scan: Scan) -> None:
         # Character limit for licenses are 256 and Trivy SBOM at times can incorrectly
         # return out lengthy gibberish
         if len(license.get("name")) > 256:
-            logger.error(f"{component} License exceeds character limit: {license['name']}")
+            logger.error(f"{component}'s license exceeds character limit: {license['name']}")
             continue
         if license_id not in license_obj_cache:
             # If we don't have a local copy of the license object get it from the DB
