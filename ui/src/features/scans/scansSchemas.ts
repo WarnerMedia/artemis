@@ -71,6 +71,7 @@ export interface ScanErrors {
 
 interface ScanInventory {
 	base_images?: object;
+	cicd_tools?: object;
 	technology_discovery?: object;
 }
 

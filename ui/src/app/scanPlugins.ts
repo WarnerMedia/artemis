@@ -154,6 +154,11 @@ export const techPluginsKeys: ScanPluginKeys = {
 		apiName: "base_images",
 		group: GROUP_INVENTORY,
 	},
+	cicd_tools: {
+		displayName: t`CICD Tools`,
+		apiName: "cicd_tools",
+		group: GROUP_INVENTORY,
+	},
 	technology_discovery: {
 		displayName: t`Enry Technology Discovery`,
 		apiName: "technology_discovery",
