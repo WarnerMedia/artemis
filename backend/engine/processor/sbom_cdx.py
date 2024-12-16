@@ -50,6 +50,8 @@ def process_dependency(dep: dict, scan: Scan) -> None:
         licenses.append(license_obj_cache[license_id])
 
     # Update the component's set of licenses
+    if len(licenses) > 20:
+        logger.error(f"too many license reported: {licenses}")
     if licenses:
         component.licenses.set(licenses)
 
