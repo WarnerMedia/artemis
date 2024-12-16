@@ -35,16 +35,14 @@ def process_dependency(dep: dict, scan: Scan) -> None:
     licenses = []
     for license in dep["licenses"]:
         license_id = license.get("id").lower()
-        logger.info(f'ALL LICENSE: {license}')
+        if len(license.get("name")) > 256:
+            logger.error(f"{component} License exceeds character limit: {license['name']}")
+            continue
         if license_id not in license_obj_cache:
-            try:
-                # If we don't have a local copy of the license object get it from the DB
-                license_obj_cache[license_id],_ = License.objects.get_or_create(
-                    license_id=license_id, defaults={"name": license["name"]}
-                )
-            except Exception as e:
-                logger.error(f'LICENSE TOO LONG: {license}')
-                logger.error(e)
+            # If we don't have a local copy of the license object get it from the DB
+            license_obj_cache[license_id],_ = License.objects.get_or_create(
+                license_id=license_id, defaults={"name": license["name"]}
+            )
 
         # Add the license object to the list for this component
         licenses.append(license_obj_cache[license_id])
