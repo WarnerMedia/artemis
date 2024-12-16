@@ -42,7 +42,7 @@ def process_dependency(dep: dict, scan: Scan) -> None:
                     license_id=license_id, defaults={"name": license["name"]}
                 )
             except Exception as e:
-                logger.error(f'LICENSE TOO LONG: {license_id}, {license.get("name")}')
+                logger.error(f'LICENSE TOO LONG: {license}')
                 logger.error(e)
 
         # Add the license object to the list for this component
