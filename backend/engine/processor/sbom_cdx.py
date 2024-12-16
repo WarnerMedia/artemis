@@ -35,6 +35,7 @@ def process_dependency(dep: dict, scan: Scan) -> None:
     licenses = []
     for license in dep["licenses"]:
         license_id = license.get("id").lower()
+        logger.info(f'ALL LICENSE: {license}')
         if license_id not in license_obj_cache:
             try:
                 # If we don't have a local copy of the license object get it from the DB
