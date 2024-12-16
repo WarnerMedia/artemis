@@ -155,7 +155,7 @@ export const techPluginsKeys: ScanPluginKeys = {
 		group: GROUP_INVENTORY,
 	},
 	cicd_tools: {
-		displayName: t`CICD Tools`,
+		displayName: t`CI/CD Tool Discovery`,
 		apiName: "cicd_tools",
 		group: GROUP_INVENTORY,
 	},

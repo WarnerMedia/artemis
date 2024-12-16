@@ -96,6 +96,7 @@ export interface SeverityLevels {
 
 export interface SummaryInventory {
 	technology_discovery?: number;
+	cicd_tools?: number;
 	base_images?: number;
 }
 
@@ -328,6 +329,7 @@ const severityLevelsSchema: Yup.ObjectSchema<SeverityLevels> = Yup.object()
 const summaryInventorySchema: Yup.ObjectSchema<SummaryInventory> = Yup.object()
 	.shape({
 		technology_discovery: Yup.number(),
+		cicd_tools: Yup.number(),
 		base_images: Yup.number(),
 	})
 	.defined();
@@ -346,6 +348,7 @@ const scanResultsSummarySchema: Yup.ObjectSchema<ScanResultsSummary> =
 const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	.shape({
 		base_images: Yup.object(), // object with varying keys based on images detected
+		cicd_tools: Yup.object(), // object with varying keys based on images detected
 		technology_discovery: Yup.object(), // object with varying keys based on languages detected
 	})
 	.defined();
