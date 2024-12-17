@@ -20,7 +20,7 @@ import {
 import { addNotification } from "features/notifications/notificationsSlice";
 
 function* _addHiddenFindingSaga(
-	action: PayloadAction<HiddenFindingsRequest>
+	action: PayloadAction<HiddenFindingsRequest>,
 ): Generator<StrictEffect, void, HiddenFinding | HiddenFinding[]> {
 	try {
 		const response = yield call(client.addHiddenFinding, { ...action.payload });
@@ -35,14 +35,14 @@ function* _addHiddenFindingSaga(
 }
 
 function* _deleteHiddenFindingSaga(
-	action: PayloadAction<HiddenFindingsRequest>
+	action: PayloadAction<HiddenFindingsRequest>,
 ): Generator<StrictEffect, void, HiddenFinding["id"]> {
 	try {
 		const response: HiddenFinding["id"] = yield call(
 			client.deleteHiddenFinding,
 			{
 				...action.payload,
-			}
+			},
 		);
 		yield put({
 			type: deleteHiddenFinding.fulfilled.type,
@@ -58,14 +58,14 @@ function* _deleteHiddenFindingSaga(
 }
 
 function* _getHiddenFindingsSaga(
-	action: PayloadAction<HiddenFindingsRequest>
+	action: PayloadAction<HiddenFindingsRequest>,
 ): Generator<StrictEffect, void, HiddenFinding[]> {
 	const { url, meta } = action.payload;
 	try {
 		const response: HiddenFinding[] = yield call(
 			client.getHiddenFindings,
 			url,
-			{ meta }
+			{ meta },
 		);
 		yield put({
 			type: getHiddenFindings.fulfilled.type,
@@ -78,7 +78,7 @@ function* _getHiddenFindingsSaga(
 }
 
 function* _updateHiddenFindingSaga(
-	action: PayloadAction<HiddenFindingsRequest>
+	action: PayloadAction<HiddenFindingsRequest>,
 ): Generator<StrictEffect, void, HiddenFinding[]> {
 	try {
 		const response: HiddenFinding[] = yield call(client.updateHiddenFinding, {

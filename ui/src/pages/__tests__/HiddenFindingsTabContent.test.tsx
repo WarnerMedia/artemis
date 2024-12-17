@@ -32,7 +32,7 @@ const openFindingDialog = async () => {
 			hiddenFindingsConsolidatedRows={mockHFRows003}
 			hiddenFindingsSummary={mockHFSummary003}
 			saveFilters={mockSaveFilters}
-		/>
+		/>,
 	);
 
 	// + "" to force string
@@ -47,7 +47,7 @@ const openFindingDialog = async () => {
 
 	// wait for dialog to open
 	await waitFor(() =>
-		screen.getByRole("dialog", { name: /modify hidden finding/i })
+		screen.getByRole("dialog", { name: /modify hidden finding/i }),
 	);
 	return user;
 };
@@ -59,7 +59,7 @@ const closeFindingDialog = async (user: any) => {
 	expect(cancelButton).toBeInTheDocument();
 	await user.click(cancelButton);
 	await waitFor(() =>
-		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
 	);
 };
 
@@ -77,7 +77,7 @@ describe("HiddenFindingsTabContent component", () => {
 				hiddenFindingsConsolidatedRows={[]}
 				hiddenFindingsSummary={mockHiddenFindingsSummaryNone}
 				saveFilters={mockSaveFilters}
-			/>
+			/>,
 		);
 
 		expect(screen.queryByRole("row")).not.toBeInTheDocument();
@@ -90,13 +90,13 @@ describe("HiddenFindingsTabContent component", () => {
 			name: /modify hidden finding/i,
 		});
 		expect(
-			within(dialog).getByRole("link", { name: "CVE-2018-00000" })
+			within(dialog).getByRole("link", { name: "CVE-2018-00000" }),
 		).toBeInTheDocument();
 		expect(
-			within(dialog).getByRole("button", { name: /^remove$/i })
+			within(dialog).getByRole("button", { name: /^remove$/i }),
 		).toBeInTheDocument();
 		expect(
-			within(dialog).getByRole("button", { name: /^update$/i })
+			within(dialog).getByRole("button", { name: /^update$/i }),
 		).toBeInTheDocument();
 		await closeFindingDialog(user);
 	});
@@ -107,13 +107,13 @@ describe("HiddenFindingsTabContent component", () => {
 				hiddenFindingsConsolidatedRows={mockHFRows003}
 				hiddenFindingsSummary={mockHFSummary003}
 				saveFilters={mockSaveFilters}
-			/>
+			/>,
 		);
 
 		expect(
 			screen.getByText(
-				/these findings will be excluded from all results for this repository, including all branches/i
-			)
+				/these findings will be excluded from all results for this repository, including all branches/i,
+			),
 		).toBeInTheDocument();
 		expect(screen.getAllByRole("checkbox")).toHaveLength(mockHFRows003.length);
 		expect(screen.getAllByLabelText(/this item has expired/i)).toHaveLength(4);
@@ -139,7 +139,7 @@ describe("HiddenFindingsTabContent component", () => {
 				hiddenFindingsConsolidatedRows={filterFindingsById("CVE-2019-00000")}
 				hiddenFindingsSummary={summary}
 				saveFilters={mockSaveFilters}
-			/>
+			/>,
 		);
 
 		const rows = screen.getAllByRole("checkbox");
@@ -151,11 +151,11 @@ describe("HiddenFindingsTabContent component", () => {
 		expect(within(rows[0]).getByText(/high/i)).toBeInTheDocument();
 		expect(
 			within(rows[0]).getByLabelText(
-				/30 source files not covered by this hidden finding/i
-			)
+				/30 source files not covered by this hidden finding/i,
+			),
 		).toBeInTheDocument();
 		expect(
-			within(rows[0]).getByLabelText(/this item has expired/i)
+			within(rows[0]).getByLabelText(/this item has expired/i),
 		).toBeInTheDocument();
 	});
 
@@ -165,7 +165,7 @@ describe("HiddenFindingsTabContent component", () => {
 				hiddenFindingsConsolidatedRows={mockHFRows003}
 				hiddenFindingsSummary={mockHFSummary003}
 				saveFilters={mockSaveFilters}
-			/>
+			/>,
 		);
 
 		const header = screen.getByRole("button", { name: "Severity" });
@@ -198,7 +198,7 @@ describe("HiddenFindingsTabContent component", () => {
 				// don't try to find blank severities
 				if (finding[0].severity) {
 					expect(
-						within(cols[3]).getByText(finding[0].severity, { exact: false })
+						within(cols[3]).getByText(finding[0].severity, { exact: false }),
 					).toBeInTheDocument(); // col 4 = severity
 				}
 				r += 1;
@@ -220,7 +220,7 @@ describe("HiddenFindingsTabContent component", () => {
 				// don't try to find blank severities
 				if (finding[0].severity) {
 					expect(
-						within(cols[3]).getByText(finding[0].severity, { exact: false })
+						within(cols[3]).getByText(finding[0].severity, { exact: false }),
 					).toBeInTheDocument(); // col 4 = severity
 				}
 				r += 1;
@@ -234,7 +234,7 @@ describe("HiddenFindingsTabContent component", () => {
 				hiddenFindingsConsolidatedRows={mockHFRows003}
 				hiddenFindingsSummary={mockHFSummary003}
 				saveFilters={mockSaveFilters}
-			/>
+			/>,
 		);
 
 		const header = screen.getByRole("button", { name: "Expires" });
@@ -276,7 +276,7 @@ describe("HiddenFindingsTabContent component", () => {
 						within(cols[4]).getByText(dt, {
 							exact: false,
 							normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-						})
+						}),
 					).toBeInTheDocument(); // col 5 = expires
 				}
 				r += 1;
@@ -307,7 +307,7 @@ describe("HiddenFindingsTabContent component", () => {
 						within(cols[4]).getByText(dt, {
 							exact: false,
 							normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-						})
+						}),
 					).toBeInTheDocument(); // col 5 = expires
 				}
 				r += 1;
@@ -322,7 +322,7 @@ describe("HiddenFindingsTabContent component", () => {
 					hiddenFindingsConsolidatedRows={mockHFRows003}
 					hiddenFindingsSummary={mockHFSummary003}
 					saveFilters={mockSaveFilters}
-				/>
+				/>,
 			);
 
 			const filterGroup = screen.getByRole("group", {
@@ -333,13 +333,15 @@ describe("HiddenFindingsTabContent component", () => {
 			});
 			expect(firstFilter).toHaveFocus();
 			expect(
-				within(filterGroup).getByRole("textbox", { name: /file/i })
+				within(filterGroup).getByRole("textbox", { name: /file/i }),
 			).toHaveAttribute("placeholder", "Contains");
 			expect(
-				within(filterGroup).getByRole("textbox", { name: /id\/line/i })
+				within(filterGroup).getByRole("textbox", { name: /id\/line/i }),
 			).toHaveAttribute("placeholder", "Contains");
 			expect(
-				within(filterGroup).getByRole("textbox", { name: /component\/commit/i })
+				within(filterGroup).getByRole("textbox", {
+					name: /component\/commit/i,
+				}),
 			).toHaveAttribute("placeholder", "Contains");
 			within(filterGroup).getByRole("button", { name: /severity /i });
 		});
@@ -356,7 +358,7 @@ describe("HiddenFindingsTabContent component", () => {
 				null,
 				{
 					advanceTimers: jest.advanceTimersByTime,
-				}
+				},
 			);
 
 			const filterGroup = screen.getByRole("group", {
@@ -387,7 +389,7 @@ describe("HiddenFindingsTabContent component", () => {
 
 			jest.runOnlyPendingTimers();
 			await waitFor(() =>
-				expect(componentFilter).toHaveDisplayValue(componentValue)
+				expect(componentFilter).toHaveDisplayValue(componentValue),
 			);
 
 			await validateSelect({
@@ -467,7 +469,7 @@ describe("HiddenFindingsTabContent component", () => {
 					hiddenFindingsConsolidatedRows={mockHFRows003}
 					hiddenFindingsSummary={mockHFSummary003}
 					saveFilters={mockSaveFilters}
-				/>
+				/>,
 			);
 
 			const filterGroup = await screen.findByRole("group", {
@@ -477,7 +479,7 @@ describe("HiddenFindingsTabContent component", () => {
 				name: /component\/commit/i,
 			});
 			await waitFor(() =>
-				expect(componentFilter).toHaveDisplayValue(componentValue)
+				expect(componentFilter).toHaveDisplayValue(componentValue),
 			);
 
 			const vulnFilter = await within(filterGroup).findByRole("textbox", {

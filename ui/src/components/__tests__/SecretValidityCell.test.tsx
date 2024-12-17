@@ -103,7 +103,7 @@ describe("SecretValidityCell", () => {
 });
 
 function getValidityStrFromDetails(
-	details: ReadonlyArray<SecretDetail>
+	details: ReadonlyArray<SecretDetail>,
 ): string {
 	return Array.from(new Set(details.map((item) => item.validity))).join(", ");
 }

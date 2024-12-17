@@ -457,7 +457,7 @@ const validScanPaths = (paths?: string): number => {
 };
 
 export const scanOptionsFormSchema = (
-	currentUser?: User
+	currentUser?: User,
 ): Yup.ObjectSchema<ScanOptionsForm> => {
 	return Yup.object({
 		vcsOrg: Yup.string()
@@ -471,7 +471,7 @@ export const scanOptionsFormSchema = (
 			.required(i18n._(t`Required`))
 			.matches(
 				/^[a-zA-Z0-9.\-_/]+$/,
-				i18n._(t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /`)
+				i18n._(t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /`),
 			)
 			.when("vcsOrg", {
 				// if VCS does not contain /Org suffix, then repo must contain Org/ Prefix
@@ -487,8 +487,8 @@ export const scanOptionsFormSchema = (
 			.matches(
 				/^[^ ~^:?*[\\]*$/,
 				i18n._(
-					t`Contains one of more of the following invalid characters: space, \, ~, ^, :, ?, *, [`
-				)
+					t`Contains one of more of the following invalid characters: space, \, ~, ^, :, ?, *, [`,
+				),
 			),
 		secrets: Yup.boolean(),
 		staticAnalysis: Yup.boolean(),
@@ -520,7 +520,7 @@ export const scanOptionsFormSchema = (
 						message: i18n._(
 							valid === PATH_INVALID_FORMAT
 								? t`Invalid path, must be relative to repository base directory and contain valid characters`
-								: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`
+								: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`,
 						),
 					});
 				}
@@ -538,7 +538,7 @@ export const scanOptionsFormSchema = (
 							message: i18n._(
 								valid === PATH_INVALID_FORMAT
 									? t`Invalid path, must be relative to repository base directory and contain valid characters`
-									: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`
+									: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`,
 							),
 						});
 					}
@@ -564,7 +564,7 @@ export const scanOptionsFormSchema = (
 					configPlugins,
 					sbomPlugins,
 				},
-				testContext
+				testContext,
 			) {
 				if (
 					// check false instead of falsy
@@ -586,12 +586,12 @@ export const scanOptionsFormSchema = (
 					return testContext.createError({
 						path: "secrets",
 						message: i18n._(
-							t`At least one scan feature or plugin must be enabled`
+							t`At least one scan feature or plugin must be enabled`,
 						),
 					});
 				}
 				return true;
-			}
+			},
 		)
 		.defined();
 };

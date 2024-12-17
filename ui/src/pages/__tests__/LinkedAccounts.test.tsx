@@ -45,7 +45,7 @@ describe("LinkedAccounts component", () => {
 
 		render(<LinkedAccounts />);
 		expect(
-			screen.getByRole("button", { name: "Link GitHub User" })
+			screen.getByRole("button", { name: "Link GitHub User" }),
 		).toBeInTheDocument();
 	});
 
@@ -121,7 +121,7 @@ describe("LinkedAccounts component", () => {
 		expect(
 			within(linkedLabel).getByText(linkedRe, {
 				normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-			})
+			}),
 		).toBeInTheDocument();
 	});
 
@@ -202,7 +202,7 @@ describe("LinkedAccounts component", () => {
 		expect(mockDispatch).toHaveBeenLastCalledWith(
 			unlinkVcsService({
 				url: "/users/self/services/github",
-			})
+			}),
 		);
 	});
 });

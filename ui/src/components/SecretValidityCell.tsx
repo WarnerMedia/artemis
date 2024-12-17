@@ -73,7 +73,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					size="small"
 					tooltipDisabled={tooltipDisabled}
 					tooltipText={i18n._(
-						t`This finding was tested and determined to be valid and active`
+						t`This finding was tested and determined to be valid and active`,
 					)}
 				/>
 			);
@@ -86,7 +86,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					size="small"
 					tooltipDisabled={tooltipDisabled}
 					tooltipText={i18n._(
-						t`This finding was tested and determined to be inactive`
+						t`This finding was tested and determined to be inactive`,
 					)}
 				/>
 			);
@@ -99,7 +99,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 					size="small"
 					tooltipDisabled={tooltipDisabled}
 					tooltipText={i18n._(
-						t`This finding could not be determined to be either active or inactive`
+						t`This finding could not be determined to be either active or inactive`,
 					)}
 				/>
 			);
@@ -117,7 +117,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 
 	function getMixedChip(
 		details: ReadonlyArray<SecretDetail>,
-		tooltipDisabled: boolean | undefined
+		tooltipDisabled: boolean | undefined,
 	) {
 		let chipStyle: string;
 		let icon: JSX.Element;
@@ -148,7 +148,7 @@ export const SecretValidityChip = (props: SecretValidityChipProps) => {
 				size="small"
 				tooltipDisabled={tooltipDisabled}
 				tooltipText={`${i18n._(
-					t`Multiple different validities reported`
+					t`Multiple different validities reported`,
 				)}: ${getDetailsSummary(details)}`}
 			/>
 		);
@@ -170,7 +170,7 @@ const TooltipChip = (props: TooltipChipProps) => {
 };
 
 function getMixedValidity(
-	details: ReadonlyArray<SecretDetail>
+	details: ReadonlyArray<SecretDetail>,
 ): SecretValidity {
 	if (allValuesMatch(details, (item) => item.type)) {
 		// If all services agree on the finding type, validity priority goes Active > Inactive >
@@ -208,7 +208,7 @@ function getMixedValidity(
 
 function allValuesMatch(
 	details: ReadonlyArray<SecretDetail>,
-	fn: (item: SecretDetail) => string
+	fn: (item: SecretDetail) => string,
 ): boolean {
 	let first: string | undefined;
 
@@ -251,7 +251,7 @@ function getDetailsSummary(details: ReadonlyArray<SecretDetail>): string {
 
 function getTypesOfValidity(
 	details: ReadonlyArray<SecretDetail>,
-	validity: SecretValidity
+	validity: SecretValidity,
 ): string[] {
 	const filtered = details
 		.filter((item) => item.validity === validity)

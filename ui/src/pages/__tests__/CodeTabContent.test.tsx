@@ -37,7 +37,7 @@ describe("CodeTabContent component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 	});
 	afterEach(() => {
@@ -55,7 +55,7 @@ describe("CodeTabContent component", () => {
 		};
 		const mockSetState = jest.fn();
 		render(
-			<CodeTabContent scan={scan} state={state} setState={mockSetState} />
+			<CodeTabContent scan={scan} state={state} setState={mockSetState} />,
 		);
 
 		const themeField = screen.getByLabelText(/theme/i);
@@ -75,7 +75,7 @@ describe("CodeTabContent component", () => {
 
 		// mock scan data doesn't include sbom category or plugins, so no sbom download button
 		expect(
-			screen.queryByRole("button", { name: /download sbom results/i })
+			screen.queryByRole("button", { name: /download sbom results/i }),
 		).not.toBeInTheDocument();
 	});
 
@@ -88,7 +88,7 @@ describe("CodeTabContent component", () => {
 		};
 		const mockSetState = jest.fn();
 		render(
-			<CodeTabContent scan={scan} state={state} setState={mockSetState} />
+			<CodeTabContent scan={scan} state={state} setState={mockSetState} />,
 		);
 
 		const themeField = screen.getByLabelText(/theme/i);
@@ -108,7 +108,7 @@ describe("CodeTabContent component", () => {
 
 		// mock scan data doesn't include sbom category or plugins, so no sbom download button
 		expect(
-			screen.queryByRole("button", { name: /download sbom results/i })
+			screen.queryByRole("button", { name: /download sbom results/i }),
 		).not.toBeInTheDocument();
 	});
 
@@ -122,7 +122,7 @@ describe("CodeTabContent component", () => {
 		};
 		const mockSetState = jest.fn();
 		render(
-			<CodeTabContent scan={scan} state={state} setState={mockSetState} />
+			<CodeTabContent scan={scan} state={state} setState={mockSetState} />,
 		);
 
 		screen.getByRole("button", { name: /download scan results/i });
@@ -146,7 +146,7 @@ describe("CodeTabContent component", () => {
 		// ensure acknowledgment dialog displayed
 		localStorage.removeItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE);
 		const { user } = render(
-			<CodeTabContent scan={scan} state={state} setState={mockSetState} />
+			<CodeTabContent scan={scan} state={state} setState={mockSetState} />,
 		);
 
 		const downloadButton = screen.getByRole("button", {
@@ -172,13 +172,13 @@ describe("CodeTabContent component", () => {
 
 		expect(localStorageSetItemSpy).toHaveBeenLastCalledWith(
 			STORAGE_LOCAL_EXPORT_ACKNOWLEDGE,
-			"1"
+			"1",
 		);
 
 		expect(spy).toHaveBeenCalledWith("scan", scan);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating JSON File", "info")
+			addNotification("Generating JSON File", "info"),
 		);
 	});
 
@@ -198,7 +198,7 @@ describe("CodeTabContent component", () => {
 		// bypass aknowledgement dialog
 		localStorage.setItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE, "1");
 		const { user } = render(
-			<CodeTabContent scan={scan} state={state} setState={mockSetState} />
+			<CodeTabContent scan={scan} state={state} setState={mockSetState} />,
 		);
 
 		const downloadButton = screen.getByRole("button", {
@@ -208,14 +208,14 @@ describe("CodeTabContent component", () => {
 
 		await waitFor(() =>
 			expect(
-				screen.queryByRole("dialog", { name: /confirm download/i })
-			).not.toBeInTheDocument()
+				screen.queryByRole("dialog", { name: /confirm download/i }),
+			).not.toBeInTheDocument(),
 		);
 
 		expect(spy).toHaveBeenCalledWith("scan", scan);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating JSON File", "info")
+			addNotification("Generating JSON File", "info"),
 		);
 	});
 
@@ -236,7 +236,7 @@ describe("CodeTabContent component", () => {
 			.mockImplementation(
 				(url: string, { meta, customConfig = {} }: Client) => {
 					return Promise.resolve(scan);
-				}
+				},
 			);
 
 		const exportSpy = jest
@@ -251,7 +251,7 @@ describe("CodeTabContent component", () => {
 				scan={scan as AnalysisReport}
 				state={state}
 				setState={mockSetState}
-			/>
+			/>,
 		);
 
 		const downloadButton = screen.getByRole("button", {
@@ -277,13 +277,13 @@ describe("CodeTabContent component", () => {
 
 		expect(localStorageSetItemSpy).toHaveBeenLastCalledWith(
 			STORAGE_LOCAL_EXPORT_ACKNOWLEDGE,
-			"1"
+			"1",
 		);
 
 		// sbom results fetched
 		expect(fetchSbomSpy).toHaveBeenCalledWith(
 			`${scan.service}/${scan.repo}/${scan.scan_id}`,
-			{}
+			{},
 		);
 		// and downloads results as JSON
 		waitFor(() => {
@@ -291,7 +291,7 @@ describe("CodeTabContent component", () => {
 		});
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating JSON File", "info")
+			addNotification("Generating JSON File", "info"),
 		);
 	});
 
@@ -312,7 +312,7 @@ describe("CodeTabContent component", () => {
 			.mockImplementation(
 				(url: string, { meta, customConfig = {} }: Client) => {
 					return Promise.resolve(scan);
-				}
+				},
 			);
 
 		const exportSpy = jest
@@ -327,7 +327,7 @@ describe("CodeTabContent component", () => {
 				scan={scan as AnalysisReport}
 				state={state}
 				setState={mockSetState}
-			/>
+			/>,
 		);
 
 		const downloadButton = screen.getByRole("button", {
@@ -337,14 +337,14 @@ describe("CodeTabContent component", () => {
 
 		await waitFor(() =>
 			expect(
-				screen.queryByRole("dialog", { name: /confirm download/i })
-			).not.toBeInTheDocument()
+				screen.queryByRole("dialog", { name: /confirm download/i }),
+			).not.toBeInTheDocument(),
 		);
 
 		// sbom results fetched
 		expect(fetchSbomSpy).toHaveBeenCalledWith(
 			`${scan.service}/${scan.repo}/${scan.scan_id}`,
-			{}
+			{},
 		);
 		// and downloads results as JSON
 		waitFor(() => {
@@ -352,7 +352,7 @@ describe("CodeTabContent component", () => {
 		});
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating JSON File", "info")
+			addNotification("Generating JSON File", "info"),
 		);
 	});
 });

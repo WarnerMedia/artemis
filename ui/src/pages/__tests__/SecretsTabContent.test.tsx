@@ -22,13 +22,13 @@ const openSecretsDialog = async () => {
 			hiddenFindings={hiddenFindings}
 			currentUser={mockCurrentUser}
 			saveFilters={mockSaveFilters}
-		/>
+		/>,
 	);
 
 	// this data should be in the dialog title
 	// first finding for this file (0)
 	const secretType = Object.entries(mockScan001.results.secrets).filter(
-		([key]) => key === secretFile
+		([key]) => key === secretFile,
 	)[0][1][0].type;
 
 	const cell = screen.getByRole("rowheader", {
@@ -52,7 +52,7 @@ const closeSecretsDialog = async (user: any) => {
 	expect(okButton).toBeInTheDocument();
 	await user.click(okButton);
 	await waitFor(() =>
-		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
 	);
 };
 
@@ -81,7 +81,7 @@ describe("SecretsTabContent component", () => {
 					hiddenFindings={hiddenFindings}
 					currentUser={mockCurrentUser}
 					saveFilters={mockSaveFilters}
-				/>
+				/>,
 			);
 
 			expect(screen.queryByRole("row")).not.toBeInTheDocument();
@@ -102,7 +102,7 @@ describe("SecretsTabContent component", () => {
 			// hide secret we are going to open dialog for
 			// first finding for this file (0)
 			const secretFinding = Object.entries(mockScan001.results.secrets).filter(
-				([key]) => key === secretFile
+				([key]) => key === secretFile,
 			)[0][1][0];
 
 			hiddenFindings = [
@@ -131,7 +131,7 @@ describe("SecretsTabContent component", () => {
 			const user = await openSecretsDialog();
 			const dialog = screen.getByRole("dialog");
 			const finding = Object.entries(mockScan001.results.secrets).filter(
-				([key]) => key === secretFile
+				([key]) => key === secretFile,
 			)[0][1][0];
 
 			within(dialog).getByText("Found in Source File");
@@ -150,7 +150,7 @@ describe("SecretsTabContent component", () => {
 						hiddenFindings={hiddenFindings}
 						currentUser={mockCurrentUser}
 						saveFilters={mockSaveFilters}
-					/>
+					/>,
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -162,17 +162,17 @@ describe("SecretsTabContent component", () => {
 				expect(firstFilter).toHaveFocus();
 				expect(firstFilter).toHaveAttribute("placeholder", "Contains");
 				expect(
-					within(filterGroup).getByRole("textbox", { name: /line/i })
+					within(filterGroup).getByRole("textbox", { name: /line/i }),
 				).toHaveAttribute("placeholder", "Exact");
 				expect(
-					within(filterGroup).getByRole("textbox", { name: /type/i })
+					within(filterGroup).getByRole("textbox", { name: /type/i }),
 				).toHaveAttribute("placeholder", "Contains");
 				expect(
-					within(filterGroup).getByRole("textbox", { name: /commit/i })
+					within(filterGroup).getByRole("textbox", { name: /commit/i }),
 				).toHaveAttribute("placeholder", "Contains");
 
 				expect(
-					within(filterGroup).getByRole("button", { name: /validity/i })
+					within(filterGroup).getByRole("button", { name: /validity/i }),
 				).toBeInTheDocument();
 			});
 
@@ -189,7 +189,7 @@ describe("SecretsTabContent component", () => {
 					null,
 					{
 						advanceTimers: jest.advanceTimersByTime,
-					}
+					},
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -203,7 +203,7 @@ describe("SecretsTabContent component", () => {
 
 				jest.runOnlyPendingTimers();
 				await waitFor(() =>
-					expect(locationFilter).toHaveDisplayValue(locationValue)
+					expect(locationFilter).toHaveDisplayValue(locationValue),
 				);
 
 				const lineFilter = await within(filterGroup).findByRole("textbox", {
@@ -239,7 +239,7 @@ describe("SecretsTabContent component", () => {
 				await act(async () => await user.type(commitFilter, commitValue));
 				jest.runOnlyPendingTimers();
 				await waitFor(() =>
-					expect(commitFilter).toHaveDisplayValue(commitValue)
+					expect(commitFilter).toHaveDisplayValue(commitValue),
 				);
 
 				expect(mockSaveFilters).toHaveBeenLastCalledWith(HASH_PREFIX, {
@@ -288,7 +288,7 @@ describe("SecretsTabContent component", () => {
 						hiddenFindings={hiddenFindings}
 						currentUser={mockCurrentUser}
 						saveFilters={mockSaveFilters}
-					/>
+					/>,
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -298,7 +298,7 @@ describe("SecretsTabContent component", () => {
 					name: /location/i,
 				});
 				await waitFor(() =>
-					expect(locationFilter).toHaveDisplayValue(locationValue)
+					expect(locationFilter).toHaveDisplayValue(locationValue),
 				);
 
 				const lineFilter = await within(filterGroup).findByRole("textbox", {
@@ -324,7 +324,7 @@ describe("SecretsTabContent component", () => {
 					name: /commit/i,
 				});
 				await waitFor(() =>
-					expect(commitFilter).toHaveDisplayValue(commitValue)
+					expect(commitFilter).toHaveDisplayValue(commitValue),
 				);
 
 				global.window ??= globalWindow;

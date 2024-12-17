@@ -67,14 +67,14 @@ const ListItemMetaMultiField = (props: {
 					<Box className={classes.listItemText}>
 						{data?.application_metadata?.sample_metadata?.field1}
 					</Box>
-				</Tooltip>
+				</Tooltip>,
 			);
 			metaRequirements -= 1;
 		} else {
 			metaData.push(
 				<Box className={classes.resultsError} key="scan-samplemeta-field1">
 					<Trans>Meta Data Field1 Missing</Trans>
-				</Box>
+				</Box>,
 			);
 		}
 
@@ -83,14 +83,14 @@ const ListItemMetaMultiField = (props: {
 			metaData.push(
 				<Box className={classes.listItemText} key="scan-samplemeta-field2">
 					<Box>{data?.application_metadata?.sample_metadata?.field2}</Box>
-				</Box>
+				</Box>,
 			);
 			metaRequirements -= 1;
 		} else {
 			metaData.push(
 				<Box className={classes.resultsError} key="scan-samplemeta-field2">
 					<Trans>Meta Data Field2 Missing</Trans>
-				</Box>
+				</Box>,
 			);
 		}
 		requirementsMet = metaRequirements === 0;
@@ -135,7 +135,7 @@ const ListItemMetaMultiField = (props: {
 						</Box>
 					</Alert>
 				)}
-			</Box>
+			</Box>,
 		);
 	}
 
@@ -148,7 +148,7 @@ const ListItemMetaMultiField = (props: {
 							{},
 							{
 								[classes.resultsError]: !requirementsMet,
-							}
+							},
 						)}
 					/>
 				</ListItemIcon>

@@ -141,10 +141,10 @@ export const serviceSchema = () => {
 			/^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/,
 			{
 				message: i18n._(
-					t`Must be a valid service name [azure|bitbucket|github] or hostname`
+					t`Must be a valid service name [azure|bitbucket|github] or hostname`,
 				),
 				excludeEmptyString: true,
-			}
+			},
 		);
 };
 

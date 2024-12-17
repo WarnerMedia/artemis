@@ -84,7 +84,7 @@ describe("ResultsPage component", () => {
 
 			// check the page title
 			await waitFor(() =>
-				expect(global.window.document.title).toMatch(/scan results/i)
+				expect(global.window.document.title).toMatch(/scan results/i),
 			);
 
 			// check share button
@@ -107,7 +107,7 @@ describe("ResultsPage component", () => {
 			// must use a scan with results
 			mockAppState.scans.ids.push(mockScan001.scan_id);
 			mockAppState.scans.entities[mockScan001.scan_id] = JSON.parse(
-				JSON.stringify(mockScan001)
+				JSON.stringify(mockScan001),
 			);
 			mockAppState.scans.status = "success";
 			mockAppState.scans.totalRecords = 1;
@@ -124,16 +124,16 @@ describe("ResultsPage component", () => {
 			// wait for scan data to load
 			await waitFor(() =>
 				expect(
-					screen.queryByText(/^fetching scan results$/)
-				).not.toBeInTheDocument()
+					screen.queryByText(/^fetching scan results$/),
+				).not.toBeInTheDocument(),
 			);
 
 			// check the page title contains expected repo & branch
 			// branch is "default" since scan contains a null branch field
 			await waitFor(() =>
 				expect(global.window.document.title).toMatch(
-					`Artemis - Scan Results: ${repo} (default)`
-				)
+					`Artemis - Scan Results: ${repo} (default)`,
+				),
 			);
 			global.window ??= globalWindow;
 		});
@@ -147,7 +147,7 @@ describe("ResultsPage component", () => {
 			// must use a scan with results
 			mockAppState.scans.ids.push(mockScan001.scan_id);
 			mockAppState.scans.entities[mockScan001.scan_id] = JSON.parse(
-				JSON.stringify(mockScan001)
+				JSON.stringify(mockScan001),
 			);
 			mockAppState.scans.status = "success";
 			mockAppState.scans.totalRecords = 1;
@@ -166,16 +166,16 @@ describe("ResultsPage component", () => {
 			// wait for scan data to load
 			await waitFor(() =>
 				expect(
-					screen.queryByText(/^fetching scan results$/)
-				).not.toBeInTheDocument()
+					screen.queryByText(/^fetching scan results$/),
+				).not.toBeInTheDocument(),
 			);
 
 			// check the page title contains expected repo & branch
 			// branch is "default" since scan contains a null branch field
 			await waitFor(() =>
 				expect(global.window.document.title).toMatch(
-					`Artemis - Scan Results: ${repo} (${branch})`
-				)
+					`Artemis - Scan Results: ${repo} (${branch})`,
+				),
 			);
 			global.window ??= globalWindow;
 		});

@@ -640,7 +640,7 @@ const MatchChipField = (props: MatchFieldProps) => {
 							}
 							setFieldValue(props.name, newValue, true);
 						}}
-					/>
+					/>,
 				);
 			}
 		}
@@ -660,7 +660,7 @@ const MatchChipField = (props: MatchFieldProps) => {
 					size="small"
 				>
 					<ClearIcon fontSize="small" />
-				</IconButton>
+				</IconButton>,
 			);
 		}
 		return nodes;
@@ -690,7 +690,7 @@ const MatchDateField = (props: MatchFieldProps) => {
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-date-item-${label}`}>
 					<Trans>{values.label}</Trans>
-				</MenuItem>
+				</MenuItem>,
 			);
 		}
 		return nodes;
@@ -736,7 +736,7 @@ const MatchPluginsSelectorField = (props: MatchFieldProps) => {
 						label={i18n._(v.label)}
 						name={label}
 						className={classes.scanCategory}
-					/>
+					/>,
 				);
 			}
 		}
@@ -764,7 +764,7 @@ const MatchStringField = (props: MatchFieldProps) => {
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
 					<Trans>{values.label}</Trans>
-				</MenuItem>
+				</MenuItem>,
 			);
 		}
 		return nodes;
@@ -829,9 +829,9 @@ const LastScanCell = (props: {
 	let resultsUrl = null;
 	if (includeLink && row?.service && row?.repo && qualifiedScan?.scan_id) {
 		resultsUrl = `/results?service=${encodeURIComponent(
-			row.service
+			row.service,
 		)}&repo=${encodeURIComponent(row.repo)}&id=${encodeURIComponent(
-			row.qualified_scan.scan_id
+			row.qualified_scan.scan_id,
 		)}`;
 	}
 
@@ -1168,19 +1168,19 @@ const ComponentFiltersForm = (props: {
 			.max(
 				COMPONENT_NAME_LENGTH,
 				i18n._(
-					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
-				)
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`,
+				),
 			),
 		version_match: matchStringSchema(
-			i18n._(t`Invalid component version matcher`)
+			i18n._(t`Invalid component version matcher`),
 		),
 		version: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_VERSION_LENGTH,
 				i18n._(
-					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
-				)
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`,
+				),
 			),
 		license_match: matchLicenseSchema(i18n._(t`Invalid license matcher`)),
 		license: Yup.string()
@@ -1188,8 +1188,8 @@ const ComponentFiltersForm = (props: {
 			.max(
 				COMPONENT_LICENSE_LENGTH,
 				i18n._(
-					t`Component license must be less than ${COMPONENT_LICENSE_LENGTH} characters`
-				)
+					t`Component license must be less than ${COMPONENT_LICENSE_LENGTH} characters`,
+				),
 			),
 		service_match: matchStringSchema(i18n._(t`Invalid service matcher`)),
 		service: serviceSchema().nullable(),
@@ -1198,7 +1198,7 @@ const ComponentFiltersForm = (props: {
 		last_scan_match: matchDateSchema(i18n._(t`Invalid scan time matcher`)),
 		last_scan: Yup.date()
 			.typeError(
-				i18n._(t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`)
+				i18n._(t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`),
 			)
 			.nullable()
 			.default(null)
@@ -1304,11 +1304,11 @@ const RepoFiltersForm = (props: {
 		repo: repoSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
 		last_qualified_scan_match: matchNullDateSchema(
-			i18n._(t`Invalid last qualified scan time matcher`)
+			i18n._(t`Invalid last qualified scan time matcher`),
 		),
 		last_qualified_scan: Yup.date()
 			.typeError(
-				i18n._(t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`)
+				i18n._(t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`),
 			)
 			.nullable()
 			.default(null)
@@ -1433,64 +1433,64 @@ const VulnFiltersForm = (props: {
 		.trim()
 		.oneOf(
 			["null", "", "low", "high", "critical", "medium", "negligible"],
-			i18n._(t`Invalid severity`)
+			i18n._(t`Invalid severity`),
 		);
 	const schema = Yup.object({
 		vuln_id_match: matchStringSchema(
-			i18n._(t`Invalid vulnerability id matcher`)
+			i18n._(t`Invalid vulnerability id matcher`),
 		),
 		vuln_id: Yup.string()
 			.trim()
 			.max(
 				VULN_ID_LENGTH,
 				i18n._(
-					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`
-				)
+					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`,
+				),
 			),
 		description_match: matchStringSchema(
-			i18n._(t`Invalid description matcher`)
+			i18n._(t`Invalid description matcher`),
 		),
 		description: Yup.string()
 			.trim()
 			.max(
 				DESCRIPTION_LENGTH,
 				i18n._(
-					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
-				)
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`,
+				),
 			),
 		remediation_match: matchStringSchema(
-			i18n._(t`Invalid remediation matcher`)
+			i18n._(t`Invalid remediation matcher`),
 		),
 		remediation: Yup.string()
 			.trim()
 			.max(
 				REMEDIATION_LENGTH,
 				i18n._(
-					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`
-				)
+					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`,
+				),
 			),
 		severity: Yup.array().of(severitySchema).ensure(), // ensures an array, even when 1 value
 		component_name_match: matchStringSchema(
-			i18n._(t`Invalid component name matcher`)
+			i18n._(t`Invalid component name matcher`),
 		),
 		component_name: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_NAME_LENGTH,
 				i18n._(
-					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
-				)
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`,
+				),
 			),
 		component_version_match: matchStringSchema(
-			i18n._(t`Invalid component version matcher`)
+			i18n._(t`Invalid component version matcher`),
 		),
 		component_version: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_VERSION_LENGTH,
 				i18n._(
-					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
-				)
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`,
+				),
 			),
 		plugin: Yup.array().of(pluginSchema).ensure(), // ensures an array, even when 1 value
 	}).defined();
@@ -1522,7 +1522,7 @@ const ComponentRepoDialog = (props: {
 						...meta,
 						filters: {},
 					},
-				}
+				},
 			);
 			setResultRows([...response.results]);
 			setTotalRows(response.count);
@@ -1544,7 +1544,7 @@ const ComponentRepoDialog = (props: {
 					...meta,
 					filters: {},
 				},
-			}
+			},
 		);
 		return response.results.map((r) => ({
 			service: r.service,
@@ -1747,9 +1747,9 @@ const VulnRepoDialog = (props: {
 			data.qualified_scan?.created
 		) {
 			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
-				data.service
+				data.service,
 			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-				data.qualified_scan.scan_id
+				data.qualified_scan.scan_id,
 			)} (created ${data.qualified_scan.created})`;
 		}
 
@@ -2001,8 +2001,8 @@ const ComponentDialogContent = (props: {
 
 	const licenseNames: string[] = selectedRow?.licenses
 		? selectedRow.licenses.map(
-				(license: ComponentLicense) => license?.name ?? ""
-		  )
+				(license: ComponentLicense) => license?.name ?? "",
+			)
 		: [];
 
 	return (
@@ -2191,14 +2191,14 @@ const VulnDialogContent = (props: {
 					key={`source-plugin-${plugin}`}
 					label={pluginName}
 					size="small"
-				/>
+				/>,
 			);
 		}
 	}
 
 	if (selectedRow?.components) {
 		for (const [name, versionArray] of Object.entries(
-			selectedRow?.components as VulnComponent
+			selectedRow?.components as VulnComponent,
 		)) {
 			componentNames.push(`${name} (${versionArray.join(", ")})`);
 		}
@@ -2345,7 +2345,7 @@ const FormFields = (props: {
 	const theme = useTheme();
 	const { classes } = useStyles();
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	); // current user is "self" id
 	const { category, values, errors, touched, submitting, setFieldValue } =
 		props;
@@ -2358,7 +2358,7 @@ const FormFields = (props: {
 			...new Set(
 				currentUser?.scan_orgs
 					? currentUser.scan_orgs.map((org) => org.split("/", 1)[0])
-					: []
+					: [],
 			),
 		];
 	};
@@ -2557,7 +2557,7 @@ const FormFields = (props: {
 					state: {
 						inputValue: string;
 						getOptionLabel: (option: string) => string;
-					}
+					},
 				) => {
 					const filtered = filterOptions(options, state);
 					// value not in services options, add it to the array
@@ -2650,7 +2650,7 @@ const FormFields = (props: {
 					state: {
 						inputValue: string;
 						getOptionLabel: (option: string) => string;
-					}
+					},
 				) => {
 					const filtered = filterOptions(options, state);
 					// value not in services options, add it to the array
@@ -2875,7 +2875,7 @@ const FormFields = (props: {
 							}
 							fullWidth
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -2906,11 +2906,11 @@ const FormFields = (props: {
 							inputFormat="yyyy/LL/dd HH:mm"
 							placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
 							invalidDateMessage={i18n._(
-								t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`
+								t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`,
 							)}
 							mask="____/__/__ __:__"
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -2929,7 +2929,7 @@ const FormFields = (props: {
 							matchOptions={props?.matchOptions ?? matchSeverity}
 							fullWidth
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -2948,7 +2948,7 @@ const FormFields = (props: {
 							matchOptions={props?.matchOptions ?? matchDate}
 							fullWidth
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -2964,7 +2964,7 @@ const FormFields = (props: {
 							label={i18n._(props.label)}
 							matchOptions={props?.matchOptions ?? matchPlugins}
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -2983,7 +2983,7 @@ const FormFields = (props: {
 							matchOptions={props?.matchOptions ?? matchString}
 							fullWidth
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -2994,7 +2994,7 @@ const FormFields = (props: {
 						item
 						xs={props.size}
 						key={`grid-item-spacer-${props.id}`}
-					></Grid>
+					></Grid>,
 				);
 				break;
 			}
@@ -3038,7 +3038,7 @@ const FormFields = (props: {
 								),
 							}}
 						/>
-					</Grid>
+					</Grid>,
 				);
 				break;
 			}
@@ -3068,51 +3068,51 @@ const SearchPage = () => {
 			.max(
 				COMPONENT_NAME_LENGTH,
 				i18n._(
-					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
-				)
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`,
+				),
 			),
 		name__icontains: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_NAME_LENGTH,
 				i18n._(
-					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
-				)
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`,
+				),
 			),
 		version: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_VERSION_LENGTH,
 				i18n._(
-					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
-				)
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`,
+				),
 			),
 		version__icontains: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_VERSION_LENGTH,
 				i18n._(
-					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
-				)
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`,
+				),
 			),
 		license: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_LICENSE_LENGTH,
 				i18n._(
-					t`Component license must be less than ${COMPONENT_LICENSE_LENGTH} characters`
-				)
+					t`Component license must be less than ${COMPONENT_LICENSE_LENGTH} characters`,
+				),
 			),
 		license__null: booleanStringSchema(
-			i18n._(t`Component license null must be either "true" or "false"`)
+			i18n._(t`Component license null must be either "true" or "false"`),
 		),
 		license__icontains: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_LICENSE_LENGTH,
 				i18n._(
-					t`Component license must be less than ${COMPONENT_LICENSE_LENGTH} characters`
-				)
+					t`Component license must be less than ${COMPONENT_LICENSE_LENGTH} characters`,
+				),
 			),
 		service: serviceSchema(),
 		service__icontains: serviceSchema(),
@@ -3121,11 +3121,11 @@ const SearchPage = () => {
 		//last_scan__null: booleanStringSchema(i18n._(t`Scan time null must be either "true" or "false"`)), // not yet implemented
 		last_scan__gt: Yup.date().max(
 			getMaxDate(),
-			i18n._(t`Scan time can not be in the future`)
+			i18n._(t`Scan time can not be in the future`),
 		),
 		last_scan__lt: Yup.date().max(
 			getMaxDate(),
-			i18n._(t`Scan time can not be in the future`)
+			i18n._(t`Scan time can not be in the future`),
 		),
 		/* FUTURE: support between 2 scans
 		last_scan__bt: Yup.date().max(
@@ -3192,15 +3192,15 @@ const SearchPage = () => {
 		repo__icontains: repoSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
 		last_qualified_scan__null: booleanStringSchema(
-			i18n._(t`Scan time null must be either "true" or "false"`)
+			i18n._(t`Scan time null must be either "true" or "false"`),
 		),
 		last_qualified_scan__gt: Yup.date().max(
 			getMaxDate(),
-			i18n._(t`Scan time can not be in the future`)
+			i18n._(t`Scan time can not be in the future`),
 		),
 		last_qualified_scan__lt: Yup.date().max(
 			getMaxDate(),
-			i18n._(t`Scan time can not be in the future`)
+			i18n._(t`Scan time can not be in the future`),
 		),
 		/* FUTURE: support between 2 scans
 		last_qualified_scan__bt: Yup.date().max(
@@ -3279,7 +3279,7 @@ const SearchPage = () => {
 		.trim()
 		.oneOf(
 			["null", "", "low", "high", "critical", "medium", "negligible"],
-			i18n._(t`Invalid severity`)
+			i18n._(t`Invalid severity`),
 		);
 
 	const pluginSchema = Yup.string()
@@ -3292,48 +3292,48 @@ const SearchPage = () => {
 			.max(
 				VULN_ID_LENGTH,
 				i18n._(
-					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`
-				)
+					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`,
+				),
 			),
 		vuln_id__icontains: Yup.string()
 			.trim()
 			.max(
 				VULN_ID_LENGTH,
 				i18n._(
-					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`
-				)
+					t`Vulnerability id must be less than ${VULN_ID_LENGTH} characters`,
+				),
 			),
 		description: Yup.string()
 			.trim()
 			.max(
 				DESCRIPTION_LENGTH,
 				i18n._(
-					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
-				)
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`,
+				),
 			),
 		description__icontains: Yup.string()
 			.trim()
 			.max(
 				DESCRIPTION_LENGTH,
 				i18n._(
-					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
-				)
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`,
+				),
 			),
 		remediation: Yup.string()
 			.trim()
 			.max(
 				REMEDIATION_LENGTH,
 				i18n._(
-					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`
-				)
+					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`,
+				),
 			),
 		remediation__icontains: Yup.string()
 			.trim()
 			.max(
 				REMEDIATION_LENGTH,
 				i18n._(
-					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`
-				)
+					t`Remediation must be less than ${REMEDIATION_LENGTH} characters`,
+				),
 			),
 		severity: Yup.array().of(severitySchema).ensure(), // ensures an array, even when 1 value
 		component_name: Yup.string()
@@ -3341,32 +3341,32 @@ const SearchPage = () => {
 			.max(
 				COMPONENT_NAME_LENGTH,
 				i18n._(
-					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
-				)
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`,
+				),
 			),
 		component_name__icontains: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_NAME_LENGTH,
 				i18n._(
-					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`
-				)
+					t`Component name must be less than ${COMPONENT_NAME_LENGTH} characters`,
+				),
 			),
 		component_version: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_VERSION_LENGTH,
 				i18n._(
-					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
-				)
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`,
+				),
 			),
 		component_version__icontains: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_VERSION_LENGTH,
 				i18n._(
-					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`
-				)
+					t`Component version must be less than ${COMPONENT_VERSION_LENGTH} characters`,
+				),
 			),
 		plugin: Yup.array().of(pluginSchema).ensure(), // ensures an array, even when 1 value
 	}).defined();
@@ -3444,7 +3444,7 @@ const SearchPage = () => {
 	}).defined();
 
 	const [searchCategory, setSearchCategory] = useState<string>(
-		Object.keys(searchCategories)[0] as string
+		Object.keys(searchCategories)[0] as string,
 	);
 
 	// sort plugin array into separate arrays for each plugin category
@@ -3631,9 +3631,9 @@ const SearchPage = () => {
 			data.qualified_scan?.created
 		) {
 			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
-				data.service
+				data.service,
 			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-				data.qualified_scan.scan_id
+				data.qualified_scan.scan_id,
 			)} (created ${data.qualified_scan.created})`;
 		}
 		return {
@@ -3734,7 +3734,7 @@ const SearchPage = () => {
 	};
 
 	const handleSearchCategoryChange = (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
 		if (typeof event.target.value === "string") {
 			const category = event.target.value;
@@ -3749,7 +3749,7 @@ const SearchPage = () => {
 			nodes.push(
 				<MenuItem value={category} key={`select-item-${category}`}>
 					{values?.component ? values.component : <Trans>{values.label}</Trans>}
-				</MenuItem>
+				</MenuItem>,
 			);
 		}
 		return nodes;

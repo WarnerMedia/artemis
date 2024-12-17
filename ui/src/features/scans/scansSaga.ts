@@ -49,7 +49,7 @@ let abortController: AbortController | null = null;
 const _cancelScanTasks = () => {
 	console.debug(
 		"cancelling queued background scan tasks:",
-		Object.keys(scanTasks).length
+		Object.keys(scanTasks).length,
 	);
 	for (const [id, task] of Object.entries(scanTasks)) {
 		cancel(task);
@@ -63,7 +63,7 @@ const _cancelScanTasks = () => {
 };
 
 function* _addScanSaga(
-	action: PayloadAction<ScanOptionsForm>
+	action: PayloadAction<ScanOptionsForm>,
 ): Generator<StrictEffect, void, AnalysisReport> {
 	const scan = action.payload;
 	_cancelScanTasks();
@@ -90,7 +90,7 @@ function* _clearScansSaga() {
 }
 
 function* _getCurrentScanSaga(
-	action: PayloadAction<Client | void>
+	action: PayloadAction<Client | void>,
 ): Generator<StrictEffect, void, AnalysisReport> {
 	const { meta } = action.payload || { meta: undefined };
 	_cancelScanTasks();
@@ -110,7 +110,7 @@ function* _getCurrentScanSaga(
 }
 
 function* _getScanByIdSaga(
-	action: PayloadAction<ScanByIdRequest>
+	action: PayloadAction<ScanByIdRequest>,
 ): Generator<StrictEffect, void, AnalysisReport> {
 	const { url, meta } = action.payload;
 	try {
@@ -143,7 +143,7 @@ function* _getScanByIdSaga(
 }
 
 function* _getScanHistorySaga(
-	action: PayloadAction<ScanRequest>
+	action: PayloadAction<ScanRequest>,
 ): Generator<StrictEffect, void, ScanHistoryResponse | Task> {
 	const { data, meta } = action.payload;
 	_cancelScanTasks();

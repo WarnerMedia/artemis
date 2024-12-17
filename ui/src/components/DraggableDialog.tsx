@@ -110,7 +110,7 @@ const DraggableDialog = (props: DraggableDialogProps) => {
 											<Trans>OK</Trans>
 										</Button>
 									</Box>
-							  )}
+								)}
 					</DialogActions>
 				</>
 			)}

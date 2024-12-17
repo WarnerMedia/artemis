@@ -159,7 +159,7 @@ describe("SearchPage component", () => {
 							disabled: disabled,
 							user,
 						});
-					}
+					},
 				);
 
 				// test text input fields
@@ -189,7 +189,7 @@ describe("SearchPage component", () => {
 						if (placeholder) {
 							expect(field).toHaveAttribute("placeholder", placeholder);
 						}
-					}
+					},
 				);
 
 				// this test generates the warning: An update to SearchPage inside a test was not wrapped in act(...)
@@ -289,7 +289,7 @@ describe("SearchPage component", () => {
 							user,
 						});
 						await testFieldLength(fieldName, maxLength, expectedError, user);
-					}
+					},
 				);
 			});
 
