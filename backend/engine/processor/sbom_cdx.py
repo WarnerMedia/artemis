@@ -11,6 +11,11 @@ from processor.sbom import convert_string_to_json
 
 logger = Logger(__name__)
 
+# Maximum allowed length for the licence name in the DB
+MAX_LICENCE_LENGTH = 256
+# Maximum count of licenses for a component, before deemed "possibly a bug from Trivy"
+MAX_LICENCE_COUNT = 15
+
 
 def process_sbom(result: Result, scan: Scan) -> None:
     if result.details:
@@ -35,15 +40,25 @@ def process_dependency(dep: dict, scan: Scan) -> None:
     licenses = []
     for license in dep["licenses"]:
         license_id = license.get("id").lower()
+        # Check if the licence exceeds the maximum allowed length
+        if len(license.get("name")) > MAX_LICENCE_LENGTH:
+            logger.error(f"{component}'s license exceeds character limit. License is: {license['name']}")
+            continue
+        # If we don't have a local copy of the license object get it from the DB
         if license_id not in license_obj_cache:
-            # If we don't have a local copy of the license object get it from the DB
-            license_obj_cache[license_id], _ = License.objects.get_or_create(
-                license_id=license_id, defaults={"name": license["name"]}
-            )
+            try:
+                license_obj_cache[license_id], _ = License.objects.get_or_create(
+                    license_id=license_id, defaults={"name": license["name"]}
+                )
+            except Exception as e:
+                logger.error(f"Error inserting data for license_id {license_id}: {e}")
 
         # Add the license object to the list for this component
         licenses.append(license_obj_cache[license_id])
 
+    # Check if the component's license count exceeds the threshold of what is deemed suspicious
+    if len(licenses) > MAX_LICENCE_COUNT:
+        logger.warning(f"{component} potentially contains incorrect license information")
     # Update the component's set of licenses
     if licenses:
         component.licenses.set(licenses)
