@@ -36,7 +36,7 @@ describe("TableMenu component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 	});
 	afterEach(() => {
@@ -69,7 +69,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -96,13 +96,13 @@ describe("TableMenu component", () => {
 
 		expect(localStorageSetItemSpy).toHaveBeenLastCalledWith(
 			STORAGE_LOCAL_EXPORT_ACKNOWLEDGE,
-			"1"
+			"1",
 		);
 
 		expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating CSV File", "info")
+			addNotification("Generating CSV File", "info"),
 		);
 	});
 
@@ -130,7 +130,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -155,13 +155,13 @@ describe("TableMenu component", () => {
 
 		expect(localStorageSetItemSpy).toHaveBeenLastCalledWith(
 			STORAGE_LOCAL_EXPORT_ACKNOWLEDGE,
-			"0"
+			"0",
 		);
 
 		expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating CSV File", "info")
+			addNotification("Generating CSV File", "info"),
 		);
 	});
 
@@ -189,7 +189,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -244,7 +244,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -266,7 +266,7 @@ describe("TableMenu component", () => {
 		screen.getByRole("progressbar");
 
 		waitFor(() =>
-			expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+			expect(screen.queryByRole("progressbar")).not.toBeInTheDocument(),
 		);
 		expect(exportFetch).toHaveBeenCalled();
 	});
@@ -295,7 +295,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -306,7 +306,7 @@ describe("TableMenu component", () => {
 		expect(spy).toHaveBeenCalledWith(exportFile, data, undefined);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating CSV File", "info")
+			addNotification("Generating CSV File", "info"),
 		);
 	});
 
@@ -331,7 +331,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -342,7 +342,7 @@ describe("TableMenu component", () => {
 		expect(spy).not.toHaveBeenCalled();
 
 		expect(dispatchSpy).toHaveBeenLastCalledWith(
-			addNotification("error!", "error")
+			addNotification("error!", "error"),
 		);
 	});
 
@@ -372,7 +372,7 @@ describe("TableMenu component", () => {
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
 				toCsv={toCsv}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -383,7 +383,7 @@ describe("TableMenu component", () => {
 		expect(spy).toHaveBeenCalledWith(exportFile, data, toCsv);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating CSV File", "info")
+			addNotification("Generating CSV File", "info"),
 		);
 	});
 
@@ -412,7 +412,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -434,7 +434,7 @@ describe("TableMenu component", () => {
 		screen.getByRole("progressbar");
 
 		waitFor(() =>
-			expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+			expect(screen.queryByRole("progressbar")).not.toBeInTheDocument(),
 		);
 		expect(exportFetch).toHaveBeenCalled();
 	});
@@ -463,7 +463,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -474,7 +474,7 @@ describe("TableMenu component", () => {
 		expect(spy).toHaveBeenCalledWith(exportFile, data);
 
 		expect(mockDispatch).toHaveBeenLastCalledWith(
-			addNotification("Generating JSON File", "info")
+			addNotification("Generating JSON File", "info"),
 		);
 	});
 
@@ -499,7 +499,7 @@ describe("TableMenu component", () => {
 				exportFile={exportFile}
 				exportFormats={exportFormats}
 				exportFetch={exportFetch}
-			/>
+			/>,
 		);
 		let menu = screen.getByRole("button", { name: /open table menu/i });
 		await user.click(menu);
@@ -510,7 +510,7 @@ describe("TableMenu component", () => {
 		expect(spy).not.toHaveBeenCalled();
 
 		expect(dispatchSpy).toHaveBeenLastCalledWith(
-			addNotification("error!", "error")
+			addNotification("error!", "error"),
 		);
 	});
 });

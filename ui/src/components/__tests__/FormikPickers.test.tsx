@@ -26,7 +26,7 @@ test("displays input field without label", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByRole("textbox", { name: "" })).toBeInTheDocument();
@@ -46,7 +46,7 @@ test("displays input field with a label", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByRole("textbox", { name: "Test Me" })).toBeInTheDocument();
@@ -66,7 +66,7 @@ test("displays error if initial date value valid", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByText(/invalid date format/i)).toBeInTheDocument();
@@ -89,11 +89,11 @@ test("displays initial date value if date valid", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(
-		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT))
+		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT)),
 	).toBeInTheDocument();
 });
 
@@ -113,7 +113,7 @@ test("displays placeholder", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByPlaceholderText(props.placeholder)).toBeInTheDocument();
@@ -136,7 +136,7 @@ test("input disabled", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByRole("textbox", { name: "Test Me" })).toBeDisabled();
@@ -159,12 +159,12 @@ test("displays value matching format", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	// expect format: Month Day Hour:Minute"
 	expect(
-		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT))
+		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT)),
 	).toBeInTheDocument();
 });
 
@@ -187,7 +187,7 @@ test("disablePast disallows initial past dates", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	// expect format: Month Day Hour:Minute"
@@ -214,7 +214,7 @@ test("disablePast disallows past date entry", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -247,7 +247,7 @@ test("minDate disallows date entry before minDate", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -287,7 +287,7 @@ test("schema with min disallows date entry before min date", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -319,7 +319,7 @@ test("disableFuture disallows initial future dates", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	// expect format: Month Day Hour:Minute"
@@ -346,7 +346,7 @@ test("disableFuture disallows future date entry", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -379,7 +379,7 @@ test("maxDate disallows date entry after maxDate", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -419,7 +419,7 @@ test("schema with max disallows date entry after max date", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -449,7 +449,7 @@ test("value not matching format cannot be entered", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -477,7 +477,7 @@ test("invalid date produces an error", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });

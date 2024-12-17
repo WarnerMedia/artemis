@@ -19,7 +19,7 @@ describe("globalException reducers", () => {
 			globalException(initialState, {
 				type: setGlobalException.type,
 				payload: { message: "Test Exception" },
-			})
+			}),
 		).toEqual({
 			message: "Test Exception",
 		});
@@ -30,7 +30,7 @@ describe("globalException reducers", () => {
 			globalException(initialState, {
 				type: setGlobalException.type,
 				payload: { message: "Test Exception", action: "login" },
-			})
+			}),
 		).toEqual({
 			message: "Test Exception",
 			action: "login",
@@ -44,8 +44,8 @@ describe("globalException reducers", () => {
 				{
 					type: setGlobalException.type,
 					payload: { message: "New Exception" },
-				}
-			)
+				},
+			),
 		).toEqual({
 			message: "New Exception", // action removed
 		});

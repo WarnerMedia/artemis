@@ -267,7 +267,7 @@ export function makeServer() {
 			defaults["currentUserScope"] =
 				Math.random() < 0.5
 					? // test: matches 1+ occurrence of any character
-					  ["*"]
+						["*"]
 					: [
 							...new Set([
 								// remove duplicates
@@ -284,7 +284,7 @@ export function makeServer() {
 								`${defaults.goodVcs}.${defaults.goodOrg}.com/interpret[?]`,
 								`${AppGlobals.APP_DEMO_USER_VCSORG}/${AppGlobals.APP_DEMO_USER_REPO}`,
 							]),
-					  ];
+						];
 			// common fields to all requested scans for a particular repo
 			const location: Location = {
 				service: "",
@@ -894,7 +894,7 @@ export function makeServer() {
 
 			// remove hidden findings from vuln object
 			const filterVulns = (
-				vulns: ResultsVulnComponents
+				vulns: ResultsVulnComponents,
 			): ResultsVulnComponents => {
 				// deep-copy vulns input
 				const vr: ResultsVulnComponents = JSON.parse(JSON.stringify(vulns));
@@ -920,7 +920,7 @@ export function makeServer() {
 							const i = vr[f.value.component][f.value.id].source.findIndex(
 								(source) => {
 									return source === f.value.source;
-								}
+								},
 							);
 							if (i !== -1) {
 								vr[f.value.component][f.value.id].source.splice(i, 1);
@@ -972,7 +972,7 @@ export function makeServer() {
 						isPluginInCategory(scan.scan_options.plugins || [], vulnPlugins))
 				) {
 					for (const [, vulnList] of Object.entries(
-						scan?.results?.vulnerabilities ?? {}
+						scan?.results?.vulnerabilities ?? {},
 					)) {
 						for (const [, details] of Object.entries(vulnList ?? {})) {
 							summary[details.severity] += 1;
@@ -985,7 +985,7 @@ export function makeServer() {
 
 			const generateVulnResults = (scan: AnalysisReport) => {
 				scan!.results!.vulnerabilities = JSON.parse(
-					JSON.stringify(scanVulnResults)
+					JSON.stringify(scanVulnResults),
 				);
 				scan!.results_summary!.vulnerabilities = genVulnSummary(scan);
 			};
@@ -1047,7 +1047,7 @@ export function makeServer() {
 						isPluginInCategory(scan.scan_options.plugins || [], secretPlugins))
 				) {
 					for (const [, secretList] of Object.entries(
-						scan?.results?.secrets ?? {}
+						scan?.results?.secrets ?? {},
 					)) {
 						if (Array.isArray(secretList)) {
 							count += secretList.length;
@@ -1311,7 +1311,7 @@ export function makeServer() {
 						isPluginInCategory(scan.scan_options.plugins || [], staticPlugins))
 				) {
 					for (const [, analysisList] of Object.entries(
-						scan?.results?.static_analysis ?? {}
+						scan?.results?.static_analysis ?? {},
 					)) {
 						analysisList.forEach((sa) => {
 							summary[sa.severity] += 1;
@@ -1324,14 +1324,14 @@ export function makeServer() {
 
 			const generateAnalysisResults = (scan: AnalysisReport) => {
 				scan!.results!.static_analysis = JSON.parse(
-					JSON.stringify(scanAnalysisResults)
+					JSON.stringify(scanAnalysisResults),
 				);
 				scan!.results_summary!.static_analysis = genAnalysisSummary(scan);
 			};
 
 			// remove hidden findings from configuration object
 			const filterConfig = (
-				config: ResultsConfiguration
+				config: ResultsConfiguration,
 			): ResultsConfiguration => {
 				// deep-copy config input
 				const cg: ResultsConfiguration = JSON.parse(JSON.stringify(config));
@@ -1372,7 +1372,7 @@ export function makeServer() {
 						isPluginInCategory(scan.scan_options.plugins || [], configPlugins))
 				) {
 					for (const [, cg] of Object.entries(
-						scan?.results?.configuration ?? {}
+						scan?.results?.configuration ?? {},
 					)) {
 						summary[cg.severity] += 1;
 					}
@@ -1383,7 +1383,7 @@ export function makeServer() {
 
 			const generateConfigResults = (scan: AnalysisReport) => {
 				scan!.results!.configuration = JSON.parse(
-					JSON.stringify(scanConfigResults)
+					JSON.stringify(scanConfigResults),
 				);
 				scan!.results_summary!.configuration = genConfigSummary(scan);
 			};
@@ -1448,13 +1448,13 @@ export function makeServer() {
 					{},
 					{
 						message: message,
-					}
+					},
 				);
 			};
 
 			const isPluginInCategory = (
 				scanPlugins: string[],
-				categoryPlugins: string[]
+				categoryPlugins: string[],
 			) => {
 				for (let i = 0; i < scanPlugins.length; i += 1) {
 					if (categoryPlugins.includes(scanPlugins[i])) {
@@ -1465,7 +1465,7 @@ export function makeServer() {
 			};
 
 			function* generateScanContent(
-				entity: Entity
+				entity: Entity,
 			): IterableIterator<AnalysisReport> {
 				let currentPlugin = 0;
 				let totalPlugins = 0; // counting categories as plugins
@@ -1476,13 +1476,13 @@ export function makeServer() {
 					const enabledCats: string[] = entity.scan_options.categories.filter(
 						(cat: string) => {
 							return !cat.startsWith("-");
-						}
+						},
 					);
 					// count the category if any plugin in that category is enabled
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
-							vulnPlugins
+							vulnPlugins,
 						) &&
 						!enabledCats.includes("vulnerability")
 					) {
@@ -1491,7 +1491,7 @@ export function makeServer() {
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
-							staticPlugins
+							staticPlugins,
 						) &&
 						!enabledCats.includes("static_analysis")
 					) {
@@ -1500,7 +1500,7 @@ export function makeServer() {
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
-							secretPlugins
+							secretPlugins,
 						) &&
 						!enabledCats.includes("secret")
 					) {
@@ -1509,7 +1509,7 @@ export function makeServer() {
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
-							techPlugins
+							techPlugins,
 						) &&
 						!enabledCats.includes("inventory")
 					) {
@@ -1518,7 +1518,7 @@ export function makeServer() {
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
-							configPlugins
+							configPlugins,
 						) &&
 						!enabledCats.includes("configuration")
 					) {
@@ -1527,7 +1527,7 @@ export function makeServer() {
 					if (
 						isPluginInCategory(
 							entity.scan_options.plugins || [],
-							sbomPlugins
+							sbomPlugins,
 						) &&
 						!enabledCats.includes("sbom")
 					) {
@@ -2004,7 +2004,7 @@ export function makeServer() {
 					entity,
 					"sbom/components",
 					components.length,
-					["id", "last_scan"]
+					["id", "last_scan"],
 				);
 			});
 
@@ -2252,7 +2252,7 @@ export function makeServer() {
 						"qualified_scan",
 						"application_metadata",
 						"last_qualified_scan",
-					]
+					],
 				);
 			});
 
@@ -2274,7 +2274,7 @@ export function makeServer() {
 					entity,
 					"search/repositories",
 					repos.length,
-					["id", "last_qualified_scan"]
+					["id", "last_qualified_scan"],
 				);
 			});
 
@@ -2418,7 +2418,7 @@ export function makeServer() {
 					entity,
 					"search/vulnerabilities",
 					vulns.length,
-					["vuln_id", "plugin"]
+					["vuln_id", "plugin"],
 				);
 			});
 
@@ -2446,9 +2446,9 @@ export function makeServer() {
 						entity,
 						`search/vulnerabilities/${id}/repositories`,
 						repos.length,
-						["id", "last_qualified_scan"]
+						["id", "last_qualified_scan"],
 					);
-				}
+				},
 			);
 
 			this.get("/system/status", () => {
@@ -2457,7 +2457,7 @@ export function makeServer() {
 					DateTime.utc()
 						.plus({ milliseconds: AppGlobals.APP_MAINT_CHECK_INTERVAL })
 						.toJSON(),
-					"long"
+					"long",
 				);
 				// trigger session timeout
 				if (defaults.showMaintenance && Math.random() < 0.04) {
@@ -2571,8 +2571,8 @@ export function makeServer() {
 					return createResponse(
 						400,
 						`Service ID invalid. Valid options: [${defaults.supportedServices.join(
-							", "
-						)}]`
+							", ",
+						)}]`,
 					);
 				}
 				const foundService = getVcsServiceByName(service);
@@ -2604,7 +2604,7 @@ export function makeServer() {
 				}
 				if (
 					!/^[0123456789abcdef]{8}-[0123456789abcdef]{4}-[0123456789abcdef]{4}-[0123456789abcdef]{4}-[0123456789abcdef]{12}$/.test(
-						request.params.id
+						request.params.id,
 					)
 				) {
 					return createResponse(400, "Key ID invalid");
@@ -2629,12 +2629,12 @@ export function makeServer() {
 					return createResponse(
 						400,
 						`Service ID invalid. Valid options: [${defaults.supportedServices.join(
-							", "
-						)}]`
+							", ",
+						)}]`,
 					);
 				}
 				const idx = userVcsServices.findIndex(
-					(userService) => userService.name === service
+					(userService) => userService.name === service,
 				);
 				if (idx === -1) {
 					return createResponse(404, "Not found");
@@ -2809,14 +2809,14 @@ export function makeServer() {
 					return createResponse(
 						400,
 						`Service ID invalid. Valid options: [${defaults.supportedServices.join(
-							", "
-						)}]`
+							", ",
+						)}]`,
 					);
 				}
 				if (!("auth_code" in attrs.params) && !("username" in attrs.params)) {
 					return createResponse(
 						400,
-						"Either auth_code or username param is required"
+						"Either auth_code or username param is required",
 					);
 				}
 				// not actually validating auth_code, just checking length to throw a test error
@@ -2829,7 +2829,7 @@ export function makeServer() {
 				if (getVcsServiceByName(attrs.name)) {
 					return createResponse(
 						409,
-						`Service ${attrs.name} exists for user ${defaults.currentUser}`
+						`Service ${attrs.name} exists for user ${defaults.currentUser}`,
 					);
 				}
 				const newService: VcsService = {
@@ -2921,7 +2921,7 @@ export function makeServer() {
 					.replace(/\/whitelist.*$/, "")
 					.replace(
 						/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.*$/,
-						""
+						"",
 					) // remove scan_id
 					.split("/");
 				if (urlParts.length > 2) {
@@ -2942,18 +2942,18 @@ export function makeServer() {
 				if (!location.org || !location.repo) {
 					return createResponse(
 						400,
-						`Unsupported repo: ${location.service}/${location.org}`
+						`Unsupported repo: ${location.service}/${location.org}`,
 					);
 				}
 
 				const attrs = JSON.parse(request.requestBody);
 				const scanId = generateId();
 				const categories = getCategories(
-					attrs.categories || defaults.categories
+					attrs.categories || defaults.categories,
 				);
 				const plugins = getPlugins(
 					attrs.categories || defaults.categories,
-					attrs.plugins || defaults.plugins
+					attrs.plugins || defaults.plugins,
 				);
 				addScan({
 					scanId: scanId,
@@ -2980,56 +2980,56 @@ export function makeServer() {
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo`,
 				(_schema, request) => {
 					return handlePostScan(request);
-				}
+				},
 			);
 
 			// negative test case to generate a scan creation failure
@@ -3039,7 +3039,7 @@ export function makeServer() {
 					if (!request.params.repo) {
 						return createResponse(
 							400,
-							`Unsupported repo: ${defaults.badVcs}/${defaults.badOrg}`
+							`Unsupported repo: ${defaults.badVcs}/${defaults.badOrg}`,
 						);
 					}
 					// return error as 400 response to match real API
@@ -3056,9 +3056,9 @@ export function makeServer() {
 									error: "Unable to start scan",
 								},
 							],
-						}
+						},
 					);
-				}
+				},
 			);
 
 			// negative test case to generate a 401 / session timeout
@@ -3175,28 +3175,28 @@ export function makeServer() {
 							// non-SBOM scans
 							// filter results by hiddenFindings
 							results.results.vulnerabilities = filterVulns(
-								results.results.vulnerabilities
+								results.results.vulnerabilities,
 							);
 							results.results.secrets = filterSecrets(results.results.secrets);
 							results.results.static_analysis = filterAnalysis(
-								results.results.static_analysis
+								results.results.static_analysis,
 							);
 							results.results.configuration = filterConfig(
-								results.results.configuration
+								results.results.configuration,
 							);
 
 							// and calculate new summary totals after filtering
 							results.results_summary.vulnerabilities = genVulnSummary(
-								results as AnalysisReport
+								results as AnalysisReport,
 							);
 							results.results_summary.secrets = genSecretsSummary(
-								results as AnalysisReport
+								results as AnalysisReport,
 							);
 							results.results_summary.static_analysis = genAnalysisSummary(
-								results as AnalysisReport
+								results as AnalysisReport,
 							);
 							results.results_summary.configuration = genConfigSummary(
-								results as AnalysisReport
+								results as AnalysisReport,
 							);
 						}
 
@@ -3255,56 +3255,56 @@ export function makeServer() {
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo/:scanId`,
 				(_schema, request) => {
 					return getScanById(request);
-				}
+				},
 			);
 
 			const getRandomBranchName = () => {
@@ -3327,7 +3327,7 @@ export function makeServer() {
 				const categories: ScanCategories[] = [];
 				defaults.categories.forEach((cat: ScanCategories) => {
 					categories.push(
-						`${catsToRun.includes(cat) ? "" : "-"}${cat}` as ScanCategories
+						`${catsToRun.includes(cat) ? "" : "-"}${cat}` as ScanCategories,
 					);
 				});
 				return categories;
@@ -3337,7 +3337,7 @@ export function makeServer() {
 			// output: array that includes all plugins, plugins that won't run prefixed with -
 			const getPlugins = (
 				catsToRun: ScanCategories[],
-				pluginsToRun: string[]
+				pluginsToRun: string[],
 			) => {
 				let plugins: string[] = [];
 
@@ -3510,7 +3510,7 @@ export function makeServer() {
 					// force a 404 failure for testing
 					return createResponse(
 						400,
-						`Unsupported repo: ${location.service}/${location.org}`
+						`Unsupported repo: ${location.service}/${location.org}`,
 					);
 				}
 
@@ -3636,7 +3636,7 @@ export function makeServer() {
 					const scope =
 						Math.random() < 0.5
 							? // test: matches 1+ occurrence of any character
-							  ["*"]
+								["*"]
 							: [
 									// test: matches any character in seq once
 									`${defaults.goodVcs}/${defaults.goodOrg}/regex-[0-9]`,
@@ -3649,7 +3649,7 @@ export function makeServer() {
 									// test: don't interpret . as a regex "any" character
 									// test: interpret [?] as literal ? not as a regex pattern
 									`${defaults.goodVcs}.${defaults.goodOrg}.com/interpret[?]`,
-							  ];
+								];
 					let scanOrgs = [];
 					if (scope[0] === "*") {
 						scanOrgs = [
@@ -3717,11 +3717,11 @@ export function makeServer() {
 				adapter: any,
 				path: string,
 				totalCount: number,
-				removeFields?: string[]
+				removeFields?: string[],
 			) => {
 				let filteredIds = [...adapter.ids];
 				for (const [param, value] of Object.entries(
-					request.queryParams || {}
+					request.queryParams || {},
 				)) {
 					// look for filtering fields
 					if (!["limit", "offset", "order_by"].includes(param)) {
@@ -3782,7 +3782,7 @@ export function makeServer() {
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
 										return valueArr.some(
-											(item: string) => item < (value as string)
+											(item: string) => item < (value as string),
 										);
 									}
 								} else if (param.endsWith("__gt")) {
@@ -3794,7 +3794,7 @@ export function makeServer() {
 									if (v) {
 										const valueArr = Array.isArray(v) ? [...v] : [v];
 										return valueArr.some(
-											(item: string) => item > (value as string)
+											(item: string) => item > (value as string),
 										);
 									}
 								} else if (param.endsWith("__isnull")) {
@@ -3929,7 +3929,7 @@ export function makeServer() {
 					allUsers,
 					"/users",
 					defaults.userCount,
-					["scan_orgs"]
+					["scan_orgs"],
 				);
 			};
 
@@ -3937,56 +3937,56 @@ export function makeServer() {
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo/history`,
 				(_schema, request) => {
 					return getScanHistory(request);
-				}
+				},
 			);
 
 			// negative test case to generate a 401 / session timeout
@@ -3994,7 +3994,7 @@ export function makeServer() {
 				`/${defaults.sessionVcs}/${defaults.sessionOrg}/:repo/history`,
 				() => {
 					return createResponse(401, "Session timeout");
-				}
+				},
 			);
 
 			const getHiddenFindings = (request: Request) => {
@@ -4003,7 +4003,7 @@ export function makeServer() {
 					// force a 404 failure for testing
 					return createResponse(
 						400,
-						`Unsupported repo: ${location.service}/${location.org}`
+						`Unsupported repo: ${location.service}/${location.org}`,
 					);
 				}
 				if (repo === "ok") {
@@ -4035,7 +4035,7 @@ export function makeServer() {
 					// force a 404 failure for testing
 					return createResponse(
 						400,
-						`Unsupported repo: ${location.service}/${location.org}`
+						`Unsupported repo: ${location.service}/${location.org}`,
 					);
 				}
 
@@ -4071,7 +4071,7 @@ export function makeServer() {
 				if (attrs.reason.length < 1 || attrs.reason.length > 512) {
 					return createResponse(
 						400,
-						"Reason must be between 1 and 512 characters"
+						"Reason must be between 1 and 512 characters",
 					);
 				}
 				// programmatically force a failure for mock testing
@@ -4238,7 +4238,7 @@ export function makeServer() {
 					// force a 404 failure for testing
 					return createResponse(
 						400,
-						`Unsupported repo: ${location.service}/${location.org}`
+						`Unsupported repo: ${location.service}/${location.org}`,
 					);
 				}
 				if (
@@ -4270,7 +4270,7 @@ export function makeServer() {
 				if (attrs.reason.length < 1 || attrs.reason.length > 512) {
 					return createResponse(
 						400,
-						"Reason must be between 1 and 512 characters"
+						"Reason must be between 1 and 512 characters",
 					);
 				}
 				// programmatically force a failure for mock testing
@@ -4387,7 +4387,7 @@ export function makeServer() {
 					// force a 404 failure for testing
 					return createResponse(
 						400,
-						`Unsupported repo: ${location.service}/${location.org}`
+						`Unsupported repo: ${location.service}/${location.org}`,
 					);
 				}
 				if (
@@ -4411,224 +4411,224 @@ export function makeServer() {
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.get(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return getHiddenFindings(request);
-				}
+				},
 			);
 
 			this.post(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.post(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo/whitelist`,
 				(_schema, request) => {
 					return addHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.put(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return updateHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`/${defaults.goodVcs}/${defaults.goodOrg}/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`${defaults.goodVcs}.${defaults.goodOrg}.com/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`${defaults.goodVcs}/${defaults.goodOrg}/org/path/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 
 			this.delete(
 				`${defaults.goodVcs}/${defaults.goodOrg}ThisIsAVeryLongNameForTheField/:org/:repo/whitelist/:id`,
 				(_schema, request) => {
 					return deleteHiddenFinding(request);
-				}
+				},
 			);
 		},
 	});

@@ -35,7 +35,7 @@ describe("NavBar component", () => {
 		mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 		render(<NavBar />);
 		expect(
-			screen.getByRole("heading", { name: /artemis/i })
+			screen.getByRole("heading", { name: /artemis/i }),
 		).toBeInTheDocument();
 	});
 
@@ -44,7 +44,7 @@ describe("NavBar component", () => {
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 			render(<NavBar />);
 			expect(
-				screen.getByRole("link", { name: /manage user settings/i })
+				screen.getByRole("link", { name: /manage user settings/i }),
 			).toBeInTheDocument();
 		});
 
@@ -52,7 +52,7 @@ describe("NavBar component", () => {
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 			render(<NavBar />);
 			expect(
-				screen.getByRole("button", { name: /open documentation/i })
+				screen.getByRole("button", { name: /open documentation/i }),
 			).toBeInTheDocument();
 		});
 
@@ -62,7 +62,7 @@ describe("NavBar component", () => {
 			expect(
 				screen.getByRole("link", {
 					name: "Search for Components, Licenses, and Repositories",
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -111,7 +111,9 @@ describe("NavBar component", () => {
 				const alert = screen.getByRole("alert");
 				expect(alert).toBeInTheDocument();
 				expect(
-					within(alert).getByText(mockAppState.systemStatus.maintenance.message)
+					within(alert).getByText(
+						mockAppState.systemStatus.maintenance.message,
+					),
 				).toBeInTheDocument();
 			});
 		});

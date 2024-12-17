@@ -63,7 +63,7 @@ describe("MainPage component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 		mockLocation = {
 			search: "",
@@ -122,7 +122,7 @@ describe("MainPage component", () => {
 			// no change to hide-welcome setting
 			expect(localStorageSetItemSpy).toHaveBeenCalledWith(
 				STORAGE_LOCAL_WELCOME,
-				"0"
+				"0",
 			);
 		});
 
@@ -134,14 +134,14 @@ describe("MainPage component", () => {
 			// wait for welcome dialog
 			await screen.findByRole("heading", { name: /welcome to artemis/i });
 			await user.click(
-				screen.getByRole("checkbox", { name: /don't show this dialog/i })
+				screen.getByRole("checkbox", { name: /don't show this dialog/i }),
 			);
 			await user.click(screen.getByRole("button", { name: /ok/i }));
 
 			// hide-welcome setting changed to true
 			expect(localStorageSetItemSpy).toHaveBeenCalledWith(
 				STORAGE_LOCAL_WELCOME,
-				"1"
+				"1",
 			);
 		});
 
@@ -152,7 +152,7 @@ describe("MainPage component", () => {
 
 			// no welcome dialog
 			expect(
-				screen.queryByRole("heading", { name: /welcome to artemis/i })
+				screen.queryByRole("heading", { name: /welcome to artemis/i }),
 			).not.toBeInTheDocument();
 		});
 	});

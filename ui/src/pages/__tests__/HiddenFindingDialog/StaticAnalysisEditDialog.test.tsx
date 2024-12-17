@@ -39,7 +39,7 @@ describe("HiddenFindingDialog component", () => {
 	const findingLabelSourceFound = new RegExp(/^Found in source file/);
 	const findingLabelSourceHidden = new RegExp(/^Hidden in source file/);
 	const findingLabelSourceNotHidden = new RegExp(
-		/^Source files not covered by this hidden finding/
+		/^Source files not covered by this hidden finding/,
 	);
 	const findingLabelType = "Type:";
 	const findingTypeAnalysis = "Static Analysis";
@@ -58,11 +58,11 @@ describe("HiddenFindingDialog component", () => {
 					row={findingAnalysisRow}
 					open={true}
 					onClose={handleClose}
-				/>
+				/>,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -74,7 +74,7 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(createdBy).getByRole("link", {
 					name: findingAnalysisRow.createdBy,
-				})
+				}),
 			).toBeInTheDocument();
 
 			const createdDate = screen.getByRole("listitem", {
@@ -89,8 +89,8 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(createdDate).getByText(
 					formatDate(findingAnalysisRow.hiddenFindings[0].created, "long"),
-					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
-				)
+					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) },
+				),
 			).toBeInTheDocument();
 
 			const updatedBy = screen.getByRole("listitem", {
@@ -100,7 +100,7 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(updatedBy).getByRole("link", {
 					name: findingAnalysisRow.hiddenFindings[0].updated_by,
-				})
+				}),
 			).toBeInTheDocument();
 
 			const updatedDate = screen.getByRole("listitem", {
@@ -115,8 +115,8 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(updatedDate).getByText(
 					formatDate(findingAnalysisRow.hiddenFindings[0].updated, "long"),
-					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
-				)
+					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) },
+				),
 			).toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -124,7 +124,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(category).toBeInTheDocument();
 			expect(
-				within(category).getByText(findingTypeAnalysis)
+				within(category).getByText(findingTypeAnalysis),
 			).toBeInTheDocument();
 
 			const severity = screen.getByRole("listitem", {
@@ -138,7 +138,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(type).toBeInTheDocument();
 			expect(
-				within(type).getByText(findingAnalysisRow.component)
+				within(type).getByText(findingAnalysisRow.component),
 			).toBeInTheDocument();
 
 			const sourceFiles = screen.queryByRole("listitem", {
@@ -152,21 +152,21 @@ describe("HiddenFindingDialog component", () => {
 			expect(hiddenSource).toBeInTheDocument();
 			const fileLine = formatSourceLine(
 				findingAnalysisRow.hiddenFindings[0].value.filename,
-				findingAnalysisRow.hiddenFindings[0].value.line
+				findingAnalysisRow.hiddenFindings[0].value.line,
 			);
 			expect(within(hiddenSource).getByText(fileLine)).toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceNotHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			// warning badge not displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).not.toBeInTheDocument();
 
 			// form doesn't have errors with this data
@@ -180,7 +180,7 @@ describe("HiddenFindingDialog component", () => {
 			const reasonField = screen.getByLabelText(fieldReasonLabel);
 			expect(reasonField).toBeInTheDocument();
 			expect(reasonField).toHaveValue(
-				findingAnalysisRow.hiddenFindings[0].reason
+				findingAnalysisRow.hiddenFindings[0].reason,
 			);
 
 			// Hide for field not in static analysis dialog

@@ -15,7 +15,7 @@ import { STORAGE_LOCAL_THEME } from "app/globals";
 function* _getThemeSaga(): Generator<StrictEffect, void, string | null> {
 	const currentTheme = yield call(
 		[localStorage, "getItem"],
-		STORAGE_LOCAL_THEME
+		STORAGE_LOCAL_THEME,
 	);
 	let payload = {
 		name: defaultTheme,
@@ -38,7 +38,7 @@ function* _getThemeSaga(): Generator<StrictEffect, void, string | null> {
 }
 
 function* _setThemeSaga(
-	action: PayloadAction<string>
+	action: PayloadAction<string>,
 ): Generator<StrictEffect, void, void> {
 	const theme = action.payload;
 	if (!(theme in themeColors)) {

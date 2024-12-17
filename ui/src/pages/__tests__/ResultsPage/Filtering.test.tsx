@@ -86,7 +86,7 @@ describe("ResultsPage component", () => {
 				if (finding.id) {
 					mockAppState.hiddenFindings.ids.push(finding.id);
 					mockAppState.hiddenFindings.entities[finding.id] = JSON.parse(
-						JSON.stringify(finding)
+						JSON.stringify(finding),
 					);
 					mockAppState.hiddenFindings.totalRecords += 1;
 				}
@@ -100,7 +100,7 @@ describe("ResultsPage component", () => {
 			// tab=6 (hidden findings)
 			mockLocation = {
 				search: `?id=${encodeURIComponent(id)}&repo=${encodeURIComponent(
-					repo
+					repo,
 				)}&service=${encodeURIComponent(service)}&tab=6`,
 			};
 			const { user } = render(<ResultsPage />);
@@ -116,10 +116,10 @@ describe("ResultsPage component", () => {
 			// check nothing is filtered
 			expect(screen.getAllByRole("checkbox")).toHaveLength(findingCount);
 			expect(
-				screen.getByText(`1–${findingCount} of ${findingCount}`)
+				screen.getByText(`1–${findingCount} of ${findingCount}`),
 			).toBeInTheDocument();
 			expect(
-				screen.queryByLabelText("This column is filtered")
+				screen.queryByLabelText("This column is filtered"),
 			).not.toBeInTheDocument();
 
 			// filter by critical severity
@@ -128,7 +128,7 @@ describe("ResultsPage component", () => {
 			await user.type(severityFilterField, "critical{enter}");
 			await waitFor(() => {
 				expect(
-					within(severityFilterField).queryByText("Critical: 2")
+					within(severityFilterField).queryByText("Critical: 2"),
 				).toBeInTheDocument();
 			});
 
@@ -136,12 +136,12 @@ describe("ResultsPage component", () => {
 			findingCount = 2;
 			expect(screen.getAllByRole("checkbox")).toHaveLength(findingCount);
 			expect(
-				screen.getByText(`1–${findingCount} of ${findingCount}`)
+				screen.getByText(`1–${findingCount} of ${findingCount}`),
 			).toBeInTheDocument();
 
 			// check column now has a filter indicator
 			expect(
-				within(severityColumn).queryByLabelText("This column is filtered")
+				within(severityColumn).queryByLabelText("This column is filtered"),
 			).toBeInTheDocument();
 
 			// filter category by vulnerability
@@ -152,7 +152,7 @@ describe("ResultsPage component", () => {
 			await user.type(categoryFilterField, "vulnerability{enter}");
 			await waitFor(() => {
 				expect(
-					within(categoryFilterField).queryByText("Vulnerability: 3")
+					within(categoryFilterField).queryByText("Vulnerability: 3"),
 				).toBeInTheDocument();
 			});
 
@@ -160,19 +160,19 @@ describe("ResultsPage component", () => {
 			findingCount = 1;
 			expect(screen.getAllByRole("checkbox")).toHaveLength(findingCount);
 			expect(
-				screen.getByText(`1–${findingCount} of ${findingCount}`)
+				screen.getByText(`1–${findingCount} of ${findingCount}`),
 			).toBeInTheDocument();
 
 			// check column now has a filter indicator
 			expect(
-				within(categoryColumn).queryByLabelText("This column is filtered")
+				within(categoryColumn).queryByLabelText("This column is filtered"),
 			).toBeInTheDocument();
 
 			// reset category field back to "None"
 			await user.type(categoryFilterField, "none{enter}");
 			await waitFor(() => {
 				expect(
-					within(categoryFilterField).queryByText("Vulnerability: 3")
+					within(categoryFilterField).queryByText("Vulnerability: 3"),
 				).not.toBeInTheDocument();
 			});
 
@@ -180,12 +180,12 @@ describe("ResultsPage component", () => {
 			findingCount = 2;
 			expect(screen.getAllByRole("checkbox")).toHaveLength(findingCount);
 			expect(
-				screen.getByText(`1–${findingCount} of ${findingCount}`)
+				screen.getByText(`1–${findingCount} of ${findingCount}`),
 			).toBeInTheDocument();
 
 			// check column filter indicator removed
 			expect(
-				within(categoryColumn).queryByLabelText("This column is filtered")
+				within(categoryColumn).queryByLabelText("This column is filtered"),
 			).not.toBeInTheDocument();
 
 			// filter file by "dockerfile""
@@ -196,7 +196,7 @@ describe("ResultsPage component", () => {
 			// check column now has a filter indicator
 			await waitFor(() => {
 				expect(
-					within(fileColumn).queryByLabelText("This column is filtered")
+					within(fileColumn).queryByLabelText("This column is filtered"),
 				).toBeInTheDocument();
 			});
 
@@ -204,18 +204,18 @@ describe("ResultsPage component", () => {
 			findingCount = 1;
 			expect(screen.getAllByRole("checkbox")).toHaveLength(findingCount);
 			expect(
-				screen.getByText(`1–${findingCount} of ${findingCount}`)
+				screen.getByText(`1–${findingCount} of ${findingCount}`),
 			).toBeInTheDocument();
 
 			// use clear all filters button to clear all filters
 			await user.click(
-				screen.getByRole("button", { name: "Clear all filters" })
+				screen.getByRole("button", { name: "Clear all filters" }),
 			);
 
 			// check all colum filter indicators removed
 			await waitFor(() => {
 				expect(
-					screen.queryByLabelText("This column is filtered")
+					screen.queryByLabelText("This column is filtered"),
 				).not.toBeInTheDocument();
 			});
 
@@ -223,7 +223,7 @@ describe("ResultsPage component", () => {
 			findingCount = 9;
 			expect(screen.getAllByRole("checkbox")).toHaveLength(findingCount);
 			expect(
-				screen.getByText(`1–${findingCount} of ${findingCount}`)
+				screen.getByText(`1–${findingCount} of ${findingCount}`),
 			).toBeInTheDocument();
 		});
 	});
@@ -352,7 +352,7 @@ describe("ResultsPage component", () => {
 			setResultFilters(prefix, filters, mockLocation, mockNavigate);
 			expect(mockNavigate).toHaveBeenLastCalledWith(
 				`${pathname}${search}#${prefix}testFilter=${filters["testFilter"].filter}`,
-				{ preventScrollReset: true, replace: true, state: state }
+				{ preventScrollReset: true, replace: true, state: state },
 			);
 		});
 
@@ -390,7 +390,7 @@ describe("ResultsPage component", () => {
 			setResultFilters(prefix, filters, mockLocation, mockNavigate);
 			expect(mockNavigate).toHaveBeenLastCalledWith(
 				`${pathname}${search}#${prefix}testFilter=${filters["testFilter"].filter}&${prefix}testFilter2=${filters["testFilter2"].filter}`,
-				{ preventScrollReset: true, replace: true, state: state }
+				{ preventScrollReset: true, replace: true, state: state },
 			);
 		});
 

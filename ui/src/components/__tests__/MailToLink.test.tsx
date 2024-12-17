@@ -38,7 +38,7 @@ describe("MailToLink component", () => {
 			render(<MailToLink recipient={recipient} text={recipient} />);
 
 			screen.getByText(
-				recipient.replace(/_DELETED_[0-9]+$/, " (Deleted 1970-05-23)")
+				recipient.replace(/_DELETED_[0-9]+$/, " (Deleted 1970-05-23)"),
 			);
 			// no link
 			expect(screen.queryByRole("link")).not.toBeInTheDocument();
@@ -97,7 +97,7 @@ describe("MailToLink component", () => {
 			const link = screen.getByRole("link", { name: text });
 			expect(link).toHaveAttribute(
 				"href",
-				`mailto:test1@example.com,test2@example.com`
+				`mailto:test1@example.com,test2@example.com`,
 			);
 		});
 
@@ -113,8 +113,8 @@ describe("MailToLink component", () => {
 			expect(link).toHaveAttribute(
 				"href",
 				`mailto:${encodeURI(recipients[0])},${encodeURI(
-					recipients[1]
-				)},${encodeURI(recipients[2])}`
+					recipients[1],
+				)},${encodeURI(recipients[2])}`,
 			);
 		});
 	});
@@ -194,7 +194,7 @@ describe("MailToLink component", () => {
 		const text = recipient + "_DELETED_" + epochSeconds;
 		render(<MailToLink text={text} recipient={text} />);
 		const expected = `${recipient} (Deleted ${DateTime.fromSeconds(
-			epochSeconds
+			epochSeconds,
 		).toFormat("yyyy-LL-dd")})`;
 		screen.getByText(expected);
 		// no link since user is deleted, shouldn't have a valid email address
@@ -251,7 +251,7 @@ describe("MailToLink component", () => {
 		const link = screen.getByRole("link", { name: text });
 		expect(link).toHaveAttribute(
 			"href",
-			`mailto:${recipient}?subject=${subject}`
+			`mailto:${recipient}?subject=${subject}`,
 		);
 	});
 
@@ -263,7 +263,7 @@ describe("MailToLink component", () => {
 		const link = screen.getByRole("link", { name: text });
 		expect(link).toHaveAttribute(
 			"href",
-			`mailto:${recipient}?subject=${encodeURIComponent(subject)}`
+			`mailto:${recipient}?subject=${encodeURIComponent(subject)}`,
 		);
 	});
 
@@ -284,7 +284,7 @@ describe("MailToLink component", () => {
 		const link = screen.getByRole("link", { name: text });
 		expect(link).toHaveAttribute(
 			"href",
-			`mailto:${recipient}?body=${encodeURIComponent(body)}`
+			`mailto:${recipient}?body=${encodeURIComponent(body)}`,
 		);
 	});
 
@@ -299,12 +299,12 @@ describe("MailToLink component", () => {
 				recipient={recipient}
 				subject={subject}
 				body={body}
-			/>
+			/>,
 		);
 		const link = screen.getByRole("link", { name: text });
 		expect(link).toHaveAttribute(
 			"href",
-			`mailto:${recipient}?subject=${subject}&body=${body}`
+			`mailto:${recipient}?subject=${subject}&body=${body}`,
 		);
 	});
 
@@ -318,14 +318,14 @@ describe("MailToLink component", () => {
 				recipient={recipient}
 				subject={body}
 				body={body}
-			/>
+			/>,
 		);
 		const link = screen.getByRole("link", { name: text });
 		expect(link).toHaveAttribute(
 			"href",
 			`mailto:${recipient}?subject=${encodeURIComponent(
-				body
-			)}&body=${encodeURIComponent(body)}`
+				body,
+			)}&body=${encodeURIComponent(body)}`,
 		);
 	});
 
@@ -340,11 +340,11 @@ describe("MailToLink component", () => {
 				subject={body}
 				body={body}
 				disabled
-			/>
+			/>,
 		);
 		expect(screen.getByRole("link", { name: text })).toHaveAttribute(
 			"aria-disabled",
-			"true"
+			"true",
 		);
 	});
 
@@ -359,7 +359,7 @@ describe("MailToLink component", () => {
 				recipient={recipient}
 				subject={body}
 				body={body}
-			/>
+			/>,
 		);
 		expect(screen.getByRole("link", { name: text })).toBeInTheDocument();
 	});
@@ -376,11 +376,11 @@ describe("MailToLink component", () => {
 				subject={body}
 				body={body}
 				disabled
-			/>
+			/>,
 		);
 		expect(screen.getByRole("link", { name: text })).toHaveAttribute(
 			"aria-disabled",
-			"true"
+			"true",
 		);
 	});
 });

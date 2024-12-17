@@ -64,7 +64,7 @@ describe("MainPage component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 		mockLocation = {
 			search: "",
@@ -101,7 +101,7 @@ describe("MainPage component", () => {
 			mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 			render(<MainPage />);
 			expect(
-				screen.getByRole("heading", { name: /scan information/i })
+				screen.getByRole("heading", { name: /scan information/i }),
 			).toBeInTheDocument();
 		});
 
@@ -166,7 +166,7 @@ describe("MainPage component", () => {
 			expect(loadedField).toBeEnabled();
 			await user.type(
 				loadedField,
-				`${mockAppState.currentUser.entities["self"].scan_orgs[2]}{enter}`
+				`${mockAppState.currentUser.entities["self"].scan_orgs[2]}{enter}`,
 			);
 
 			// user clicks next field after entering a valid value for vcs field
@@ -211,11 +211,11 @@ describe("MainPage component", () => {
 			expect(
 				screen.getByRole("combobox", {
 					name: "Version Control System",
-				})
+				}),
 			).toHaveValue(APP_DEMO_USER_VCSORG);
 
 			expect(screen.getByLabelText("Repository")).toHaveValue(
-				APP_DEMO_USER_REPO
+				APP_DEMO_USER_REPO,
 			);
 
 			// assert the button is live

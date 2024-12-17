@@ -45,7 +45,7 @@ describe("HiddenFindingDialog component", () => {
 	const findingLabelSourceFound = new RegExp(/^Found in source file/);
 	const findingLabelSourceHidden = new RegExp(/^Hidden in source file/);
 	const findingLabelSourceNotHidden = new RegExp(
-		/^Source files not covered by this hidden finding/
+		/^Source files not covered by this hidden finding/,
 	);
 	const findingLabelType = "Type:";
 	const findingTypeSecret = "Secret";
@@ -65,11 +65,11 @@ describe("HiddenFindingDialog component", () => {
 					row={findingSecretRow}
 					open={true}
 					onClose={handleClose}
-				/>
+				/>,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -81,20 +81,20 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(createdBy).getByRole("link", {
 					name: findingSecretRow.createdBy,
-				})
+				}),
 			).toBeInTheDocument();
 
 			// test created, updated fields not in row data are not displayed
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenDate })
+				screen.queryByRole("listitem", { name: findingLabelHiddenDate }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -106,13 +106,13 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSeverity,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelType,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			const commit = screen.getByRole("listitem", {
@@ -121,8 +121,8 @@ describe("HiddenFindingDialog component", () => {
 			expect(commit).toBeInTheDocument();
 			expect(
 				within(commit).getByText(
-					findingSecretRow.hiddenFindings[0].value.commit
-				)
+					findingSecretRow.hiddenFindings[0].value.commit,
+				),
 			).toBeInTheDocument();
 
 			const sourceFiles = screen.queryByRole("listitem", {
@@ -136,21 +136,21 @@ describe("HiddenFindingDialog component", () => {
 			expect(hiddenSource).toBeInTheDocument();
 			const fileLine = formatSourceLine(
 				findingSecretRow.hiddenFindings[0].value.filename,
-				findingSecretRow.hiddenFindings[0].value.line
+				findingSecretRow.hiddenFindings[0].value.line,
 			);
 			expect(within(hiddenSource).getByText(fileLine)).toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceNotHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			// warning badge not displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).not.toBeInTheDocument();
 
 			// form doesn't have errors with this data
@@ -164,14 +164,14 @@ describe("HiddenFindingDialog component", () => {
 			const reasonField = screen.getByLabelText(fieldReasonLabel);
 			expect(reasonField).toBeInTheDocument();
 			expect(reasonField).toHaveValue(
-				findingSecretRow.hiddenFindings[0].reason
+				findingSecretRow.hiddenFindings[0].reason,
 			);
 
 			const hideForField = screen.getByLabelText(fieldHideForLabel);
 			expect(hideForField).toBeInTheDocument();
 			expect(hideForField).toHaveAttribute("aria-disabled", "true");
 			expect(
-				within(hideForField).getByText("This secret in THIS specific location")
+				within(hideForField).getByText("This secret in THIS specific location"),
 			).toBeInTheDocument();
 
 			// secret string field hidden in "this" hide for mode
@@ -186,11 +186,11 @@ describe("HiddenFindingDialog component", () => {
 					row={findingSecretRawRow}
 					open={true}
 					onClose={handleClose}
-				/>
+				/>,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -202,7 +202,7 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(createdBy).getByRole("link", {
 					name: findingSecretRawRow.createdBy,
-				})
+				}),
 			).toBeInTheDocument();
 
 			const createdDate = screen.getByRole("listitem", {
@@ -217,17 +217,17 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(createdDate).getByText(
 					formatDate(findingSecretRawRow.hiddenFindings[0].created, "long"),
-					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
-				)
+					{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) },
+				),
 			).toBeInTheDocument();
 
 			// test updated fields not in row data are not displayed
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -235,13 +235,13 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(category).toBeInTheDocument();
 			expect(
-				within(category).getByText(findingTypeSecretRaw)
+				within(category).getByText(findingTypeSecretRaw),
 			).toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSeverity,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			const typeField = screen.getByRole("listitem", {
@@ -270,14 +270,14 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceNotHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			// warning badge not displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).not.toBeInTheDocument();
 
 			// form doesn't have errors with this data
@@ -291,7 +291,7 @@ describe("HiddenFindingDialog component", () => {
 			const reasonField = screen.getByLabelText(fieldReasonLabel);
 			expect(reasonField).toBeInTheDocument();
 			expect(reasonField).toHaveValue(
-				findingSecretRawRow.hiddenFindings[0].reason
+				findingSecretRawRow.hiddenFindings[0].reason,
 			);
 
 			const hideForField = screen.getByLabelText(fieldHideForLabel);
@@ -299,15 +299,15 @@ describe("HiddenFindingDialog component", () => {
 			expect(hideForField).toHaveAttribute("aria-disabled", "true");
 			expect(
 				within(hideForField).getByText(
-					"This secret ANYWHERE in this repository"
-				)
+					"This secret ANYWHERE in this repository",
+				),
 			).toBeInTheDocument();
 
 			// secret string field hidden in "this" hide for mode
 			const secretStringField = screen.getByLabelText(fieldSecretStringLabel);
 			expect(secretStringField).toBeInTheDocument();
 			expect(secretStringField).toHaveValue(
-				findingSecretRawRow.hiddenFindings[0].value.value
+				findingSecretRawRow.hiddenFindings[0].value.value,
 			);
 		});
 	});

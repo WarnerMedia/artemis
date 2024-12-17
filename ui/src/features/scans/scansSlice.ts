@@ -30,18 +30,18 @@ const initialState = scansAdapter.getInitialState<SliceState>({
 // output: AnalysisReport = API scan object
 // input: ScanOptionsForm = user form
 export const addScan = createSagaActions<AnalysisReport, ScanOptionsForm>(
-	"scans/addScan"
+	"scans/addScan",
 );
 export const clearScans = createSagaActions<void>("scans/clearScans");
 export const getCurrentScan = createSagaActions<AnalysisReport, Client | void>(
-	"scans/getCurrentScan"
+	"scans/getCurrentScan",
 );
 export const getScanHistory = createSagaActions<
 	ScanHistoryResponse,
 	ScanRequest
 >("scans/getScanHistory");
 export const getScanById = createSagaActions<AnalysisReport, ScanByIdRequest>(
-	"scans/getScanById"
+	"scans/getScanById",
 );
 
 const scansSlice = createSlice({

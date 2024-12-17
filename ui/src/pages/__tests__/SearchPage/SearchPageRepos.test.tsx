@@ -172,7 +172,7 @@ describe("SearchPage component", () => {
 							disabled: disabled,
 							user,
 						});
-					}
+					},
 				);
 
 				// test text input fields
@@ -207,7 +207,7 @@ describe("SearchPage component", () => {
 						if (placeholder) {
 							expect(field).toHaveAttribute("placeholder", placeholder);
 						}
-					}
+					},
 				);
 
 				it("Risk field checkbox options", async () => {
@@ -269,8 +269,8 @@ describe("SearchPage component", () => {
 								? (
 										mockAppState.currentUser.entities["self"]
 											.scan_orgs as string[]
-								  ).map((org: string) => org.split("/", 1)[0])
-								: []
+									).map((org: string) => org.split("/", 1)[0])
+								: [],
 						),
 					];
 					await validateSelect({
@@ -300,7 +300,7 @@ describe("SearchPage component", () => {
 
 					// not using *ByRole (a11y tree), so this element will exist but should be hidden at this point
 					expect(
-						screen.queryByRole("textbox", { name: /license/i })
+						screen.queryByRole("textbox", { name: /license/i }),
 					).not.toBeInTheDocument();
 				});
 
@@ -348,7 +348,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.queryByRole("button", {
 							name: /copy link to these search results/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 				});
 
@@ -368,7 +368,7 @@ describe("SearchPage component", () => {
 
 					// accordion open on load
 					expect(
-						screen.getByRole("button", { name: /search filters/i })
+						screen.getByRole("button", { name: /search filters/i }),
 					).toHaveAttribute("aria-expanded", "true");
 					const submitButton = await screen.findByRole("button", {
 						name: /^search$/i,
@@ -382,19 +382,19 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// accordion closed on submit
 					expect(
-						screen.getByRole("button", { name: /search filters/i })
+						screen.getByRole("button", { name: /search filters/i }),
 					).toHaveAttribute("aria-expanded", "false");
 
 					// "repo" should not be included in filters
@@ -408,7 +408,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=repo"
+						"/search?category=repo",
 					);
 
 					// sortable columns are buttons
@@ -490,7 +490,7 @@ describe("SearchPage component", () => {
 							"checkbox",
 							{
 								name: "Moderate",
-							}
+							},
 						);
 						riskHigh = within(riskField.parentElement).getByRole("checkbox", {
 							name: "High",
@@ -499,13 +499,13 @@ describe("SearchPage component", () => {
 							"checkbox",
 							{
 								name: "Critical",
-							}
+							},
 						);
 						riskPriority = within(riskField.parentElement).getByRole(
 							"checkbox",
 							{
 								name: "Priority",
-							}
+							},
 						);
 					} else {
 						fail("Risk field has no options");
@@ -590,7 +590,7 @@ describe("SearchPage component", () => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							await user.click(riskCheckbox);
 							expect(riskCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					const scanTimeField = await screen.findByRole("textbox", {
@@ -613,14 +613,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "repo" should not be included in filters
@@ -652,8 +652,8 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
-						)}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`
+							dt.toUTC().toISO() ?? "",
+						)}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`,
 					);
 				});
 
@@ -707,7 +707,7 @@ describe("SearchPage component", () => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							await user.click(riskCheckbox);
 							expect(riskCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					await validateSelect({
@@ -740,14 +740,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "repo" should not be included in filters
@@ -778,7 +778,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						`/search?category=repo&last_qualified_scan__null=true&repo=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service__icontains=${serviceValue}`
+						`/search?category=repo&last_qualified_scan__null=true&repo=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service__icontains=${serviceValue}`,
 					);
 				});
 
@@ -834,14 +834,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "repo" should not be included in filters
@@ -861,8 +861,8 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
-						)}`
+							dt.toUTC().toISO() ?? "",
+						)}`,
 					);
 				});
 
@@ -918,14 +918,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "repo" should not be included in filters
@@ -945,8 +945,8 @@ describe("SearchPage component", () => {
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__gt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
-						)}`
+							dt.toUTC().toISO() ?? "",
+						)}`,
 					);
 				});
 
@@ -995,14 +995,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "repo" should not be included in filters
@@ -1021,7 +1021,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						`/search?category=repo&last_qualified_scan__null=false`
+						`/search?category=repo&last_qualified_scan__null=false`,
 					);
 				});
 
@@ -1057,7 +1057,7 @@ describe("SearchPage component", () => {
 								"checkbox",
 								{
 									name: "Moderate",
-								}
+								},
 							);
 							riskHigh = within(riskField.parentElement).getByRole("checkbox", {
 								name: "High",
@@ -1066,13 +1066,13 @@ describe("SearchPage component", () => {
 								"checkbox",
 								{
 									name: "Critical",
-								}
+								},
 							);
 							riskPriority = within(riskField.parentElement).getByRole(
 								"checkbox",
 								{
 									name: "Priority",
-								}
+								},
 							);
 						} else {
 							fail("Risk field has no options");
@@ -1150,7 +1150,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
+							dt.toUTC().toISO() ?? "",
 						)}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1162,14 +1162,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// all form fields are defaults (empty with default matchers)
@@ -1194,7 +1194,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1261,14 +1261,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// all form fields are defaults (empty with default matchers)
@@ -1293,7 +1293,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1353,7 +1353,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
+							dt.toUTC().toISO() ?? "",
 						)}&repo=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service__icontains=${serviceValue}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1365,14 +1365,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// all form fields are defaults (empty with default matchers)
@@ -1397,7 +1397,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1430,7 +1430,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).not.toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1446,7 +1446,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
+							dt.toUTC().toISO() ?? "",
 						)}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1458,14 +1458,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					screen.getByRole("button", {
@@ -1488,7 +1488,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).not.toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1535,7 +1535,7 @@ describe("SearchPage component", () => {
 
 					mockLocation = {
 						search: `?category=repo&last_qualified_scan__gt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? ""
+							dt.toUTC().toISO() ?? "",
 						)}`,
 					};
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
@@ -1547,14 +1547,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					screen.getByRole("button", {
@@ -1577,7 +1577,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).not.toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1630,14 +1630,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					screen.getByRole("button", {
@@ -1660,7 +1660,7 @@ describe("SearchPage component", () => {
 						(risk: string) => {
 							const riskCheckbox = screen.getByRole("checkbox", { name: risk });
 							expect(riskCheckbox).not.toBeChecked();
-						}
+						},
 					);
 
 					screen.getByRole("button", {
@@ -1739,9 +1739,9 @@ describe("SearchPage component", () => {
 							validInput,
 							unexpectedError,
 							role,
-							user
+							user,
 						);
-					}
+					},
 				);
 
 				it('"Last Qualified Scan Time" field allows valid datetime', async () => {
@@ -1770,8 +1770,8 @@ describe("SearchPage component", () => {
 					await waitFor(() => expect(testComponent).toHaveDisplayValue(dt));
 					await waitFor(() =>
 						expect(
-							screen.queryByText("Scan time can not be in the future")
-						).not.toBeInTheDocument()
+							screen.queryByText("Scan time can not be in the future"),
+						).not.toBeInTheDocument(),
 					);
 
 					const submitButton = screen.getByRole("button", {
@@ -1848,9 +1848,9 @@ describe("SearchPage component", () => {
 							invalidInput,
 							expectedError,
 							role,
-							user
+							user,
 						);
-					}
+					},
 				);
 
 				it('"Last Qualified Scan Time" field disallows invalid datetime', async () => {
@@ -1879,8 +1879,8 @@ describe("SearchPage component", () => {
 					await waitFor(() => expect(testComponent).toHaveDisplayValue(dt));
 					await waitFor(() =>
 						expect(
-							screen.getByText("Scan time can not be in the future")
-						).toBeInTheDocument()
+							screen.getByText("Scan time can not be in the future"),
+						).toBeInTheDocument(),
 					);
 
 					const submitButton = screen.getByRole("button", {
@@ -1918,14 +1918,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "component" should not be included in filters
@@ -1939,7 +1939,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=repo"
+						"/search?category=repo",
 					);
 
 					const repoName = "tv/dev";
@@ -1974,7 +1974,7 @@ describe("SearchPage component", () => {
 					expect(vcsLink).toHaveAttribute("target", "_blank");
 					expect(vcsLink).toHaveAttribute(
 						"rel",
-						"noopener noreferrer nofollow"
+						"noopener noreferrer nofollow",
 					);
 				});
 
@@ -2005,14 +2005,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "component" should not be included in filters
@@ -2026,7 +2026,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=repo"
+						"/search?category=repo",
 					);
 
 					const repoName = "tv/dev";
@@ -2045,24 +2045,24 @@ describe("SearchPage component", () => {
 					});
 
 					const scanTimeField = within(dialog).getByText(
-						/last qualified scan time/i
+						/last qualified scan time/i,
 					);
 					// scan time doesn't have a copy-to-clipboard, it will have a link to the scan if there a last scan time
 					expect(
 						within(scanTimeField).queryByRole("button", {
 							name: /copy to clipboard/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 					if (scanTimeField.parentElement) {
 						expect(
 							within(scanTimeField.parentElement).getByText(
-								/Wednesday, February 2, 2022(,| at) 9:00:00 AM EST/
-							)
+								/Wednesday, February 2, 2022(,| at) 9:00:00 AM EST/,
+							),
 						).toBeInTheDocument();
 
 						const scanLink = within(scanTimeField.parentElement).getByRole(
 							"link",
-							{ name: /open this scan in a new tab/i }
+							{ name: /open this scan in a new tab/i },
 						);
 
 						// link should have expected attributes
@@ -2100,14 +2100,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "component" should not be included in filters
@@ -2121,7 +2121,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=repo"
+						"/search?category=repo",
 					);
 
 					const repoName = "tv/dev";
@@ -2156,7 +2156,7 @@ describe("SearchPage component", () => {
 					expect(vcsLink).toHaveAttribute("target", "_blank");
 					expect(vcsLink).toHaveAttribute(
 						"rel",
-						"noopener noreferrer nofollow"
+						"noopener noreferrer nofollow",
 					);
 
 					const serviceField = within(dialog).getByText(/service/i);
@@ -2165,7 +2165,7 @@ describe("SearchPage component", () => {
 					});
 					if (serviceField.parentElement) {
 						expect(
-							within(serviceField.parentElement).getByText("azure")
+							within(serviceField.parentElement).getByText("azure"),
 						).toBeInTheDocument();
 					} else {
 						fail("Service value missing");
@@ -2175,7 +2175,7 @@ describe("SearchPage component", () => {
 					within(repoField).getByRole("button", { name: /copy to clipboard/i });
 					if (repoField.parentElement) {
 						expect(
-							within(repoField.parentElement).getByText(repoName)
+							within(repoField.parentElement).getByText(repoName),
 						).toBeInTheDocument();
 					} else {
 						fail("Repository value missing");
@@ -2209,14 +2209,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "component" should not be included in filters
@@ -2230,7 +2230,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=repo"
+						"/search?category=repo",
 					);
 
 					const repoName = "tv/qa";
@@ -2249,25 +2249,25 @@ describe("SearchPage component", () => {
 					});
 
 					const scanTimeField = within(dialog).getByText(
-						/last qualified scan time/i
+						/last qualified scan time/i,
 					);
 					// scan time doesn't have a copy-to-clipboard, it will have a link to the scan if there a last scan time
 					expect(
 						within(scanTimeField).queryByRole("button", {
 							name: /copy to clipboard/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 					if (scanTimeField.parentElement) {
 						expect(
 							within(scanTimeField.parentElement).getByText(
-								/no qualified scans/i
-							)
+								/no qualified scans/i,
+							),
 						).toBeInTheDocument();
 
 						expect(
 							within(scanTimeField.parentElement).queryByRole("link", {
 								name: /open this scan in a new tab/i,
-							})
+							}),
 						).not.toBeInTheDocument();
 					} else {
 						fail("Last Qualified Scan Time value missing");
@@ -2301,14 +2301,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// "component" should not be included in filters
@@ -2322,7 +2322,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=repo"
+						"/search?category=repo",
 					);
 
 					const repoName = "tv/dev";
@@ -2344,8 +2344,8 @@ describe("SearchPage component", () => {
 
 					await waitFor(() =>
 						expect(
-							screen.queryByRole("dialog", { name: new RegExp(dialogTitle) })
-						).not.toBeInTheDocument()
+							screen.queryByRole("dialog", { name: new RegExp(dialogTitle) }),
+						).not.toBeInTheDocument(),
 					);
 				});
 			});

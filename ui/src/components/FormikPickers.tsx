@@ -108,7 +108,9 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 								format = dt.toFormat(props.inputFormat);
 							} else {
 								format = dt.toLocaleString(
-									props?.maxDate ? DateTime.DATE_SHORT : DateTime.DATETIME_SHORT
+									props?.maxDate
+										? DateTime.DATE_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = i18n._(t`Date can not be after ${format}`);
@@ -124,7 +126,9 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 								format = dt.toFormat(props.inputFormat);
 							} else {
 								format = dt.toLocaleString(
-									props?.minDate ? DateTime.DATE_SHORT : DateTime.DATETIME_SHORT
+									props?.minDate
+										? DateTime.DATE_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = i18n._(t`Date can not be before ${format}`);
@@ -142,7 +146,7 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 								format = dt.toLocaleString(
 									props?.maxTime
 										? DateTime.TIME_SIMPLE
-										: DateTime.DATETIME_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = props?.maxTime
@@ -162,7 +166,7 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 								format = dt.toLocaleString(
 									props?.minTime
 										? DateTime.TIME_SIMPLE
-										: DateTime.DATETIME_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = props?.minTime

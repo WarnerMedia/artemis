@@ -64,7 +64,7 @@ describe("MainPage component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 		mockLocation = {
 			search: "",
@@ -105,8 +105,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				// check the page title contains expected repo & branch
@@ -121,8 +121,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				const vcsField = screen.getByRole("combobox", {
@@ -145,7 +145,7 @@ describe("MainPage component", () => {
 				// check the page title contains expected repo & branch
 				// branch is "default" since scan contains a null branch field
 				await waitFor(() =>
-					expect(global.window.document.title).toMatch(`Artemis: ${repo}`)
+					expect(global.window.document.title).toMatch(`Artemis: ${repo}`),
 				);
 
 				await waitFor(() =>
@@ -153,17 +153,17 @@ describe("MainPage component", () => {
 						getScanHistory({
 							data: expect.objectContaining({ repo: repo, vcsOrg: vcsOrg }),
 							meta: expect.any(Object),
-						})
-					)
+						}),
+					),
 				);
 
 				await waitFor(() =>
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/?repo=${encodeURIComponent(
-							repo
+							repo,
 						)}&submitContext=view&vcsOrg=${encodeURIComponent(vcsOrg)}`,
-						{ replace: true }
-					)
+						{ replace: true },
+					),
 				);
 			});
 
@@ -174,8 +174,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				const vcsField = screen.getByRole("combobox", {
@@ -199,8 +199,8 @@ describe("MainPage component", () => {
 				// branch is "default" since scan contains a null branch field
 				await waitFor(() =>
 					expect(global.window.document.title).toMatch(
-						`Artemis: ${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`
-					)
+						`Artemis: ${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`,
+					),
 				);
 
 				await waitFor(() =>
@@ -208,17 +208,17 @@ describe("MainPage component", () => {
 						getScanHistory({
 							data: expect.objectContaining({ repo: repo, vcsOrg: vcsOrg }),
 							meta: expect.any(Object),
-						})
-					)
+						}),
+					),
 				);
 
 				await waitFor(() =>
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/?repo=${encodeURIComponent(
-							repo
+							repo,
 						)}&submitContext=view&vcsOrg=${encodeURIComponent(vcsOrg)}`,
-						{ replace: true }
-					)
+						{ replace: true },
+					),
 				);
 			});
 
@@ -229,8 +229,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				const vcsOrg = "goodVcs/goodOrg/org/path";
@@ -254,8 +254,8 @@ describe("MainPage component", () => {
 				// branch is "default" since scan contains a null branch field
 				await waitFor(() =>
 					expect(global.window.document.title).toMatch(
-						`${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`
-					)
+						`${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`,
+					),
 				);
 
 				await waitFor(() =>
@@ -263,17 +263,17 @@ describe("MainPage component", () => {
 						getScanHistory({
 							data: expect.objectContaining({ repo: repo, vcsOrg: vcsOrg }),
 							meta: expect.any(Object),
-						})
-					)
+						}),
+					),
 				);
 
 				await waitFor(() =>
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/?repo=${encodeURIComponent(
-							repo
+							repo,
 						)}&submitContext=view&vcsOrg=${encodeURIComponent(vcsOrg)}`,
-						{ replace: true }
-					)
+						{ replace: true },
+					),
 				);
 			});
 		});
@@ -285,7 +285,7 @@ describe("MainPage component", () => {
 				const repo = "org/repo";
 				mockLocation = {
 					search: `?repo=${encodeURIComponent(
-						repo
+						repo,
 					)}&submitContext=view&vcsOrg=${encodeURIComponent(vcsOrg)}`,
 				};
 				render(<MainPage />);
@@ -293,8 +293,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				const vcsField = screen.getByRole("combobox", {
@@ -310,7 +310,7 @@ describe("MainPage component", () => {
 				// check the page title contains expected repo & branch
 				// branch is "default" since scan contains a null branch field
 				await waitFor(() =>
-					expect(global.window.document.title).toMatch(`Artemis: ${repo}`)
+					expect(global.window.document.title).toMatch(`Artemis: ${repo}`),
 				);
 
 				await waitFor(() =>
@@ -318,8 +318,8 @@ describe("MainPage component", () => {
 						getScanHistory({
 							data: expect.objectContaining({ repo: repo, vcsOrg: vcsOrg }),
 							meta: expect.any(Object),
-						})
-					)
+						}),
+					),
 				);
 			});
 
@@ -329,7 +329,7 @@ describe("MainPage component", () => {
 				const repo = "repo";
 				mockLocation = {
 					search: `?repo=${encodeURIComponent(
-						repo
+						repo,
 					)}&submitContext=view&vcsOrg=${encodeURIComponent(vcsOrg)}`,
 				};
 				render(<MainPage />);
@@ -337,8 +337,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				const vcsField = screen.getByRole("combobox", {
@@ -355,8 +355,8 @@ describe("MainPage component", () => {
 				// branch is "default" since scan contains a null branch field
 				await waitFor(() =>
 					expect(global.window.document.title).toMatch(
-						`Artemis: ${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`
-					)
+						`Artemis: ${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`,
+					),
 				);
 
 				await waitFor(() =>
@@ -364,8 +364,8 @@ describe("MainPage component", () => {
 						getScanHistory({
 							data: expect.objectContaining({ repo: repo, vcsOrg: vcsOrg }),
 							meta: expect.any(Object),
-						})
-					)
+						}),
+					),
 				);
 			});
 
@@ -375,7 +375,7 @@ describe("MainPage component", () => {
 				const repo = "repo";
 				mockLocation = {
 					search: `?repo=${encodeURIComponent(
-						repo
+						repo,
 					)}&submitContext=view&vcsOrg=${encodeURIComponent(vcsOrg)}`,
 				};
 				render(<MainPage />);
@@ -383,8 +383,8 @@ describe("MainPage component", () => {
 				// wait for current user info to load
 				await waitFor(() =>
 					expect(
-						screen.queryByText(/^loading options$/)
-					).not.toBeInTheDocument()
+						screen.queryByText(/^loading options$/),
+					).not.toBeInTheDocument(),
 				);
 
 				const vcsField = screen.getByRole("combobox", {
@@ -401,8 +401,8 @@ describe("MainPage component", () => {
 				// branch is "default" since scan contains a null branch field
 				await waitFor(() =>
 					expect(global.window.document.title).toMatch(
-						`${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`
-					)
+						`${vcsOrg.substring(vcsOrg.indexOf("/") + 1)}/${repo}`,
+					),
 				);
 
 				await waitFor(() =>
@@ -410,8 +410,8 @@ describe("MainPage component", () => {
 						getScanHistory({
 							data: expect.objectContaining({ repo: repo, vcsOrg: vcsOrg }),
 							meta: expect.any(Object),
-						})
-					)
+						}),
+					),
 				);
 			});
 		});

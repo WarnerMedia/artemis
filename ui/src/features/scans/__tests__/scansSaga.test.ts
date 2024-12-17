@@ -61,7 +61,7 @@ test("test _getCurrentScan Saga success effects", () => {
 	});
 	expect(gen.next().value).toEqual(call(client.getCurrentScan, actionPayload));
 	expect(gen.next().value).toEqual(
-		put({ type: getCurrentScan.fulfilled.type })
+		put({ type: getCurrentScan.fulfilled.type }),
 	);
 	expect(gen.next()).toEqual({ done: true, value: undefined });
 });
@@ -76,7 +76,7 @@ test("test _getCurrentScan Saga failure effects", () => {
 	// use generator's throw() method to test failure case (catch)
 	const error = {};
 	expect(gen.throw(error).value).toEqual(
-		put({ type: getCurrentScan.rejected.type })
+		put({ type: getCurrentScan.rejected.type }),
 	);
 	expect(gen.next().value).toEqual(call(handleException, error));
 	expect(gen.next()).toEqual({ done: true, value: undefined });
@@ -86,7 +86,7 @@ test("test watchAddScanSaga Saga effects", () => {
 	const gen = watchAddScanSaga();
 
 	expect(gen.next().value).toEqual(
-		takeEvery(addScan.pending.type, exportsForTesting._addScanSaga)
+		takeEvery(addScan.pending.type, exportsForTesting._addScanSaga),
 	);
 	expect(gen.next()).toEqual({ done: true, value: undefined });
 });
@@ -97,8 +97,8 @@ test("test watchGetCurrentScan Saga effects", () => {
 	expect(gen.next().value).toEqual(
 		takeLatest(
 			getCurrentScan.pending.type,
-			exportsForTesting._getCurrentScanSaga
-		)
+			exportsForTesting._getCurrentScanSaga,
+		),
 	);
 	expect(gen.next()).toEqual({ done: true, value: undefined });
 });

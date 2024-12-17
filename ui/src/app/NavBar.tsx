@@ -71,10 +71,10 @@ const NavBar = (props: INavBar) => {
 	const { i18n } = useLingui();
 	const colors = useSelector(selectTheme);
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	); // current user is "self" id
 	const userStatus = useSelector(
-		(state: RootState) => state.currentUser.status
+		(state: RootState) => state.currentUser.status,
 	);
 	const systemStatus = useSelector(selectSystemStatus);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -203,13 +203,13 @@ const NavBar = (props: INavBar) => {
 									)}
 									<Tooltip
 										title={i18n._(
-											t`Search for Components, Licenses, and Repositories`
+											t`Search for Components, Licenses, and Repositories`,
 										)}
 									>
 										<span>
 											<IconButton
 												aria-label={i18n._(
-													t`Search for Components, Licenses, and Repositories`
+													t`Search for Components, Licenses, and Repositories`,
 												)}
 												component={Link}
 												to="/search"

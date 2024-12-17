@@ -124,7 +124,7 @@ describe("api client", () => {
 			expect(setTimeout).toHaveBeenCalledTimes(1);
 			expect(setTimeout).toHaveBeenLastCalledWith(
 				exportsForTesting._redirect, // should call redirect
-				APP_NOTIFICATION_DELAY // should set a delay
+				APP_NOTIFICATION_DELAY, // should set a delay
 			);
 		});
 	});
@@ -196,7 +196,7 @@ describe("api client", () => {
 					}),
 					url: `${data.vcsOrg}/${data.repo}`,
 					// don't check headers, baseUrl
-				})
+				}),
 			);
 		});
 
@@ -226,7 +226,7 @@ describe("api client", () => {
 					}),
 					url: `${data.vcsOrg}/${data.repo}`,
 					// don't check headers, baseUrl
-				})
+				}),
 			);
 		});
 
@@ -265,7 +265,7 @@ describe("api client", () => {
 						plugins: plugins,
 					}),
 					url: `${data.vcsOrg}/${data.repo}`,
-				})
+				}),
 			);
 		});
 
@@ -280,7 +280,7 @@ describe("api client", () => {
 
 			const categories = Object.keys(pluginCatalog)
 				.map((category) =>
-					category === "secret" ? `${category}` : `-${category}`
+					category === "secret" ? `${category}` : `-${category}`,
 				)
 				.sort();
 
@@ -293,7 +293,7 @@ describe("api client", () => {
 						plugins: ["-ghas_secrets", "-trufflehog"],
 					}),
 					url: `${data.vcsOrg}/${data.repo}`,
-				})
+				}),
 			);
 		});
 	});
@@ -324,7 +324,7 @@ describe("api client", () => {
 		it("getSbomScanById should GET a scan by id with format=sbom", async () => {
 			await client.getSbomScanById(
 				`/${mockScan.service}/${mockScan.repo}/${mockScan.scan_id}`,
-				{}
+				{},
 			);
 			for (const [
 				key,
@@ -337,7 +337,7 @@ describe("api client", () => {
 				expect.objectContaining({
 					url: `/${mockScan.service}/${mockScan.repo}/${mockScan.scan_id}`,
 					// don't check headers, baseUrl
-				})
+				}),
 			);
 			// ensure search parameter format=sbom passed
 			expect(mockRequest.mock.calls[0][0].params.has("format")).toBeTruthy();

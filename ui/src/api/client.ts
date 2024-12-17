@@ -214,7 +214,7 @@ export const handleException = (err: any) => {
 	// set a global exception & force reauth
 	if (err instanceof AuthError) {
 		store.dispatch(
-			setGlobalException({ message: err.message, action: "login" })
+			setGlobalException({ message: err.message, action: "login" }),
 		);
 
 		// redirect to / for reauth once user has opportunty to view exception
@@ -233,7 +233,7 @@ export const handleException = (err: any) => {
 
 const client = async (
 	url: string,
-	{ data, meta, schema, ...customConfig }: Client
+	{ data, meta, schema, ...customConfig }: Client,
 ) => {
 	const headers = {
 		"Content-Type": "application/json",
@@ -360,7 +360,7 @@ client.getComponents = async ({
 				meta,
 				schema: searchComponentResponseSchema,
 				method: "GET",
-			}
+			},
 		);
 		response.results.forEach((result: SearchComponent) => {
 			adjustComponent(result);
@@ -382,7 +382,7 @@ const adjustComponentRepo = (response: SearchComponentRepo) => {
 client.getComponentRepos = async (
 	name: SearchComponent["name"],
 	version: SearchComponent["version"],
-	{ meta, customConfig = {} }: Client
+	{ meta, customConfig = {} }: Client,
 ): Promise<SearchComponentReposResponse> => {
 	if (!name) {
 		throw new Error(i18n._(t`Component name required`));
@@ -394,14 +394,14 @@ client.getComponentRepos = async (
 	try {
 		const response = await client(
 			`/sbom/components/${encodeURIComponent(name)}/${encodeURIComponent(
-				version
+				version,
 			)}/repos`,
 			{
 				...customConfig,
 				meta,
 				schema: searchComponentRepoResponseSchema,
 				method: "GET",
-			}
+			},
 		);
 		response.results.forEach((result: SearchComponentRepo) => {
 			adjustComponentRepo(result);
@@ -421,7 +421,7 @@ const adjustRepo = (response: SearchRepo) => {
 	}
 	if (response?.qualified_scan?.created) {
 		response.qualified_scan.created = addUTCOffset(
-			response.qualified_scan.created
+			response.qualified_scan.created,
 		);
 	}
 	// duplicate the qualified_scan field into a last_qualified_scan field
@@ -515,7 +515,7 @@ client.getVulnerabilities = async ({
 				meta,
 				schema: searchVulnsResponseSchema,
 				method: "GET",
-			}
+			},
 		);
 		response.results.forEach((result: SearchVulnerability) => {
 			adjustVuln(result);
@@ -529,7 +529,7 @@ client.getVulnerabilities = async ({
 
 client.getVulnerabilityRepos = async (
 	id: SearchVulnerability["id"],
-	{ meta, customConfig = {} }: Client
+	{ meta, customConfig = {} }: Client,
 ): Promise<SearchReposResponse> => {
 	if (!id) {
 		throw new Error(i18n._(t`Vulnerability ID required`));
@@ -543,7 +543,7 @@ client.getVulnerabilityRepos = async (
 				meta,
 				schema: searchRepoResponseSchema,
 				method: "GET",
-			}
+			},
 		);
 		response.results.forEach((result: SearchRepo) => {
 			adjustRepo(result);
@@ -662,7 +662,7 @@ client.deleteUser = async ({
 
 client.getUserById = async (
 	email: User["email"],
-	{ meta, customConfig = {} }: Client
+	{ meta, customConfig = {} }: Client,
 ): Promise<User> => {
 	if (!email) {
 		throw new Error(i18n._(t`Email required`));
@@ -745,7 +745,7 @@ const adjustScanHistory = (response: ScanHistory) => {
 	}
 	if (response?.status_detail.plugin_start_time) {
 		response.status_detail.plugin_start_time = addUTCOffset(
-			response.status_detail.plugin_start_time
+			response.status_detail.plugin_start_time,
 		);
 	}
 	// scan history doesn't provide separate scan_id field, it's appended to repo field
@@ -768,7 +768,7 @@ const adjustScan = (response: AnalysisReport | SbomReport) => {
 // fetches scan with format=sbom filter
 client.getSbomScanById = async (
 	url: string,
-	{ meta, customConfig = {} }: Client
+	{ meta, customConfig = {} }: Client,
 ): Promise<SbomReport> => {
 	try {
 		const response: SbomReport = await client(url, {
@@ -796,7 +796,7 @@ client.getSbomScanById = async (
 
 client.getScanById = async (
 	url: string,
-	{ meta, customConfig = {} }: Client
+	{ meta, customConfig = {} }: Client,
 ): Promise<AnalysisReport> => {
 	try {
 		const response: AnalysisReport = await client(url, {
@@ -850,7 +850,7 @@ client.addScan = async ({
 	// We have to do this because formik only reports the checked checkboxes, whereas we want to know the unchecked ones
 	const getRemovedPlugins = (
 		allPlugins: string[],
-		checkedPlugins: string[]
+		checkedPlugins: string[],
 	) => {
 		const removedPlugins: string[] = [];
 
@@ -956,7 +956,7 @@ client.addScan = async ({
 				...customConfig,
 				data: scanOpts,
 				schema: scanQueueResponseSchema,
-			}
+			},
 		);
 
 		// Note: we are creating scans 1-at-a-time as user clicks "Start Scan",
@@ -1044,7 +1044,7 @@ client.getScanHistory = async ({
 				meta,
 				schema: scanHistoryResponseSchema,
 				method: "GET",
-			}
+			},
 		);
 		response.results.forEach((result: ScanHistory) => {
 			adjustScanHistory(result);
@@ -1098,7 +1098,7 @@ client.addHiddenFinding = async ({
 				...customConfig,
 				data: requestData,
 				schema: hiddenFindingsResponseSchema,
-			}
+			},
 		);
 
 		// legacy: POST API doesn't return created_by user
@@ -1149,7 +1149,7 @@ client.deleteHiddenFinding = async ({
 
 client.getHiddenFindings = async (
 	repoUrl: string,
-	{ meta, customConfig = {} }: Client
+	{ meta, customConfig = {} }: Client,
 ): Promise<HiddenFinding[]> => {
 	try {
 		const response: HiddenFinding[] = await client(
@@ -1159,7 +1159,7 @@ client.getHiddenFindings = async (
 				meta,
 				schema: hiddenFindingsResponseSchema,
 				method: "GET",
-			}
+			},
 		);
 		if (Array.isArray(response)) {
 			response.forEach((result: HiddenFinding) => {
