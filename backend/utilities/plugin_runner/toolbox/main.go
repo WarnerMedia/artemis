@@ -176,8 +176,10 @@ func reportStatus(exitCode int, outputLen int) {
 }
 
 func reportLintErrors(err error) {
-	fmt.Print(color.HiRedString("--> Error: "))
-	color.HiYellow(err.Error())
+	if err != nil {
+		fmt.Print(color.HiRedString("--> Error: "))
+		color.HiYellow(err.Error())
+	}
 }
 
 func main() {
