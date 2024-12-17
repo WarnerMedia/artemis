@@ -57,7 +57,50 @@ func TestRequiredFields(t *testing.T) {
 	}
 }
 
-func TestValid(t *testing.T) {
+func TestInvalidFinding(t *testing.T) {
+	actual := lint("secrets", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": [{
+			"filename": "src/env/config.json",
+			"line": 42,
+			"commit": "45d6bf712794a90aea3304dbb0d2dfa3a1b9ecef",
+			"type": "aws",
+			"author": "George P. Burdell <george.p.burdell@example.com>"
+		}, {
+			"filename": "src/env/loader.yml",
+			"line": "42",
+			"commit": "678f73297c93a88fd91a5fd0c45d7a10d43fad58",
+			"type": "ssh",
+			"author": "George P. Burdell <george.p.burdell@example.com>"
+		}],
+		"errors": ["failed to scan"]
+	}`))
+	if !containsValidationError(actual, "/details/1/line", "got string, want integer") {
+		t.Fatalf("expected type error, got %v", actual)
+	}
+}
+
+func TestValidVulnerability(t *testing.T) {
+	actual := lint("vulnerability", []byte(`{
+		"success": false,
+		"truncated": false,
+		"details": [{
+			"component": "package-1.2.3",
+			"source": "src/package.json",
+			"id": "CVE-2019-00000",
+			"description": "An unauthenticated RCE vulnerability exists in package <= 1.2.3",
+			"severity": "critical",
+			"remediation": "Upgrade to package 1.2.4 or later"
+		}],
+		"errors": ["failed to scan"]
+	}`))
+	if actual != nil {
+		t.Fatalf("expected no errors, got %v", actual)
+	}
+}
+
+func TestValidStaticAnalysis(t *testing.T) {
 	actual := lint("static_analysis", []byte(`{
 		"success": false,
 		"truncated": false,
@@ -67,6 +110,24 @@ func TestValid(t *testing.T) {
 			"message": "Double-free of 'buf'",
 			"severity": "medium",
 			"type": "Memory safety"
+		}],
+		"errors": ["failed to scan"]
+	}`))
+	if actual != nil {
+		t.Fatalf("expected no errors, got %v", actual)
+	}
+}
+
+func TestValidSecrets(t *testing.T) {
+	actual := lint("secrets", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": [{
+			"filename": "src/env/config.json",
+			"line": 42,
+			"commit": "45d6bf712794a90aea3304dbb0d2dfa3a1b9ecef",
+			"type": "aws",
+			"author": "George P. Burdell <george.p.burdell@example.com>"
 		}],
 		"errors": ["failed to scan"]
 	}`))
