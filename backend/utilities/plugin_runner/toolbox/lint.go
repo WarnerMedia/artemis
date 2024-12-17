@@ -33,6 +33,7 @@ func mustLoadSchema(id string) any {
 
 // Plugin type -> schema ID.
 var pluginTypeSchemaMap = map[string]string{
+	"secrets":         "secrets-finding",
 	"static_analysis": "static-analysis-finding",
 	"vulnerability":   "vulnerability-finding",
 }
