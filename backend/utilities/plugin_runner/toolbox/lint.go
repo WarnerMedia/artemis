@@ -10,6 +10,7 @@ import (
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
+// Root namespace for the schemas (not a real resource).
 const schemaRoot = "https://wbd.com/artemis/plugin"
 
 //go:embed schemas/*.json
