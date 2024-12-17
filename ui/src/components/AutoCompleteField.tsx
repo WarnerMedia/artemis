@@ -52,7 +52,7 @@ const AutoCompleteField = React.forwardRef(
 					renderOption={(
 						renderProps: any,
 						option: any,
-						{ inputValue }: { inputValue: string }
+						{ inputValue }: { inputValue: string },
 					) => {
 						// highlight portion of Autocomplete results that match user text entered
 						let optionLabel = option;
@@ -83,6 +83,6 @@ const AutoCompleteField = React.forwardRef(
 				/>
 			</>
 		);
-	}
+	},
 );
 export default AutoCompleteField;

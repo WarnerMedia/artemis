@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 
 export default function createSagaActions<Returned, ThunkArg = void>(
-	typePrefix: string
+	typePrefix: string,
 ) {
 	const fulfilled = createAction(
 		typePrefix + "/fulfilled",
@@ -10,7 +10,7 @@ export default function createSagaActions<Returned, ThunkArg = void>(
 				payload: result,
 				meta: { arg },
 			};
-		}
+		},
 	);
 
 	const pending = createAction(typePrefix + "/pending", (arg: ThunkArg) => {
@@ -27,7 +27,7 @@ export default function createSagaActions<Returned, ThunkArg = void>(
 				error: error || "Rejected",
 				meta: { arg },
 			};
-		}
+		},
 	);
 
 	// TODO: consider also adding a separate "cancelled" action
@@ -40,6 +40,6 @@ export default function createSagaActions<Returned, ThunkArg = void>(
 			rejected,
 			fulfilled,
 			typePrefix,
-		}
+		},
 	);
 }

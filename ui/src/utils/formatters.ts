@@ -20,7 +20,7 @@ export const DELETED_REGEX = new RegExp(/_DELETED_[0-9]+$/);
 // if the dateString is not a valid date, the dateString will be returned as output
 export const formatDate = (
 	dateString: string | null,
-	format: "short" | "long" = "short"
+	format: "short" | "long" = "short",
 ) => {
 	if (!dateString) {
 		return "";
@@ -173,7 +173,7 @@ export type ToCsvFormat = (data: any) => any; // format object fields for CSV
 export const exportToCsv = (
 	fileName: string,
 	data: RowDef[],
-	toCsv?: ToCsvFormat
+	toCsv?: ToCsvFormat,
 ) => {
 	let headers = [""];
 	if (data.length > 0) {

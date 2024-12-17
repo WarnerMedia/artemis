@@ -85,12 +85,12 @@ describe("ResultsPage component", () => {
 
 			// wait for scan data to load
 			const orgRepository = await screen.findByText(
-				/^Organization \/ Repository$/
+				/^Organization \/ Repository$/,
 			);
 			expect(orgRepository).toBeInTheDocument();
 			if (orgRepository.parentElement) {
 				expect(
-					within(orgRepository.parentElement).getByText(repo)
+					within(orgRepository.parentElement).getByText(repo),
 				).toBeInTheDocument();
 			}
 
@@ -100,7 +100,7 @@ describe("ResultsPage component", () => {
 			expect(serviceField).toBeInTheDocument();
 			if (serviceField.parentElement) {
 				expect(
-					within(serviceField.parentElement).getByText(service)
+					within(serviceField.parentElement).getByText(service),
 				).toBeInTheDocument();
 			}
 
@@ -109,7 +109,7 @@ describe("ResultsPage component", () => {
 			expect(branch).toBeInTheDocument();
 			if (branch.parentElement) {
 				expect(
-					within(branch.parentElement).getByText(scan.branch)
+					within(branch.parentElement).getByText(scan.branch),
 				).toBeInTheDocument();
 			}
 
@@ -117,12 +117,12 @@ describe("ResultsPage component", () => {
 			expect(initiatedBy).toBeInTheDocument();
 			if (initiatedBy.parentElement) {
 				expect(
-					within(initiatedBy.parentElement).getByText(scan.initiated_by)
+					within(initiatedBy.parentElement).getByText(scan.initiated_by),
 				).toBeInTheDocument();
 				expect(
 					within(initiatedBy.parentElement).getByRole("link", {
 						name: scan.initiated_by,
-					})
+					}),
 				).toBeInTheDocument();
 			}
 
@@ -131,7 +131,7 @@ describe("ResultsPage component", () => {
 			if (status.parentElement) {
 				const statusRe = new RegExp(scan.status, "i");
 				expect(
-					within(status.parentElement).getByText(statusRe)
+					within(status.parentElement).getByText(statusRe),
 				).toBeInTheDocument();
 			}
 
@@ -140,8 +140,8 @@ describe("ResultsPage component", () => {
 			if (results.parentElement) {
 				expect(
 					within(results.parentElement).getByText(
-						scan.success ? "No Issues Found" : "Issues Found"
-					)
+						scan.success ? "No Issues Found" : "Issues Found",
+					),
 				).toBeInTheDocument();
 			}
 
@@ -155,7 +155,7 @@ describe("ResultsPage component", () => {
 			expect(screen.queryByText(/^Batch Description$/)).not.toBeInTheDocument();
 
 			const queudDateElapsed = await screen.findByText(
-				/^Queued Date \/ Queued Time Elapsed$/
+				/^Queued Date \/ Queued Time Elapsed$/,
 			);
 			expect(queudDateElapsed).toBeInTheDocument();
 			if (queudDateElapsed.parentElement) {
@@ -168,7 +168,7 @@ describe("ResultsPage component", () => {
 				expect(
 					within(queudDateElapsed.parentElement).getByText(queued, {
 						normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-					})
+					}),
 				).toBeInTheDocument();
 			}
 
@@ -183,13 +183,13 @@ describe("ResultsPage component", () => {
 				expect(
 					within(startDate.parentElement).getByText(
 						formatDate(scan.timestamps.start, "long"),
-						{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
-					)
+						{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) },
+					),
 				).toBeInTheDocument();
 			}
 
 			const endDateElapsed = await screen.findByText(
-				/^End Date \/ Scan Time Elapsed$/
+				/^End Date \/ Scan Time Elapsed$/,
 			);
 			expect(endDateElapsed).toBeInTheDocument();
 			if (endDateElapsed.parentElement) {
@@ -202,7 +202,7 @@ describe("ResultsPage component", () => {
 				expect(
 					within(endDateElapsed.parentElement).getByText(end, {
 						normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-					})
+					}),
 				).toBeInTheDocument();
 			}
 		});
@@ -223,13 +223,12 @@ describe("ResultsPage component", () => {
 			render(<ResultsPage />);
 
 			// wait for scan data to load
-			const batchDescriptionElt = await screen.findByText(
-				/^Batch Description$/
-			);
+			const batchDescriptionElt =
+				await screen.findByText(/^Batch Description$/);
 			expect(batchDescriptionElt).toBeInTheDocument();
 			if (batchDescriptionElt.parentElement) {
 				expect(
-					within(batchDescriptionElt.parentElement).getByText(batchDescription)
+					within(batchDescriptionElt.parentElement).getByText(batchDescription),
 				).toBeInTheDocument();
 			}
 		});
@@ -242,7 +241,7 @@ describe("ResultsPage component", () => {
 			expect(
 				screen.getByRole("button", {
 					name: /back to scans/i,
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -291,7 +290,7 @@ describe("ResultsPage component", () => {
 							format: { match: "exact", filter: "full" },
 						},
 					},
-				})
+				}),
 			);
 		});
 
@@ -319,8 +318,8 @@ describe("ResultsPage component", () => {
 			await user.click(cancelButton);
 			await waitFor(() =>
 				expect(
-					screen.queryByRole("dialog", { name: /new scan/i })
-				).not.toBeInTheDocument()
+					screen.queryByRole("dialog", { name: /new scan/i }),
+				).not.toBeInTheDocument(),
 			);
 			expect(startScan).not.toHaveBeenCalled();
 		});
@@ -350,8 +349,8 @@ describe("ResultsPage component", () => {
 			await user.click(startScanButton);
 			await waitFor(() =>
 				expect(
-					screen.queryByRole("dialog", { name: /new scan/i })
-				).not.toBeInTheDocument()
+					screen.queryByRole("dialog", { name: /new scan/i }),
+				).not.toBeInTheDocument(),
 			);
 			expect(startScan).toHaveBeenLastCalledWith(
 				expect.any(Function), // navigate
@@ -385,7 +384,7 @@ describe("ResultsPage component", () => {
 						? scan.scan_options?.exclude_paths.join(", ")
 						: "",
 				},
-				mockAppState.currentUser.entities["self"] // currentUser
+				mockAppState.currentUser.entities["self"], // currentUser
 			);
 		});
 	});

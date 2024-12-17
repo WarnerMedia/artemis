@@ -27,7 +27,7 @@ import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 
 function* _addUserSaga(
-	action: PayloadAction<UserRequest>
+	action: PayloadAction<UserRequest>,
 ): Generator<StrictEffect, void, User> {
 	try {
 		const response: User = yield call(client.addUser, { ...action.payload });
@@ -42,7 +42,7 @@ function* _addUserSaga(
 }
 
 function* _updateUserSaga(
-	action: PayloadAction<UserRequest>
+	action: PayloadAction<UserRequest>,
 ): Generator<StrictEffect, void, User> {
 	try {
 		const response: User = yield call(client.updateUser, {
@@ -62,7 +62,7 @@ function* _updateUserSaga(
 }
 
 function* _deleteUserSaga(
-	action: PayloadAction<UserByIdRequest>
+	action: PayloadAction<UserByIdRequest>,
 ): Generator<StrictEffect, void, User["email"]> {
 	try {
 		const response: User["email"] = yield call(client.deleteUser, {
@@ -83,7 +83,7 @@ function* _deleteUserSaga(
 }
 
 function* _getUserByIdSaga(
-	action: PayloadAction<UserByIdRequest>
+	action: PayloadAction<UserByIdRequest>,
 ): Generator<StrictEffect, void, User> {
 	const { email, meta } = action.payload;
 	try {
@@ -114,7 +114,7 @@ function* _getCurrentUserSaga(): Generator<StrictEffect, void, User> {
 }
 
 function* _getUsersSaga(
-	action: PayloadAction<Client>
+	action: PayloadAction<Client>,
 ): Generator<StrictEffect, void, User[]> {
 	const { meta } = action.payload;
 	try {

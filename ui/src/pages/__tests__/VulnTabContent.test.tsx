@@ -18,8 +18,8 @@ let hiddenFindings: HiddenFinding[] = [];
 const vulnComponent = Object.keys(mockScan001.results.vulnerabilities)[4];
 const cveId = Object.keys(
 	Object.entries(mockScan001.results.vulnerabilities).filter(
-		([key]) => key === vulnComponent
-	)[0][1]
+		([key]) => key === vulnComponent,
+	)[0][1],
 )[0]; // first component vuln
 
 const openVulnDialog = async () => {
@@ -29,7 +29,7 @@ const openVulnDialog = async () => {
 			hiddenFindings={hiddenFindings}
 			currentUser={mockCurrentUser}
 			saveFilters={mockSaveFilters}
-		/>
+		/>,
 	);
 
 	const cell = screen.getByRole("rowheader", {
@@ -53,7 +53,7 @@ const closeVulnDialog = async (user: any) => {
 	expect(okButton).toBeInTheDocument();
 	await user.click(okButton);
 	await waitFor(() =>
-		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
 	);
 };
 
@@ -78,7 +78,7 @@ describe("VulnTabContent component", () => {
 					hiddenFindings={hiddenFindings}
 					currentUser={mockCurrentUser}
 					saveFilters={mockSaveFilters}
-				/>
+				/>,
 			);
 
 			expect(screen.queryByRole("row")).not.toBeInTheDocument();
@@ -100,9 +100,9 @@ describe("VulnTabContent component", () => {
 			const vulnFinding = Object.values(
 				Object.values(
 					Object.entries(mockScan001.results.vulnerabilities).filter(
-						([key]) => key === vulnComponent
-					)[0]
-				)[1]
+						([key]) => key === vulnComponent,
+					)[0],
+				)[1],
 			)[0];
 
 			// 2 items / 1-per-source-file
@@ -146,9 +146,9 @@ describe("VulnTabContent component", () => {
 			const finding = Object.values(
 				Object.values(
 					Object.entries(mockScan001.results.vulnerabilities).filter(
-						([key]) => key === vulnComponent
-					)[0]
-				)[1]
+						([key]) => key === vulnComponent,
+					)[0],
+				)[1],
 			)[0];
 
 			within(dialog).getByText("Critical");
@@ -160,13 +160,13 @@ describe("VulnTabContent component", () => {
 			within(dialog).getByText("Remediation");
 			within(dialog).getByText(finding.remediation);
 			within(dialog).getByText(
-				`Found in Source Files (${finding.source.length})`
+				`Found in Source Files (${finding.source.length})`,
 			);
 			finding.source.forEach((source: string) => {
 				within(dialog).getByText(source);
 			});
 			within(dialog).getByText(
-				`Discovered By Plugins (${finding.source_plugins.length})`
+				`Discovered By Plugins (${finding.source_plugins.length})`,
 			);
 			finding.source_plugins.forEach((plugin: string) => {
 				within(dialog).getByText(plugin);
@@ -183,7 +183,7 @@ describe("VulnTabContent component", () => {
 						hiddenFindings={hiddenFindings}
 						currentUser={mockCurrentUser}
 						saveFilters={mockSaveFilters}
-					/>
+					/>,
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -195,7 +195,7 @@ describe("VulnTabContent component", () => {
 				expect(firstFilter).toHaveFocus();
 				expect(firstFilter).toHaveAttribute("placeholder", "Contains");
 				expect(
-					within(filterGroup).getByRole("textbox", { name: /vulnerability/i })
+					within(filterGroup).getByRole("textbox", { name: /vulnerability/i }),
 				).toHaveAttribute("placeholder", "Contains");
 				within(filterGroup).getByRole("button", { name: /severity /i });
 			});
@@ -213,7 +213,7 @@ describe("VulnTabContent component", () => {
 					null,
 					{
 						advanceTimers: jest.advanceTimersByTime,
-					}
+					},
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -227,7 +227,7 @@ describe("VulnTabContent component", () => {
 
 				jest.runOnlyPendingTimers();
 				await waitFor(() =>
-					expect(componentFilter).toHaveDisplayValue(componentValue)
+					expect(componentFilter).toHaveDisplayValue(componentValue),
 				);
 
 				await validateSelect({
@@ -292,7 +292,7 @@ describe("VulnTabContent component", () => {
 						hiddenFindings={hiddenFindings}
 						currentUser={mockCurrentUser}
 						saveFilters={mockSaveFilters}
-					/>
+					/>,
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -302,7 +302,7 @@ describe("VulnTabContent component", () => {
 					name: /component/i,
 				});
 				await waitFor(() =>
-					expect(componentFilter).toHaveDisplayValue(componentValue)
+					expect(componentFilter).toHaveDisplayValue(componentValue),
 				);
 
 				const vulnFilter = await within(filterGroup).findByRole("textbox", {

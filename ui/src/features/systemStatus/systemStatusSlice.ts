@@ -19,7 +19,7 @@ const initialState: SliceState = {
 };
 
 export const getSystemStatus = createSagaActions<SystemStatus, void>(
-	"systemStatus/getSystemStatus"
+	"systemStatus/getSystemStatus",
 );
 
 const systemStatusSlice = createSlice({

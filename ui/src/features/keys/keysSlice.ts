@@ -20,10 +20,10 @@ const initialState = keysAdapter.getInitialState<SliceState>({
 });
 
 export const deleteUserKey = createSagaActions<Key["id"], UserKeyRequest>(
-	"users/deleteUserKey"
+	"users/deleteUserKey",
 );
 export const getUserKeys = createSagaActions<KeysResponse, void>(
-	"users/getUserKeys"
+	"users/getUserKeys",
 );
 
 // note: add key is not a redux store action since we don't store the returned api key value

@@ -42,19 +42,19 @@ describe("ScanMessages component", () => {
 					],
 				}}
 				startExpanded={true}
-			/>
+			/>,
 		);
 		expect(
-			screen.getByRole("button", { name: "Scan Warnings (3)" })
+			screen.getByRole("button", { name: "Scan Warnings (3)" }),
 		).toBeInTheDocument();
 		expect(screen.getByText("variable: variableValue")).toBeInTheDocument();
 		expect(
-			screen.getByText("variableArray1: variableArray1Item1")
+			screen.getByText("variableArray1: variableArray1Item1"),
 		).toBeInTheDocument();
 		expect(
 			screen.getByText(
-				"variableArray2: variableArray2Item1, variableArray2Item2, variableArray2Item3, variableArray2Item4"
-			)
+				"variableArray2: variableArray2Item1, variableArray2Item2, variableArray2Item3, variableArray2Item4",
+			),
 		).toBeInTheDocument();
 	});
 });

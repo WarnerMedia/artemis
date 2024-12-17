@@ -183,7 +183,7 @@ describe("SearchPage component", () => {
 							disabled: disabled,
 							user,
 						});
-					}
+					},
 				);
 
 				// test text input fields
@@ -215,7 +215,7 @@ describe("SearchPage component", () => {
 						if (placeholder) {
 							expect(field).toHaveAttribute("placeholder", placeholder);
 						}
-					}
+					},
 				);
 
 				it("Severity field checkbox options", async () => {
@@ -343,7 +343,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.queryByRole("button", {
 							name: /copy link to these search results/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 				});
 
@@ -362,7 +362,7 @@ describe("SearchPage component", () => {
 
 					// accordion open on load
 					expect(
-						screen.getByRole("button", { name: /search filters/i })
+						screen.getByRole("button", { name: /search filters/i }),
 					).toHaveAttribute("aria-expanded", "true");
 					const submitButton = await screen.findByRole("button", {
 						name: /^search$/i,
@@ -376,19 +376,19 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// accordion closed on submit
 					expect(
-						screen.getByRole("button", { name: /search filters/i })
+						screen.getByRole("button", { name: /search filters/i }),
 					).toHaveAttribute("aria-expanded", "false");
 
 					// "vuln" should not be included in filters
@@ -401,7 +401,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=vuln"
+						"/search?category=vuln",
 					);
 
 					// sortable columns are buttons, vuln search results table has no sortable columns
@@ -425,7 +425,7 @@ describe("SearchPage component", () => {
 					// validate a result row contains correctly rendered values
 					within(rows[0]).getByText("CVE-2022-0101 + 1 more");
 					within(rows[0]).getByText(
-						"component1-name (1.0.0, 1.0.1, 1.0.2) + 1 more"
+						"component1-name (1.0.0, 1.0.1, 1.0.2) + 1 more",
 					);
 					within(rows[0]).getByText("A_totes_new_plugin + 6 more");
 				});
@@ -489,7 +489,7 @@ describe("SearchPage component", () => {
 							"checkbox",
 							{
 								name: "None",
-							}
+							},
 						);
 						sevLow = within(severityField.parentElement).getByRole("checkbox", {
 							name: "Low",
@@ -498,19 +498,19 @@ describe("SearchPage component", () => {
 							"checkbox",
 							{
 								name: "Medium",
-							}
+							},
 						);
 						sevHigh = within(severityField.parentElement).getByRole(
 							"checkbox",
 							{
 								name: "High",
-							}
+							},
 						);
 						sevCritical = within(severityField.parentElement).getByRole(
 							"checkbox",
 							{
 								name: "Critical",
-							}
+							},
 						);
 					} else {
 						fail("Severity field has no options");
@@ -656,7 +656,7 @@ describe("SearchPage component", () => {
 							});
 							await user.click(severityCheckbox);
 							expect(severityCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					// select all plugins by checking vuln category checkbox
@@ -700,14 +700,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					const severities = ["", "low", "medium", "high", "critical"];
@@ -863,14 +863,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
@@ -954,7 +954,7 @@ describe("SearchPage component", () => {
 								"checkbox",
 								{
 									name: "Critical",
-								}
+								},
 							);
 						} else {
 							fail("Severity field has no options");
@@ -1055,14 +1055,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// all form fields populated with url query params
@@ -1072,7 +1072,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^vulnerability$/i,
-						})
+						}),
 					).toHaveDisplayValue(vulnValue);
 
 					screen.getByRole("button", {
@@ -1081,7 +1081,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^description$/i,
-						})
+						}),
 					).toHaveDisplayValue(descValue);
 
 					screen.getByRole("button", {
@@ -1090,7 +1090,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^remediation$/i,
-						})
+						}),
 					).toHaveDisplayValue(remedyValue);
 
 					screen.getByRole("button", {
@@ -1099,7 +1099,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component name$/i,
-						})
+						}),
 					).toHaveDisplayValue(componentValue);
 
 					screen.getByRole("button", {
@@ -1108,7 +1108,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component version$/i,
-						})
+						}),
 					).toHaveDisplayValue(versionValue);
 
 					// validate all severity values checked
@@ -1118,7 +1118,7 @@ describe("SearchPage component", () => {
 								name: severity,
 							});
 							expect(severityCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					// validate all vuln plugins checked
@@ -1226,14 +1226,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// all form fields populated with url query params
@@ -1243,7 +1243,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^vulnerability$/i,
-						})
+						}),
 					).toHaveDisplayValue(vulnValue);
 
 					screen.getByRole("button", {
@@ -1252,7 +1252,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^description$/i,
-						})
+						}),
 					).toHaveDisplayValue(descValue);
 
 					screen.getByRole("button", {
@@ -1261,7 +1261,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^remediation$/i,
-						})
+						}),
 					).toHaveDisplayValue(remedyValue);
 
 					screen.getByRole("button", {
@@ -1270,7 +1270,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component name$/i,
-						})
+						}),
 					).toHaveDisplayValue(componentValue);
 
 					screen.getByRole("button", {
@@ -1279,7 +1279,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component version$/i,
-						})
+						}),
 					).toHaveDisplayValue(versionValue);
 
 					// validate no severity values checked
@@ -1289,7 +1289,7 @@ describe("SearchPage component", () => {
 								name: severity,
 							});
 							expect(severityCheckbox).not.toBeChecked();
-						}
+						},
 					);
 
 					// validate no vuln plugins checked
@@ -1392,14 +1392,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					// all form fields populated with url query params
@@ -1409,7 +1409,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^vulnerability$/i,
-						})
+						}),
 					).toHaveDisplayValue(vulnValue);
 
 					screen.getByRole("button", {
@@ -1418,7 +1418,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^description$/i,
-						})
+						}),
 					).toHaveDisplayValue(descValue);
 
 					screen.getByRole("button", {
@@ -1427,7 +1427,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^remediation$/i,
-						})
+						}),
 					).toHaveDisplayValue(remedyValue);
 
 					screen.getByRole("button", {
@@ -1436,7 +1436,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component name$/i,
-						})
+						}),
 					).toHaveDisplayValue(componentValue);
 
 					screen.getByRole("button", {
@@ -1445,7 +1445,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component version$/i,
-						})
+						}),
 					).toHaveDisplayValue(versionValue);
 
 					// validate all severity values checked
@@ -1455,7 +1455,7 @@ describe("SearchPage component", () => {
 								name: severity,
 							});
 							expect(severityCheckbox).toBeChecked();
-						}
+						},
 					);
 
 					// validate all vuln plugins checked
@@ -1504,7 +1504,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^vulnerability$/i,
-						})
+						}),
 					).toHaveDisplayValue("");
 
 					screen.getByRole("button", {
@@ -1513,7 +1513,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^description$/i,
-						})
+						}),
 					).toHaveDisplayValue("");
 
 					screen.getByRole("button", {
@@ -1522,7 +1522,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^remediation$/i,
-						})
+						}),
 					).toHaveDisplayValue("");
 
 					screen.getByRole("button", {
@@ -1531,7 +1531,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component name$/i,
-						})
+						}),
 					).toHaveDisplayValue("");
 
 					screen.getByRole("button", {
@@ -1540,7 +1540,7 @@ describe("SearchPage component", () => {
 					expect(
 						screen.getByRole("textbox", {
 							name: /^component version$/i,
-						})
+						}),
 					).toHaveDisplayValue("");
 
 					// validate all severity values unchecked
@@ -1550,7 +1550,7 @@ describe("SearchPage component", () => {
 								name: severity,
 							});
 							expect(severityCheckbox).not.toBeChecked();
-						}
+						},
 					);
 
 					// validate all vuln plugins unchecked
@@ -1604,7 +1604,7 @@ describe("SearchPage component", () => {
 							user,
 						});
 						await testFieldLength(fieldName, maxLength, expectedError, user);
-					}
+					},
 				);
 			});
 
@@ -1635,14 +1635,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
@@ -1653,7 +1653,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=vuln"
+						"/search?category=vuln",
 					);
 
 					// find item and click row to open dialog
@@ -1676,7 +1676,7 @@ describe("SearchPage component", () => {
 					within(dialog).getByText("High");
 
 					within(dialog).getByText(
-						`Vulnerability IDs (${vuln.advisory_ids.length})`
+						`Vulnerability IDs (${vuln.advisory_ids.length})`,
 					);
 					vuln.advisory_ids.sort().forEach((advisory) => {
 						const link = within(dialog).getByRole("link", {
@@ -1695,13 +1695,13 @@ describe("SearchPage component", () => {
 					within(dialog).getByText(vuln.remediation);
 
 					within(dialog).getByText(
-						`Components (${Object.keys(vuln.components).length})`
+						`Components (${Object.keys(vuln.components).length})`,
 					);
 					within(dialog).getByText("component1-name (1.0.0, 1.0.1, 1.0.2)");
 					within(dialog).getByText("component2-name (2.0.0, 2.0.1, 2.0.2)");
 
 					within(dialog).getByText(
-						`Discovered By Plugins (${vuln.source_plugins.length})`
+						`Discovered By Plugins (${vuln.source_plugins.length})`,
 					);
 					within(dialog).getByText("A_totes_new_plugin");
 					within(dialog).getByText("Aqua CLI Scanner (Docker)");
@@ -1720,8 +1720,8 @@ describe("SearchPage component", () => {
 						expect(
 							screen.queryByRole("dialog", {
 								name: dialogTitle,
-							})
-						).not.toBeInTheDocument()
+							}),
+						).not.toBeInTheDocument(),
 					);
 				});
 
@@ -1750,14 +1750,14 @@ describe("SearchPage component", () => {
 
 					await waitFor(() => {
 						expect(
-							screen.queryByText(/fetching results.../)
+							screen.queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 					await waitFor(
 						() => {
 							expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 						},
-						{ timeout: 6000 }
+						{ timeout: 6000 },
 					);
 
 					expect(mockGetVulnerabilities).toHaveBeenLastCalledWith({
@@ -1768,7 +1768,7 @@ describe("SearchPage component", () => {
 						},
 					});
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=vuln"
+						"/search?category=vuln",
 					);
 
 					// 2. click a vuln result row to open a vuln dialog
@@ -1794,7 +1794,7 @@ describe("SearchPage component", () => {
 					});
 					await waitFor(() => {
 						expect(
-							within(dialog).queryByText(/fetching results.../)
+							within(dialog).queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 
@@ -1809,7 +1809,7 @@ describe("SearchPage component", () => {
 					});
 					// url should remain the same
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=vuln"
+						"/search?category=vuln",
 					);
 
 					// check vuln>repos form for all the things
@@ -1832,7 +1832,7 @@ describe("SearchPage component", () => {
 					});
 					let rows = within(repoTable).getAllByRole("checkbox");
 					expect(rows).toHaveLength(
-						mockSearchVulnerabilityRepos.results.length
+						mockSearchVulnerabilityRepos.results.length,
 					);
 
 					// check repo filter form exists & has expected fields
@@ -1881,7 +1881,7 @@ describe("SearchPage component", () => {
 					});
 					await waitFor(() => {
 						expect(
-							within(dialog).queryByText(/fetching results.../)
+							within(dialog).queryByText(/fetching results.../),
 						).not.toBeInTheDocument();
 					});
 
@@ -1902,12 +1902,12 @@ describe("SearchPage component", () => {
 									itemsPerPage: 10,
 									orderBy: "service",
 								},
-							}
-						)
+							},
+						),
 					);
 					// url should remain the same
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						"/search?category=vuln"
+						"/search?category=vuln",
 					);
 
 					// check populated repo results table
@@ -1916,7 +1916,7 @@ describe("SearchPage component", () => {
 					});
 					rows = within(repoTable).getAllByRole("checkbox");
 					expect(rows).toHaveLength(
-						mockSearchVulnerabilityRepos.results.length
+						mockSearchVulnerabilityRepos.results.length,
 					);
 
 					// 5. clicking a result row should swap search filters with repo details (not open a new dialog)
@@ -1924,7 +1924,7 @@ describe("SearchPage component", () => {
 					expect(
 						within(dialog).queryByRole("button", {
 							name: /close repository details/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 
 					const repoRow = within(repoTable).getByRole("cell", {
@@ -1956,12 +1956,12 @@ describe("SearchPage component", () => {
 					expect(
 						within(dialog).queryByRole("link", {
 							name: /view in version control/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 					expect(
 						within(dialog).queryByRole("button", {
 							name: /close repository details/i,
-						})
+						}),
 					).not.toBeInTheDocument();
 					// search filters are visible again
 					within(dialog).getByRole("button", {
@@ -1977,13 +1977,13 @@ describe("SearchPage component", () => {
 					// repos header removed
 					await waitFor(() =>
 						expect(
-							within(dialog).queryByRole("heading", { name: /repositories/i })
-						).not.toBeInTheDocument()
+							within(dialog).queryByRole("heading", { name: /repositories/i }),
+						).not.toBeInTheDocument(),
 					);
 
 					// back on details page, verify an expected field
 					expect(
-						within(dialog).getByText(/Vulnerability IDs.*/i)
+						within(dialog).getByText(/Vulnerability IDs.*/i),
 					).toBeInTheDocument();
 				});
 			});

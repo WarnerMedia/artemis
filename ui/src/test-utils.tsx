@@ -57,7 +57,7 @@ const AllTheProviders = ({ children }: AllTheProvidersProps) => {
 const customRender = (
 	ui: React.ReactElement,
 	options?: any,
-	userEventOptions?: any
+	userEventOptions?: any,
 ) => {
 	return {
 		user: userEvent.setup({ ...userEventOptions }),

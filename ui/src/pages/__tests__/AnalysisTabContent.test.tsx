@@ -26,14 +26,14 @@ const openAnalysisDialog = async () => {
 			hiddenFindings={hiddenFindings}
 			currentUser={mockCurrentUser}
 			saveFilters={mockSaveFilters}
-		/>
+		/>,
 	);
 
 	// this data should be in the dialog title
 	// first finding for this file (0)
 	const analysisType =
 		Object.entries(mockScan002.results.static_analysis).filter(
-			([key]) => key === analysisFile
+			([key]) => key === analysisFile,
 		)[0][1][0].type || "No Type";
 
 	const cell = screen.getByRole("rowheader", {
@@ -57,7 +57,7 @@ const closeAnalysisDialog = async (user: any) => {
 	expect(okButton).toBeInTheDocument();
 	await user.click(okButton);
 	await waitFor(() =>
-		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
 	);
 };
 
@@ -86,12 +86,12 @@ describe("AnalysisTabContent component", () => {
 					hiddenFindings={hiddenFindings}
 					currentUser={mockCurrentUser}
 					saveFilters={mockSaveFilters}
-				/>
+				/>,
 			);
 
 			expect(screen.queryByRole("row")).not.toBeInTheDocument();
 			expect(
-				screen.getByText(/no static analysis findings/i)
+				screen.getByText(/no static analysis findings/i),
 			).toBeInTheDocument();
 		});
 
@@ -109,7 +109,7 @@ describe("AnalysisTabContent component", () => {
 			// hide analysis we are going to open dialog for
 			// first finding for this file (0)
 			const analysisFinding = Object.entries(
-				mockScan002.results.static_analysis
+				mockScan002.results.static_analysis,
 			).filter(([key]) => key === analysisFile)[0][1][0];
 
 			hiddenFindings = [
@@ -138,7 +138,7 @@ describe("AnalysisTabContent component", () => {
 			const user = await openAnalysisDialog();
 			const dialog = screen.getByRole("dialog");
 			const finding = Object.entries(
-				mockScan002.results.static_analysis
+				mockScan002.results.static_analysis,
 			).filter(([key]) => key === analysisFile)[0][1][0];
 
 			within(dialog).getByText("Medium");
@@ -158,7 +158,7 @@ describe("AnalysisTabContent component", () => {
 						hiddenFindings={hiddenFindings}
 						currentUser={mockCurrentUser}
 						saveFilters={mockSaveFilters}
-					/>
+					/>,
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -170,10 +170,10 @@ describe("AnalysisTabContent component", () => {
 				expect(firstFilter).toHaveFocus();
 				expect(firstFilter).toHaveAttribute("placeholder", "Contains");
 				expect(
-					within(filterGroup).getByRole("textbox", { name: /line/i })
+					within(filterGroup).getByRole("textbox", { name: /line/i }),
 				).toHaveAttribute("placeholder", "Exact");
 				expect(
-					within(filterGroup).getByRole("textbox", { name: /type/i })
+					within(filterGroup).getByRole("textbox", { name: /type/i }),
 				).toHaveAttribute("placeholder", "Contains");
 				within(filterGroup).getByRole("button", { name: /severity /i });
 			});
@@ -191,7 +191,7 @@ describe("AnalysisTabContent component", () => {
 					null,
 					{
 						advanceTimers: jest.advanceTimersByTime,
-					}
+					},
 				);
 
 				const filterGroup = screen.getByRole("group", {
@@ -279,7 +279,7 @@ describe("AnalysisTabContent component", () => {
 						hiddenFindings={hiddenFindings}
 						currentUser={mockCurrentUser}
 						saveFilters={mockSaveFilters}
-					/>
+					/>,
 				);
 
 				const filterGroup = screen.getByRole("group", {

@@ -28,7 +28,7 @@ const Notifications = () => {
 	const allNotifications = useSelector(selectAllNotifications);
 	const defaultHideDuration = APP_NOTIFICATION_DELAY; // delay before auto-closing all alerts
 	const [autoHideDuration, setAutoHideDuration] = useState<number | null>(
-		defaultHideDuration
+		defaultHideDuration,
 	);
 
 	// don't auto-close the snackbar if there are error|warning notifications
@@ -52,7 +52,7 @@ const Notifications = () => {
 
 	const onDismissAllNotifications = (
 		_event: React.SyntheticEvent | Event,
-		reason?: string
+		reason?: string,
 	) => {
 		// note: by default, snackbars allow a user to click outside the snackbar (ie. "clickaway")
 		// to dismiss the snackbar... however, this is not the behavior we want because the snackbar

@@ -36,7 +36,7 @@ describe("ScanOptionsSummary component", () => {
 			const categoryChip = screen.getByText(value.displayName);
 			expect(categoryChip).toBeInTheDocument();
 			expect(
-				screen.getByTitle(value.displayName, { exact: false })
+				screen.getByTitle(value.displayName, { exact: false }),
 			).toBeInTheDocument(); // substring
 			expect(categoryChip).not.toHaveAttribute("aria-disabled");
 		}
@@ -45,18 +45,18 @@ describe("ScanOptionsSummary component", () => {
 	it("displays each disabled category by display name, not API name", () => {
 		const mockScan = JSON.parse(JSON.stringify(scanMockData));
 		mockScan.scan_options.categories = Object.keys(pluginCatalog).map(
-			(category) => `-${category}`
+			(category) => `-${category}`,
 		);
 		render(<ScanOptionsSummary scan={mockScan as AnalysisReport} />);
 		for (const [, value] of Object.entries(pluginCatalog)) {
 			const categoryChip = screen.getByText(value.displayName);
 			expect(categoryChip).toBeInTheDocument();
 			expect(
-				screen.getByTitle(`${value.displayName} (not run)`, { exact: false })
+				screen.getByTitle(`${value.displayName} (not run)`, { exact: false }),
 			).toBeInTheDocument(); // substring
 			expect(categoryChip.parentElement).toHaveAttribute(
 				"aria-disabled",
-				"true"
+				"true",
 			);
 		}
 	});
@@ -76,7 +76,7 @@ describe("ScanOptionsSummary component", () => {
 			const pluginChip = screen.getByText(value.displayName);
 			expect(pluginChip).toBeInTheDocument();
 			expect(
-				screen.getByTitle(value.displayName, { exact: false })
+				screen.getByTitle(value.displayName, { exact: false }),
 			).toBeInTheDocument(); // substring
 			expect(pluginChip).not.toHaveAttribute("aria-disabled");
 		}
@@ -92,14 +92,14 @@ describe("ScanOptionsSummary component", () => {
 		};
 		const mockScan = JSON.parse(JSON.stringify(scanMockData));
 		mockScan.scan_options.plugins = Object.keys(allPlugins).map(
-			(plugin) => `-${plugin}`
+			(plugin) => `-${plugin}`,
 		);
 		render(<ScanOptionsSummary scan={mockScan as AnalysisReport} />);
 		for (const [, value] of Object.entries(allPlugins)) {
 			const pluginChip = screen.getByText(value.displayName);
 			expect(pluginChip).toBeInTheDocument();
 			expect(
-				screen.getByTitle(`${value.displayName} (not run)`, { exact: false })
+				screen.getByTitle(`${value.displayName} (not run)`, { exact: false }),
 			).toBeInTheDocument(); // substring
 			expect(pluginChip.parentElement).toHaveAttribute("aria-disabled", "true");
 		}
@@ -147,7 +147,7 @@ describe("ScanOptionsSummary component", () => {
 			];
 			render(<ScanOptionsSummary scan={mockScan as AnalysisReport} />);
 			const includePaths = screen.getByText(
-				`Include Paths (${mockScan.scan_options.include_paths.length})`
+				`Include Paths (${mockScan.scan_options.include_paths.length})`,
 			);
 			if (includePaths.parentElement) {
 				for (const path of mockScan.scan_options.include_paths) {
@@ -155,7 +155,7 @@ describe("ScanOptionsSummary component", () => {
 				}
 			}
 			const excludePaths = screen.getByText(
-				`Exclude Paths (${mockScan.scan_options.exclude_paths.length})`
+				`Exclude Paths (${mockScan.scan_options.exclude_paths.length})`,
 			);
 			if (excludePaths.parentElement) {
 				for (const path of mockScan.scan_options.exclude_paths) {

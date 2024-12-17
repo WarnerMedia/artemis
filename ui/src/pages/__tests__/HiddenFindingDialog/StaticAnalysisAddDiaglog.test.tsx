@@ -32,7 +32,7 @@ describe("HiddenFindingDialog component", () => {
 	const findingLabelSourceFound = new RegExp(/^Found in source file/);
 	const findingLabelSourceHidden = new RegExp(/^Hidden in source file/);
 	const findingLabelSourceNotHidden = new RegExp(
-		/^Source files not covered by this hidden finding/
+		/^Source files not covered by this hidden finding/,
 	);
 	const findingLabelType = "Type:";
 	const findingTypeAnalysis = "Static Analysis";
@@ -51,29 +51,29 @@ describe("HiddenFindingDialog component", () => {
 					row={analysisRow}
 					open={true}
 					onClose={handleClose}
-				/>
+				/>,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogAddTitle })
+					screen.queryByRole("dialog", { name: dialogAddTitle }),
 				).toBeInTheDocument();
 			});
 
 			// check expected fields for an add analysis hidden findings dialog
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenBy })
+				screen.queryByRole("listitem", { name: findingLabelHiddenBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenDate })
+				screen.queryByRole("listitem", { name: findingLabelHiddenDate }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -81,7 +81,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(category).toBeInTheDocument();
 			expect(
-				within(category).getByText(findingTypeAnalysis)
+				within(category).getByText(findingTypeAnalysis),
 			).toBeInTheDocument();
 
 			const severity = screen.getByRole("listitem", {
@@ -106,20 +106,20 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceNotHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			// warning badge not displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).not.toBeInTheDocument();
 
 			// form doesn't start with any errors

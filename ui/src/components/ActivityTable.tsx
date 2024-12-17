@@ -166,9 +166,9 @@ const ReportAction = (props: ReportActionProps) => {
 	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 	const menuOpen = Boolean(anchorEl);
 	const resultsUrl = `results?org=${encodeURIComponent(
-		vcsOrg || ""
+		vcsOrg || "",
 	)}&repo=${encodeURIComponent(repo || "")}&id=${encodeURIComponent(
-		row.scan_id
+		row.scan_id,
 	)}`;
 	let ReportButton = <AssignmentIcon />;
 	let tooltip = i18n._(t`View results`);
@@ -272,7 +272,7 @@ const ReportAction = (props: ReportActionProps) => {
 							setTimeout(() => {
 								setTimeoutId(null);
 								setCopied(false);
-							}, APP_NOTIFICATION_DELAY)
+							}, APP_NOTIFICATION_DELAY),
 						);
 					}}
 				>
@@ -334,22 +334,22 @@ const ActivityTable = (props: ActivityTableProps) => {
 		itemsPerPage: AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT,
 	};
 	const [autoReload, setAutoReload] = useState<boolean>(
-		stateDefaults.autoReload
+		stateDefaults.autoReload,
 	);
 	const [showMyScans, setShowMyScans] = useState<boolean>(
-		stateDefaults.showMyScans
+		stateDefaults.showMyScans,
 	);
 	const [includeBatch, setIncludeBatch] = useState<boolean>(
-		stateDefaults.includeBatch
+		stateDefaults.includeBatch,
 	);
 	const [currentPage, setCurrentPage] = useState<number>(
-		stateDefaults.currentPage
+		stateDefaults.currentPage,
 	);
 	const [itemsPerPage, setItemsPerPage] = useState<number>(
-		stateDefaults.itemsPerPage
+		stateDefaults.itemsPerPage,
 	);
 	const [scanToRestart, setScanToRestart] = useState<AnalysisReport | null>(
-		null
+		null,
 	);
 
 	const scansStatus = useSelector((state: RootState) => state.scans.status);
@@ -357,7 +357,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 	const scansTotal = useSelector(selectTotalScans);
 	const allScans = useSelector(selectAllScans);
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	); // current user is "self" id
 
 	// get any prior table state passed-in URL hash and validate matches schema
@@ -390,7 +390,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 	// such as "show only my scans" and "include batched scans" toggles
 	const getFilters = (
 		show: boolean = showMyScans,
-		batch: boolean = includeBatch
+		batch: boolean = includeBatch,
 	) => {
 		const filters: RequestMeta["filters"] = {};
 		// check both currentUser & currenUser.email to make TypeScript happy in subsequent assignment
@@ -502,7 +502,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 	};
 
 	const handleChangeRowsPerPage = (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
 		const count = parseInt(event.target.value, 10);
 		const page = 0; // reset page # since items per page changed
@@ -564,32 +564,32 @@ const ActivityTable = (props: ActivityTableProps) => {
 				secretPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => secretPlugins.includes(p) || secretPlugins.includes(`-${p}`)
+						(p) => secretPlugins.includes(p) || secretPlugins.includes(`-${p}`),
 					),
 				staticPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => staticPlugins.includes(p) || staticPlugins.includes(`-${p}`)
+						(p) => staticPlugins.includes(p) || staticPlugins.includes(`-${p}`),
 					),
 				techPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => techPlugins.includes(p) || techPlugins.includes(`-${p}`)
+						(p) => techPlugins.includes(p) || techPlugins.includes(`-${p}`),
 					),
 				vulnPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => vulnPlugins.includes(p) || vulnPlugins.includes(`-${p}`)
+						(p) => vulnPlugins.includes(p) || vulnPlugins.includes(`-${p}`),
 					),
 				sbomPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`)
+						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`),
 					),
 				configPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => configPlugins.includes(p) || configPlugins.includes(`-${p}`)
+						(p) => configPlugins.includes(p) || configPlugins.includes(`-${p}`),
 					),
 				includePaths: scan.scan_options?.include_paths
 					? scan.scan_options?.include_paths.join(", ")
@@ -598,7 +598,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 					? scan.scan_options?.exclude_paths.join(", ")
 					: "",
 			},
-			currentUser
+			currentUser,
 		);
 
 	return (
@@ -824,8 +824,8 @@ const ActivityTable = (props: ActivityTableProps) => {
 																row?.scan_options?.batch_priority
 																	? row?.batch_description
 																		? i18n._(
-																				t`Batched Scan: ${row.batch_description}`
-																		  )
+																				t`Batched Scan: ${row.batch_description}`,
+																			)
 																		: i18n._(t`Batched Scan`)
 																	: i18n._(t`On-Demand Scan`)
 															}
@@ -851,16 +851,16 @@ const ActivityTable = (props: ActivityTableProps) => {
 																	t`Include paths: ${
 																		row?.scan_options?.include_paths.length > 0
 																			? row?.scan_options?.include_paths.join(
-																					", "
-																			  )
+																					", ",
+																				)
 																			: "None"
 																	} ; Exclude paths: ${
 																		row?.scan_options?.exclude_paths.length > 0
 																			? row?.scan_options?.exclude_paths.join(
-																					", "
-																			  )
+																					", ",
+																				)
 																			: "None"
-																	}`
+																	}`,
 																)}
 															>
 																<RuleFolderIcon fontSize="small" />

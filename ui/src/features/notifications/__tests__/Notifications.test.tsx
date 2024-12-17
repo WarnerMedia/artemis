@@ -73,7 +73,7 @@ describe("Notificaions component", () => {
 		mockAppState = JSON.parse(JSON.stringify(initialState));
 		render(<Notifications />);
 		expect(screen.getAllByRole("alert")).toHaveLength(
-			mockAppState.notifications.ids.length
+			mockAppState.notifications.ids.length,
 		);
 		expect(screen.getAllByLabelText("error")).toHaveLength(2);
 		expect(screen.getAllByLabelText("warning")).toHaveLength(1);
@@ -139,7 +139,7 @@ describe("Notificaions component", () => {
 		jest.advanceTimersByTime(APP_NOTIFICATION_DELAY + 1000); // all messages should have been dismissed delay +1 second
 
 		expect(screen.getAllByRole("alert")).toHaveLength(
-			mockAppState.notifications.ids.length
+			mockAppState.notifications.ids.length,
 		);
 
 		// notifications should not be auto-dismissed
@@ -176,7 +176,7 @@ describe("Notificaions component", () => {
 		jest.advanceTimersByTime(APP_NOTIFICATION_DELAY + 1000); // all messages should have been dismissed delay +1 second
 
 		expect(screen.getAllByRole("alert")).toHaveLength(
-			mockAppState.notifications.ids.length
+			mockAppState.notifications.ids.length,
 		);
 
 		// notifications should not be auto-dismissed
@@ -209,7 +209,7 @@ describe("Notificaions component", () => {
 		jest.advanceTimersByTime(APP_NOTIFICATION_DELAY + 1000); // all messages should have been dismissed delay +1 second
 
 		expect(screen.getAllByRole("alert")).toHaveLength(
-			mockAppState.notifications.ids.length
+			mockAppState.notifications.ids.length,
 		);
 
 		// all notifications should be auto-dismissed
@@ -228,7 +228,7 @@ describe("Notificaions component", () => {
 			null,
 			{
 				advanceTimers: jest.advanceTimersByTime,
-			}
+			},
 		);
 		jest.clearAllTimers();
 		await user.click(screen.getByTestId("outer-element"));
