@@ -26,14 +26,14 @@ type PluginOutput struct {
 	Output   []byte // Raw stdout from plugin.
 	ExitCode int
 
-	LintErrors []error
+	LintErrors error
 }
 
-func NewPluginOutput(output []byte, exitCode int) *PluginOutput {
+func NewPluginOutput(pluginType string, output []byte, exitCode int) *PluginOutput {
 	// Skip lint checks if the plugin process failed.
-	var lintErrors []error
+	var lintErrors error
 	if exitCode == 0 {
-		lintErrors = lint(output)
+		lintErrors = lint(pluginType, output)
 	}
 
 	return &PluginOutput{
@@ -47,7 +47,7 @@ func NewPluginOutput(output []byte, exitCode int) *PluginOutput {
 // usage prints the command-line help and exits.
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: "+
-		os.Args[0]+" plugin runner\n")
+		os.Args[0]+" plugin plugin_type runner\n")
 	os.Exit(1)
 }
 
@@ -81,7 +81,7 @@ func mustRenderCmd(plugin, runner string) (name string, args []string) {
 // run executes the plugin.
 // stdout and stderr from the plugin are colorized.
 // Returns the exitcode.
-func run(ctx context.Context, name string, args []string) (*PluginOutput, error) {
+func run(ctx context.Context, name string, pluginType string, args []string) (*PluginOutput, error) {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Stdin = nil
 	outPipe, err := cmd.StdoutPipe()
@@ -138,13 +138,13 @@ func run(ctx context.Context, name string, args []string) (*PluginOutput, error)
 		var exitErr *exec.ExitError
 		if errors.As(cmdErr, &exitErr) && exitcode != -1 {
 			// Normal process exit (with potential non-zero exit code).
-			return NewPluginOutput(output, exitcode), nil
+			return NewPluginOutput(pluginType, output, exitcode), nil
 		} else {
 			// Other error (e.g. IO interrupt, terminated by signal).
 			return nil, cmdErr
 		}
 	}
-	return NewPluginOutput(output, cmd.ProcessState.ExitCode()), nil
+	return NewPluginOutput(pluginType, output, cmd.ProcessState.ExitCode()), nil
 }
 
 // installTerminateHandler sets up the handlers for termination signals
@@ -175,24 +175,23 @@ func reportStatus(exitCode int, outputLen int) {
 	fmt.Printf(" (%d output bytes)\n", outputLen)
 }
 
-func reportLintErrors(errs []error) {
-	for _, err := range errs {
-		fmt.Print(color.HiRedString("--> Error: "))
-		color.HiYellow(err.Error())
-	}
+func reportLintErrors(err error) {
+	fmt.Print(color.HiRedString("--> Error: "))
+	color.HiYellow(err.Error())
 }
 
 func main() {
-	if len(os.Args) < 3 {
+	if len(os.Args) < 4 {
 		usage()
 	}
 	plugin := os.Args[1]
-	runner := os.Args[2]
+	pluginType := os.Args[2]
+	runner := os.Args[3]
 
 	ctx := installTerminateHandler(context.Background())
 
 	name, args := mustRenderCmd(plugin, runner)
-	output, err := run(ctx, name, args)
+	output, err := run(ctx, name, pluginType, args)
 	if err != nil {
 		log.Fatalf("Error running plugin: %v", err)
 	}

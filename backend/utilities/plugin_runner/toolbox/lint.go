@@ -1,13 +1,33 @@
 package main
 
 import (
+	"bytes"
+	_ "embed"
 	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
 
-	"github.com/packntrack/jsonValidator"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
+
+// JSON schema for plugin results.
+var pluginResultSchema *jsonschema.Schema
+
+//go:embed plugin-results.json
+var pluginResultSchemaData []byte
+
+func init() {
+	schema, err := jsonschema.UnmarshalJSON(bytes.NewReader(pluginResultSchemaData))
+	if err != nil {
+		panic(err)
+	}
+	c := jsonschema.NewCompiler()
+	if err = c.AddResource("PluginResults", schema); err != nil {
+		panic(err)
+	}
+	pluginResultSchema = c.MustCompile("PluginResults")
+}
 
 type LintErrors []error
 
@@ -25,31 +45,30 @@ func (errs LintErrors) String() string {
 }
 
 // lint validates the JSON results from the plugin.
-func lint(buf []byte) LintErrors {
-	var retv []error
+func lint(pluginType string, buf []byte) error {
+	switch pluginType {
+	case "configuration":
+	case "inventory":
+	case "sbom":
+	case "secrets":
+	case "static_analysis":
+	case "vulnerability":
+	default:
+		return fmt.Errorf("unknown plugin type: %#v", pluginType)
+	}
 
 	if !utf8.Valid(buf) {
-		retv = append(retv, errors.New("invalid UTF-8"))
-		return retv
+		return errors.New("invalid UTF-8")
 	}
 
-	var result struct {
-		Success   *bool    `validations:"type=bool;required=true"`
-		Truncated *bool    `validations:"type=bool;required=true"`
-		Details   any      `validations:"required=true"`
-		Errors    []string `validations:"type=[]string;required=true"`
+	inst, err := jsonschema.UnmarshalJSON(bytes.NewReader(buf))
+	if err != nil {
+		return fmt.Errorf("invalid JSON: %w", err)
 	}
 
-	errs := jsonValidator.Validate(buf, &result)
-	retv = append(retv, errs...)
-
-	if result.Truncated != nil && *result.Truncated {
-		retv = append(retv, jsonValidator.ValidationError{
-			Field: "truncated", Message: "Must be false",
-		})
+	if err = pluginResultSchema.Validate(inst); err != nil {
+		return err
 	}
 
-	//TODO: Validate details based on plugin type.
-
-	return retv
+	return nil
 }
