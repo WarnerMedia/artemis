@@ -1,4 +1,4 @@
 *
 !*.go
 !go.*
-!plugin-results.json
+!schemas/*.json
