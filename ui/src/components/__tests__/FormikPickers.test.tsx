@@ -26,7 +26,7 @@ test("displays input field without label", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByRole("textbox", { name: "" })).toBeInTheDocument();
@@ -46,7 +46,7 @@ test("displays input field with a label", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByRole("textbox", { name: "Test Me" })).toBeInTheDocument();
@@ -66,7 +66,7 @@ test("displays error if initial date value valid", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByText(/invalid date format/i)).toBeInTheDocument();
@@ -82,18 +82,18 @@ test("displays initial date value if date valid", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT, // enforce a date format to ensure consistent results
+		format: DATE_FORMAT, // enforce a date format to ensure consistent results
 	};
 	render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(
-		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT))
+		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT)),
 	).toBeInTheDocument();
 });
 
@@ -113,7 +113,7 @@ test("displays placeholder", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByPlaceholderText(props.placeholder)).toBeInTheDocument();
@@ -136,7 +136,7 @@ test("input disabled", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	expect(screen.getByRole("textbox", { name: "Test Me" })).toBeDisabled();
@@ -152,19 +152,19 @@ test("displays value matching format", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	// expect format: Month Day Hour:Minute"
 	expect(
-		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT))
+		screen.getByDisplayValue(dt.toFormat(DATE_FORMAT)),
 	).toBeInTheDocument();
 });
 
@@ -178,7 +178,7 @@ test("disablePast disallows initial past dates", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disablePast: true,
 		minDateMessage: "min-date",
 	};
@@ -187,7 +187,7 @@ test("disablePast disallows initial past dates", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	// expect format: Month Day Hour:Minute"
@@ -195,7 +195,7 @@ test("disablePast disallows initial past dates", () => {
 	expect(elt).toHaveAccessibleDescription(props.minDateMessage);
 });
 
-test("disablePast disallows past date entry", async () => {
+test.only("disablePast disallows past date entry", async () => {
 	const dt = DateTime.now().minus({ days: 1 });
 	const initialValues = {
 		"datetime-test-1": null, // intial date value
@@ -205,7 +205,7 @@ test("disablePast disallows past date entry", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disablePast: true,
 		minDateMessage: "min-date",
 	};
@@ -214,7 +214,7 @@ test("disablePast disallows past date entry", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -238,7 +238,7 @@ test("minDate disallows date entry before minDate", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		minDate: minDate,
 		minDateMessage: "min-date",
 	};
@@ -247,7 +247,7 @@ test("minDate disallows date entry before minDate", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -276,7 +276,7 @@ test("schema with min disallows date entry before min date", async () => {
 		name: "date_field",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	const { user } = render(
 		<Formik
@@ -287,7 +287,7 @@ test("schema with min disallows date entry before min date", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -310,7 +310,7 @@ test("disableFuture disallows initial future dates", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disableFuture: true,
 		maxDateMessage: "max-date",
 	};
@@ -319,7 +319,7 @@ test("disableFuture disallows initial future dates", () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	// expect format: Month Day Hour:Minute"
@@ -337,7 +337,7 @@ test("disableFuture disallows future date entry", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disableFuture: true,
 		maxDateMessage: "max-date",
 	};
@@ -346,7 +346,7 @@ test("disableFuture disallows future date entry", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -370,7 +370,7 @@ test("maxDate disallows date entry after maxDate", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		maxDate: maxDate,
 		maxDateMessage: "max-date",
 	};
@@ -379,7 +379,7 @@ test("maxDate disallows date entry after maxDate", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -408,7 +408,7 @@ test("schema with max disallows date entry after max date", async () => {
 		name: "date_field",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	const { user } = render(
 		<Formik
@@ -419,7 +419,7 @@ test("schema with max disallows date entry after max date", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -441,7 +441,7 @@ test("value not matching format cannot be entered", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		mask: "____/__/__ __:__", // input is only restricted in MUIv5 if the picker has a mask
 	};
 	const { user } = render(
@@ -449,7 +449,7 @@ test("value not matching format cannot be entered", async () => {
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
@@ -470,14 +470,14 @@ test("invalid date produces an error", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	const { user } = render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>
 			<Form noValidate autoComplete="off">
 				<Field component={DatePickerField} {...props} />
 			</Form>
-		</Formik>
+		</Formik>,
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });

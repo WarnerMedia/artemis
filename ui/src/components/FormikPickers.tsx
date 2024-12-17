@@ -41,7 +41,6 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 		field,
 		form,
 		getShouldDisableDateError,
-		renderInput,
 		onChange,
 		value,
 		invalidDateMessage,
@@ -58,11 +57,6 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 	// UI has not yet been tested on mobile and there are some significant differences to Desktop picker that cause unit tests to fail
 	return (
 		<DesktopDateTimePicker
-			componentsProps={{
-				actionBar: {
-					actions: ["clear", "cancel", "accept"],
-				},
-			}}
 			value={field.value}
 			label={props?.label}
 			onChange={(date) => {
@@ -104,11 +98,13 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = maxDateMessage;
 						} else {
 							dt = props?.maxDate ?? props?.maxDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
+							if (props?.format) {
+								format = dt.toFormat(props.format);
 							} else {
 								format = dt.toLocaleString(
-									props?.maxDate ? DateTime.DATE_SHORT : DateTime.DATETIME_SHORT
+									props?.maxDate
+										? DateTime.DATE_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = i18n._(t`Date can not be after ${format}`);
@@ -120,11 +116,13 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = minDateMessage;
 						} else {
 							dt = props?.minDate ?? props?.minDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
+							if (props?.format) {
+								format = dt.toFormat(props.format);
 							} else {
 								format = dt.toLocaleString(
-									props?.minDate ? DateTime.DATE_SHORT : DateTime.DATETIME_SHORT
+									props?.minDate
+										? DateTime.DATE_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = i18n._(t`Date can not be before ${format}`);
@@ -136,13 +134,13 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = maxDateMessage;
 						} else {
 							dt = props?.maxTime ?? props?.maxDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
+							if (props?.format) {
+								format = dt.toFormat(props.format);
 							} else {
 								format = dt.toLocaleString(
 									props?.maxTime
 										? DateTime.TIME_SIMPLE
-										: DateTime.DATETIME_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = props?.maxTime
@@ -156,13 +154,13 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = minDateMessage;
 						} else {
 							dt = props?.minTime ?? props?.minDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
+							if (props?.format) {
+								format = dt.toFormat(props.format);
 							} else {
 								format = dt.toLocaleString(
 									props?.minTime
 										? DateTime.TIME_SIMPLE
-										: DateTime.DATETIME_SHORT
+										: DateTime.DATETIME_SHORT,
 								);
 							}
 							error = props?.minTime
@@ -194,33 +192,40 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 					form.setFieldError(field.name, error);
 				}
 			}}
-			toolbarTitle={props?.toolbarTitle ?? i18n._(t`Select date`)}
-			renderInput={(inputProps) => {
-				if (props?.placeholder && inputProps?.inputProps) {
-					inputProps.inputProps.placeholder = props.placeholder;
-				}
-				if (props?.id && inputProps?.inputProps) {
-					inputProps.inputProps.id = props.id;
-				}
-				return (
-					<TextField
-						name={field.name}
-						{...inputProps}
-						InputLabelProps={{ htmlFor: props.id }}
-						style={props.style ?? undefined}
-						size={props.size ?? "medium"}
-						error={Boolean(hasError)}
-						helperText={hasError ?? inputProps.helperText}
-						onBlur={() => {
-							form.setFieldTouched(field.name, true, false);
-							if (muiError) {
-								form.setFieldError(field.name, muiError);
-							} else {
-								form.validateField(field.name);
-							}
-						}}
-					/>
-				);
+			localeText={{
+				toolbarTitle: props?.localeText?.toolbarTitle ?? i18n._(t`Select date`),
+			}}
+			slotProps={{
+				actionBar: {
+					actions: ["clear", "cancel", "accept"],
+				},
+				textField: (inputProps) => {
+					if (props?.placeholder && inputProps?.inputProps) {
+						inputProps.inputProps.placeholder = props.placeholder;
+					}
+					if (props?.id && inputProps?.inputProps) {
+						inputProps.inputProps.id = props.id;
+					}
+					return (
+						<TextField
+							name={field.name}
+							{...inputProps}
+							InputLabelProps={{ htmlFor: props.id }}
+							style={props.style ?? undefined}
+							size={props.size ?? "medium"}
+							error={Boolean(hasError)}
+							helperText={hasError ?? inputProps.helperText}
+							onBlur={() => {
+								form.setFieldTouched(field.name, true, false);
+								if (muiError) {
+									form.setFieldError(field.name, muiError);
+								} else {
+									form.validateField(field.name);
+								}
+							}}
+						/>
+					);
+				},
 			}}
 			{...other}
 		/>
