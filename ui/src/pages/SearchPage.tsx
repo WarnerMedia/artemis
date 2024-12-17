@@ -513,7 +513,7 @@ const initialRepoFilters: RepoFiltersT = {
 	service: "",
 	repo_match: "icontains",
 	repo: "",
-	cicd_tool: "none",
+	cicd_tool: "",
 	risk: [],
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
@@ -2408,11 +2408,7 @@ const FormFields = (props: {
 		},
 		*/
 	};
-	const matchCicdTools: MatcherT = {
-		none: {
-			label: "None",
-		},
-	};
+	const matchCicdTools: MatcherT = {};
 	supportedCicdTools.forEach(
 		(item) =>
 			(matchCicdTools[item.id] = {
