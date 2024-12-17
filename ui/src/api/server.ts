@@ -1424,11 +1424,11 @@ export function makeServer() {
 					cicd_tools: {
 						github_actions: {
 							display_name: "Github Actions",
-							configs: [".github/workflows/deploy.yml"],
+							configs: [{ path: ".github/workflows/deploy.yml" }],
 						},
 						jenkins: {
 							display_name: "Jenkins",
-							configs: ["Jenkinsfile", "build/Jenkinsfile"],
+							configs: [{ path: "Jenkinsfile" }, { path: "build/Jenkinsfile" }],
 						},
 					},
 					technology_discovery: {

@@ -148,6 +148,62 @@ export const serviceSchema = () => {
 		);
 };
 
+export const supportedCicdTools = [
+	{
+		id: "aws_codebuild",
+		displayName: "AWS CodeBuild",
+	},
+	{
+		id: "azure_pipelines",
+		displayName: "Azure Pipelines",
+	},
+	{
+		id: "bitrise",
+		displayName: "BitRise",
+	},
+	{
+		id: "circleci",
+		displayName: "CircleCI",
+	},
+	{
+		id: "electron_forge",
+		displayName: "Electron Forge",
+	},
+	{
+		id: "github_actions",
+		displayName: "GitHub Actions",
+	},
+	{
+		id: "gitlab_ci",
+		displayName: "GitLab CI",
+	},
+	{
+		id: "jenkins",
+		displayName: "Jenkins",
+	},
+	{
+		id: "teamcity",
+		displayName: "TeamCity",
+	},
+	{
+		id: "travis_ci",
+		displayName: "Travis CI",
+	},
+];
+
+const cicdToolIDs = supportedCicdTools.map((item) => item.id);
+
+function getCicdToolError() {
+	const validToolsStr = `[${cicdToolIDs.join("|")}]`;
+	const intro = i18n._(t`Must be a supported cicd tool name:`);
+
+	return `${intro} ${validToolsStr}`;
+}
+
+export const cicdToolSchema = () => {
+	return Yup.string().trim().oneOf(cicdToolIDs, getCicdToolError());
+};
+
 export const riskSchema = Yup.string()
 	.oneOf(["priority", "critical", "high", "moderate", "low"])
 	.nullable();

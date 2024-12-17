@@ -214,6 +214,7 @@ import {
 	SecretFindingResult,
 	SecretValidity,
 	SeverityLevels,
+	SummaryInventory,
 } from "features/scans/scansSchemas";
 import {
 	clearScans,
@@ -4743,17 +4744,17 @@ const InventoryTabContent = (props: {
 	const { i18n } = useLingui();
 	const { scan, sharedColors } = props;
 
-	const columns: ColDef[] = [
+	const baseImageColumns: ColDef[] = [
 		{ field: "image", headerName: i18n._(t`Image`) },
 		{ field: "tag", headerName: i18n._(t`Tag`) },
 	];
-	const rows: RowDef[] = [];
+	const baseImageRows: RowDef[] = [];
 
 	for (const [image, items] of Object.entries(
 		scan.results?.inventory?.base_images ?? {}
 	)) {
 		items?.tags.forEach((tag: string) => {
-			rows.push({
+			baseImageRows.push({
 				keyId: ["image", image, tag].join("-"),
 				image,
 				tag,
@@ -4761,7 +4762,7 @@ const InventoryTabContent = (props: {
 		});
 	}
 
-	const exportData = () => {
+	const baseImageExportData = () => {
 		const data: RowDef[] = [];
 		for (const [image, items] of Object.entries(
 			scan.results?.inventory?.base_images ?? {}
@@ -4775,6 +4776,34 @@ const InventoryTabContent = (props: {
 		}
 		return data;
 	};
+
+	const cicdToolsColumns: ColDef[] = [
+		{ field: "tool", headerName: i18n._(t`Tool`) },
+		{ field: "files", headerName: i18n._(t`Config Files`) },
+	];
+	const cicdToolsRows: RowDef[] = [];
+
+	for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+		cicdToolsRows.push({
+			tool: item.display_name,
+			files: item.configs
+				.map((config: { [key: string]: string }) => config.path)
+				.join(', ')
+		});
+	}
+
+    const cicdToolsExportData = () => {
+        const data: RowDef[] = [];
+        for (const items of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+			data.push({
+				tool: items.display_name,
+				files: items.configs
+					.map((config: { [key: string]: string }) => config.path)
+					.join(','),
+			});
+        }
+        return data;
+    };
 
 	interface TechData {
 		name: string;
@@ -4902,9 +4931,9 @@ const InventoryTabContent = (props: {
 				<Toolbar>
 					<Typography variant="h6" id="base-images-title" component="div">
 						<Trans>Base Images</Trans>
-						{rows && (
+						{baseImageRows && (
 							<CustomCopyToClipboard
-								copyTarget={rows
+								copyTarget={baseImageRows
 									.map((data) => {
 										// format base image results
 										return `${data.image} - ${data.tag}`;
@@ -4916,17 +4945,45 @@ const InventoryTabContent = (props: {
 				</Toolbar>
 				{scan.results?.inventory?.base_images ? (
 					<EnhancedTable
-						columns={columns}
-						rows={rows}
+						columns={baseImageColumns}
+						rows={baseImageRows}
 						defaultOrderBy="image"
 						menuOptions={{
 							exportFile: "scan_images",
 							exportFormats: ["csv", "json"],
-							exportData: exportData,
+							exportData: baseImageExportData,
 						}}
 					/>
 				) : (
 					<NoResults title={i18n._(t`No base images found`)} />
+				)}
+			</Paper>
+			<Paper square className={classes.paper}>
+				<Toolbar>
+					<Typography variant="h6" id="cicd-tools-title" component="div">
+						<Trans>Potential CI/CD Tools</Trans>
+						{baseImageRows && (
+							<CustomCopyToClipboard
+								copyTarget={cicdToolsRows
+									.map((data) => data.tool)
+									.join(", ")}
+							/>
+						)}
+					</Typography>
+				</Toolbar>
+				{scan.results?.inventory?.cicd_tools ? (
+					<EnhancedTable
+						columns={cicdToolsColumns}
+						rows={cicdToolsRows}
+						defaultOrderBy="tool"
+						menuOptions={{
+							exportFile: "cicd_tools",
+							exportFormats: ["csv", "json"],
+							exportData: cicdToolsExportData,
+						}}
+					/>
+				) : (
+					<NoResults title={i18n._(t`No CI/CD tools found`)} />
 				)}
 			</Paper>
 		</>
@@ -6152,6 +6209,32 @@ export const setResultFilters = (
 	}
 };
 
+function getInventoryCount(inventory: SummaryInventory): string {
+	const imageCount = inventory.base_images ?? 0;
+	const cicdToolCount = inventory.cicd_tools ?? 0;
+	const techCount = inventory.technology_discovery ?? 0;
+
+	const result = [];
+
+	if (techCount) {
+		result.push(techCount);
+	}
+
+	if (imageCount) {
+		result.push(imageCount);
+	}
+
+	if (cicdToolCount) {
+		result.push(cicdToolCount);
+	}
+
+	if (result) {
+		return result.join('/');
+	} else {
+		return "0";
+	}
+}
+
 export const TabContent = (props: {
 	activeTab: number;
 	onTabChange: (n: number) => void;
@@ -6180,12 +6263,9 @@ export const TabContent = (props: {
 	} = props;
 
 	const getTotalCounts = useCallback(() => {
-		const imageCount = scan?.results_summary?.inventory?.base_images ?? 0;
-		const techCount =
-			scan?.results_summary?.inventory?.technology_discovery ?? 0;
 		return {
 			secrets: scan?.results_summary?.secrets ?? 0,
-			inventory: imageCount || techCount ? `${techCount}/${imageCount}` : 0,
+			inventory: getInventoryCount(scan?.results_summary?.inventory || {}),
 			// sum the key totals
 			vulnerabilities: scan?.results_summary?.vulnerabilities
 				? Object.values(scan.results_summary.vulnerabilities).reduce(

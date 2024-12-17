@@ -106,11 +106,13 @@ import {
 	SearchVulnsResponse,
 	VulnComponent,
 	booleanStringSchema,
+	cicdToolSchema,
 	matchDateSchema,
 	matchNullDateSchema,
 	matchStringSchema,
 	repoSchema,
 	serviceSchema,
+	supportedCicdTools,
 } from "features/search/searchSchemas";
 import { selectCurrentUser } from "features/users/currentUserSlice";
 import {
@@ -461,6 +463,7 @@ type RepoFiltersT = MetaFiltersT & {
 	service: string;
 	repo_match: MatchStringT;
 	repo: string;
+	cicd_tool: string;
 	risk: MatchRiskT[];
 	last_qualified_scan_match: MatchNullDateT;
 	last_qualified_scan: DateTime | null;
@@ -510,6 +513,7 @@ const initialRepoFilters: RepoFiltersT = {
 	service: "",
 	repo_match: "icontains",
 	repo: "",
+	cicd_tool: "none",
 	risk: [],
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
@@ -1302,6 +1306,7 @@ const RepoFiltersForm = (props: {
 		service: serviceSchema().nullable(),
 		repo_match: matchStringSchema(i18n._(t`Invalid repository matcher`)),
 		repo: repoSchema(),
+		cicd_tool: cicdToolSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
 		last_qualified_scan_match: matchNullDateSchema(
 			i18n._(t`Invalid last qualified scan time matcher`)
@@ -2127,6 +2132,19 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 								secondary={selectedRow?.repo ?? ""}
 							/>
 						</ListItem>
+						<ListItem key="repo-cicd-tool">
+							<ListItemText
+								primary={
+									<>
+										{i18n._(t`CI/CD Tool`)}
+										{selectedRow?.cicd_tool && (
+											<CustomCopyToClipboard copyTarget={selectedRow?.repo} />
+										)}
+									</>
+								}
+								secondary={selectedRow?.repo ?? ""}
+							/>
+						</ListItem>
 						<SearchMetaField data={selectedRow} />
 					</List>
 				</Grid>
@@ -2390,6 +2408,14 @@ const FormFields = (props: {
 		},
 		*/
 	};
+	const matchCicdTools: MatcherT = {
+		"none": {
+			label: "None",
+		},
+	};
+	supportedCicdTools.forEach((item) => matchCicdTools[item.id] = {
+		label: item.displayName,
+	});
 	const matchRisk: MatcherT = {
 		/* FUTURE: include null (None)
 		null: {
@@ -2682,6 +2708,19 @@ const FormFields = (props: {
 			label: t`Repository`,
 			component: "TextField",
 			icon: <FolderIcon />,
+			size: 9,
+		},
+		spacer_cicd: {
+			id: "repo-spacer-cicd",
+			label: "",
+			component: "SpacerField",
+			size: 3,
+		},
+		cicd_tool: {
+			id: "repo-cicd-tool",
+			label: t`CI/CD Tool`,
+			component: "MatchStringField",
+			matchOptions: matchCicdTools,
 			size: 9,
 		},
 		...metaFields,
