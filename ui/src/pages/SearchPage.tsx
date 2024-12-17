@@ -2409,13 +2409,16 @@ const FormFields = (props: {
 		*/
 	};
 	const matchCicdTools: MatcherT = {
-		"none": {
+		none: {
 			label: "None",
 		},
 	};
-	supportedCicdTools.forEach((item) => matchCicdTools[item.id] = {
-		label: item.displayName,
-	});
+	supportedCicdTools.forEach(
+		(item) =>
+			(matchCicdTools[item.id] = {
+				label: item.displayName,
+			})
+	);
 	const matchRisk: MatcherT = {
 		/* FUTURE: include null (None)
 		null: {

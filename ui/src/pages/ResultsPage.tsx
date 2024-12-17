@@ -4788,22 +4788,24 @@ const InventoryTabContent = (props: {
 			tool: item.display_name,
 			files: item.configs
 				.map((config: { [key: string]: string }) => config.path)
-				.join(', ')
+				.join(", "),
 		});
 	}
 
-    const cicdToolsExportData = () => {
-        const data: RowDef[] = [];
-        for (const items of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+	const cicdToolsExportData = () => {
+		const data: RowDef[] = [];
+		for (const items of Object.values(
+			scan.results?.inventory?.cicd_tools ?? {}
+		)) {
 			data.push({
 				tool: items.display_name,
 				files: items.configs
 					.map((config: { [key: string]: string }) => config.path)
-					.join(','),
+					.join(","),
 			});
-        }
-        return data;
-    };
+		}
+		return data;
+	};
 
 	interface TechData {
 		name: string;
@@ -4964,9 +4966,7 @@ const InventoryTabContent = (props: {
 						<Trans>Potential CI/CD Tools</Trans>
 						{baseImageRows && (
 							<CustomCopyToClipboard
-								copyTarget={cicdToolsRows
-									.map((data) => data.tool)
-									.join(", ")}
+								copyTarget={cicdToolsRows.map((data) => data.tool).join(", ")}
 							/>
 						)}
 					</Typography>
@@ -6229,7 +6229,7 @@ function getInventoryCount(inventory: SummaryInventory): string {
 	}
 
 	if (result) {
-		return result.join('/');
+		return result.join("/");
 	} else {
 		return "0";
 	}
