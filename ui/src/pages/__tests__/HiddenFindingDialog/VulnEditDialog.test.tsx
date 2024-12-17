@@ -35,7 +35,7 @@ describe("HiddenFindingDialog component", () => {
 	const findingLabelSourceFound = new RegExp(/^Found in source file/);
 	const findingLabelSourceHidden = new RegExp(/^Hidden in source file/);
 	const findingLabelSourceNotHidden = new RegExp(
-		/^Source files not covered by this hidden finding/
+		/^Source files not covered by this hidden finding/,
 	);
 	const findingTypeVuln = "Vulnerability";
 	const findingTypeVulnRaw = "Vulnerability Raw";
@@ -51,11 +51,11 @@ describe("HiddenFindingDialog component", () => {
 		it("vulnerability edit dialog", async () => {
 			// wait for dialog to open
 			const { user } = render(
-				<HiddenFindingDialog row={vulnRow} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vulnRow} open={true} onClose={handleClose} />,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -65,19 +65,19 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(createdBy).toBeInTheDocument();
 			expect(
-				within(createdBy).getByRole("link", { name: vulnRow.createdBy })
+				within(createdBy).getByRole("link", { name: vulnRow.createdBy }),
 			).toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenDate })
+				screen.queryByRole("listitem", { name: findingLabelHiddenDate }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -97,7 +97,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(vulnerability).toBeInTheDocument();
 			expect(
-				within(vulnerability).getByRole("link", { name: vulnRow.id })
+				within(vulnerability).getByRole("link", { name: vulnRow.id }),
 			).toBeInTheDocument();
 
 			const component = screen.getByRole("listitem", {
@@ -105,7 +105,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(component).toBeInTheDocument();
 			expect(
-				within(component).getByText(vulnRow.component)
+				within(component).getByText(vulnRow.component),
 			).toBeInTheDocument();
 
 			const sourceFiles = screen.queryByRole("listitem", {
@@ -118,7 +118,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(hiddenSource).toBeInTheDocument();
 			expect(within(hiddenSource).getAllByRole("listitem")).toHaveLength(
-				vulnRow.hiddenFindings.length
+				vulnRow.hiddenFindings.length,
 			);
 
 			const unhiddenSource = screen.getByRole("listitem", {
@@ -126,14 +126,14 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(unhiddenSource).toBeInTheDocument();
 			expect(within(unhiddenSource).getAllByRole("listitem")).toHaveLength(
-				vulnRow.unhiddenFindings.length
+				vulnRow.unhiddenFindings.length,
 			);
 
 			// warning badge displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).toBeInTheDocument();
 
 			const reasonField = screen.getByLabelText(fieldReasonLabel);
@@ -145,19 +145,19 @@ describe("HiddenFindingDialog component", () => {
 			expect(hideForField).toBeInTheDocument();
 			expect(hideForField).toHaveAttribute("aria-disabled", "true");
 			expect(
-				within(hideForField).getByText("This vulnerability in THIS component")
+				within(hideForField).getByText("This vulnerability in THIS component"),
 			).toBeInTheDocument();
 
 			const expiresField = screen.getByLabelText(fieldExpiresLabel);
 			expect(expiresField).toBeInTheDocument();
 			expect(expiresField).toHaveValue(
-				formatDateForExpirationField(vulnRow.hiddenFindings[0].expires)
+				formatDateForExpirationField(vulnRow.hiddenFindings[0].expires),
 			);
 			expect(screen.getByText("Must be a future date")).toBeInTheDocument();
 
 			// fix date error
 			const tomorrow = formatDateForExpirationField(
-				DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON()
+				DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
 			);
 			await user.clear(expiresField); // clear prior entry
 			await user.type(expiresField, tomorrow);
@@ -165,7 +165,7 @@ describe("HiddenFindingDialog component", () => {
 				expect(expiresField).toHaveValue(tomorrow);
 			});
 			expect(
-				screen.queryByText("Must be a future date")
+				screen.queryByText("Must be a future date"),
 			).not.toBeInTheDocument();
 
 			// no form errors after fixing field errors
@@ -186,11 +186,11 @@ describe("HiddenFindingDialog component", () => {
 					row={findingVulnRawRow}
 					open={true}
 					onClose={handleClose}
-				/>
+				/>,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -202,19 +202,19 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(createdBy).getByRole("link", {
 					name: findingVulnRawRow.createdBy,
-				})
+				}),
 			).toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenDate })
+				screen.queryByRole("listitem", { name: findingLabelHiddenDate }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -222,7 +222,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(category).toBeInTheDocument();
 			expect(
-				within(category).getByText(findingTypeVulnRaw)
+				within(category).getByText(findingTypeVulnRaw),
 			).toBeInTheDocument();
 
 			const severity = screen.getByRole("listitem", {
@@ -238,7 +238,7 @@ describe("HiddenFindingDialog component", () => {
 			expect(
 				within(vulnerability).getByRole("link", {
 					name: findingVulnRawRow.location,
-				})
+				}),
 			).toBeInTheDocument();
 
 			const component = screen.getByRole("listitem", {
@@ -269,28 +269,28 @@ describe("HiddenFindingDialog component", () => {
 			expect(reasonField).toBeInTheDocument();
 			expect(reasonField).toHaveFocus(); // first field should have focus
 			expect(reasonField).toHaveValue(
-				findingVulnRawRow.hiddenFindings[0].reason
+				findingVulnRawRow.hiddenFindings[0].reason,
 			);
 
 			const hideForField = screen.getByLabelText(fieldHideForLabel);
 			expect(hideForField).toBeInTheDocument();
 			expect(hideForField).toHaveAttribute("aria-disabled", "true");
 			expect(
-				within(hideForField).getByText("This vulnerability in ALL components")
+				within(hideForField).getByText("This vulnerability in ALL components"),
 			).toBeInTheDocument();
 
 			const expiresField = screen.getByLabelText(fieldExpiresLabel);
 			expect(expiresField).toBeInTheDocument();
 			expect(expiresField).toHaveValue(
 				formatDateForExpirationField(
-					findingVulnRawRow.hiddenFindings[0].expires
-				)
+					findingVulnRawRow.hiddenFindings[0].expires,
+				),
 			);
 			expect(screen.getByText("Must be a future date")).toBeInTheDocument();
 
 			// fix date error
 			const tomorrow = formatDateForExpirationField(
-				DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON()
+				DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
 			);
 			await user.clear(expiresField); // clear prior entry
 			await user.type(expiresField, tomorrow);
@@ -298,7 +298,7 @@ describe("HiddenFindingDialog component", () => {
 				expect(expiresField).toHaveValue(tomorrow);
 			});
 			expect(
-				screen.queryByText("Must be a future date")
+				screen.queryByText("Must be a future date"),
 			).not.toBeInTheDocument();
 
 			// no form errors after fixing field errors

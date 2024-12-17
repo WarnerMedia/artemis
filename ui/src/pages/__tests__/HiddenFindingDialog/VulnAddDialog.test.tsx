@@ -30,7 +30,7 @@ describe("HiddenFindingDialog component", () => {
 	const findingLabelSourceFound = new RegExp(/^Found in source file/);
 	const findingLabelSourceHidden = new RegExp(/^Hidden in source file/);
 	const findingLabelSourceNotHidden = new RegExp(
-		/^Source files not covered by this hidden finding/
+		/^Source files not covered by this hidden finding/,
 	);
 	const findingTypeVuln = "Vulnerability";
 	const findingTypeVulnRaw = "Vulnerability Raw";
@@ -52,29 +52,29 @@ describe("HiddenFindingDialog component", () => {
 
 			// wait for dialog to open
 			const { user } = render(
-				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogAddTitle })
+					screen.queryByRole("dialog", { name: dialogAddTitle }),
 				).toBeInTheDocument();
 			});
 
 			// check expected fields for an add vuln hidden findings dialog
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenBy })
+				screen.queryByRole("listitem", { name: findingLabelHiddenBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenDate })
+				screen.queryByRole("listitem", { name: findingLabelHiddenDate }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -94,7 +94,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(vulnerability).toBeInTheDocument();
 			expect(
-				within(vulnerability).getByRole("link", { name: vuln.id })
+				within(vulnerability).getByRole("link", { name: vuln.id }),
 			).toBeInTheDocument();
 
 			const component = screen.getByRole("listitem", {
@@ -108,26 +108,26 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(sourceFiles).toBeInTheDocument();
 			expect(within(sourceFiles).getAllByRole("listitem")).toHaveLength(
-				vuln.source.length
+				vuln.source.length,
 			);
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceNotHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			// warning badge not displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).not.toBeInTheDocument();
 
 			// form doesn't start with any errors
@@ -142,7 +142,7 @@ describe("HiddenFindingDialog component", () => {
 			expect(hideForField).toBeInTheDocument();
 			expect(hideForField).not.toHaveAttribute("aria-disabled");
 			expect(
-				within(hideForField).getByText("This vulnerability in THIS component")
+				within(hideForField).getByText("This vulnerability in THIS component"),
 			).toBeInTheDocument();
 
 			// no form errors after entering required fields
@@ -164,29 +164,29 @@ describe("HiddenFindingDialog component", () => {
 
 			// wait for dialog to open
 			const { user } = render(
-				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />,
 			);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogAddTitle })
+					screen.queryByRole("dialog", { name: dialogAddTitle }),
 				).toBeInTheDocument();
 			});
 
 			// check expected fields for an add vuln hidden findings dialog
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenBy })
+				screen.queryByRole("listitem", { name: findingLabelHiddenBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelHiddenDate })
+				screen.queryByRole("listitem", { name: findingLabelHiddenDate }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedBy })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedBy }),
 			).not.toBeInTheDocument();
 
 			expect(
-				screen.queryByRole("listitem", { name: findingLabelUpdatedDate })
+				screen.queryByRole("listitem", { name: findingLabelUpdatedDate }),
 			).not.toBeInTheDocument();
 
 			const category = screen.getByRole("listitem", {
@@ -206,7 +206,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(vulnerability).toBeInTheDocument();
 			expect(
-				within(vulnerability).getByRole("link", { name: vuln.id })
+				within(vulnerability).getByRole("link", { name: vuln.id }),
 			).toBeInTheDocument();
 
 			const component = screen.getByRole("listitem", {
@@ -220,26 +220,26 @@ describe("HiddenFindingDialog component", () => {
 			});
 			expect(sourceFiles).toBeInTheDocument();
 			expect(within(sourceFiles).getAllByRole("listitem")).toHaveLength(
-				vuln.source.length
+				vuln.source.length,
 			);
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			expect(
 				screen.queryByRole("listitem", {
 					name: findingLabelSourceNotHidden,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			// warning badge not displayed for unhiddenSource
 			expect(
 				screen.queryByLabelText(
-					'Click the "Update" button to add these source files to this hidden finding'
-				)
+					'Click the "Update" button to add these source files to this hidden finding',
+				),
 			).not.toBeInTheDocument();
 
 			// form doesn't start with any errors
@@ -249,32 +249,32 @@ describe("HiddenFindingDialog component", () => {
 			expect(reasonField).toBeInTheDocument();
 			await user.type(reasonField, "add vuln raw reason");
 			await waitFor(() =>
-				expect(reasonField).toHaveValue("add vuln raw reason")
+				expect(reasonField).toHaveValue("add vuln raw reason"),
 			);
 
 			const hideForField = screen.getByLabelText(fieldHideForLabel);
 			expect(hideForField).toBeInTheDocument();
 			expect(hideForField).not.toHaveAttribute("aria-disabled");
 			expect(
-				within(hideForField).getByText("This vulnerability in THIS component")
+				within(hideForField).getByText("This vulnerability in THIS component"),
 			).toBeInTheDocument();
 
 			await user.type(hideForField, "{arrowdown}{enter}");
 			await waitFor(() => {
 				expect(
 					within(hideForField).queryByText(
-						"This vulnerability in ALL components"
-					)
+						"This vulnerability in ALL components",
+					),
 				).toBeInTheDocument();
 			});
 
 			// changing Hide For value to "any" should change several finding details values
 			expect(
-				within(category).getByText(findingTypeVulnRaw)
+				within(category).getByText(findingTypeVulnRaw),
 			).toBeInTheDocument(); // changed to vuln raw
 			expect(within(severity).getByText(severityHigh)).toBeInTheDocument(); // unchanged
 			expect(
-				within(vulnerability).getByRole("link", { name: vuln.id })
+				within(vulnerability).getByRole("link", { name: vuln.id }),
 			).toBeInTheDocument(); // unchanged
 			expect(within(component).getByText(anyValue)).toBeInTheDocument(); // changed to Any
 			expect(within(sourceFiles).getByText(anyValue)).toBeInTheDocument(); // changed to Any

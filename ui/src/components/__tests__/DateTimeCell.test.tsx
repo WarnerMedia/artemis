@@ -22,7 +22,7 @@ describe("DateTimeCell component", () => {
 	it("valid date, short (default) format", () => {
 		render(<DateTimeCell value="2021-08-11T22:46:24.518Z" />);
 		expect(
-			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/)
+			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/),
 		).toBeInTheDocument();
 		expect(screen.getByText("2021-08-11 6:46 PM EDT")).toBeInTheDocument();
 	});
@@ -30,10 +30,10 @@ describe("DateTimeCell component", () => {
 	it("valid date, long format", () => {
 		render(<DateTimeCell value="2021-08-11T22:46:24.518Z" format="long" />);
 		expect(
-			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/)
+			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/),
 		).toBeInTheDocument();
 		expect(
-			screen.getByText(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/)
+			screen.getByText(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/),
 		).toBeInTheDocument();
 	});
 });
@@ -52,20 +52,20 @@ describe("ExpiringDateTimeCell component", () => {
 	it("valid date, short (default) format", () => {
 		render(<ExpiringDateTimeCell value="2021-08-11T22:46:24.518Z" />);
 		expect(
-			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/)
+			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/),
 		).toBeInTheDocument();
 		expect(screen.getByText("2021-08-11 6:46 PM EDT")).toBeInTheDocument();
 	});
 
 	it("valid date, long format", () => {
 		render(
-			<ExpiringDateTimeCell value="2021-08-11T22:46:24.518Z" format="long" />
+			<ExpiringDateTimeCell value="2021-08-11T22:46:24.518Z" format="long" />,
 		);
 		expect(
-			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/)
+			screen.getByTitle(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/),
 		).toBeInTheDocument();
 		expect(
-			screen.getByText(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/)
+			screen.getByText(/Wednesday, August 11, 2021(,| at) 6:46:24 PM EDT/),
 		).toBeInTheDocument();
 	});
 
@@ -73,13 +73,13 @@ describe("ExpiringDateTimeCell component", () => {
 		render(
 			<ExpiringDateTimeCell
 				value={DateTime.utc().plus({ days: 1 }).toJSON() ?? undefined}
-			/>
+			/>,
 		);
 		expect(
-			screen.queryByTitle(/this item has expired/i)
+			screen.queryByTitle(/this item has expired/i),
 		).not.toBeInTheDocument();
 		expect(
-			screen.queryByLabelText(/this item has expired/i)
+			screen.queryByLabelText(/this item has expired/i),
 		).not.toBeInTheDocument();
 	});
 
@@ -87,10 +87,10 @@ describe("ExpiringDateTimeCell component", () => {
 		render(
 			<ExpiringDateTimeCell
 				value={DateTime.utc().minus({ days: 1 }).toJSON() ?? undefined}
-			/>
+			/>,
 		);
 		expect(
-			screen.queryByLabelText(/this item has expired/i)
+			screen.queryByLabelText(/this item has expired/i),
 		).toBeInTheDocument();
 	});
 });

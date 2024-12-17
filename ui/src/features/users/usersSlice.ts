@@ -25,16 +25,16 @@ const initialState = usersAdapter.getInitialState<SliceState>({
 
 export const addUser = createSagaActions<User, UserRequest>("users/addUser");
 export const updateUser = createSagaActions<User, UserRequest>(
-	"users/updateUser"
+	"users/updateUser",
 );
 export const deleteUser = createSagaActions<User["email"], UserByIdRequest>(
-	"users/deleteUser"
+	"users/deleteUser",
 );
 export const getUserById = createSagaActions<User, UserByIdRequest>(
-	"users/getUserById"
+	"users/getUserById",
 );
 export const getUsers = createSagaActions<UsersResponse, Client>(
-	"users/getUsers"
+	"users/getUsers",
 );
 
 const usersSlice = createSlice({

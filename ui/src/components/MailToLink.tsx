@@ -29,7 +29,7 @@ const useStyles = makeStyles()(() => ({
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#basic_validation
 const EMAIL_REGEX = new RegExp(
-	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
 
 const MailToLink = (props: MailToLinkProps) => {
@@ -44,7 +44,7 @@ const MailToLink = (props: MailToLinkProps) => {
 		: [APP_EMAIL_AUTHOR];
 	if (recipients.length > MAX_RECIPIENTS) {
 		console.debug(
-			`maximum ${MAX_RECIPIENTS} email recipients allowed, truncating`
+			`maximum ${MAX_RECIPIENTS} email recipients allowed, truncating`,
 		);
 	}
 
@@ -58,7 +58,7 @@ const MailToLink = (props: MailToLinkProps) => {
 			const dt = DateTime.fromSeconds(parseInt(timestamp, 10)); // fromSeconds uses utc epoch seconds
 			if (dt.isValid) {
 				tooltipTitle = i18n._(
-					t`${user} (Deleted ${dt.toFormat("yyyy-LL-dd")})`
+					t`${user} (Deleted ${dt.toFormat("yyyy-LL-dd")})`,
 				);
 			} else {
 				tooltipTitle = i18n._(t`${user} (Deleted)`);

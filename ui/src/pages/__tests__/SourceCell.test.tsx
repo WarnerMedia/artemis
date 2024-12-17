@@ -65,7 +65,7 @@ describe("SourceCell component", () => {
 		expect(screen.getByText(row.source[0])).toBeInTheDocument();
 
 		expect(
-			screen.getByLabelText(/1 source file not covered/i)
+			screen.getByLabelText(/1 source file not covered/i),
 		).toBeInTheDocument();
 	});
 
@@ -79,7 +79,7 @@ describe("SourceCell component", () => {
 		expect(screen.getByText(row.source[0])).toBeInTheDocument();
 
 		expect(
-			screen.getByLabelText(/3 source files not covered/i)
+			screen.getByLabelText(/3 source files not covered/i),
 		).toBeInTheDocument();
 	});
 });

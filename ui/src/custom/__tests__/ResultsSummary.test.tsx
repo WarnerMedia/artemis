@@ -22,13 +22,13 @@ describe("ResultsSummary component", () => {
 		if (sectionField.parentElement) {
 			expect(
 				within(sectionField.parentElement).getByText(
-					scan.application_metadata.sample_metadata.field1
-				)
+					scan.application_metadata.sample_metadata.field1,
+				),
 			).toBeInTheDocument();
 			expect(
 				within(sectionField.parentElement).getByText(
-					scan.application_metadata.sample_metadata.field2
-				)
+					scan.application_metadata.sample_metadata.field2,
+				),
 			).toBeInTheDocument();
 		}
 	});
@@ -50,8 +50,8 @@ describe("ResultsSummary component", () => {
 		if (sectionField.parentElement) {
 			expect(
 				within(sectionField.parentElement).getByText(
-					scan.application_metadata.sample_metadata.field3
-				)
+					scan.application_metadata.sample_metadata.field3,
+				),
 			).toBeInTheDocument();
 		}
 	});
@@ -72,7 +72,7 @@ describe("ResultsSummary component", () => {
 		expect(sectionField).toBeInTheDocument();
 		if (sectionField.parentElement) {
 			expect(
-				within(sectionField.parentElement).getByText(/unknown/i)
+				within(sectionField.parentElement).getByText(/unknown/i),
 			).toBeInTheDocument();
 		}
 	});
@@ -92,10 +92,14 @@ describe("ResultsSummary component", () => {
 		expect(sectionField).toBeInTheDocument();
 		if (sectionField.parentElement) {
 			expect(
-				within(sectionField.parentElement).getByText("Meta Data Field1 Missing")
+				within(sectionField.parentElement).getByText(
+					"Meta Data Field1 Missing",
+				),
 			).toBeInTheDocument();
 			expect(
-				within(sectionField.parentElement).getByText("Meta Data Field2 Missing")
+				within(sectionField.parentElement).getByText(
+					"Meta Data Field2 Missing",
+				),
 			).toBeInTheDocument();
 		}
 	});
@@ -115,10 +119,14 @@ describe("ResultsSummary component", () => {
 		expect(sectionField).toBeInTheDocument();
 		if (sectionField.parentElement) {
 			expect(
-				within(sectionField.parentElement).getByText("Meta Data Field1 Missing")
+				within(sectionField.parentElement).getByText(
+					"Meta Data Field1 Missing",
+				),
 			).toBeInTheDocument();
 			expect(
-				within(sectionField.parentElement).getByText("Meta Data Field2 Missing")
+				within(sectionField.parentElement).getByText(
+					"Meta Data Field2 Missing",
+				),
 			).toBeInTheDocument();
 		}
 

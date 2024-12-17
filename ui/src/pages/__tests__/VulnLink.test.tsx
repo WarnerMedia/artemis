@@ -4,7 +4,7 @@ import { VulnLink } from "pages/ResultsPage";
 describe("VulnLink component", () => {
 	const nvdTitle = new RegExp(
 		"view in the national vulnerability database",
-		"i"
+		"i",
 	);
 	const vulnTitle = new RegExp("view in external site", "i");
 
@@ -20,7 +20,7 @@ describe("VulnLink component", () => {
 		render(<VulnLink vulnId={vulnId} />);
 		expect(screen.getByTitle(nvdTitle)).toBeInTheDocument();
 		expect(
-			screen.queryByRole("button", { name: vulnId })
+			screen.queryByRole("button", { name: vulnId }),
 		).not.toBeInTheDocument();
 	});
 
@@ -29,7 +29,7 @@ describe("VulnLink component", () => {
 		render(<VulnLink vulnId={vulnId} />);
 		expect(screen.getByTitle(nvdTitle)).toBeInTheDocument();
 		expect(
-			screen.queryByRole("button", { name: vulnId })
+			screen.queryByRole("button", { name: vulnId }),
 		).not.toBeInTheDocument();
 	});
 
@@ -37,7 +37,7 @@ describe("VulnLink component", () => {
 		const vulnId = "CVE-2021-0101";
 		render(<VulnLink vulnId={vulnId} />);
 		expect(
-			screen.queryByRole("button", { name: nvdTitle })
+			screen.queryByRole("button", { name: nvdTitle }),
 		).not.toBeInTheDocument();
 	});
 
@@ -53,7 +53,7 @@ describe("VulnLink component", () => {
 		render(<VulnLink vulnId={vulnId} />);
 		expect(screen.getByTitle(vulnTitle)).toBeInTheDocument();
 		expect(
-			screen.queryByRole("button", { name: vulnId })
+			screen.queryByRole("button", { name: vulnId }),
 		).not.toBeInTheDocument();
 	});
 
@@ -61,7 +61,7 @@ describe("VulnLink component", () => {
 		const vulnId = "https://npmjs.com/vuln/1234";
 		render(<VulnLink vulnId={vulnId} />);
 		expect(
-			screen.queryByRole("button", { name: vulnTitle })
+			screen.queryByRole("button", { name: vulnTitle }),
 		).not.toBeInTheDocument();
 	});
 });

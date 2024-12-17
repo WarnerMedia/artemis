@@ -61,10 +61,10 @@ describe("GlobalException component", () => {
 
 		// dialog should have login button but not close button
 		expect(
-			screen.queryByRole("button", { name: /close/i })
+			screen.queryByRole("button", { name: /close/i }),
 		).not.toBeInTheDocument();
 		expect(
-			screen.queryByRole("link", { name: /return to login/i })
+			screen.queryByRole("link", { name: /return to login/i }),
 		).toBeInTheDocument();
 	});
 });

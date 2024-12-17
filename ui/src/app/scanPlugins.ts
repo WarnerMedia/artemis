@@ -258,14 +258,14 @@ export const vulnPlugins = Object.keys(vulnPluginsKeys)
 	.sort();
 
 export const configPluginsObjects = configPlugins.map(
-	(k) => configPluginsKeys[k]
+	(k) => configPluginsKeys[k],
 );
 export const sbomPluginsObjects = sbomPlugins.map((k) => sbomPluginsKeys[k]);
 export const secretPluginsObjects = secretPlugins.map(
-	(k) => secretPluginsKeys[k]
+	(k) => secretPluginsKeys[k],
 );
 export const staticPluginsObjects = staticPlugins.map(
-	(k) => staticPluginsKeys[k]
+	(k) => staticPluginsKeys[k],
 );
 export const techPluginsObjects = techPlugins.map((k) => techPluginsKeys[k]);
 export const vulnPluginsObjects = vulnPlugins.map((k) => vulnPluginsKeys[k]);
@@ -308,7 +308,7 @@ export const isFeatureDisabled = (apiName: string) => apiName.startsWith("-");
 // e.g. "owasp_dependency_check" => "OWASP Check (Java)"
 export const getFeatureName = (
 	apiName: string,
-	featureObj: IPluginCatalog | IPluginKeys
+	featureObj: IPluginCatalog | IPluginKeys,
 ) => {
 	const feat = isFeatureDisabled(apiName) ? apiName.slice(1) : apiName;
 	return feat in featureObj && featureObj[feat]?.displayName

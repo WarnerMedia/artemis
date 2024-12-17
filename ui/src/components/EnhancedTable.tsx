@@ -129,7 +129,7 @@ function descendingComparator<T>(
 	a: T,
 	b: T,
 	orderBy: keyof T,
-	orderMap?: OrderMap
+	orderMap?: OrderMap,
 ) {
 	const aVal = a[orderBy];
 	const bVal = b[orderBy];
@@ -143,10 +143,10 @@ function descendingComparator<T>(
 function getComparator<Key extends keyof any>(
 	order: Order,
 	orderBy: Key,
-	orderMap?: OrderMap
+	orderMap?: OrderMap,
 ): (
 	a: { [key in Key]: number | string },
-	b: { [key in Key]: number | string }
+	b: { [key in Key]: number | string },
 ) => number {
 	return order === "desc"
 		? (a, b) => descendingComparator(a, b, orderBy, orderMap)
@@ -156,7 +156,7 @@ function getComparator<Key extends keyof any>(
 function stableSort<T>(
 	array: T[],
 	comparator: (a: T, b: T) => number,
-	order: Order
+	order: Order,
 ) {
 	const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
 	stabilizedThis.sort((a, b) => {
@@ -176,7 +176,7 @@ interface EnhancedTableHeadProps {
 	onRequestSort: (
 		event: React.MouseEvent<unknown>,
 		property: keyof RowDef,
-		column?: ColDef
+		column?: ColDef,
 	) => void;
 	order: Order;
 	orderBy: keyof RowDef | null;
@@ -345,16 +345,16 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		}
 	}
 	const [orderBy, setOrderBy] = useState<keyof RowDef | null>(
-		defaultOrderBy ?? null
+		defaultOrderBy ?? null,
 	);
 	const [order, setOrder] = useState<Order>(initialOrder);
 	const [orderMap, setOrderMap] = useState<OrderMap | undefined>(
-		defaultOrderMap
+		defaultOrderMap,
 	);
 	const [selected, setSelected] = useState<string[]>([]);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(
-		props?.rowsPerPage ?? AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT
+		props?.rowsPerPage ?? AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT,
 	);
 	let filtered = false;
 
@@ -387,7 +387,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 	const handleRequestSort = (
 		_event: React.MouseEvent<unknown>,
 		property: keyof RowDef,
-		column?: ColDef
+		column?: ColDef,
 	) => {
 		// by default just flip ordering of column
 		let newOrder: Order = order === "asc" ? "desc" : "asc";
@@ -443,7 +443,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 	};
 
 	const handleChangeRowsPerPage = (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
 		const newRowsPerPage = parseInt(event.target.value, 10);
 		setRowsPerPage(newRowsPerPage);
@@ -543,13 +543,13 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 					cells.push(
 						<TableCell key={cellKey} {...cellProps}>
 							{children}
-						</TableCell>
+						</TableCell>,
 					);
 				} else {
 					cells.push(
 						<TableCell key={cellKey} {...cellProps}>
 							{rowValue}
-						</TableCell>
+						</TableCell>,
 					);
 				}
 			}
@@ -581,7 +581,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 			filteredRows = stableSort(
 				rows.filter(handleChangeFilters),
 				getComparator(order, orderBy, orderMap),
-				order
+				order,
 			);
 		} else {
 			filteredRows = [...rows.filter(handleChangeFilters)];
@@ -589,7 +589,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		count = filteredRows.length;
 		filteredRows = filteredRows.slice(
 			page * rowsPerPage,
-			page * rowsPerPage + rowsPerPage
+			page * rowsPerPage + rowsPerPage,
 		);
 	}
 
@@ -650,7 +650,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 					r = stableSort(
 						data.filter(handleChangeFilters),
 						getComparator(order, orderBy, orderMap),
-						order
+						order,
 					);
 				} else {
 					r = [...data.filter(handleChangeFilters)];
@@ -715,7 +715,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 												classes.tableRow,
 												collapsibleOpen &&
 													collapsibleOpen(row[id]) &&
-													collapsibleParentClassName
+													collapsibleParentClassName,
 											)}
 										>
 											{tableCells(row as RowDef, columns, rowNum)}

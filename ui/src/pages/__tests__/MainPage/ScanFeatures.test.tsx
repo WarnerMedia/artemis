@@ -65,7 +65,7 @@ describe("MainPage component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 		mockLocation = {
 			search: "",
@@ -108,7 +108,7 @@ describe("MainPage component", () => {
 
 			// wait for current user info to load
 			await waitFor(() =>
-				expect(screen.queryByText(/^loading options$/)).not.toBeInTheDocument()
+				expect(screen.queryByText(/^loading options$/)).not.toBeInTheDocument(),
 			);
 
 			const optionsAccordion = screen.getByRole("button", {
@@ -174,15 +174,15 @@ describe("MainPage component", () => {
 						expect(pluginCheckbox).not.toBeChecked();
 					}
 				});
-			}
+			},
 		);
 
 		test("if all scan categories and plugins disabled, display error", async () => {
 			// disable all scan categories
 			expect(
 				within(optionsRegion).queryByText(
-					/at least one scan feature or plugin must be enabled/i
-				)
+					/at least one scan feature or plugin must be enabled/i,
+				),
 			).not.toBeInTheDocument();
 
 			for (const [name, values] of Object.entries(pluginCatalog)) {
@@ -208,8 +208,8 @@ describe("MainPage component", () => {
 			await waitFor(() => {
 				expect(
 					within(optionsRegion).getByText(
-						/at least one scan feature or plugin must be enabled/i
-					)
+						/at least one scan feature or plugin must be enabled/i,
+					),
 				).toBeInTheDocument();
 			});
 
@@ -237,8 +237,8 @@ describe("MainPage component", () => {
 			await waitFor(() => {
 				expect(
 					within(optionsRegion).queryByText(
-						/at least one scan feature or plugin must be enabled/i
-					)
+						/at least one scan feature or plugin must be enabled/i,
+					),
 				).not.toBeInTheDocument();
 			});
 		});
@@ -260,13 +260,13 @@ describe("MainPage component", () => {
 				await user.type(field, testPaths.join("{enter}"));
 				fireEvent.blur(field);
 				await waitFor(() =>
-					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument()
+					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument(),
 				);
 
 				await user.type(field, testPaths.join(", "));
 				fireEvent.blur(field);
 				await waitFor(() =>
-					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument()
+					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument(),
 				);
 			});
 
@@ -279,7 +279,7 @@ describe("MainPage component", () => {
 				await user.paste(maxInput);
 				fireEvent.blur(field);
 				await waitFor(() =>
-					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument()
+					expect(screen.queryByText(/invalid path/i)).not.toBeInTheDocument(),
 				);
 
 				// add 1 extra character to exceed max path length
@@ -289,8 +289,8 @@ describe("MainPage component", () => {
 				fireEvent.blur(field);
 				await waitFor(() =>
 					expect(
-						screen.getByText(/invalid path, longer than/i)
-					).toBeInTheDocument()
+						screen.getByText(/invalid path, longer than/i),
+					).toBeInTheDocument(),
 				);
 			});
 
@@ -302,19 +302,19 @@ describe("MainPage component", () => {
 					await waitFor(() =>
 						expect(
 							screen.queryByText(
-								/invalid path, must be relative to repository/i
-							)
-						).not.toBeInTheDocument()
+								/invalid path, must be relative to repository/i,
+							),
+						).not.toBeInTheDocument(),
 					);
 					await user.type(field, chars);
 					fireEvent.blur(field);
 					await waitFor(() => expect(field).toHaveDisplayValue(chars));
 					await waitFor(() =>
 						expect(
-							screen.getByText(/invalid path, must be relative to repository/i)
-						).toBeInTheDocument()
+							screen.getByText(/invalid path, must be relative to repository/i),
+						).toBeInTheDocument(),
 					);
-				}
+				},
 			);
 
 			test.each([["./"], ["/"]])(
@@ -325,9 +325,9 @@ describe("MainPage component", () => {
 					await waitFor(() =>
 						expect(
 							screen.queryByText(
-								/invalid path, must be relative to repository/i
-							)
-						).not.toBeInTheDocument()
+								/invalid path, must be relative to repository/i,
+							),
+						).not.toBeInTheDocument(),
 					);
 
 					// test only these chars - should produce error
@@ -336,8 +336,8 @@ describe("MainPage component", () => {
 					await waitFor(() => expect(field).toHaveDisplayValue(chars));
 					await waitFor(() =>
 						expect(
-							screen.getByText(/invalid path, must be relative to repository/i)
-						).toBeInTheDocument()
+							screen.getByText(/invalid path, must be relative to repository/i),
+						).toBeInTheDocument(),
 					);
 
 					// string doesn't start with these characters - should produce no errors
@@ -345,14 +345,14 @@ describe("MainPage component", () => {
 					await user.type(field, "startstring" + chars);
 					fireEvent.blur(field);
 					await waitFor(() =>
-						expect(field).toHaveDisplayValue("startstring" + chars)
+						expect(field).toHaveDisplayValue("startstring" + chars),
 					);
 					await waitFor(() =>
 						expect(
 							screen.queryByText(
-								/invalid path, must be relative to repository/i
-							)
-						).not.toBeInTheDocument()
+								/invalid path, must be relative to repository/i,
+							),
+						).not.toBeInTheDocument(),
 					);
 
 					// test starts with these characters - should produce error
@@ -360,14 +360,14 @@ describe("MainPage component", () => {
 					await user.type(field, chars + "endstring");
 					fireEvent.blur(field);
 					await waitFor(() =>
-						expect(field).toHaveDisplayValue(chars + "endstring")
+						expect(field).toHaveDisplayValue(chars + "endstring"),
 					);
 					await waitFor(() =>
 						expect(
-							screen.getByText(/invalid path, must be relative to repository/i)
-						).toBeInTheDocument()
+							screen.getByText(/invalid path, must be relative to repository/i),
+						).toBeInTheDocument(),
 					);
-				}
+				},
 			);
 		});
 	});

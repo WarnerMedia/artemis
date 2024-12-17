@@ -345,16 +345,16 @@ export const LinkedAccounts = () => {
 	const { classes } = useStyles();
 	const dispatch: AppDispatch = useDispatch();
 	const isLinking = useSelector(
-		(state: RootState) => state.vcsServices.linking
+		(state: RootState) => state.vcsServices.linking,
 	);
 	const isUnlinking = useSelector(
-		(state: RootState) => state.vcsServices.unlinking
+		(state: RootState) => state.vcsServices.unlinking,
 	);
 	const serviceGithub = useSelector((state: RootState) =>
-		selectServiceById(state, "github")
+		selectServiceById(state, "github"),
 	);
 	const vcsServicesStatus = useSelector(
-		(state: RootState) => state.vcsServices.status
+		(state: RootState) => state.vcsServices.status,
 	);
 	const [service, setService] = useState<"github" | "">("");
 
@@ -366,7 +366,7 @@ export const LinkedAccounts = () => {
 		dispatch(
 			unlinkVcsService({
 				url: `/users/self/services/${service}`,
-			})
+			}),
 		);
 		handleClose();
 	};
@@ -514,11 +514,11 @@ export default function UserSettings() {
 	const dispatch: AppDispatch = useDispatch();
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	);
 	const keys = useSelector((state: RootState) => selectAllKeys(state));
 	const currentUserStatus = useSelector(
-		(state: RootState) => state.currentUser.status
+		(state: RootState) => state.currentUser.status,
 	);
 	const keysStatus = useSelector((state: RootState) => state.keys.status);
 	const keyCount = useSelector((state: RootState) => state.keys.totalRecords);
@@ -532,7 +532,7 @@ export default function UserSettings() {
 	const [newKeyValue, setNewKeyValue] = useState<string | null>(null);
 	const [newKeyError, setNewKeyError] = useState<string | null>(null);
 	const [scrollTarget, setScrollTarget] = useState<HTMLElement | undefined>(
-		undefined
+		undefined,
 	);
 	const [hideWelcome, setHideWelcome] = useState(false);
 	const [fromRedirect, setFromRedirect] = useState(false);
@@ -545,7 +545,7 @@ export default function UserSettings() {
 
 	useEffect(() => {
 		setHideWelcome(
-			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME)))
+			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME))),
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -585,14 +585,14 @@ export default function UserSettings() {
 			if ("errors" in err && Array.isArray(err.errors)) {
 				dispatch(
 					addNotification(
-						i18n._(t`Unable to link service account: ${err.errors.join(", ")}`)
-					)
+						i18n._(t`Unable to link service account: ${err.errors.join(", ")}`),
+					),
 				);
 			} else if ("message" in err) {
 				dispatch(
 					addNotification(
-						i18n._(t`Unable to link service account: ${err.message}`)
-					)
+						i18n._(t`Unable to link service account: ${err.message}`),
+					),
 				);
 			}
 		}
@@ -612,7 +612,7 @@ export default function UserSettings() {
 							auth_code: searchParams?.code,
 						},
 					},
-				})
+				}),
 			);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -661,7 +661,7 @@ export default function UserSettings() {
 						className={classes.chipFeatures}
 						label={featName}
 						key={feat}
-					></Chip>
+					></Chip>,
 				);
 			} else {
 				tooltips.push(`${featName} ` + i18n._(t`(disabled)`));
@@ -675,7 +675,7 @@ export default function UserSettings() {
 						className={classes.chipFeatures}
 						label={featName}
 						key={feat}
-					></Chip>
+					></Chip>,
 				);
 			}
 		});
@@ -711,7 +711,7 @@ export default function UserSettings() {
 					onClick={() => handleClick(id as keyof IThemeColors)}
 					label={i18n._(palette.displayName)}
 					key={`user-theme-${id}`}
-				/>
+				/>,
 			);
 		}
 		return chips;
@@ -775,7 +775,7 @@ export default function UserSettings() {
 										primary={i18n._(
 											t`Scope  (${
 												currentUser?.scope ? currentUser.scope.length : 0
-											})`
+											})`,
 										)}
 										secondary={
 											currentUserStatus !== "loading" ? (
@@ -813,7 +813,7 @@ export default function UserSettings() {
 											onChange={() => {
 												localStorage.setItem(
 													STORAGE_LOCAL_WELCOME,
-													hideWelcome ? "0" : "1"
+													hideWelcome ? "0" : "1",
 												);
 												setHideWelcome(!hideWelcome);
 											}}
@@ -955,7 +955,7 @@ export default function UserSettings() {
 												currentUser?.scan_orgs
 													? currentUser.scan_orgs.length
 													: 0
-											})`
+											})`,
 										)}
 										secondary={
 											currentUserStatus !== "loading" ? (
@@ -1053,7 +1053,7 @@ export default function UserSettings() {
 								dispatch(
 									deleteUserKey({
 										url: `/users/self/keys/${deleteKey.id}`,
-									})
+									}),
 								);
 							}
 							setDeleteKey(null);
@@ -1135,7 +1135,7 @@ export default function UserSettings() {
 			<span style={{ flexGrow: 1 }}>
 				<Chip
 					label={i18n._(
-						t`API keys can not be modified after creation, they can only be removed and re-added`
+						t`API keys can not be modified after creation, they can only be removed and re-added`,
 					)}
 					icon={<InfoIcon />}
 				/>
@@ -1234,7 +1234,7 @@ export default function UserSettings() {
 
 		const onSubmit = async (
 			values: AddKeyForm,
-			actions: FormikHelpers<AddKeyForm>
+			actions: FormikHelpers<AddKeyForm>,
 		) => {
 			let expires: string | undefined = undefined;
 			if (values?.expires) {
@@ -1303,15 +1303,15 @@ export default function UserSettings() {
 					if (fieldValue.startsWith(currentUser?.scan_orgs[i] + "/")) {
 						const rest = fieldValue.replace(
 							currentUser?.scan_orgs[i] + "/",
-							""
+							"",
 						);
 
 						if (rest.length === 0) {
 							// invalid: no repository specified after scan org
 							setNewScopeError(
 								i18n._(
-									t`No repository or path name pattern supplied after scan organization prefix`
-								)
+									t`No repository or path name pattern supplied after scan organization prefix`,
+								),
 							);
 							setNewScopeValid(false);
 							return false;
@@ -1328,8 +1328,8 @@ export default function UserSettings() {
 							// invalid characters
 							setNewScopeError(
 								i18n._(
-									t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !`
-								)
+									t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !`,
+								),
 							);
 							setNewScopeValid(false);
 							return false;
@@ -1340,8 +1340,8 @@ export default function UserSettings() {
 				// not found in user's scan_orgs
 				setNewScopeError(
 					i18n._(
-						t`Scope value not within user's scan organizations or does not end with /repo or /path_name_pattern`
-					)
+						t`Scope value not within user's scan organizations or does not end with /repo or /path_name_pattern`,
+					),
 				);
 			}
 			setNewScopeValid(false);
@@ -1361,7 +1361,7 @@ export default function UserSettings() {
 
 		const handleScopeValueChange = (
 			event: React.ChangeEvent<HTMLInputElement>,
-			currentScopes: string[]
+			currentScopes: string[],
 		) => {
 			setNewScopeValue(event.target.value);
 			const scopes = getDelimitedValues(event.target.value);
@@ -1492,7 +1492,7 @@ export default function UserSettings() {
 													<span>
 														<IconButton
 															aria-label={i18n._(
-																t`What are my scan organizations?`
+																t`What are my scan organizations?`,
 															)}
 															onClick={handleHelpClick}
 															size="small"
@@ -1587,7 +1587,7 @@ export default function UserSettings() {
 																<span>
 																	<IconButton
 																		aria-label={i18n._(
-																			t`Remove this scope item`
+																			t`Remove this scope item`,
 																		)}
 																		onClick={() => {
 																			const newScope = values.scope.slice();
@@ -1596,8 +1596,8 @@ export default function UserSettings() {
 																			if (newScope.length === 0) {
 																				setNewScopeError(
 																					i18n._(
-																						t`At least 1 scope is required`
-																					)
+																						t`At least 1 scope is required`,
+																					),
 																				);
 																				setNewScopeValid(false);
 																			}
@@ -1655,7 +1655,7 @@ export default function UserSettings() {
 														value={newScopeValue}
 														multiline={true}
 														onChange={(
-															event: React.ChangeEvent<HTMLInputElement>
+															event: React.ChangeEvent<HTMLInputElement>,
 														) => handleScopeValueChange(event, values.scope)}
 														onKeyDown={(event) => {
 															if (
@@ -1680,8 +1680,8 @@ export default function UserSettings() {
 																if (newScopeValue && !newScopeError) {
 																	setNewScopeError(
 																		i18n._(
-																			t`This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field`
-																		)
+																			t`This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field`,
+																		),
 																	);
 																} else if (!newScopeValue) {
 																	setNewScopeError(null);
@@ -1692,7 +1692,7 @@ export default function UserSettings() {
 														helperText={
 															newScopeError ??
 															i18n._(
-																t`Click + icon to add this value to the Current Scope list above`
+																t`Click + icon to add this value to the Current Scope list above`,
 															)
 														}
 														placeholder="One or more scope entries separated by a comma, space, or newline"
@@ -1737,7 +1737,7 @@ export default function UserSettings() {
 																	getDelimitedValues(newScopeValue).forEach(
 																		(value) => {
 																			newScope.push(value);
-																		}
+																		},
 																	);
 																	setFieldValue("scope", newScope, false);
 																	resetAddForm();
@@ -1956,8 +1956,8 @@ export default function UserSettings() {
 					title={
 						keysStatus !== "loading"
 							? i18n._(
-									t`No API keys found. Click the + button to add a new API key`
-							  )
+									t`No API keys found. Click the + button to add a new API key`,
+								)
 							: i18n._(t`Fetching API keys...`)
 					}
 				/>
@@ -1967,7 +1967,7 @@ export default function UserSettings() {
 
 	const viewKey = () => {
 		const [featuresTooltip, featuresChips] = getFeatureTooltipChips(
-			selectedRow as Key
+			selectedRow as Key,
 		);
 		return (
 			<Grid container spacing={3}>

@@ -71,7 +71,7 @@
     "markdownlint": "^0.36.1",
     "markdownlint-cli2": "^0.15.0",
     "miragejs": "^0.1.48",
-    "prettier": "^2.8.8",
+    "prettier": "^3.4.2",
     "react-scripts": "^5.0.1",
     "source-map-explorer": "^2.5.3"
   },

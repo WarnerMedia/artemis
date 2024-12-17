@@ -6,7 +6,7 @@ describe("WelcomeDialog component", () => {
 		const { container } = render(
 			<WelcomeDialog open={false} onOk={() => {}} title="my title">
 				Content
-			</WelcomeDialog>
+			</WelcomeDialog>,
 		);
 		expect(container.firstChild).toBeNull();
 	});
@@ -15,10 +15,10 @@ describe("WelcomeDialog component", () => {
 		render(
 			<WelcomeDialog open={true} onOk={() => {}} title="my title">
 				The Dialog Content
-			</WelcomeDialog>
+			</WelcomeDialog>,
 		);
 		expect(
-			screen.getByRole("heading", { name: /my title/i })
+			screen.getByRole("heading", { name: /my title/i }),
 		).toBeInTheDocument();
 		screen.getByText(/the dialog content/i);
 	});
@@ -28,7 +28,7 @@ describe("WelcomeDialog component", () => {
 		const { user } = render(
 			<WelcomeDialog open={true} onOk={mockOnClose} title="my title">
 				Content
-			</WelcomeDialog>
+			</WelcomeDialog>,
 		);
 		await user.click(screen.getByRole("button", { name: /ok/i }));
 		expect(mockOnClose.mock.calls[0][0]).toBe(false);
@@ -39,10 +39,10 @@ describe("WelcomeDialog component", () => {
 		const { user } = render(
 			<WelcomeDialog open={true} onOk={mockOnClose} title="my title">
 				Content
-			</WelcomeDialog>
+			</WelcomeDialog>,
 		);
 		await user.click(
-			screen.getByRole("checkbox", { name: /don't show this dialog/i })
+			screen.getByRole("checkbox", { name: /don't show this dialog/i }),
 		);
 		await user.click(screen.getByRole("button", { name: /ok/i }));
 		expect(mockOnClose.mock.calls[0][0]).toBe(true);
@@ -58,10 +58,10 @@ describe("WelcomeDialog component", () => {
 				okText="I Acknowledge"
 			>
 				Content
-			</WelcomeDialog>
+			</WelcomeDialog>,
 		);
 		expect(
-			screen.queryByRole("button", { name: /ok/i })
+			screen.queryByRole("button", { name: /ok/i }),
 		).not.toBeInTheDocument();
 		await user.click(screen.getByRole("button", { name: "I Acknowledge" }));
 		expect(mockOnClose.mock.calls[0][0]).toBe(false);
@@ -78,7 +78,7 @@ describe("WelcomeDialog component", () => {
 				title="my title"
 			>
 				Content
-			</WelcomeDialog>
+			</WelcomeDialog>,
 		);
 		await user.click(screen.getByRole("button", { name: /cancel/i }));
 		expect(mockOnClose).not.toHaveBeenCalled();

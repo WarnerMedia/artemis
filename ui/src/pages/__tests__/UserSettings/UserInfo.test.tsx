@@ -95,34 +95,34 @@ describe("UserSettings component", () => {
 				expect(
 					within(emailField.parentElement).getByRole("link", {
 						name: mockAppState.currentUser.entities.self.email,
-					})
+					}),
 				).toBeInTheDocument();
 			}
 
 			const scopeField = screen.getByText(
-				`Scope (${mockAppState.currentUser.entities.self.scope.length})`
+				`Scope (${mockAppState.currentUser.entities.self.scope.length})`,
 			);
 			expect(scopeField).toBeInTheDocument();
 			mockAppState.currentUser.entities.self.scope.forEach((scope: string) => {
 				if (scopeField.parentElement) {
 					expect(
-						within(scopeField.parentElement).getByText(scope)
+						within(scopeField.parentElement).getByText(scope),
 					).toBeInTheDocument();
 				}
 			});
 
 			const scanOrgField = screen.getByText(
-				`Scan Organizations (${mockAppState.currentUser.entities.self.scan_orgs.length})`
+				`Scan Organizations (${mockAppState.currentUser.entities.self.scan_orgs.length})`,
 			);
 			expect(scanOrgField).toBeInTheDocument();
 			mockAppState.currentUser.entities.self.scan_orgs.forEach(
 				(org: string) => {
 					if (scanOrgField.parentElement) {
 						expect(
-							within(scanOrgField.parentElement).getByText(org)
+							within(scanOrgField.parentElement).getByText(org),
 						).toBeInTheDocument();
 					}
-				}
+				},
 			);
 
 			// linked account functionality tested more thoroughly in LinkedAccounts.test.tsx
@@ -133,7 +133,7 @@ describe("UserSettings component", () => {
 				expect(
 					within(accountsField.parentElement).getByRole("button", {
 						name: "Link GitHub User",
-					})
+					}),
 				).toBeInTheDocument();
 			}
 
@@ -149,30 +149,30 @@ describe("UserSettings component", () => {
 					within(loginField.parentElement).getByText(
 						formatDate(
 							mockAppState.currentUser.entities.self.last_login,
-							"long"
+							"long",
 						),
-						{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) }
-					)
+						{ normalizer: getDefaultNormalizer({ collapseWhitespace: false }) },
+					),
 				).toBeInTheDocument();
 			}
 
 			const featuresField = screen.getByText("Features");
 			expect(featuresField).toBeInTheDocument();
 			for (const [feature, enabled] of Object.entries(
-				mockAppState.currentUser.entities.self.features
+				mockAppState.currentUser.entities.self.features,
 			)) {
 				if (featuresField.parentElement) {
 					// feature names are capitalized, so do a case-insensitive comparison
 					const featureRe = new RegExp(feature, "i");
 					const featureElt = within(featuresField.parentElement).getByText(
-						featureRe
+						featureRe,
 					);
 					expect(featureElt).toBeInTheDocument();
 					// check whether feature enabled or disabled
 					if (enabled) {
 						if (featureElt.parentElement) {
 							expect(featureElt.parentElement).not.toHaveAttribute(
-								"aria-disabled"
+								"aria-disabled",
 							);
 						}
 					} else {
@@ -190,8 +190,8 @@ describe("UserSettings component", () => {
 					within(categoryField.parentElement).getByText(
 						mockAppState.currentUser.entities.self.admin
 							? "Administrator"
-							: "Standard"
-					)
+							: "Standard",
+					),
 				).toBeInTheDocument();
 			}
 		});
@@ -200,7 +200,7 @@ describe("UserSettings component", () => {
 			beforeEach(() => {
 				localStorageSetItemSpy = jest.spyOn(
 					window.localStorage.__proto__,
-					"setItem"
+					"setItem",
 				);
 			});
 			afterEach(() => {
@@ -216,7 +216,7 @@ describe("UserSettings component", () => {
 				expect(welcomeField).toBeInTheDocument();
 				if (welcomeField.parentElement) {
 					const toggle = within(welcomeField.parentElement).getByRole(
-						"checkbox"
+						"checkbox",
 					);
 					expect(toggle).toBeInTheDocument();
 					expect(toggle).toBeChecked();
@@ -225,7 +225,7 @@ describe("UserSettings component", () => {
 					expect(toggle).not.toBeChecked();
 					expect(localStorageSetItemSpy).toHaveBeenCalledWith(
 						STORAGE_LOCAL_WELCOME,
-						"1"
+						"1",
 					);
 				}
 			});
@@ -239,7 +239,7 @@ describe("UserSettings component", () => {
 				expect(welcomeField).toBeInTheDocument();
 				if (welcomeField.parentElement) {
 					const toggle = within(welcomeField.parentElement).getByRole(
-						"checkbox"
+						"checkbox",
 					);
 					expect(toggle).toBeInTheDocument();
 					expect(toggle).toBeChecked();
@@ -248,7 +248,7 @@ describe("UserSettings component", () => {
 					expect(toggle).not.toBeChecked();
 					expect(localStorageSetItemSpy).toHaveBeenCalledWith(
 						STORAGE_LOCAL_WELCOME,
-						"1"
+						"1",
 					);
 				}
 			});
@@ -262,7 +262,7 @@ describe("UserSettings component", () => {
 				expect(welcomeField).toBeInTheDocument();
 				if (welcomeField.parentElement) {
 					const toggle = within(welcomeField.parentElement).getByRole(
-						"checkbox"
+						"checkbox",
 					);
 					expect(toggle).toBeInTheDocument();
 					expect(toggle).not.toBeChecked();
@@ -271,7 +271,7 @@ describe("UserSettings component", () => {
 					expect(toggle).toBeChecked();
 					expect(localStorageSetItemSpy).toHaveBeenCalledWith(
 						STORAGE_LOCAL_WELCOME,
-						"0"
+						"0",
 					);
 				}
 			});
@@ -304,7 +304,7 @@ describe("UserSettings component", () => {
 						expect(
 							within(themeField.parentElement).getByRole("radio", {
 								name: palette.displayName,
-							})
+							}),
 						).toBeInTheDocument();
 					}
 				}
@@ -326,7 +326,7 @@ describe("UserSettings component", () => {
 
 					const actionableRadio = within(themeField.parentElement).getByRole(
 						"radio",
-						{ name: /teal/i }
+						{ name: /teal/i },
 					);
 					expect(actionableRadio).toBeInTheDocument();
 					expect(actionableRadio).not.toBeChecked();

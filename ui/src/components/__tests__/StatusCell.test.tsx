@@ -133,7 +133,7 @@ describe("field displays 'in progress' status", () => {
 		render(<StatusCell row={row} />);
 		const reg = new RegExp(
 			`${row.status_detail.current_plugin} of ${row.status_detail.total_plugins}: ${row.status_detail.plugin_name}`,
-			"i"
+			"i",
 		);
 		const statusText = screen.getByText(reg);
 		expect(statusText).toBeInTheDocument();
@@ -161,7 +161,7 @@ describe("field displays 'in progress' status", () => {
 		const statusText = screen.getByText(
 			`Running plugin ${row.status_detail.current_plugin} of ${
 				row.status_detail.total_plugins
-			}: ${vulnPluginsKeys[row.status_detail.plugin_name || ""].displayName}`
+			}: ${vulnPluginsKeys[row.status_detail.plugin_name || ""].displayName}`,
 		);
 		expect(statusText).toBeInTheDocument();
 	});
@@ -358,7 +358,7 @@ describe("field displays 'complete' status", () => {
 		it("displays a count of technologies discovered", () => {
 			render(<StatusCell row={row} />);
 			const count = Object.keys(
-				row?.results?.inventory?.technology_discovery || {}
+				row?.results?.inventory?.technology_discovery || {},
 			).length.toString();
 			const reg = new RegExp(`${count} tech`, "i");
 			const elt = screen.getByTitle(reg);
@@ -369,7 +369,7 @@ describe("field displays 'complete' status", () => {
 		it("displays a count of base images discovered", () => {
 			render(<StatusCell row={row} />);
 			const count = Object.keys(
-				row?.results?.inventory?.base_images || {}
+				row?.results?.inventory?.base_images || {},
 			).length.toString();
 			const reg = new RegExp(`${count} base image`, "i");
 			const elt = screen.getByTitle(reg);
@@ -510,7 +510,7 @@ describe("field displays 'complete' status", () => {
 		it("displays a count of technologies discovered", () => {
 			render(<StatusCell row={row} />);
 			const count = Object.keys(
-				row?.results?.inventory?.technology_discovery || {}
+				row?.results?.inventory?.technology_discovery || {},
 			).length.toString();
 			const reg = new RegExp(`${count} tech`, "i");
 			const elt = screen.getByTitle(reg);
@@ -521,7 +521,7 @@ describe("field displays 'complete' status", () => {
 		it("displays a count of base images discovered", () => {
 			render(<StatusCell row={row} />);
 			const count = Object.keys(
-				row?.results?.inventory?.base_images || {}
+				row?.results?.inventory?.base_images || {},
 			).length.toString();
 			const reg = new RegExp(`${count} base image`, "i");
 			const elt = screen.getByTitle(reg);
@@ -533,7 +533,7 @@ describe("field displays 'complete' status", () => {
 			it("displays sbom category run indicator without a count", () => {
 				render(<StatusCell row={row} />);
 				expect(
-					screen.getByTitle(/software bill of materials \(sbom\)/i)
+					screen.getByTitle(/software bill of materials \(sbom\)/i),
 				).toBeInTheDocument();
 			});
 		}
@@ -641,7 +641,7 @@ describe("field displays 'complete' status", () => {
 		it("displays a count of technologies discovered", () => {
 			render(<StatusCell row={row} />);
 			const count = Object.keys(
-				row?.results?.inventory?.technology_discovery || {}
+				row?.results?.inventory?.technology_discovery || {},
 			).length.toString();
 			const reg = new RegExp(`${count} tech`, "i");
 			const elt = screen.getByTitle(reg);
@@ -652,7 +652,7 @@ describe("field displays 'complete' status", () => {
 		it("displays a count of base images discovered", () => {
 			render(<StatusCell row={row} />);
 			const count = Object.keys(
-				row?.results?.inventory?.base_images || {}
+				row?.results?.inventory?.base_images || {},
 			).length.toString();
 			const reg = new RegExp(`${count} base image`, "i");
 			const elt = screen.getByTitle(reg);
@@ -695,7 +695,7 @@ describe("field displays 'complete' status", () => {
 			it("displays sbom category run indicator without a count", () => {
 				render(<StatusCell row={row} />);
 				expect(
-					screen.getByTitle(/software bill of materials \(sbom\)/i)
+					screen.getByTitle(/software bill of materials \(sbom\)/i),
 				).toBeInTheDocument();
 			});
 		}
@@ -798,11 +798,11 @@ describe("field displays 'complete' status", () => {
 			expect(subsetIndicator).toBeInTheDocument();
 
 			expect(
-				screen.queryByText(/this scan ran with a subset of plugins/i)
+				screen.queryByText(/this scan ran with a subset of plugins/i),
 			).not.toBeInTheDocument();
 			await user.click(subsetIndicator);
 			expect(
-				screen.getByText(/this scan ran with a subset of plugins/i)
+				screen.getByText(/this scan ran with a subset of plugins/i),
 			).toBeInTheDocument();
 			expect(screen.getByText(/results may vary/i)).toBeInTheDocument();
 		});
@@ -858,14 +858,14 @@ describe("field displays 'complete' status", () => {
 
 			expect(
 				screen.queryByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).not.toBeInTheDocument();
 			await user.click(subsetIndicator);
 			expect(
 				screen.getByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).toBeInTheDocument();
 			expect(screen.getByText(/results may vary/i)).toBeInTheDocument();
 		});
@@ -881,14 +881,14 @@ describe("field displays 'complete' status", () => {
 
 			expect(
 				screen.queryByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).not.toBeInTheDocument();
 			await user.click(subsetIndicator);
 			expect(
 				screen.getByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).toBeInTheDocument();
 			expect(screen.getByText(/results may vary/i)).toBeInTheDocument();
 		});
@@ -905,14 +905,14 @@ describe("field displays 'complete' status", () => {
 
 			expect(
 				screen.queryByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).not.toBeInTheDocument();
 			await user.click(subsetIndicator);
 			expect(
 				screen.getByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).toBeInTheDocument();
 			expect(screen.getByText(/results may vary/i)).toBeInTheDocument();
 		});
@@ -928,21 +928,21 @@ describe("field displays 'complete' status", () => {
 			expect(subsetIndicator).toBeInTheDocument();
 
 			expect(
-				screen.queryByText(/this scan ran with a subset of plugins/i)
+				screen.queryByText(/this scan ran with a subset of plugins/i),
 			).not.toBeInTheDocument();
 			expect(
 				screen.queryByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).not.toBeInTheDocument();
 			await user.click(subsetIndicator);
 			expect(
-				screen.queryByText(/this scan ran with a subset of plugins/i)
+				screen.queryByText(/this scan ran with a subset of plugins/i),
 			).toBeInTheDocument();
 			expect(
 				screen.getByText(
-					/this scan ran against a subset of source code due to include\/exclude paths/i
-				)
+					/this scan ran against a subset of source code due to include\/exclude paths/i,
+				),
 			).toBeInTheDocument();
 			expect(screen.getByText(/results may vary/i)).toBeInTheDocument();
 		});

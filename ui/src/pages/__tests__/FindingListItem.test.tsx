@@ -15,7 +15,7 @@ describe("FindingListItem component", () => {
 				id="testId"
 				label={<span>testLabel</span>}
 				value={<span>testValue</span>}
-			/>
+			/>,
 		);
 		const listItem = screen.getByRole("listitem", { name: "testLabel" });
 		expect(listItem).toBeInTheDocument();

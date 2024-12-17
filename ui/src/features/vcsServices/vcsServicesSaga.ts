@@ -23,7 +23,7 @@ import { addNotification } from "features/notifications/notificationsSlice";
 import { VcsService, VcsServicesGetResponse } from "./vcsServicesSchemas";
 
 function* _linkVcsServiceSaga(
-	action: PayloadAction<UserServiceRequest>
+	action: PayloadAction<UserServiceRequest>,
 ): Generator<StrictEffect, void, VcsService> {
 	try {
 		const response = yield call(client.linkUserService, { ...action.payload });
@@ -42,7 +42,7 @@ function* _linkVcsServiceSaga(
 }
 
 function* _unlinkVcsServiceSaga(
-	action: PayloadAction<UserServiceRequest>
+	action: PayloadAction<UserServiceRequest>,
 ): Generator<StrictEffect, void, string | undefined> {
 	try {
 		const response: string | undefined = yield call(client.unlinkUserService, {
@@ -64,7 +64,7 @@ function* _unlinkVcsServiceSaga(
 }
 
 function* _getVcsServicesSaga(
-	action: PayloadAction<Client>
+	action: PayloadAction<Client>,
 ): Generator<StrictEffect, void, VcsServicesGetResponse> {
 	let meta = undefined;
 	if (action?.payload?.meta) {
@@ -73,7 +73,7 @@ function* _getVcsServicesSaga(
 	try {
 		const response: VcsServicesGetResponse = yield call(
 			client.getUserServices,
-			{ meta }
+			{ meta },
 		);
 		yield put({
 			type: getVcsServices.fulfilled.type,
