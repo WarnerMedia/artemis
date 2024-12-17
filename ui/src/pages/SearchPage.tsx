@@ -2,6 +2,7 @@ import { Trans, t } from "@lingui/macro";
 import { useLingui } from "@lingui/react";
 import {
 	ArrowBackIos as ArrowBackIosIcon,
+	BuildCircle,
 	Clear as ClearIcon,
 	Close as CloseIcon,
 	Cloud as CloudIcon,
@@ -44,6 +45,7 @@ import {
 	LinearProgress,
 	List,
 	ListItem,
+	ListItemIcon,
 	ListItemText,
 	MenuItem,
 	TextField as MuiTextField,
@@ -133,6 +135,7 @@ import { PSProps, PluginsSelector } from "pages/MainPage";
 import queryString from "query-string";
 import {
 	Dispatch,
+	ReactElement,
 	ReactNode,
 	SetStateAction,
 	useEffect,
@@ -513,7 +516,7 @@ const initialRepoFilters: RepoFiltersT = {
 	service: "",
 	repo_match: "icontains",
 	repo: "",
-	cicd_tool: "",
+	cicd_tool: "none",
 	risk: [],
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
@@ -542,6 +545,7 @@ const initialVulnFilters: VulnFiltersT = {
 export interface MatcherT {
 	[name: string]: {
 		label: string;
+		icon?: ReactElement;
 		props?: ChipProps | PSProps;
 	};
 }
@@ -765,9 +769,18 @@ const MatchStringField = (props: MatchFieldProps) => {
 	const menuItems = () => {
 		const nodes: ReactNode[] = [];
 		for (const [label, values] of Object.entries(matchOptions)) {
+			const text = <Trans>{values.label}</Trans>;
+
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
-					<Trans>{values.label}</Trans>
+					{
+						values.icon ? (
+							<div style={{ display: 'flex', alignItems: 'center' }}>
+								<ListItemIcon style={{ minWidth: 0 }}>{values.icon}</ListItemIcon>
+								<ListItemText primary={text} />
+							</div>
+						) : text
+					} 
 				</MenuItem>,
 			);
 		}
@@ -780,6 +793,7 @@ const MatchStringField = (props: MatchFieldProps) => {
 				<InputLabel
 					id={`${props.id}-select-string-label`}
 					style={{ display: "none" }}
+					shrink={fieldProps.shrink}
 				>
 					<Trans>{props.label}</Trans>
 				</InputLabel>
@@ -788,6 +802,7 @@ const MatchStringField = (props: MatchFieldProps) => {
 					{...fieldProps}
 					labelId={`${props.id}-select-string-label`}
 					size="small"
+					notched={fieldProps.shrink}
 				>
 					{menuItems()}
 				</Field>
@@ -2408,12 +2423,19 @@ const FormFields = (props: {
 		},
 		*/
 	};
-	const matchCicdTools: MatcherT = {};
+	const matchCicdTools: MatcherT = {
+		none: {
+			label: 'None',
+			icon: <BuildCircle style={{ marginRight: theme.spacing(1) }} />,
+		}
+	};
 	supportedCicdTools.forEach(
-		(item) =>
-			(matchCicdTools[item.id] = {
+		(item) => (
+			matchCicdTools[item.id] = {
 				label: item.displayName,
-			})
+				icon: <BuildCircle style={{ marginRight: theme.spacing(1) }} />,
+			}
+		)
 	);
 	const matchRisk: MatcherT = {
 		/* FUTURE: include null (None)
@@ -2709,19 +2731,6 @@ const FormFields = (props: {
 			icon: <FolderIcon />,
 			size: 9,
 		},
-		spacer_cicd: {
-			id: "repo-spacer-cicd",
-			label: "",
-			component: "SpacerField",
-			size: 3,
-		},
-		cicd_tool: {
-			id: "repo-cicd-tool",
-			label: t`CI/CD Tool`,
-			component: "MatchStringField",
-			matchOptions: matchCicdTools,
-			size: 9,
-		},
 		...metaFields,
 		spacer_1: {
 			id: "repo-spacer1",
@@ -2752,6 +2761,22 @@ const FormFields = (props: {
 				disableFuture: true,
 				maxDateMessage: i18n._(t`Scan time can not be in the future`),
 			},
+		},
+		spacer_cicd: {
+			id: "repo-spacer-cicd",
+			label: "",
+			component: "SpacerField",
+			size: 3,
+		},
+		cicd_tool: {
+			id: "repo-cicd-tool",
+			label: t`CI/CD Tool`,
+			component: "MatchStringField",
+			matchOptions: matchCicdTools,
+			fieldProps: {
+				shrink: true,
+			},
+			size: 9,
 		},
 		/* FUTURE: support for between 2 scans
 		spacer_2: {
