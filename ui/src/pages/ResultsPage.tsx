@@ -66,7 +66,7 @@ import {
 	FormControlLabel,
 	FormGroup,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	IconButton,
 	InputAdornment,
 	InputBaseComponentProps,
@@ -611,7 +611,7 @@ const useStyles = makeStyles()((theme) => ({
 export const getResultFilters = (
 	schema: Yup.ObjectSchema<any>,
 	prefix: string = "",
-	filters: FilterDef
+	filters: FilterDef,
 ) => {
 	const hash = queryString.parse(window.location.hash);
 	try {
@@ -664,7 +664,7 @@ const FindingAccordionSummary = withStyles(
 			},
 		},
 		expanded: {},
-	})
+	}),
 );
 
 const NoResults = (props: { title: string }) => {
@@ -943,7 +943,7 @@ export const HiddenFindingDialog = (props: {
 	const { i18n } = useLingui();
 	const dispatch: AppDispatch = useDispatch();
 	const hiddenFindingState = useSelector(
-		(state: RootState) => state.hiddenFindings
+		(state: RootState) => state.hiddenFindings,
 	);
 	const { row, open, onClose } = props;
 	const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -972,7 +972,7 @@ export const HiddenFindingDialog = (props: {
 						.min(4, i18n._(t`Must be 4 or more characters`));
 				}
 				return schema;
-			}
+			},
 		),
 		expires: Yup.date()
 			.typeError(i18n._(t`Invalid date format`))
@@ -1209,7 +1209,7 @@ export const HiddenFindingDialog = (props: {
 						});
 					} else {
 						console.error(
-							"unable to add or update vulnerability hidden finding"
+							"unable to add or update vulnerability hidden finding",
 						);
 					}
 					break;
@@ -1240,7 +1240,7 @@ export const HiddenFindingDialog = (props: {
 	// alert displayed in dialog if async form submission encounters errors
 	const hiddenFindingAlert = (
 		isSubmitting: boolean,
-		setSubmitting: FormikHelpers<HiddenFindingForm>["setSubmitting"]
+		setSubmitting: FormikHelpers<HiddenFindingForm>["setSubmitting"],
 	) => {
 		let alert = <></>;
 		if (open && hiddenFindingState.status === "failed") {
@@ -1276,7 +1276,7 @@ export const HiddenFindingDialog = (props: {
 		let updated = null;
 		let type = row?.type;
 		const warningTitle = i18n._(
-			t`Click the "Update" button to add these source files to this hidden finding`
+			t`Click the "Update" button to add these source files to this hidden finding`,
 		);
 
 		if (isRaw && (type === "vulnerability" || type === "secret")) {
@@ -1313,7 +1313,7 @@ export const HiddenFindingDialog = (props: {
 					id="finding-details-updated-date"
 					label={<Trans>Hidden finding last updated:</Trans>}
 					value={formatDate(updated, "long")}
-				/>
+				/>,
 			);
 		}
 
@@ -1324,7 +1324,7 @@ export const HiddenFindingDialog = (props: {
 					id="finding-details-updated-by"
 					label={<Trans>Hidden finding last updated by:</Trans>}
 					value={<MailToLink recipient={updatedBy} text={updatedBy} tooltip />}
-				/>
+				/>,
 			);
 		}
 
@@ -1335,7 +1335,7 @@ export const HiddenFindingDialog = (props: {
 					id="finding-details-hidden-date"
 					label={<Trans>Hidden finding created:</Trans>}
 					value={formatDate(created, "long")}
-				/>
+				/>,
 			);
 		}
 
@@ -1347,7 +1347,7 @@ export const HiddenFindingDialog = (props: {
 					id="finding-details-hidden-by"
 					label={<Trans>Hidden finding created by:</Trans>}
 					value={<MailToLink recipient={createdBy} text={createdBy} tooltip />}
-				/>
+				/>,
 			);
 		}
 
@@ -1360,7 +1360,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-severity"
 							label={<Trans>Severity:</Trans>}
 							value={<SeverityChip value={row?.severity} />}
-						/>
+						/>,
 					);
 				}
 				details.push(
@@ -1369,7 +1369,7 @@ export const HiddenFindingDialog = (props: {
 						id="finding-details-name"
 						label={<Trans>Name:</Trans>}
 						value={item?.name ?? item?.id}
-					/>
+					/>,
 				);
 				if (item?.description) {
 					details.push(
@@ -1378,7 +1378,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-description"
 							label={<Trans>Description:</Trans>}
 							value={item.description}
-						/>
+						/>,
 					);
 				}
 				break;
@@ -1392,7 +1392,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-type"
 							label={<Trans>Type:</Trans>}
 							value={capitalize(item?.resource)}
-						/>
+						/>,
 					);
 				}
 				item.commit &&
@@ -1402,7 +1402,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-commit"
 							label={<Trans>Commit:</Trans>}
 							value={item?.commit ?? ""}
-						/>
+						/>,
 					);
 				!row?.locationType || row?.locationType === "commit"
 					? details.push(
@@ -1428,8 +1428,8 @@ export const HiddenFindingDialog = (props: {
 										</li>
 									</ul>
 								}
-							/>
-					  )
+							/>,
+						)
 					: details.push(
 							<FindingListItem
 								key="finding-details-fileline"
@@ -1454,8 +1454,8 @@ export const HiddenFindingDialog = (props: {
 										</li>
 									</ul>
 								}
-							/>
-					  );
+							/>,
+						);
 				break;
 			}
 
@@ -1470,7 +1470,7 @@ export const HiddenFindingDialog = (props: {
 								<Trans>Any</Trans>
 							</span>
 						}
-					/>
+					/>,
 				);
 				details.push(
 					<FindingListItem
@@ -1482,7 +1482,7 @@ export const HiddenFindingDialog = (props: {
 								<Trans>Any</Trans>
 							</span>
 						}
-					/>
+					/>,
 				);
 				details.push(
 					<FindingListItem
@@ -1500,7 +1500,7 @@ export const HiddenFindingDialog = (props: {
 								<Trans>Any</Trans>
 							</span>
 						}
-					/>
+					/>,
 				);
 				break;
 			}
@@ -1513,7 +1513,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-severity"
 							label={<Trans>Severity:</Trans>}
 							value={<SeverityChip value={row?.severity} />}
-						/>
+						/>,
 					);
 				}
 				details.push(
@@ -1522,7 +1522,7 @@ export const HiddenFindingDialog = (props: {
 						id="finding-details-resource"
 						label={<Trans>Type:</Trans>}
 						value={capitalize(item?.resource ?? item?.type ?? "")}
-					/>
+					/>,
 				);
 				details.push(
 					<FindingListItem
@@ -1547,7 +1547,7 @@ export const HiddenFindingDialog = (props: {
 								</li>
 							</ul>
 						}
-					/>
+					/>,
 				);
 				break;
 			}
@@ -1560,7 +1560,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-severity"
 							label={<Trans>Severity:</Trans>}
 							value={<SeverityChip value={row?.severity} />}
-						/>
+						/>,
 					);
 				}
 				details.push(
@@ -1569,7 +1569,7 @@ export const HiddenFindingDialog = (props: {
 						id="finding-details-vulnerability"
 						label={<Trans>Vulnerability:</Trans>}
 						value={<VulnLink vulnId={item?.id} />}
-					/>
+					/>,
 				);
 				details.push(
 					<FindingListItem
@@ -1577,7 +1577,7 @@ export const HiddenFindingDialog = (props: {
 						id="finding-details-component"
 						label={<Trans>Component:</Trans>}
 						value={item?.component ?? ""}
-					/>
+					/>,
 				);
 				if (hiddenFindingCount) {
 					// viewing existing hidden finding
@@ -1592,13 +1592,13 @@ export const HiddenFindingDialog = (props: {
 								<ol
 									className={cx(
 										classes.sourceFileList,
-										classes.sourceFileListScrollable
+										classes.sourceFileListScrollable,
 									)}
 								>
 									{findingSourceFiles(row?.hiddenFindings)}
 								</ol>
 							}
-						/>
+						/>,
 					);
 					if (
 						row?.unhiddenFindings &&
@@ -1628,13 +1628,13 @@ export const HiddenFindingDialog = (props: {
 										className={cx(
 											classes.sourceFileList,
 											classes.sourceFileListScrollable,
-											classes.fieldError
+											classes.fieldError,
 										)}
 									>
 										{sourceFiles(row?.unhiddenFindings as string[])}
 									</ol>
 								}
-							/>
+							/>,
 						);
 					}
 				} else {
@@ -1653,13 +1653,13 @@ export const HiddenFindingDialog = (props: {
 								<ol
 									className={cx(
 										classes.sourceFileList,
-										classes.sourceFileListScrollable
+										classes.sourceFileListScrollable,
 									)}
 								>
 									{sourceFiles(row?.source as string[])}
 								</ol>
 							}
-						/>
+						/>,
 					);
 				}
 				break;
@@ -1673,7 +1673,7 @@ export const HiddenFindingDialog = (props: {
 							id="finding-details-severity"
 							label={<Trans>Severity:</Trans>}
 							value={<SeverityChip value={row?.severity} />}
-						/>
+						/>,
 					);
 				}
 				details.push(
@@ -1682,7 +1682,7 @@ export const HiddenFindingDialog = (props: {
 						id="finding-details-vulnerability"
 						label={<Trans>Vulnerability:</Trans>}
 						value={<VulnLink vulnId={item?.id} />}
-					/>
+					/>,
 				);
 				details.push(
 					<FindingListItem
@@ -1694,7 +1694,7 @@ export const HiddenFindingDialog = (props: {
 								<Trans>Any</Trans>
 							</span>
 						}
-					/>
+					/>,
 				);
 				if (hiddenFindingCount) {
 					// viewing existing hidden finding
@@ -1708,7 +1708,7 @@ export const HiddenFindingDialog = (props: {
 									<Trans>Any</Trans>
 								</span>
 							}
-						/>
+						/>,
 					);
 				} else {
 					// viewing vuln details to add a new hidden finding
@@ -1722,7 +1722,7 @@ export const HiddenFindingDialog = (props: {
 									<Trans>Any</Trans>
 								</span>
 							}
-						/>
+						/>,
 					);
 				}
 				break;
@@ -1897,7 +1897,7 @@ export const HiddenFindingDialog = (props: {
 												variant="outlined"
 												label={i18n._(t`Reason`)}
 												placeholder={i18n._(
-													t`Justification for hiding this security finding`
+													t`Justification for hiding this security finding`,
 												)}
 												fullWidth
 												multiline={true}
@@ -1965,11 +1965,11 @@ export const HiddenFindingDialog = (props: {
 															component={TextField}
 															className={classes.findingFormStringField}
 															label={i18n._(
-																t`String to exclude from secret findings (future scans only)`
+																t`String to exclude from secret findings (future scans only)`,
 															)}
 															variant="outlined"
 															placeholder={i18n._(
-																t`This should not be a real secret`
+																t`This should not be a real secret`,
 															)}
 														/>
 													)}
@@ -2128,7 +2128,7 @@ const HiddenFindingCell = (props: { row?: RowDef | null }) => {
 				plural(row?.unhiddenFindings.length, {
 					one: "# Source file not covered by this hidden finding",
 					other: "# Source files not covered by this hidden finding",
-				})
+				}),
 			);
 		}
 		// check expiration on each hidden finding to see if it's expired
@@ -2266,7 +2266,7 @@ export const OverviewCard = ({
 	const nothingFound = countFound === 0;
 
 	return (
-		<Grid item xs={6} sm={4}>
+		<Grid size={{ xs: 12, sm: 6 }}>
 			<Card
 				elevation={2}
 				className={classes.overviewCard}
@@ -2406,7 +2406,7 @@ export const ScanMessages = (props: {
 						);
 					}
 					return errArr[0];
-			  })
+				})
 			: null;
 	}
 	return (
@@ -2438,7 +2438,7 @@ export const ScanMessages = (props: {
 						<AccordionDetails
 							className={cx(
 								classes.accordionDetails,
-								classes.scanMessagesAccordionDetails
+								classes.scanMessagesAccordionDetails,
 							)}
 						>
 							<Grid className={classes.scanErrorsContainer}>
@@ -2564,7 +2564,7 @@ export const OverviewTabContent = (props: {
 		}));
 
 	const baseImagesSummarized = Object.keys(
-		scan.results?.inventory?.base_images ?? {}
+		scan.results?.inventory?.base_images ?? {},
 	).sort((a, b) => a.localeCompare(b));
 
 	const techInventoryExtraText = baseImagesSummarized.length
@@ -2743,7 +2743,7 @@ interface FilterFieldProps {
 	onChange: (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => void;
 	inputProps?: InputBaseComponentProps;
 	type?: React.InputHTMLAttributes<unknown>["type"];
@@ -2847,7 +2847,7 @@ interface SeverityFilterFieldProps {
 	onChange: (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => void;
 }
 
@@ -2927,7 +2927,7 @@ interface SecretValidityFilterFieldProps {
 	onChange: (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => void;
 }
 
@@ -3098,13 +3098,13 @@ export const VulnTabContent = (props: {
 			.trim()
 			.max(
 				COMPONENT_LENGTH,
-				i18n._(t`Component must be less than ${COMPONENT_LENGTH} characters`)
+				i18n._(t`Component must be less than ${COMPONENT_LENGTH} characters`),
 			),
 		vn_id: Yup.string()
 			.trim()
 			.max(
 				VULN_ID_LENGTH,
-				i18n._(t`Vulnerability must be less than ${VULN_ID_LENGTH} characters`)
+				i18n._(t`Vulnerability must be less than ${VULN_ID_LENGTH} characters`),
 			),
 		vn_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
@@ -3119,7 +3119,7 @@ export const VulnTabContent = (props: {
 			severity: {
 				filter: "",
 			},
-		})
+		}),
 	);
 
 	const dialogTitle = (): string => {
@@ -3145,7 +3145,7 @@ export const VulnTabContent = (props: {
 					key={`source-plugin-${plugin}`}
 					label={plugin}
 					size="small"
-				/>
+				/>,
 			);
 		}
 	}
@@ -3160,7 +3160,7 @@ export const VulnTabContent = (props: {
 					</span>
 					<Grid container spacing={3}>
 						{/* left column */}
-						<Grid item xs={6} className={classes.tabDialogGrid}>
+						<Grid size={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
 								<ListItem key="vuln-description">
@@ -3197,7 +3197,7 @@ export const VulnTabContent = (props: {
 						</Grid>
 
 						{/* right column */}
-						<Grid item xs={6}>
+						<Grid size={6}>
 							<List>
 								<ListItem key="vuln-source">
 									<ListItemText
@@ -3280,7 +3280,7 @@ export const VulnTabContent = (props: {
 	const rows: RowDef[] = [];
 
 	for (const [component, vulns] of Object.entries(
-		scan.results?.vulnerabilities ?? {}
+		scan.results?.vulnerabilities ?? {},
 	)) {
 		for (const [id, details] of Object.entries(vulns ?? {})) {
 			let hasRaw = false;
@@ -3345,7 +3345,7 @@ export const VulnTabContent = (props: {
 	const exportData = () => {
 		const data: RowDef[] = [];
 		for (const [component, vulns] of Object.entries(
-			scan.results?.vulnerabilities ?? {}
+			scan.results?.vulnerabilities ?? {},
 		)) {
 			for (const [id, details] of Object.entries(vulns ?? {})) {
 				data.push({
@@ -3396,7 +3396,7 @@ export const VulnTabContent = (props: {
 	const handleOnChange = (
 		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
@@ -3621,7 +3621,7 @@ export const AnalysisTabContent = (props: {
 			.trim()
 			.max(
 				FILEPATH_LENGTH,
-				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`)
+				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`),
 			),
 		sa_line: Yup.number()
 			.positive(i18n._(t`Line must be a positive integer`))
@@ -3631,7 +3631,7 @@ export const AnalysisTabContent = (props: {
 			.trim()
 			.max(
 				RESOURCE_LENGTH,
-				i18n._(t`Resource must be less than ${RESOURCE_LENGTH} characters`)
+				i18n._(t`Resource must be less than ${RESOURCE_LENGTH} characters`),
 			),
 		sa_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
@@ -3650,7 +3650,7 @@ export const AnalysisTabContent = (props: {
 			severity: {
 				filter: "",
 			},
-		})
+		}),
 	);
 
 	const columns: ColDef[] = [
@@ -3678,7 +3678,7 @@ export const AnalysisTabContent = (props: {
 	const rows: RowDef[] = [];
 
 	for (const [filename, items] of Object.entries(
-		scan.results?.static_analysis ?? {}
+		scan.results?.static_analysis ?? {},
 	)) {
 		items.forEach((item: AnalysisFinding) => {
 			// single matching hidden finding
@@ -3729,7 +3729,7 @@ export const AnalysisTabContent = (props: {
 					</span>
 					<Grid container spacing={3}>
 						{/* left column */}
-						<Grid item xs={6} className={classes.tabDialogGrid}>
+						<Grid size={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
 								<ListItem key="analysis-source">
@@ -3761,7 +3761,7 @@ export const AnalysisTabContent = (props: {
 						</Grid>
 
 						{/* right column */}
-						<Grid item xs={6}>
+						<Grid size={6}>
 							<List>
 								<ListItem key="analysis-details">
 									<ListItemText
@@ -3796,7 +3796,7 @@ export const AnalysisTabContent = (props: {
 	const exportData = () => {
 		const data: RowDef[] = [];
 		for (const [filename, items] of Object.entries(
-			scan.results?.static_analysis ?? {}
+			scan.results?.static_analysis ?? {},
 		)) {
 			items.forEach((item: AnalysisFinding) => {
 				data.push({
@@ -3845,7 +3845,7 @@ export const AnalysisTabContent = (props: {
 	const handleOnChange = (
 		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
@@ -3978,7 +3978,7 @@ export const SecretsTabContent = (props: {
 			.trim()
 			.max(
 				FILEPATH_LENGTH,
-				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`)
+				i18n._(t`File path must be less than ${FILEPATH_LENGTH} characters`),
 			),
 		st_line: Yup.number()
 			.positive(i18n._(t`Line must be a positive integer`))
@@ -3988,13 +3988,13 @@ export const SecretsTabContent = (props: {
 			.trim()
 			.max(
 				RESOURCE_LENGTH,
-				i18n._(t`Resource must be less than ${RESOURCE_LENGTH} characters`)
+				i18n._(t`Resource must be less than ${RESOURCE_LENGTH} characters`),
 			),
 		st_commit: Yup.string()
 			.trim()
 			.max(
 				COMMIT_LENGTH,
-				i18n._(t`Commit must be less than ${COMMIT_LENGTH} characters`)
+				i18n._(t`Commit must be less than ${COMMIT_LENGTH} characters`),
 			),
 		st_f_validity: Yup.string()
 			.trim()
@@ -4018,7 +4018,7 @@ export const SecretsTabContent = (props: {
 			commit: {
 				filter: "",
 			},
-		})
+		}),
 	);
 
 	const columns: ColDef[] = [
@@ -4061,7 +4061,7 @@ export const SecretsTabContent = (props: {
 			// this is why fields such as url and createdBy are added here
 			rows.push({
 				keyId: ["secret", filename, item.line, item.type, item.commit].join(
-					"-"
+					"-",
 				),
 				type: "secret",
 				// Typically, the url field is expected to be an empty string,
@@ -4150,7 +4150,7 @@ export const SecretsTabContent = (props: {
 				<DialogContent dividers={true}>
 					<Grid container spacing={3}>
 						{/* left column */}
-						<Grid item xs={6} className={classes.tabDialogGrid}>
+						<Grid size={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
 								<ListItem key="secret-source">{secretSource}</ListItem>
@@ -4158,7 +4158,7 @@ export const SecretsTabContent = (props: {
 						</Grid>
 
 						{/* right column */}
-						<Grid item xs={6}>
+						<Grid size={6}>
 							<List>
 								<ListItem key="secret-commit">
 									<ListItemText
@@ -4223,7 +4223,7 @@ export const SecretsTabContent = (props: {
 																			{item.source}
 																		</TableCell>
 																	</TableRow>
-																)
+																),
 															)}
 														</TableBody>
 													</Table>
@@ -4252,7 +4252,7 @@ export const SecretsTabContent = (props: {
 	const exportData = () => {
 		const data: RowDef[] = [];
 		for (const [filename, items] of Object.entries(
-			scan.results?.secrets ?? {}
+			scan.results?.secrets ?? {},
 		)) {
 			items.forEach((item: SecretFinding) => {
 				data.push({
@@ -4301,7 +4301,7 @@ export const SecretsTabContent = (props: {
 	const handleOnChange = (
 		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
@@ -4442,15 +4442,15 @@ export const ConfigTabContent = (props: {
 			.trim()
 			.max(
 				NAME_LENGTH,
-				i18n._(t`Name must be less than ${NAME_LENGTH} characters`)
+				i18n._(t`Name must be less than ${NAME_LENGTH} characters`),
 			),
 		cg_description: Yup.string()
 			.trim()
 			.max(
 				DESCRIPTION_LENGTH,
 				i18n._(
-					t`Description must be less than ${DESCRIPTION_LENGTH} characters`
-				)
+					t`Description must be less than ${DESCRIPTION_LENGTH} characters`,
+				),
 			),
 		cg_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
@@ -4465,7 +4465,7 @@ export const ConfigTabContent = (props: {
 			severity: {
 				filter: "",
 			},
-		})
+		}),
 	);
 
 	const columns: ColDef[] = [
@@ -4491,7 +4491,7 @@ export const ConfigTabContent = (props: {
 	const rows: RowDef[] = [];
 
 	for (const [rule, info] of Object.entries(
-		scan.results?.configuration ?? {}
+		scan.results?.configuration ?? {},
 	)) {
 		// single matching hidden finding
 		const findings = hiddenFindings.find((hf) => {
@@ -4528,7 +4528,7 @@ export const ConfigTabContent = (props: {
 					</span>
 					<Grid container spacing={3}>
 						{/* single large column */}
-						<Grid item xs={12} className={classes.tabDialogGrid}>
+						<Grid size={12} className={classes.tabDialogGrid}>
 							<List>
 								<ListItem key="config-description">
 									<ListItemText
@@ -4583,7 +4583,7 @@ export const ConfigTabContent = (props: {
 	const exportData = () => {
 		const data: RowDef[] = [];
 		for (const [rule, info] of Object.entries(
-			scan.results?.configuration ?? {}
+			scan.results?.configuration ?? {},
 		)) {
 			data.push({
 				id: rule,
@@ -4630,7 +4630,7 @@ export const ConfigTabContent = (props: {
 	const handleOnChange = (
 		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
@@ -4750,7 +4750,7 @@ const InventoryTabContent = (props: {
 	const rows: RowDef[] = [];
 
 	for (const [image, items] of Object.entries(
-		scan.results?.inventory?.base_images ?? {}
+		scan.results?.inventory?.base_images ?? {},
 	)) {
 		items?.tags.forEach((tag: string) => {
 			rows.push({
@@ -4764,7 +4764,7 @@ const InventoryTabContent = (props: {
 	const exportData = () => {
 		const data: RowDef[] = [];
 		for (const [image, items] of Object.entries(
-			scan.results?.inventory?.base_images ?? {}
+			scan.results?.inventory?.base_images ?? {},
 		)) {
 			items?.tags.forEach((tag: string) => {
 				data.push({
@@ -4785,7 +4785,7 @@ const InventoryTabContent = (props: {
 	const techData: TechData[] = [];
 	let i = 0;
 	for (const [name, value] of Object.entries(
-		scan.results?.inventory?.technology_discovery ?? {}
+		scan.results?.inventory?.technology_discovery ?? {},
 	)) {
 		techData.push({
 			name,
@@ -4844,7 +4844,7 @@ const InventoryTabContent = (props: {
 											<Label
 												className={cx(
 													classes.pieInnerLabel,
-													"MuiTypography-h4"
+													"MuiTypography-h4",
 												)}
 												value={
 													scan.results_summary?.inventory
@@ -5025,7 +5025,7 @@ export const CodeTabContent = (props: {
 
 	useEffect(() => {
 		setSkipDialog(
-			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE)))
+			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -5226,24 +5226,24 @@ export const HiddenFindingsTabContent = (props: {
 			.max(
 				FILEPATH_LENGTH,
 				i18n._(
-					t`Location/File path must be less than ${FILEPATH_LENGTH} characters`
-				)
+					t`Location/File path must be less than ${FILEPATH_LENGTH} characters`,
+				),
 			),
 		hf_location: Yup.string()
 			.trim()
 			.max(
 				VULN_ID_LENGTH,
 				i18n._(
-					t`Id/Line location must be less than ${VULN_ID_LENGTH} characters`
-				)
+					t`Id/Line location must be less than ${VULN_ID_LENGTH} characters`,
+				),
 			),
 		hf_component: Yup.string()
 			.trim()
 			.max(
 				COMPONENT_LENGTH,
 				i18n._(
-					t`Component/commit must be less than ${COMPONENT_LENGTH} characters`
-				)
+					t`Component/commit must be less than ${COMPONENT_LENGTH} characters`,
+				),
 			),
 		hf_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
@@ -5265,7 +5265,7 @@ export const HiddenFindingsTabContent = (props: {
 			severity: {
 				filter: "",
 			},
-		})
+		}),
 	);
 
 	const onRowSelect = (row: RowDef | null) => {
@@ -5383,7 +5383,7 @@ export const HiddenFindingsTabContent = (props: {
 	const handleOnChange = (
 		_event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		field: string,
-		value: string
+		value: string,
 	) => {
 		setFilters((prevState: FilterDef) => {
 			const newFilters = { ...prevState };
@@ -5401,7 +5401,7 @@ export const HiddenFindingsTabContent = (props: {
 						<Box>
 							<Chip
 								label={i18n._(
-									t`These findings will be excluded from all results for this repository, including all branches`
+									t`These findings will be excluded from all results for this repository, including all branches`,
 								)}
 								icon={<InfoIcon />}
 							/>
@@ -5427,7 +5427,7 @@ export const HiddenFindingsTabContent = (props: {
 								size="small"
 								className={classes.selectFilter}
 								onChange={(
-									event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+									event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 								) => {
 									handleOnChange(event, "type", event.target.value);
 								}}
@@ -5606,23 +5606,23 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 	};
 
 	const categoryChips: React.ReactNode[] = categories.map((apiName) =>
-		getFeatureChip(apiName, getFeatureName(apiName, pluginCatalog))
+		getFeatureChip(apiName, getFeatureName(apiName, pluginCatalog)),
 	);
 
 	const pluginChips: React.ReactNode[] | undefined = pluginsList.map(
-		(apiName) => getFeatureChip(apiName, getFeatureName(apiName, pluginKeys))
+		(apiName) => getFeatureChip(apiName, getFeatureName(apiName, pluginKeys)),
 	);
 
 	const categoriesTooltip = categories.map((apiName) =>
 		isFeatureDisabled(apiName)
 			? i18n._(t`${getFeatureName(apiName, pluginCatalog)} (not run)`)
-			: i18n._(t`${getFeatureName(apiName, pluginCatalog)}`)
+			: i18n._(t`${getFeatureName(apiName, pluginCatalog)}`),
 	);
 
 	const pluginsListTooltip = pluginsList.map((apiName) =>
 		isFeatureDisabled(apiName)
 			? i18n._(t`${getFeatureName(apiName, pluginKeys)} (not run)`)
-			: i18n._(t`${getFeatureName(apiName, pluginKeys)}`)
+			: i18n._(t`${getFeatureName(apiName, pluginKeys)}`),
 	);
 
 	return (
@@ -5651,7 +5651,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 
 			<AccordionDetails className={classes.accordionDetails}>
 				<Grid container spacing={3}>
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="scan-options-categories" alignItems="flex-start">
 								<ListItemIcon>
@@ -5690,7 +5690,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 							</ListItem>
 						</List>
 					</Grid>
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="scan-options-include-dev" alignItems="flex-start">
 								<ListItemIcon>
@@ -5777,7 +5777,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												scan?.scan_options?.include_paths
 													? scan?.scan_options?.include_paths.length
 													: 0
-											})`
+											})`,
 										)}
 										secondary={
 											scan?.scan_options?.include_paths &&
@@ -5819,7 +5819,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												scan?.scan_options?.exclude_paths
 													? scan?.scan_options?.exclude_paths.length
 													: 0
-											})`
+											})`,
 										)}
 										secondary={
 											scan?.scan_options?.exclude_paths &&
@@ -5857,7 +5857,7 @@ interface ResultsSummaryProps {
 function elapsedTime(
 	startTime?: string,
 	endTime?: string,
-	displayEnd?: boolean
+	displayEnd?: boolean,
 ) {
 	const dt = formatDate((displayEnd ? endTime : startTime) || "", "long");
 	const elapsed = DateTime.fromISO(endTime || DateTime.now().toString())
@@ -5915,7 +5915,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 
 			<Grid container spacing={3}>
 				{/* left column */}
-				<Grid item xs={4}>
+				<Grid size={4}>
 					<List dense={true}>
 						<ListItem key="scan-repo" alignItems="flex-start">
 							<ListItemIcon>
@@ -5965,7 +5965,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				</Grid>
 
 				{/* middle column */}
-				<Grid item xs={4}>
+				<Grid size={4}>
 					<List dense={true}>
 						<ListItem key="scan-initiated-by" alignItems="flex-start">
 							<ListItemIcon>
@@ -6038,7 +6038,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				</Grid>
 
 				{/* right column */}
-				<Grid item xs={4}>
+				<Grid size={4}>
 					<List dense={true}>
 						<ListItem key="scan-time-queued" alignItems="flex-start">
 							<ListItemIcon>
@@ -6048,7 +6048,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								describeChild
 								title={elapsedTime(
 									scan?.timestamps?.queued || undefined,
-									scan?.timestamps?.start || DateTime.now().toString()
+									scan?.timestamps?.start || DateTime.now().toString(),
 								)}
 							>
 								<ListItemText
@@ -6056,7 +6056,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 									primary={i18n._(t`Queued Date / Queued Time Elapsed`)}
 									secondary={elapsedTime(
 										scan?.timestamps?.queued || undefined,
-										scan?.timestamps?.start || DateTime.now().toString()
+										scan?.timestamps?.start || DateTime.now().toString(),
 									)}
 								/>
 							</Tooltip>
@@ -6085,7 +6085,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								title={elapsedTime(
 									scan?.timestamps?.start || undefined,
 									scan?.timestamps?.end || DateTime.now().toString(),
-									true
+									true,
 								)}
 							>
 								<ListItemText
@@ -6094,7 +6094,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 									secondary={elapsedTime(
 										scan?.timestamps?.start || undefined,
 										scan?.timestamps?.end || DateTime.now().toString(),
-										true
+										true,
 									)}
 								/>
 							</Tooltip>
@@ -6116,7 +6116,7 @@ export const setResultFilters = (
 	prefix: string = "",
 	filters: FilterDef | null = null,
 	location: Location,
-	navigate: NavigateFunction
+	navigate: NavigateFunction,
 ): void => {
 	const hash = queryString.parse(window.location.hash);
 	const keys = Object.keys(hash);
@@ -6189,18 +6189,18 @@ export const TabContent = (props: {
 			// sum the key totals
 			vulnerabilities: scan?.results_summary?.vulnerabilities
 				? Object.values(scan.results_summary.vulnerabilities).reduce(
-						(a, b) => a + b
-				  )
+						(a, b) => a + b,
+					)
 				: 0,
 			staticAnalysis: scan?.results_summary?.static_analysis
 				? Object.values(scan.results_summary.static_analysis).reduce(
-						(a, b) => a + b
-				  )
+						(a, b) => a + b,
+					)
 				: 0,
 			config: scan?.results_summary?.configuration
 				? Object.values(scan.results_summary.configuration).reduce(
-						(a, b) => a + b
-				  )
+						(a, b) => a + b,
+					)
 				: 0,
 		};
 	}, [scan?.results_summary]);
@@ -6347,7 +6347,7 @@ export const TabContent = (props: {
 						rowMatch.source.push(item.value.source);
 						rowMatch.hiddenFindings.push({ ...item });
 						rowMatch.unhiddenFindings = rowMatch.unhiddenFindings.filter(
-							(src: string) => src !== item.value.source
+							(src: string) => src !== item.value.source,
 						);
 					} else {
 						// source files associated with this component/vuln that are not already covered by this hidden finding
@@ -6362,7 +6362,7 @@ export const TabContent = (props: {
 								unhiddenFindings = scan.results.vulnerabilities[
 									item.value.component
 								][item.value.id].source.filter(
-									(src: string) => src !== item.value.source
+									(src: string) => src !== item.value.source,
 								);
 							}
 						}
@@ -6640,22 +6640,22 @@ const ResultsPage = () => {
 	const [id, setId] = useState<string | null>(null);
 	const [activeTab, setActiveTab] = useState(TAB_OVERVIEW);
 	const [initialFindingCount, setInitialFindingCount] = useState<number | null>(
-		null
+		null,
 	);
 	const hiddenFindings = useSelector((state: RootState) =>
-		selectAllHiddenFindings(state)
+		selectAllHiddenFindings(state),
 	);
 	const hiddenFindingsTotal = useSelector(selectTotalHiddenFindings);
 	const scansStatus = useSelector((state: RootState) => state.scans.status);
 	const scan = useSelector((state: RootState) =>
-		selectScanById(state, id || -1)
+		selectScanById(state, id || -1),
 	);
 
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	); // current user is "self" id
 	const usersStatus = useSelector(
-		(state: RootState) => state.currentUser.status
+		(state: RootState) => state.currentUser.status,
 	);
 	const [sharedColors, setSharedColors] = useState<Palette[]>([]);
 	const [startingRescan, setStartingRescan] = useState(false);
@@ -6695,7 +6695,7 @@ const ResultsPage = () => {
 							}
 						}
 						return false;
-					}
+					},
 				),
 			repo: Yup.string()
 				.trim()
@@ -6710,11 +6710,11 @@ const ResultsPage = () => {
 				.defined()
 				.length(36)
 				.matches(
-					/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+					/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
 				), // UUID
 			tab: Yup.number().min(TAB_MIN).max(TAB_MAX).integer(),
 		},
-		[["org", "service"]]
+		[["org", "service"]],
 	);
 
 	// get report params from passed-in URL query params and validate matches schema
@@ -6760,7 +6760,7 @@ const ResultsPage = () => {
 						state: location?.state,
 						replace: true,
 						preventScrollReset: true,
-					}
+					},
 				);
 			}
 		}
@@ -6793,7 +6793,7 @@ const ResultsPage = () => {
 								format: { match: "exact", filter: "full" },
 							}, // get full results
 						},
-					})
+					}),
 				);
 
 				// clear stale hidden findings (could be for a different repo)
@@ -6803,7 +6803,7 @@ const ResultsPage = () => {
 				dispatch(
 					getHiddenFindings({
 						url: repoUrl,
-					})
+					}),
 				);
 			}
 		}
@@ -6862,8 +6862,8 @@ const ResultsPage = () => {
 				dispatch(
 					addNotification(
 						i18n._(t`Scan in progress, results subject to change`),
-						"info"
-					)
+						"info",
+					),
 				);
 			}
 		}
@@ -6986,32 +6986,32 @@ const ResultsPage = () => {
 				secretPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => secretPlugins.includes(p) || secretPlugins.includes(`-${p}`)
+						(p) => secretPlugins.includes(p) || secretPlugins.includes(`-${p}`),
 					),
 				staticPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => staticPlugins.includes(p) || staticPlugins.includes(`-${p}`)
+						(p) => staticPlugins.includes(p) || staticPlugins.includes(`-${p}`),
 					),
 				techPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => techPlugins.includes(p) || techPlugins.includes(`-${p}`)
+						(p) => techPlugins.includes(p) || techPlugins.includes(`-${p}`),
 					),
 				vulnPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => vulnPlugins.includes(p) || vulnPlugins.includes(`-${p}`)
+						(p) => vulnPlugins.includes(p) || vulnPlugins.includes(`-${p}`),
 					),
 				sbomPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`)
+						(p) => sbomPlugins.includes(p) || sbomPlugins.includes(`-${p}`),
 					),
 				configPlugins:
 					scan.scan_options?.plugins &&
 					scan.scan_options?.plugins.filter(
-						(p) => configPlugins.includes(p) || configPlugins.includes(`-${p}`)
+						(p) => configPlugins.includes(p) || configPlugins.includes(`-${p}`),
 					),
 				includePaths: scan.scan_options?.include_paths
 					? scan.scan_options?.include_paths.join(", ")
@@ -7020,7 +7020,7 @@ const ResultsPage = () => {
 					? scan.scan_options?.exclude_paths.join(", ")
 					: "",
 			},
-			currentUser
+			currentUser,
 		);
 	};
 
@@ -7045,7 +7045,7 @@ const ResultsPage = () => {
 										format: { match: "exact", filter: "full" },
 									}, // get full results
 								},
-							})
+							}),
 						);
 					}}
 				>

@@ -24,7 +24,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	IconButton,
 	InputAdornment,
 	LinearProgress,
@@ -339,7 +339,7 @@ export default function UsersPage() {
 	const dispatch: AppDispatch = useDispatch();
 	const [selectedRow, setSelectedRow] = useState<RowDef | null>(null);
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	);
 	const users = useSelector((state: RootState) => selectAllUsers(state));
 	const usersState = useSelector((state: RootState) => state.users);
@@ -350,7 +350,7 @@ export default function UsersPage() {
 	const [newScopeValid, setNewScopeValid] = useState(false);
 	const [newScopeError, setNewScopeError] = useState<string | null>(null);
 	const [scrollTarget, setScrollTarget] = useState<HTMLElement | undefined>(
-		undefined
+		undefined,
 	);
 	const [reloadCount, setReloadCount] = useState(0);
 	const [filters, setFilters] = useState<FilterDef>({
@@ -513,7 +513,7 @@ export default function UsersPage() {
 								dispatch(
 									deleteUser({
 										email: userToDelete.email,
-									})
+									}),
 								);
 							}
 							setUserToDelete(null);
@@ -625,7 +625,7 @@ export default function UsersPage() {
 
 	// ensure each feature key has a boolean value
 	const featuresSchema = Yup.lazy((map) =>
-		Yup.object(mapRules(map, Yup.boolean())).nullable()
+		Yup.object(mapRules(map, Yup.boolean())).nullable(),
 	);
 
 	const addUserForm = () => {
@@ -638,7 +638,7 @@ export default function UsersPage() {
 				// basic HTML5 email validation regex
 				.matches(
 					/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-					i18n._(t`Invalid email address`)
+					i18n._(t`Invalid email address`),
 				),
 			scope: Yup.array().of(Yup.string()),
 			admin: Yup.boolean(),
@@ -672,7 +672,7 @@ export default function UsersPage() {
 							admin: values?.admin ?? false,
 							features: values?.features ?? {},
 						},
-					})
+					}),
 				);
 			} else {
 				dispatch(
@@ -683,7 +683,7 @@ export default function UsersPage() {
 							admin: values?.admin ?? false,
 							features: values?.features ?? {},
 						},
-					})
+					}),
 				);
 			}
 			return true;
@@ -691,7 +691,7 @@ export default function UsersPage() {
 
 		const handleScopeValueChange = (
 			event: React.ChangeEvent<HTMLInputElement>,
-			currentScopes: string[]
+			currentScopes: string[],
 		) => {
 			// validate new scope value
 			// set field validation true (which will enable/disable add button)
@@ -719,8 +719,8 @@ export default function UsersPage() {
 				if (!fieldValue.match(/^([a-zA-Z0-9.\-_/[\]*?!]([,]?\s?)){1,}$/gm)) {
 					setNewScopeError(
 						i18n._(
-							t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !`
-						)
+							t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !`,
+						),
 					);
 					setNewScopeValid(false);
 					return;
@@ -783,7 +783,7 @@ export default function UsersPage() {
 						const plugin = values.plugins.find((n) => n.apiName === name);
 						if (plugin) {
 							label = i18n._(
-								t`${plugin?.displayName} ${values.displayName} Plugin`
+								t`${plugin?.displayName} ${values.displayName} Plugin`,
 							);
 							break;
 						}
@@ -806,7 +806,7 @@ export default function UsersPage() {
 								</>
 							}
 							label={label}
-						/>
+						/>,
 					);
 				});
 			}
@@ -947,12 +947,11 @@ export default function UsersPage() {
 												{values.scope.map((scope: string, idx: number) => (
 													<Grid
 														container
-														item
-														xs={12}
+														size={12}
 														spacing={1}
 														key={`scope-row-${scope}`}
 													>
-														<Grid item xs={11}>
+														<Grid size={11}>
 															<MuiTextField
 																id={`scope-${idx}`}
 																label={<Trans>Scope {idx + 1}</Trans>}
@@ -963,18 +962,14 @@ export default function UsersPage() {
 																disabled
 															/>
 														</Grid>
-														<Grid
-															item
-															xs={1}
-															className={classes.formScopeAction}
-														>
+														<Grid size={1} className={classes.formScopeAction}>
 															<Tooltip
 																title={<Trans>Remove scope {idx + 1}</Trans>}
 															>
 																<span>
 																	<IconButton
 																		aria-label={i18n._(
-																			t`Remove this scope item`
+																			t`Remove this scope item`,
 																		)}
 																		onClick={() => {
 																			const newScope = values.scope.slice();
@@ -1023,8 +1018,8 @@ export default function UsersPage() {
 											alignItems="flex-end"
 											className={classes.addNewScopeField}
 										>
-											<Grid container item xs={12} spacing={1}>
-												<Grid item xs={11}>
+											<Grid container size={12} spacing={1}>
+												<Grid size={11}>
 													<MuiTextField
 														id="add-new-scope-input"
 														label={<Trans>Add Scope</Trans>}
@@ -1032,7 +1027,7 @@ export default function UsersPage() {
 														value={newScopeValue}
 														multiline={true}
 														onChange={(
-															event: React.ChangeEvent<HTMLInputElement>
+															event: React.ChangeEvent<HTMLInputElement>,
 														) => handleScopeValueChange(event, values.scope)}
 														onKeyDown={(event) => {
 															if (
@@ -1057,8 +1052,8 @@ export default function UsersPage() {
 																if (newScopeValue && !newScopeError) {
 																	setNewScopeError(
 																		i18n._(
-																			t`This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field`
-																		)
+																			t`This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field`,
+																		),
 																	);
 																} else if (!newScopeValue) {
 																	setNewScopeError(null);
@@ -1069,7 +1064,7 @@ export default function UsersPage() {
 														helperText={
 															newScopeError ??
 															i18n._(
-																t`Click + icon to add this value to the Current Scope list above`
+																t`Click + icon to add this value to the Current Scope list above`,
 															)
 														}
 														placeholder="One or more scope entries separated by a comma, space, or newline"
@@ -1100,7 +1095,7 @@ export default function UsersPage() {
 														}}
 													/>
 												</Grid>
-												<Grid item xs={1} className={classes.formScopeAction}>
+												<Grid size={1} className={classes.formScopeAction}>
 													<Tooltip title={<Trans>Add to scope</Trans>}>
 														<span>
 															<Fab
@@ -1114,7 +1109,7 @@ export default function UsersPage() {
 																	getDelimitedSet(newScopeValue).forEach(
 																		(value) => {
 																			newScope.push(value);
-																		}
+																		},
 																	);
 																	setFieldValue("scope", newScope, false);
 																	resetAddForm();
@@ -1321,8 +1316,8 @@ export default function UsersPage() {
 							? filterCount
 								? i18n._(t`No results match current filters`)
 								: i18n._(
-										t`No users found. Click the + button to add a new user`
-								  )
+										t`No users found. Click the + button to add a new user`,
+									)
 							: i18n._(t`Fetching users...`)
 					}
 				/>

@@ -36,7 +36,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	InputAdornment,
 	LinearProgress,
 	Paper,
@@ -225,14 +225,14 @@ const setPageTitle = (scan?: ScanOptionsForm) => {
 export const startScan = (
 	navigate: NavigateFunction,
 	values: ScanOptionsForm,
-	currentUser?: User
+	currentUser?: User,
 ) => {
 	try {
 		const validValues = scanOptionsFormSchema(currentUser).validateSync(
 			values,
 			{
 				strict: false,
-			}
+			},
 		);
 		sessionStorage.clear();
 		store.dispatch(clearScans());
@@ -245,7 +245,7 @@ export const startScan = (
 					submitContext: "scan",
 					vcsOrg: validValues.vcsOrg,
 				}),
-			{ replace: true }
+			{ replace: true },
 		); // reload form with data in URL query string
 	} catch (err) {
 		handleException(err);
@@ -271,10 +271,10 @@ const MainPage = () => {
 	// saga action completes
 	const scansStatus = useSelector((state: RootState) => state.scans.status);
 	const usersStatus = useSelector(
-		(state: RootState) => state.currentUser.status
+		(state: RootState) => state.currentUser.status,
 	);
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	); // current user is "self" id
 
 	// empty form values for initializing form on first load or resetting form
@@ -304,7 +304,7 @@ const MainPage = () => {
 	};
 	const [submitContext, setSubmitContext] = useState<SubmitContext>("view");
 	const [validatedData, setValidatedData] = useState<ScanOptionsForm | null>(
-		null
+		null,
 	);
 	const [initialValues, setInitialValues] =
 		useState<ScanOptionsForm>(emptyValues);
@@ -324,7 +324,7 @@ const MainPage = () => {
 						search,
 						{
 							strict: false, // setting to false will trim fields on validate
-						}
+						},
 					);
 					return { ...emptyValues, ...validValues };
 				} catch (err) {
@@ -368,7 +368,7 @@ const MainPage = () => {
 				values,
 				{
 					strict: false, // setting to false will trim fields on validate
-				}
+				},
 			);
 			// save form
 			// we can't just pass-around the known org/repo/scanid
@@ -483,7 +483,7 @@ const MainPage = () => {
 										},
 									},
 								},
-							})
+							}),
 						);
 						if (
 							batchPromises.length === batchSize ||
@@ -499,7 +499,7 @@ const MainPage = () => {
 									.results_summary
 									? ({
 											...batchResults[k].results_summary,
-									  } as ScanResultsSummary)
+										} as ScanResultsSummary)
 									: undefined;
 								response.results[j].engine_id = batchResults[k].engine_id;
 								response.results[j].application_metadata = batchResults[k]
@@ -688,7 +688,7 @@ const MainPage = () => {
 		if (!location.search) {
 			runMigrations();
 			setHideWelcome(
-				Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME)))
+				Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME))),
 			);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -824,7 +824,7 @@ const MainPage = () => {
 											}
 											label={i18n._(t`Version Control System`)}
 											placeholder={i18n._(
-												t`Select Version Control System or type to autocomplete`
+												t`Select Version Control System or type to autocomplete`,
 											)}
 										/>
 										{APP_URL_PROVISION && (
@@ -919,7 +919,7 @@ const MainPage = () => {
 														)}
 
 														<Grid container>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="vulnerability"
 																	group="vulnPlugins"
@@ -937,7 +937,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="staticAnalysis"
 																	group="staticPlugins"
@@ -955,7 +955,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="secrets"
 																	group="secretPlugins"
@@ -973,7 +973,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="configuration"
 																	group="configPlugins"
@@ -991,7 +991,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="inventory"
 																	group="techPlugins"
@@ -1010,7 +1010,7 @@ const MainPage = () => {
 																/>
 															</Grid>
 															{sbomPluginsObjects.length > 0 && (
-																<Grid item xs={4}>
+																<Grid size={4}>
 																	<PluginsSelector
 																		name="sbom"
 																		group="sbomPlugins"
@@ -1081,7 +1081,7 @@ const MainPage = () => {
 														disabled={usersStatus === "loading"}
 														multiline={true}
 														placeholder={i18n._(
-															t`One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)`
+															t`One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)`,
 														)}
 														variant="outlined"
 														fullWidth
@@ -1090,8 +1090,8 @@ const MainPage = () => {
 															!!errors["includePaths"]
 																? errors["includePaths"]
 																: i18n._(
-																		t`Include these files or directories in the scan. Defined alone, limits the scan to only these paths`
-																  )
+																		t`Include these files or directories in the scan. Defined alone, limits the scan to only these paths`,
+																	)
 														}
 														InputProps={{
 															startAdornment: (
@@ -1112,7 +1112,7 @@ const MainPage = () => {
 														disabled={usersStatus === "loading"}
 														multiline={true}
 														placeholder={i18n._(
-															t`One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)`
+															t`One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)`,
 														)}
 														variant="outlined"
 														fullWidth
@@ -1121,8 +1121,8 @@ const MainPage = () => {
 															!!errors["excludePaths"]
 																? errors["excludePaths"]
 																: i18n._(
-																		t`Exclude these files or directories from the scan`
-																  )
+																		t`Exclude these files or directories from the scan`,
+																	)
 														}
 														InputProps={{
 															startAdornment: (
@@ -1335,7 +1335,7 @@ export const PluginsSelector = ({
 												disabled={disabled}
 												indeterminate={isCategoryIndeterminate(
 													Array(values[group]) ? values[group].length : 0,
-													pluginNames.length
+													pluginNames.length,
 												)}
 												onChange={handleCategoryChange}
 											/>
@@ -1353,7 +1353,7 @@ export const PluginsSelector = ({
 									>
 										{getCategoryHelpText(
 											Array(values[group]) ? values[group].length : 0,
-											pluginNames.length
+											pluginNames.length,
 										)}
 									</Typography>
 								</Box>
