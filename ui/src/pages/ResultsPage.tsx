@@ -4970,7 +4970,8 @@ const InventoryTabContent = (props: {
 						)}
 					</Typography>
 				</Toolbar>
-				{scan.results?.inventory?.cicd_tools ? (
+				{scan.results_summary?.inventory?.cicd_tools &&
+				scan.results_summary?.inventory?.cicd_tools > 0 ? (
 					<EnhancedTable
 						columns={cicdToolsColumns}
 						rows={cicdToolsRows}
