@@ -214,7 +214,6 @@ import {
 	SecretFindingResult,
 	SecretValidity,
 	SeverityLevels,
-	SummaryInventory,
 } from "features/scans/scansSchemas";
 import {
 	clearScans,
@@ -6209,32 +6208,6 @@ export const setResultFilters = (
 	}
 };
 
-function getInventoryCount(inventory: SummaryInventory): string {
-	const imageCount = inventory.base_images ?? 0;
-	const cicdToolCount = inventory.cicd_tools ?? 0;
-	const techCount = inventory.technology_discovery ?? 0;
-
-	const result = [];
-
-	if (techCount) {
-		result.push(techCount);
-	}
-
-	if (imageCount) {
-		result.push(imageCount);
-	}
-
-	if (cicdToolCount) {
-		result.push(cicdToolCount);
-	}
-
-	if (result) {
-		return result.join("/");
-	} else {
-		return "0";
-	}
-}
-
 export const TabContent = (props: {
 	activeTab: number;
 	onTabChange: (n: number) => void;
@@ -6263,9 +6236,12 @@ export const TabContent = (props: {
 	} = props;
 
 	const getTotalCounts = useCallback(() => {
+		const imageCount = scan?.results_summary?.inventory?.base_images ?? 0;
+		const techCount = scan?.results_summary?.inventory?.technology_discovery ?? 0;
+
 		return {
 			secrets: scan?.results_summary?.secrets ?? 0,
-			inventory: getInventoryCount(scan?.results_summary?.inventory || {}),
+			inventory: imageCount || techCount ? `${techCount}/${imageCount}` : 0,
 			// sum the key totals
 			vulnerabilities: scan?.results_summary?.vulnerabilities
 				? Object.values(scan.results_summary.vulnerabilities).reduce(
