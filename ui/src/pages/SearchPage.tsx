@@ -2191,19 +2191,6 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 								secondary={selectedRow?.repo ?? ""}
 							/>
 						</ListItem>
-						<ListItem key="repo-cicd-tool">
-							<ListItemText
-								primary={
-									<>
-										{i18n._(t`CI/CD Tool`)}
-										{selectedRow?.cicd_tool && (
-											<CustomCopyToClipboard copyTarget={selectedRow?.repo} />
-										)}
-									</>
-								}
-								secondary={selectedRow?.repo ?? ""}
-							/>
-						</ListItem>
 						<SearchMetaField data={selectedRow} />
 					</List>
 				</Grid>

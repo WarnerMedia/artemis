@@ -4776,35 +4776,24 @@ const InventoryTabContent = (props: {
 		return data;
 	};
 
+	const getCICDRows = (configsSeparator: string = ",") => {
+		const result = [];
+		for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+			result.push({
+				tool: item.display_name,
+				files: item.configs
+					.map((config: { [key: string]: string }) => config.path)
+					.join(configsSeparator),
+			});
+		}
+		return result;
+	}
+
 	const cicdToolsColumns: ColDef[] = [
 		{ field: "tool", headerName: i18n._(t`Tool`) },
 		{ field: "files", headerName: i18n._(t`Config Files`) },
 	];
-	const cicdToolsRows: RowDef[] = [];
-
-	for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
-		cicdToolsRows.push({
-			tool: item.display_name,
-			files: item.configs
-				.map((config: { [key: string]: string }) => config.path)
-				.join(", "),
-		});
-	}
-
-	const cicdToolsExportData = () => {
-		const data: RowDef[] = [];
-		for (const items of Object.values(
-			scan.results?.inventory?.cicd_tools ?? {},
-		)) {
-			data.push({
-				tool: items.display_name,
-				files: items.configs
-					.map((config: { [key: string]: string }) => config.path)
-					.join(","),
-			});
-		}
-		return data;
-	};
+	const cicdToolsRows: RowDef[] = getCICDRows(", ");
 
 	interface TechData {
 		name: string;
@@ -4970,8 +4959,7 @@ const InventoryTabContent = (props: {
 						)}
 					</Typography>
 				</Toolbar>
-				{scan.results_summary?.inventory?.cicd_tools &&
-				scan.results_summary?.inventory?.cicd_tools > 0 ? (
+				{(scan.results_summary?.inventory?.cicd_tools || 0) > 0 ? (
 					<EnhancedTable
 						columns={cicdToolsColumns}
 						rows={cicdToolsRows}
@@ -4979,7 +4967,7 @@ const InventoryTabContent = (props: {
 						menuOptions={{
 							exportFile: "cicd_tools",
 							exportFormats: ["csv", "json"],
-							exportData: cicdToolsExportData,
+							exportData: getCICDRows,
 						}}
 					/>
 				) : (
@@ -6240,7 +6228,6 @@ export const TabContent = (props: {
 		const imageCount = scan?.results_summary?.inventory?.base_images ?? 0;
 		const techCount =
 			scan?.results_summary?.inventory?.technology_discovery ?? 0;
-
 		return {
 			secrets: scan?.results_summary?.secrets ?? 0,
 			inventory: imageCount || techCount ? `${techCount}/${imageCount}` : 0,
