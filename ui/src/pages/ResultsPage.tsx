@@ -4778,7 +4778,9 @@ const InventoryTabContent = (props: {
 
 	const getCICDRows = (configsSeparator: string = ",") => {
 		const result = [];
-		for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+		for (const item of Object.values(
+			scan.results?.inventory?.cicd_tools ?? {},
+		)) {
 			result.push({
 				tool: item.display_name,
 				files: item.configs
@@ -4787,7 +4789,7 @@ const InventoryTabContent = (props: {
 			});
 		}
 		return result;
-	}
+	};
 
 	const cicdToolsColumns: ColDef[] = [
 		{ field: "tool", headerName: i18n._(t`Tool`) },
