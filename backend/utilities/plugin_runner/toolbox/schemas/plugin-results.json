@@ -1,0 +1,29 @@
+{
+  "$id": "https://wbd.com/artemis/plugin/plugin-results.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+  "title": "PluginResults",
+  "type": "object",
+  "required": [
+    "success",
+    "truncated",
+    "details",
+    "errors"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "truncated": {
+      "enum": [false]
+    },
+    "details": {
+      "type": "array",
+      "items": { "$ref": "finding.json" }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
