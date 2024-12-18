@@ -342,6 +342,40 @@ class TestPluginBandit(unittest.TestCase):
         actual = bandit.build_dict(data, "/src")
         self.assertEqual(expected, actual)
 
+    def test_build_dict_B105(self):
+        data = {
+            "errors": [],
+            "generated_at": "2019-06-07T17:33:47.000000+00:00",
+            "metrics": {},
+            "results": [
+                {
+                    "code": 'ssn_plus_one = "123-45-67890"\n',
+                    "filename": "test.py",
+                    "issue_confidence": "MEDIUM",
+                    "issue_cwe": {"id": 259, "link": "https://cwe.mitre.org/data/definitions/259.html"},
+                    "issue_severity": "LOW",
+                    "issue_text": "Possible hardcoded password: '123-45-67890'",
+                    "line_number": 17,
+                    "line_range": [17],
+                    "more_info": "https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html",
+                    "test_id": "B105",
+                    "test_name": "hardcoded_password_string",
+                }
+            ],
+        }
+        expected = [
+            {
+                "filename": "test.py",
+                "severity": "low",
+                "message": "Possible hardcoded password",
+                "line": 17,
+                "type": "B105: hardcoded_password_string",
+            }
+        ]
+
+        actual = bandit.build_dict(data, "src")
+        self.assertEqual(expected, actual)
+
 
 if __name__ == "__main__":
     unittest.main()
