@@ -61,6 +61,7 @@ function install_plugin_arg_file {
 function init_compose {
   local plugin="$1"; shift
   local plugin_image="$1"; shift
+  local plugin_type="$1"; shift
   local target="$1"; shift
   local runner="$1"; shift
   local writable="$1"; shift
@@ -79,7 +80,7 @@ function init_compose {
   echo "--> Generating: $plugin_entry"
   cat <<EOD > "$plugin_entry" || return 1
 #!/opt/artemis-plugin-toolbox/bin/sh
-exec /opt/artemis-plugin-toolbox/bin/run-plugin $plugin $runner
+exec /opt/artemis-plugin-toolbox/bin/run-plugin $plugin $plugin_type $runner
 EOD
   chmod 755 "$plugin_entry" || return 1
 
@@ -202,8 +203,10 @@ function do_run {
   fi
 
   # Determine the local image name and runnner for the plugin.
-  { read -r image; read -r runner; read -r writable; } < \
-    <(jq -r '.image,.runner,(.writable|not|not)' "$plugindir/settings.json") || return 1
+  local image type runner writable
+  { read -r image; read -r type; read -r runner; read -r writable; } < \
+    <(jq -r '.image,.type,.runner,(.writable|not|not)' \
+      "$plugindir/settings.json") || return 1
   # shellcheck disable=SC2016
   image="${image#'$ECR/'}"  # Trim repo placeholder (assume images are local).
   if [[ $image = '' || $image = 'null' ]]; then
@@ -214,7 +217,7 @@ function do_run {
     runner=core
   fi
 
-  init_compose "$plugin" "$image" "$target" "$runner" "$writable" \
+  init_compose "$plugin" "$image" "$type" "$target" "$runner" "$writable" \
     "${debug_shell[@]}" || return 1
 
   echo "--> Building toolbox"

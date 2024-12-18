@@ -1,55 +1,96 @@
 package main
 
 import (
+	"bytes"
+	"embed"
 	"errors"
 	"fmt"
-	"strings"
 	"unicode/utf8"
 
-	"github.com/packntrack/jsonValidator"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
-type LintErrors []error
+// Root namespace for the schemas (not a real resource).
+const schemaRoot = "https://wbd.com/artemis/plugin"
 
-func (errs LintErrors) String() string {
-	var sb strings.Builder
-	sb.WriteRune('[')
-	for i, e := range errs {
-		if i > 0 {
-			sb.WriteString(", ")
-		}
-		sb.WriteString(fmt.Sprintf("%#v", e.Error()))
+//go:embed schemas/*.json
+var pluginResultsSchemas embed.FS
+
+// mustLoadSchema loads an embedded JSON schema by ID.
+// Panics on error.
+func mustLoadSchema(id string) any {
+	buf, err := pluginResultsSchemas.ReadFile("schemas/" + id + ".json")
+	if err != nil {
+		panic(err)
 	}
-	sb.WriteRune(']')
-	return sb.String()
+
+	schema, err := jsonschema.UnmarshalJSON(bytes.NewReader(buf))
+	if err != nil {
+		panic(err)
+	}
+
+	return schema
+}
+
+// Plugin type -> schema ID.
+var pluginTypeSchemaMap = map[string]string{
+	"secrets":         "secrets-finding",
+	"static_analysis": "static-analysis-finding",
+	"vulnerability":   "vulnerability-finding",
+}
+
+// mustCompileSchema compiles the JSON schema for the given plugin type.
+// Panics on error.
+func mustCompileSchema(pluginType string) *jsonschema.Schema {
+	var err error
+
+	c := jsonschema.NewCompiler()
+
+	if err = c.AddResource(schemaRoot+"/plugin-results.json", mustLoadSchema("plugin-results")); err != nil {
+		panic(err)
+	}
+
+	// The schema of the findings is determined by the plugin type, which
+	// isn't included in the results JSON itself.
+	// As a hack, we load the type-specific schema as "finding.json" so that
+	// the reference in plugin-results.json is compiled to the correct schema.
+	findingSchemaID, ok := pluginTypeSchemaMap[pluginType]
+	if !ok {
+		// Open-ended finding schema so the top-level schema will compile.
+		findingSchemaID = "unknown-finding"
+	}
+	if err = c.AddResource(schemaRoot+"/finding.json", mustLoadSchema(findingSchemaID)); err != nil {
+		panic(err)
+	}
+
+	return c.MustCompile(schemaRoot + "/plugin-results.json")
 }
 
 // lint validates the JSON results from the plugin.
-func lint(buf []byte) LintErrors {
-	var retv []error
+func lint(pluginType string, buf []byte) error {
+	switch pluginType {
+	case "configuration":
+	case "inventory":
+	case "sbom":
+	case "secrets":
+	case "static_analysis":
+	case "vulnerability":
+	default:
+		return fmt.Errorf("unknown plugin type: %#v", pluginType)
+	}
 
 	if !utf8.Valid(buf) {
-		retv = append(retv, errors.New("invalid UTF-8"))
-		return retv
+		return errors.New("invalid UTF-8")
 	}
 
-	var result struct {
-		Success   *bool    `validations:"type=bool;required=true"`
-		Truncated *bool    `validations:"type=bool;required=true"`
-		Details   any      `validations:"required=true"`
-		Errors    []string `validations:"type=[]string;required=true"`
+	inst, err := jsonschema.UnmarshalJSON(bytes.NewReader(buf))
+	if err != nil {
+		return fmt.Errorf("invalid JSON: %w", err)
 	}
 
-	errs := jsonValidator.Validate(buf, &result)
-	retv = append(retv, errs...)
-
-	if result.Truncated != nil && *result.Truncated {
-		retv = append(retv, jsonValidator.ValidationError{
-			Field: "truncated", Message: "Must be false",
-		})
+	if err = mustCompileSchema(pluginType).Validate(inst); err != nil {
+		return err
 	}
 
-	//TODO: Validate details based on plugin type.
-
-	return retv
+	return nil
 }

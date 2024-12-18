@@ -4,8 +4,8 @@ go 1.23.3
 
 require (
 	github.com/fatih/color v1.18.0
-	github.com/packntrack/jsonValidator v0.5.2
-	golang.org/x/sys v0.28.0
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
+	golang.org/x/sys v0.25.0
 )
 
 require (

@@ -44,6 +44,10 @@ def build_dict(data: dict, path: str) -> list:
                 "line": warnings.get("line_range")[0],
                 "type": "{}: {}".format(warnings.get("test_id"), warnings.get("test_name")),
             }
+
+            if warnings.get("test_id") == "B105":
+                items["message"] = "Possible hardcoded password"
+
             results_list.append(items)
     return results_list
 
