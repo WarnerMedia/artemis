@@ -1,6 +1,6 @@
 module github.com/warnermedia/artemis/backend/utilities/plugin_runner/toolbox
 
-go 1.23.3
+go 1.23.4
 
 require (
 	github.com/fatih/color v1.18.0
