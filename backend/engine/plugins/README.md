@@ -195,11 +195,33 @@ TODO: Add documentation here
 
 ### Inventory
 
-TODO: Add documentation here
+Inventory plugins generate statistics such as technologies used or declared dependencies, either for purely informational or audit purposes (such as generating an SBOM).
+
+These typically do not make judgements about the security impact of the data collected.
+
+The details payload for inventory plugins is specific to each plugin.
 
 ### Configuration
 
-TODO: Add documentation here
+Configuration plugins evaluate the security settings of a repository.
+
+The fields are:
+
+- `name`: The name of the issue.
+- `description`: Long-form description of the issue.
+- `severity`: The severity level of the issue: critical, high, medium, low, or negligible.
+
+Example:
+
+```json
+[
+    {
+        "name": "Branch Rule - Require Status Checks",
+        "description": "Requires that a branch rule is enabled that requires status checks on pull requests",
+        "severity": "medium"
+    }
+]
+```
 
 ## Local Testing
 
