@@ -3,21 +3,24 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
 
   "title": "ConfigurationFinding",
-  "type": "object",
-  "required": [
-    "name",
-    "description",
-    "severity"
-  ],
-  "properties": {
-    "name": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "severity": {
-      "enum": ["critical", "high", "medium", "low", "negligible"]
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "name",
+      "description",
+      "severity"
+    ],
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "severity": {
+        "enum": ["critical", "high", "medium", "low", "negligible"]
+      }
     }
   }
 }

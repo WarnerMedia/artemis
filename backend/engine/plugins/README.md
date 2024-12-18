@@ -195,7 +195,7 @@ TODO: Add documentation here
 
 ### Inventory
 
-Inventory plugins generate statistics such as technologies used or declared dependencies, either for purely informational or audit purposes (such as generating an SBOM).
+Inventory plugins generate statistics such as technologies used or declared dependencies, either for purely informational or audit purposes.
 
 These typically do not make judgements about the security impact of the data collected.
 
@@ -203,7 +203,7 @@ The details payload for inventory plugins is specific to each plugin.
 
 ### Configuration
 
-Configuration plugins evaluate the security settings of a repository.
+Configuration plugins evaluate the security settings of a repository. The `details` returned is a list of objects. Each distinct issue should have its own entry in the list.
 
 The fields are:
 
