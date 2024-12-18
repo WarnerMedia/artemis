@@ -4794,7 +4794,7 @@ const InventoryTabContent = (props: {
 	const cicdToolsExportData = () => {
 		const data: RowDef[] = [];
 		for (const items of Object.values(
-			scan.results?.inventory?.cicd_tools ?? {}
+			scan.results?.inventory?.cicd_tools ?? {},
 		)) {
 			data.push({
 				tool: items.display_name,
@@ -6237,7 +6237,8 @@ export const TabContent = (props: {
 
 	const getTotalCounts = useCallback(() => {
 		const imageCount = scan?.results_summary?.inventory?.base_images ?? 0;
-		const techCount = scan?.results_summary?.inventory?.technology_discovery ?? 0;
+		const techCount =
+			scan?.results_summary?.inventory?.technology_discovery ?? 0;
 
 		return {
 			secrets: scan?.results_summary?.secrets ?? 0,

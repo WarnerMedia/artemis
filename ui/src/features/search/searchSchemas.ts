@@ -191,7 +191,10 @@ export const supportedCicdTools = [
 	},
 ];
 
-const cicdToolIDs = supportedCicdTools.map((item) => item.id);
+const cicdToolIDs = [
+	"", // Add empty string so that no value is acceptable
+	...supportedCicdTools.map((item) => item.id),
+];
 
 function getCicdToolError() {
 	const validToolsStr = `[${cicdToolIDs.join("|")}]`;

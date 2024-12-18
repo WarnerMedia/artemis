@@ -803,7 +803,7 @@ const MatchStringField = (props: MatchFieldProps) => {
 
 const DropdownSelector = (props: MatchFieldProps) => {
 	const { classes } = useStyles();
-	const { matchOptions } = props;
+	const { matchOptions, ...fieldProps } = props;
 
 	const menuItems = () => {
 		const nodes: ReactNode[] = [];
@@ -812,24 +812,35 @@ const DropdownSelector = (props: MatchFieldProps) => {
 
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
-					{
-						values.icon ? (
-							<div style={{ display: 'flex', alignItems: 'center' }}>
-								<ListItemIcon style={{ minWidth: 0 }}>{values.icon}</ListItemIcon>
-								<ListItemText primary={text} style={{ marginTop: 0, marginBottom: 0 }}/>
-							</div>
-						) : text
-					} 
+					{values.icon ? (
+						<div style={{ display: "flex", alignItems: "center" }}>
+							<ListItemIcon style={{ minWidth: 0 }}>{values.icon}</ListItemIcon>
+							<ListItemText
+								primary={text}
+								style={{ marginTop: 0, marginBottom: 0 }}
+							/>
+						</div>
+					) : (
+						text
+					)}
 				</MenuItem>,
 			);
 		}
 		return nodes;
 	};
 
+	const FieldMuiTextField = (props: any) => {
+		const { field, form, ...fieldProps } = props;
+		return <MuiTextField {...field} {...fieldProps} />;
+	};
+
 	return (
 		<FormGroup row>
 			<FormControl variant="outlined" className={classes.formControl}>
-				<MuiTextField
+				<Field
+					component={FieldMuiTextField}
+					defaultValue=""
+					{...fieldProps}
 					select
 					disabled={props.disabled}
 					label={props.label}
@@ -838,7 +849,7 @@ const DropdownSelector = (props: MatchFieldProps) => {
 					size="small"
 				>
 					{menuItems()}
-				</MuiTextField>
+				</Field>
 			</FormControl>
 		</FormGroup>
 	);
@@ -2459,15 +2470,14 @@ const FormFields = (props: {
 	const matchCicdTools: MatcherT = {
 		"": {
 			label: "None",
-		}
+		},
 	};
 	supportedCicdTools.forEach(
-		(item) => (
-			matchCicdTools[item.id] = {
+		(item) =>
+			(matchCicdTools[item.id] = {
 				label: item.displayName,
 				icon: <BuildCircle style={{ marginRight: theme.spacing(1) }} />,
-			}
-		)
+			}),
 	);
 	const matchRisk: MatcherT = {
 		/* FUTURE: include null (None)
@@ -2982,7 +2992,7 @@ const FormFields = (props: {
 							disabled={submitting}
 							label={i18n._(props.label)}
 							variant="outlined"
-							matchOptions={props?.matchOptions ?? matchSeverity}
+							matchOptions={props?.matchOptions}
 							fullWidth
 						/>
 					</Grid>,
