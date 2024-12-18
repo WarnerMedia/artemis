@@ -516,7 +516,7 @@ const initialRepoFilters: RepoFiltersT = {
 	service: "",
 	repo_match: "icontains",
 	repo: "",
-	cicd_tool: "none",
+	cicd_tool: "",
 	risk: [],
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
@@ -556,6 +556,7 @@ export interface FormFieldDef {
 		label: string;
 		component:
 			| "AutoCompleteField"
+			| "DropdownSelector"
 			| "KeyboardDateTimePickerField"
 			| "MatchChipField"
 			| "MatchDateField"
@@ -769,18 +770,9 @@ const MatchStringField = (props: MatchFieldProps) => {
 	const menuItems = () => {
 		const nodes: ReactNode[] = [];
 		for (const [label, values] of Object.entries(matchOptions)) {
-			const text = <Trans>{values.label}</Trans>;
-
 			nodes.push(
 				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
-					{
-						values.icon ? (
-							<div style={{ display: 'flex', alignItems: 'center' }}>
-								<ListItemIcon style={{ minWidth: 0 }}>{values.icon}</ListItemIcon>
-								<ListItemText primary={text} />
-							</div>
-						) : text
-					} 
+					<Trans>{values.label}</Trans>
 				</MenuItem>,
 			);
 		}
@@ -793,7 +785,6 @@ const MatchStringField = (props: MatchFieldProps) => {
 				<InputLabel
 					id={`${props.id}-select-string-label`}
 					style={{ display: "none" }}
-					shrink={fieldProps.shrink}
 				>
 					<Trans>{props.label}</Trans>
 				</InputLabel>
@@ -802,10 +793,52 @@ const MatchStringField = (props: MatchFieldProps) => {
 					{...fieldProps}
 					labelId={`${props.id}-select-string-label`}
 					size="small"
-					notched={fieldProps.shrink}
 				>
 					{menuItems()}
 				</Field>
+			</FormControl>
+		</FormGroup>
+	);
+};
+
+const DropdownSelector = (props: MatchFieldProps) => {
+	const { classes } = useStyles();
+	const { matchOptions } = props;
+
+	const menuItems = () => {
+		const nodes: ReactNode[] = [];
+		for (const [label, values] of Object.entries(matchOptions)) {
+			const text = <Trans>{values.label}</Trans>;
+
+			nodes.push(
+				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
+					{
+						values.icon ? (
+							<div style={{ display: 'flex', alignItems: 'center' }}>
+								<ListItemIcon style={{ minWidth: 0 }}>{values.icon}</ListItemIcon>
+								<ListItemText primary={text} style={{ marginTop: 0, marginBottom: 0 }}/>
+							</div>
+						) : text
+					} 
+				</MenuItem>,
+			);
+		}
+		return nodes;
+	};
+
+	return (
+		<FormGroup row>
+			<FormControl variant="outlined" className={classes.formControl}>
+				<MuiTextField
+					select
+					disabled={props.disabled}
+					label={props.label}
+					id={`${props.id}-dropdown-selector`}
+					name={props.name}
+					size="small"
+				>
+					{menuItems()}
+				</MuiTextField>
 			</FormControl>
 		</FormGroup>
 	);
@@ -2424,9 +2457,8 @@ const FormFields = (props: {
 		*/
 	};
 	const matchCicdTools: MatcherT = {
-		none: {
-			label: 'None',
-			icon: <BuildCircle style={{ marginRight: theme.spacing(1) }} />,
+		"": {
+			label: "None",
 		}
 	};
 	supportedCicdTools.forEach(
@@ -2771,11 +2803,8 @@ const FormFields = (props: {
 		cicd_tool: {
 			id: "repo-cicd-tool",
 			label: t`CI/CD Tool`,
-			component: "MatchStringField",
+			component: "DropdownSelector",
 			matchOptions: matchCicdTools,
-			fieldProps: {
-				shrink: true,
-			},
 			size: 9,
 		},
 		/* FUTURE: support for between 2 scans
@@ -2936,6 +2965,24 @@ const FormFields = (props: {
 									? errors[fieldName]
 									: ""
 							}
+							fullWidth
+						/>
+					</Grid>,
+				);
+				break;
+			}
+
+			case "DropdownSelector": {
+				fields.push(
+					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
+						<DropdownSelector
+							{...props?.fieldProps}
+							id={props.id}
+							name={name}
+							disabled={submitting}
+							label={i18n._(props.label)}
+							variant="outlined"
+							matchOptions={props?.matchOptions ?? matchSeverity}
 							fullWidth
 						/>
 					</Grid>,
