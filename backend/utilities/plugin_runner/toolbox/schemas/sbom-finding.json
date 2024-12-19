@@ -1,0 +1,55 @@
+{
+  "$id": "https://wbd.com/artemis/plugin/sbom-finding.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+  "title": "SBOMFinding",
+  "type": "array",
+  "items": false,
+  "prefixItems": [
+    {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    {
+      "type": "array",
+      "items": { "$ref": "#/$defs/component" }
+    }
+  ],
+  "minItems": 2,
+  "maxItems": 2,
+
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": [
+        "bom-ref",
+        "type",
+        "name",
+        "version",
+        "licenses"
+      ],
+      "properties": {
+        "bom-ref": { "type": "string" },
+        "type": { "type": "string" },
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "licenses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/license" }
+        }
+      }
+    },
+
+    "license": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    }
+  }
+}
