@@ -4776,26 +4776,35 @@ const InventoryTabContent = (props: {
 		return data;
 	};
 
-	const getCICDRows = (configsSeparator: string = ",") => {
+	const cicdToolsColumns: ColDef[] = [
+		{ field: "tool", headerName: i18n._(t`Tool`) },
+		{ field: "files", headerName: i18n._(t`Config Files`) },
+	];
+
+	const cicdToolsRows: RowDef[] = [];
+	for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+		const configFileItems = item.configs.map((config: { path: string }) => (
+			<li>{config.path}</li>
+		));
+
+		cicdToolsRows.push({
+			tool: item.display_name,
+			files: <ul style={{ margin: 0, padding: 0 }}>{configFileItems}</ul>,
+		});
+	}
+
+	const getCicdExportData = () => {
 		const result = [];
 		for (const item of Object.values(
 			scan.results?.inventory?.cicd_tools ?? {},
 		)) {
 			result.push({
 				tool: item.display_name,
-				files: item.configs
-					.map((config: { [key: string]: string }) => config.path)
-					.join(configsSeparator),
+				files: item.configs.map((config: { path: string }) => config.path),
 			});
 		}
 		return result;
 	};
-
-	const cicdToolsColumns: ColDef[] = [
-		{ field: "tool", headerName: i18n._(t`Tool`) },
-		{ field: "files", headerName: i18n._(t`Config Files`) },
-	];
-	const cicdToolsRows: RowDef[] = getCICDRows(", ");
 
 	interface TechData {
 		name: string;
@@ -4969,7 +4978,7 @@ const InventoryTabContent = (props: {
 						menuOptions={{
 							exportFile: "cicd_tools",
 							exportFormats: ["csv", "json"],
-							exportData: getCICDRows,
+							exportData: getCicdExportData,
 						}}
 					/>
 				) : (
