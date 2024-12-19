@@ -2,6 +2,7 @@ import { Trans, t } from "@lingui/macro";
 import { useLingui } from "@lingui/react";
 import {
 	ArrowBackIos as ArrowBackIosIcon,
+	BuildCircle,
 	Clear as ClearIcon,
 	Close as CloseIcon,
 	Cloud as CloudIcon,
@@ -44,6 +45,7 @@ import {
 	LinearProgress,
 	List,
 	ListItem,
+	ListItemIcon,
 	ListItemText,
 	MenuItem,
 	TextField as MuiTextField,
@@ -106,11 +108,13 @@ import {
 	SearchVulnsResponse,
 	VulnComponent,
 	booleanStringSchema,
+	cicdToolSchema,
 	matchDateSchema,
 	matchNullDateSchema,
 	matchStringSchema,
 	repoSchema,
 	serviceSchema,
+	supportedCicdTools,
 } from "features/search/searchSchemas";
 import { selectCurrentUser } from "features/users/currentUserSlice";
 import {
@@ -131,6 +135,7 @@ import { PSProps, PluginsSelector } from "pages/MainPage";
 import queryString from "query-string";
 import {
 	Dispatch,
+	ReactElement,
 	ReactNode,
 	SetStateAction,
 	useEffect,
@@ -461,6 +466,7 @@ type RepoFiltersT = MetaFiltersT & {
 	service: string;
 	repo_match: MatchStringT;
 	repo: string;
+	cicd_tool: string;
 	risk: MatchRiskT[];
 	last_qualified_scan_match: MatchNullDateT;
 	last_qualified_scan: DateTime | null;
@@ -510,6 +516,7 @@ const initialRepoFilters: RepoFiltersT = {
 	service: "",
 	repo_match: "icontains",
 	repo: "",
+	cicd_tool: "",
 	risk: [],
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
@@ -538,6 +545,7 @@ const initialVulnFilters: VulnFiltersT = {
 export interface MatcherT {
 	[name: string]: {
 		label: string;
+		icon?: ReactElement;
 		props?: ChipProps | PSProps;
 	};
 }
@@ -548,6 +556,7 @@ export interface FormFieldDef {
 		label: string;
 		component:
 			| "AutoCompleteField"
+			| "DropdownSelector"
 			| "KeyboardDateTimePickerField"
 			| "MatchChipField"
 			| "MatchDateField"
@@ -783,6 +792,60 @@ const MatchStringField = (props: MatchFieldProps) => {
 					component={Select}
 					{...fieldProps}
 					labelId={`${props.id}-select-string-label`}
+					size="small"
+				>
+					{menuItems()}
+				</Field>
+			</FormControl>
+		</FormGroup>
+	);
+};
+
+const DropdownSelector = (props: MatchFieldProps) => {
+	const { classes } = useStyles();
+	const { matchOptions, ...fieldProps } = props;
+
+	const menuItems = () => {
+		const nodes: ReactNode[] = [];
+		for (const [label, values] of Object.entries(matchOptions)) {
+			const text = <Trans>{values.label}</Trans>;
+
+			nodes.push(
+				<MenuItem value={label} key={`${props.id}-select-string-item-${label}`}>
+					{values.icon ? (
+						<div style={{ display: "flex", alignItems: "center" }}>
+							<ListItemIcon style={{ minWidth: 0 }}>{values.icon}</ListItemIcon>
+							<ListItemText
+								primary={text}
+								style={{ marginTop: 0, marginBottom: 0 }}
+							/>
+						</div>
+					) : (
+						text
+					)}
+				</MenuItem>,
+			);
+		}
+		return nodes;
+	};
+
+	const FieldMuiTextField = (props: any) => {
+		const { field, form, ...fieldProps } = props;
+		return <MuiTextField {...field} {...fieldProps} />;
+	};
+
+	return (
+		<FormGroup row>
+			<FormControl variant="outlined" className={classes.formControl}>
+				<Field
+					component={FieldMuiTextField}
+					defaultValue=""
+					{...fieldProps}
+					select
+					disabled={props.disabled}
+					label={props.label}
+					id={`${props.id}-dropdown-selector`}
+					name={props.name}
 					size="small"
 				>
 					{menuItems()}
@@ -1302,6 +1365,7 @@ const RepoFiltersForm = (props: {
 		service: serviceSchema().nullable(),
 		repo_match: matchStringSchema(i18n._(t`Invalid repository matcher`)),
 		repo: repoSchema(),
+		cicd_tool: cicdToolSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
 		last_qualified_scan_match: matchNullDateSchema(
 			i18n._(t`Invalid last qualified scan time matcher`),
@@ -2390,6 +2454,18 @@ const FormFields = (props: {
 		},
 		*/
 	};
+	const matchCicdTools: MatcherT = {
+		"": {
+			label: "None",
+		},
+	};
+	supportedCicdTools.forEach(
+		(item) =>
+			(matchCicdTools[item.id] = {
+				label: item.displayName,
+				icon: <BuildCircle style={{ marginRight: theme.spacing(1) }} />,
+			}),
+	);
 	const matchRisk: MatcherT = {
 		/* FUTURE: include null (None)
 		null: {
@@ -2715,6 +2791,19 @@ const FormFields = (props: {
 				maxDateMessage: i18n._(t`Scan time can not be in the future`),
 			},
 		},
+		spacer_cicd: {
+			id: "repo-spacer-cicd",
+			label: "",
+			component: "SpacerField",
+			size: 3,
+		},
+		cicd_tool: {
+			id: "repo-cicd-tool",
+			label: t`CI/CD Tool`,
+			component: "DropdownSelector",
+			matchOptions: matchCicdTools,
+			size: 9,
+		},
 		/* FUTURE: support for between 2 scans
 		spacer_2: {
 			id: "repo-spacer2",
@@ -2873,6 +2962,24 @@ const FormFields = (props: {
 									? errors[fieldName]
 									: ""
 							}
+							fullWidth
+						/>
+					</Grid>,
+				);
+				break;
+			}
+
+			case "DropdownSelector": {
+				fields.push(
+					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
+						<DropdownSelector
+							{...props?.fieldProps}
+							id={props.id}
+							name={name}
+							disabled={submitting}
+							label={i18n._(props.label)}
+							variant="outlined"
+							matchOptions={props?.matchOptions}
 							fullWidth
 						/>
 					</Grid>,
