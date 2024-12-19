@@ -17,10 +17,7 @@
     "truncated": {
       "enum": [false]
     },
-    "details": {
-      "type": "array",
-      "items": { "$ref": "finding.json" }
-    },
+    "details": { "$ref": "finding.json" },
     "errors": {
       "type": "array",
       "items": { "type": "string" }

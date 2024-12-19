@@ -1,27 +1,18 @@
 {
-  "$id": "https://wbd.com/artemis/plugin/vulnerability-finding.json",
+  "$id": "https://wbd.com/artemis/plugin/configuration-finding.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
 
-  "title": "VulnerabilityFinding",
+  "title": "ConfigurationFinding",
   "type": "array",
   "items": {
     "type": "object",
     "required": [
-      "component",
-      "source",
-      "id",
+      "name",
       "description",
-      "severity",
-      "remediation"
+      "severity"
     ],
     "properties": {
-      "component": {
-        "type": "string"
-      },
-      "source": {
-        "type": "string"
-      },
-      "id": {
+      "name": {
         "type": "string"
       },
       "description": {
@@ -29,9 +20,6 @@
       },
       "severity": {
         "enum": ["critical", "high", "medium", "low", "negligible"]
-      },
-      "remediation": {
-        "type": "string"
       }
     }
   }

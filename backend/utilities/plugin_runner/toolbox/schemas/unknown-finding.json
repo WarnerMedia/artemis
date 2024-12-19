@@ -2,6 +2,5 @@
   "$id": "https://wbd.com/artemis/plugin/unknown-finding.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
 
-  "title": "UnknownFinding",
-  "type": "object"
+  "title": "UnknownFinding"
 }

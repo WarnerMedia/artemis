@@ -3,29 +3,32 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
 
   "title": "StaticAnalysisFinding",
-  "type": "object",
-  "required": [
-    "filename",
-    "line",
-    "message",
-    "severity",
-    "type"
-  ],
-  "properties": {
-    "filename": {
-      "type": "string"
-    },
-    "line": {
-      "type": "integer"
-    },
-    "message": {
-      "type": "string"
-    },
-    "severity": {
-      "enum": ["critical", "high", "medium", "low", "negligible"]
-    },
-    "type": {
-      "type": "string"
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "filename",
+      "line",
+      "message",
+      "severity",
+      "type"
+    ],
+    "properties": {
+      "filename": {
+        "type": "string"
+      },
+      "line": {
+        "type": "integer"
+      },
+      "message": {
+        "type": "string"
+      },
+      "severity": {
+        "enum": ["critical", "high", "medium", "low", "negligible"]
+      },
+      "type": {
+        "type": "string"
+      }
     }
   }
 }
