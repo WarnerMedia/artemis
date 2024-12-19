@@ -1391,13 +1391,10 @@ export function makeServer() {
 			const generateInventoryResults = (scan: AnalysisReport) => {
 				scan!.results_summary!.inventory = {
 					base_images: 3,
+					cicd_tools: 2,
 					technology_discovery: 12,
 				};
 
-				scan!.results_summary!.inventory = {
-					...scan!.results_summary!.inventory,
-					technology_discovery: 12,
-				};
 				scan!.results!.inventory = {
 					base_images: {
 						golang: {
@@ -1422,6 +1419,16 @@ export function makeServer() {
 								"10.10",
 							],
 							digests: [],
+						},
+					},
+					cicd_tools: {
+						github_actions: {
+							display_name: "Github Actions",
+							configs: [{ path: ".github/workflows/deploy.yml" }],
+						},
+						jenkins: {
+							display_name: "Jenkins",
+							configs: [{ path: "Jenkinsfile" }, { path: "build/Jenkinsfile" }],
 						},
 					},
 					technology_discovery: {
