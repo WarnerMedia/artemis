@@ -191,15 +191,76 @@ Example:
 
 ### SBOM
 
-TODO: Add documentation here
+SBOM ([software bill of materials](https://en.wikipedia.org/wiki/Software_supply_chain)) plugins gather an inventory of software components such as library dependencies.
+
+The `details` returned is a 2-element array.
+
+The first element is an array of SBOMs. These are not modified and are saved as-is for later retrieval. The specific format depends on the plugin, but should be a standard JSON format such as [CycloneDX](https://cyclonedx.org/) or [SPDX](https://spdx.dev/). This may be an empty array if no user-downloadable SBOMs are generated.
+
+The second element is an array of detected components, with the following fields:
+
+- `bom-ref`: Unique reference ID for this component.
+- `type`: Component type (e.g. `jar`, `gomod`, etc.). This is tool-specific. For example, see the [list of types for Trivy](https://github.com/aquasecurity/trivy/blob/49f354085fdaf0f45f8f8f52c9a2a06fffbc2e63/pkg/fanal/analyzer/const.go).
+- `name`: Component name, such as a package ID or filename.
+- `version`: Component version. If not available or does not apply for this component type, must be `none`.
+- `licenses`: Array of licenses:
+  - `id`: The [SPDX license identifier](https://spdx.org/licenses/).
+  - `name`: The license name.
+
+Full example:
+
+```jsonc
+[
+    [
+        { /* SBOM for component 1... */ },
+        { /* SBOM for component 2... */ }
+    ],
+    [
+        {
+            "bom-ref": "pkg:golang/cloud.google.com/go/datastore@1.1.0",
+            "type": "gomod",
+            "name": "cloud.google.com/go/datastore",
+            "version": "1.1.0",
+            "licenses": [
+                {
+                    "id": "Apache-2.0",
+                    "name": "Apache-2.0"
+                }
+            ]
+        }
+    ]
+]
+```
 
 ### Inventory
 
-TODO: Add documentation here
+Inventory plugins generate statistics such as technologies used or declared dependencies, either for purely informational or audit purposes.
+
+These typically do not make judgements about the security impact of the data collected.
+
+The details payload for inventory plugins is specific to each plugin.
 
 ### Configuration
 
-TODO: Add documentation here
+Configuration plugins evaluate the security settings of a repository. The `details` returned is a list of objects. Each distinct issue should have its own entry in the list.
+
+The fields are:
+
+- `name`: The name of the issue.
+- `description`: Long-form description of the issue.
+- `severity`: The severity level of the issue: critical, high, medium, low, or negligible.
+
+Example:
+
+```json
+[
+    {
+        "name": "Branch Rule - Require Status Checks",
+        "description": "Requires that a branch rule is enabled that requires status checks on pull requests",
+        "severity": "medium"
+    }
+]
+```
 
 ## Local Testing
 
