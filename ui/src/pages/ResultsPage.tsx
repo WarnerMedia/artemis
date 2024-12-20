@@ -5836,7 +5836,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												</i>
 											)
 										}
-										secondaryTypographyProps={{ component: "div" }}
+										slotProps={{ secondary: { component: "div" } }}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -6017,7 +6017,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								<ListItemText
 									primary={i18n._(t`Results`)}
 									secondary={resultsChip}
-									secondaryTypographyProps={{ component: "div" }}
+									slotProps={{ secondary: { component: "div" } }}
 								/>
 							</Tooltip>
 						</ListItem>

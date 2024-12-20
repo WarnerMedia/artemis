@@ -1,25 +1,27 @@
-import { Trans, t } from "@lingui/macro";
-import { useLingui } from "@lingui/react";
+import { DateTime } from "luxon";
 import {
-	ArrowBackIos as ArrowBackIosIcon,
-	Clear as ClearIcon,
-	Close as CloseIcon,
-	Cloud as CloudIcon,
-	Description as DescriptionIcon,
-	ExpandMore as ExpandMoreIcon,
-	Filter1 as Filter1Icon,
-	FilterList as FilterListIcon,
-	Folder as FolderIcon,
-	Grading as GradingIcon,
-	OpenInNew as OpenInNewIcon,
-	RadioButtonChecked as RadioButtonCheckedIcon,
-	RadioButtonUnchecked as RadioButtonUncheckedIcon,
-	Replay as ReplayIcon,
-	Search as SearchIcon,
-	Security as SecurityIcon,
-	Settings as SettingsIcon,
-	Subject as SubjectIcon,
-} from "@mui/icons-material";
+	Dispatch,
+	ReactNode,
+	SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+	Formik,
+	Form,
+	Field,
+	FieldAttributes,
+	FormikErrors,
+	FormikTouched,
+	validateYupSchema,
+	yupToFormErrors,
+	useFormikContext,
+	FormikProps,
+} from "formik";
+import { Select, TextField } from "formik-mui";
 import {
 	Accordion,
 	AccordionDetails,
@@ -46,29 +48,38 @@ import {
 	ListItem,
 	ListItemText,
 	MenuItem,
-	TextField as MuiTextField,
 	Paper,
 	Slide,
+	TextField as MuiTextField,
 	Tooltip,
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { createFilterOptions } from "@mui/material/Autocomplete";
-import client, {
-	Client,
-	FilterDef,
-	RequestMeta,
-	handleException,
-} from "api/client";
 import {
-	colorCritical,
-	colorHigh,
-	colorLow,
-	colorMedium,
-	colorNegligible,
-	colorPriority,
-} from "app/colors";
-import { RootState } from "app/rootReducer";
+	ArrowBackIos as ArrowBackIosIcon,
+	Filter1 as Filter1Icon,
+	Clear as ClearIcon,
+	Close as CloseIcon,
+	Cloud as CloudIcon,
+	Description as DescriptionIcon,
+	ExpandMore as ExpandMoreIcon,
+	FilterList as FilterListIcon,
+	Folder as FolderIcon,
+	Grading as GradingIcon,
+	OpenInNew as OpenInNewIcon,
+	RadioButtonChecked as RadioButtonCheckedIcon,
+	RadioButtonUnchecked as RadioButtonUncheckedIcon,
+	Replay as ReplayIcon,
+	Search as SearchIcon,
+	Security as SecurityIcon,
+	Settings as SettingsIcon,
+	Subject as SubjectIcon,
+} from "@mui/icons-material";
+import { makeStyles } from "tss-react/mui";
+import { Trans, t } from "@lingui/macro";
+import { useLingui } from "@lingui/react";
+import * as Yup from "yup";
+import queryString from "query-string";
 import {
 	GROUP_VULN,
 	pluginKeys,
@@ -81,68 +92,57 @@ import {
 	vulnPluginsObjects,
 } from "app/scanPlugins";
 import AutoCompleteField from "components/AutoCompleteField";
-import { RiskChip, SeverityChip } from "components/ChipCell";
-import CustomCopyToClipboard from "components/CustomCopyToClipboard";
+import DatePickerField from "components/FormikPickers";
+import { PluginsSelector, PSProps } from "pages/MainPage";
+import {
+	colorCritical,
+	colorHigh,
+	colorLow,
+	colorMedium,
+	colorNegligible,
+	colorPriority,
+} from "app/colors";
 import DraggableDialog from "components/DraggableDialog";
 import EnhancedTable, { ColDef, RowDef } from "components/EnhancedTable";
-import DatePickerField from "components/FormikPickers";
+import { RiskChip, SeverityChip } from "components/ChipCell";
 import TooltipCell from "components/TooltipCell";
-import ListItemMetaMultiField from "custom/ListItemMetaMultiField";
-import SearchMetaField, {
-	MetaFiltersT,
-	exportMetaData,
-	initialMetaFilters,
-	metaFields,
-} from "custom/SearchMetaField";
-import { metaQueryParamsSchema, metaSchema } from "custom/searchMetaSchemas";
 import { Risks, Severities } from "features/scans/scansSchemas";
+import { capitalize, formatDate } from "utils/formatters";
 import {
+	booleanStringSchema,
 	ComponentLicense,
+	matchDateSchema,
+	matchNullDateSchema,
+	matchStringSchema,
+	repoSchema,
 	SearchComponent,
 	SearchComponentsResponse,
 	SearchRepo,
 	SearchReposResponse,
 	SearchVulnerability,
 	SearchVulnsResponse,
-	VulnComponent,
-	booleanStringSchema,
-	matchDateSchema,
-	matchNullDateSchema,
-	matchStringSchema,
-	repoSchema,
 	serviceSchema,
+	VulnComponent,
 } from "features/search/searchSchemas";
-import { selectCurrentUser } from "features/users/currentUserSlice";
-import {
-	Field,
-	FieldAttributes,
-	Form,
-	Formik,
-	FormikErrors,
-	FormikProps,
-	FormikTouched,
-	useFormikContext,
-	validateYupSchema,
-	yupToFormErrors,
-} from "formik";
-import { Select, TextField } from "formik-mui";
-import { DateTime } from "luxon";
-import { PSProps, PluginsSelector } from "pages/MainPage";
-import queryString from "query-string";
-import {
-	Dispatch,
-	ReactNode,
-	SetStateAction,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { makeStyles } from "tss-react/mui";
-import { capitalize, formatDate } from "utils/formatters";
-import * as Yup from "yup";
+import client, {
+	Client,
+	FilterDef,
+	handleException,
+	RequestMeta,
+} from "api/client";
+import CustomCopyToClipboard from "components/CustomCopyToClipboard";
 import { SourceCodeHotLink, VulnLink } from "./ResultsPage";
+import ListItemMetaMultiField from "custom/ListItemMetaMultiField";
+import { RootState } from "app/rootReducer";
+import { selectCurrentUser } from "features/users/currentUserSlice";
+import { createFilterOptions } from "@mui/material/Autocomplete";
+import SearchMetaField, {
+	initialMetaFilters,
+	metaFields,
+	MetaFiltersT,
+	exportMetaData,
+} from "custom/SearchMetaField";
+import { metaQueryParamsSchema, metaSchema } from "custom/searchMetaSchemas";
 
 const useStyles = makeStyles()((theme) => ({
 	accordionDetails: {
@@ -2903,8 +2903,7 @@ const FormFields = (props: {
 							component={DatePickerField}
 							inputVariant="outlined"
 							ampm={false}
-							inputFormat="yyyy/LL/dd HH:mm"
-							placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
+							format="yyyy/LL/dd HH:mm"
 							invalidDateMessage={i18n._(
 								t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`,
 							)}

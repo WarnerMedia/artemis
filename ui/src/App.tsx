@@ -87,7 +87,7 @@ export const AppRoutes = () => {
 	const { classes } = useStyles();
 	const dispatch: AppDispatch = useDispatch();
 	const currentUser = useSelector((state: RootState) =>
-		selectCurrentUser(state, "self")
+		selectCurrentUser(state, "self"),
 	);
 
 	// load current user in app and not in NavBar since it's global throughout the app
@@ -214,9 +214,9 @@ const ThemedApp = () => {
 						gradient: colors.gradient,
 						gradientText: colors.gradientText,
 					},
-				}
+				},
 			),
-		[prefersDarkMode, colors]
+		[prefersDarkMode, colors],
 	);
 
 	theme = React.useMemo(
@@ -279,7 +279,7 @@ const ThemedApp = () => {
 					},
 				},
 			}),
-		[theme, prefersDarkMode]
+		[theme, prefersDarkMode],
 	);
 
 	// TODO i18n: Date/Time pickers have changed the way they handle i18n
@@ -290,7 +290,12 @@ const ThemedApp = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<LocalizationProvider dateAdapter={DateAdapter}>
-				<Router>
+				<Router
+					future={{
+						v7_startTransition: true,
+						v7_relativeSplatPath: true,
+					}}
+				>
 					<AppRoutes />
 				</Router>
 			</LocalizationProvider>
