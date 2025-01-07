@@ -92,6 +92,7 @@ def build_npm_auth_config(scope, registry, auth, email, **kwargs):
         f"//{registry}:always-auth=true\n"
     )
 
+
 def build_npm_auth_token_config(scope, registry, authToken, email, **kwargs):
     """
     gets the variables necessary to return the npmrc config with _authToken
