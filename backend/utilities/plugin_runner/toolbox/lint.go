@@ -34,7 +34,10 @@ func mustLoadSchema(id string) any {
 
 // Plugin type -> schema ID.
 var pluginTypeSchemaMap = map[string]string{
+	"configuration":   "configuration-finding",
+	"inventory":       "unknown-finding", // Open-ended schema.
 	"secrets":         "secrets-finding",
+	"sbom":            "sbom-finding",
 	"static_analysis": "static-analysis-finding",
 	"vulnerability":   "vulnerability-finding",
 }

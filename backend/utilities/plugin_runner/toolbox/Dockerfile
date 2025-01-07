@@ -11,7 +11,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 # Distroless always uses the "latest" tag.
 # hadolint ignore=DL3007
-FROM gcr.io/distroless/static-debian11:latest
+FROM gcr.io/distroless/static-debian12:latest
 
 WORKDIR /opt/artemis-plugin-toolbox/bin
 

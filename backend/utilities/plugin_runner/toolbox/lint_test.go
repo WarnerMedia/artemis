@@ -136,6 +136,90 @@ func TestValidSecrets(t *testing.T) {
 	}
 }
 
+func TestValidConfiguration(t *testing.T) {
+	actual := lint("configuration", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": [{
+			"name": "Branch Rule - Require Status Checks",
+			"description": "Requires that a branch rule is enabled that requires status checks on pull requests",
+			"severity": "medium"
+		}],
+		"errors": ["failed to scan"]
+	}`))
+	if actual != nil {
+		t.Fatalf("expected no errors, got %v", actual)
+	}
+}
+
+func TestValidInventory(t *testing.T) {
+	// The "details" payload for inventory plugins can be anything.
+
+	actual := lint("inventory", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": {"foo": {"bar": "baz"}},
+		"errors": ["failed to scan"]
+	}`))
+	if actual != nil {
+		t.Fatalf("expected no errors, got %v", actual)
+	}
+
+	actual = lint("inventory", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": [["foo", false]],
+		"errors": ["failed to scan"]
+	}`))
+	if actual != nil {
+		t.Fatalf("expected no errors, got %v", actual)
+	}
+}
+
+func TestValidSBOM(t *testing.T) {
+	actual := lint("sbom", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": [
+			[
+				{"sbom": "foo"}
+			],
+			[
+				{
+					"bom-ref": "pkg:golang/cloud.google.com/go/datastore@1.1.0",
+					"type": "gomod",
+					"name": "cloud.google.com/go/datastore",
+					"version": "1.1.0",
+					"licenses": [
+						{
+							"id": "Apache-2.0",
+							"name": "Apache-2.0"
+						}
+					]
+				}
+			]
+		],
+		"errors": ["failed to scan"]
+	}`))
+	if actual != nil {
+		t.Fatalf("expected no errors, got %v", actual)
+	}
+}
+
+func TestSBOMMissingValue(t *testing.T) {
+	actual := lint("sbom", []byte(`{
+		"success": true,
+		"truncated": false,
+		"details": [
+			[]
+		],
+		"errors": ["failed to scan"]
+	}`))
+	if !containsValidationError(actual, "/details", "minItems: got 1, want 2") {
+		t.Fatalf("expected required error, got %v", actual)
+	}
+}
+
 func TestUnknownType(t *testing.T) {
 	actual := lint("foo", []byte("{}"))
 	if actual == nil || !strings.Contains(actual.Error(), "unknown plugin type") {

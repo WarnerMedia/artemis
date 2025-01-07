@@ -4743,17 +4743,17 @@ const InventoryTabContent = (props: {
 	const { i18n } = useLingui();
 	const { scan, sharedColors } = props;
 
-	const columns: ColDef[] = [
+	const baseImageColumns: ColDef[] = [
 		{ field: "image", headerName: i18n._(t`Image`) },
 		{ field: "tag", headerName: i18n._(t`Tag`) },
 	];
-	const rows: RowDef[] = [];
+	const baseImageRows: RowDef[] = [];
 
 	for (const [image, items] of Object.entries(
 		scan.results?.inventory?.base_images ?? {},
 	)) {
 		items?.tags.forEach((tag: string) => {
-			rows.push({
+			baseImageRows.push({
 				keyId: ["image", image, tag].join("-"),
 				image,
 				tag,
@@ -4761,7 +4761,7 @@ const InventoryTabContent = (props: {
 		});
 	}
 
-	const exportData = () => {
+	const baseImageExportData = () => {
 		const data: RowDef[] = [];
 		for (const [image, items] of Object.entries(
 			scan.results?.inventory?.base_images ?? {},
@@ -4774,6 +4774,36 @@ const InventoryTabContent = (props: {
 			});
 		}
 		return data;
+	};
+
+	const cicdToolsColumns: ColDef[] = [
+		{ field: "tool", headerName: i18n._(t`Tool`) },
+		{ field: "files", headerName: i18n._(t`Config Files`) },
+	];
+
+	const cicdToolsRows: RowDef[] = [];
+	for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
+		const configFileItems = item.configs.map((config: { path: string }) => (
+			<li>{config.path}</li>
+		));
+
+		cicdToolsRows.push({
+			tool: item.display_name,
+			files: <ul style={{ margin: 0, padding: 0 }}>{configFileItems}</ul>,
+		});
+	}
+
+	const getCicdExportData = () => {
+		const result = [];
+		for (const item of Object.values(
+			scan.results?.inventory?.cicd_tools ?? {},
+		)) {
+			result.push({
+				tool: item.display_name,
+				files: item.configs.map((config: { path: string }) => config.path),
+			});
+		}
+		return result;
 	};
 
 	interface TechData {
@@ -4902,9 +4932,9 @@ const InventoryTabContent = (props: {
 				<Toolbar>
 					<Typography variant="h6" id="base-images-title" component="div">
 						<Trans>Base Images</Trans>
-						{rows && (
+						{baseImageRows && (
 							<CustomCopyToClipboard
-								copyTarget={rows
+								copyTarget={baseImageRows
 									.map((data) => {
 										// format base image results
 										return `${data.image} - ${data.tag}`;
@@ -4916,17 +4946,43 @@ const InventoryTabContent = (props: {
 				</Toolbar>
 				{scan.results?.inventory?.base_images ? (
 					<EnhancedTable
-						columns={columns}
-						rows={rows}
+						columns={baseImageColumns}
+						rows={baseImageRows}
 						defaultOrderBy="image"
 						menuOptions={{
 							exportFile: "scan_images",
 							exportFormats: ["csv", "json"],
-							exportData: exportData,
+							exportData: baseImageExportData,
 						}}
 					/>
 				) : (
 					<NoResults title={i18n._(t`No base images found`)} />
+				)}
+			</Paper>
+			<Paper square className={classes.paper}>
+				<Toolbar>
+					<Typography variant="h6" id="cicd-tools-title" component="div">
+						<Trans>Potential CI/CD Tools</Trans>
+						{baseImageRows && (
+							<CustomCopyToClipboard
+								copyTarget={cicdToolsRows.map((data) => data.tool).join(", ")}
+							/>
+						)}
+					</Typography>
+				</Toolbar>
+				{(scan.results_summary?.inventory?.cicd_tools || 0) > 0 ? (
+					<EnhancedTable
+						columns={cicdToolsColumns}
+						rows={cicdToolsRows}
+						defaultOrderBy="tool"
+						menuOptions={{
+							exportFile: "cicd_tools",
+							exportFormats: ["csv", "json"],
+							exportData: getCicdExportData,
+						}}
+					/>
+				) : (
+					<NoResults title={i18n._(t`No CI/CD tools found`)} />
 				)}
 			</Paper>
 		</>
