@@ -1,5 +1,5 @@
 import { DateTime, Settings } from "luxon";
-import { render, screen, waitFor } from "test-utils";
+import { act, render, screen, waitFor } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
 import { vulnRow } from "../../../../testData/testMockData";
 
@@ -36,10 +36,10 @@ describe("HiddenFindingDialog component", () => {
 
 	it("displays no dialog if open = false", () => {
 		render(
-			<HiddenFindingDialog row={vulnRow} open={false} onClose={handleClose} />
+			<HiddenFindingDialog row={vulnRow} open={false} onClose={handleClose} />,
 		);
 		expect(
-			screen.queryByRole("dialog", { name: dialogEditTitle })
+			screen.queryByRole("dialog", { name: dialogEditTitle }),
 		).not.toBeInTheDocument();
 		expect(handleClose).toHaveBeenCalledTimes(0);
 	});
@@ -55,12 +55,12 @@ describe("HiddenFindingDialog component", () => {
 
 			// wait for dialog to open
 			const renderArgs = render(
-				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />,
 			);
 			user = renderArgs.user;
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogAddTitle })
+					screen.queryByRole("dialog", { name: dialogAddTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -73,7 +73,7 @@ describe("HiddenFindingDialog component", () => {
 			expect(helpAccordionTitle).toBeInTheDocument();
 
 			const helpMessageSnippet = new RegExp(
-				/hidden findings are global to this repository/i
+				/hidden findings are global to this repository/i,
 			);
 			expect(screen.getByText(helpMessageSnippet)).not.toBeVisible();
 			await user.click(helpAccordionTitle);
@@ -116,10 +116,6 @@ describe("HiddenFindingDialog component", () => {
 			it("date min value", async () => {
 				const expiresField = screen.getByLabelText(fieldExpiresLabel);
 				expect(expiresField).toBeInTheDocument();
-				expect(expiresField).toHaveAttribute(
-					"placeholder",
-					"yyyy/MM/dd HH:mm (24-hour)"
-				);
 				expect(expiresField).toHaveValue("");
 				const now = formatDateForExpirationField(DateTime.utc().toJSON());
 				await user.type(expiresField, now);
@@ -131,7 +127,7 @@ describe("HiddenFindingDialog component", () => {
 				});
 
 				const tomorrow = formatDateForExpirationField(
-					DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON()
+					DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
 				);
 				await user.clear(expiresField); // clear the past field entry
 				await user.type(expiresField, tomorrow);
@@ -139,7 +135,7 @@ describe("HiddenFindingDialog component", () => {
 					expect(expiresField).toHaveValue(tomorrow);
 				});
 				expect(
-					screen.queryByText("Must be a future date")
+					screen.queryByText("Must be a future date"),
 				).not.toBeInTheDocument();
 			});
 
@@ -154,7 +150,7 @@ describe("HiddenFindingDialog component", () => {
 				});
 				await waitFor(() => {
 					expect(
-						screen.getByText("Date must be before 2050/12/31")
+						screen.getByText("Date must be before 2050/12/31"),
 					).toBeInTheDocument();
 				});
 
@@ -166,7 +162,7 @@ describe("HiddenFindingDialog component", () => {
 				});
 				await waitFor(() => {
 					expect(
-						screen.queryByText("Date must be before 2050/12/31")
+						screen.queryByText("Date must be before 2050/12/31"),
 					).not.toBeInTheDocument();
 				});
 			});
@@ -182,7 +178,7 @@ describe("HiddenFindingDialog component", () => {
 				});
 				await waitFor(() => {
 					expect(
-						screen.queryByText("Date must be before 2050/12/31")
+						screen.queryByText("Date must be before 2050/12/31"),
 					).not.toBeInTheDocument();
 				});
 			});
@@ -191,9 +187,12 @@ describe("HiddenFindingDialog component", () => {
 				const expiresField = screen.getByLabelText(fieldExpiresLabel);
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveValue("");
-				await user.type(expiresField, "testme!");
+				await act(async () => {
+					/* fire events that update state */
+					await user.type(expiresField, "testme!");
+				});
 				await waitFor(() => {
-					expect(expiresField).toHaveValue(""); // can't type invalid chars in field
+					expect(expiresField).toHaveValue("YYYY/MM/DD hh:mm"); // can't type invalid chars in field
 				});
 			});
 
@@ -220,12 +219,12 @@ describe("HiddenFindingDialog component", () => {
 
 			// wait for dialog to open
 			const { user } = render(
-				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vuln} open={true} onClose={handleClose} />,
 			);
 			await waitFor(() => {
 				// check for expected title
 				expect(
-					screen.queryByRole("dialog", { name: dialogAddTitle })
+					screen.queryByRole("dialog", { name: dialogAddTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -235,10 +234,10 @@ describe("HiddenFindingDialog component", () => {
 			expect(addButton).not.toBeEnabled();
 
 			expect(
-				screen.queryByRole("button", { name: buttonRemoveLabel })
+				screen.queryByRole("button", { name: buttonRemoveLabel }),
 			).not.toBeInTheDocument();
 			expect(
-				screen.queryByRole("button", { name: buttonUpdateLabel })
+				screen.queryByRole("button", { name: buttonUpdateLabel }),
 			).not.toBeInTheDocument();
 
 			// cancel button enabled and calls close onClick
@@ -255,18 +254,18 @@ describe("HiddenFindingDialog component", () => {
 		it("edit dialog has expected elements", async () => {
 			// wait for dialog to open
 			const { user } = render(
-				<HiddenFindingDialog row={vulnRow} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vulnRow} open={true} onClose={handleClose} />,
 			);
 			// check for expected title
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
 			// check for expected buttons
 			expect(
-				screen.queryByRole("button", { name: buttonAddLabel })
+				screen.queryByRole("button", { name: buttonAddLabel }),
 			).not.toBeInTheDocument();
 
 			const removeButton = screen.getByRole("button", {
@@ -293,12 +292,12 @@ describe("HiddenFindingDialog component", () => {
 		it("clicking remove opens remove dialog", async () => {
 			// wait for dialog to open
 			const { user } = render(
-				<HiddenFindingDialog row={vulnRow} open={true} onClose={handleClose} />
+				<HiddenFindingDialog row={vulnRow} open={true} onClose={handleClose} />,
 			);
 			// check for expected title
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 
@@ -311,11 +310,11 @@ describe("HiddenFindingDialog component", () => {
 			await user.click(removeButton);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: "Remove Hidden Finding" })
+					screen.queryByRole("dialog", { name: "Remove Hidden Finding" }),
 				).toBeInTheDocument();
 			});
 			expect(
-				screen.getByText(/remove this hidden finding/i)
+				screen.getByText(/remove this hidden finding/i),
 			).toBeInTheDocument();
 
 			// verify expected buttons: remove, cancel
@@ -335,7 +334,7 @@ describe("HiddenFindingDialog component", () => {
 			await user.click(cancelButton);
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("dialog", { name: dialogEditTitle })
+					screen.queryByRole("dialog", { name: dialogEditTitle }),
 				).toBeInTheDocument();
 			});
 		});

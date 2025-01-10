@@ -29,13 +29,13 @@ export const validateSelect = async (options: {
 	let selectField: HTMLElement;
 	if (options?.withinElement) {
 		selectField = await within(options.withinElement).findByRole(
-			options?.role ?? "button",
+			options?.role ?? "combobox",
 			{
 				name: options.label,
-			}
+			},
 		);
 	} else {
-		selectField = await screen.findByRole(options?.role ?? "button", {
+		selectField = await screen.findByRole(options?.role ?? "combobox", {
 			name: options.label,
 		});
 	}
@@ -89,8 +89,8 @@ export const validateSelect = async (options: {
 	// check select box closed
 	await waitFor(() =>
 		expect(
-			screen.queryByRole("listbox", { name: options?.label })
-		).not.toBeInTheDocument()
+			screen.queryByRole("listbox", { name: options?.label }),
+		).not.toBeInTheDocument(),
 	);
 };
 
@@ -98,7 +98,7 @@ export const testFieldLength = async (
 	fieldName: string | RegExp,
 	maxLength: number,
 	expectedError: string,
-	user: any
+	user: any,
 ) => {
 	let testValue = "z".repeat(maxLength + 1); // invalid length value
 	const testComponent = await screen.findByRole("textbox", {
@@ -109,7 +109,7 @@ export const testFieldLength = async (
 	fireEvent.blur(testComponent);
 	await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
 	await waitFor(() =>
-		expect(screen.getByText(expectedError)).toBeInTheDocument()
+		expect(screen.getByText(expectedError)).toBeInTheDocument(),
 	);
 
 	// submit button should be disabled since form now invalid
@@ -121,7 +121,7 @@ export const testFieldLength = async (
 	await user.clear(testComponent);
 	await waitFor(() => expect(testComponent).toHaveDisplayValue(""));
 	await waitFor(() =>
-		expect(screen.queryByText(expectedError)).not.toBeInTheDocument()
+		expect(screen.queryByText(expectedError)).not.toBeInTheDocument(),
 	);
 	expect(submitButton).not.toBeDisabled();
 
@@ -130,7 +130,7 @@ export const testFieldLength = async (
 	fireEvent.blur(testComponent);
 	await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
 	await waitFor(() =>
-		expect(screen.queryByText(expectedError)).not.toBeInTheDocument()
+		expect(screen.queryByText(expectedError)).not.toBeInTheDocument(),
 	);
 	expect(submitButton).not.toBeDisabled(); // form now valid, buttons should not be disabled
 };
@@ -140,7 +140,7 @@ export const testFieldValid = async (
 	value: string,
 	unexpectedError: string,
 	role: "textbox" | "combobox" = "textbox",
-	user: any
+	user: any,
 ) => {
 	const testComponent = await screen.findByRole(role, {
 		name: fieldName,
@@ -151,7 +151,7 @@ export const testFieldValid = async (
 	fireEvent.blur(testComponent);
 	await waitFor(() => expect(testComponent).toHaveDisplayValue(value));
 	await waitFor(() =>
-		expect(screen.queryByText(unexpectedError)).not.toBeInTheDocument()
+		expect(screen.queryByText(unexpectedError)).not.toBeInTheDocument(),
 	);
 
 	const submitButton = screen.getByRole("button", {
@@ -165,7 +165,7 @@ export const testFieldInvalid = async (
 	value: string,
 	expectedError: string,
 	role: "combobox" | "textbox" = "combobox",
-	user: any
+	user: any,
 ) => {
 	const testComponent = await screen.findByRole(role, {
 		name: fieldName,
@@ -210,7 +210,7 @@ export const testFieldInvalid = async (
 		fireEvent.blur(testComponent);
 		await waitFor(() => expect(testComponent).toHaveDisplayValue(displayChar));
 		await waitFor(() =>
-			expect(screen.getByText(expectedError)).toBeInTheDocument()
+			expect(screen.getByText(expectedError)).toBeInTheDocument(),
 		);
 		expect(submitButton).toBeDisabled();
 	}

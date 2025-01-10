@@ -46,7 +46,12 @@ const AllTheProviders = ({ children }: AllTheProvidersProps) => {
 			<I18nProvider i18n={i18n}>
 				<ThemeProvider theme={theme}>
 					<LocalizationProvider dateAdapter={DateAdapter}>
-						<MemoryRouter initialEntries={["/"]}>{children}</MemoryRouter>
+						<MemoryRouter
+							future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+							initialEntries={["/"]}
+						>
+							{children}
+						</MemoryRouter>
 					</LocalizationProvider>
 				</ThemeProvider>
 			</I18nProvider>
@@ -57,7 +62,7 @@ const AllTheProviders = ({ children }: AllTheProvidersProps) => {
 const customRender = (
 	ui: React.ReactElement,
 	options?: any,
-	userEventOptions?: any
+	userEventOptions?: any,
 ) => {
 	return {
 		user: userEvent.setup({ ...userEventOptions }),
