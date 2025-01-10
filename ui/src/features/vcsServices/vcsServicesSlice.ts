@@ -39,14 +39,14 @@ const initialState = vcsServicesAdapter.getInitialState<SliceState>({
 });
 
 export const linkVcsService = createSagaActions<VcsService, UserServiceRequest>(
-	"users/linkVcsServices"
+	"users/linkVcsServices",
 );
 export const unlinkVcsService = createSagaActions<
 	string | undefined,
 	UserServiceRequest
 >("users/unlinkVcsServices");
 export const getVcsServices = createSagaActions<VcsServicesGetResponse, void>(
-	"users/getVcsServices"
+	"users/getVcsServices",
 );
 
 const vcsServicesSlice = createSlice({

@@ -18,14 +18,14 @@ const initialState: ThemeColors = {
 export const getTheme = createSagaActions<ThemeColors, void>("theme/getTheme");
 
 export const setTheme = createSagaActions<ThemeColors, keyof IThemeColors>(
-	"theme/setTheme"
+	"theme/setTheme",
 );
 
 const saveThemeState = (
 	state: WritableDraft<ThemeColors>,
 	action:
 		| PayloadAction<ThemeColors, string, { arg: void }, never>
-		| PayloadAction<ThemeColors, string, { arg: keyof IThemeColors }, never>
+		| PayloadAction<ThemeColors, string, { arg: keyof IThemeColors }, never>,
 ) => {
 	state.name = action.payload.name;
 	state.dark = action.payload.dark;

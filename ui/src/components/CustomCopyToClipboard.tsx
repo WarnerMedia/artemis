@@ -44,14 +44,14 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 			<ShareIcon fontSize={size} {...buttonProps} />
 		) : (
 			<AssignmentReturnedIcon fontSize={size} {...buttonProps} />
-		)
+		),
 	);
 	const [buttonClicked] = useState(
 		icon === "share" ? (
 			<CheckIcon fontSize={size} {...buttonProps} />
 		) : (
 			<AssignmentTurnedInIcon fontSize={size} {...buttonProps} />
-		)
+		),
 	);
 
 	// convert copyTarget to a string if needed
@@ -87,7 +87,7 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 						setTimeout(() => {
 							setTimeoutId(null);
 							setCopied(false);
-						}, APP_NOTIFICATION_DELAY)
+						}, APP_NOTIFICATION_DELAY),
 					);
 				}}
 			>
@@ -100,7 +100,7 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 							disabled={disabled}
 							onClick={() =>
 								dispatch(
-									addNotification(i18n._(t`Copied to clipboard`), "info")
+									addNotification(i18n._(t`Copied to clipboard`), "info"),
 								)
 							}
 						>

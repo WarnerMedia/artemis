@@ -164,10 +164,10 @@ describe("UserSettings component", () => {
 				await user.clear(expiresField);
 				await user.type(expiresField, futureDate);
 				await waitFor(() =>
-					expect(expiresField).toHaveDisplayValue(futureDate)
+					expect(expiresField).toHaveDisplayValue(futureDate),
 				);
 				expect(
-					within(dialog).queryByText("Must be a future date")
+					within(dialog).queryByText("Must be a future date"),
 				).not.toBeInTheDocument();
 				expect(addKeyButton).not.toBeDisabled();
 				expect(within(dialog).queryByText(error)).not.toBeInTheDocument();
@@ -202,7 +202,7 @@ describe("UserSettings component", () => {
 					mockAppState.currentUser.entities.self.scan_orgs.forEach(
 						(org: string) => {
 							within(scopeList).getByText(org);
-						}
+						},
 					);
 
 					const scopeHelpButton = within(dialog).getByRole("button", {
@@ -289,7 +289,7 @@ describe("UserSettings component", () => {
 					// enter a single valid scope from user's scan_orgs
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/*`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/*`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -324,7 +324,7 @@ describe("UserSettings component", () => {
 					expect(
 						within(dialog).getAllByRole("button", {
 							name: /remove this scope item/i,
-						})
+						}),
 					).toHaveLength(1);
 
 					const addScopeField = within(dialog).getByRole("textbox", {
@@ -334,7 +334,7 @@ describe("UserSettings component", () => {
 					// enter 5 additional scopes from user's scan_orgs, separated by space, comma, comma+space, & newline
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*,${mockAppState.currentUser.entities.self.scan_orgs[2]}/*, ${mockAppState.currentUser.entities.self.scan_orgs[3]}/*{enter}${mockAppState.currentUser.entities.self.scan_orgs[4]}/*`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*,${mockAppState.currentUser.entities.self.scan_orgs[2]}/*, ${mockAppState.currentUser.entities.self.scan_orgs[3]}/*{enter}${mockAppState.currentUser.entities.self.scan_orgs[4]}/*`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -347,8 +347,8 @@ describe("UserSettings component", () => {
 						expect(
 							within(dialog).getAllByRole("button", {
 								name: /remove this scope item/i,
-							})
-						).toHaveLength(6)
+							}),
+						).toHaveLength(6),
 					);
 				});
 
@@ -402,7 +402,7 @@ describe("UserSettings component", () => {
 					// test invalid scope value
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -433,7 +433,7 @@ describe("UserSettings component", () => {
 					// test invalid scope value
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -464,7 +464,7 @@ describe("UserSettings component", () => {
 					// 1st and 3rd scopes are valid, 2nd (middle) scope is invalid
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* invalid-scope ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* invalid-scope ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -496,7 +496,7 @@ describe("UserSettings component", () => {
 						"button",
 						{
 							name: copyString,
-						}
+						},
 					);
 					expect(copyButton).toBeInTheDocument();
 					await user.click(copyButton);

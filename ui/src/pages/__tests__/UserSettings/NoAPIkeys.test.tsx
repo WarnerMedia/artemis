@@ -99,7 +99,7 @@ describe("UserSettings component", () => {
 				render(<UserSettings />);
 				const string = "Add API key";
 				expect(
-					screen.getByRole("button", { name: string })
+					screen.getByRole("button", { name: string }),
 				).toBeInTheDocument();
 			});
 		});
@@ -110,7 +110,7 @@ describe("UserSettings component", () => {
 				render(<UserSettings />);
 				const string = "Add API key";
 				expect(
-					screen.getByRole("button", { name: string })
+					screen.getByRole("button", { name: string }),
 				).toBeInTheDocument();
 			});
 
@@ -119,7 +119,7 @@ describe("UserSettings component", () => {
 					mockAppState = JSON.parse(JSON.stringify(mockStoreApiKeys));
 					render(<UserSettings />);
 					expect(
-						screen.queryByText(/no api keys found/i)
+						screen.queryByText(/no api keys found/i),
 					).not.toBeInTheDocument();
 				});
 
@@ -127,22 +127,22 @@ describe("UserSettings component", () => {
 					mockAppState = JSON.parse(JSON.stringify(mockStoreApiKeys));
 					render(<UserSettings />);
 					expect(
-						screen.getByRole("columnheader", { name: /name/i })
+						screen.getByRole("columnheader", { name: /name/i }),
 					).toBeInTheDocument();
 					expect(
-						screen.getByRole("columnheader", { name: /scope/i })
+						screen.getByRole("columnheader", { name: /scope/i }),
 					).toBeInTheDocument();
 					expect(
-						screen.getByRole("columnheader", { name: /created/i })
+						screen.getByRole("columnheader", { name: /created/i }),
 					).toBeInTheDocument();
 					expect(
-						screen.getByRole("columnheader", { name: /expires/i })
+						screen.getByRole("columnheader", { name: /expires/i }),
 					).toBeInTheDocument();
 					expect(
-						screen.getByRole("columnheader", { name: /last used/i })
+						screen.getByRole("columnheader", { name: /last used/i }),
 					).toBeInTheDocument();
 					expect(
-						screen.getByRole("columnheader", { name: /actions/i })
+						screen.getByRole("columnheader", { name: /actions/i }),
 					).toBeInTheDocument();
 				});
 
@@ -161,7 +161,7 @@ describe("UserSettings component", () => {
 						await user.click(deleteButton);
 						await waitFor(() => {
 							expect(
-								screen.getByText(`Remove API key named "${name}"?`)
+								screen.getByText(`Remove API key named "${name}"?`),
 							).toBeInTheDocument();
 						});
 
@@ -177,13 +177,13 @@ describe("UserSettings component", () => {
 						expect(mockDispatch).not.toHaveBeenCalledWith(
 							deleteUserKey({
 								url: `/users/self/keys/${id}`,
-							})
+							}),
 						);
 
 						// collapsible row should be collapsed
 						await waitFor(() => {
 							expect(
-								screen.queryByText(`Remove API key named "${name}"?`)
+								screen.queryByText(`Remove API key named "${name}"?`),
 							).not.toBeInTheDocument();
 						});
 					});
@@ -200,7 +200,7 @@ describe("UserSettings component", () => {
 						await user.click(deleteButton);
 						await waitFor(() => {
 							expect(
-								screen.getByText(`Remove API key named "${name}"?`)
+								screen.getByText(`Remove API key named "${name}"?`),
 							).toBeInTheDocument();
 						});
 
@@ -216,7 +216,7 @@ describe("UserSettings component", () => {
 						expect(mockDispatch).toHaveBeenCalledWith(
 							deleteUserKey({
 								url: `/users/self/keys/${id}`,
-							})
+							}),
 						);
 					});
 				});
@@ -235,7 +235,7 @@ describe("UserSettings component", () => {
 
 						await waitFor(() => {
 							expect(
-								screen.queryByRole("dialog", { name: "Add New API Key" })
+								screen.queryByRole("dialog", { name: "Add New API Key" }),
 							).toBeInTheDocument();
 						});
 
@@ -244,10 +244,10 @@ describe("UserSettings component", () => {
 						});
 
 						expect(
-							within(dialog).queryByText("Features")
+							within(dialog).queryByText("Features"),
 						).not.toBeInTheDocument();
 						expect(
-							within(dialog).queryByLabelText("Snyk Vulnerability Plugin")
+							within(dialog).queryByLabelText("Snyk Vulnerability Plugin"),
 						).not.toBeInTheDocument();
 					});
 
@@ -266,7 +266,7 @@ describe("UserSettings component", () => {
 
 						await waitFor(() => {
 							expect(
-								screen.queryByRole("dialog", { name: "Add New API Key" })
+								screen.queryByRole("dialog", { name: "Add New API Key" }),
 							).toBeInTheDocument();
 						});
 
@@ -275,10 +275,10 @@ describe("UserSettings component", () => {
 						});
 
 						expect(
-							within(dialog).queryByText("Features")
+							within(dialog).queryByText("Features"),
 						).not.toBeInTheDocument();
 						expect(
-							within(dialog).queryByLabelText("Snyk Vulnerability Plugin")
+							within(dialog).queryByLabelText("Snyk Vulnerability Plugin"),
 						).not.toBeInTheDocument();
 					});
 
@@ -295,7 +295,7 @@ describe("UserSettings component", () => {
 
 						await waitFor(() => {
 							expect(
-								screen.queryByRole("dialog", { name: "Add New API Key" })
+								screen.queryByRole("dialog", { name: "Add New API Key" }),
 							).toBeInTheDocument();
 						});
 
@@ -307,15 +307,15 @@ describe("UserSettings component", () => {
 							console.log("Snyk feature enabled, testing it is enabled...");
 							expect(within(dialog).getByText("Features")).toBeInTheDocument();
 							expect(
-								within(dialog).getByLabelText("Snyk Vulnerability Plugin")
+								within(dialog).getByLabelText("Snyk Vulnerability Plugin"),
 							).toBeInTheDocument();
 						} else {
 							console.log("Snyk feature disabled, testing it is disabled...");
 							expect(
-								within(dialog).queryByText("Features")
+								within(dialog).queryByText("Features"),
 							).not.toBeInTheDocument();
 							expect(
-								within(dialog).queryByLabelText("Snyk Vulnerability Plugin")
+								within(dialog).queryByLabelText("Snyk Vulnerability Plugin"),
 							).not.toBeInTheDocument();
 						}
 					});
@@ -403,10 +403,10 @@ describe("UserSettings component", () => {
 				await user.clear(expiresField);
 				await user.type(expiresField, futureDate);
 				await waitFor(() =>
-					expect(expiresField).toHaveDisplayValue(futureDate)
+					expect(expiresField).toHaveDisplayValue(futureDate),
 				);
 				expect(
-					within(dialog).queryByText("Must be a future date")
+					within(dialog).queryByText("Must be a future date"),
 				).not.toBeInTheDocument();
 				expect(addKeyButton).not.toBeDisabled();
 				expect(within(dialog).queryByText(error)).not.toBeInTheDocument();
@@ -441,7 +441,7 @@ describe("UserSettings component", () => {
 					mockAppState.currentUser.entities.self.scan_orgs.forEach(
 						(org: string) => {
 							within(scopeList).getByText(org);
-						}
+						},
 					);
 
 					const scopeHelpButton = within(dialog).getByRole("button", {
@@ -528,7 +528,7 @@ describe("UserSettings component", () => {
 					// enter a single valid scope from user's scan_orgs
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/*`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/*`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -563,7 +563,7 @@ describe("UserSettings component", () => {
 					expect(
 						within(dialog).getAllByRole("button", {
 							name: /remove this scope item/i,
-						})
+						}),
 					).toHaveLength(1);
 
 					const addScopeField = within(dialog).getByRole("textbox", {
@@ -573,7 +573,7 @@ describe("UserSettings component", () => {
 					// enter 5 additional scopes from user's scan_orgs, separated by space, comma, comma+space, & newline
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*,${mockAppState.currentUser.entities.self.scan_orgs[2]}/*, ${mockAppState.currentUser.entities.self.scan_orgs[3]}/*{enter}${mockAppState.currentUser.entities.self.scan_orgs[4]}/*`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*,${mockAppState.currentUser.entities.self.scan_orgs[2]}/*, ${mockAppState.currentUser.entities.self.scan_orgs[3]}/*{enter}${mockAppState.currentUser.entities.self.scan_orgs[4]}/*`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -586,8 +586,8 @@ describe("UserSettings component", () => {
 						expect(
 							within(dialog).getAllByRole("button", {
 								name: /remove this scope item/i,
-							})
-						).toHaveLength(6)
+							}),
+						).toHaveLength(6),
 					);
 				});
 
@@ -641,7 +641,7 @@ describe("UserSettings component", () => {
 					// test invalid scope value
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -672,7 +672,7 @@ describe("UserSettings component", () => {
 					// test invalid scope value
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -703,7 +703,7 @@ describe("UserSettings component", () => {
 					// 1st and 3rd scopes are valid, 2nd (middle) scope is invalid
 					await user.type(
 						addScopeField,
-						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* invalid-scope ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*`
+						`${mockAppState.currentUser.entities.self.scan_orgs[0]}/* invalid-scope ${mockAppState.currentUser.entities.self.scan_orgs[1]}/*`,
 					);
 					const addNewScopeButton = within(dialog).getByRole("button", {
 						name: /add this item to scope/i,
@@ -735,7 +735,7 @@ describe("UserSettings component", () => {
 						"button",
 						{
 							name: copyString,
-						}
+						},
 					);
 					expect(copyButton).toBeInTheDocument();
 					await user.click(copyButton);

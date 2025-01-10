@@ -24,7 +24,7 @@ describe("formatters", () => {
 		it("valid date, short (default) format", () => {
 			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
 			expect(formatters.formatDate("2021-08-11T22:46:24.518Z")).toMatch(
-				/2021-08-11 6:46[ \u202f]PM EDT/
+				/2021-08-11 6:46[ \u202f]PM EDT/,
 			);
 		});
 
@@ -35,7 +35,7 @@ describe("formatters", () => {
 			// allow either
 			// ICU 72.1 update introduced a unicode string, \u202f, to separate time from AM/PM
 			expect(formatters.formatDate("2021-08-11T22:46:24.518Z", "long")).toMatch(
-				/Wednesday, August 11, 2021(,| at) 6:46:24[ \u202f]PM EDT/
+				/Wednesday, August 11, 2021(,| at) 6:46:24[ \u202f]PM EDT/,
 			);
 		});
 	});
@@ -57,7 +57,7 @@ describe("formatters", () => {
 	describe("compareButIgnoreLeadingDashes", () => {
 		it("aaa < bbb", () => {
 			expect(formatters.compareButIgnoreLeadingDashes("aaa", "bbb")).toEqual(
-				-1
+				-1,
 			);
 		});
 
@@ -71,19 +71,19 @@ describe("formatters", () => {
 
 		it("-aaa < bbb", () => {
 			expect(formatters.compareButIgnoreLeadingDashes("-aaa", "bbb")).toEqual(
-				-1
+				-1,
 			);
 		});
 
 		it("-bbb > aaa", () => {
 			expect(formatters.compareButIgnoreLeadingDashes("-bbb", "aaa")).toEqual(
-				1
+				1,
 			);
 		});
 
 		it("-aaa == aaa", () => {
 			expect(formatters.compareButIgnoreLeadingDashes("-aaa", "aaa")).toEqual(
-				0
+				0,
 			);
 		});
 	});
@@ -133,7 +133,7 @@ describe("formatters", () => {
 			rows[0]["branch"] = branch;
 			rows[0]["commit"] = "";
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/blob/${branch}/${filename}`)
+				new RegExp(`/${repo}/blob/${branch}/${filename}`),
 			);
 		});
 
@@ -141,7 +141,7 @@ describe("formatters", () => {
 			rows[0]["commit"] = "";
 			rows[0]["line"] = line_no;
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/blob/${branch}/${filename}#L${line_no}`)
+				new RegExp(`/${repo}/blob/${branch}/${filename}#L${line_no}`),
 			);
 		});
 
@@ -149,7 +149,7 @@ describe("formatters", () => {
 			rows[0]["commit"] = commit;
 			rows[0]["line"] = "";
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/blob/${commit}/${filename}`)
+				new RegExp(`/${repo}/blob/${commit}/${filename}`),
 			);
 		});
 
@@ -159,7 +159,7 @@ describe("formatters", () => {
 			rows[0]["service"] = "gitlab";
 			rows[0]["commit"] = "";
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/-/blob/${branch}/${filename}`)
+				new RegExp(`/${repo}/-/blob/${branch}/${filename}`),
 			);
 		});
 
@@ -168,7 +168,7 @@ describe("formatters", () => {
 			rows[0]["commit"] = "";
 			rows[0]["line"] = line_no;
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/-/blob/${branch}/${filename}#L${line_no}`)
+				new RegExp(`/${repo}/-/blob/${branch}/${filename}#L${line_no}`),
 			);
 		});
 
@@ -176,7 +176,7 @@ describe("formatters", () => {
 			rows[0]["commit"] = commit;
 			rows[0]["line"] = "";
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/-/blob/${commit}/${filename}`)
+				new RegExp(`/${repo}/-/blob/${commit}/${filename}`),
 			);
 		});
 
@@ -186,7 +186,7 @@ describe("formatters", () => {
 			rows[0]["service"] = "bitbucket";
 			rows[0]["commit"] = "";
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/src/${branch}/${filename}`)
+				new RegExp(`/${repo}/src/${branch}/${filename}`),
 			);
 		});
 
@@ -195,7 +195,7 @@ describe("formatters", () => {
 			rows[0]["commit"] = "";
 			rows[0]["line"] = line_no;
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/src/${branch}/${filename}#lines-${line_no}`)
+				new RegExp(`/${repo}/src/${branch}/${filename}#lines-${line_no}`),
 			);
 		});
 
@@ -203,7 +203,7 @@ describe("formatters", () => {
 			rows[0]["commit"] = commit;
 			rows[0]["line"] = "";
 			expect(formatters.vcsHotLink(rows[0])).toMatch(
-				new RegExp(`/${repo}/src/${commit}/${filename}`)
+				new RegExp(`/${repo}/src/${commit}/${filename}`),
 			);
 		});
 	});

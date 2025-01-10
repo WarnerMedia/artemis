@@ -138,5 +138,5 @@ export const {
 	selectIds: selectHiddenFindingIds,
 	selectTotal: selectTotalHiddenFindings,
 } = hiddenFindingsAdapter.getSelectors(
-	(state: RootState) => state.hiddenFindings
+	(state: RootState) => state.hiddenFindings,
 );

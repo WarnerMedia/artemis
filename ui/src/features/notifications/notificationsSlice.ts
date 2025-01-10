@@ -62,5 +62,5 @@ export const {
 	selectIds: selectNotificationIds,
 	selectTotal: selectTotalNotifications,
 } = notificationsAdapter.getSelectors(
-	(state: RootState) => state.notifications
+	(state: RootState) => state.notifications,
 );

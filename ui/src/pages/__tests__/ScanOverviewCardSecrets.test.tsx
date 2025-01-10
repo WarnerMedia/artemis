@@ -39,11 +39,11 @@ describe("Overview Card Secrets test", () => {
 				chartData={mockTinyChartData}
 				nothingFoundText={`No secrets detected`}
 				isTabDisabled={true}
-			/>
+			/>,
 		);
 
 		expect(
-			screen.getByText(/This scan option was not used/)
+			screen.getByText(/This scan option was not used/),
 		).toBeInTheDocument();
 	});
 });
@@ -73,7 +73,7 @@ describe("Overview Card Secrets test", () => {
 				chartData={mockTinyChartData}
 				nothingFoundText={`No secrets detected`}
 				isTabDisabled={true}
-			/>
+			/>,
 		);
 
 		expect(screen.getByText(/No secrets detected/)).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe("Overview Card Secrets test", () => {
 				chartData={mockTinyChartData}
 				nothingFoundText={`No secrets detected`}
 				isTabDisabled={true}
-			/>
+			/>,
 		);
 
 		expect(screen.getByTestId("a-donut-chart")).toBeInTheDocument();

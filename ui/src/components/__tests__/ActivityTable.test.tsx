@@ -75,12 +75,12 @@ describe("ActivityTable component", () => {
 				onDataLoad={mockOnDataLoad}
 				exportFetch={mockExportFetch}
 				toCsv={mockToCsv}
-			/>
+			/>,
 		);
 
 		expect(screen.getByText(/no matching scans/i)).toBeInTheDocument();
 		expect(
-			screen.queryByRole("table", { name: /scans table/i })
+			screen.queryByRole("table", { name: /scans table/i }),
 		).not.toBeInTheDocument();
 		// callback should not have been called to fetch data if form (data) wasn't passed
 		expect(mockOnDataLoad.mock.calls.length).toBe(0);
@@ -98,37 +98,37 @@ describe("ActivityTable component", () => {
 				onDataLoad={mockOnDataLoad}
 				exportFetch={mockExportFetch}
 				toCsv={mockToCsv}
-			/>
+			/>,
 		);
 
 		expect(screen.queryByText(/no matching scans/i)).not.toBeInTheDocument();
 		// check table has expected title, refresh buttons, & column titles
 		expect(
-			screen.getByRole("table", { name: /scans table/i })
+			screen.getByRole("table", { name: /scans table/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("button", { name: /refresh/i })
+			screen.getByRole("button", { name: /refresh/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("checkbox", { name: /auto refresh/i })
+			screen.getByRole("checkbox", { name: /auto refresh/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("columnheader", { name: /actions/i })
+			screen.getByRole("columnheader", { name: /actions/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("columnheader", { name: /^Type$/i })
+			screen.getByRole("columnheader", { name: /^Type$/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("columnheader", { name: /branch/i })
+			screen.getByRole("columnheader", { name: /branch/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("columnheader", { name: /start/i })
+			screen.getByRole("columnheader", { name: /start/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("columnheader", { name: /end/i })
+			screen.getByRole("columnheader", { name: /end/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("columnheader", { name: /status/i })
+			screen.getByRole("columnheader", { name: /status/i }),
 		).toBeInTheDocument();
 	});
 
@@ -148,7 +148,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(screen.getByLabelText(/On-Demand Scan/)).toBeInTheDocument();
@@ -168,7 +168,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(screen.getByLabelText("Batched Scan")).toBeInTheDocument();
@@ -190,13 +190,13 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
 				screen.getByLabelText(
-					`Batched Scan: ${mockAppState.scans.entities[mockStoreScanId].batch_description}`
-				)
+					`Batched Scan: ${mockAppState.scans.entities[mockStoreScanId].batch_description}`,
+				),
 			).toBeInTheDocument();
 		});
 
@@ -213,7 +213,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(screen.getByLabelText("Qualified Scan")).toBeInTheDocument();
@@ -233,15 +233,15 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
 				screen.getByLabelText(
 					`Include paths: ${scan.scan_options.include_paths.join(
-						", "
-					)} ; Exclude paths: None`
-				)
+						", ",
+					)} ; Exclude paths: None`,
+				),
 			).toBeInTheDocument();
 		});
 
@@ -259,15 +259,15 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
 				screen.getByLabelText(
 					`Include paths: None ; Exclude paths: ${scan.scan_options.exclude_paths.join(
-						", "
-					)}`
-				)
+						", ",
+					)}`,
+				),
 			).toBeInTheDocument();
 		});
 
@@ -286,15 +286,15 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
 				screen.getByLabelText(
 					`Include paths: ${scan.scan_options.include_paths.join(
-						", "
-					)} ; Exclude paths: ${scan.scan_options.exclude_paths.join(", ")}`
-				)
+						", ",
+					)} ; Exclude paths: ${scan.scan_options.exclude_paths.join(", ")}`,
+				),
 			).toBeInTheDocument();
 		});
 
@@ -314,7 +314,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(screen.getByLabelText("Batched Scan")).toBeInTheDocument();
@@ -322,9 +322,9 @@ describe("ActivityTable component", () => {
 			expect(
 				screen.getByLabelText(
 					`Include paths: ${scan.scan_options.include_paths.join(
-						", "
-					)} ; Exclude paths: None`
-				)
+						", ",
+					)} ; Exclude paths: None`,
+				),
 			).toBeInTheDocument();
 		});
 	});
@@ -343,13 +343,13 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
 				screen.queryByRole("cell", {
 					name: mockAppState.scans.entities[mockStoreScanId].branch,
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -366,13 +366,13 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
 				screen.queryByRole("cell", {
 					name: "Default",
-				})
+				}),
 			).toBeInTheDocument();
 		});
 	});
@@ -392,18 +392,18 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			// note: start date from API is in GMT, so displayed date in GMT should be 5 hours earlier
 			// since we are in EST on Jan 1 (GMT-0500)
 			const dateField = screen.getByTitle(
-				/Wednesday, January 1, 2020(,| at) 6:00:00 AM EST/
+				/Wednesday, January 1, 2020(,| at) 6:00:00 AM EST/,
 			);
 			expect(dateField).toBeInTheDocument();
 			// also check the long date tooltip exists
 			expect(
-				getByText(dateField, "2020-01-01 6:00 AM EST")
+				getByText(dateField, "2020-01-01 6:00 AM EST"),
 			).toBeInTheDocument();
 		});
 	});
@@ -423,18 +423,18 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			// note: start date from API is in GMT, so displayed date in GMT should be 5 hours earlier
 			// since we are in EST on Jan 1 (GMT-0500)
 			const dateField = screen.getByTitle(
-				/Wednesday, January 1, 2020(,| at) 8:00:00 AM EST/
+				/Wednesday, January 1, 2020(,| at) 8:00:00 AM EST/,
 			);
 			expect(dateField).toBeInTheDocument();
 			// also check the long date tooltip exists
 			expect(
-				getByText(dateField, "2020-01-01 8:00 AM EST")
+				getByText(dateField, "2020-01-01 8:00 AM EST"),
 			).toBeInTheDocument();
 		});
 	});
@@ -455,11 +455,11 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
-				screen.getByRole("button", { name: /^view successful results$/i })
+				screen.getByRole("button", { name: /^view successful results$/i }),
 			).toBeInTheDocument();
 			// MUI "buttons" with href attrs are really a href link components
 			const reportNewTabLink = screen.getByRole("link", {
@@ -471,7 +471,7 @@ describe("ActivityTable component", () => {
 			expect(
 				screen.getByRole("button", {
 					name: /open more actions menu/i,
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -490,17 +490,17 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			expect(
-				screen.getByRole("button", { name: /^view failed results$/i })
+				screen.getByRole("button", { name: /^view failed results$/i }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("link", { name: /^view failed results in new tab$/i })
+				screen.getByRole("link", { name: /^view failed results in new tab$/i }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("button", { name: /open more actions menu/i })
+				screen.getByRole("button", { name: /open more actions menu/i }),
 			).toBeInTheDocument();
 		});
 
@@ -519,7 +519,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			const resultsButton = screen.getByRole("button", {
@@ -553,7 +553,7 @@ describe("ActivityTable component", () => {
 						onDataLoad={mockOnDataLoad}
 						exportFetch={mockExportFetch}
 						toCsv={mockToCsv}
-					/>
+					/>,
 				);
 
 				const moreActionsButton = screen.getByRole("button", {
@@ -584,7 +584,7 @@ describe("ActivityTable component", () => {
 						onDataLoad={mockOnDataLoad}
 						exportFetch={mockExportFetch}
 						toCsv={mockToCsv}
-					/>
+					/>,
 				);
 
 				const moreActionsButton = screen.getByRole("button", {
@@ -613,7 +613,7 @@ describe("ActivityTable component", () => {
 						onDataLoad={mockOnDataLoad}
 						exportFetch={mockExportFetch}
 						toCsv={mockToCsv}
-					/>
+					/>,
 				);
 
 				const moreActionsButton = screen.getByRole("button", {
@@ -633,8 +633,8 @@ describe("ActivityTable component", () => {
 				await user.click(cancelButton);
 				await waitFor(() =>
 					expect(
-						screen.queryByRole("dialog", { name: /new scan/i })
-					).not.toBeInTheDocument()
+						screen.queryByRole("dialog", { name: /new scan/i }),
+					).not.toBeInTheDocument(),
 				);
 				expect(startScan).not.toHaveBeenCalled();
 			});
@@ -656,7 +656,7 @@ describe("ActivityTable component", () => {
 						onDataLoad={mockOnDataLoad}
 						exportFetch={mockExportFetch}
 						toCsv={mockToCsv}
-					/>
+					/>,
 				);
 
 				const moreActionsButton = screen.getByRole("button", {
@@ -676,8 +676,8 @@ describe("ActivityTable component", () => {
 				await user.click(startScanButton);
 				await waitFor(() =>
 					expect(
-						screen.queryByRole("dialog", { name: /new scan/i })
-					).not.toBeInTheDocument()
+						screen.queryByRole("dialog", { name: /new scan/i }),
+					).not.toBeInTheDocument(),
 				);
 				expect(startScan).toHaveBeenLastCalledWith(
 					expect.any(Function), // navigate
@@ -711,7 +711,7 @@ describe("ActivityTable component", () => {
 							? scan.scan_options?.exclude_paths.join(", ")
 							: "",
 					},
-					mockAppState.currentUser.entities["self"] // currentUser
+					mockAppState.currentUser.entities["self"], // currentUser
 				);
 			});
 		});
@@ -734,7 +734,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
@@ -767,7 +767,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
@@ -806,7 +806,7 @@ describe("ActivityTable component", () => {
 				null,
 				{
 					advanceTimers: jest.advanceTimersByTime,
-				}
+				},
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
@@ -844,7 +844,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
@@ -884,7 +884,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 
 			const reloadButton = screen.getByRole("button", {
@@ -913,7 +913,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // load data should be called once
 
@@ -931,7 +931,7 @@ describe("ActivityTable component", () => {
 
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("listbox", { name: /rows per page/i })
+					screen.queryByRole("listbox", { name: /rows per page/i }),
 				).toBeInTheDocument();
 			});
 
@@ -974,7 +974,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad).toBeCalledWith({
 				currentPage: 0,
@@ -1011,7 +1011,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			// associated filter toggles should be disabled
 			const toggleShowScans = screen.getByRole("checkbox", {
@@ -1040,7 +1040,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad).toBeCalledWith({
 				currentPage: 0,
@@ -1092,7 +1092,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad).toBeCalledWith({
 				currentPage: 0,
@@ -1144,7 +1144,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad).toBeCalledWith({
 				currentPage: 0,
@@ -1210,7 +1210,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad).toBeCalledWith({
 				currentPage: 0,
@@ -1278,7 +1278,7 @@ describe("ActivityTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					exportFetch={mockExportFetch}
 					toCsv={mockToCsv}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad).toBeCalledWith({
 				currentPage: 0,

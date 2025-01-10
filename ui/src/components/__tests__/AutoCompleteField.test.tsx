@@ -22,7 +22,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(screen.getByRole("combobox", { name: "" })).toBeInTheDocument();
@@ -43,11 +43,11 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(
-			screen.getByRole("combobox", { name: "Test Me" })
+			screen.getByRole("combobox", { name: "Test Me" }),
 		).toBeInTheDocument();
 	});
 
@@ -69,7 +69,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		/* testing:
@@ -82,7 +82,7 @@ describe("AutoCompleteField component", () => {
 		expect(inputField).toBeInTheDocument();
 		if (inputField && inputField.parentElement) {
 			expect(inputField.parentElement.firstChild).toHaveClass(
-				"MuiInputAdornment-positionStart"
+				"MuiInputAdornment-positionStart",
 			);
 		} else {
 			fail("Autocomplete did not match the expected element tree");
@@ -104,7 +104,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(screen.getByDisplayValue("foo")).toBeInTheDocument();
@@ -126,7 +126,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(screen.getByText("Helper Text")).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(screen.queryAllByPlaceholderText("Placeholder")).toHaveLength(2);
@@ -170,7 +170,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(screen.getByRole("combobox", { name: "Test Me" })).toBeDisabled();
@@ -192,7 +192,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		expect(screen.queryByLabelText(/loading/i)).toBeInTheDocument();
@@ -228,7 +228,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		const inputEl = screen.getByLabelText("Test Me");
@@ -294,7 +294,7 @@ describe("AutoCompleteField component", () => {
 				<Form noValidate autoComplete="off">
 					<AutoCompleteField {...props} />
 				</Form>
-			</Formik>
+			</Formik>,
 		);
 
 		const inputEl = screen.getByLabelText("Test Me");

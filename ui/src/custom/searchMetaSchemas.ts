@@ -26,26 +26,26 @@ const matchMetadataFieldSchema = (message: string) => {
 export const metaSchema = () => {
 	return Yup.object({
 		field1_match: matchMetadataFieldSchema(
-			i18n._(t`Invalid meta data field1 matcher`)
+			i18n._(t`Invalid meta data field1 matcher`),
 		),
 		field1: Yup.string()
 			.trim()
 			.max(
 				META_FIELD1_LENGTH,
 				i18n._(
-					t`Meta data field1 must be less than ${META_FIELD1_LENGTH} characters`
-				)
+					t`Meta data field1 must be less than ${META_FIELD1_LENGTH} characters`,
+				),
 			),
 		field2_match: matchMetadataFieldSchema(
-			i18n._(t`Invalid meta data field2 matcher`)
+			i18n._(t`Invalid meta data field2 matcher`),
 		),
 		field2: Yup.string()
 			.trim()
 			.max(
 				META_FIELD2_LENGTH,
 				i18n._(
-					t`Meta data field2 must be less than ${META_FIELD2_LENGTH} characters`
-				)
+					t`Meta data field2 must be less than ${META_FIELD2_LENGTH} characters`,
+				),
 			),
 	}).defined();
 };
@@ -61,38 +61,38 @@ export const metaQueryParamsSchema = () => {
 			.max(
 				META_FIELD1_LENGTH,
 				i18n._(
-					t`Meta data field1 must be less than ${META_FIELD1_LENGTH} characters`
-				)
+					t`Meta data field1 must be less than ${META_FIELD1_LENGTH} characters`,
+				),
 			),
 		field1__null: booleanStringSchema(
-			i18n._(t`Meta data field1 null must be either "true" or "false"`)
+			i18n._(t`Meta data field1 null must be either "true" or "false"`),
 		),
 		field1__icontains: Yup.string()
 			.trim()
 			.max(
 				META_FIELD1_LENGTH,
 				i18n._(
-					t`Meta data field1 must be less than ${META_FIELD1_LENGTH} characters`
-				)
+					t`Meta data field1 must be less than ${META_FIELD1_LENGTH} characters`,
+				),
 			),
 		field2: Yup.string()
 			.trim()
 			.max(
 				META_FIELD2_LENGTH,
 				i18n._(
-					t`Meta data field2 must be less than ${META_FIELD2_LENGTH} characters`
-				)
+					t`Meta data field2 must be less than ${META_FIELD2_LENGTH} characters`,
+				),
 			),
 		field2__null: booleanStringSchema(
-			i18n._(t`Meta data field2 null must be either "true" or "false"`)
+			i18n._(t`Meta data field2 null must be either "true" or "false"`),
 		),
 		field2__icontains: Yup.string()
 			.trim()
 			.max(
 				META_FIELD2_LENGTH,
 				i18n._(
-					t`Meta data field2 must be less than ${META_FIELD2_LENGTH} characters`
-				)
+					t`Meta data field2 must be less than ${META_FIELD2_LENGTH} characters`,
+				),
 			),
 	}).defined();
 };

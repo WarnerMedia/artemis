@@ -86,19 +86,19 @@ describe("UsersPage component", () => {
 				mockAppState = JSON.parse(JSON.stringify(mockUsers));
 				render(<UsersPage />);
 				expect(
-					screen.getByRole("columnheader", { name: /email/i })
+					screen.getByRole("columnheader", { name: /email/i }),
 				).toBeInTheDocument();
 				expect(
-					screen.getByRole("columnheader", { name: /scope/i })
+					screen.getByRole("columnheader", { name: /scope/i }),
 				).toBeInTheDocument();
 				expect(
-					screen.getByRole("columnheader", { name: /admin/i })
+					screen.getByRole("columnheader", { name: /admin/i }),
 				).toBeInTheDocument();
 				expect(
-					screen.getByRole("columnheader", { name: /last login/i })
+					screen.getByRole("columnheader", { name: /last login/i }),
 				).toBeInTheDocument();
 				expect(
-					screen.getByRole("columnheader", { name: /actions/i })
+					screen.getByRole("columnheader", { name: /actions/i }),
 				).toBeInTheDocument();
 			});
 
@@ -131,7 +131,7 @@ describe("UsersPage component", () => {
 					await user.click(deleteButton);
 					await waitFor(() => {
 						expect(
-							screen.getByText(`Remove user "${id}"?`)
+							screen.getByText(`Remove user "${id}"?`),
 						).toBeInTheDocument();
 					});
 
@@ -145,13 +145,13 @@ describe("UsersPage component", () => {
 					expect(mockDispatch).not.toHaveBeenCalledWith(
 						deleteUser({
 							email: id as string,
-						})
+						}),
 					);
 
 					// collapsible row should be collapsed
 					await waitFor(() => {
 						expect(
-							screen.queryByText(`Remove user "${id}"?`)
+							screen.queryByText(`Remove user "${id}"?`),
 						).not.toBeInTheDocument();
 					});
 				});
@@ -176,7 +176,7 @@ describe("UsersPage component", () => {
 
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("dialog", { name: dialogTitle })
+						screen.queryByRole("dialog", { name: dialogTitle }),
 					).toBeInTheDocument();
 				});
 				const addNewUserDialog = screen.getByRole("dialog", {
@@ -203,14 +203,14 @@ describe("UsersPage component", () => {
 					expect(
 						screen.getByRole("checkbox", {
 							name: "Snyk Vulnerability Detection Plugin",
-						})
+						}),
 					).toBeInTheDocument();
 				} else {
 					console.log("Snyk feature disabled, testing it is disabled...");
 					expect(
 						screen.queryByRole("checkbox", {
 							name: "Snyk Vulnerability Detection Plugin",
-						})
+						}),
 					).not.toBeInTheDocument();
 				}
 
@@ -236,7 +236,7 @@ describe("UsersPage component", () => {
 				await user.click(addButton);
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("dialog", { name: dialogTitle })
+						screen.queryByRole("dialog", { name: dialogTitle }),
 					).toBeInTheDocument();
 				});
 
@@ -250,7 +250,7 @@ describe("UsersPage component", () => {
 				expect(emailField).toHaveFocus();
 
 				expect(
-					within(dialog).getByLabelText("Administrator")
+					within(dialog).getByLabelText("Administrator"),
 				).toBeInTheDocument();
 
 				const invalidInput = "test@";
@@ -268,7 +268,7 @@ describe("UsersPage component", () => {
 
 				await waitFor(() => {
 					expect(
-						screen.queryByText("Invalid email address")
+						screen.queryByText("Invalid email address"),
 					).not.toBeInTheDocument();
 				});
 			});
@@ -285,7 +285,7 @@ describe("UsersPage component", () => {
 				await user.click(addButton);
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("dialog", { name: dialogTitle })
+						screen.queryByRole("dialog", { name: dialogTitle }),
 					).toBeInTheDocument();
 				});
 
@@ -320,7 +320,7 @@ describe("UsersPage component", () => {
 				await user.click(addButton);
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("dialog", { name: dialogTitle })
+						screen.queryByRole("dialog", { name: dialogTitle }),
 					).toBeInTheDocument();
 				});
 
@@ -346,7 +346,7 @@ describe("UsersPage component", () => {
 				expect(addScopeButton).toBeInTheDocument();
 				await user.click(addScopeButton);
 				expect(
-					within(dialog).getByDisplayValue(scopeInput)
+					within(dialog).getByDisplayValue(scopeInput),
 				).toBeInTheDocument();
 
 				// there is a known issue in user-events v4 where if you fire an event on an actve element after
@@ -410,7 +410,7 @@ describe("UsersPage component", () => {
 				const dialogTitle = "Modify User";
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("dialog", { name: dialogTitle })
+						screen.queryByRole("dialog", { name: dialogTitle }),
 					).toBeInTheDocument();
 				});
 
@@ -443,14 +443,14 @@ describe("UsersPage component", () => {
 					expect(
 						screen.getByRole("checkbox", {
 							name: "Snyk Vulnerability Detection Plugin",
-						})
+						}),
 					).toBeInTheDocument();
 				} else {
 					console.log("Snyk feature disabled, testing it is disabled...");
 					expect(
 						screen.queryByRole("checkbox", {
 							name: "Snyk Vulnerability Detection Plugin",
-						})
+						}),
 					).not.toBeInTheDocument();
 				}
 
@@ -494,7 +494,7 @@ describe("UsersPage component", () => {
 				const dialogTitle = "Modify User";
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("dialog", { name: dialogTitle })
+						screen.queryByRole("dialog", { name: dialogTitle }),
 					).toBeInTheDocument();
 				});
 

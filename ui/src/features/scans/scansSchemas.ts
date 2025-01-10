@@ -71,6 +71,7 @@ export interface ScanErrors {
 
 interface ScanInventory {
 	base_images?: object;
+	cicd_tools?: object;
 	technology_discovery?: object;
 }
 
@@ -95,6 +96,7 @@ export interface SeverityLevels {
 
 export interface SummaryInventory {
 	technology_discovery?: number;
+	cicd_tools?: number;
 	base_images?: number;
 }
 
@@ -327,6 +329,7 @@ const severityLevelsSchema: Yup.ObjectSchema<SeverityLevels> = Yup.object()
 const summaryInventorySchema: Yup.ObjectSchema<SummaryInventory> = Yup.object()
 	.shape({
 		technology_discovery: Yup.number(),
+		cicd_tools: Yup.number(),
 		base_images: Yup.number(),
 	})
 	.defined();
@@ -345,6 +348,7 @@ const scanResultsSummarySchema: Yup.ObjectSchema<ScanResultsSummary> =
 const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	.shape({
 		base_images: Yup.object(), // object with varying keys based on images detected
+		cicd_tools: Yup.object(), // object with varying keys based on images detected
 		technology_discovery: Yup.object(), // object with varying keys based on languages detected
 	})
 	.defined();
@@ -457,7 +461,7 @@ const validScanPaths = (paths?: string): number => {
 };
 
 export const scanOptionsFormSchema = (
-	currentUser?: User
+	currentUser?: User,
 ): Yup.ObjectSchema<ScanOptionsForm> => {
 	return Yup.object({
 		vcsOrg: Yup.string()
@@ -471,7 +475,7 @@ export const scanOptionsFormSchema = (
 			.required(i18n._(t`Required`))
 			.matches(
 				/^[a-zA-Z0-9.\-_/]+$/,
-				i18n._(t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /`)
+				i18n._(t`May only contain the characters: A-Z, a-z, 0-9, ., -, _, /`),
 			)
 			.when("vcsOrg", {
 				// if VCS does not contain /Org suffix, then repo must contain Org/ Prefix
@@ -487,8 +491,8 @@ export const scanOptionsFormSchema = (
 			.matches(
 				/^[^ ~^:?*[\\]*$/,
 				i18n._(
-					t`Contains one of more of the following invalid characters: space, \, ~, ^, :, ?, *, [`
-				)
+					t`Contains one of more of the following invalid characters: space, \, ~, ^, :, ?, *, [`,
+				),
 			),
 		secrets: Yup.boolean(),
 		staticAnalysis: Yup.boolean(),
@@ -520,7 +524,7 @@ export const scanOptionsFormSchema = (
 						message: i18n._(
 							valid === PATH_INVALID_FORMAT
 								? t`Invalid path, must be relative to repository base directory and contain valid characters`
-								: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`
+								: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`,
 						),
 					});
 				}
@@ -538,7 +542,7 @@ export const scanOptionsFormSchema = (
 							message: i18n._(
 								valid === PATH_INVALID_FORMAT
 									? t`Invalid path, must be relative to repository base directory and contain valid characters`
-									: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`
+									: t`Invalid path, longer than ${MAX_PATH_LENGTH} characters`,
 							),
 						});
 					}
@@ -564,7 +568,7 @@ export const scanOptionsFormSchema = (
 					configPlugins,
 					sbomPlugins,
 				},
-				testContext
+				testContext,
 			) {
 				if (
 					// check false instead of falsy
@@ -586,12 +590,12 @@ export const scanOptionsFormSchema = (
 					return testContext.createError({
 						path: "secrets",
 						message: i18n._(
-							t`At least one scan feature or plugin must be enabled`
+							t`At least one scan feature or plugin must be enabled`,
 						),
 					});
 				}
 				return true;
-			}
+			},
 		)
 		.defined();
 };

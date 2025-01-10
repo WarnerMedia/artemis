@@ -47,19 +47,19 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(rowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rows.length}`)
+				screen.getByText(`1–${rowsPerPage} of ${rows.length}`),
 			).toBeInTheDocument();
 			expect(
-				screen.queryByLabelText("This column is filtered")
+				screen.queryByLabelText("This column is filtered"),
 			).not.toBeInTheDocument();
 		});
 
@@ -77,32 +77,32 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
-				screen.getByRole("rowheader", { name: "row 1" })
+				screen.getByRole("rowheader", { name: "row 1" }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("rowheader", { name: "ROW 1" })
+				screen.getByRole("rowheader", { name: "ROW 1" }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("rowheader", { name: "notarow 1" })
+				screen.getByRole("rowheader", { name: "notarow 1" }),
 			).toBeInTheDocument();
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(totalRowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 
 			// check total items matches filtered item count (not unfiltered record count)
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`)
+				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
 
 			// column has a filtered indicator
 			expect(
-				screen.getByLabelText("This column is filtered")
+				screen.getByLabelText("This column is filtered"),
 			).toBeInTheDocument();
 		});
 
@@ -124,14 +124,14 @@ describe("EnhancedTable component", () => {
 					id="id"
 					defaultOrderBy="id"
 					filters={filters}
-				/>
+				/>,
 			);
 
 			// column has a filtered indicator
 			expect(
 				screen.getByRole("columnheader", {
 					name: "Data This column is filtered",
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -149,26 +149,26 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
-				screen.getByRole("rowheader", { name: "row 1" })
+				screen.getByRole("rowheader", { name: "row 1" }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("rowheader", { name: "ROW 1" })
+				screen.getByRole("rowheader", { name: "ROW 1" }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("rowheader", { name: "notarow 1" })
+				screen.getByRole("rowheader", { name: "notarow 1" }),
 			).toBeInTheDocument();
 			expect(screen.getByRole("rowheader", { name: "1" })).toBeInTheDocument();
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(totalRowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`)
+				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
 		});
 
@@ -186,22 +186,22 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
-				screen.getByRole("rowheader", { name: "foo 3" })
+				screen.getByRole("rowheader", { name: "foo 3" }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("rowheader", { name: "foobarbaz" })
+				screen.getByRole("rowheader", { name: "foobarbaz" }),
 			).toBeInTheDocument();
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(totalRowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`)
+				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
 		});
 
@@ -220,22 +220,22 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
-				screen.getByRole("rowheader", { name: "ROW 1" })
+				screen.getByRole("rowheader", { name: "ROW 1" }),
 			).toBeInTheDocument();
 			expect(
-				screen.getByRole("rowheader", { name: "ROW 2" })
+				screen.getByRole("rowheader", { name: "ROW 2" }),
 			).toBeInTheDocument();
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(totalRowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`)
+				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
 		});
 
@@ -254,19 +254,19 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
-				screen.getByRole("rowheader", { name: "row 1" })
+				screen.getByRole("rowheader", { name: "row 1" }),
 			).toBeInTheDocument();
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(totalRowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`)
+				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
 		});
 
@@ -286,16 +286,16 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(totalRowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(
-				screen.getByText(`1–${rowsPerPage} of ${rows.length}`)
+				screen.getByText(`1–${rowsPerPage} of ${rows.length}`),
 			).toBeInTheDocument();
 
 			// go to page 2
@@ -318,7 +318,7 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			await screen.findByText(`1–${rowsPerPage} of ${rowsPerPage}`);
 		});
@@ -338,17 +338,17 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(screen.queryByRole("cell")).not.toBeInTheDocument();
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(rowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 			expect(screen.getByText("0–0 of 0")).toBeInTheDocument();
 			expect(
-				screen.getByText("No results match current filters")
+				screen.getByText("No results match current filters"),
 			).toBeInTheDocument();
 		});
 	});
@@ -361,14 +361,14 @@ describe("EnhancedTable component", () => {
 					rows={rows}
 					id="data"
 					defaultOrderBy="data"
-				/>
+				/>,
 			);
 			expect(
 				screen.getByRole("button", {
 					name:
 						"Rows per page: " +
 						String(AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT),
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -381,12 +381,12 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy="data"
 					rowsPerPage={rowsPerPage}
-				/>
+				/>,
 			);
 			expect(
 				screen.getByRole("button", {
 					name: "Rows per page: " + String(rowsPerPage),
-				})
+				}),
 			).toBeInTheDocument();
 		});
 
@@ -398,7 +398,7 @@ describe("EnhancedTable component", () => {
 					rows={rows}
 					id="data"
 					defaultOrderBy="data"
-				/>
+				/>,
 			);
 
 			const rowsPerPageButton = screen.getByRole("button", {
@@ -409,7 +409,7 @@ describe("EnhancedTable component", () => {
 
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("listbox", { name: /rows per page/i })
+					screen.queryByRole("listbox", { name: /rows per page/i }),
 				).toBeInTheDocument();
 			});
 
@@ -430,7 +430,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy="data"
 					rowsPerPage={rowsPerPage}
 					rowsPerPageOptions={rowsPerPageOptions}
-				/>
+				/>,
 			);
 
 			const rowsPerPageButton = screen.getByRole("button", {
@@ -441,7 +441,7 @@ describe("EnhancedTable component", () => {
 
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("listbox", { name: /rows per page/i })
+					screen.queryByRole("listbox", { name: /rows per page/i }),
 				).toBeInTheDocument();
 			});
 
@@ -469,7 +469,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					reloadCount={0}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -494,7 +494,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -517,7 +517,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					filters={filters}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
@@ -538,12 +538,12 @@ describe("EnhancedTable component", () => {
 					id="data"
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
-				/>
+				/>,
 			);
 			expect(
 				screen.getByText(
-					`1–${AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT} of ${totalRows}`
-				)
+					`1–${AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT} of ${totalRows}`,
+				),
 			).toBeInTheDocument();
 		});
 
@@ -557,7 +557,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -576,7 +576,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
@@ -595,7 +595,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(3);
 			expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
@@ -620,7 +620,7 @@ describe("EnhancedTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
 					totalRows={totalRows}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -663,7 +663,7 @@ describe("EnhancedTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
 					totalRows={totalRows}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(3);
 			expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
@@ -688,7 +688,7 @@ describe("EnhancedTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
 					totalRows={totalRows}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -711,7 +711,7 @@ describe("EnhancedTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					reloadCount={reloadCount}
 					totalRows={totalRows}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
@@ -734,7 +734,7 @@ describe("EnhancedTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					totalRows={totalRows}
 					reloadCount={0}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -776,7 +776,7 @@ describe("EnhancedTable component", () => {
 					onDataLoad={mockOnDataLoad}
 					totalRows={totalRows}
 					reloadCount={0}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -795,7 +795,7 @@ describe("EnhancedTable component", () => {
 
 			await waitFor(() => {
 				expect(
-					screen.queryByRole("listbox", { name: /rows per page/i })
+					screen.queryByRole("listbox", { name: /rows per page/i }),
 				).toBeInTheDocument();
 			});
 
@@ -843,7 +843,7 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy={defaultOrderBy}
 					onDataLoad={mockOnDataLoad}
 					reloadCount={0}
-				/>
+				/>,
 			);
 			expect(mockOnDataLoad.mock.calls.length).toBe(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -860,7 +860,7 @@ describe("EnhancedTable component", () => {
 			expect(dataHeader).toBeInTheDocument();
 			await user.click(dataHeader);
 			expect(
-				screen.getByRole("button", { name: "Data sorted descending" })
+				screen.getByRole("button", { name: "Data sorted descending" }),
 			).toBeInTheDocument();
 
 			expect(mockOnDataLoad.mock.calls.length).toBe(2);
@@ -874,7 +874,7 @@ describe("EnhancedTable component", () => {
 			// click data column header again to change sort order
 			await user.click(dataHeader);
 			expect(
-				screen.getByRole("button", { name: "Data sorted ascending" })
+				screen.getByRole("button", { name: "Data sorted ascending" }),
 			).toBeInTheDocument();
 
 			expect(mockOnDataLoad.mock.calls.length).toBe(3);
@@ -890,7 +890,7 @@ describe("EnhancedTable component", () => {
 			expect(nameHeader).toBeInTheDocument();
 			await user.click(nameHeader);
 			expect(
-				screen.getByRole("button", { name: "Name sorted ascending" })
+				screen.getByRole("button", { name: "Name sorted ascending" }),
 			).toBeInTheDocument();
 
 			expect(mockOnDataLoad.mock.calls.length).toBe(4);
@@ -904,7 +904,7 @@ describe("EnhancedTable component", () => {
 			// click name column header again to change sort order
 			await user.click(nameHeader);
 			expect(
-				screen.getByRole("button", { name: "Name sorted descending" })
+				screen.getByRole("button", { name: "Name sorted descending" }),
 			).toBeInTheDocument();
 
 			expect(mockOnDataLoad.mock.calls.length).toBe(5);
@@ -918,7 +918,7 @@ describe("EnhancedTable component", () => {
 			// click name column header again to change sort order
 			await user.click(nameHeader);
 			expect(
-				screen.getByRole("button", { name: "Name sorted ascending" })
+				screen.getByRole("button", { name: "Name sorted ascending" }),
 			).toBeInTheDocument();
 
 			expect(mockOnDataLoad.mock.calls.length).toBe(6);
@@ -939,14 +939,14 @@ describe("EnhancedTable component", () => {
 					rows={rows}
 					id="data"
 					defaultOrderBy="data" // sort by this field
-				/>
+				/>,
 			);
 
 			// table sort column indicator
 			expect(
 				screen.getByRole("button", {
 					name: /[A-Za-z]+ sorted ascending/i,
-				})
+				}),
 			).toBeInTheDocument();
 
 			// ensure row data is sorted by defaultOrderBy param
@@ -976,13 +976,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				// ensure row data is in original, unsorted order
@@ -1013,7 +1013,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						reloadCount={0}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -1026,13 +1026,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 			});
 
@@ -1049,7 +1049,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						filters={filters}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -1062,13 +1062,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				filters = {
@@ -1083,7 +1083,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						filters={filters}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
@@ -1096,13 +1096,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 			});
 
@@ -1115,7 +1115,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						reloadCount={reloadCount}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -1128,13 +1128,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				reloadCount += 1;
@@ -1145,7 +1145,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						reloadCount={reloadCount}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
@@ -1158,13 +1158,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				reloadCount += 1;
@@ -1175,7 +1175,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						reloadCount={reloadCount}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(3);
 				expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
@@ -1188,13 +1188,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 			});
 
@@ -1209,7 +1209,7 @@ describe("EnhancedTable component", () => {
 						onDataLoad={mockOnDataLoad}
 						totalRows={totalRows}
 						reloadCount={0}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -1222,13 +1222,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				// go to page 2
@@ -1253,13 +1253,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 			});
 
@@ -1274,7 +1274,7 @@ describe("EnhancedTable component", () => {
 						onDataLoad={mockOnDataLoad}
 						totalRows={totalRows}
 						reloadCount={0}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -1287,13 +1287,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				// switch from 10 items per page to 20
@@ -1305,7 +1305,7 @@ describe("EnhancedTable component", () => {
 
 				await waitFor(() => {
 					expect(
-						screen.queryByRole("listbox", { name: /rows per page/i })
+						screen.queryByRole("listbox", { name: /rows per page/i }),
 					).toBeInTheDocument();
 				});
 
@@ -1335,13 +1335,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 			});
 
@@ -1364,7 +1364,7 @@ describe("EnhancedTable component", () => {
 						id="data"
 						onDataLoad={mockOnDataLoad}
 						reloadCount={0}
-					/>
+					/>,
 				);
 				expect(mockOnDataLoad.mock.calls.length).toBe(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
@@ -1377,13 +1377,13 @@ describe("EnhancedTable component", () => {
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted ascending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				expect(
 					screen.queryByRole("button", {
 						name: /[A-Za-z]+ sorted descending/i,
-					})
+					}),
 				).not.toBeInTheDocument();
 
 				// click data column header to change sort order
@@ -1393,7 +1393,7 @@ describe("EnhancedTable component", () => {
 				expect(dataHeader).toBeInTheDocument();
 				await user.click(dataHeader);
 				expect(
-					screen.getByRole("button", { name: "Data sorted ascending" })
+					screen.getByRole("button", { name: "Data sorted ascending" }),
 				).toBeInTheDocument();
 
 				expect(mockOnDataLoad.mock.calls.length).toBe(2);
@@ -1407,7 +1407,7 @@ describe("EnhancedTable component", () => {
 				// click data column header again to change sort order
 				await user.click(dataHeader);
 				expect(
-					screen.getByRole("button", { name: "Data sorted descending" })
+					screen.getByRole("button", { name: "Data sorted descending" }),
 				).toBeInTheDocument();
 
 				expect(mockOnDataLoad.mock.calls.length).toBe(3);
@@ -1423,7 +1423,7 @@ describe("EnhancedTable component", () => {
 				expect(nameHeader).toBeInTheDocument();
 				await user.click(nameHeader);
 				expect(
-					screen.getByRole("button", { name: "Name sorted ascending" })
+					screen.getByRole("button", { name: "Name sorted ascending" }),
 				).toBeInTheDocument();
 
 				expect(mockOnDataLoad.mock.calls.length).toBe(4);
@@ -1437,7 +1437,7 @@ describe("EnhancedTable component", () => {
 				// click name column header again to change sort order
 				await user.click(nameHeader);
 				expect(
-					screen.getByRole("button", { name: "Name sorted descending" })
+					screen.getByRole("button", { name: "Name sorted descending" }),
 				).toBeInTheDocument();
 
 				expect(mockOnDataLoad.mock.calls.length).toBe(5);
@@ -1451,7 +1451,7 @@ describe("EnhancedTable component", () => {
 				// click name column header again to change sort order
 				await user.click(nameHeader);
 				expect(
-					screen.getByRole("button", { name: "Name sorted ascending" })
+					screen.getByRole("button", { name: "Name sorted ascending" }),
 				).toBeInTheDocument();
 
 				expect(mockOnDataLoad.mock.calls.length).toBe(6);
@@ -1490,7 +1490,7 @@ describe("EnhancedTable component", () => {
 						exportFormats: exportFormats,
 						exportFetch: exportFetch,
 					}}
-				/>
+				/>,
 			);
 
 			let menu = screen.getByRole("button", { name: /open table menu/i });
@@ -1548,7 +1548,7 @@ describe("EnhancedTable component", () => {
 						exportFormats: exportFormats,
 						exportData: exportData,
 					}}
-				/>
+				/>,
 			);
 
 			let menu = screen.getByRole("button", { name: /open table menu/i });

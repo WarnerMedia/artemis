@@ -19,7 +19,7 @@ const initialState = currentUserAdapter.getInitialState<SliceState>({
 });
 
 export const getCurrentUser = createSagaActions<User, void>(
-	"currentUser/getCurrentUser"
+	"currentUser/getCurrentUser",
 );
 
 const currentUserSlice = createSlice({

@@ -74,7 +74,7 @@ describe("ResultsPage component", () => {
 			// page needs query params to get the scan
 			mockLocation = {
 				search: `?id=${encodeURIComponent(id)}&repo=${encodeURIComponent(
-					repo
+					repo,
 				)}&service=${encodeURIComponent(service)}`,
 			};
 			render(<ResultsPage />);
@@ -99,7 +99,7 @@ describe("ResultsPage component", () => {
 			// tab=3 (secrets)
 			mockLocation = {
 				search: `?id=${encodeURIComponent(id)}&repo=${encodeURIComponent(
-					repo
+					repo,
 				)}&service=${encodeURIComponent(service)}&tab=3`,
 			};
 			render(<ResultsPage />);
@@ -127,7 +127,7 @@ describe("ResultsPage component", () => {
 			// tab=2 (static_analysis)
 			mockLocation = {
 				search: `?id=${encodeURIComponent(id)}&repo=${encodeURIComponent(
-					repo
+					repo,
 				)}&service=${encodeURIComponent(service)}&tab=2`,
 			};
 			render(<ResultsPage />);

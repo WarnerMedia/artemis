@@ -15,7 +15,7 @@ import { addNotification } from "features/notifications/notificationsSlice";
 import { Key, KeysResponse } from "./keysSchemas";
 
 function* _deleteUserKeySaga(
-	action: PayloadAction<UserKeyRequest>
+	action: PayloadAction<UserKeyRequest>,
 ): Generator<StrictEffect, void, Key["id"]> {
 	try {
 		const response: Key["id"] = yield call(client.deleteUserKey, {
@@ -36,7 +36,7 @@ function* _deleteUserKeySaga(
 }
 
 function* _getUserKeysSaga(
-	action: PayloadAction<Client>
+	action: PayloadAction<Client>,
 ): Generator<StrictEffect, void, KeysResponse> {
 	const maxCount = 200;
 	let meta = undefined;
@@ -61,10 +61,10 @@ function* _getUserKeysSaga(
 			yield put(
 				addNotification(
 					i18n._(
-						t`User API key count exceeds ${maxCount}. Currently users can only manage ${maxCount} keys at a time. Please remove some expired or unused keys`
+						t`User API key count exceeds ${maxCount}. Currently users can only manage ${maxCount} keys at a time. Please remove some expired or unused keys`,
 					),
-					"warning"
-				)
+					"warning",
+				),
 			);
 		}
 	} catch (error: any) {

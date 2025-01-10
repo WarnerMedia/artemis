@@ -30,7 +30,7 @@ describe("PluginsSelector component", () => {
 						<PluginsSelector {...options} />
 					</Form>
 				)}
-			</Formik>
+			</Formik>,
 		);
 		user = renderArgs.user;
 	};
@@ -148,7 +148,7 @@ describe("PluginsSelector component", () => {
 			expect(
 				screen.queryByRole("checkbox", {
 					name: psMock.plugins[0].displayName,
-				})
+				}),
 			).not.toBeInTheDocument();
 
 			expect(mockExpandedChange).not.toHaveBeenCalled();

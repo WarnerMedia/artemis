@@ -70,7 +70,7 @@ const TableMenu = (props: TableMenuOptions) => {
 
 	useEffect(() => {
 		setSkipDialog(
-			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE)))
+			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);

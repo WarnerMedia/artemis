@@ -116,6 +116,10 @@ describe("HiddenFindingDialog component", () => {
 			it("date min value", async () => {
 				const expiresField = screen.getByLabelText(fieldExpiresLabel);
 				expect(expiresField).toBeInTheDocument();
+				expect(expiresField).toHaveAttribute(
+					"placeholder",
+					"yyyy/MM/dd HH:mm (24-hour)",
+				);
 				expect(expiresField).toHaveValue("");
 				const now = formatDateForExpirationField(DateTime.utc().toJSON());
 				await user.type(expiresField, now);

@@ -70,7 +70,7 @@ describe("MainPage component", () => {
 		mockUseDispatch.mockImplementation(() => mockDispatch);
 		localStorageSetItemSpy = jest.spyOn(
 			window.localStorage.__proto__,
-			"setItem"
+			"setItem",
 		);
 		mockLocation = {
 			search: "",
@@ -157,9 +157,9 @@ describe("MainPage component", () => {
 
 			expect(mockNavigate).toHaveBeenLastCalledWith(
 				`/?repo=${encodeURIComponent(
-					repo
+					repo,
 				)}&submitContext=scan&vcsOrg=${encodeURIComponent(vcsOrg)}`,
-				{ replace: true }
+				{ replace: true },
 			);
 		});
 	});

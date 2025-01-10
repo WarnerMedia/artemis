@@ -29,21 +29,21 @@ describe("OverviewTabContent", () => {
 				hfRows={mockHFRows001}
 				sharedColors={mockColors}
 				tabsStatus={tabsStatus}
-			/>
+			/>,
 		);
 
 		expect(screen.getByText(/Vulnerabilities/)).toBeInTheDocument();
 
 		expect(screen.getByText(/Static Analysis/)).toBeInTheDocument();
 		expect(
-			screen.getByText(/This scan option was not used/)
+			screen.getByText(/This scan option was not used/),
 		).toBeInTheDocument();
 
 		expect(screen.getByText(/Secrets/)).toBeInTheDocument();
 
 		expect(screen.getByText(/Inventory/)).toBeInTheDocument();
 		expect(
-			screen.getByText(/Images: golang, python, ubuntu/)
+			screen.getByText(/Images: golang, python, ubuntu/),
 		).toBeInTheDocument();
 
 		expect(screen.getByText(/Hidden Findings/)).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe("OverviewTabContent", () => {
 				hfRows={mockHFRows002}
 				sharedColors={mockColors}
 				tabsStatus={tabsStatus}
-			/>
+			/>,
 		);
 
 		expect(screen.getByText(/Vulnerabilities/)).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("OverviewTabContent", () => {
 
 		expect(screen.getByText(/Secrets/)).toBeInTheDocument();
 		expect(
-			screen.getAllByText(/This scan option was not used/)[0]
+			screen.getAllByText(/This scan option was not used/)[0],
 		).toBeInTheDocument();
 
 		expect(screen.getByText(/Inventory/)).toBeInTheDocument();

@@ -151,9 +151,9 @@ const StatusCell = (props: StatusCellProps) => {
 
 	const openResults = (tab: number) => {
 		const resultsUrl = `results?service=${encodeURIComponent(
-			row?.service || ""
+			row?.service || "",
 		)}&repo=${encodeURIComponent(row?.repo || "")}&id=${encodeURIComponent(
-			row.scan_id
+			row.scan_id,
 		)}&tab=${tab}`;
 		window.open(resultsUrl, "_blank");
 	};
@@ -248,12 +248,12 @@ const StatusCell = (props: StatusCellProps) => {
 					row?.scan_options?.exclude_paths.length > 0)
 			) {
 				info["paths"] = i18n._(
-					t`This scan ran against a subset of source code due to include/exclude paths.`
+					t`This scan ran against a subset of source code due to include/exclude paths.`,
 				);
 			}
 			if (Object.keys(info).length > 0) {
 				info["results"] = i18n._(
-					t`Results may vary compared to scans run with other options. View scan results for additional details`
+					t`Results may vary compared to scans run with other options. View scan results for additional details`,
 				);
 			}
 
@@ -276,7 +276,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Critical vulnerability",
 													other: "# Critical vulnerabilities",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -297,7 +297,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# High vulnerability",
 													other: "# High vulnerabilities",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -316,7 +316,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Medium vulnerability",
 													other: "# Medium vulnerabilities",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -374,7 +374,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Critical static analysis result",
 													other: "# Critical static analysis results",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -395,7 +395,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# High static analysis result",
 													other: "# High static analysis results",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -414,7 +414,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Medium static analysis result",
 													other: "# Medium static analysis results",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -515,7 +515,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Critical configuration result",
 													other: "# Critical configuration results",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -536,7 +536,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# High configuration result",
 													other: "# High configuration results",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -555,7 +555,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Medium configuration result",
 													other: "# Medium configuration results",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -612,7 +612,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Technology",
 													other: "# Technologies",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -634,7 +634,7 @@ const StatusCell = (props: StatusCellProps) => {
 												{
 													one: "# Base image",
 													other: "# Base images",
-												}
+												},
 											)}
 										>
 											<Chip
@@ -795,7 +795,7 @@ const StatusCell = (props: StatusCellProps) => {
 			const progress = (current / (total + 1)) * 100;
 			const pluginName = getFeatureName(
 				row.status_detail.plugin_name || "",
-				pluginKeys
+				pluginKeys,
 			);
 
 			return (
