@@ -328,8 +328,8 @@ describe("HiddenFindingsTabContent component", () => {
 			const filterGroup = screen.getByRole("group", {
 				name: /filter results/i,
 			});
-			const firstFilter = within(filterGroup).getByRole("button", {
-				name: /category /i,
+			const firstFilter = within(filterGroup).getByRole("combobox", {
+				name: /category/i,
 			});
 			expect(firstFilter).toHaveFocus();
 			expect(
@@ -343,7 +343,7 @@ describe("HiddenFindingsTabContent component", () => {
 					name: /component\/commit/i,
 				}),
 			).toHaveAttribute("placeholder", "Contains");
-			within(filterGroup).getByRole("button", { name: /severity /i });
+			within(filterGroup).getByRole("combobox", { name: /severity/i });
 		});
 
 		it("filters add to url hash parameters", async () => {

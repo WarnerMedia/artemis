@@ -172,7 +172,7 @@ describe("SecretsTabContent component", () => {
 				).toHaveAttribute("placeholder", "Contains");
 
 				expect(
-					within(filterGroup).getByRole("button", { name: /validity/i }),
+					within(filterGroup).getByRole("combobox", { name: /validity/i }),
 				).toBeInTheDocument();
 			});
 

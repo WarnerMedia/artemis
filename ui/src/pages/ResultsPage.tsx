@@ -1986,6 +1986,7 @@ export const HiddenFindingDialog = (props: {
 												component={DatePickerField}
 												inputVariant="outlined"
 												ampm={false}
+												placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
 												format="yyyy/LL/dd HH:mm"
 												mask="____/__/__ __:__"
 											/>

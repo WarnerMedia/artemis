@@ -923,8 +923,8 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const rowsPerPageButton = screen.getByRole("button", {
-				name: "Rows per page: " + String(defaultRowsPerPage),
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
 			});
 			expect(rowsPerPageButton).toBeInTheDocument();
 			await user.click(rowsPerPageButton);
@@ -950,10 +950,11 @@ describe("ActivityTable component", () => {
 
 			// ensure Rows per page changes to 20
 			await waitFor(() => {
-				const rowsPerPageButton = screen.getByRole("button", {
-					name: "Rows per page: " + String(20),
+				const rowsPerPageButton = screen.getByRole("combobox", {
+					name: "Rows per page:",
 				});
 				expect(rowsPerPageButton).toBeInTheDocument();
+				expect(rowsPerPageButton.innerHTML).toEqual(String(20));
 			});
 		});
 	});

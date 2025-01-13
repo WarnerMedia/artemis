@@ -455,7 +455,7 @@ describe("SearchPage component", () => {
 						user,
 					});
 
-					const serviceMatch = screen.getByRole("button", {
+					const serviceMatch = screen.getByRole("combobox", {
 						name: /service match exact/i,
 					});
 					const service = screen.getByRole("combobox", {
