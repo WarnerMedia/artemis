@@ -7,6 +7,8 @@ readonly BASEDIR
 readonly TEMPDIR="$BASEDIR/tmp"
 readonly COMPOSEFILE="$TEMPDIR/docker-compose.yml"
 
+readonly ENGINE_IMAGE=artemis/engine:latest
+
 workdir_readonly=true
 
 # Print usage info to stderr.
@@ -19,6 +21,13 @@ Available subcommands:
     run-writable - Same as "run", but mounts target directory as read-write.
     clean - Stop and clean up all containers.
 EOD
+}
+
+# Check that the image exists locally.
+# This is to provide a friendlier error message instead of Docker Compose
+# attempting (and failing) to pull the image from a remote registry.
+function check_local_image {
+  docker image inspect --format=none "$1" > /dev/null 2>&1 || return 1
 }
 
 # Install one of the optional JSON files used for plugin arguments.
@@ -135,7 +144,7 @@ services:
     build:
       context: ../toolbox
   engine:
-    image: "artemis/engine:latest"
+    image: "$ENGINE_IMAGE"
     container_name: engine
     command: ["/bin/true"]
     volumes:
@@ -215,6 +224,15 @@ function do_run {
   fi
   if [[ $runner = '' || $runner = 'null' ]]; then
     runner=core
+  fi
+
+  if ! check_local_image "$ENGINE_IMAGE"; then
+    echo "Engine container image ($ENGINE_IMAGE) must be built locally." >&2
+    return 1
+  fi
+  if ! check_local_image "$image"; then
+    echo "Container image for plugin \"$plugin\" ($image) must be built locally." >&2
+    return 1
   fi
 
   init_compose "$plugin" "$image" "$type" "$target" "$runner" "$writable" \

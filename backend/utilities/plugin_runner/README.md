@@ -107,11 +107,12 @@ The script will perform a sanity check on the JSON file. If the file does not co
 
 Only plugins in [backend/engine/plugins](../../engine/plugins) are supported.
 
+* Error: Container image (...) must be built locally
 * Error: pull access denied for ... repository does not exist or may require 'docker login'
 
-The container image for the plugin has not been built locally or has been removed.
+The container image for the engine or plugin has not been built locally or has been removed.
 
-Re-build the container image for the plugin.
+Re-build the container image for the engine or plugin.
 
 * Error: Read-only filesystem (or similar)
 
