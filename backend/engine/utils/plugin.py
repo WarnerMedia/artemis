@@ -394,6 +394,7 @@ def run_plugin(
                 stop_command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                encoding="utf-8",
                 check=False,
             )
 
