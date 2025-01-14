@@ -1226,9 +1226,10 @@ class RepoVulnerabilityScan(models.Model):
         ret["vulnerability"]["components"] = []
         ret["vulnerability"]["sources"] = []
         for vsp in self.vulnerabilityscanplugin_set.all():
+            c = None
             for component in vsp.components.all():
                 c = f"{component.name}-{component.version}"
-            if c not in ret["vulnerability"]["components"]:
+            if c and c not in ret["vulnerability"]["components"]:
                 ret["vulnerability"]["components"].append(c)
             for source in vsp.source:
                 ret["vulnerability"]["sources"] += source["source"]
