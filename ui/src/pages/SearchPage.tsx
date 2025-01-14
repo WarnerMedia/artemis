@@ -3010,6 +3010,7 @@ const FormFields = (props: {
 							component={DatePickerField}
 							inputVariant="outlined"
 							ampm={false}
+							placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
 							format="yyyy/LL/dd HH:mm"
 							invalidDateMessage={i18n._(
 								t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`,

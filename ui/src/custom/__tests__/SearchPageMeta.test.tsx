@@ -214,8 +214,8 @@ describe("SearchPage component", () => {
 						user,
 					});
 
-					const field1Match = screen.getByRole("button", {
-						name: /meta data field1 match contains/i,
+					const field1Match = screen.getByRole("combobox", {
+						name: /meta data field1 match/i,
 					});
 					const field1 = screen.getByRole("textbox", {
 						name: /meta data field1/i,

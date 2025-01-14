@@ -273,7 +273,7 @@ describe("SearchPage component", () => {
 						),
 					];
 					await validateSelect({
-						label: /service/i,
+						label: "Service",
 						options: options,
 						defaultOption: "",
 						disabled: false,
@@ -456,13 +456,13 @@ describe("SearchPage component", () => {
 					});
 
 					const serviceMatch = screen.getByRole("combobox", {
-						name: /service match exact/i,
+						name: /service match/i,
 					});
 					const service = screen.getByRole("combobox", {
 						name: "Service",
 					});
-					const repoMatch = screen.getByRole("button", {
-						name: /repository match contains/i,
+					const repoMatch = screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repo = screen.getByRole("textbox", {
 						name: "Repository",

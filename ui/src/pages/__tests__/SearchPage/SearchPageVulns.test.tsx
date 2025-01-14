@@ -451,8 +451,8 @@ describe("SearchPage component", () => {
 						user,
 					});
 
-					const vulnMatch = screen.getByRole("button", {
-						name: /vulnerability match contains/i,
+					const vulnMatch = screen.getByRole("combobox", {
+						name: /vulnerability match/i,
 					});
 					const vuln = screen.getByRole("textbox", {
 						name: "Vulnerability",
@@ -1066,8 +1066,8 @@ describe("SearchPage component", () => {
 					);
 
 					// all form fields populated with url query params
-					screen.getByRole("button", {
-						name: /vulnerability match contains/i,
+					screen.getByRole("combobox", {
+						name: /vulnerability match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1403,8 +1403,8 @@ describe("SearchPage component", () => {
 					);
 
 					// all form fields populated with url query params
-					screen.getByRole("button", {
-						name: /vulnerability match exact/i,
+					screen.getByRole("combobox", {
+						name: /vulnerability match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
