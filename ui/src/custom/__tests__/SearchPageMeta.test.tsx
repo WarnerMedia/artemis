@@ -220,8 +220,8 @@ describe("SearchPage component", () => {
 					const field1 = screen.getByRole("textbox", {
 						name: /meta data field1/i,
 					});
-					const field2Match = screen.getByRole("button", {
-						name: /meta data field2 match exact/i,
+					const field2Match = screen.getByRole("combobox", {
+						name: /meta data field2 match/i,
 					});
 					const field2 = screen.getByRole("textbox", {
 						name: /meta data field2/i,
