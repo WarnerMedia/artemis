@@ -375,8 +375,9 @@ def run_plugin(
     # The temporary named volume is automatically deleted after the plugin
     # container exits.
     with temporary_volume(f"{TEMP_VOLUME_NAME_PREFIX}-{plugin}") as volname:
+        container_name = get_container_name()
         plugin_command = get_plugin_command(
-            scan, plugin, settings, depth, include_dev, volname, scan_images, plugin_config, services
+            scan, plugin, container_name, settings, depth, include_dev, volname, scan_images, plugin_config, services
         )
         try:
             # Run the plugin inside the settings.image
@@ -388,6 +389,20 @@ def run_plugin(
                 timeout=settings.timeout,
             )
         except subprocess.TimeoutExpired:
+            stop_command = get_plugin_stop_command(container_name)
+            stop_response = subprocess.run(
+                stop_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                encoding="utf-8",
+                check=False,
+            )
+
+            if stop_response.returncode != 0:
+                log.error("Failed to stop container after timeout. Returned %d", stop_response.returncode)
+                log.debug("stdout: %s", stop_response.stdout)
+                log.debug("stderr: %s", stop_response.stderr)
+
             return Result(
                 name=settings.name,
                 type=settings.plugin_type,
@@ -676,9 +691,14 @@ def get_iso_timestamp() -> str:
     return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
 
 
+def get_container_name() -> str:
+    return f"plugin-{ENGINE_ID}"
+
+
 def get_plugin_command(
     scan: Scan,
     plugin: str,
+    container_name: str,
     settings: PluginSettings,
     depth: Optional[str],
     include_dev: bool,
@@ -699,7 +719,7 @@ def get_plugin_command(
         "run",
         "--rm",
         "--name",
-        f"plugin-{ENGINE_ID}",
+        container_name,
         "--volumes-from",
         ENGINE_ID,
         "-v",
@@ -788,6 +808,16 @@ def get_plugin_command(
             json.dumps(plugin_config),
         ]
     )
+
+    return cmd
+
+
+def get_plugin_stop_command(container_name: str) -> list[str]:
+    cmd = [
+        "docker",
+        "stop",
+        container_name,
+    ]
 
     return cmd
 
