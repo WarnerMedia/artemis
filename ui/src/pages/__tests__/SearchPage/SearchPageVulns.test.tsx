@@ -164,7 +164,7 @@ describe("SearchPage component", () => {
 					],
 				])(
 					"%p field Match select field options and expected default",
-					async (_fieldName, label, options, defaultOptions, disabled) => {
+					async (_fieldName, label, options, defaultOption, disabled) => {
 						mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 						const { user } = render(<SearchPage />);
 
@@ -179,7 +179,7 @@ describe("SearchPage component", () => {
 						await validateSelect({
 							label: label,
 							options: options,
-							defaultOption: defaultOptions,
+							defaultOption: defaultOption,
 							disabled: disabled,
 							user,
 						});
@@ -457,26 +457,26 @@ describe("SearchPage component", () => {
 					const vuln = screen.getByRole("textbox", {
 						name: "Vulnerability",
 					});
-					const descMatch = screen.getByRole("button", {
-						name: /description match contains/i,
+					const descMatch = screen.getByRole("combobox", {
+						name: /description match/i,
 					});
 					const desc = screen.getByRole("textbox", {
 						name: "Description",
 					});
-					const remedyMatch = screen.getByRole("button", {
-						name: /remediation match contains/i,
+					const remedyMatch = screen.getByRole("combobox", {
+						name: /remediation match/i,
 					});
 					const remedy = screen.getByRole("textbox", {
 						name: "Remediation",
 					});
-					const nameMatch = screen.getByRole("button", {
-						name: /component name match contains/i,
+					const nameMatch = screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const name = screen.getByRole("textbox", {
 						name: "Component Name",
 					});
-					const versionMatch = screen.getByRole("button", {
-						name: /component version match contains/i,
+					const versionMatch = screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const version = screen.getByRole("textbox", {
 						name: "Component Version",
@@ -1075,8 +1075,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(vulnValue);
 
-					screen.getByRole("button", {
-						name: /description match contains/i,
+					screen.getByRole("combobox", {
+						name: /description match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1084,8 +1084,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(descValue);
 
-					screen.getByRole("button", {
-						name: /remediation match contains/i,
+					screen.getByRole("combobox", {
+						name: /remediation match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1093,8 +1093,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(remedyValue);
 
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1102,8 +1102,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(componentValue);
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1237,8 +1237,8 @@ describe("SearchPage component", () => {
 					);
 
 					// all form fields populated with url query params
-					screen.getByRole("button", {
-						name: /vulnerability match exact/i,
+					screen.getByRole("combobox", {
+						name: /vulnerability match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1246,8 +1246,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(vulnValue);
 
-					screen.getByRole("button", {
-						name: /description match exact/i,
+					screen.getByRole("combobox", {
+						name: /description match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1255,8 +1255,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(descValue);
 
-					screen.getByRole("button", {
-						name: /remediation match exact/i,
+					screen.getByRole("combobox", {
+						name: /remediation match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1264,8 +1264,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(remedyValue);
 
-					screen.getByRole("button", {
-						name: /component name match exact/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1273,8 +1273,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(componentValue);
 
-					screen.getByRole("button", {
-						name: /component version match exact/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1412,8 +1412,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(vulnValue);
 
-					screen.getByRole("button", {
-						name: /description match exact/i,
+					screen.getByRole("combobox", {
+						name: /description match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1421,8 +1421,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(descValue);
 
-					screen.getByRole("button", {
-						name: /remediation match exact/i,
+					screen.getByRole("combobox", {
+						name: /remediation match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1430,8 +1430,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(remedyValue);
 
-					screen.getByRole("button", {
-						name: /component name match exact/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1439,8 +1439,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue(componentValue);
 
-					screen.getByRole("button", {
-						name: /component version match exact/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1498,8 +1498,8 @@ describe("SearchPage component", () => {
 					await user.click(resetButton);
 
 					// ensure all values reset to default state
-					screen.getByRole("button", {
-						name: /vulnerability match contains/i,
+					screen.getByRole("combobox", {
+						name: /vulnerability match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1507,8 +1507,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /description match contains/i,
+					screen.getByRole("combobox", {
+						name: /description match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1516,8 +1516,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /remediation match contains/i,
+					screen.getByRole("combobox", {
+						name: /remediation match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1525,8 +1525,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1534,8 +1534,8 @@ describe("SearchPage component", () => {
 						}),
 					).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					expect(
 						screen.getByRole("textbox", {
@@ -1603,6 +1603,7 @@ describe("SearchPage component", () => {
 							selectOption: SEARCH_OPTION_VULNS,
 							user,
 						});
+						// This function causes error: Warning: An update to Formik inside a test was not wrapped in act(...).
 						await testFieldLength(fieldName, maxLength, expectedError, user);
 					},
 				);
@@ -1846,20 +1847,20 @@ describe("SearchPage component", () => {
 					// expand filters accordion
 					await user.click(repoFilterAccordion);
 
-					await within(dialog).findByRole("button", {
-						name: /service match exact/i,
+					await within(dialog).findByRole("combobox", {
+						name: /service match/i,
 					});
 					within(dialog).getByRole("combobox", {
 						name: "Service",
 					});
-					within(dialog).getByRole("button", {
-						name: /repository match contains/i,
+					within(dialog).getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = within(dialog).getByRole("textbox", {
 						name: "Repository",
 					});
-					within(dialog).getByRole("button", {
-						name: /last qualified scan time match before/i,
+					within(dialog).getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					within(dialog).getByRole("textbox", {
 						name: /last qualified scan time/i,

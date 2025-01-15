@@ -1321,7 +1321,7 @@ export const PluginsSelector = ({
 						id={`scan-features-${name}-header`}
 						className={classes.pluginsSelectorAccordionSummary}
 					>
-						<Typography className={classes.heading}>
+						<Typography component="div" className={classes.heading}>
 							<>
 								<FormControlLabel
 									className={className}

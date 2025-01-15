@@ -45,7 +45,6 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 		form,
 		getShouldDisableDateError,
 		onChange,
-		value,
 		invalidDateMessage,
 		minDateMessage,
 		maxDateMessage,
@@ -75,6 +74,10 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 	}
 	// x-date-pickers v6 expects the picker's field value to be in the adapter's date/time format - it no longer performs this conversion
 	// so this wrapper will now handle this conversion
+	// Luxon adapter doesn't accept Date objects, so convert to a string first.
+	if (field.value && typeof field.value.toISOString === "function") {
+		field.value = field.value.toISOString();
+	}
 	const adapter = new DateAdapter({ locale: browserLanguage });
 	const fieldValue = adapter.date(field.value);
 

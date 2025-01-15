@@ -73,6 +73,9 @@ export const validateSelect = async (options: {
 			"selectOption" in options &&
 			options.selectOption === String(options.options[i])
 		) {
+			// This line throws testing error:
+			// Warning: A props object containing a "key" prop is being spread into JSX
+			// in src/pages/__tests__/SearchPage/SearchPageRepos.test.tsx
 			await options?.user.click(optionText);
 			await waitFor(() => {
 				within(selectField).getByText(String(options.options[i]));
@@ -94,6 +97,7 @@ export const validateSelect = async (options: {
 	);
 };
 
+// This function causes error in tests: Warning: An update to Formik inside a test was not wrapped in act(...).
 export const testFieldLength = async (
 	fieldName: string | RegExp,
 	maxLength: number,
@@ -107,31 +111,30 @@ export const testFieldLength = async (
 	await user.clear(testComponent);
 	await user.type(testComponent, testValue);
 	fireEvent.blur(testComponent);
-	await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
-	await waitFor(() =>
-		expect(screen.getByText(expectedError)).toBeInTheDocument(),
-	);
+
+	expect(testComponent).toHaveDisplayValue(testValue);
+	expect(screen.getByText(expectedError)).toBeInTheDocument();
 
 	// submit button should be disabled since form now invalid
 	const submitButton = screen.getByRole("button", {
 		name: /^search$/i,
 	});
+
 	expect(submitButton).toBeDisabled();
 
 	await user.clear(testComponent);
-	await waitFor(() => expect(testComponent).toHaveDisplayValue(""));
-	await waitFor(() =>
-		expect(screen.queryByText(expectedError)).not.toBeInTheDocument(),
-	);
+
+	expect(testComponent).toHaveDisplayValue("");
+	expect(screen.queryByText(expectedError)).not.toBeInTheDocument();
 	expect(submitButton).not.toBeDisabled();
 
 	testValue = "z".repeat(maxLength); // valid length value
 	await user.type(testComponent, testValue);
+
 	fireEvent.blur(testComponent);
-	await waitFor(() => expect(testComponent).toHaveDisplayValue(testValue));
-	await waitFor(() =>
-		expect(screen.queryByText(expectedError)).not.toBeInTheDocument(),
-	);
+
+	expect(testComponent).toHaveDisplayValue(testValue);
+	expect(screen.queryByText(expectedError)).not.toBeInTheDocument();
 	expect(submitButton).not.toBeDisabled(); // form now valid, buttons should not be disabled
 };
 

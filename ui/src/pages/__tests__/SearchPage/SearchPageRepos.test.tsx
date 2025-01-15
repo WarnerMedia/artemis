@@ -248,6 +248,7 @@ describe("SearchPage component", () => {
 
 				// auto-complete field is a special use-case because it's an auto-complete
 				// field that should have certain values, so validate that separately
+				// @TODO throws key error in validateSelect("Service")
 				it("Service autocomplete field options and default", async () => {
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
 					const { user } = render(<SearchPage />);
@@ -468,8 +469,8 @@ describe("SearchPage component", () => {
 						name: "Repository",
 					});
 
-					const scanTimeMatch = screen.getByRole("button", {
-						name: /last qualified scan time match before/i,
+					const scanTimeMatch = screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTime = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -573,7 +574,7 @@ describe("SearchPage component", () => {
 
 					// fill-out the form fields
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					await user.type(serviceField, `${serviceValue}{enter}`); // enter to select match in list
 
@@ -1171,16 +1172,16 @@ describe("SearchPage component", () => {
 					);
 
 					// all form fields are defaults (empty with default matchers)
-					screen.getByRole("button", {
-						name: /service match exact/i,
+					screen.getByRole("combobox", {
+						name: /service match/i,
 					});
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					expect(serviceField).toHaveDisplayValue(serviceValue);
 
-					screen.getByRole("button", {
-						name: /repository match contains/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = screen.getByRole("textbox", {
 						name: /^repository$/i,
@@ -1195,8 +1196,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -1270,16 +1271,16 @@ describe("SearchPage component", () => {
 					);
 
 					// all form fields are defaults (empty with default matchers)
-					screen.getByRole("button", {
-						name: /service match contains/i,
+					screen.getByRole("combobox", {
+						name: /service match/i,
 					});
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					expect(serviceField).toHaveDisplayValue(serviceValue);
 
-					screen.getByRole("button", {
-						name: /repository match exact/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = screen.getByRole("textbox", {
 						name: /^repository$/i,
@@ -1294,8 +1295,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match no qualified scans/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -1374,16 +1375,16 @@ describe("SearchPage component", () => {
 					);
 
 					// all form fields are defaults (empty with default matchers)
-					screen.getByRole("button", {
-						name: /service match contains/i,
+					screen.getByRole("combobox", {
+						name: /service match/i,
 					});
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					expect(serviceField).toHaveDisplayValue(serviceValue);
 
-					screen.getByRole("button", {
-						name: /repository match exact/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = screen.getByRole("textbox", {
 						name: /^repository$/i,
@@ -1398,8 +1399,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -1413,13 +1414,13 @@ describe("SearchPage component", () => {
 					await user.click(resetButton);
 
 					// form should be in default state after reset
-					await screen.findByRole("button", {
-						name: /service match exact/i,
+					await screen.findByRole("combobox", {
+						name: /service match/i,
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /repository match contains/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					expect(repoField).toHaveDisplayValue("");
 
@@ -1431,8 +1432,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					expect(scanTimeField).toHaveDisplayValue("");
 				});
@@ -1466,16 +1467,16 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /service match exact/i,
+					screen.getByRole("combobox", {
+						name: /service match/i,
 					});
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /repository match contains/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = screen.getByRole("textbox", {
 						name: /^repository$/i,
@@ -1489,8 +1490,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -1555,16 +1556,16 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /service match exact/i,
+					screen.getByRole("combobox", {
+						name: /service match/i,
 					});
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /repository match contains/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = screen.getByRole("textbox", {
 						name: /^repository$/i,
@@ -1578,8 +1579,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match after/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -1638,16 +1639,16 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /service match exact/i,
+					screen.getByRole("combobox", {
+						name: /service match/i,
 					});
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: "Service",
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /repository match contains/i,
+					screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repoField = screen.getByRole("textbox", {
 						name: /^repository$/i,
@@ -1661,8 +1662,8 @@ describe("SearchPage component", () => {
 						},
 					);
 
-					screen.getByRole("button", {
-						name: /last qualified scan time match any qualified scan/i,
+					screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
@@ -1702,7 +1703,7 @@ describe("SearchPage component", () => {
 				test.each([
 					[
 						"Service",
-						/service/i,
+						"Service",
 						"abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ.0123456789",
 						"Must be a valid service name [azure|bitbucket|github] or hostname",
 						"combobox" as const,
@@ -1783,21 +1784,21 @@ describe("SearchPage component", () => {
 					// this prevents the test from timing out
 					[
 						"Service",
-						/service/i,
+						"Service",
 						"!@#$%^&*()+=",
 						"Must be a valid service name [azure|bitbucket|github] or hostname",
 						"combobox" as const,
 					],
 					[
 						"Service",
-						/service/i,
+						"Service",
 						" \\:;\"'<,>?/",
 						"Must be a valid service name [azure|bitbucket|github] or hostname",
 						"combobox" as const,
 					],
 					[
 						"Service",
-						/service/i,
+						"Service",
 						"{}[]|",
 						"Must be a valid service name [azure|bitbucket|github] or hostname",
 						"combobox" as const,
