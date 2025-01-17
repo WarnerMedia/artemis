@@ -94,6 +94,9 @@ resource "aws_cloudfront_distribution" "ui" {
     min_ttl                = 0
     default_ttl            = 7200
     max_ttl                = 86400
+
+    compress                   = false
+    response_headers_policy_id = var.response_headers_policy_id
   }
 
   viewer_certificate {

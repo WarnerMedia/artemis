@@ -22,6 +22,11 @@ variable "zone_name" {
 
 variable "profile" {}
 
+variable "response_headers_policy_id" {
+  description = "ID of a reponse header policy"
+  type        = string
+}
+
 ###############################################################################
 # Environment-agnostic variables
 #
