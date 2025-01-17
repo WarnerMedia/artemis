@@ -287,9 +287,9 @@ resource "aws_api_gateway_gateway_response" "unauthorized" {
     })
   }
 
-  response_parameters = {
+  response_parameters = merge({
     "gatewayresponse.header.Content-Type" = "'text/html'"
-  }
+  }, var.additional_response_headers)
 }
 
 ###############################################################################

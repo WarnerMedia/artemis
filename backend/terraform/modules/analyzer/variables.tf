@@ -146,6 +146,10 @@ variable "artemis_api_base_url" {
   type        = string
 }
 
+variable "additional_response_headers" {
+  type        = map(string)
+  description = "Additional response headers for API Gateway responses"
+}
 
 ###############################################################################
 # Environment-agnostic variables
