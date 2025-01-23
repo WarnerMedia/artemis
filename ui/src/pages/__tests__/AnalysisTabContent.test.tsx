@@ -175,7 +175,7 @@ describe("AnalysisTabContent component", () => {
 				expect(
 					within(filterGroup).getByRole("textbox", { name: /type/i }),
 				).toHaveAttribute("placeholder", "Contains");
-				within(filterGroup).getByRole("button", { name: /severity /i });
+				within(filterGroup).getByRole("combobox", { name: /severity/i });
 			});
 
 			it("filters add to url hash parameters", async () => {
@@ -201,9 +201,11 @@ describe("AnalysisTabContent component", () => {
 					name: /file/i,
 				});
 				const fileValue = "/path/to/a/new/@library/file-name-1.0.3b6";
-				await act(async () => await user.type(fileFilter, fileValue));
+				await act(async () => {
+					await user.type(fileFilter, fileValue);
+					jest.runOnlyPendingTimers();
+				});
 
-				jest.runOnlyPendingTimers();
 				await waitFor(() => expect(fileFilter).toHaveDisplayValue(fileValue));
 
 				await validateSelect({
@@ -227,16 +229,20 @@ describe("AnalysisTabContent component", () => {
 					name: /line/i,
 				});
 				const lineValue = "1234";
-				await act(async () => await user.type(lineFilter, lineValue));
-				jest.runOnlyPendingTimers();
+				await act(async () => {
+					await user.type(lineFilter, lineValue);
+					jest.runOnlyPendingTimers();
+				});
 				await waitFor(() => expect(lineFilter).toHaveDisplayValue(lineValue));
 
 				const typeFilter = await within(filterGroup).findByRole("textbox", {
 					name: /type/i,
 				});
 				const typeValue = "a great type";
-				await act(async () => await user.type(typeFilter, typeValue));
-				jest.runOnlyPendingTimers();
+				await act(async () => {
+					await user.type(typeFilter, typeValue);
+					jest.runOnlyPendingTimers();
+				});
 				await waitFor(() => expect(typeFilter).toHaveDisplayValue(typeValue));
 
 				expect(mockSaveFilters).toHaveBeenLastCalledWith(HASH_PREFIX, {

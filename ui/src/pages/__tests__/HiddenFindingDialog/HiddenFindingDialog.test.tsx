@@ -1,5 +1,5 @@
 import { DateTime, Settings } from "luxon";
-import { render, screen, waitFor } from "test-utils";
+import { act, render, screen, waitFor } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
 import { vulnRow } from "../../../../testData/testMockData";
 
@@ -191,9 +191,12 @@ describe("HiddenFindingDialog component", () => {
 				const expiresField = screen.getByLabelText(fieldExpiresLabel);
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveValue("");
-				await user.type(expiresField, "testme!");
+				await act(async () => {
+					/* fire events that update state */
+					await user.type(expiresField, "testme!");
+				});
 				await waitFor(() => {
-					expect(expiresField).toHaveValue(""); // can't type invalid chars in field
+					expect(expiresField).toHaveValue("YYYY/MM/DD hh:mm"); // can't type invalid chars in field
 				});
 			});
 

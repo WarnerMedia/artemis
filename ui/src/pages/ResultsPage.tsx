@@ -66,7 +66,7 @@ import {
 	FormControlLabel,
 	FormGroup,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	IconButton,
 	InputAdornment,
 	InputBaseComponentProps,
@@ -1986,8 +1986,8 @@ export const HiddenFindingDialog = (props: {
 												component={DatePickerField}
 												inputVariant="outlined"
 												ampm={false}
-												inputFormat="yyyy/LL/dd HH:mm"
 												placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
+												format="yyyy/LL/dd HH:mm"
 												mask="____/__/__ __:__"
 											/>
 										</Box>
@@ -2266,7 +2266,7 @@ export const OverviewCard = ({
 	const nothingFound = countFound === 0;
 
 	return (
-		<Grid item xs={6} sm={4}>
+		<Grid size={{ xs: 12, sm: 6 }}>
 			<Card
 				elevation={2}
 				className={classes.overviewCard}
@@ -3160,7 +3160,7 @@ export const VulnTabContent = (props: {
 					</span>
 					<Grid container spacing={3}>
 						{/* left column */}
-						<Grid item xs={6} className={classes.tabDialogGrid}>
+						<Grid size={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
 								<ListItem key="vuln-description">
@@ -3197,7 +3197,7 @@ export const VulnTabContent = (props: {
 						</Grid>
 
 						{/* right column */}
-						<Grid item xs={6}>
+						<Grid size={6}>
 							<List>
 								<ListItem key="vuln-source">
 									<ListItemText
@@ -3729,7 +3729,7 @@ export const AnalysisTabContent = (props: {
 					</span>
 					<Grid container spacing={3}>
 						{/* left column */}
-						<Grid item xs={6} className={classes.tabDialogGrid}>
+						<Grid size={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
 								<ListItem key="analysis-source">
@@ -3761,7 +3761,7 @@ export const AnalysisTabContent = (props: {
 						</Grid>
 
 						{/* right column */}
-						<Grid item xs={6}>
+						<Grid size={6}>
 							<List>
 								<ListItem key="analysis-details">
 									<ListItemText
@@ -4150,7 +4150,7 @@ export const SecretsTabContent = (props: {
 				<DialogContent dividers={true}>
 					<Grid container spacing={3}>
 						{/* left column */}
-						<Grid item xs={6} className={classes.tabDialogGrid}>
+						<Grid size={6} className={classes.tabDialogGrid}>
 							<List>
 								{/* TODO: consider making long individual list items scroll instead of scrolling all dialog content */}
 								<ListItem key="secret-source">{secretSource}</ListItem>
@@ -4158,7 +4158,7 @@ export const SecretsTabContent = (props: {
 						</Grid>
 
 						{/* right column */}
-						<Grid item xs={6}>
+						<Grid size={6}>
 							<List>
 								<ListItem key="secret-commit">
 									<ListItemText
@@ -4528,7 +4528,7 @@ export const ConfigTabContent = (props: {
 					</span>
 					<Grid container spacing={3}>
 						{/* single large column */}
-						<Grid item xs={12} className={classes.tabDialogGrid}>
+						<Grid size={12} className={classes.tabDialogGrid}>
 							<List>
 								<ListItem key="config-description">
 									<ListItemText
@@ -5707,7 +5707,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 
 			<AccordionDetails className={classes.accordionDetails}>
 				<Grid container spacing={3}>
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="scan-options-categories" alignItems="flex-start">
 								<ListItemIcon>
@@ -5746,7 +5746,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 							</ListItem>
 						</List>
 					</Grid>
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="scan-options-include-dev" alignItems="flex-start">
 								<ListItemIcon>
@@ -5892,7 +5892,7 @@ export const ScanOptionsSummary = (props: ScanOptionsProps) => {
 												</i>
 											)
 										}
-										secondaryTypographyProps={{ component: "div" }}
+										slotProps={{ secondary: { component: "div" } }}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -5971,7 +5971,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 
 			<Grid container spacing={3}>
 				{/* left column */}
-				<Grid item xs={4}>
+				<Grid size={4}>
 					<List dense={true}>
 						<ListItem key="scan-repo" alignItems="flex-start">
 							<ListItemIcon>
@@ -6021,7 +6021,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				</Grid>
 
 				{/* middle column */}
-				<Grid item xs={4}>
+				<Grid size={4}>
 					<List dense={true}>
 						<ListItem key="scan-initiated-by" alignItems="flex-start">
 							<ListItemIcon>
@@ -6073,7 +6073,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 								<ListItemText
 									primary={i18n._(t`Results`)}
 									secondary={resultsChip}
-									secondaryTypographyProps={{ component: "div" }}
+									slotProps={{ secondary: { component: "div" } }}
 								/>
 							</Tooltip>
 						</ListItem>
@@ -6094,7 +6094,7 @@ export const ResultsSummary = (props: ResultsSummaryProps) => {
 				</Grid>
 
 				{/* right column */}
-				<Grid item xs={4}>
+				<Grid size={4}>
 					<List dense={true}>
 						<ListItem key="scan-time-queued" alignItems="flex-start">
 							<ListItemIcon>

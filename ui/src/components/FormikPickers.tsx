@@ -1,13 +1,15 @@
-import TextField from "@mui/material/TextField";
 import { DateTime } from "luxon";
+import { AdapterLuxon as DateAdapter } from "@mui/x-date-pickers/AdapterLuxon";
 import { FieldProps, getIn } from "formik";
 import {
 	DesktopDateTimePicker,
-	DateTimePickerProps,
+	DesktopDateTimePickerProps,
 } from "@mui/x-date-pickers";
 import { useLingui } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { useState } from "react";
+import { browserLanguage } from "App";
+import { InputBaseProps } from "@mui/material";
 
 // Formik wrapper for Material UI date/time pickers
 // adapted from Material-UI picker Formik sample:
@@ -20,10 +22,9 @@ import { useState } from "react";
 
 interface DatePickerFieldProps
 	extends FieldProps,
-		DateTimePickerProps<any, any> {
+		DesktopDateTimePickerProps<DateTime> {
 	id?: string;
-	getShouldDisableDateError: (date: Date) => string;
-	placeholder?: string;
+	getShouldDisableDateError: (date: DateTime | null) => string;
 	size?: "small" | "medium";
 	style?: React.CSSProperties;
 	// allow overriding default error messages
@@ -31,6 +32,8 @@ interface DatePickerFieldProps
 	invalidDateMessage?: string;
 	minDateMessage?: string;
 	maxDateMessage?: string;
+	placeholder?: string;
+	helperText?: string;
 }
 
 // for picker format argument, see:
@@ -41,9 +44,7 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 		field,
 		form,
 		getShouldDisableDateError,
-		renderInput,
 		onChange,
-		value,
 		invalidDateMessage,
 		minDateMessage,
 		maxDateMessage,
@@ -52,18 +53,75 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 	const [muiError, setMuiError] = useState<string | null>(null);
 	const formikError = getIn(form.errors, field.name);
 	const hasError = formikError ?? muiError;
+	const localeText = props.localeText ? { ...props.localeText } : {};
+	if (!localeText?.toolbarTitle) {
+		localeText.toolbarTitle = i18n._(t`Select date`);
+	}
+	if (!localeText?.cancelButtonLabel) {
+		localeText.cancelButtonLabel = i18n._(t`Cancel`);
+	}
+	if (!localeText?.clearButtonLabel) {
+		localeText.clearButtonLabel = i18n._(t`Clear`);
+	}
+	if (!localeText?.okButtonLabel) {
+		localeText.okButtonLabel = i18n._(t`OK`);
+	}
+	if (!localeText?.previousMonth) {
+		localeText.previousMonth = i18n._(t`Previous month`);
+	}
+	if (!localeText?.nextMonth) {
+		localeText.nextMonth = i18n._(t`Next month`);
+	}
+	// x-date-pickers v6 expects the picker's field value to be in the adapter's date/time format - it no longer performs this conversion
+	// so this wrapper will now handle this conversion
+	// Luxon adapter doesn't accept Date objects, so convert to a string first.
+	if (field.value && typeof field.value.toISOString === "function") {
+		field.value = field.value.toISOString();
+	}
+	const adapter = new DateAdapter({ locale: browserLanguage });
+	const fieldValue = adapter.date(field.value);
+
+	// for a11y assign an additional title to the input field separate from the value, since v6 x-date-pickers picker value contains additional non-display characters
+	// const displayValue = fieldValue
+	// 	? fieldValue.toFormat(other.format ?? "yyyy/LL/dd HH:mm")
+	// 	: "";
+	const displayValue = "";
+	const inputProps: InputBaseProps["inputProps"] = {
+		id: props.id,
+		title: displayValue,
+	};
+	if (props.placeholder) {
+		inputProps.placeholder = props.placeholder;
+	}
 
 	// explicitly use the _Desktop_ variant of DateTimePicker, i.e., DesktopDateTimePicker
 	// Using the generic DateTimePicker component causes the variant (Desktop or Mobile) to be automatically resolved based on media queries
 	// UI has not yet been tested on mobile and there are some significant differences to Desktop picker that cause unit tests to fail
 	return (
 		<DesktopDateTimePicker
-			componentsProps={{
+			slotProps={{
 				actionBar: {
 					actions: ["clear", "cancel", "accept"],
 				},
+				textField: {
+					name: field.name,
+					InputLabelProps: { htmlFor: props.id },
+					inputProps: inputProps,
+					style: props.style ?? undefined,
+					size: props.size ?? "medium",
+					error: Boolean(hasError),
+					helperText: hasError ?? props.helperText,
+					onBlur: () => {
+						form.setFieldTouched(field.name, true, false);
+						if (muiError) {
+							form.setFieldError(field.name, muiError);
+						} else {
+							form.validateField(field.name);
+						}
+					},
+				},
 			}}
-			value={field.value}
+			value={fieldValue}
 			label={props?.label}
 			onChange={(date) => {
 				form.setFieldTouched(field.name, true, false);
@@ -76,7 +134,7 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 			}}
 			onError={(code, value) => {
 				// map error enum to a formik field error
-				let dt: any;
+				let dt: DateTime | undefined;
 				let format: string;
 				let error: string | null = null;
 
@@ -104,16 +162,18 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = maxDateMessage;
 						} else {
 							dt = props?.maxDate ?? props?.maxDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
-							} else {
-								format = dt.toLocaleString(
-									props?.maxDate
-										? DateTime.DATE_SHORT
-										: DateTime.DATETIME_SHORT,
-								);
+							if (dt) {
+								if (props?.format) {
+									format = dt.toFormat(props.format);
+								} else {
+									format = dt.toLocaleString(
+										props?.maxDate
+											? DateTime.DATE_SHORT
+											: DateTime.DATETIME_SHORT,
+									);
+								}
+								error = i18n._(t`Date can not be after ${format}`);
 							}
-							error = i18n._(t`Date can not be after ${format}`);
 						}
 						break;
 					}
@@ -122,16 +182,18 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = minDateMessage;
 						} else {
 							dt = props?.minDate ?? props?.minDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
-							} else {
-								format = dt.toLocaleString(
-									props?.minDate
-										? DateTime.DATE_SHORT
-										: DateTime.DATETIME_SHORT,
-								);
+							if (dt) {
+								if (props?.format) {
+									format = dt.toFormat(props.format);
+								} else {
+									format = dt.toLocaleString(
+										props?.minDate
+											? DateTime.DATE_SHORT
+											: DateTime.DATETIME_SHORT,
+									);
+								}
+								error = i18n._(t`Date can not be before ${format}`);
 							}
-							error = i18n._(t`Date can not be before ${format}`);
 						}
 						break;
 					}
@@ -140,18 +202,20 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = maxDateMessage;
 						} else {
 							dt = props?.maxTime ?? props?.maxDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
-							} else {
-								format = dt.toLocaleString(
-									props?.maxTime
-										? DateTime.TIME_SIMPLE
-										: DateTime.DATETIME_SHORT,
-								);
+							if (dt) {
+								if (props?.format) {
+									format = dt.toFormat(props.format);
+								} else {
+									format = dt.toLocaleString(
+										props?.maxTime
+											? DateTime.TIME_SIMPLE
+											: DateTime.DATETIME_SHORT,
+									);
+								}
+								error = props?.maxTime
+									? i18n._(t`Time can not be after ${format}`)
+									: i18n._(t`Date can not be after ${format}`);
 							}
-							error = props?.maxTime
-								? i18n._(t`Time can not be after ${format}`)
-								: i18n._(t`Date can not be after ${format}`);
 						}
 						break;
 					}
@@ -160,18 +224,20 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 							error = minDateMessage;
 						} else {
 							dt = props?.minTime ?? props?.minDateTime;
-							if (props?.inputFormat) {
-								format = dt.toFormat(props.inputFormat);
-							} else {
-								format = dt.toLocaleString(
-									props?.minTime
-										? DateTime.TIME_SIMPLE
-										: DateTime.DATETIME_SHORT,
-								);
+							if (dt) {
+								if (props?.format) {
+									format = dt.toFormat(props.format);
+								} else {
+									format = dt.toLocaleString(
+										props?.minTime
+											? DateTime.TIME_SIMPLE
+											: DateTime.DATETIME_SHORT,
+									);
+								}
+								error = props?.minTime
+									? i18n._(t`Time can not be before ${format}`)
+									: i18n._(t`Date can not be before ${format}`);
 							}
-							error = props?.minTime
-								? i18n._(t`Time can not be before ${format}`)
-								: i18n._(t`Date can not be before ${format}`);
 						}
 						break;
 					}
@@ -198,34 +264,7 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 					form.setFieldError(field.name, error);
 				}
 			}}
-			toolbarTitle={props?.toolbarTitle ?? i18n._(t`Select date`)}
-			renderInput={(inputProps) => {
-				if (props?.placeholder && inputProps?.inputProps) {
-					inputProps.inputProps.placeholder = props.placeholder;
-				}
-				if (props?.id && inputProps?.inputProps) {
-					inputProps.inputProps.id = props.id;
-				}
-				return (
-					<TextField
-						name={field.name}
-						{...inputProps}
-						InputLabelProps={{ htmlFor: props.id }}
-						style={props.style ?? undefined}
-						size={props.size ?? "medium"}
-						error={Boolean(hasError)}
-						helperText={hasError ?? inputProps.helperText}
-						onBlur={() => {
-							form.setFieldTouched(field.name, true, false);
-							if (muiError) {
-								form.setFieldError(field.name, muiError);
-							} else {
-								form.validateField(field.name);
-							}
-						}}
-					/>
-				);
-			}}
+			localeText={localeText}
 			{...other}
 		/>
 	);

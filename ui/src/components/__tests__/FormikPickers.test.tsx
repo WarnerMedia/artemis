@@ -1,6 +1,6 @@
 import { DateTime, Settings } from "luxon";
 import * as Yup from "yup";
-import { render, screen, waitFor } from "test-utils";
+import { act, fireEvent, render, screen, waitFor } from "test-utils";
 import { Field, Formik, Form } from "formik";
 import DatePickerField from "components/FormikPickers";
 
@@ -82,7 +82,7 @@ test("displays initial date value if date valid", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT, // enforce a date format to ensure consistent results
+		format: DATE_FORMAT, // enforce a date format to ensure consistent results
 	};
 	render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>
@@ -152,7 +152,7 @@ test("displays value matching format", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>
@@ -178,7 +178,7 @@ test("disablePast disallows initial past dates", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disablePast: true,
 		minDateMessage: "min-date",
 	};
@@ -205,7 +205,7 @@ test("disablePast disallows past date entry", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disablePast: true,
 		minDateMessage: "min-date",
 	};
@@ -219,8 +219,10 @@ test("disablePast disallows past date entry", async () => {
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	const fieldValue = dt.toFormat(DATE_FORMAT);
-	await user.type(inputField, fieldValue);
-	expect(inputField).toHaveDisplayValue(fieldValue);
+	inputField.focus();
+	await user.paste(fieldValue);
+	fireEvent.blur(inputField);
+	expect(inputField).toHaveAttribute("value", fieldValue);
 
 	await waitFor(() => {
 		expect(inputField).toHaveAccessibleDescription(props.minDateMessage);
@@ -238,7 +240,7 @@ test("minDate disallows date entry before minDate", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		minDate: minDate,
 		minDateMessage: "min-date",
 	};
@@ -252,8 +254,13 @@ test("minDate disallows date entry before minDate", async () => {
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	const fieldValue = beforeMin.toFormat(DATE_FORMAT);
-	await user.type(inputField, fieldValue);
-	expect(inputField).toHaveDisplayValue(fieldValue);
+	act(() => {
+		/* fire events that update state */
+		inputField.focus();
+	});
+	await user.paste(fieldValue);
+	fireEvent.blur(inputField);
+	expect(inputField).toHaveAttribute("value", fieldValue);
 
 	await waitFor(() => {
 		expect(inputField).toHaveAccessibleDescription(props.minDateMessage);
@@ -276,7 +283,7 @@ test("schema with min disallows date entry before min date", async () => {
 		name: "date_field",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	const { user } = render(
 		<Formik
@@ -292,8 +299,13 @@ test("schema with min disallows date entry before min date", async () => {
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	const fieldValue = beforeMin.toFormat(DATE_FORMAT);
-	await user.type(inputField, fieldValue);
-	expect(inputField).toHaveDisplayValue(fieldValue);
+	act(() => {
+		/* fire events that update state */
+		inputField.focus();
+	});
+	await user.paste(fieldValue);
+	fireEvent.blur(inputField);
+	expect(inputField).toHaveAttribute("value", fieldValue);
 
 	await waitFor(() => {
 		expect(inputField).toHaveAccessibleDescription(minError);
@@ -310,7 +322,7 @@ test("disableFuture disallows initial future dates", () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disableFuture: true,
 		maxDateMessage: "max-date",
 	};
@@ -337,7 +349,7 @@ test("disableFuture disallows future date entry", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		disableFuture: true,
 		maxDateMessage: "max-date",
 	};
@@ -351,8 +363,13 @@ test("disableFuture disallows future date entry", async () => {
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	const fieldValue = dt.toFormat(DATE_FORMAT);
-	await user.type(inputField, fieldValue);
-	expect(inputField).toHaveDisplayValue(fieldValue);
+	act(() => {
+		/* fire events that update state */
+		inputField.focus();
+	});
+	await user.paste(fieldValue);
+	fireEvent.blur(inputField);
+	expect(inputField).toHaveAttribute("value", fieldValue);
 
 	await waitFor(() => {
 		expect(inputField).toHaveAccessibleDescription(props.maxDateMessage);
@@ -370,7 +387,7 @@ test("maxDate disallows date entry after maxDate", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		maxDate: maxDate,
 		maxDateMessage: "max-date",
 	};
@@ -384,8 +401,13 @@ test("maxDate disallows date entry after maxDate", async () => {
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	const fieldValue = afterMax.toFormat(DATE_FORMAT);
-	await user.type(inputField, fieldValue);
-	expect(inputField).toHaveDisplayValue(fieldValue);
+	act(() => {
+		/* fire events that update state */
+		inputField.focus();
+	});
+	await user.paste(fieldValue);
+	fireEvent.blur(inputField);
+	expect(inputField).toHaveAttribute("value", fieldValue);
 
 	await waitFor(() => {
 		expect(inputField).toHaveAccessibleDescription(props.maxDateMessage);
@@ -408,7 +430,7 @@ test("schema with max disallows date entry after max date", async () => {
 		name: "date_field",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	const { user } = render(
 		<Formik
@@ -421,11 +443,15 @@ test("schema with max disallows date entry after max date", async () => {
 			</Form>
 		</Formik>,
 	);
-
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	const fieldValue = afterMax.toFormat(DATE_FORMAT);
-	await user.type(inputField, fieldValue);
-	expect(inputField).toHaveDisplayValue(fieldValue);
+	act(() => {
+		/* fire events that update state */
+		inputField.focus();
+	});
+	await user.paste(fieldValue);
+	fireEvent.blur(inputField);
+	expect(inputField).toHaveAttribute("value", fieldValue);
 
 	await waitFor(() => {
 		expect(inputField).toHaveAccessibleDescription(maxError);
@@ -441,7 +467,7 @@ test("value not matching format cannot be entered", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 		mask: "____/__/__ __:__", // input is only restricted in MUIv5 if the picker has a mask
 	};
 	const { user } = render(
@@ -470,7 +496,7 @@ test("invalid date produces an error", async () => {
 		name: "datetime-test-1",
 		label: "Test Me",
 		ampm: false,
-		inputFormat: DATE_FORMAT,
+		format: DATE_FORMAT,
 	};
 	const { user } = render(
 		<Formik initialValues={initialValues} onSubmit={() => {}}>
@@ -481,10 +507,8 @@ test("invalid date produces an error", async () => {
 	);
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
-	await user.type(inputField, "2021/02/31 12:00"); // Feb 31 invalid
-	expect(inputField.nodeValue).toEqual(null);
+	await user.type(inputField, "2021/02/3112:00"); // Feb 31 invalid
 
-	await waitFor(() => {
-		expect(screen.queryByText(/invalid date format/i)).toBeInTheDocument();
-	});
+	expect(inputField).toHaveAttribute("value", "2021/02/31 12:00");
+	expect(screen.queryByText(/invalid date format/i)).toBeInTheDocument();
 });

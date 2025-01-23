@@ -50,11 +50,12 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(rowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(rowsPerPage));
+
 			expect(
 				screen.getByText(`1–${rowsPerPage} of ${rows.length}`),
 			).toBeInTheDocument();
@@ -89,11 +90,13 @@ describe("EnhancedTable component", () => {
 			expect(
 				screen.getByRole("rowheader", { name: "notarow 1" }),
 			).toBeInTheDocument();
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(totalRowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(
+				String(AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT),
+			);
 
 			// check total items matches filtered item count (not unfiltered record count)
 			expect(
@@ -162,11 +165,11 @@ describe("EnhancedTable component", () => {
 				screen.getByRole("rowheader", { name: "notarow 1" }),
 			).toBeInTheDocument();
 			expect(screen.getByRole("rowheader", { name: "1" })).toBeInTheDocument();
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(totalRowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(totalRowsPerPage));
 			expect(
 				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
@@ -195,11 +198,12 @@ describe("EnhancedTable component", () => {
 			expect(
 				screen.getByRole("rowheader", { name: "foobarbaz" }),
 			).toBeInTheDocument();
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(totalRowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(totalRowsPerPage));
+
 			expect(
 				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
@@ -229,11 +233,12 @@ describe("EnhancedTable component", () => {
 			expect(
 				screen.getByRole("rowheader", { name: "ROW 2" }),
 			).toBeInTheDocument();
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(totalRowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(totalRowsPerPage));
+
 			expect(
 				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
@@ -260,11 +265,15 @@ describe("EnhancedTable component", () => {
 			expect(
 				screen.getByRole("rowheader", { name: "row 1" }),
 			).toBeInTheDocument();
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(totalRowsPerPage),
-				}),
-			).toBeInTheDocument();
+
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(
+				String(AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT),
+			);
+
 			expect(
 				screen.getByText(`1–${rowsPerPage} of ${rowsPerPage}`),
 			).toBeInTheDocument();
@@ -289,11 +298,12 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 			expect(screen.getAllByRole("rowheader")).toHaveLength(rowsPerPage);
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(totalRowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(rowsPerPage));
+
 			expect(
 				screen.getByText(`1–${rowsPerPage} of ${rows.length}`),
 			).toBeInTheDocument();
@@ -341,11 +351,12 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 			expect(screen.queryByRole("cell")).not.toBeInTheDocument();
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(rowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(rowsPerPage));
+
 			expect(screen.getByText("0–0 of 0")).toBeInTheDocument();
 			expect(
 				screen.getByText("No results match current filters"),
@@ -363,13 +374,13 @@ describe("EnhancedTable component", () => {
 					defaultOrderBy="data"
 				/>,
 			);
-			expect(
-				screen.getByRole("button", {
-					name:
-						"Rows per page: " +
-						String(AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(
+				String(AppGlobals.APP_TABLE_ROWS_PER_PAGE_DEFAULT),
+			);
 		});
 
 		it("rows per page matches rowsPerPage option", () => {
@@ -383,11 +394,11 @@ describe("EnhancedTable component", () => {
 					rowsPerPage={rowsPerPage}
 				/>,
 			);
-			expect(
-				screen.getByRole("button", {
-					name: "Rows per page: " + String(rowsPerPage),
-				}),
-			).toBeInTheDocument();
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
+			});
+			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(rowsPerPage));
 		});
 
 		it("rows per page options default to [5, 10, 20]", async () => {
@@ -401,10 +412,12 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 
-			const rowsPerPageButton = screen.getByRole("button", {
-				name: "Rows per page: " + String(defaultRowsPerPage),
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
 			});
 			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(defaultRowsPerPage));
+
 			await user.click(rowsPerPageButton);
 
 			await waitFor(() => {
@@ -433,10 +446,11 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 
-			const rowsPerPageButton = screen.getByRole("button", {
-				name: "Rows per page: " + String(rowsPerPage),
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
 			});
 			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(rowsPerPage));
 			await user.click(rowsPerPageButton);
 
 			await waitFor(() => {
@@ -787,10 +801,11 @@ describe("EnhancedTable component", () => {
 			});
 
 			// switch from 10 items per page to 20
-			const rowsPerPageButton = screen.getByRole("button", {
-				name: "Rows per page: " + String(itemsPerPage),
+			const rowsPerPageButton = screen.getByRole("combobox", {
+				name: "Rows per page:",
 			});
 			expect(rowsPerPageButton).toBeInTheDocument();
+			expect(rowsPerPageButton.innerHTML).toEqual(String(itemsPerPage));
 			await user.click(rowsPerPageButton);
 
 			await waitFor(() => {
@@ -816,10 +831,11 @@ describe("EnhancedTable component", () => {
 
 			// ensure Rows per page changes to 20
 			await waitFor(() => {
-				const rowsPerPageButton = screen.getByRole("button", {
-					name: "Rows per page: " + String(itemsPerPage),
+				const rowsPerPageButton = screen.getByRole("combobox", {
+					name: "Rows per page:",
 				});
 				expect(rowsPerPageButton).toBeInTheDocument();
+				expect(rowsPerPageButton.innerHTML).toEqual(String(itemsPerPage));
 			});
 		});
 
@@ -1297,10 +1313,11 @@ describe("EnhancedTable component", () => {
 				).not.toBeInTheDocument();
 
 				// switch from 10 items per page to 20
-				const rowsPerPageButton = screen.getByRole("button", {
-					name: "Rows per page: " + String(itemsPerPage),
+				const rowsPerPageButton = screen.getByRole("combobox", {
+					name: "Rows per page:",
 				});
 				expect(rowsPerPageButton).toBeInTheDocument();
+				expect(rowsPerPageButton.innerHTML).toEqual(String(itemsPerPage));
 				await user.click(rowsPerPageButton);
 
 				await waitFor(() => {
@@ -1325,10 +1342,11 @@ describe("EnhancedTable component", () => {
 
 				// ensure Rows per page changes to 20
 				await waitFor(() => {
-					const rowsPerPageButton = screen.getByRole("button", {
-						name: "Rows per page: " + String(itemsPerPage),
+					const rowsPerPageButton = screen.getByRole("combobox", {
+						name: "Rows per page:",
 					});
 					expect(rowsPerPageButton).toBeInTheDocument();
+					expect(rowsPerPageButton.innerHTML).toEqual(String(itemsPerPage));
 				});
 
 				// no table sort column indicator

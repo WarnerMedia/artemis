@@ -197,7 +197,7 @@ describe("VulnTabContent component", () => {
 				expect(
 					within(filterGroup).getByRole("textbox", { name: /vulnerability/i }),
 				).toHaveAttribute("placeholder", "Contains");
-				within(filterGroup).getByRole("button", { name: /severity /i });
+				within(filterGroup).getByRole("combobox", { name: /severity/i });
 			});
 
 			it("filters add to url hash parameters", async () => {
@@ -223,9 +223,11 @@ describe("VulnTabContent component", () => {
 					name: /component/i,
 				});
 				const componentValue = "@library/component-name-1.0.3b6";
-				await act(async () => await user.type(componentFilter, componentValue));
+				await act(async () => {
+					await user.type(componentFilter, componentValue);
+					jest.runOnlyPendingTimers();
+				});
 
-				jest.runOnlyPendingTimers();
 				await waitFor(() =>
 					expect(componentFilter).toHaveDisplayValue(componentValue),
 				);
@@ -251,8 +253,10 @@ describe("VulnTabContent component", () => {
 					name: /vulnerability/i,
 				});
 				const vulnValue = "https://example.com/vulnid/description/remediation";
-				await act(async () => await user.type(vulnFilter, vulnValue));
-				jest.runOnlyPendingTimers();
+				await act(async () => {
+					await user.type(vulnFilter, vulnValue);
+					jest.runOnlyPendingTimers();
+				});
 				await waitFor(() => expect(vulnFilter).toHaveDisplayValue(vulnValue));
 
 				expect(mockSaveFilters).toHaveBeenLastCalledWith(HASH_PREFIX, {

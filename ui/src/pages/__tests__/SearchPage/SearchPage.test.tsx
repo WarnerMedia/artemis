@@ -269,7 +269,7 @@ describe("SearchPage component", () => {
 
 					await validateSelect({
 						role: "combobox",
-						label: /service/i,
+						label: /^service$/i,
 						options: options,
 						defaultOption: "",
 						disabled: false,
@@ -384,9 +384,9 @@ describe("SearchPage component", () => {
 
 					// for multiple licenses, expect tooltip with all license names
 					// role = cell matches a particular data cell in the table
-					screen.getByRole("cell", {
-						name: "The First License, The Second License, The Third License",
-					});
+					screen.getByTitle(
+						"The First License, The Second License, The Third License",
+					);
 
 					// for multiple licenses, expect format: <License Name> + # more
 					screen.getByText("The First License + 2 more");
@@ -407,32 +407,32 @@ describe("SearchPage component", () => {
 						advanceTimers: jest.advanceTimersByTime,
 					});
 
-					const componentNameMatch = await screen.findByRole("button", {
-						name: /component name match contains/i,
+					const componentNameMatch = await screen.findByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentName = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
-					const componentVersionMatch = screen.getByRole("button", {
-						name: /component version match contains/i,
+					const componentVersionMatch = screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersion = screen.getByRole("textbox", {
 						name: /component version/i,
 					});
-					const licenseMatch = screen.getByRole("button", {
-						name: /license match contains/i,
+					const licenseMatch = screen.getByRole("combobox", {
+						name: /license match/i,
 					});
 					const license = screen.getByRole("textbox", { name: /license/i });
-					const serviceMatch = screen.getByRole("button", {
-						name: /service match exact/i,
+					const serviceMatch = screen.getByRole("combobox", {
+						name: /service match/i,
 					});
-					const service = screen.getByRole("combobox", { name: /service/i });
-					const repoMatch = screen.getByRole("button", {
-						name: /repository match contains/i,
+					const service = screen.getByRole("combobox", { name: /^service$/i });
+					const repoMatch = screen.getByRole("combobox", {
+						name: /repository match/i,
 					});
 					const repo = screen.getByRole("textbox", { name: /repository/i });
-					const scanTimeMatch = screen.getByRole("button", {
-						name: /scan time match before/i,
+					const scanTimeMatch = screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					const scanTime = screen.getByRole("textbox", { name: /scan time/i });
 					const submitButton = screen.getByRole("button", {
@@ -513,7 +513,7 @@ describe("SearchPage component", () => {
 					await user.type(licenseField, licenseValue);
 
 					const serviceField = await screen.findByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					await user.type(serviceField, `${serviceValue}{enter}`); // enter to select match in list
 
@@ -653,7 +653,7 @@ describe("SearchPage component", () => {
 						user,
 					});
 					const serviceField = await screen.findByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					await user.type(serviceField, `${serviceValue}{enter}`); // enter to select match in list
 
@@ -1163,16 +1163,16 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
 					expect(componentNameField).toHaveDisplayValue(componentNameValue);
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
@@ -1181,25 +1181,25 @@ describe("SearchPage component", () => {
 						componentVersionValue,
 					);
 
-					screen.getByRole("button", { name: /license match contains/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
 					expect(licenseField).toHaveDisplayValue(licenseValue);
 
-					screen.getByRole("button", { name: /service match exact/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					expect(serviceField).toHaveDisplayValue(serviceValue);
 
-					screen.getByRole("button", { name: /repository match contains/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
 					expect(repoField).toHaveDisplayValue(repoValue);
 
-					screen.getByRole("button", { name: /scan time match before/i });
+					screen.getByRole("combobox", { name: /scan time match/i });
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /scan time/i,
 					});
@@ -1286,16 +1286,16 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component name match exact/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
 					expect(componentNameField).toHaveDisplayValue(componentNameValue);
 
-					screen.getByRole("button", {
-						name: /component version match exact/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
@@ -1304,26 +1304,26 @@ describe("SearchPage component", () => {
 						componentVersionValue,
 					);
 
-					screen.getByRole("button", { name: /license match exact/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
 					expect(licenseField).toHaveDisplayValue(licenseValue);
 
-					screen.getByRole("button", { name: /service match contains/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					expect(serviceField).toHaveDisplayValue(serviceValue);
 
-					screen.getByRole("button", { name: /repository match exact/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
 					expect(repoField).toHaveDisplayValue(repoValue);
 
-					screen.getByRole("button", {
-						name: /scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /scan time/i,
@@ -1415,7 +1415,7 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", { name: /license match no license/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
@@ -1470,7 +1470,7 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", { name: /license match any license/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
@@ -1536,16 +1536,16 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component name match exact/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
 					expect(componentNameField).toHaveDisplayValue(componentNameValue);
 
-					screen.getByRole("button", {
-						name: /component version match exact/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
@@ -1554,26 +1554,26 @@ describe("SearchPage component", () => {
 						componentVersionValue,
 					);
 
-					screen.getByRole("button", { name: /license match exact/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
 					expect(licenseField).toHaveDisplayValue(licenseValue);
 
-					screen.getByRole("button", { name: /service match contains/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					expect(serviceField).toHaveDisplayValue(serviceValue);
 
-					screen.getByRole("button", { name: /repository match exact/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
 					expect(repoField).toHaveDisplayValue(repoValue);
 
-					screen.getByRole("button", {
-						name: /scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /scan time/i,
@@ -1588,27 +1588,27 @@ describe("SearchPage component", () => {
 					await user.click(resetButton);
 
 					// form should be in default state after reset
-					await screen.findByRole("button", {
-						name: /component name match contains/i,
+					await screen.findByRole("combobox", {
+						name: /component name match/i,
 					});
 					expect(componentNameField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					expect(componentVersionField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /license match contains/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					expect(licenseField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /service match exact/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /repository match contains/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					expect(repoField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					expect(scanTimeField).toHaveDisplayValue("");
 					expect(scanTimeField).toBeEnabled();
@@ -1643,42 +1643,42 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
 					expect(componentNameField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
 					});
 					expect(componentVersionField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /license match contains/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
 					expect(licenseField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /service match exact/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /repository match contains/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
 					expect(repoField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /scan time/i,
@@ -1743,42 +1743,42 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
 					expect(componentNameField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
 					});
 					expect(componentVersionField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /license match contains/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
 					expect(licenseField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /service match exact/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /repository match contains/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
 					expect(repoField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /scan time match after/i,
+					screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /scan time/i,
@@ -1826,42 +1826,42 @@ describe("SearchPage component", () => {
 					// don't await data loading indicator because url query params invalid
 
 					// all form fields are defaults (empty with default matchers)
-					await screen.findByRole("button", {
-						name: /component name match contains/i,
+					await screen.findByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
 					});
 					expect(componentNameField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
 					});
 					expect(componentVersionField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /license match contains/i });
+					screen.getByRole("combobox", { name: /license match/i });
 					const licenseField = screen.getByRole("textbox", {
 						name: /license/i,
 					});
 					expect(licenseField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /service match exact/i });
+					screen.getByRole("combobox", { name: /service match/i });
 					const serviceField = screen.getByRole("combobox", {
-						name: /service/i,
+						name: /^service$/i,
 					});
 					expect(serviceField).toHaveDisplayValue("");
 
-					screen.getByRole("button", { name: /repository match contains/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
 					expect(repoField).toHaveDisplayValue("");
 
-					screen.getByRole("button", {
-						name: /scan time match before/i,
+					screen.getByRole("combobox", {
+						name: /scan time match/i,
 					});
 					const scanTimeField = screen.getByRole("textbox", {
 						name: /scan time/i,
@@ -1908,8 +1908,8 @@ describe("SearchPage component", () => {
 					);
 
 					// valid field will be populated
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
@@ -1917,7 +1917,7 @@ describe("SearchPage component", () => {
 					expect(componentNameField).toHaveDisplayValue(validValue);
 
 					// field with invalid matcher will use default values
-					screen.getByRole("button", { name: /repository match contains/i });
+					screen.getByRole("combobox", { name: /repository match/i });
 					const repoField = screen.getByRole("textbox", {
 						name: /repository/i,
 					});
@@ -1977,8 +1977,8 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component name match contains/i,
+					screen.getByRole("combobox", {
+						name: /component name match/i,
 					});
 					const componentNameField = screen.getByRole("textbox", {
 						name: /component name/i,
@@ -2029,8 +2029,8 @@ describe("SearchPage component", () => {
 						{ timeout: 6000 },
 					);
 
-					screen.getByRole("button", {
-						name: /component version match contains/i,
+					screen.getByRole("combobox", {
+						name: /component version match/i,
 					});
 					const componentVersionField = screen.getByRole("textbox", {
 						name: /component version/i,
@@ -2088,7 +2088,7 @@ describe("SearchPage component", () => {
 				test.each([
 					[
 						"Service",
-						/service/i,
+						/^service$/i,
 						"abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ.0123456789",
 						"Must be a valid service name [azure|bitbucket|github] or hostname",
 						"combobox" as const,
@@ -2390,9 +2390,9 @@ describe("SearchPage component", () => {
 
 					// find the table row with multiple licenses and click it to open the dialog
 					const table = screen.getByRole("table", { name: "results table" });
-					const row = within(table).getByRole("cell", {
-						name: "The First License, The Second License, The Third License",
-					});
+					const row = within(table).getByTitle(
+						"The First License, The Second License, The Third License",
+					);
 					await user.click(row);
 
 					// find dialog with component name + - + component version
@@ -2498,9 +2498,9 @@ describe("SearchPage component", () => {
 
 					// find the table row with multiple licenses and click it to open the dialog
 					const table = screen.getByRole("table", { name: "results table" });
-					const row = within(table).getByRole("cell", {
-						name: "The First License, The Second License, The Third License",
-					});
+					const row = within(table).getByTitle(
+						"The First License, The Second License, The Third License",
+					);
 					await user.click(row);
 
 					// find dialog with component name + - + component version
@@ -2564,9 +2564,9 @@ describe("SearchPage component", () => {
 
 					// find the table row with multiple licenses and click it to open the dialog
 					const table = screen.getByRole("table", { name: "results table" });
-					const row = within(table).getByRole("cell", {
-						name: "The First License, The Second License, The Third License",
-					});
+					const row = within(table).getByTitle(
+						"The First License, The Second License, The Third License",
+					);
 					await user.click(row);
 
 					// find dialog with component name + - + component version

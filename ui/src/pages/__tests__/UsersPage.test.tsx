@@ -107,10 +107,14 @@ describe("UsersPage component", () => {
 				mockAppState = JSON.parse(JSON.stringify(mockUsers));
 				const defaultRowsPerPage = 20;
 				render(<UsersPage />);
-				const rowsPerPageButton = screen.getByRole("button", {
-					name: "Rows per page: " + String(defaultRowsPerPage),
+				const rowsPerPageButton = screen.getByRole("combobox", {
+					name: "Rows per page:",
 				});
+
 				expect(rowsPerPageButton).toBeInTheDocument();
+				expect(parseInt(rowsPerPageButton.innerHTML)).toEqual(
+					defaultRowsPerPage,
+				);
 			});
 
 			describe("table actions", () => {

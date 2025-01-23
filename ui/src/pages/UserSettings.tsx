@@ -44,7 +44,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	IconButton,
 	InputAdornment,
 	LinearProgress,
@@ -729,7 +729,7 @@ export default function UserSettings() {
 
 				<Grid container spacing={3}>
 					{/* left column */}
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="user-email">
 								<ListItemIcon>
@@ -837,7 +837,7 @@ export default function UserSettings() {
 					</Grid>
 
 					{/* right column */}
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="user-last-login">
 								<ListItemIcon>
@@ -1439,7 +1439,7 @@ export default function UserSettings() {
 
 								{currentUser?.admin && (
 									<Grid container spacing={2}>
-										<Grid item xs={6}>
+										<Grid size={6}>
 											<Box className={classes.addKeyFormField}>
 												<FormControlLabel
 													control={
@@ -1560,12 +1560,11 @@ export default function UserSettings() {
 												{values.scope.map((scope: string, idx: number) => (
 													<Grid
 														container
-														item
-														xs={12}
+														size={12}
 														spacing={1}
 														key={`scope-row-${scope}`}
 													>
-														<Grid item xs={11}>
+														<Grid size={11}>
 															<MuiTextField
 																id={`scope-${idx}`}
 																label={<Trans>Scope {idx + 1}</Trans>}
@@ -1576,11 +1575,7 @@ export default function UserSettings() {
 																disabled
 															/>
 														</Grid>
-														<Grid
-															item
-															xs={1}
-															className={classes.formScopeAction}
-														>
+														<Grid size={1} className={classes.formScopeAction}>
 															<Tooltip
 																title={<Trans>Remove scope {idx + 1}</Trans>}
 															>
@@ -1647,8 +1642,8 @@ export default function UserSettings() {
 											alignItems="flex-end"
 											className={classes.addNewScopeField}
 										>
-											<Grid container item xs={12} spacing={1}>
-												<Grid item xs={11}>
+											<Grid container size={12} spacing={1}>
+												<Grid size={11}>
 													<MuiTextField
 														id="add-new-scope-input"
 														label={<Trans>Add Scope</Trans>}
@@ -1723,7 +1718,7 @@ export default function UserSettings() {
 														}}
 													/>
 												</Grid>
-												<Grid item xs={1} className={classes.formScopeAction}>
+												<Grid size={1} className={classes.formScopeAction}>
 													<Tooltip title={<Trans>Add to scope</Trans>}>
 														<span>
 															<Fab
@@ -1795,8 +1790,7 @@ export default function UserSettings() {
 										component={DatePickerField}
 										inputVariant="outlined"
 										ampm={false}
-										inputFormat="yyyy/LL/dd HH:mm"
-										placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
+										format="yyyy/LL/dd HH:mm"
 										mask="____/__/__ __:__"
 									/>
 								</Box>
@@ -1972,7 +1966,7 @@ export default function UserSettings() {
 		return (
 			<Grid container spacing={3}>
 				{/* left column */}
-				<Grid item xs={6}>
+				<Grid size={6}>
 					<List dense={true}>
 						<ListItem key="key-scope">
 							<ListItemIcon className={classes.scopeItemIcon}>
@@ -2065,7 +2059,7 @@ export default function UserSettings() {
 				</Grid>
 
 				{/* right column */}
-				<Grid item xs={6}>
+				<Grid size={6}>
 					<List dense={true}>
 						<ListItem key="key-created">
 							<ListItemIcon>

@@ -1,5 +1,5 @@
 import { DateTime, Settings } from "luxon";
-import { render, screen, waitFor, within } from "test-utils";
+import { act, render, screen, waitFor, within } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
 import { vulnRow, findingVulnRawRow } from "../../../../testData/testMockData";
 
@@ -12,6 +12,8 @@ beforeAll(() => {
 const formatDateForExpirationField = (dateIsoString: string | null) => {
 	return DateTime.fromISO(dateIsoString ?? "").toFormat("yyyy/LL/dd HH:mm");
 };
+
+const DATE_FORMAT = "yyyy/LL/dd HH:mm";
 
 describe("HiddenFindingDialog component", () => {
 	// increase this test timeout since waiting for async dialog operations can take some time
@@ -156,11 +158,19 @@ describe("HiddenFindingDialog component", () => {
 			expect(screen.getByText("Must be a future date")).toBeInTheDocument();
 
 			// fix date error
-			const tomorrow = formatDateForExpirationField(
-				DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
-			);
-			await user.clear(expiresField); // clear prior entry
-			await user.type(expiresField, tomorrow);
+			// const tomorrow = formatDateForExpirationField(
+			// 	DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
+			// );
+			const tomorrow = DateTime.now()
+				.plus({ days: 1, minutes: 5 })
+				.set({ second: 0, millisecond: 0 })
+				.toFormat(DATE_FORMAT);
+			act(() => {
+				/* fire events that update state */
+				user.clear(expiresField); // clear prior entry
+				user.type(expiresField, tomorrow);
+			});
+
 			await waitFor(() => {
 				expect(expiresField).toHaveValue(tomorrow);
 			});
@@ -289,11 +299,19 @@ describe("HiddenFindingDialog component", () => {
 			expect(screen.getByText("Must be a future date")).toBeInTheDocument();
 
 			// fix date error
-			const tomorrow = formatDateForExpirationField(
-				DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
-			);
-			await user.clear(expiresField); // clear prior entry
-			await user.type(expiresField, tomorrow);
+			// const tomorrow = formatDateForExpirationField(
+			// 	DateTime.utc().plus({ days: 1, minutes: 5 }).toJSON(),
+			// );
+			const tomorrow = DateTime.now()
+				.plus({ days: 1, minutes: 5 })
+				.set({ second: 0, millisecond: 0 })
+				.toFormat(DATE_FORMAT);
+
+			act(() => {
+				/* fire events that update state */
+				user.clear(expiresField); // clear prior entry
+				user.type(expiresField, tomorrow);
+			});
 			await waitFor(() => {
 				expect(expiresField).toHaveValue(tomorrow);
 			});

@@ -36,7 +36,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	InputAdornment,
 	LinearProgress,
 	Paper,
@@ -919,7 +919,7 @@ const MainPage = () => {
 														)}
 
 														<Grid container>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="vulnerability"
 																	group="vulnPlugins"
@@ -937,7 +937,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="staticAnalysis"
 																	group="staticPlugins"
@@ -955,7 +955,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="secrets"
 																	group="secretPlugins"
@@ -973,7 +973,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="configuration"
 																	group="configPlugins"
@@ -991,7 +991,7 @@ const MainPage = () => {
 																	onExpandedChange={onPluginAccordionExpanded}
 																/>
 															</Grid>
-															<Grid item xs={4}>
+															<Grid size={4}>
 																<PluginsSelector
 																	name="inventory"
 																	group="techPlugins"
@@ -1010,7 +1010,7 @@ const MainPage = () => {
 																/>
 															</Grid>
 															{sbomPluginsObjects.length > 0 && (
-																<Grid item xs={4}>
+																<Grid size={4}>
 																	<PluginsSelector
 																		name="sbom"
 																		group="sbomPlugins"
@@ -1321,7 +1321,7 @@ export const PluginsSelector = ({
 						id={`scan-features-${name}-header`}
 						className={classes.pluginsSelectorAccordionSummary}
 					>
-						<Typography className={classes.heading}>
+						<Typography component="div" className={classes.heading}>
 							<>
 								<FormControlLabel
 									className={className}

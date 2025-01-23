@@ -290,7 +290,12 @@ const ThemedApp = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<LocalizationProvider dateAdapter={DateAdapter}>
-				<Router>
+				<Router
+					future={{
+						v7_startTransition: true,
+						v7_relativeSplatPath: true,
+					}}
+				>
 					<AppRoutes />
 				</Router>
 			</LocalizationProvider>

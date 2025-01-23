@@ -37,7 +37,7 @@ import {
 	FormControlLabel,
 	FormGroup,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	GridSize,
 	IconButton,
 	InputAdornment,
@@ -565,7 +565,7 @@ export interface FormFieldDef {
 			| "TextField"
 			| "SpacerField";
 		icon?: React.ReactNode;
-		size: boolean | GridSize;
+		size: GridSize;
 		fieldProps?: FieldAttributes<any>;
 		matchOptions?: MatcherT;
 	};
@@ -2074,7 +2074,7 @@ const ComponentDialogContent = (props: {
 			<DialogContent dividers={true}>
 				<Grid container spacing={3}>
 					{/* left column */}
-					<Grid item xs={6} className={classes.tabDialogGrid}>
+					<Grid size={6} className={classes.tabDialogGrid}>
 						<List>
 							<ListItem key="component-name">
 								<ListItemText
@@ -2108,7 +2108,7 @@ const ComponentDialogContent = (props: {
 					</Grid>
 
 					{/* right column */}
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<List>
 							<ListItem key="component-licenses">
 								<ListItemText
@@ -2161,7 +2161,7 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 			</span>
 			<Grid container spacing={3}>
 				{/* left column */}
-				<Grid item xs={6} className={classes.tabDialogGrid}>
+				<Grid size={6} className={classes.tabDialogGrid}>
 					<List>
 						<ListItem key="repo-service">
 							<ListItemText
@@ -2196,7 +2196,7 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 				</Grid>
 
 				{/* right column */}
-				<Grid item xs={6}>
+				<Grid size={6}>
 					<List>
 						<ListItemMetaMultiField data={selectedRow} />
 						<ListItem key="repo-last-qualified-scan">
@@ -2276,7 +2276,7 @@ const VulnDialogContent = (props: {
 				</span>
 				<Grid container spacing={3}>
 					{/* left column */}
-					<Grid item xs={6} className={classes.tabDialogGrid}>
+					<Grid size={6} className={classes.tabDialogGrid}>
 						<List>
 							<ListItem key="vuln-ids">
 								<ListItemText
@@ -2341,7 +2341,7 @@ const VulnDialogContent = (props: {
 					</Grid>
 
 					{/* right column */}
-					<Grid item xs={6}>
+					<Grid size={6}>
 						<ListItem key="vuln-components">
 							<ListItemText
 								primary={
@@ -2942,7 +2942,7 @@ const FormFields = (props: {
 		switch (props.component) {
 			case "AutoCompleteField": {
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-autocomplete-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-autocomplete-${props.id}`}>
 						<AutoCompleteField
 							{...props?.fieldProps}
 							id={props.id}
@@ -2971,7 +2971,7 @@ const FormFields = (props: {
 
 			case "DropdownSelector": {
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-chip-${props.id}`}>
 						<DropdownSelector
 							{...props?.fieldProps}
 							id={props.id}
@@ -2993,7 +2993,7 @@ const FormFields = (props: {
 				const dateTo = `${dateFrom}_to`;
 				const dateMatcher = `${dateFrom}_match`;
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-datetime-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-datetime-${props.id}`}>
 						<Field
 							{...props?.fieldProps}
 							id={props.id}
@@ -3010,8 +3010,8 @@ const FormFields = (props: {
 							component={DatePickerField}
 							inputVariant="outlined"
 							ampm={false}
-							inputFormat="yyyy/LL/dd HH:mm"
 							placeholder={i18n._(t`yyyy/MM/dd HH:mm (24-hour)`)}
+							format="yyyy/LL/dd HH:mm"
 							invalidDateMessage={i18n._(
 								t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`,
 							)}
@@ -3024,7 +3024,7 @@ const FormFields = (props: {
 
 			case "MatchChipField": {
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-chip-${props.id}`}>
 						<MatchChipField
 							{...props?.fieldProps}
 							id={props.id}
@@ -3043,7 +3043,7 @@ const FormFields = (props: {
 
 			case "MatchDateField": {
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-match-date-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-match-date-${props.id}`}>
 						<MatchDateField
 							{...props?.fieldProps}
 							id={props.id}
@@ -3062,7 +3062,7 @@ const FormFields = (props: {
 
 			case "MatchPluginsSelectorField": {
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-chip-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-chip-${props.id}`}>
 						<MatchPluginsSelectorField
 							{...props?.fieldProps}
 							id={props.id}
@@ -3078,7 +3078,7 @@ const FormFields = (props: {
 
 			case "MatchStringField": {
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-match-string-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-match-string-${props.id}`}>
 						<MatchStringField
 							{...props?.fieldProps}
 							id={props.id}
@@ -3097,11 +3097,7 @@ const FormFields = (props: {
 
 			case "SpacerField": {
 				fields.push(
-					<Grid
-						item
-						xs={props.size}
-						key={`grid-item-spacer-${props.id}`}
-					></Grid>,
+					<Grid size={props.size} key={`grid-item-spacer-${props.id}`}></Grid>,
 				);
 				break;
 			}
@@ -3110,7 +3106,7 @@ const FormFields = (props: {
 				// disable field if matcher is "null"
 				const matcher = `${name}_match`;
 				fields.push(
-					<Grid item xs={props.size} key={`grid-item-text-${props.id}`}>
+					<Grid size={props.size} key={`grid-item-text-${props.id}`}>
 						<Field
 							{...props?.fieldProps}
 							component={TextField}

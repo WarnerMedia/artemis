@@ -24,7 +24,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid,
+	Grid2 as Grid,
 	IconButton,
 	InputAdornment,
 	LinearProgress,
@@ -947,12 +947,11 @@ export default function UsersPage() {
 												{values.scope.map((scope: string, idx: number) => (
 													<Grid
 														container
-														item
-														xs={12}
+														size={12}
 														spacing={1}
 														key={`scope-row-${scope}`}
 													>
-														<Grid item xs={11}>
+														<Grid size={11}>
 															<MuiTextField
 																id={`scope-${idx}`}
 																label={<Trans>Scope {idx + 1}</Trans>}
@@ -963,11 +962,7 @@ export default function UsersPage() {
 																disabled
 															/>
 														</Grid>
-														<Grid
-															item
-															xs={1}
-															className={classes.formScopeAction}
-														>
+														<Grid size={1} className={classes.formScopeAction}>
 															<Tooltip
 																title={<Trans>Remove scope {idx + 1}</Trans>}
 															>
@@ -1023,8 +1018,8 @@ export default function UsersPage() {
 											alignItems="flex-end"
 											className={classes.addNewScopeField}
 										>
-											<Grid container item xs={12} spacing={1}>
-												<Grid item xs={11}>
+											<Grid container size={12} spacing={1}>
+												<Grid size={11}>
 													<MuiTextField
 														id="add-new-scope-input"
 														label={<Trans>Add Scope</Trans>}
@@ -1100,7 +1095,7 @@ export default function UsersPage() {
 														}}
 													/>
 												</Grid>
-												<Grid item xs={1} className={classes.formScopeAction}>
+												<Grid size={1} className={classes.formScopeAction}>
 													<Tooltip title={<Trans>Add to scope</Trans>}>
 														<span>
 															<Fab
