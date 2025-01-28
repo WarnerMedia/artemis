@@ -42,3 +42,13 @@ variable "backend_app" {
   description = "The application name for the backend deployment"
   default     = "artemis"
 }
+
+variable "logging" {
+  type = object({
+    bucket          = string
+    prefix          = string
+    include_cookies = bool
+  })
+  description = "Enable access logs. The S3 bucket must already exist. If not set, logging will be disabled."
+  default     = null
+}
