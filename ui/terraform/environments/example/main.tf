@@ -38,6 +38,10 @@ module "analyzer-ui" {
   profile           = local.profile
   cloudfront_domain = "artemis-ui.example.com"
   zone_name         = "artemis.example.com"
+
+  # Link to managed policy ID: SecurityHeadersPolicy
+  # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html#managed-response-headers-policies-security
+  response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
 }
 
 output "cloudfront_url" {
