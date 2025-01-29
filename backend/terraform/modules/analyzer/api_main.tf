@@ -396,8 +396,8 @@ resource "aws_api_gateway_stage" "api" {
 }
 
 resource "aws_wafv2_web_acl" "api" {
-  name        = "${var.app}-acl"
-  description = "ACL for ${var.app}"
+  name        = "${var.app}-api-acl"
+  description = "ACL for ${var.app} API"
   scope       = "REGIONAL"
 
   default_action {
@@ -406,7 +406,7 @@ resource "aws_wafv2_web_acl" "api" {
 
   visibility_config {
     cloudwatch_metrics_enabled = false
-    metric_name                = "${var.app}-acl"
+    metric_name                = "${var.app}-api-acl"
     sampled_requests_enabled   = false
   }
 
