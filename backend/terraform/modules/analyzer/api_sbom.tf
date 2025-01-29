@@ -298,7 +298,7 @@ resource "aws_lambda_permission" "sbom_components" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "sbom_licenses" {
@@ -309,5 +309,5 @@ resource "aws_lambda_permission" "sbom_licenses" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }

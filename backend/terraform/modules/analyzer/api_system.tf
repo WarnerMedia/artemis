@@ -324,7 +324,7 @@ resource "aws_lambda_permission" "system_allowlist" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "system_status" {
@@ -335,7 +335,7 @@ resource "aws_lambda_permission" "system_status" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "system_services" {
@@ -346,5 +346,5 @@ resource "aws_lambda_permission" "system_services" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }

@@ -304,7 +304,7 @@ resource "aws_lambda_permission" "repo" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "users" {
@@ -315,7 +315,7 @@ resource "aws_lambda_permission" "users" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "users_keys" {
@@ -326,7 +326,7 @@ resource "aws_lambda_permission" "users_keys" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "users_services" {
@@ -337,7 +337,7 @@ resource "aws_lambda_permission" "users_services" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "signin" {
@@ -348,7 +348,7 @@ resource "aws_lambda_permission" "signin" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "ci-tools" {
@@ -359,7 +359,7 @@ resource "aws_lambda_permission" "ci-tools" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 ###############################################################################
@@ -612,7 +612,7 @@ resource "aws_lambda_permission" "authorizer" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api-authorizer.arn
   principal     = "apigateway.amazonaws.com"
-  source_arn    = aws_api_gateway_deployment.api.execution_arn
+  source_arn    = aws_api_gateway_stage.api.execution_arn
 }
 
 ###############################################################################
