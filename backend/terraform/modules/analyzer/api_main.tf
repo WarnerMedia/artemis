@@ -395,6 +395,29 @@ resource "aws_api_gateway_stage" "api" {
   stage_name    = var.api_stage
 }
 
+resource "aws_wafv2_web_acl" "api" {
+  name        = "${var.app}-acl"
+  description = "ACL for ${var.app}"
+  scope       = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = false
+    metric_name                = "${var.app}-acl"
+    sampled_requests_enabled   = false
+  }
+
+  tags = var.tags
+}
+
+resource "aws_wafv2_web_acl_association" "api" {
+  resource_arn = aws_api_gateway_stage.api.arn
+  web_acl_arn  = aws_wafv2_web_acl.api.arn
+}
+
 ###############################################################################
 # Certificate and DNS
 ###############################################################################
