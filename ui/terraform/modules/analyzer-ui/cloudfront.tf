@@ -105,6 +105,15 @@ resource "aws_cloudfront_distribution" "ui" {
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.2_2021"
   }
+
+  dynamic "logging_config" {
+    for_each = var.logging != null ? [var.logging] : []
+    content {
+      bucket          = logging_config.value.bucket
+      prefix          = logging_config.value.prefix
+      include_cookies = logging_config.value.include_cookies
+    }
+  }
 }
 
 ###############################################################################
