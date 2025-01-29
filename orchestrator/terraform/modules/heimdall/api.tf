@@ -22,6 +22,8 @@ resource "aws_api_gateway_usage_plan" "org_queue_usage" {
     api_id = aws_api_gateway_rest_api.on_demand_api.id
     stage  = var.api_stage
   }
+
+  depends_on = [aws_api_gateway_stage.on_demand_api]
 }
 
 resource "aws_api_gateway_usage_plan_key" "org-queue-plan-key" {
@@ -163,4 +165,6 @@ resource "aws_api_gateway_base_path_mapping" "on_demand" {
   stage_name  = var.api_stage
   domain_name = aws_api_gateway_domain_name.heimdall.domain_name
   base_path   = "on_demand"
+
+  depends_on = [aws_api_gateway_stage.on_demand_api]
 }

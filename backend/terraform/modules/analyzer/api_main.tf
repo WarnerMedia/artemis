@@ -497,6 +497,8 @@ resource "aws_api_gateway_base_path_mapping" "api" {
   api_id      = aws_api_gateway_rest_api.api.id
   stage_name  = var.api_stage
   domain_name = aws_api_gateway_domain_name.api.*.domain_name[count.index]
+
+  depends_on = [aws_api_gateway_stage.api]
 }
 
 ################################################################################
