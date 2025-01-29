@@ -387,7 +387,12 @@ resource "aws_api_gateway_deployment" "api" {
   ]
 
   rest_api_id = aws_api_gateway_rest_api.api.id
-  stage_name  = var.api_stage
+}
+
+resource "aws_api_gateway_stage" "api" {
+  deployment_id = aws_api_gateway_deployment.api.id
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  stage_name    = var.api_stage
 }
 
 ###############################################################################
@@ -467,7 +472,7 @@ resource "aws_api_gateway_base_path_mapping" "api" {
   count = length(aws_api_gateway_domain_name.api)
 
   api_id      = aws_api_gateway_rest_api.api.id
-  stage_name  = aws_api_gateway_deployment.api.stage_name
+  stage_name  = var.api_stage
   domain_name = aws_api_gateway_domain_name.api.*.domain_name[count.index]
 }
 
