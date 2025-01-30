@@ -336,7 +336,7 @@ resource "aws_lambda_permission" "groups" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "groups_members" {
@@ -347,7 +347,7 @@ resource "aws_lambda_permission" "groups_members" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "groups_keys" {
@@ -358,5 +358,5 @@ resource "aws_lambda_permission" "groups_keys" {
 
   # The /*/* portion grants access from any method on any resource
   # within the API Gateway "REST API".
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_stage.api.execution_arn}/*/*"
 }
