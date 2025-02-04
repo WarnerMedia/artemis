@@ -49,6 +49,12 @@ variable "api_stage" {
   description = "API stage name"
 }
 
+variable "api_log_retention_period" {
+  description = "API log retention period (days)"
+  type        = number
+  default     = 30
+}
+
 variable "scan_orgs" {
   description = "Orgs to queue scans for"
   default     = []
