@@ -393,6 +393,15 @@ resource "aws_api_gateway_stage" "api" {
   deployment_id = aws_api_gateway_deployment.api.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = var.api_stage
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api.arn
+
+    # Common Log Format (CLF)
+    format = "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime]\"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId $context.extendedRequestId"
+  }
+
+  depends_on = [aws_cloudwatch_log_group.api]
 }
 
 resource "aws_wafv2_web_acl" "api" {
@@ -497,6 +506,21 @@ resource "aws_api_gateway_base_path_mapping" "api" {
   api_id      = aws_api_gateway_rest_api.api.id
   stage_name  = aws_api_gateway_stage.api.stage_name
   domain_name = aws_api_gateway_domain_name.api.*.domain_name[count.index]
+}
+
+################################################################################
+# Logging
+################################################################################
+
+resource "aws_cloudwatch_log_group" "api" {
+  # Name should match the standard API Gateway naming convention.
+  # If the log group was previously automatically created by API Gateway, this
+  # resource must be imported first.
+  name = "API-Gateway-Execution-Logs_${var.app}-rest-api/${var.api_stage}"
+
+  retention_in_days = var.api_log_retention_period
+
+  tags = var.tags
 }
 
 ################################################################################
