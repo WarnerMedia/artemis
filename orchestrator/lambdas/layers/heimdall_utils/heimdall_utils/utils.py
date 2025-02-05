@@ -17,7 +17,7 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)
 
 DYNAMODB_TTL_DAYS = 60
-TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 # -- This constant represents the maximum age for a HEIMDALL Scan --
