@@ -54,6 +54,12 @@ variable "api_stage" {
   description = "API stage name"
 }
 
+variable "api_log_retention_period" {
+  description = "API log retention period (days)"
+  type        = number
+  default     = 30
+}
+
 variable "db_kms_key" {
   description = "KMS key ID for database encryption"
 }

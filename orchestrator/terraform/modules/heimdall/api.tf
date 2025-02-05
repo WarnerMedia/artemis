@@ -76,6 +76,15 @@ resource "aws_api_gateway_stage" "on_demand_api" {
   deployment_id = aws_api_gateway_deployment.on_demand_api.id
   rest_api_id   = aws_api_gateway_rest_api.on_demand_api.id
   stage_name    = var.api_stage
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.on_demand_api.arn
+
+    # Common Log Format (CLF)
+    format = "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime]\"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId $context.extendedRequestId"
+  }
+
+  depends_on = [aws_cloudwatch_log_group.on_demand_api]
 }
 
 resource "aws_wafv2_web_acl" "on_demand_api" {
@@ -163,4 +172,19 @@ resource "aws_api_gateway_base_path_mapping" "on_demand" {
   stage_name  = aws_api_gateway_stage.on_demand_api.stage_name
   domain_name = aws_api_gateway_domain_name.heimdall.domain_name
   base_path   = "on_demand"
+}
+
+################################################################################
+# Logging
+################################################################################
+
+resource "aws_cloudwatch_log_group" "on_demand_api" {
+  # Name should match the standard API Gateway naming convention.
+  # If the log group was previously automatically created by API Gateway, this
+  # resource must be imported first.
+  name = "API-Gateway-Execution-Logs_${var.app}-on-demand-api/${var.api_stage}"
+
+  retention_in_days = var.api_log_retention_period
+
+  tags = var.tags
 }
