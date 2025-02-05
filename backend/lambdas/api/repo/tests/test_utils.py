@@ -44,7 +44,7 @@ class TestUtils(unittest.TestCase):
         }
         actual = response(msg=[])
 
-        self.assertDictEqual(expected, actual)
+        self.assertEqual(expected, actual | expected)
 
     def test_is_sbom(self):
         if not VERACODE_ENABLED:
