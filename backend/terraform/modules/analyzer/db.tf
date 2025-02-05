@@ -21,6 +21,9 @@ resource "aws_rds_cluster" "aurora" {
   vpc_security_group_ids          = [aws_security_group.db.id]
   final_snapshot_identifier       = "final-${local.db_prefix}-${random_id.rds_snapshot_identifier.hex}"
 
+  # Note: The Engine does not use IAM authentication, regardless of this setting.
+  iam_database_authentication_enabled = var.db_iam_authentication_enabled
+
   tags = merge(
     var.tags,
     {
@@ -79,7 +82,7 @@ resource "random_id" "rds_snapshot_identifier" {
   }
 }
 
-############################ 
+############################
 # Aurora Cluster Instance ##
 ############################
 resource "aws_rds_cluster_instance" "cluster_instance" {

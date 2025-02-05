@@ -86,6 +86,17 @@ variable "db_ca_cert_identifier" {
   default     = "rds-ca-ecc384-g1"
 }
 
+variable "db_iam_authentication_enabled" {
+  description = <<EOD
+Enable IAM database authentication.
+
+Note: This does not affect how the Engine or API lambdas connect to the database.
+This option is to enable direct connections by users for debugging or maintenance using IAM roles.
+EOD
+  type        = bool
+  default     = false
+}
+
 variable "ui_origin_url" {
   description = "Origin URL for the UI"
 }
