@@ -7,7 +7,7 @@ from artemisapi.const import DEFAULT_RESPONSE_MESSAGE_OVERRIDES
 These security headers are derived from Amazon's SecurityHeaderPolicy for CloudFront.
 https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html#managed-response-headers-policies-security
 
-Note: The link above lists the HTTP headers for the SecurityHeaderPolicy
+Note: You can find a detailed list of the HTTP headers included in the SecurityHeaderPolicy at the link above!
 """
 SECURITY_HEADERS = {
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
