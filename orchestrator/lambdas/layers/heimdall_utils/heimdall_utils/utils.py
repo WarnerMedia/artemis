@@ -3,7 +3,7 @@ import json
 import logging
 import time
 from collections import namedtuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 from typing import Optional
 
@@ -133,6 +133,6 @@ def is_valid_timestamp(timestamp: str) -> bool:
 
 
 def get_datetime_from_past(days: int) -> datetime:
-    current_timestamp = datetime.now()
+    current_timestamp = datetime.now(timezone.utc)
     three_months_ago = current_timestamp - timedelta(days=days)
     return three_months_ago
