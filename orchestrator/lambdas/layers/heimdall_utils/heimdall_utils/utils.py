@@ -109,7 +109,6 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
 
     Notes:
         - The function uses the current system time to calculate the 3-month offset.
-        - All returned timestamps are in UTC (denoted by the 'Z' suffix).
     """
     if timestamp and is_valid_timestamp(timestamp):
         return timestamp
