@@ -3,7 +3,7 @@ import json
 import logging
 import time
 from collections import namedtuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 from typing import Optional
 
@@ -17,7 +17,7 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)
 
 DYNAMODB_TTL_DAYS = 60
-TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 # -- This constant represents the maximum age for a HEIMDALL Scan --
@@ -102,14 +102,13 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
     Examples:
         >>> parse_timestamp()
         {"level":"DEBUG","location":"parse_timestamp","message":"Generating Default timestamp"}
-        "2024-04-24T22:35:36Z"  # Output will vary based on the current date and time
+        "2024-01-01T6:14:57-0800"  # Output will vary based on the current date, time, and timezone
 
         >>> parse_timestamp("2024-06-24T22:50:00Z")
         "2024-06-24T22:50:00Z"
 
     Notes:
         - The function uses the current system time to calculate the 3-month offset.
-        - All returned timestamps are in UTC (denoted by the 'Z' suffix).
     """
     if timestamp and is_valid_timestamp(timestamp):
         return timestamp
@@ -133,6 +132,6 @@ def is_valid_timestamp(timestamp: str) -> bool:
 
 
 def get_datetime_from_past(days: int) -> datetime:
-    current_timestamp = datetime.now()
+    current_timestamp = datetime.now(timezone.utc)
     three_months_ago = current_timestamp - timedelta(days=days)
     return three_months_ago

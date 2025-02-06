@@ -26,3 +26,15 @@ class TestUtils(unittest.TestCase):
         result = self.json_utils.get_json_from_response(json.dumps(test_dict))
 
         self.assertEqual(test_dict, result)
+
+    def test_is_valid_timestamp_utc(self):
+        # Checks relative to current time minus a max scan age.
+        # Make sure to change this before 9998
+        time = "9999-01-01T00:00:00Z"
+        self.assertTrue(utils.is_valid_timestamp(time))
+
+    def test_is_valid_timestamp_localized(self):
+        # Checks relative to current time minus a max scan age.
+        # Make sure to change this before 9998
+        time = "9999-01-01T00:00:00-08:00"
+        self.assertTrue(utils.is_valid_timestamp(time))
