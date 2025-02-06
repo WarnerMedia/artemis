@@ -102,7 +102,7 @@ def parse_timestamp(timestamp: Optional[str] = None) -> str:
     Examples:
         >>> parse_timestamp()
         {"level":"DEBUG","location":"parse_timestamp","message":"Generating Default timestamp"}
-        "2024-04-24T22:35:36Z"  # Output will vary based on the current date and time
+        "2024-01-01T6:14:57-0800"  # Output will vary based on the current date, time, and timezone
 
         >>> parse_timestamp("2024-06-24T22:50:00Z")
         "2024-06-24T22:50:00Z"
