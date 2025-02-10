@@ -37,8 +37,20 @@ EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 if REGION is not None and USERPOOL_ID is not None:  # Make sure this doesn't run during loading unit tests
     KEYS = load_cognito_public_keys(REGION, USERPOOL_ID)
 
+# Paths which do not require authorization.
+PASSTHROUGH_PATHS = {
+    # System status is used as a healthcheck.
+    "/api/v1/system/status",
+    # Entrypoints into the auth workflow.
+    "/provision",
+    "/signin",
+}
+
 
 def handler(event, _):
+    if str(event["path"]) in PASSTHROUGH_PATHS:
+        return passthrough_response(event)
+
     if MAINTENANCE_MODE:
         req_path = event["methodArn"].split(":")[-1].split("/", maxsplit=3)[3]
         if req_path.startswith("api/") or req_path.startswith("ci-tools/"):
@@ -76,6 +88,11 @@ def handler(event, _):
         # Anything goes wrong auth fails
         LOG.error(f"Error: {e}")
         raise Exception("Unauthorized")
+
+
+def passthrough_response(event: dict):
+    """Generate the response for passthrough events"""
+    return response(event=event, success=True)
 
 
 def process_user_auth(event):
