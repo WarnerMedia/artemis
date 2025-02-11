@@ -3,7 +3,7 @@ import os
 import re
 import time
 from datetime import datetime, timezone
-from typing import Tuple
+from typing import Optional, Tuple, Union
 
 from django.db import transaction
 from joserfc import jwk, jwt
@@ -37,8 +37,20 @@ EMAIL_DOMAIN_ALIASES = json.loads(os.environ.get("EMAIL_DOMAIN_ALIASES", "[]"))
 if REGION is not None and USERPOOL_ID is not None:  # Make sure this doesn't run during loading unit tests
     KEYS = load_cognito_public_keys(REGION, USERPOOL_ID)
 
+# Paths which do not require authorization.
+PASSTHROUGH_PATHS = {
+    # System status is used as a healthcheck.
+    "/api/v1/system/status",
+    # Entrypoints into the auth workflow.
+    "/provision",
+    "/signin",
+}
+
 
 def handler(event, _):
+    if str(event["path"]) in PASSTHROUGH_PATHS:
+        return passthrough_response(event)
+
     if MAINTENANCE_MODE:
         req_path = event["methodArn"].split(":")[-1].split("/", maxsplit=3)[3]
         if req_path.startswith("api/") or req_path.startswith("ci-tools/"):
@@ -76,6 +88,11 @@ def handler(event, _):
         # Anything goes wrong auth fails
         LOG.error(f"Error: {e}")
         raise Exception("Unauthorized")
+
+
+def passthrough_response(event: dict):
+    """Generate the response for passthrough events"""
+    return response(event=event, success=True)
 
 
 def process_user_auth(event):
@@ -158,7 +175,7 @@ def _verify_claims(claims: dict):
 
 
 @transaction.atomic
-def _get_update_or_create_user(email: str, source_ip: str) -> User:
+def _get_update_or_create_user(email: str, source_ip: str) -> Optional[User]:
     """
     Attempt to get a user based on email.
     If user does not exist, try to match based on EMAIL_DOMAIN_ALIASES, and update email if successful.
@@ -274,7 +291,7 @@ def _create_user(email: str, source_ip: str) -> User:
     return user
 
 
-def _get_user(email: str) -> User:
+def _get_user(email: str) -> Optional[User]:
     """
     Attempt to get a user based on email. Return None if no match found.
     """
@@ -387,6 +404,8 @@ def _get_api_key_group_permissions(key: APIKey) -> Tuple[list, dict, list]:
     allowlist_denied = []
 
     group = key.group
+    if group is None:
+        raise Exception("APIKey missing group")
 
     # Record the features for this group
     features = group.features
@@ -447,13 +466,17 @@ def process_api_key(event):
         audit_log = AuditLogger(principal=api_key.user.email, source_ip=event["requestContext"]["identity"]["sourceIp"])
         audit_log.key_login(key_id=str(api_key.key_id))
 
+        group = api_key.group
+        if group is None:
+            raise Exception("APIKey missing group")
+
         scopes, features, allowlist_denied = _get_api_key_group_permissions(api_key)
         return response(
             event=event,
             success=True,
-            principal_name=f"{api_key.name} ({api_key.group.name})",
-            principal_id=api_key.group.name if api_key.group.self_group else str(api_key.group.group_id),
-            principal_type="user_api_key" if api_key.group.self_group else "group_api_key",
+            principal_name=f"{api_key.name} ({group.name})",
+            principal_id=group.name if group.self_group else str(group.group_id),
+            principal_type="user_api_key" if group.self_group else "group_api_key",
             group_admin=False,  # API keys can't have group admin
             scope=json.dumps(scopes),
             admin=api_key.admin,
@@ -468,19 +491,19 @@ def process_api_key(event):
 def response(
     event: dict,
     success: bool,
-    principal_name: str = None,
-    principal_id: str = None,
-    principal_type: str = None,
-    group_admin: str = None,
-    scope: str = None,
+    principal_name: Optional[str] = None,
+    principal_id: Optional[str] = None,
+    principal_type: Optional[str] = None,
+    group_admin: Union[str, bool, None] = None,
+    scope: Optional[str] = None,
     use_email: bool = False,
     admin: bool = False,
-    features: str = None,
-    scheduler: bool = False,
+    features: Optional[str] = None,
+    scheduler: Optional[bool] = False,
     maintenance: bool = False,
-    maintenance_message: str = None,
-    maintenance_retry_after: str = None,
-    allowlist_denied: list = None,
+    maintenance_message: Optional[str] = None,
+    maintenance_retry_after: Optional[str] = None,
+    allowlist_denied: Optional[list] = None,
 ):
     # Since we're caching the auth determination for a few minutes build a resource ARN that allows all of the API
     # so that the cached response will work for multiple API resources.

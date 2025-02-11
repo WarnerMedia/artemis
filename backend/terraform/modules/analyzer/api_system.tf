@@ -104,7 +104,8 @@ resource "aws_api_gateway_method" "api_v1_system_status" {
   rest_api_id      = aws_api_gateway_rest_api.api.id
   resource_id      = aws_api_gateway_resource.api_v1_system_status.id
   http_method      = "ANY"
-  authorization    = "NONE"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.authorizer.id
   api_key_required = false
 }
 
