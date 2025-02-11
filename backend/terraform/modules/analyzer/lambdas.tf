@@ -186,7 +186,9 @@ resource "aws_lambda_function" "repo-handler" {
         DD_LAMBDA_HANDLER = "handlers.handler"
         DD_SERVICE        = "${var.app}-api"
       }, var.datadog_environment_variables)
-    : {})
+      : {},
+      var.repo_handler_environment_variables
+    )
   }
 
   tags = merge(

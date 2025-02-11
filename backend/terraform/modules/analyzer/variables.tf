@@ -386,6 +386,12 @@ variable "extra_event_dispatch_queues" {
   default     = []
 }
 
+variable "repo_handler_environment_variables" {
+  description = "Environment variables to add to repo handler lambda"
+  type        = map(any)
+  default     = {}
+}
+
 ################################################
 # Engine Cluster Customization
 ################################################
