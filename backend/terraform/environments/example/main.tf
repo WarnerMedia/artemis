@@ -114,6 +114,7 @@ module "analyzer" {
   lambda_availability_zone    = "${local.region}a"
   lambda_architecture         = local.lambda_architecture
   domain_name                 = "ARTEMIS_ROUTE53_FQDN"
+  artemis_api_base_url        = "https://artemis-ui.example.com/api/v1"
   alternative_names           = []
   api_stage                   = "v1"
   lambda_cidr                 = "10.0.32.0/20"
@@ -166,6 +167,12 @@ module "analyzer" {
 
   # List of service integration names. These are referenced in the services.json config.
   service-integrations = []
+
+  additional_response_headers = {
+    "gatewayresponse.header.X-Content-Type-Options" = "'nosniff'"
+    "gatewayresponse.header.X-Frame-Options"        = "'SAMEORIGIN'"
+    "gatewayresponse.header.Referrer-Policy"        = "'strict-origin-when-cross-origin'"
+  }
 }
 
 module "metric_alarms" {
