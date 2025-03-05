@@ -10,7 +10,7 @@ log = utils.setup_logging("findsecbugs_java")
 
 def main_util():
     """
-    Executes main function for findsecbugs_java 7,8, and 13
+    Executes main function for findsecbugs_java 8, 11, 17 and 21
     :todo: Will want to expand this out to ant and gradle builds as well
     """
     args = utils.parse_args()

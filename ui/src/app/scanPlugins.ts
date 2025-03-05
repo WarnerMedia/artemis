@@ -101,19 +101,24 @@ export const staticPluginsKeys: ScanPluginKeys = {
 		apiName: "eslint",
 		group: GROUP_ANALYSIS,
 	},
-	findsecbugs_java7: {
-		displayName: t`FindSecBugs (Java 7)`,
-		apiName: "findsecbugs_java7",
-		group: GROUP_ANALYSIS,
-	},
 	findsecbugs_java8: {
 		displayName: t`FindSecBugs (Java 8)`,
 		apiName: "findsecbugs_java8",
 		group: GROUP_ANALYSIS,
 	},
-	findsecbugs_java13: {
-		displayName: t`FindSecBugs (Java 13)`,
-		apiName: "findsecbugs_java13",
+	findsecbugs_java11: {
+		displayName: t`FindSecBugs (Java 11)`,
+		apiName: "findsecbugs_java11",
+		group: GROUP_ANALYSIS,
+	},
+	findsecbugs_java17: {
+		displayName: t`FindSecBugs (Java 17)`,
+		apiName: "findsecbugs_java17",
+		group: GROUP_ANALYSIS,
+	},
+	findsecbugs_java21: {
+		displayName: t`FindSecBugs (Java 21)`,
+		apiName: "findsecbugs_java21",
 		group: GROUP_ANALYSIS,
 	},
 	gosec: {
