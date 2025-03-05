@@ -196,7 +196,7 @@ def main():
     args = utils.parse_args(
         extra_args=[
             [["cli_path"], {"type": str, "nargs": "?", "default": "/app/owasp_dependency-check/dependency-check/"}],
-            [["java_versions"], {"type": str, "nargs": "?", "default": '{\r\n\t"version_list": [7, 8, 12, 13]\r\n}'}],
+            [["java_versions"], {"type": str, "nargs": "?", "default": '{\r\n\t"version_list": [8, 11, 17, 21]\r\n}'}],
         ]
     )
 
