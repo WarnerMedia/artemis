@@ -60,6 +60,12 @@ variable "api_log_retention_period" {
   default     = 30
 }
 
+variable "api_log_format" {
+  description = "API log format. Default is Common Log Format (CLF)."
+  type        = string
+  default     = "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime]\"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId $context.extendedRequestId"
+}
+
 variable "db_kms_key" {
   description = "KMS key ID for database encryption"
 }

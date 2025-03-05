@@ -397,9 +397,7 @@ resource "aws_api_gateway_stage" "api" {
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api.arn
-
-    # Common Log Format (CLF)
-    format = "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime]\"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId $context.extendedRequestId"
+    format          = var.api_log_format
   }
 
   depends_on = [aws_cloudwatch_log_group.api]
