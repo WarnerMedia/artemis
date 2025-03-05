@@ -37,6 +37,7 @@ FROM eclipse-temurin:$OPENJDK_VER AS dist
 
 ARG OWASP_DC=""
 ARG OWASP_DC_SHA=""
+ARG NVD_API_KEY=""
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -68,7 +69,7 @@ RUN if [ "$OWASP_DC" != "" ] ; then \
     echo "$OWASP_DC_SHA  /tmp/dependency-check.zip" | sha256sum -c - && \
     unzip /tmp/dependency-check.zip -d /app/owasp_dependency-check && \
     rm /tmp/dependency-check.zip && \
-    /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --connectiontimeout 120000 --updateonly ; \
+    /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --nvdApiKey "$NVD_API_KEY" --connectiontimeout 120000 --updateonly ; \
     fi
 
 COPY --from=common /app/findsecbugs/ /app/findsecbugs/

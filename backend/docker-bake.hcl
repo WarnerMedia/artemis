@@ -4,6 +4,7 @@ variable "DETEKT_VER" {}
 variable "DETEKT_SHA" {}
 variable "FSB_VER" {}
 variable "FSB_PATCH" {}
+variable "NVD_API_KEY" {}
 variable "OWASP_DC" {}
 variable "OWASP_DC_SHA" {}
 
@@ -88,6 +89,7 @@ target "java11" {
     # OWASP Dependency Check enabled for Java 11 only.
     OWASP_DC = OWASP_DC
     OWASP_DC_SHA = OWASP_DC_SHA
+    NVD_API_KEY = NVD_API_KEY
   })
 }
 
