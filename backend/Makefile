@@ -126,10 +126,10 @@ RUBY_PKG := ${PREFIX}/ruby
 RUBY_TAG := ${RUBY_PKG}:latest
 
 JAVA_PKG := ${PREFIX}/java
-JAVA7_TAG := ${JAVA_PKG}:7-latest
 JAVA8_TAG := ${JAVA_PKG}:8-latest
-JAVA13_TAG := ${JAVA_PKG}:13-latest
+JAVA11_TAG := ${JAVA_PKG}:11-latest
 JAVA17_TAG := ${JAVA_PKG}:17-latest
+JAVA21_TAG := ${JAVA_PKG}:21-latest
 
 DB_MAINT_PKG := ${PREFIX}/db_maintenance
 DB_MAINT_TAG := ${DB_MAINT_PKG}:latest
@@ -144,10 +144,10 @@ SWIFT_TAG := ${SWIFT_PKG}:latest
 SWIFTLINT_VER := 0.45.1
 SWIFTLINT_SHA := 3b5075a5cdf17fc5aaf03636b81d96b29ff5040ee24ca11e1fafc3b43e0fb9e4
 
-FSB_VER := 1.9.0
-FSB_PATCH := -fix2
-OWASP_DC := 6.1.6
-OWASP_DC_SHA := 34e817f41b1267e3d17173b0e4fd87c1358beacb94793fec544b8a7b0b2823bd
+FSB_VER := 1.12.0
+FSB_PATCH := 
+OWASP_DC := 12.1.0
+OWASP_DC_SHA := 0e5ba6ae58e753d5841048c6c8e495dbc4c7a4ea921a2b14daeac65195700532
 GIT_SECRETS_VER := 1.3.0
 
 ARTEMISAPI = libs/artemisapi
@@ -565,13 +565,13 @@ define docker-build-java
 	FSB_PATCH=${FSB_PATCH} \
 	OWASP_DC=${OWASP_DC} \
 	OWASP_DC_SHA=${OWASP_DC_SHA} \
-	JAVA7_TAG=${JAVA7_TAG} \
 	JAVA8_TAG=${JAVA8_TAG} \
-	JAVA13_TAG=${JAVA13_TAG} \
+	JAVA11_TAG=${JAVA11_TAG} \
 	JAVA17_TAG=${JAVA17_TAG} \
+	JAVA21_TAG=${JAVA21_TAG} \
 	ECR_URL=${ECR_URL} \
 	LATEST_COMMIT=${LATEST_COMMIT} \
-	${DOCKER} buildx bake -f docker-bake.hcl $1
+	${DOCKER} buildx bake --set *.platform=linux/amd64 -f docker-bake.hcl $1
 endef
 
 # Build an individual Java image.
@@ -588,10 +588,10 @@ docker-java: docker-bake.hcl Dockerfiles/Dockerfile.java
 	@echo "${INFO}Building $@"
 	$(call docker-build-java,java)
 	mkdir -p ${DIST_DIR}/docker
-	touch dist/docker/java7
 	touch dist/docker/java8
-	touch dist/docker/java13
+	touch dist/docker/java11
 	touch dist/docker/java17
+	touch dist/docker/java21
 	@echo "${OK}"
 .PHONY: docker-java
 
@@ -672,11 +672,11 @@ stage/docker/golang: dist/docker/golang
 	touch $@
 	@echo "${OK}"
 
-stage/docker/java7: dist/docker/java7
+stage/docker/java11: dist/docker/java11
 	@echo "${INFO}Staging $@ in ECR"
 	mkdir -p ${STAGE_DIR}/docker
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${JAVA7_TAG}-stage-${LATEST_COMMIT}
+	${DOCKER} push ${ECR_URL}${JAVA11_TAG}-stage-${LATEST_COMMIT}
 	touch $@
 	@echo "${OK}"
 
@@ -688,11 +688,11 @@ stage/docker/java8: dist/docker/java8
 	touch $@
 	@echo "${OK}"
 
-stage/docker/java13: dist/docker/java13
+stage/docker/java21: dist/docker/java21
 	@echo "${INFO}Staging $@ in ECR"
 	mkdir -p ${STAGE_DIR}/docker
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${JAVA13_TAG}-stage-${LATEST_COMMIT}
+	${DOCKER} push ${ECR_URL}${JAVA21_TAG}-stage-${LATEST_COMMIT}
 	touch $@
 	@echo "${OK}"
 
@@ -745,10 +745,10 @@ docker_push: stage/docker/engine \
 			 stage/docker/php \
 			 stage/docker/dind \
 			 stage/docker/golang \
-			 stage/docker/java7 \
 			 stage/docker/java8 \
-			 stage/docker/java13 \
+			 stage/docker/java11 \
 			 stage/docker/java17 \
+			 stage/docker/java21 \
 			 stage/docker/ruby \
 			 stage/docker/db_maintenance \
 			 stage/docker/veracode \
@@ -1525,14 +1525,14 @@ deploy_golang_image:
 	@echo "${OK}"
 .PHONY: deploy_golang_image
 
-deploy_java7_image:
-	@echo "${INFO}Moving staged java7 image into place"
+deploy_java11_image:
+	@echo "${INFO}Moving staged java11 image into place"
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${JAVA7_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${JAVA7_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA7_TAG}
-	docker push ${ECR_URL}${JAVA7_TAG}
+	docker pull ${ECR_URL}${JAVA11_TAG}-stage-${LATEST_COMMIT}
+	docker tag ${ECR_URL}${JAVA11_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA11_TAG}
+	docker push ${ECR_URL}${JAVA11_TAG}
 	@echo "${OK}"
-.PHONY: deploy_java7_image
+.PHONY: deploy_java11_image
 
 deploy_java8_image:
 	@echo "${INFO}Moving staged java8 image into place"
@@ -1543,14 +1543,14 @@ deploy_java8_image:
 	@echo "${OK}"
 .PHONY: deploy_java8_image
 
-deploy_java13_image:
-	@echo "${INFO}Moving staged java13 image into place"
+deploy_java21_image:
+	@echo "${INFO}Moving staged java21 image into place"
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${JAVA13_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${JAVA13_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA13_TAG}
-	docker push ${ECR_URL}${JAVA13_TAG}
+	docker pull ${ECR_URL}${JAVA21_TAG}-stage-${LATEST_COMMIT}
+	docker tag ${ECR_URL}${JAVA21_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA21_TAG}
+	docker push ${ECR_URL}${JAVA21_TAG}
 	@echo "${OK}"
-.PHONY: deploy_java13_image
+.PHONY: deploy_java21_image
 
 deploy_java17_image:
 	@echo "${INFO}Moving staged java17 image into place"
@@ -1605,10 +1605,10 @@ deploy_images: deploy_engine_image \
         	   deploy_php_image \
         	   deploy_dind_image \
         	   deploy_golang_image \
-        	   deploy_java7_image \
         	   deploy_java8_image \
-        	   deploy_java13_image \
+        	   deploy_java11_image \
         	   deploy_java17_image \
+        	   deploy_java21_image \
         	   deploy_ruby_image \
         	   deploy_db_maint_image \
         	   deploy_veracode_image \

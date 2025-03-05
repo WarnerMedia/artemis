@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG OPENJDK_VER=7u201-jdk-alpine3.9
+ARG OPENJDK_VER=11-jdk-alpine-3.21
 
 # Common tools included in all Java targets.
 FROM alpine:3.20 AS common
@@ -33,7 +33,7 @@ RUN chmod a+x /usr/local/bin/detekt
 
 
 # Java-version-specific images.
-FROM openjdk:$OPENJDK_VER AS dist
+FROM eclipse-temurin:$OPENJDK_VER AS dist
 
 ARG OWASP_DC=""
 ARG OWASP_DC_SHA=""
@@ -55,9 +55,7 @@ RUN apk --no-cache add \
 
 # Upgrade pip and install engine dependencies.
 # hadolint ignore=DL3013
-RUN pip3 install --no-cache-dir --upgrade pip setuptools && \
-    pip3 install --no-cache-dir boto3 && \
-    ln -s /usr/bin/python3 /usr/bin/python
+RUN pip3 install --no-cache-dir --break-system-packages --upgrade pip setuptools boto3 
 
 WORKDIR /app
 
