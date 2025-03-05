@@ -1,5 +1,5 @@
 {
   "name": "Detekt",
   "type": "static_analysis",
-  "image": "$ECR/artemis/java:21-latest"
+  "image": "$ECR/artemis/java:17-latest"
 }

@@ -208,8 +208,8 @@ SNYK_VER := v1.889.0
 SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/environments/${ENV}/main.tf | sed 's: ::g' | cut -d'=' -f2)
 
 # Detekt
-DETEKT_VER := 1.23.8
-DETEKT_SHA := 2ce2ff952e150baf28a29cda70a363b0340b3e81a55f43e51ec5edffc3d066c1
+DETEKT_VER := 1.19.0
+DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # Lambdas
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
