@@ -24,7 +24,7 @@ RUN wget -q -O /tmp/findsecbugs.zip "https://github.com/find-sec-bugs/find-sec-b
 
 # Install detekt.
 RUN wget -q -O /usr/local/bin/detekt.jar \
-    "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" && \
+        "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" && \
     echo "$DETEKT_SHA  /usr/local/bin/detekt.jar" | sha256sum -c -
 ## The detekt wrapper script is renamed from detekt.sh to "detekt"
 ## This is for compatability with installations done via a package manager
@@ -44,14 +44,14 @@ LABEL maintainer=$MAINTAINER
 # Base apk requirements to execute script
 # hadolint ignore=DL3018
 RUN apk --no-cache add \
-    bash \
-    curl \
-    docker \
-    git \
-    maven \
-    py3-pip \
-    python3 \
-    unzip
+        bash \
+        curl \
+        docker \
+        git \
+        maven \
+        py3-pip \
+        python3 \
+        unzip
 
 # Upgrade pip and install engine dependencies.
 # hadolint ignore=DL3013
