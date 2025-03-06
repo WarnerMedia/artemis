@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG OPENJDK_VER=7u201-jdk-alpine3.9
+ARG OPENJDK_VER=11-jdk-alpine-3.21
 
 # Common tools included in all Java targets.
 FROM alpine:3.20 AS common
@@ -33,7 +33,7 @@ RUN chmod a+x /usr/local/bin/detekt
 
 
 # Java-version-specific images.
-FROM openjdk:$OPENJDK_VER AS dist
+FROM eclipse-temurin:$OPENJDK_VER AS dist
 
 ARG OWASP_DC=""
 ARG OWASP_DC_SHA=""
@@ -55,9 +55,7 @@ RUN apk --no-cache add \
 
 # Upgrade pip and install engine dependencies.
 # hadolint ignore=DL3013
-RUN pip3 install --no-cache-dir --upgrade pip setuptools && \
-    pip3 install --no-cache-dir boto3 && \
-    ln -s /usr/bin/python3 /usr/bin/python
+RUN pip3 install --no-cache-dir --break-system-packages --upgrade pip setuptools boto3 
 
 WORKDIR /app
 
@@ -65,12 +63,12 @@ WORKDIR /app
 # if the variable is set, which will happen for those Java versions. After
 # downloading, update dependency check data so it doesn't have to all be
 # downloaded each scan
-RUN if [ "$OWASP_DC" != "" ] ; then \
+RUN  --mount=type=secret,id=NVD_API_KEY,env=NVD_API_KEY if [ "$OWASP_DC" != "" ] ; then \
     wget -q -O /tmp/dependency-check.zip "https://github.com/jeremylong/DependencyCheck/releases/download/v$OWASP_DC/dependency-check-$OWASP_DC-release.zip" && \
     echo "$OWASP_DC_SHA  /tmp/dependency-check.zip" | sha256sum -c - && \
     unzip /tmp/dependency-check.zip -d /app/owasp_dependency-check && \
     rm /tmp/dependency-check.zip && \
-    /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --connectiontimeout 120000 --updateonly ; \
+    /app/owasp_dependency-check/dependency-check/bin/dependency-check.sh --nvdApiKey "$NVD_API_KEY" --connectiontimeout 120000 --updateonly ; \
     fi
 
 COPY --from=common /app/findsecbugs/ /app/findsecbugs/

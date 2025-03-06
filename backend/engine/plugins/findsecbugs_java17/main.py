@@ -1,15 +1,15 @@
 """
-findsecbugs_java7 plugin
+findsecbugs_java17 plugin
 """
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.findsecbugs_common.main_util import main_util
 
-log = utils.setup_logging("findsecbugs_java_7")
+log = utils.setup_logging("findsecbugs_java_17")
 
 
 def main():
-    log.info("Starting FindSecBugs for Java 7")
+    log.info("Starting FindSecBugs for Java 17")
     print(main_util())
 
 

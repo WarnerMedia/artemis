@@ -1,0 +1,6 @@
+{
+    "name": "FindSecBugs Scanner Java 17",
+    "type": "static_analysis",
+    "image": "$ECR/artemis/java:17-latest",
+    "writable": true
+}

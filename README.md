@@ -28,6 +28,10 @@ Artemis is made up of 3 primary components: the [backend](./backend), the [web U
 [GitHub Actions Integrations](docs/actions.md)
 
 
+## 📌 Notice
+
+This product uses data from the NVD API but is not endorsed or certified by the NVD.
+
 ## ©️ License
 
 This repository is released under [the MIT license](https://en.wikipedia.org/wiki/MIT_License).  View the [local license file](./LICENSE).

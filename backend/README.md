@@ -73,6 +73,7 @@ The following steps describe how to bootstrap this project for development on a 
 9. Install [Terraform](https://www.terraform.io/) via Homebrew or [directly](https://www.terraform.io/downloads.html)
 10. Install [pipenv](https://pypi.org/project/pipenv/) via pip3
     - `pip3 install -g pipenv`
+11. [optional] Request an NVD API Key [here](https://nvd.nist.gov/developers/request-an-api-key) to speed up Docker builds for the OWASP Dependency Checker
 
 #### 🐍 Python
 

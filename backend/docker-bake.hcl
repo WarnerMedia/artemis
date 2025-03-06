@@ -10,20 +10,20 @@ variable "OWASP_DC_SHA" {}
 variable "ENGINE_BASE" {}
 
 variable "ENGINE_TAG" {}
-variable "JAVA7_TAG" {}
 variable "JAVA8_TAG" {}
-variable "JAVA13_TAG" {}
+variable "JAVA11_TAG" {}
 variable "JAVA17_TAG" {}
+variable "JAVA21_TAG" {}
 
 variable "ECR_URL" {}
 variable "LATEST_COMMIT" {}
 
 group "java" {
   targets = [
-    "java7",
     "java8",
-    "java13",
+    "java11",
     "java17",
+    "java21",
   ]
 }
 
@@ -68,36 +68,30 @@ java_args = {
   FSB_PATCH = FSB_PATCH
 }
 
-target "java7" {
-  dockerfile = "Dockerfiles/Dockerfile.java"
-  tags = full_tags(JAVA7_TAG)
-  no-cache = true
-
-  args = merge(java_args, {
-    OPENJDK_VER = "7u201-jdk-alpine3.9"
-  })
-}
-
 target "java8" {
   dockerfile = "Dockerfiles/Dockerfile.java"
   tags = full_tags(JAVA8_TAG)
   no-cache = true
 
   args = merge(java_args, {
-    OPENJDK_VER = "8u201-jdk-alpine3.9"
-    # OWASP Dependency Check enabled for Java 8 only.
-    OWASP_DC = OWASP_DC
-    OWASP_DC_SHA = OWASP_DC_SHA
+    OPENJDK_VER = "8-jdk-alpine-3.21"
   })
 }
 
-target "java13" {
+target "java11" {
   dockerfile = "Dockerfiles/Dockerfile.java"
-  tags = full_tags(JAVA13_TAG)
+  tags = full_tags(JAVA11_TAG)
   no-cache = true
 
+  secret = [
+    "type=env,id=NVD_API_KEY,env=NVD_API_KEY"
+  ]
+
   args = merge(java_args, {
-    OPENJDK_VER = "13-ea-14-jdk-alpine3.9"
+    OPENJDK_VER = "11-jdk-alpine-3.21"
+    # OWASP Dependency Check enabled for Java 11 only.
+    OWASP_DC = OWASP_DC
+    OWASP_DC_SHA = OWASP_DC_SHA
   })
 }
 
@@ -107,6 +101,16 @@ target "java17" {
   no-cache = true
 
   args = merge(java_args, {
-    OPENJDK_VER = "17-ea-14-jdk-alpine3.12"
+    OPENJDK_VER = "17-jdk-alpine-3.21"
+  })
+}
+
+target "java21" {
+  dockerfile = "Dockerfiles/Dockerfile.java"
+  tags = full_tags(JAVA21_TAG)
+  no-cache = true
+
+  args = merge(java_args, {
+    OPENJDK_VER = "21-jdk-alpine-3.21"
   })
 }
