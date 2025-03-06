@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "schedule" {
   name                = "${var.app}-run-${var.name}-scan"
   description         = var.description
-  is_enabled          = var.enabled
+  state               = var.enabled ? "ENABLED" : "DISABLED"
   schedule_expression = var.schedule_expression
 }
 
