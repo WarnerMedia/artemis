@@ -6,13 +6,14 @@ Artemis is an extensible source code scanning tool developed by the Warner Bros.
 
 ## 📖 Contents
 
--   [Overview](#overview)
--   [License](#license)
--   [Contributors](docs/contributors.md)
+- [Overview](#overview)
+- [License](#license)
+- [Contributors](docs/contributors.md)
 
 ## 🔨 Building
 
 Artemis is made up of 3 primary components: the [backend](./backend), the [web UI](./ui), and the [scan orchestrator](./orchestrator). Each of these has its own components, architecture, and development processes, which are detailed in the README files within their subdirectories.
+
 
 ## 📁 Documents
 
@@ -26,10 +27,11 @@ Artemis is made up of 3 primary components: the [backend](./backend), the [web U
 
 [GitHub Actions Integrations](docs/actions.md)
 
+
 ## 📌 Notice
 
 This product uses data from the NVD API but is not endorsed or certified by the NVD.
 
 ## ©️ License
 
-This repository is released under [the MIT license](https://en.wikipedia.org/wiki/MIT_License). View the [local license file](./LICENSE).
+This repository is released under [the MIT license](https://en.wikipedia.org/wiki/MIT_License).  View the [local license file](./LICENSE).
