@@ -4,7 +4,6 @@ variable "DETEKT_VER" {}
 variable "DETEKT_SHA" {}
 variable "FSB_VER" {}
 variable "FSB_PATCH" {}
-variable "NVD_API_KEY" {}
 variable "OWASP_DC" {}
 variable "OWASP_DC_SHA" {}
 
@@ -84,12 +83,15 @@ target "java11" {
   tags = full_tags(JAVA11_TAG)
   no-cache = true
 
+  secret = [
+    "type=env,id=NVD_API_KEY,env=NVD_API_KEY"
+  ]
+
   args = merge(java_args, {
     OPENJDK_VER = "11-jdk-alpine-3.21"
     # OWASP Dependency Check enabled for Java 11 only.
     OWASP_DC = OWASP_DC
     OWASP_DC_SHA = OWASP_DC_SHA
-    NVD_API_KEY = NVD_API_KEY
   })
 }
 

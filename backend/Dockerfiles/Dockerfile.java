@@ -24,7 +24,7 @@ RUN wget -q -O /tmp/findsecbugs.zip "https://github.com/find-sec-bugs/find-sec-b
 
 # Install detekt.
 RUN wget -q -O /usr/local/bin/detekt.jar \
-        "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" && \
+    "https://github.com/detekt/detekt/releases/download/v${DETEKT_VER}/detekt-cli-${DETEKT_VER}-all.jar" && \
     echo "$DETEKT_SHA  /usr/local/bin/detekt.jar" | sha256sum -c -
 ## The detekt wrapper script is renamed from detekt.sh to "detekt"
 ## This is for compatability with installations done via a package manager
@@ -37,7 +37,6 @@ FROM eclipse-temurin:$OPENJDK_VER AS dist
 
 ARG OWASP_DC=""
 ARG OWASP_DC_SHA=""
-ARG NVD_API_KEY=""
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -45,14 +44,14 @@ LABEL maintainer=$MAINTAINER
 # Base apk requirements to execute script
 # hadolint ignore=DL3018
 RUN apk --no-cache add \
-        bash \
-        curl \
-        docker \
-        git \
-        maven \
-        py3-pip \
-        python3 \
-        unzip
+    bash \
+    curl \
+    docker \
+    git \
+    maven \
+    py3-pip \
+    python3 \
+    unzip
 
 # Upgrade pip and install engine dependencies.
 # hadolint ignore=DL3013
@@ -64,7 +63,7 @@ WORKDIR /app
 # if the variable is set, which will happen for those Java versions. After
 # downloading, update dependency check data so it doesn't have to all be
 # downloaded each scan
-RUN if [ "$OWASP_DC" != "" ] ; then \
+RUN  --mount=type=secret,id=NVD_API_KEY,env=NVD_API_KEY if [ "$OWASP_DC" != "" ] ; then \
     wget -q -O /tmp/dependency-check.zip "https://github.com/jeremylong/DependencyCheck/releases/download/v$OWASP_DC/dependency-check-$OWASP_DC-release.zip" && \
     echo "$OWASP_DC_SHA  /tmp/dependency-check.zip" | sha256sum -c - && \
     unzip /tmp/dependency-check.zip -d /app/owasp_dependency-check && \
