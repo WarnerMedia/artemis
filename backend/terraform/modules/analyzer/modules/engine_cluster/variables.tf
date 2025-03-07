@@ -96,7 +96,7 @@ variable "engine_scale_down_threshold" {
 
 variable "engine_volume_size" {
   description = "Engine instance volume size"
-  default     = 35
+  default     = 45
 }
 
 variable "repos_volume_size" {
