@@ -398,6 +398,11 @@ variable "repo_handler_environment_variables" {
   default     = {}
 }
 
+variable "enable_task_queue_metrics" {
+  description = "Whether to enable the task-queue-metrics Lambda"
+  default     = true
+}
+
 ################################################
 # Engine Cluster Customization
 ################################################
