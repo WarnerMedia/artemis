@@ -400,7 +400,7 @@ variable "repo_handler_environment_variables" {
 
 variable "enable_task_queue_metrics" {
   description = "Whether to enable the task-queue-metrics Lambda"
-  default     = true
+  default     = false
 }
 
 ################################################
