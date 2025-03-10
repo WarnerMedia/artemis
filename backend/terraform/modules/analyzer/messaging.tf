@@ -126,6 +126,7 @@ resource "aws_cloudwatch_event_rule" "every-minute" {
   name                = "${var.app}-run-every-minute"
   description         = "Event that fires every minute"
   schedule_expression = "rate(1 minute)"
+  state               = !var.enable_task_queue_metrics ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "queue-metrics" {
