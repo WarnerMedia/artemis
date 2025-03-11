@@ -887,6 +887,59 @@ const LastScanCell = (props: {
 }) => {
 	const { i18n } = useLingui();
 	const { row, format = "short", includeLink = false } = props;
+	const scan = row?.last_scan ?? row?.scan;
+
+	let resultsUrl = null;
+	if (includeLink && row?.service && row?.repo && scan?.scan_id) {
+		resultsUrl = `/results?service=${encodeURIComponent(
+			row.service,
+		)}&repo=${encodeURIComponent(row.repo)}&id=${encodeURIComponent(
+			row.scan.scan_id,
+		)}`;
+	}
+
+	let cell = (
+		<>
+			<Trans>No Scans</Trans>
+		</>
+	);
+	if (scan?.created) {
+		cell = (
+			<>
+				<Tooltip
+					title={formatDate(scan.created, "long")}
+					describeChild
+				>
+					<span>{formatDate(scan.created, format)}</span>
+				</Tooltip>
+				{resultsUrl && (
+					<Tooltip title={i18n._(t`Open this scan in a new tab`)}>
+						<span>
+							<IconButton
+								size="small"
+								aria-label={i18n._(t`Open this scan in a new tab`)}
+								href={resultsUrl}
+								target="_blank"
+							>
+								{<OpenInNewIcon fontSize="inherit" />}
+							</IconButton>
+						</span>
+					</Tooltip>
+				)}
+			</>
+		);
+	}
+	return cell;
+};
+
+// cell requires full row data to get service/repo/scanid for generating scan link
+const LastQualifiedScanCell = (props: {
+	row?: RowDef | null;
+	format?: "short" | "long";
+	includeLink?: boolean;
+}) => {
+	const { i18n } = useLingui();
+	const { row, format = "short", includeLink = false } = props;
 	const qualifiedScan = row?.last_qualified_scan ?? row?.qualified_scan;
 
 	let resultsUrl = null;
@@ -1863,9 +1916,15 @@ const VulnRepoDialog = (props: {
 				// no orderMap, ordered backend by API
 			},
 			{
+				field: "last_scan", // duplicated field from qualified_scan so matches filtering name
+				headerName: i18n._(t`Last Scan`),
+				children: LastScanCell,
+				sortable: false,
+			},
+			{
 				field: "last_qualified_scan", // duplicated field from qualified_scan so matches filtering name
 				headerName: i18n._(t`Last Qualified Scan`),
-				children: LastScanCell,
+				children: LastQualifiedScanCell,
 				sortable: false,
 			},
 		];
@@ -2202,7 +2261,7 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 						<ListItem key="repo-last-qualified-scan">
 							<ListItemText
 								primary={<>{i18n._(t`Last Qualified Scan Time`)}</>}
-								secondary={LastScanCell({
+								secondary={LastQualifiedScanCell({
 									row: selectedRow,
 									format: "long",
 									includeLink: true,
@@ -4090,9 +4149,15 @@ const SearchPage = () => {
 				// no orderMap, ordered backend by API
 			},
 			{
+				field: "last_scan", // duplicated field from scan so matches filtering name
+				headerName: i18n._(t`Last Scan`),
+				children: LastScanCell,
+				sortable: false,
+			},
+			{
 				field: "last_qualified_scan", // duplicated field from qualified_scan so matches filtering name
 				headerName: i18n._(t`Last Qualified Scan`),
-				children: LastScanCell,
+				children: LastQualifiedScanCell,
 				sortable: false,
 			},
 		];

@@ -10,7 +10,7 @@ class ParsedEvent:
             event,
             exact_filters=["service", "repo"],
             substring_filters=["service", "repo"],
-            timestamp_filters=["last_qualified_scan"],
+            timestamp_filters=["last_qualified_scan", "last_scan"],
             nullable_filters=["last_qualified_scan"],
             ordering_fields=["service", "repo", "risk"],
             mv_filters=["risk"],
