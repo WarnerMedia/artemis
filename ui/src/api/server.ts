@@ -33,7 +33,7 @@ import {
 	VcsService,
 	githubAuthRegex,
 } from "features/vcsServices/vcsServicesSchemas";
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { Request, Response, createServer } from "miragejs";
 import { customAlphabet } from "nanoid";
 import queryString from "query-string";
@@ -191,6 +191,27 @@ export function makeServer() {
 				const uuid4 = customAlphabet(charSet, 4);
 				const uuid12 = customAlphabet(charSet, 12);
 				return [uuid8(), uuid4(), uuid4(), uuid4(), uuid12()].join("-");
+			};
+
+			let lastScanMetadataOffset = 0;
+			const lastScanMetadataBase = DateTime.fromISO("2025-01-01T12:00:00Z");
+
+			const generateLastScanMetadata = () => {
+				const created = lastScanMetadataBase.plus(
+					Duration.fromObject({
+						days: lastScanMetadataOffset,
+						hours: lastScanMetadataOffset,
+						minutes: lastScanMetadataOffset,
+					}),
+				);
+				lastScanMetadataOffset += 1;
+
+				const scan_id = generateId();
+
+				return {
+					created,
+					scan_id,
+				};
 			};
 
 			// use nanoid to generate a fake api key in the format:
@@ -2026,10 +2047,7 @@ export function makeServer() {
 						created: "2022-02-02T14:00:00Z",
 						scan_id: generateId(),
 					},
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData2,
 					},
@@ -2040,10 +2058,7 @@ export function makeServer() {
 					repo: "tv/qa",
 					risk: "priority",
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData3,
 					},
@@ -2058,10 +2073,7 @@ export function makeServer() {
 						created: "2022-03-02T12:00:00Z",
 						scan_id: generateId(),
 					},
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData4,
 					},
@@ -2072,10 +2084,7 @@ export function makeServer() {
 					repo: "tv/new-show",
 					risk: "high",
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData5,
 					},
@@ -2086,10 +2095,7 @@ export function makeServer() {
 					repo: "tv/game-of-chairs",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2100,10 +2106,7 @@ export function makeServer() {
 					repo: "tv/dragon-house",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2114,10 +2117,7 @@ export function makeServer() {
 					repo: "movies/2quick2angry",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2128,10 +2128,7 @@ export function makeServer() {
 					repo: "movies/another_superhero_movie",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2142,10 +2139,7 @@ export function makeServer() {
 					repo: "movies/thriller",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2160,10 +2154,7 @@ export function makeServer() {
 						created: "2021-12-12T12:12:12Z",
 						scan_id: generateId(),
 					},
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2174,10 +2165,7 @@ export function makeServer() {
 					repo: "tv/peasmaker/season2",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2192,10 +2180,7 @@ export function makeServer() {
 						created: "2022-01-01T11:01:01Z",
 						scan_id: generateId(),
 					},
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData6,
 					},
@@ -2206,10 +2191,7 @@ export function makeServer() {
 					repo: "games/strategy",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData1,
 					},
@@ -2220,10 +2202,7 @@ export function makeServer() {
 					repo: "games/sports",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData1,
 					},
@@ -2234,10 +2213,7 @@ export function makeServer() {
 					repo: "our-source-code",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData1,
 					},
@@ -2252,10 +2228,7 @@ export function makeServer() {
 						created: "2022-02-22T14:22:22Z",
 						scan_id: generateId(),
 					},
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData1,
 					},
@@ -2266,10 +2239,7 @@ export function makeServer() {
 					repo: "nothin-but-codes",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: {
 						...sampleMetaData1,
 					},
@@ -2280,10 +2250,7 @@ export function makeServer() {
 					repo: "documentation",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: null, // test entire object is null
 				},
 				{
@@ -2296,10 +2263,7 @@ export function makeServer() {
 						created: "2021-01-11T11:11:11Z",
 						scan_id: generateId(),
 					},
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: null,
 				},
 				{
@@ -2308,10 +2272,7 @@ export function makeServer() {
 					repo: "feeds",
 					risk: null,
 					qualified_scan: null,
-					scan: {
-						created: "2025-02-02T14:00:00Z",
-						scan_id: generateId(),
-					},
+					scan: generateLastScanMetadata(),
 					application_metadata: null,
 				},
 			];

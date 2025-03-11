@@ -1916,7 +1916,7 @@ const VulnRepoDialog = (props: {
 				// no orderMap, ordered backend by API
 			},
 			{
-				field: "last_scan", // duplicated field from qualified_scan so matches filtering name
+				field: "scan",
 				headerName: i18n._(t`Last Scan`),
 				children: LastScanCell,
 				sortable: false,
@@ -2258,6 +2258,16 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 				<Grid size={6}>
 					<List>
 						<ListItemMetaMultiField data={selectedRow} />
+						<ListItem key="repo-last-scan">
+							<ListItemText
+								primary={<>{i18n._(t`Last Scan Time`)}</>}
+								secondary={LastScanCell({
+									row: selectedRow,
+									format: "long",
+									includeLink: true,
+								})}
+							/>
+						</ListItem>
 						<ListItem key="repo-last-qualified-scan">
 							<ListItemText
 								primary={<>{i18n._(t`Last Qualified Scan Time`)}</>}
@@ -3751,6 +3761,7 @@ const SearchPage = () => {
 					service: r.service,
 					repo: r.repo,
 					risk: r.risk,
+					scan: r.scan,
 					qualified_scan: r.qualified_scan,
 					application_metadata: r.application_metadata,
 				}));
@@ -4149,7 +4160,7 @@ const SearchPage = () => {
 				// no orderMap, ordered backend by API
 			},
 			{
-				field: "last_scan", // duplicated field from scan so matches filtering name
+				field: "scan",
 				headerName: i18n._(t`Last Scan`),
 				children: LastScanCell,
 				sortable: false,
