@@ -100,6 +100,7 @@ import { metaQueryParamsSchema, metaSchema } from "custom/searchMetaSchemas";
 import { Risks, Severities } from "features/scans/scansSchemas";
 import {
 	ComponentLicense,
+	Scan,
 	SearchComponent,
 	SearchComponentsResponse,
 	SearchRepo,
@@ -468,6 +469,8 @@ type RepoFiltersT = MetaFiltersT & {
 	repo: string;
 	cicd_tool: string;
 	risk: MatchRiskT[];
+	last_scan_match: MatchNullDateT;
+	last_scan: DateTime | null;
 	last_qualified_scan_match: MatchNullDateT;
 	last_qualified_scan: DateTime | null;
 	// last_qualified_scan_to: DateTime | null; // FUTURE
@@ -518,6 +521,8 @@ const initialRepoFilters: RepoFiltersT = {
 	repo: "",
 	cicd_tool: "",
 	risk: [],
+	last_scan_match: "lt",
+	last_scan: null,
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
 	// last_qualified_scan_to: null, // FUTURE
@@ -1420,6 +1425,16 @@ const RepoFiltersForm = (props: {
 		repo: repoSchema(),
 		cicd_tool: cicdToolSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
+		last_scan_match: matchNullDateSchema(
+			i18n._(t`Invalid last qualified scan time matcher`),
+		),
+		last_scan: Yup.date()
+			.typeError(
+				i18n._(t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`),
+			)
+			.nullable()
+			.default(null)
+			.max(getMaxDate(), i18n._(t`Scan time can not be in the future`)),
 		last_qualified_scan_match: matchNullDateSchema(
 			i18n._(t`Invalid last qualified scan time matcher`),
 		),
@@ -1850,31 +1865,39 @@ const VulnRepoDialog = (props: {
 			service: r.service,
 			repo: r.repo,
 			risk: r.risk,
+			scan: r.scan,
 			qualified_scan: r.qualified_scan,
 			application_metadata: r.application_metadata,
 		}));
 	};
 
 	const toCsv = (data: SearchRepo) => {
-		let scanUrl = "";
-		if (
-			data.service &&
-			data.repo &&
-			data.qualified_scan?.scan_id &&
-			data.qualified_scan?.created
-		) {
-			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
-				data.service,
-			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-				data.qualified_scan.scan_id,
-			)} (created ${data.qualified_scan.created})`;
+		const getScanUrl = (scan: Scan | null) => {
+			if (
+				data.service &&
+				data.repo &&
+				scan?.scan_id &&
+				scan?.created
+			) {
+				return `${window.location.origin}/results?service=${encodeURIComponent(
+					data.service,
+				)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
+					scan.scan_id,
+				)} (created ${scan.created})`;
+			} else {
+				return null;
+			}
 		}
+
+		const scanUrl = getScanUrl(data.scan);
+		const qualifiedScanUrl = getScanUrl(data.qualified_scan);
 
 		return {
 			service: data.service,
 			repo: data.repo,
 			risk: data.risk ?? "",
-			qualified_scan: scanUrl,
+			scan: scanUrl,
+			qualified_scan: qualifiedScanUrl,
 			...exportMetaData(data.application_metadata),
 		};
 	};
@@ -2843,6 +2866,23 @@ const FormFields = (props: {
 			matchOptions: matchRisk,
 			size: 9,
 		},
+		last_scan_match: {
+			id: "repo-last-scan-match",
+			label: t`Last Scan Time Match`,
+			component: "MatchDateField",
+			matchOptions: matchDate,
+			size: 3,
+		},
+		last_scan: {
+			id: "repo-last-scan",
+			label: t`Last Scan Time`,
+			component: "KeyboardDateTimePickerField",
+			size: 9,
+			fieldProps: {
+				disableFuture: true,
+				maxDateMessage: i18n._(t`Scan time can not be in the future`),
+			},
+		},
 		last_qualified_scan_match: {
 			id: "repo-last-qualified-scan-match",
 			label: t`Last Qualified Scan Time Match`,
@@ -3363,6 +3403,14 @@ const SearchPage = () => {
 		repo: repoSchema(),
 		repo__icontains: repoSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
+		last_scan__gt: Yup.date().max(
+			getMaxDate(),
+			i18n._(t`Scan time can not be in the future`),
+		),
+		last_scan__lt: Yup.date().max(
+			getMaxDate(),
+			i18n._(t`Scan time can not be in the future`),
+		),
 		last_qualified_scan__null: booleanStringSchema(
 			i18n._(t`Scan time null must be either "true" or "false"`),
 		),
@@ -3796,24 +3844,32 @@ const SearchPage = () => {
 	});
 
 	const repoToCsv = (data: SearchRepo) => {
-		let scanUrl = "";
-		if (
-			data.service &&
-			data.repo &&
-			data.qualified_scan?.scan_id &&
-			data.qualified_scan?.created
-		) {
-			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
-				data.service,
-			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-				data.qualified_scan.scan_id,
-			)} (created ${data.qualified_scan.created})`;
+		const getScanUrl = (scan: Scan | null) => {
+			if (
+				data.service &&
+				data.repo &&
+				scan?.scan_id &&
+				scan?.created
+			) {
+				return `${window.location.origin}/results?service=${encodeURIComponent(
+					data.service,
+				)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
+					scan.scan_id,
+				)} (created ${scan.created})`;
+			} else {
+				return null;
+			}
 		}
+
+		let scanUrl = getScanUrl(data.scan);
+		let qualifiedScanUrl = getScanUrl(data.qualified_scan);
+
 		return {
 			service: data.service,
 			repo: data.repo,
 			risk: data.risk ?? "",
-			qualified_scan: scanUrl,
+			scan: scanUrl,
+			qualified_scan: qualifiedScanUrl,
 			...exportMetaData(data.application_metadata),
 		};
 	};

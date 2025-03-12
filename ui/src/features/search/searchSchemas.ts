@@ -119,7 +119,7 @@ export const searchComponentResponseSchema: Yup.ObjectSchema<PagedResponse> =
 			.defined(),
 	});
 
-const qualifiedScanSchema: Yup.ObjectSchema<Scan> = Yup.object()
+const scanSchema: Yup.ObjectSchema<Scan> = Yup.object()
 	.shape({
 		created: Yup.string().defined(),
 		scan_id: scanIdSchema.defined(),
@@ -220,8 +220,8 @@ export const searchRepoSchema: Yup.ObjectSchema<
 		service: serviceSchema().defined(),
 		repo: repoSchema().defined(),
 		risk: riskSchema.defined().nullable(),
-		scan: qualifiedScanSchema.defined().nullable(),
-		qualified_scan: qualifiedScanSchema.defined().nullable(),
+		scan: scanSchema.defined().nullable(),
+		qualified_scan: scanSchema.defined().nullable(),
 		application_metadata: appMetaSchema.nullable(),
 	})
 	.defined();
