@@ -911,10 +911,7 @@ const LastScanCell = (props: {
 	if (scan?.created) {
 		cell = (
 			<>
-				<Tooltip
-					title={formatDate(scan.created, "long")}
-					describeChild
-				>
+				<Tooltip title={formatDate(scan.created, "long")} describeChild>
 					<span>{formatDate(scan.created, format)}</span>
 				</Tooltip>
 				{resultsUrl && (
@@ -1873,12 +1870,7 @@ const VulnRepoDialog = (props: {
 
 	const toCsv = (data: SearchRepo) => {
 		const getScanUrl = (scan: Scan | null) => {
-			if (
-				data.service &&
-				data.repo &&
-				scan?.scan_id &&
-				scan?.created
-			) {
+			if (data.service && data.repo && scan?.scan_id && scan?.created) {
 				return `${window.location.origin}/results?service=${encodeURIComponent(
 					data.service,
 				)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
@@ -1887,7 +1879,7 @@ const VulnRepoDialog = (props: {
 			} else {
 				return null;
 			}
-		}
+		};
 
 		const scanUrl = getScanUrl(data.scan);
 		const qualifiedScanUrl = getScanUrl(data.qualified_scan);
@@ -3845,12 +3837,7 @@ const SearchPage = () => {
 
 	const repoToCsv = (data: SearchRepo) => {
 		const getScanUrl = (scan: Scan | null) => {
-			if (
-				data.service &&
-				data.repo &&
-				scan?.scan_id &&
-				scan?.created
-			) {
+			if (data.service && data.repo && scan?.scan_id && scan?.created) {
 				return `${window.location.origin}/results?service=${encodeURIComponent(
 					data.service,
 				)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
@@ -3859,7 +3846,7 @@ const SearchPage = () => {
 			} else {
 				return null;
 			}
-		}
+		};
 
 		let scanUrl = getScanUrl(data.scan);
 		let qualifiedScanUrl = getScanUrl(data.qualified_scan);
