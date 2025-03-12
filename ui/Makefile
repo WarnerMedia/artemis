@@ -205,7 +205,7 @@ outdated: package.json package-lock.json  ## Check for outdated package dependen
 .PHONY: audit
 audit: package.json package-lock.json  ## Audit package dependencies for vulnerabilities
 	@echo "${INFO}Auditing package dependencies for vulnerabilities"
-	$(NPM) audit --only=prod
+	$(NPM) audit --omit=dev --audit-level=high
 	@echo "${OK}"
 
 # Enable non-interactive test mode with CI=true
