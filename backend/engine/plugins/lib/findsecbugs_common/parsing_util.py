@@ -6,6 +6,13 @@ def parse_cli_output(output_list):
     """
     cli_output = []
     for output in output_list:
+        result = output.split(":")
+        if len(result) == 3:
+            output_type, message_and_file, line_text = output.split(":")
+        else:
+            output_type = result[0]
+            message_and_file = result[1]
+            line_text = result[3]
         output_type, message_and_file, line_text = output.split(":")
         try:
             line = int(line_text.replace("[line ", "").replace("]", ""))
