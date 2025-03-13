@@ -24,8 +24,17 @@ def _get_repos(paging: PageInfo, query: dict[str, str], scope: list[list[list[st
     map.add_string("service")
     map.add("risk", filter_type=FilterType.IS_IN)
 
-    # Add items to the filter map for last_qualified_scan time
+    # Add items to the filter map for last_scan and last_qualified_scan time
     for filter_type in [FilterType.EXACT, FilterType.GREATER_THAN, FilterType.LESS_THAN]:
+        # Last scan
+        map.add(
+            "scan__created",
+            "last_scan",
+            filter_type,
+            FilterMapItem(f"scan__created__{filter_type.value}"),
+        )
+
+        # Last qualified scan
         map.add(
             "scan__created",
             "last_qualified_scan",
@@ -64,7 +73,7 @@ def _get_repos(paging: PageInfo, query: dict[str, str], scope: list[list[list[st
         paging.limit,
         "search/repositories",
         query_str=paging.query_str,
-        to_dict_kwargs={"include_qualified_scan": True, "include_app_metadata": True},
+        to_dict_kwargs={"include_scan": True, "include_qualified_scan": True, "include_app_metadata": True},
     )
 
 

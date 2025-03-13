@@ -23,7 +23,7 @@ export interface SearchComponentsResponse extends Response {
 	results: SearchComponent[];
 }
 
-export interface QualifiedScan {
+export interface Scan {
 	created: string;
 	scan_id: string;
 }
@@ -33,8 +33,9 @@ export interface SearchRepo {
 	service: string;
 	repo: string;
 	risk: Risks | null;
-	qualified_scan: QualifiedScan | null;
-	last_qualified_scan?: QualifiedScan | null; // generated client-side
+	scan: Scan | null;
+	qualified_scan: Scan | null;
+	last_qualified_scan?: Scan | null; // generated client-side
 	application_metadata: AppMeta | null;
 }
 
@@ -118,7 +119,7 @@ export const searchComponentResponseSchema: Yup.ObjectSchema<PagedResponse> =
 			.defined(),
 	});
 
-const qualifiedScanSchema: Yup.ObjectSchema<QualifiedScan> = Yup.object()
+const scanSchema: Yup.ObjectSchema<Scan> = Yup.object()
 	.shape({
 		created: Yup.string().defined(),
 		scan_id: scanIdSchema.defined(),
@@ -219,7 +220,8 @@ export const searchRepoSchema: Yup.ObjectSchema<
 		service: serviceSchema().defined(),
 		repo: repoSchema().defined(),
 		risk: riskSchema.defined().nullable(),
-		qualified_scan: qualifiedScanSchema.defined().nullable(),
+		scan: scanSchema.defined().nullable(),
+		qualified_scan: scanSchema.defined().nullable(),
 		application_metadata: appMetaSchema.nullable(),
 	})
 	.defined();
