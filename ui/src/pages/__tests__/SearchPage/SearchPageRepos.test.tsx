@@ -184,12 +184,7 @@ describe("SearchPage component", () => {
 				// test text input fields
 				test.each([
 					["Repository", "Repository", "", ""],
-					[
-						"Last Scan Time",
-						/last scan time/i,
-						"",
-						DATE_PLACEHOLDER,
-					],
+					["Last Scan Time", /last scan time/i, "", DATE_PLACEHOLDER],
 					[
 						"Last Qualified Scan Time",
 						/last qualified scan time/i,
@@ -562,7 +557,10 @@ describe("SearchPage component", () => {
 					expect(repo).toBeDisabled();
 					expect(scanTimeMatch).toHaveAttribute("aria-disabled", "true");
 					expect(scanTime).toBeDisabled();
-					expect(qualifiedScanTimeMatch).toHaveAttribute("aria-disabled", "true");
+					expect(qualifiedScanTimeMatch).toHaveAttribute(
+						"aria-disabled",
+						"true",
+					);
 					expect(qualifiedScanTime).toBeDisabled();
 					expect(submitButton).toBeDisabled();
 
@@ -629,7 +627,9 @@ describe("SearchPage component", () => {
 					});
 					await user.type(qualifiedScanTimeField, dt.toFormat(DATE_FORMAT));
 					await waitFor(() => {
-						expect(qualifiedScanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
+						expect(qualifiedScanTimeField).toHaveDisplayValue(
+							dt.toFormat(DATE_FORMAT),
+						);
 					});
 
 					// submit form
@@ -685,7 +685,7 @@ describe("SearchPage component", () => {
 							orderBy: "service",
 						},
 					});
-					const datetimeStr = encodeURIComponent(dt.toUTC().toISO() ?? "")
+					const datetimeStr = encodeURIComponent(dt.toUTC().toISO() ?? "");
 					expect(mockNavigate).toHaveBeenLastCalledWith(
 						`/search?category=repo&last_qualified_scan__lt=${datetimeStr}&last_scan__lt=${datetimeStr}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`,
 					);
