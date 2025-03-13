@@ -143,6 +143,13 @@ describe("SearchPage component", () => {
 						false,
 					],
 					[
+						"Last Scan Time Match",
+						/last scan time match/i,
+						["Before", "After"],
+						"Before",
+						false,
+					],
+					[
 						"Last Qualified Scan Time Match",
 						/last qualified scan time match/i,
 						["No Qualified Scans", "Any Qualified Scan", "Before", "After"],
@@ -177,6 +184,12 @@ describe("SearchPage component", () => {
 				// test text input fields
 				test.each([
 					["Repository", "Repository", "", ""],
+					[
+						"Last Scan Time",
+						/last scan time/i,
+						"",
+						DATE_PLACEHOLDER,
+					],
 					[
 						"Last Qualified Scan Time",
 						/last qualified scan time/i,
@@ -415,6 +428,7 @@ describe("SearchPage component", () => {
 					screen.getByRole("button", { name: "Repository" });
 					screen.getByRole("button", { name: "Risk" });
 					// unsortable columns are columnheaders
+					screen.getByRole("columnheader", { name: "Last Scan" });
 					screen.getByRole("columnheader", { name: "Last Qualified Scan" });
 
 					// results should have a copy button
@@ -470,9 +484,15 @@ describe("SearchPage component", () => {
 					});
 
 					const scanTimeMatch = screen.getByRole("combobox", {
-						name: /last qualified scan time match/i,
+						name: /last scan time match/i,
 					});
 					const scanTime = screen.getByRole("textbox", {
+						name: /last scan time/i,
+					});
+					const qualifiedScanTimeMatch = screen.getByRole("combobox", {
+						name: /last qualified scan time match/i,
+					});
+					const qualifiedScanTime = screen.getByRole("textbox", {
 						name: /last qualified scan time/i,
 					});
 					const submitButton = screen.getByRole("button", {
@@ -517,6 +537,8 @@ describe("SearchPage component", () => {
 					expect(repo).not.toBeDisabled();
 					expect(scanTimeMatch).not.toHaveAttribute("aria-disabled");
 					expect(scanTime).not.toBeDisabled();
+					expect(qualifiedScanTimeMatch).not.toHaveAttribute("aria-disabled");
+					expect(qualifiedScanTime).not.toBeDisabled();
 					expect(submitButton).not.toBeDisabled();
 
 					// Mui chips, again uses aria-disabled
@@ -540,6 +562,8 @@ describe("SearchPage component", () => {
 					expect(repo).toBeDisabled();
 					expect(scanTimeMatch).toHaveAttribute("aria-disabled", "true");
 					expect(scanTime).toBeDisabled();
+					expect(qualifiedScanTimeMatch).toHaveAttribute("aria-disabled", "true");
+					expect(qualifiedScanTime).toBeDisabled();
 					expect(submitButton).toBeDisabled();
 
 					expect(riskLow).toHaveAttribute("aria-disabled", "true");
@@ -593,11 +617,19 @@ describe("SearchPage component", () => {
 					);
 
 					const scanTimeField = await screen.findByRole("textbox", {
-						name: /last qualified scan time/i,
+						name: /last scan time/i,
 					});
 					await user.type(scanTimeField, dt.toFormat(DATE_FORMAT));
 					await waitFor(() => {
 						expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
+					});
+
+					const qualifiedScanTimeField = await screen.findByRole("textbox", {
+						name: /last qualified scan time/i,
+					});
+					await user.type(qualifiedScanTimeField, dt.toFormat(DATE_FORMAT));
+					await waitFor(() => {
+						expect(qualifiedScanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					});
 
 					// submit form
@@ -628,6 +660,10 @@ describe("SearchPage component", () => {
 						meta: {
 							currentPage: 0,
 							filters: {
+								last_scan: {
+									filter: dt.toUTC().toISO(),
+									match: "lt",
+								},
 								last_qualified_scan: {
 									filter: dt.toUTC().toISO(),
 									match: "lt",
@@ -649,10 +685,9 @@ describe("SearchPage component", () => {
 							orderBy: "service",
 						},
 					});
+					const datetimeStr = encodeURIComponent(dt.toUTC().toISO() ?? "")
 					expect(mockNavigate).toHaveBeenLastCalledWith(
-						`/search?category=repo&last_qualified_scan__lt=${encodeURIComponent(
-							dt.toUTC().toISO() ?? "",
-						)}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`,
+						`/search?category=repo&last_qualified_scan__lt=${datetimeStr}&last_scan__lt=${datetimeStr}&repo__icontains=${repoValue}&risk=low&risk=moderate&risk=high&risk=critical&risk=priority&service=${serviceValue}`,
 					);
 				});
 
