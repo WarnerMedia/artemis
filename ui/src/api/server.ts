@@ -197,13 +197,15 @@ export function makeServer() {
 			const lastScanMetadataBase = DateTime.fromISO("2025-01-01T12:00:00Z");
 
 			const generateLastScanMetadata = () => {
-				const created = lastScanMetadataBase.plus(
-					Duration.fromObject({
-						days: lastScanMetadataOffset,
-						hours: lastScanMetadataOffset,
-						minutes: lastScanMetadataOffset,
-					}),
-				);
+				const created = lastScanMetadataBase
+					.plus(
+						Duration.fromObject({
+							days: lastScanMetadataOffset,
+							hours: lastScanMetadataOffset,
+							minutes: lastScanMetadataOffset,
+						}),
+					)
+					.toISO();
 				lastScanMetadataOffset += 1;
 
 				const scan_id = generateId();
