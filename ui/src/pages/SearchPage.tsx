@@ -1076,6 +1076,23 @@ const RepoCell = (props: { row?: RowDef | null }) => {
 	);
 };
 
+const getScanUrl = (service: string, repo: string, scan: Scan | null) => {
+	if (
+		service &&
+		repo &&
+		scan?.scan_id &&
+		scan?.created
+	) {
+		return `${window.location.origin}/results?service=${encodeURIComponent(
+			service,
+		)}&repo=${encodeURIComponent(repo)}&id=${encodeURIComponent(
+			scan.scan_id,
+		)} (created ${scan.created})`;
+	} else {
+		return null;
+	}
+}
+
 const formatDateValue = (date?: Date | null) => {
 	return date ? date.toJSON() : null;
 };
@@ -1869,20 +1886,8 @@ const VulnRepoDialog = (props: {
 	};
 
 	const toCsv = (data: SearchRepo) => {
-		const getScanUrl = (scan: Scan | null) => {
-			if (data.service && data.repo && scan?.scan_id && scan?.created) {
-				return `${window.location.origin}/results?service=${encodeURIComponent(
-					data.service,
-				)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-					scan.scan_id,
-				)} (created ${scan.created})`;
-			} else {
-				return null;
-			}
-		};
-
-		const scanUrl = getScanUrl(data.scan);
-		const qualifiedScanUrl = getScanUrl(data.qualified_scan);
+		const scanUrl = getScanUrl(data.service, data.repo, data.scan);
+		const qualifiedScanUrl = getScanUrl(data.service, data.repo, data.qualified_scan);
 
 		return {
 			service: data.service,
@@ -3836,20 +3841,8 @@ const SearchPage = () => {
 	});
 
 	const repoToCsv = (data: SearchRepo) => {
-		const getScanUrl = (scan: Scan | null) => {
-			if (data.service && data.repo && scan?.scan_id && scan?.created) {
-				return `${window.location.origin}/results?service=${encodeURIComponent(
-					data.service,
-				)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-					scan.scan_id,
-				)} (created ${scan.created})`;
-			} else {
-				return null;
-			}
-		};
-
-		let scanUrl = getScanUrl(data.scan);
-		let qualifiedScanUrl = getScanUrl(data.qualified_scan);
+		let scanUrl = getScanUrl(data.service, data.repo, data.scan);
+		let qualifiedScanUrl = getScanUrl(data.service, data.repo, data.qualified_scan);
 
 		return {
 			service: data.service,
