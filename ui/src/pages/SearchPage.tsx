@@ -100,6 +100,7 @@ import { metaQueryParamsSchema, metaSchema } from "custom/searchMetaSchemas";
 import { Risks, Severities } from "features/scans/scansSchemas";
 import {
 	ComponentLicense,
+	Scan,
 	SearchComponent,
 	SearchComponentsResponse,
 	SearchRepo,
@@ -468,6 +469,8 @@ type RepoFiltersT = MetaFiltersT & {
 	repo: string;
 	cicd_tool: string;
 	risk: MatchRiskT[];
+	last_scan_match: MatchNullDateT;
+	last_scan: DateTime | null;
 	last_qualified_scan_match: MatchNullDateT;
 	last_qualified_scan: DateTime | null;
 	// last_qualified_scan_to: DateTime | null; // FUTURE
@@ -518,6 +521,8 @@ const initialRepoFilters: RepoFiltersT = {
 	repo: "",
 	cicd_tool: "",
 	risk: [],
+	last_scan_match: "lt",
+	last_scan: null,
 	last_qualified_scan_match: "lt",
 	last_qualified_scan: null,
 	// last_qualified_scan_to: null, // FUTURE
@@ -887,6 +892,56 @@ const LastScanCell = (props: {
 }) => {
 	const { i18n } = useLingui();
 	const { row, format = "short", includeLink = false } = props;
+	const scan = row?.last_scan ?? row?.scan;
+
+	let resultsUrl = null;
+	if (includeLink && row?.service && row?.repo && scan?.scan_id) {
+		resultsUrl = `/results?service=${encodeURIComponent(
+			row.service,
+		)}&repo=${encodeURIComponent(row.repo)}&id=${encodeURIComponent(
+			row.scan.scan_id,
+		)}`;
+	}
+
+	let cell = (
+		<>
+			<Trans>No Scans</Trans>
+		</>
+	);
+	if (scan?.created) {
+		cell = (
+			<>
+				<Tooltip title={formatDate(scan.created, "long")} describeChild>
+					<span>{formatDate(scan.created, format)}</span>
+				</Tooltip>
+				{resultsUrl && (
+					<Tooltip title={i18n._(t`Open this scan in a new tab`)}>
+						<span>
+							<IconButton
+								size="small"
+								aria-label={i18n._(t`Open this scan in a new tab`)}
+								href={resultsUrl}
+								target="_blank"
+							>
+								{<OpenInNewIcon fontSize="inherit" />}
+							</IconButton>
+						</span>
+					</Tooltip>
+				)}
+			</>
+		);
+	}
+	return cell;
+};
+
+// cell requires full row data to get service/repo/scanid for generating scan link
+const LastQualifiedScanCell = (props: {
+	row?: RowDef | null;
+	format?: "short" | "long";
+	includeLink?: boolean;
+}) => {
+	const { i18n } = useLingui();
+	const { row, format = "short", includeLink = false } = props;
 	const qualifiedScan = row?.last_qualified_scan ?? row?.qualified_scan;
 
 	let resultsUrl = null;
@@ -1019,6 +1074,18 @@ const RepoCell = (props: { row?: RowDef | null }) => {
 			</Tooltip>
 		</>
 	);
+};
+
+const getScanUrl = (service: string, repo: string, scan: Scan | null) => {
+	if (service && repo && scan?.scan_id && scan?.created) {
+		return `${window.location.origin}/results?service=${encodeURIComponent(
+			service,
+		)}&repo=${encodeURIComponent(repo)}&id=${encodeURIComponent(
+			scan.scan_id,
+		)} (created ${scan.created})`;
+	} else {
+		return null;
+	}
 };
 
 const formatDateValue = (date?: Date | null) => {
@@ -1367,6 +1434,16 @@ const RepoFiltersForm = (props: {
 		repo: repoSchema(),
 		cicd_tool: cicdToolSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
+		last_scan_match: matchNullDateSchema(
+			i18n._(t`Invalid last qualified scan time matcher`),
+		),
+		last_scan: Yup.date()
+			.typeError(
+				i18n._(t`Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)`),
+			)
+			.nullable()
+			.default(null)
+			.max(getMaxDate(), i18n._(t`Scan time can not be in the future`)),
 		last_qualified_scan_match: matchNullDateSchema(
 			i18n._(t`Invalid last qualified scan time matcher`),
 		),
@@ -1797,31 +1874,26 @@ const VulnRepoDialog = (props: {
 			service: r.service,
 			repo: r.repo,
 			risk: r.risk,
+			scan: r.scan,
 			qualified_scan: r.qualified_scan,
 			application_metadata: r.application_metadata,
 		}));
 	};
 
 	const toCsv = (data: SearchRepo) => {
-		let scanUrl = "";
-		if (
-			data.service &&
-			data.repo &&
-			data.qualified_scan?.scan_id &&
-			data.qualified_scan?.created
-		) {
-			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
-				data.service,
-			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-				data.qualified_scan.scan_id,
-			)} (created ${data.qualified_scan.created})`;
-		}
+		const scanUrl = getScanUrl(data.service, data.repo, data.scan);
+		const qualifiedScanUrl = getScanUrl(
+			data.service,
+			data.repo,
+			data.qualified_scan,
+		);
 
 		return {
 			service: data.service,
 			repo: data.repo,
 			risk: data.risk ?? "",
-			qualified_scan: scanUrl,
+			scan: scanUrl,
+			qualified_scan: qualifiedScanUrl,
 			...exportMetaData(data.application_metadata),
 		};
 	};
@@ -1863,9 +1935,15 @@ const VulnRepoDialog = (props: {
 				// no orderMap, ordered backend by API
 			},
 			{
+				field: "scan",
+				headerName: i18n._(t`Last Scan`),
+				children: LastScanCell,
+				sortable: false,
+			},
+			{
 				field: "last_qualified_scan", // duplicated field from qualified_scan so matches filtering name
 				headerName: i18n._(t`Last Qualified Scan`),
-				children: LastScanCell,
+				children: LastQualifiedScanCell,
 				sortable: false,
 			},
 		];
@@ -2199,10 +2277,20 @@ const RepoDialogContent = (props: { selectedRow: RowDef | null }) => {
 				<Grid size={6}>
 					<List>
 						<ListItemMetaMultiField data={selectedRow} />
+						<ListItem key="repo-last-scan">
+							<ListItemText
+								primary={<>{i18n._(t`Last Scan Time`)}</>}
+								secondary={LastScanCell({
+									row: selectedRow,
+									format: "long",
+									includeLink: true,
+								})}
+							/>
+						</ListItem>
 						<ListItem key="repo-last-qualified-scan">
 							<ListItemText
 								primary={<>{i18n._(t`Last Qualified Scan Time`)}</>}
-								secondary={LastScanCell({
+								secondary={LastQualifiedScanCell({
 									row: selectedRow,
 									format: "long",
 									includeLink: true,
@@ -2774,6 +2862,23 @@ const FormFields = (props: {
 			matchOptions: matchRisk,
 			size: 9,
 		},
+		last_scan_match: {
+			id: "repo-last-scan-match",
+			label: t`Last Scan Time Match`,
+			component: "MatchDateField",
+			matchOptions: matchDate,
+			size: 3,
+		},
+		last_scan: {
+			id: "repo-last-scan",
+			label: t`Last Scan Time`,
+			component: "KeyboardDateTimePickerField",
+			size: 9,
+			fieldProps: {
+				disableFuture: true,
+				maxDateMessage: i18n._(t`Scan time can not be in the future`),
+			},
+		},
 		last_qualified_scan_match: {
 			id: "repo-last-qualified-scan-match",
 			label: t`Last Qualified Scan Time Match`,
@@ -3294,6 +3399,14 @@ const SearchPage = () => {
 		repo: repoSchema(),
 		repo__icontains: repoSchema(),
 		risk: Yup.array().of(riskSchema).ensure(), // ensures an array, even when 1 value
+		last_scan__gt: Yup.date().max(
+			getMaxDate(),
+			i18n._(t`Scan time can not be in the future`),
+		),
+		last_scan__lt: Yup.date().max(
+			getMaxDate(),
+			i18n._(t`Scan time can not be in the future`),
+		),
 		last_qualified_scan__null: booleanStringSchema(
 			i18n._(t`Scan time null must be either "true" or "false"`),
 		),
@@ -3692,6 +3805,7 @@ const SearchPage = () => {
 					service: r.service,
 					repo: r.repo,
 					risk: r.risk,
+					scan: r.scan,
 					qualified_scan: r.qualified_scan,
 					application_metadata: r.application_metadata,
 				}));
@@ -3726,24 +3840,19 @@ const SearchPage = () => {
 	});
 
 	const repoToCsv = (data: SearchRepo) => {
-		let scanUrl = "";
-		if (
-			data.service &&
-			data.repo &&
-			data.qualified_scan?.scan_id &&
-			data.qualified_scan?.created
-		) {
-			scanUrl = `${window.location.origin}/results?service=${encodeURIComponent(
-				data.service,
-			)}&repo=${encodeURIComponent(data.repo)}&id=${encodeURIComponent(
-				data.qualified_scan.scan_id,
-			)} (created ${data.qualified_scan.created})`;
-		}
+		let scanUrl = getScanUrl(data.service, data.repo, data.scan);
+		let qualifiedScanUrl = getScanUrl(
+			data.service,
+			data.repo,
+			data.qualified_scan,
+		);
+
 		return {
 			service: data.service,
 			repo: data.repo,
 			risk: data.risk ?? "",
-			qualified_scan: scanUrl,
+			scan: scanUrl,
+			qualified_scan: qualifiedScanUrl,
 			...exportMetaData(data.application_metadata),
 		};
 	};
@@ -4090,9 +4199,15 @@ const SearchPage = () => {
 				// no orderMap, ordered backend by API
 			},
 			{
+				field: "scan",
+				headerName: i18n._(t`Last Scan`),
+				children: LastScanCell,
+				sortable: false,
+			},
+			{
 				field: "last_qualified_scan", // duplicated field from qualified_scan so matches filtering name
 				headerName: i18n._(t`Last Qualified Scan`),
-				children: LastScanCell,
+				children: LastQualifiedScanCell,
 				sortable: false,
 			},
 		];

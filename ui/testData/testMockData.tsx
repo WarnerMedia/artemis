@@ -4,6 +4,8 @@ import { sampleMetaData2, sampleMetaData3, sampleMetaData4, sampleMetaData5, sam
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
 import { AnalysisReport } from "features/scans/scansSchemas";
 import { User } from "features/users/usersSchemas";
+import { DateTime, Duration } from 'luxon';
+import { customAlphabet } from "nanoid";
 
 // Palette
 export const mockColors = [
@@ -7836,6 +7838,38 @@ export const mockSearchComponentRepos = {
 	],
 };
 
+const generateId = () => {
+	// nanoid uses it's own unique id generator that doesn't match our UUIDs
+	// so we need to define the format we want nanoid to use for generating scan ids
+	// using customAlphabet
+	const charSet = "0123456789abcdef";
+	const uuid8 = customAlphabet(charSet, 8);
+	const uuid4 = customAlphabet(charSet, 4);
+	const uuid12 = customAlphabet(charSet, 12);
+	return [uuid8(), uuid4(), uuid4(), uuid4(), uuid12()].join("-");
+};
+
+let lastScanMetadataOffset = 0;
+const lastScanMetadataBase = DateTime.fromISO("2025-01-01T12:00:00Z");
+
+const generateLastScanMetadata = () => {
+	const created = lastScanMetadataBase.plus(
+		Duration.fromObject({
+			days: lastScanMetadataOffset,
+			hours: lastScanMetadataOffset,
+			minutes: lastScanMetadataOffset,
+		}),
+	).toISO();
+	lastScanMetadataOffset += 1;
+
+	const scan_id = generateId();
+
+	return {
+		created,
+		scan_id,
+	};
+};
+
 export const mockSearchRepos = {
 	results: [
 		{
@@ -7846,6 +7880,7 @@ export const mockSearchRepos = {
 				created: "2022-02-02T14:00:00Z",
 				scan_id: "9cb02b99-fdcb-4234-5127-4e418d600f46"
 			},
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData2,
 			}
@@ -7855,6 +7890,7 @@ export const mockSearchRepos = {
 			repo: "tv/qa",
 			risk: "priority",
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData3,
 			}
@@ -7867,6 +7903,7 @@ export const mockSearchRepos = {
 				created: "2022-03-02T12:00:00Z",
 				scan_id: "a4d915a7-2ce0-c42e-9ab6-d6e95843160e"
 			},
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData4,
 			}
@@ -7876,6 +7913,7 @@ export const mockSearchRepos = {
 			repo: "tv/new-show",
 			risk: "high",
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData5,
 			}
@@ -7885,6 +7923,7 @@ export const mockSearchRepos = {
 			repo: "tv/game-of-chairs",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7894,6 +7933,7 @@ export const mockSearchRepos = {
 			repo: "tv/dragon-house",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7903,6 +7943,7 @@ export const mockSearchRepos = {
 			repo: "tv/peasmaker/season2",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7915,6 +7956,7 @@ export const mockSearchRepos = {
 				created: "2022-02-22T14:22:22Z",
 				scan_id: "3446feae-1480-d43f-680e-7087bff49d38"
 			},
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7924,6 +7966,7 @@ export const mockSearchRepos = {
 			repo: "movies/2quick2angry",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7933,6 +7976,7 @@ export const mockSearchRepos = {
 			repo: "movies/another_superhero_movie",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7942,6 +7986,7 @@ export const mockSearchRepos = {
 			repo: "movies/thriller",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7954,6 +7999,7 @@ export const mockSearchRepos = {
 				created: "2021-12-12T12:12:12Z",
 				scan_id: "32bc93b8-c337-f25d-aa33-9fb961b520b5"
 			},
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7963,6 +8009,7 @@ export const mockSearchRepos = {
 			repo: "documentation",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: null
 		},
 		{
@@ -7973,6 +8020,7 @@ export const mockSearchRepos = {
 				created: "2022-01-01T11:01:01Z",
 				scan_id: "f4fa42b2-0640-d16e-e387-7e54e37ead88"
 			},
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7982,6 +8030,7 @@ export const mockSearchRepos = {
 			repo: "games/strategy",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -7991,6 +8040,7 @@ export const mockSearchRepos = {
 			repo: "games/sports",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -8003,6 +8053,7 @@ export const mockSearchRepos = {
 				created: "2021-01-11T11:11:11Z",
 				scan_id: "0ddda3a0-09c7-62df-9141-5db71833f439"
 			},
+			scan: generateLastScanMetadata(),
 			application_metadata: null
 		},
 		{
@@ -8010,6 +8061,7 @@ export const mockSearchRepos = {
 			repo: "feeds",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: null
 		},
 		{
@@ -8017,6 +8069,7 @@ export const mockSearchRepos = {
 			repo: "our-source-code",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}
@@ -8026,6 +8079,7 @@ export const mockSearchRepos = {
 			repo: "nothin-but-codes",
 			risk: null,
 			qualified_scan: null,
+			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
 			}

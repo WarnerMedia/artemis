@@ -1824,6 +1824,7 @@ describe("SearchPage component", () => {
 
 					// not sortable columns
 					within(dialog).getByRole("columnheader", { name: "Risk" });
+					within(dialog).getByRole("columnheader", { name: "Last Scan" });
 					within(dialog).getByRole("columnheader", {
 						name: "Last Qualified Scan",
 					});
@@ -1858,6 +1859,12 @@ describe("SearchPage component", () => {
 					});
 					const repoField = within(dialog).getByRole("textbox", {
 						name: "Repository",
+					});
+					within(dialog).getByRole("combobox", {
+						name: /last scan time match/i,
+					});
+					within(dialog).getByRole("textbox", {
+						name: /last scan time/i,
 					});
 					within(dialog).getByRole("combobox", {
 						name: /last qualified scan time match/i,

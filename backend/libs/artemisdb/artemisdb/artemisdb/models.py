@@ -202,16 +202,33 @@ class Repo(models.Model):
     def __str__(self):
         return f"{self.service}/{self.repo}"
 
-    def to_dict(self, include_qualified_scan: bool = False, include_app_metadata: bool = False):
+    def to_dict(
+        self, include_scan: bool = False, include_qualified_scan: bool = False, include_app_metadata: bool = False
+    ):
         ret = {"service": self.service, "repo": self.repo, "risk": self.risk}
-        if include_qualified_scan:
-            scan = self.scan_set.filter(qualified=True).order_by("-created").only("created", "scan_id").first()
+
+        if include_scan:
+            scan = self.scan_set.order_by("-created").only("created", "scan_id").first()
             if scan:
-                ret["qualified_scan"] = {"created": format_timestamp(scan.created), "scan_id": str(scan.scan_id)}
+                ret["scan"] = {"created": format_timestamp(scan.created), "scan_id": str(scan.scan_id)}
+            else:
+                ret["scan"] = None
+
+        if include_qualified_scan:
+            qualified_scan = (
+                self.scan_set.filter(qualified=True).order_by("-created").only("created", "scan_id").first()
+            )
+            if qualified_scan:
+                ret["qualified_scan"] = {
+                    "created": format_timestamp(qualified_scan.created),
+                    "scan_id": str(qualified_scan.scan_id),
+                }
             else:
                 ret["qualified_scan"] = None
+
         if include_app_metadata:
             ret["application_metadata"] = self.formatted_application_metadata()
+
         return ret
 
     @classmethod
