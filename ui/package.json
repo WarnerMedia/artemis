@@ -94,7 +94,8 @@
     "prettier-check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
     "prettier-write": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "precommit": "npm run lint && npm audit --omit=dev --audit-level=high && npm run prettier-write && npm run extract && npm run compile",
-    "typescript-check": "npx tsc"
+    "typescript-check": "npx tsc",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -139,4 +140,3 @@
     "includeConsoleLog": true
   }
 }
-
