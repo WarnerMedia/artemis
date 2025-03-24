@@ -200,7 +200,7 @@
       "node_modules/(?!d3-shape)/"
     ],
     "modulePaths": [
-      "/Users/kibeziako/Documents/artemis-ui/artemis/ui/src"
+      "<rootDir>/src"
     ],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
