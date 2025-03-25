@@ -15,7 +15,7 @@ SWIFT_RESPONSE1 = {
     "details": [
         {
             "filename": "findings.swift",
-            "line": "1",
+            "line": 1,
             "message": "Prefer `private` over `fileprivate` declarations. (private_over_fileprivate)",
             "severity": "low",
             "type": "Private over fileprivate Violation",
