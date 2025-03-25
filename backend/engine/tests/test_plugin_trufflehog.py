@@ -101,6 +101,32 @@ EXAMPLE_INACTIVE_FINDING = {
     "StructuredData": None,
 }
 
+EXAMPLE_COMMIT_MESSAGE_FINDING = {
+    "SourceMetadata": {
+        "Data": {
+            "Git": {
+                "commit": "corned_beef_hash",
+                "email": EXAMPLE_EMAIL,
+                "repository": "https://example.com/example/example.git",
+                "timestamp": "2021-01-01 00:00:00 +0000",
+                "line": 23,
+            }
+        }
+    },
+    "SourceID": 1,
+    "SourceType": 16,
+    "SourceName": "trufflehog - git",
+    "DetectorType": 8,
+    "DetectorName": "Github",
+    "DecoderName": "PLAIN",
+    "Verified": False,
+    "Raw": "YER' A STRING 'ARRY",
+    "RawV2": "YER' A STRING 'ARRY",
+    "Redacted": "YER A ****** 'ARRY",
+    "ExtraData": None,
+    "StructuredData": None,
+}
+
 EXAMPLE_UNKNOWN_BECAUSE_NEVER_INACTIVE_FINDING = copy.deepcopy(EXAMPLE_INACTIVE_FINDING)
 EXAMPLE_UNKNOWN_BECAUSE_NEVER_INACTIVE_FINDING["DetectorName"] = "PrivateKey"
 
@@ -270,6 +296,34 @@ class TestPluginTrufflehog(unittest.TestCase):
             "author": EXAMPLE_EMAIL,
             "author-timestamp": "2021-01-01 00:00:00 +0000",
             "validity": SecretValidity.ACTIVE,
+        }
+        expected_event = {actual["results"][0]["id"]: {"match": ["YER' A STRING 'ARRY"], "type": expected_type}}
+        expected = {"results": [expected1], "event_info": expected_event}
+
+        self.assertEqual(actual, expected)
+
+    @patch("engine.plugins.trufflehog.main.SystemAllowList._load_al")
+    def test_run_scrub_results_with_commit_message_finding(self, mock_load_al):
+        mock_load_al.return_value = []
+
+        errors_dict = {
+            "errors": [],
+            "alerts": [],
+            "debug": [],
+        }
+        test = [EXAMPLE_COMMIT_MESSAGE_FINDING]
+        actual = trufflehog.scrub_results(test, errors_dict)
+
+        expected_type = EXAMPLE_COMMIT_MESSAGE_FINDING.get("DetectorName", "").lower()
+        expected1 = {
+            "id": actual["results"][0]["id"],
+            "filename": "commit_message",
+            "line": 0,
+            "commit": "corned_beef_hash",
+            "type": expected_type,
+            "author": EXAMPLE_EMAIL,
+            "author-timestamp": "2021-01-01 00:00:00 +0000",
+            "validity": SecretValidity.INACTIVE,
         }
         expected_event = {actual["results"][0]["id"]: {"match": ["YER' A STRING 'ARRY"], "type": expected_type}}
         expected = {"results": [expected1], "event_info": expected_event}

@@ -108,8 +108,8 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
         else:
             # `path` can be None if finding is from a commit message, since the finding's
             # `source_metadata` will not have a "file" property.
-            # - Set `path` to `commit_message` to follow the pattern for non-file secrets in the
-            #   `ghas_secrets`` plugin
+            # - Set `path` to "commit_message" to follow the pattern for non-file secrets in the
+            #   `ghas_secrets` plugin
             # - Set `line` to 0, as it will otherwise refer to the line in the commit message
             #   instead of the line of code
             path = "commit_message"
