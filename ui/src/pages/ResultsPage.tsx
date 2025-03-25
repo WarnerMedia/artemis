@@ -1181,7 +1181,7 @@ export const HiddenFindingDialog = (props: {
 							type: "static_analysis",
 							value: {
 								filename: row?.filename ?? "",
-								line: row?.line ?? "",
+								line: parseInt(row?.line) ?? "",
 								type: row?.resource ?? "",
 							},
 						},
