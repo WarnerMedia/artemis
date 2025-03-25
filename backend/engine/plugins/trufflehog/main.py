@@ -96,9 +96,8 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
             continue
 
         path = source_metadata.get("file")
+        line = source_metadata.get("line")
 
-        # `path` can be None if finding is from a commit message, since the finding's
-        # `source_metadata` will not have a "file" property
         if path:
             for prefix in STARTS:
                 if path.startswith(prefix):
@@ -106,6 +105,15 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
             for suffix in ENDS:
                 if path.endswith(suffix):
                     add_to_list = False
+        else:
+            # `path` can be None if finding is from a commit message, since the finding's
+            # `source_metadata` will not have a "file" property.
+            # - Set `path` to `commit_message` to follow the pattern for non-file secrets in the
+            #   `ghas_secrets`` plugin
+            # - Set `line` to 0, as it will otherwise refer to the line in the commit message
+            #   instead of the line of code
+            path = "commit_message"
+            line = 0
 
         if add_to_list:
             item_id = str(uuid.uuid4())
@@ -119,7 +127,7 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
             record_json = {
                 "id": item_id,
                 "filename": path,
-                "line": source_metadata.get("line"),
+                "line": line,
                 "commit": source_metadata.get("commit"),
                 "type": get_finding_type(record),
                 "author": source_metadata.get("email"),
