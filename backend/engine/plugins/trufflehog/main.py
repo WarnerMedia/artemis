@@ -97,12 +97,15 @@ def scrub_results(scan_results: list, error_dict: dict) -> dict:
 
         path = source_metadata.get("file")
 
-        for prefix in STARTS:
-            if path.startswith(prefix):
-                add_to_list = False
-        for suffix in ENDS:
-            if path.endswith(suffix):
-                add_to_list = False
+        # `path` can be None if finding is from a commit message, since it will not have a "file"
+        # property
+        if path:
+            for prefix in STARTS:
+                if path.startswith(prefix):
+                    add_to_list = False
+            for suffix in ENDS:
+                if path.endswith(suffix):
+                    add_to_list = False
 
         if add_to_list:
             item_id = str(uuid.uuid4())
