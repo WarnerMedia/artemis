@@ -72,6 +72,11 @@ def parse_swiftlint(swiftlint_output, path) -> list:
         columns = line.split(":")
         finding["filename"] = columns[0].strip().replace(f"{path}/", "", 1)
         finding["line"] = columns[1].strip()
+        try:
+            finding["line"] = int(finding["line"])
+        except ValueError:
+            finding["line"] = 0
+
         finding["message"] = columns[5].strip()
         # SwiftLint has two severities: warning and error
         # Errors include some relatively minor things such as "Line Length Violation", so a "low" severity should be
