@@ -151,10 +151,6 @@ In the project directory, you can run:
     Messages will be written to `locales/en/messages.po`.
 11. `npm run compile` or `make compile`
     I18N: Uses LingUI to compile message catalogs into a messages.js file that can be read by the application for text translations.
-12. 🛑 **DO NOT** run `npm run eject` or `yarn eject`
-    This project and its dependencies are currently managed by `create-react-app` choices for WebPack.  
-    Running eject will disconnect this so that WebPack, Babel, ESLint, and other configs can be configured directly.  
-    **This is a one-way operation, once you eject you can't go back!**
 
 ### 🌎 Browser Plugins
 
