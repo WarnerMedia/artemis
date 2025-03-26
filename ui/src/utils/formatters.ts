@@ -69,7 +69,7 @@ interface IGetVcsUrlUniversalParams {
 
 interface IGetVcsUrlServiceParams {
 	commitBase: string; // The string that goes between repo and commit in the url
-	lineParam: string; // The string that goes before the line number in the url
+	linePrefix: string; // The string that goes before the line number in the url
 }
 
 const nonFileLocations = new Set(["Commit Message"]);
@@ -82,7 +82,7 @@ const getVcsUrl = (
 	const refPath = universal.commit || universal.branch;
 	const lineText =
 		universal?.line_no !== "0"
-			? `#${service.lineParam}${universal.line_no}`
+			? `#${service.linePrefix}${universal.line_no}`
 			: "";
 
 	if (!universal.filename) {
@@ -124,7 +124,7 @@ export const vcsHotLink = (row: RowDef) => {
 					//https://<server>/<repo>/<filename_path>#L<line_number>
 					url = getVcsUrl(universalParams, {
 						commitBase: "_git",
-						lineParam: "L",
+						linePrefix: "L",
 					});
 					break;
 				case "bitbucket":
@@ -132,7 +132,7 @@ export const vcsHotLink = (row: RowDef) => {
 					//https://<server>/<repo>/src/<branch>/<filename_path>#lines-<line_number>
 					url = getVcsUrl(universalParams, {
 						commitBase: "src",
-						lineParam: "lines-",
+						linePrefix: "lines-",
 					});
 					break;
 				case "gitlab":
@@ -140,7 +140,7 @@ export const vcsHotLink = (row: RowDef) => {
 					//https://<server>/<repo>/<filename_path>#L<line_number>
 					url = getVcsUrl(universalParams, {
 						commitBase: "-/blob",
-						lineParam: "L",
+						linePrefix: "L",
 					});
 					break;
 				case "github":
@@ -148,7 +148,7 @@ export const vcsHotLink = (row: RowDef) => {
 					//https://<server>/<repo>/<filename_path>#L<line_number>
 					url = getVcsUrl(universalParams, {
 						commitBase: "blob",
-						lineParam: "L",
+						linePrefix: "L",
 					});
 					break;
 				default:
