@@ -175,7 +175,7 @@ describe("formatters", () => {
 		it("HotLink for GitHub commit message", () => {
 			const row = {
 				...analysisRow,
-				filename: "commit_message",
+				filename: "Commit Message",
 			};
 
 			expect(formatters.vcsHotLink(row)).toMatch(
@@ -226,7 +226,7 @@ describe("formatters", () => {
 			const row = {
 				...analysisRow,
 				service: "gitlab",
-				filename: "commit_message",
+				filename: "Commit Message",
 			};
 
 			expect(formatters.vcsHotLink(row)).toMatch(
@@ -277,7 +277,7 @@ describe("formatters", () => {
 			const row = {
 				...analysisRow,
 				service: "bitbucket",
-				filename: "commit_message",
+				filename: "Commit Message",
 			};
 
 			expect(formatters.vcsHotLink(row)).toMatch(
@@ -328,7 +328,7 @@ describe("formatters", () => {
 			const row = {
 				...analysisRow,
 				service: "azure",
-				filename: "commit_message",
+				filename: "Commit Message",
 			};
 
 			expect(formatters.vcsHotLink(row)).toMatch(
