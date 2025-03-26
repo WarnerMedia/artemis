@@ -120,7 +120,7 @@ export const vcsHotLink = (row: RowDef) => {
 
 			switch (serviceInfo?.type) {
 				case "ado":
-					//https://<server>/<repo>//<commit>/<filename_path>#L<line_number>
+					//https://<server>/<repo>/blob/<commit>/<filename_path>#L<line_number>
 					//https://<server>/<repo>/<filename_path>#L<line_number>
 					url = getVcsUrl(universalParams, {
 						commitBase: "_git",
