@@ -172,6 +172,17 @@ describe("formatters", () => {
 			);
 		});
 
+		it("HotLink for GitHub commit message", () => {
+			const row = {
+				...analysisRow,
+				filename: "commit_message",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/blob/${commit}`),
+			);
+		});
+
 		//https://<server>/<repo>/-/blob/<branch>/<commit>/<filename_path>#L<line_number>
 		//https://<server>/<repo>/<filename_path>#L<line_number>
 		it("HotLink for unknown GitLab commit", () => {
@@ -208,6 +219,18 @@ describe("formatters", () => {
 
 			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/-/blob/${commit}/${filename}`),
+			);
+		});
+
+		it("HotLink for GitLab commit message", () => {
+			const row = {
+				...analysisRow,
+				service: "gitlab",
+				filename: "commit_message",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/-/blob/${commit}`),
 			);
 		});
 
@@ -250,6 +273,18 @@ describe("formatters", () => {
 			);
 		});
 
+		it("HotLink for BitBucket commit message", () => {
+			const row = {
+				...analysisRow,
+				service: "bitbucket",
+				filename: "commit_message",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/src/${commit}`),
+			);
+		});
+
 		//https://<server>/<repo>/_git/<commit>/<filename_path>#lines-<line_number>
 		//https://<server>/<repo>/_git/<branch>/<filename_path>#lines-<line_number>
 		it("HotLink for unknown Azure commit", () => {
@@ -286,6 +321,18 @@ describe("formatters", () => {
 
 			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/_git/${commit}/${filename}`),
+			);
+		});
+
+		it("HotLink for Azure commit message", () => {
+			const row = {
+				...analysisRow,
+				service: "azure",
+				filename: "commit_message",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/_git/${commit}`),
 			);
 		});
 	});
