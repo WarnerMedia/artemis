@@ -88,7 +88,7 @@ const getVcsUrl = (
 	if (!universal.filename) {
 		return base;
 	} else if (nonFileLocations.has(universal.filename)) {
-		// Link to the commit directly if filename is special
+		// Link to the commit directly if filename is not an actual file
 		return `${base}/${service.commitBase}/${refPath}`;
 	} else {
 		return `${base}/${service.commitBase}/${refPath}/${universal.filename}${lineText}`;
