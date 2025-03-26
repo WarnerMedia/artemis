@@ -88,16 +88,7 @@ describe("formatters", () => {
 		});
 	});
 
-	describe("validatevcsHotLink", () => {
-		const rows: RowDef[] = [];
-		rows.push({
-			service: "",
-			repo: "",
-			branch: "",
-			commit: "",
-			filename: "",
-			line: "",
-		});
+	describe("validate vcsHotLink", () => {
 		const service = analysisRow.service;
 		const repo = analysisRow.repo;
 		const branch = analysisRow.branch;
@@ -105,50 +96,78 @@ describe("formatters", () => {
 		const filename = analysisRow.filename;
 		const line_no = analysisRow.line;
 
-		// note: each test builds on the prior one by filling-in required row fields (e.g. service, repo)
-		// since modifications are made to row object, changes are persisted to subsequent test
 		it("No HotLink for unknown Service", () => {
-			expect(formatters.vcsHotLink(rows[0])).toHaveLength(0);
+			const row = {
+				...analysisRow,
+				service: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toHaveLength(0);
 		});
 
 		it("No HotLink for unknown Repo", () => {
-			rows[0]["service"] = service;
-			expect(formatters.vcsHotLink(rows[0])).toHaveLength(0);
+			const row = {
+				...analysisRow,
+				repo: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toHaveLength(0);
 		});
 
 		it("Hotlink for unknown filename returns service/repo without branch/file", () => {
-			rows[0]["repo"] = repo;
-			const link = formatters.vcsHotLink(rows[0]);
-			expect(link).toMatch(new RegExp(`/${service}.com/${repo}`));
+			const row = {
+				...analysisRow,
+				branch: "",
+				filename: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${service}.com/${repo}`),
+			);
 		});
 
-		it("HotLink for unknown branch uses HEAD", () => {
-			rows[0]["filename"] = filename;
-			expect(formatters.vcsHotLink(rows[0])).toMatch(new RegExp(`/HEAD/`));
+		it("HotLink for unknown branch and commit uses HEAD", () => {
+			const row = {
+				...analysisRow,
+				branch: "",
+				commit: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(new RegExp(`/HEAD/`));
 		});
 
 		//https://<server>/<repo>/blob/<commit>/<filename_path>#L<line_number>
 		//https://<server>/<repo>/<filename_path>#L<line_number>
 		it("HotLink for unknown GitHub commit", () => {
-			rows[0]["branch"] = branch;
-			rows[0]["commit"] = "";
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				commit: "",
+				line_no: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/blob/${branch}/${filename}`),
 			);
 		});
 
 		it("HotLink for target Line GitHub", () => {
-			rows[0]["commit"] = "";
-			rows[0]["line"] = line_no;
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				commit: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/blob/${branch}/${filename}#L${line_no}`),
 			);
 		});
 
 		it("HotLink for known GitHub commit", () => {
-			rows[0]["commit"] = commit;
-			rows[0]["line"] = "";
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/blob/${commit}/${filename}`),
 			);
 		});
@@ -156,26 +175,38 @@ describe("formatters", () => {
 		//https://<server>/<repo>/-/blob/<branch>/<commit>/<filename_path>#L<line_number>
 		//https://<server>/<repo>/<filename_path>#L<line_number>
 		it("HotLink for unknown GitLab commit", () => {
-			rows[0]["service"] = "gitlab";
-			rows[0]["commit"] = "";
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				service: "gitlab",
+				commit: "",
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/-/blob/${branch}/${filename}`),
 			);
 		});
 
 		it("HotLink for target Line GitLab", () => {
-			rows[0]["service"] = "gitlab";
-			rows[0]["commit"] = "";
-			rows[0]["line"] = line_no;
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				service: "gitlab",
+				commit: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/-/blob/${branch}/${filename}#L${line_no}`),
 			);
 		});
 
 		it("HotLink for known GitLab commit", () => {
-			rows[0]["commit"] = commit;
-			rows[0]["line"] = "";
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				service: "gitlab",
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/-/blob/${commit}/${filename}`),
 			);
 		});
@@ -183,27 +214,78 @@ describe("formatters", () => {
 		//https://<server>/<repo>/src/<commit>/<filename_path>#lines-<line_number>
 		//https://<server>/<repo>/src/<branch>/<filename_path>#lines-<line_number>
 		it("HotLink for unknown BitBucket commit", () => {
-			rows[0]["service"] = "bitbucket";
-			rows[0]["commit"] = "";
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				service: "bitbucket",
+				commit: "",
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/src/${branch}/${filename}`),
 			);
 		});
 
 		it("HotLink for target Line BitBucket", () => {
-			rows[0]["service"] = "bitbucket";
-			rows[0]["commit"] = "";
-			rows[0]["line"] = line_no;
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				service: "bitbucket",
+				commit: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/src/${branch}/${filename}#lines-${line_no}`),
 			);
 		});
 
 		it("HotLink for known BitBucket commit", () => {
-			rows[0]["commit"] = commit;
-			rows[0]["line"] = "";
-			expect(formatters.vcsHotLink(rows[0])).toMatch(
+			const row = {
+				...analysisRow,
+				service: "bitbucket",
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
 				new RegExp(`/${repo}/src/${commit}/${filename}`),
+			);
+		});
+
+		//https://<server>/<repo>/_git/<commit>/<filename_path>#lines-<line_number>
+		//https://<server>/<repo>/_git/<branch>/<filename_path>#lines-<line_number>
+		it("HotLink for unknown Azure commit", () => {
+			const row = {
+				...analysisRow,
+				service: "azure",
+				commit: "",
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/_git/${branch}/${filename}`),
+			);
+		});
+
+		it("HotLink for target Line Azure", () => {
+			const row = {
+				...analysisRow,
+				service: "azure",
+				commit: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/_git/${branch}/${filename}#L${line_no}`),
+			);
+		});
+
+		it("HotLink for known Azure commit", () => {
+			const row = {
+				...analysisRow,
+				service: "azure",
+				line: "",
+			};
+
+			expect(formatters.vcsHotLink(row)).toMatch(
+				new RegExp(`/${repo}/_git/${commit}/${filename}`),
 			);
 		});
 	});
