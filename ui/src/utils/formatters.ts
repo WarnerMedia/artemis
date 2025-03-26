@@ -72,7 +72,7 @@ interface IGetVcsUrlServiceParams {
 	lineParam: string; // The string that goes before the line number in the url
 }
 
-const nonFileLocations = new Set(["commit_message"]);
+const nonFileLocations = new Set(["Commit Message"]);
 
 const getVcsUrl = (
 	universal: IGetVcsUrlUniversalParams,
@@ -88,6 +88,7 @@ const getVcsUrl = (
 	if (!universal.filename) {
 		return base;
 	} else if (nonFileLocations.has(universal.filename)) {
+		// Link to the commit directly if filename is special
 		return `${base}/${service.commitBase}/${refPath}`;
 	} else {
 		return `${base}/${service.commitBase}/${refPath}/${universal.filename}${lineText}`;
