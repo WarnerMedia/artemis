@@ -4117,7 +4117,8 @@ export const SecretsTabContent = (props: {
 					<>
 						<span>
 							<Trans>
-								{selectedRow?.filename ?? ""}{lineText}
+								{selectedRow?.filename ?? ""}
+								{lineText}
 							</Trans>
 						</span>
 						<SourceCodeHotLink row={selectedRow} addTitle={true} />
