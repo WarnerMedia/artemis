@@ -1422,7 +1422,7 @@ export const HiddenFindingDialog = (props: {
 											<span>
 												<Trans>
 													{item?.filename ?? ""}
-													{item?.line ? ` (Line ${item.liune})` : ""}
+													{item?.line ? ` (Line ${item.line})` : ""}
 												</Trans>
 												<SourceCodeHotLink row={row} addTitle={true} />
 											</span>
