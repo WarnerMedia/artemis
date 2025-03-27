@@ -1422,7 +1422,7 @@ export const HiddenFindingDialog = (props: {
 											<span>
 												<Trans>
 													{item?.filename ?? ""}
-													{item?.line ? ` (Line ${item.line})` : ""}
+													{item?.line ? ` (Line ${item.liune})` : ""}
 												</Trans>
 												<SourceCodeHotLink row={row} addTitle={true} />
 											</span>
@@ -4100,14 +4100,15 @@ export const SecretsTabContent = (props: {
 		selectedRow?.location === "" ||
 		selectedRow?.location === "commit"
 	) {
+		const lineText = selectedRow?.line ? ` (Line ${selectedRow.line})` : "";
 		secretSource = (
 			<ListItemText
 				primary={
 					<>
 						{i18n._(t`Found in Source File`)}
-						{selectedRow?.filename && selectedRow?.line && (
+						{selectedRow?.filename && (
 							<CustomCopyToClipboard
-								copyTarget={`${selectedRow.filename} (Line ${selectedRow.line})`}
+								copyTarget={`${selectedRow.filename}${lineText}`}
 							/>
 						)}
 					</>
@@ -4116,7 +4117,7 @@ export const SecretsTabContent = (props: {
 					<>
 						<span>
 							<Trans>
-								{selectedRow?.filename ?? ""} (Line {selectedRow?.line})
+								{selectedRow?.filename ?? ""}{lineText}
 							</Trans>
 						</span>
 						<SourceCodeHotLink row={selectedRow} addTitle={true} />
