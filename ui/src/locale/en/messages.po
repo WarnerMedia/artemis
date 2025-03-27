@@ -118,7 +118,7 @@ msgstr "Loading options..."
 msgid "Not tested"
 msgstr "Not tested"
 
-#: src/utils/formatters.ts:259
+#: src/utils/formatters.ts:260
 msgid "Discussion Comment"
 msgstr "Discussion Comment"
 
@@ -930,7 +930,7 @@ msgstr "Unable to get SBOM scan by id"
 msgid "Severity:"
 msgstr "Severity:"
 
-#: src/utils/formatters.ts:267
+#: src/utils/formatters.ts:268
 msgid "Issue Title"
 msgstr "Issue Title"
 
@@ -1369,7 +1369,7 @@ msgstr "Unable to update hidden finding"
 msgid "Remove scope {0}"
 msgstr "Remove scope {0}"
 
-#: src/utils/formatters.ts:255
+#: src/utils/formatters.ts:256
 msgid "Commit Message"
 msgstr "Commit Message"
 
@@ -1770,7 +1770,7 @@ msgstr "Not authorized"
 msgid "Missing an option? Request access"
 msgstr "Missing an option? Request access"
 
-#: src/utils/formatters.ts:275
+#: src/utils/formatters.ts:276
 msgid "Pull Request Review Comment"
 msgstr "Pull Request Review Comment"
 
@@ -1792,7 +1792,6 @@ msgstr "Invalid remediation matcher"
 msgid "Generating JSON File"
 msgstr "Generating JSON File"
 
-#: src/pages/ResultsPage.tsx:1423
 #: src/pages/ResultsPage.tsx:1542
 #: src/pages/ResultsPage.tsx:3750
 #: src/pages/ResultsPage.tsx:4117
@@ -1858,7 +1857,7 @@ msgstr "Scope"
 msgid "{0} {1} Plugin"
 msgstr "{0} {1} Plugin"
 
-#: src/utils/formatters.ts:261
+#: src/utils/formatters.ts:262
 msgid "Discussion Title"
 msgstr "Discussion Title"
 
@@ -2052,7 +2051,7 @@ msgstr "Repository Match"
 msgid "New scan with these options"
 msgstr "New scan with these options"
 
-#: src/utils/formatters.ts:279
+#: src/utils/formatters.ts:280
 msgid "Wiki Commit"
 msgstr "Wiki Commit"
 
@@ -2166,7 +2165,7 @@ msgstr "Artemis - Scan Results: {0} (default)"
 msgid "Last Login"
 msgstr "Last Login"
 
-#: src/utils/formatters.ts:265
+#: src/utils/formatters.ts:266
 msgid "Issue Comment"
 msgstr "Issue Comment"
 
@@ -2710,7 +2709,7 @@ msgstr "Commit"
 msgid "Start Scan"
 msgstr "Start Scan"
 
-#: src/utils/formatters.ts:263
+#: src/utils/formatters.ts:264
 msgid "Issue Body"
 msgstr "Issue Body"
 
@@ -2810,7 +2809,7 @@ msgstr "Last Used"
 msgid "No images detected"
 msgstr "No images detected"
 
-#: src/utils/formatters.ts:271
+#: src/utils/formatters.ts:272
 msgid "Pull Request Comment"
 msgstr "Pull Request Comment"
 
@@ -2834,7 +2833,7 @@ msgstr "This secret ANYWHERE in this repository"
 msgid "Start"
 msgstr "Start"
 
-#: src/utils/formatters.ts:257
+#: src/utils/formatters.ts:258
 msgid "Discussion Body"
 msgstr "Discussion Body"
 
@@ -2941,7 +2940,7 @@ msgstr "Download as CSV"
 msgid "Found in {0}"
 msgstr "Found in {0}"
 
-#: src/utils/formatters.ts:277
+#: src/utils/formatters.ts:278
 msgid "Pull Request Title"
 msgstr "Pull Request Title"
 
@@ -2957,7 +2956,7 @@ msgstr "Start a new scan using the same options used in this scan?<0/>Initiating
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 
-#: src/utils/formatters.ts:273
+#: src/utils/formatters.ts:274
 msgid "Pull Request Review"
 msgstr "Pull Request Review"
 
@@ -3059,6 +3058,10 @@ msgstr "At least one scan feature or plugin must be enabled"
 msgid "Medium: {count}"
 msgstr "Medium: {count}"
 
+#: src/pages/ResultsPage.tsx:1423
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
 #: src/pages/ResultsPage.tsx:6978
 msgid "Fetching scan results..."
 msgstr "Fetching scan results..."
@@ -3159,7 +3162,7 @@ msgstr "Allow this user to use additional scan features"
 msgid "Unlink GitHub User"
 msgstr "Unlink GitHub User"
 
-#: src/utils/formatters.ts:269
+#: src/utils/formatters.ts:270
 msgid "Pull Request Body"
 msgstr "Pull Request Body"
 
