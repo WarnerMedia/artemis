@@ -1152,6 +1152,22 @@ export function makeServer() {
 							],
 						},
 					],
+					commit_message: [
+						{
+							type: "github",
+							line: 0,
+							commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+							location: "commit",
+							url: "",
+							details: [
+								{
+									type: "github",
+									validity: "inactive",
+									source: "Trufflehog Scanner",
+								},
+							],
+						},
+					],
 					discussion_comment: [
 						{
 							type: "slack_api_token",
