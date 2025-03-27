@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { browserLanguage } from "App";
 import { APP_EXPORT_CLASSIFICATION } from "app/globals";
-import { serviceMap } from "app/services";
+import { IServiceMapValue, serviceMap } from "app/services";
 import { RowDef } from "components/EnhancedTable";
 import { t } from "@lingui/macro";
 import { i18n } from "@lingui/core";
@@ -58,15 +58,46 @@ export const compareButIgnoreLeadingDashes = (a: string, b: string) => {
 	return aClean.localeCompare(bClean);
 };
 
+interface IGetVcsUrlUniversalParams {
+	serviceInfo: IServiceMapValue | undefined;
+	repo: string;
+	filename: string | undefined;
+	branch: string | undefined;
+	commit: string | undefined;
+	line_no: string | undefined;
+}
+
+interface IGetVcsUrlServiceParams {
+	commitBase: string; // The string that goes between repo and commit in the url
+	linePrefix: string; // The string that goes before the line number in the url
+}
+
+const nonFileLocations = new Set(["Commit Message"]);
+
+const getVcsUrl = (
+	universal: IGetVcsUrlUniversalParams,
+	service: IGetVcsUrlServiceParams,
+) => {
+	const base = `${universal.serviceInfo?.url ?? ""}/${universal.repo}`;
+	const refPath = universal.commit || universal.branch;
+	const lineText =
+		universal?.line_no !== "0"
+			? `#${service.linePrefix}${universal.line_no}`
+			: "";
+
+	if (!universal.filename) {
+		return base;
+	} else if (nonFileLocations.has(universal.filename)) {
+		// Link to the commit directly if filename is not an actual file
+		return `${base}/${service.commitBase}/${refPath}`;
+	} else {
+		return `${base}/${service.commitBase}/${refPath}/${universal.filename}${lineText}`;
+	}
+};
+
 export const vcsHotLink = (row: RowDef) => {
 	let url = "";
-	if (
-		row &&
-		row.service &&
-		row.service.length > 0 &&
-		row.repo &&
-		row.repo.length > 0
-	) {
+	if (row?.service?.length > 0 && row?.repo?.length > 0) {
 		const branch =
 			!row.branch || row.branch.length === 0 ? "HEAD" : row.branch.toString();
 		const service = String(row.service);
@@ -78,46 +109,47 @@ export const vcsHotLink = (row: RowDef) => {
 			const commit = row.commit ? row.commit.toString() : null;
 			const line_no = row.line ? row.line.toString() : null;
 
+			const universalParams: IGetVcsUrlUniversalParams = {
+				serviceInfo,
+				repo,
+				branch,
+				filename,
+				commit,
+				line_no,
+			};
+
 			switch (serviceInfo?.type) {
 				case "ado":
 					//https://<server>/<repo>/blob/<commit>/<filename_path>#L<line_number>
 					//https://<server>/<repo>/<filename_path>#L<line_number>
-					url = `${serviceInfo?.url ?? ""}/${repo}`;
-					if (filename) {
-						url += `/_git${commit ? `/${commit}` : `/${branch}`}/${filename}${
-							line_no ? `#L${line_no}` : ""
-						}`;
-					}
+					url = getVcsUrl(universalParams, {
+						commitBase: "_git",
+						linePrefix: "L",
+					});
 					break;
 				case "bitbucket":
 					//https://<server>/<repo>/src/<commit>/<filename_path>#lines-<line_number>
 					//https://<server>/<repo>/src/<branch>/<filename_path>#lines-<line_number>
-					url = `${serviceInfo?.url ?? ""}/${repo}`;
-					if (filename) {
-						url += `/src${commit ? `/${commit}` : `/${branch}`}/${filename}${
-							line_no ? `#lines-${line_no}` : ""
-						}`;
-					}
+					url = getVcsUrl(universalParams, {
+						commitBase: "src",
+						linePrefix: "lines-",
+					});
 					break;
 				case "gitlab":
 					//https://<server>/<repo>/-/blob/<branch>/<commit>/<filename_path>#L<line_number>
 					//https://<server>/<repo>/<filename_path>#L<line_number>
-					url = `${serviceInfo?.url ?? ""}/${repo}`;
-					if (filename) {
-						url += `/-/blob${commit ? `/${commit}` : `/${branch}`}/${filename}${
-							line_no ? `#L${line_no}` : ""
-						}`;
-					}
+					url = getVcsUrl(universalParams, {
+						commitBase: "-/blob",
+						linePrefix: "L",
+					});
 					break;
 				case "github":
 					//https://<server>/<repo>/blob/<commit>/<filename_path>#L<line_number>
 					//https://<server>/<repo>/<filename_path>#L<line_number>
-					url = `${serviceInfo?.url ?? ""}/${repo}`;
-					if (filename) {
-						url += `/blob${commit ? `/${commit}` : `/${branch}`}/${filename}${
-							line_no ? `#L${line_no}` : ""
-						}`;
-					}
+					url = getVcsUrl(universalParams, {
+						commitBase: "blob",
+						linePrefix: "L",
+					});
 					break;
 				default:
 					console.error(`Unsupported repository: ${repo}`);
@@ -220,22 +252,20 @@ export const exportToCsv = (
 
 export const formatLocationName = (location: string): string => {
 	switch (location) {
-		case "wiki_commit":
-			return i18n._(t`Wiki Commit`);
-		case "issue_title":
-			return i18n._(t`Issue Title`);
-		case "issue_body":
-			return i18n._(t`Issue Body`);
-		case "issue_comment":
-			return i18n._(t`Issue Comment`);
-		case "discussion_title":
-			return i18n._(t`Discussion Title`);
+		case "commit_message":
+			return i18n._(t`Commit Message`);
 		case "discussion_body":
 			return i18n._(t`Discussion Body`);
 		case "discussion_comment":
 			return i18n._(t`Discussion Comment`);
-		case "pull_request_title":
-			return i18n._(t`Pull Request Title`);
+		case "discussion_title":
+			return i18n._(t`Discussion Title`);
+		case "issue_body":
+			return i18n._(t`Issue Body`);
+		case "issue_comment":
+			return i18n._(t`Issue Comment`);
+		case "issue_title":
+			return i18n._(t`Issue Title`);
 		case "pull_request_body":
 			return i18n._(t`Pull Request Body`);
 		case "pull_request_comment":
@@ -244,6 +274,10 @@ export const formatLocationName = (location: string): string => {
 			return i18n._(t`Pull Request Review`);
 		case "pull_request_review_comment":
 			return i18n._(t`Pull Request Review Comment`);
+		case "pull_request_title":
+			return i18n._(t`Pull Request Title`);
+		case "wiki_commit":
+			return i18n._(t`Wiki Commit`);
 		default:
 			return location;
 	}

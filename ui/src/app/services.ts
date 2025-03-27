@@ -1,13 +1,12 @@
 import { customServiceMap } from "custom/services";
 
-export type ServiceMapT = Map<
-	string,
-	{
-		service: string;
-		type: string;
-		url: string;
-	}
->;
+export interface IServiceMapValue {
+	service: string;
+	type: string;
+	url: string;
+}
+
+export type ServiceMapT = Map<string, IServiceMapValue>;
 
 // public (external) VCS services
 export const serviceMap: ServiceMapT = new Map([
