@@ -110,6 +110,17 @@ resource "aws_launch_template" "engine-template" {
     )
   }
 
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      var.tags,
+      {
+        Name = "Artemis Engine ${var.name}"
+      }
+    )
+  }
+
   tags = merge(
     var.tags,
     {
