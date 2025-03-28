@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # actions/checkout@v4.2.2
 
       - name: Setup node from node version file
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # actions/setup-node@v4.2.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # actions/setup-node@v4.3.0
         with:
           node-version-file: "${{ env.UI_PATH }}/.nvmrc"
 
@@ -39,7 +39,7 @@ jobs:
         run: make -C $UI_PATH precommit
 
       - name: Save test results
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # actions/upload-artifact@v4.6.2
         with:
           name: ui-test
           path: ui/test-report/index.html
