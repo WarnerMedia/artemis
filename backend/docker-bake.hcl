@@ -48,6 +48,7 @@ target "boxed-glibc" {
 target "engine" {
   dockerfile = "Dockerfiles/Dockerfile.engine"
   tags = full_tags(ENGINE_TAG)
+  platforms = ["linux/amd64"]
 
   contexts = {
     boxed-glibc = "target:boxed-glibc"
