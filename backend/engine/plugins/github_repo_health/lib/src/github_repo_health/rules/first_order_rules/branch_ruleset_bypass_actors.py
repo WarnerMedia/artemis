@@ -70,37 +70,37 @@ def _check_ruleset(config, ruleset):
     allowed_modes = config.get("allowed_bypass_actor_modes")
     required_ids = config.get("required_bypass_actor_ids")
 
-    allowed_ids_passing = _check_allowed_bypass_ids(allowed_ids, ruleset) if allowed_ids != None else True
-    allowed_types_passing = _check_allowed_bypass_types(allowed_types, ruleset) if allowed_types != None else True
-    allowed_modes_passing = _check_allowed_bypass_modes(allowed_modes, ruleset) if allowed_modes != None else True
-    required_ids_passing = _check_required_bypass_ids(required_ids, ruleset) if required_ids != None else True
+    allowed_ids_passing = _check_allowed_bypass_ids(allowed_ids, ruleset) if allowed_ids is not None else True
+    allowed_types_passing = _check_allowed_bypass_types(allowed_types, ruleset) if allowed_types is not None else True
+    allowed_modes_passing = _check_allowed_bypass_modes(allowed_modes, ruleset) if allowed_modes is not None else True
+    required_ids_passing = _check_required_bypass_ids(required_ids, ruleset) if required_ids is not None else True
 
     return allowed_ids_passing and allowed_types_passing and allowed_modes_passing and required_ids_passing
 
 
 def _check_allowed_bypass_ids(allowed_ids, ruleset):
     allowed_ids_set = set(allowed_ids)
-    bypass_actors = ruleset.get("bypass_actors")
+    bypass_actors = ruleset.get("bypass_actors", [])
 
     return all(map(lambda actor: actor.get("actor_id") in allowed_ids_set, bypass_actors))
 
 
 def _check_allowed_bypass_types(allowed_types, ruleset):
     allowed_types_set = set(allowed_types)
-    bypass_actors = ruleset.get("bypass_actors")
+    bypass_actors = ruleset.get("bypass_actors", [])
 
     return all(map(lambda actor: actor.get("actor_type") in allowed_types_set, bypass_actors))
 
 
 def _check_allowed_bypass_modes(allowed_modes, ruleset):
     allowed_modes_set = set(allowed_modes)
-    bypass_actors = ruleset.get("bypass_actors")
+    bypass_actors = ruleset.get("bypass_actors", [])
 
     return all(map(lambda actor: actor.get("bypass_mode") in allowed_modes_set, bypass_actors))
 
 
 def _check_required_bypass_ids(required_ids, ruleset):
-    bypass_actors = ruleset.get("bypass_actors")
+    bypass_actors = ruleset.get("bypass_actors", [])
     actor_ids_set = set(map(lambda actor: actor.get("actor_id"), bypass_actors))
 
     return all(map(lambda required_id: required_id in actor_ids_set, required_ids))
