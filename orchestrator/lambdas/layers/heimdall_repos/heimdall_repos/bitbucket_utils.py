@@ -1,5 +1,5 @@
 # pylint: disable=no-name-in-module,no-member
-from typing import Tuple
+from typing import Tuple, Optional
 
 import requests
 import time
@@ -13,6 +13,7 @@ from heimdall_utils.aws_utils import GetProxySecret, queue_service_and_org, queu
 from heimdall_utils.env import APPLICATION
 from heimdall_utils.utils import JSONUtils, ScanOptions, ServiceInfo, parse_timestamp
 from heimdall_utils.variables import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
+from heimdall_utils.utils import HeimdallException
 
 log = Logger(service=APPLICATION, name="ProcessBitbucketRepos", child=True)
 
@@ -73,32 +74,59 @@ class ProcessBitbucketRepos:
                 self.service_info.url, self.service_info.org, self.service_info.repo_cursor
             )
 
-        response_text = self._query_bitbucket_api(query)
-        resp = self.json_utils.get_json_from_response(response_text)
-        if not resp:
+        try:
+            response_text = self._query_bitbucket_api(query)
+
+            resp = self.json_utils.get_json_from_response(response_text)
+            if not resp:
+                return []
+
+            nodes = resp.get("values", [])
+            if not nodes and "slug" in resp:
+                nodes = [resp]
+
+            repos = self._process_repos(nodes)
+
+            if self.service_helper.has_next_page(resp):
+                cursor = self.service_helper.get_cursor(resp)
+                # Re-queue this org, setting the cursor for the next page of the query
+                log.info("Queueing next page of repos %s to re-start at cursor %s", self.service_info.org, cursor)
+                queue_service_and_org(
+                    self.queue,
+                    self.service_info.service,
+                    self.service_info.org,
+                    {"cursor": cursor},
+                    self.scan_options.default_branch_only,
+                    self.scan_options.plugins,
+                    self.scan_options.batch_id,
+                    self.redundant_scan_query,
+                )
+            return repos
+        except HeimdallException:
+            log.info("Rate limit hit. Requeuing task")
+            if self.scan_options.repo:
+                queue_branch_and_repo(
+                    queue=self.queue,
+                    service=self.service_info.service,
+                    org_name=self.service_info.org,
+                    branch_cursor=self.service_info.branch_cursor,
+                    repo=self.scan_options.repo,
+                    plugins=self.scan_options.plugins,
+                    batch_id=self.scan_options.batch_id,
+                    redundant_scan_query=self.redundant_scan_query,
+                )
+            else:
+                queue_service_and_org(
+                    queue=self.queue,
+                    service=self.service_info.service,
+                    org_name=self.service_info.org,
+                    page=self.service_info.repo_cursor,
+                    default_branch_only=self.scan_options.default_branch_only,
+                    plugins=self.scan_options.plugins,
+                    batch_id=self.scan_options.batch_id,
+                    redundant_scan_query=self.redundant_scan_query,
+                )
             return []
-
-        nodes = resp.get("values", [])
-        if not nodes and "slug" in resp:
-            nodes = [resp]
-
-        repos = self._process_repos(nodes)
-
-        if self.service_helper.has_next_page(resp):
-            cursor = self.service_helper.get_cursor(resp)
-            # Re-queue this org, setting the cursor for the next page of the query
-            log.info("Queueing next page of repos %s to re-start at cursor %s", self.service_info.org, cursor)
-            queue_service_and_org(
-                self.queue,
-                self.service_info.service,
-                self.service_info.org,
-                {"cursor": cursor},
-                self.scan_options.default_branch_only,
-                self.scan_options.plugins,
-                self.scan_options.batch_id,
-                self.redundant_scan_query,
-            )
-        return repos
 
     def _process_repos(self, nodes: list) -> list:
         """
@@ -239,7 +267,6 @@ class ProcessBitbucketRepos:
                 url=self.service_info.url, org=self.service_info.org, repo=repo_name
             )
             response = self._query_bitbucket_api(url)
-            response = self.json_utils.get_json_from_response(response)
             if not response:
                 log.warning(
                     "Unable to retrieve Default Branch for repo: %s/%s",
@@ -250,6 +277,7 @@ class ProcessBitbucketRepos:
                 default_branch = "HEAD"
                 return default_branch
 
+            response = self.json_utils.get_json_from_response(response)
             default_branch = self.service_helper.get_default_branch_name(response)
         return default_branch
 
@@ -279,7 +307,7 @@ class ProcessBitbucketRepos:
 
         return timestamp
 
-    def _query_bitbucket_api(self, url: str) -> str or None:
+    def _query_bitbucket_api(self, url: str) -> Optional[str]:
         with requests.session() as session:
             headers = {
                 "Authorization": f"Basic {self.service_info.api_key}",
@@ -289,8 +317,11 @@ class ProcessBitbucketRepos:
                 headers[REV_PROXY_SECRET_HEADER] = GetProxySecret()
             response = session.get(url=url, headers=headers)
             if response.status_code == 429:
-                log.error("Error retrieving Bitbucket query. Rate Limit Reached")
-                raise requests.HTTPError("Bitbucket Rate Limit Reached")
+                log.warning("Error retrieving Bitbucket query. Rate Limit Reached")
+                raise HeimdallException("Bitbucket Rate Limit Reached")
+            if response.status_code == 204:
+                log.warning("No data was returned for the Bitbucket Query: %s", url)
+                return None
             if response.status_code != 200:
                 log.error("Error retrieving Bitbucket query: %s, Error Code: %s", url, response.status_code)
                 return None
