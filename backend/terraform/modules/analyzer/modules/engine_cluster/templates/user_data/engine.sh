@@ -49,7 +49,7 @@ yum -y update
 
 # Install dependencies
 yum -y install jq
-yum -y install docker-25.0.3
+yum -y install 'docker-25.0.*'
 
 # Allow ec2-user to use docker
 usermod -a -G docker ec2-user
