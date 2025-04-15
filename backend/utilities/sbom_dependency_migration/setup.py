@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[],
-    tests_require=["pytest~=8.2"],
+    tests_require=["pytest~=8.3"],
     entry_points={"console_scripts": ["sbom_dependency_migration=sbom_dependency_migration.main:main"]},
     classifiers=[
         "Programming Language :: Python :: 3.9",
