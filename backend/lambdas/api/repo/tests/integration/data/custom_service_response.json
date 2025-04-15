@@ -22,9 +22,6 @@
     "OWASP Dependency Scanner": [
       "Java build failed"
     ],
-    "Sensio Security Scanner": [
-      "composer_install failed"
-    ],
     "ESLint Static Scanner": [
       "Plugin returned invalid output: "
     ],

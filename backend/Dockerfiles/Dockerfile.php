@@ -11,7 +11,6 @@ ARG PHP_SCANNER_VER
 # - Symlink python3 to python for Analyzer Engine benefit
 # - Setup directory for scanner binary to sit
 # - Download and Install Composer
-# - Download sensio tool (requires git and unzip)
 RUN apk update && apk --update-cache add git unzip python3 py3-pip && \
     apk upgrade && \
     pip3 install --upgrade pip setuptools boto3 requests && \
