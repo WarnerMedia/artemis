@@ -2085,7 +2085,6 @@ components:
               - gitlab_repo_health
               - node_dependencies
               - owasp_dependency_check
-              - php_sensio_security_checker
               - python_code_checker
               - technology_discovery
               - cicd_tools
