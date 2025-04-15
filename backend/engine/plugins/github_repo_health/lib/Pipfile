@@ -5,12 +5,12 @@ name = "pypi"
 
 [packages]
 jsonschema = "~=4.22"
-pygithub = "~=2.1"
+pygithub = "~=2.5"
 
 [requires]
 python_version = "3.9"
 
 [dev-packages]
-isort = "~=5.12"
-pytest = "~=8.2"
-ruff = "~=0.6.8"
+isort = "~=5.13"
+pytest = "~=8.3"
+ruff = "~=0.8.1"

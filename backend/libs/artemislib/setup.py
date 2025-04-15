@@ -22,15 +22,15 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     install_requires=[
-        "aws-lambda-powertools~=3.2",
-        "boto3~=1.34",
-        "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.35",
+        "aws-lambda-powertools~=3.9",
+        "boto3~=1.37",
+        "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.37",
         # pyjwt requires the cryptography library but it needs to be installed
         # separately because it contains platform-dependent pre-compiled code
-        "pyjwt[crypto]~=2.8",
-        "requests~=2.31",
+        "pyjwt[crypto]~=2.10",
+        "requests~=2.32",
     ],
-    tests_require=["pytest~=8.2"],
+    tests_require=["pytest~=8.3"],
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
