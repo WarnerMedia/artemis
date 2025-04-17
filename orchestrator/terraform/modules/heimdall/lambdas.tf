@@ -437,6 +437,13 @@ resource "aws_cloudwatch_event_rule" "repo-scan-loop-rate" {
   description         = "The rate at which repo-scan-loop lambda runs"
   schedule_expression = var.repo_scan_loop_rate
   state               = var.scanning_enabled ? "ENABLED" : "DISABLED"
+
+  lifecycle {
+    ignore_changes = [
+      schedule_expression
+    ]
+  }
+
   tags = merge(
     var.tags,
     {
