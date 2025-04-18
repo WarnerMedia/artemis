@@ -515,7 +515,7 @@ msgstr "Queued"
 msgid "Report Sections Tabs"
 msgstr "Report Sections Tabs"
 
-#: src/app/scanPlugins.ts:200
+#: src/app/scanPlugins.ts:195
 msgid "Snyk"
 msgstr "Snyk"
 
@@ -903,7 +903,7 @@ msgstr "Results may vary compared to scans run with other options. View scan res
 msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
 msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
 
-#: src/app/scanPlugins.ts:202
+#: src/app/scanPlugins.ts:197
 msgid "Trivy Container Image"
 msgstr "Trivy Container Image"
 
@@ -930,7 +930,7 @@ msgstr "Unable to get user keys"
 msgid "Scope {0}"
 msgstr "Scope {0}"
 
-#: src/app/scanPlugins.ts:207
+#: src/app/scanPlugins.ts:202
 msgid "Trivy SCA"
 msgstr "Trivy SCA"
 
@@ -2509,8 +2509,8 @@ msgid "Reset Filters"
 msgstr "Reset Filters"
 
 #: src/app/scanPlugins.ts:196
-msgid "Sensio Security Check (PHP)"
-msgstr "Sensio Security Check (PHP)"
+#~ msgid "Sensio Security Check (PHP)"
+#~ msgstr "Sensio Security Check (PHP)"
 
 #: src/api/client.ts:177
 msgid "Session expired, redirecting to login..."
@@ -2673,7 +2673,7 @@ msgid "Component Name"
 msgstr "Component Name"
 
 #. placeholder {0}: item?.filename ?? ""
-#. placeholder {1}: item?.line ? ` (Line ${item.liune})` : ""
+#. placeholder {1}: item?.line ? ` (Line ${item.line})` : ""
 #: src/pages/ResultsPage.tsx:1423
 msgid "{0}{1}"
 msgstr "{0}{1}"
@@ -3016,7 +3016,7 @@ msgstr "Remove API key named \"{0}\"?"
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
-#: src/app/scanPlugins.ts:212
+#: src/app/scanPlugins.ts:207
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
 

@@ -26,9 +26,6 @@
     "OWASP Dependency Scanner": [
       "Java build failed"
     ],
-    "Sensio Security Scanner": [
-      "composer_install failed"
-    ],
     "FindSecBugs Scanner Java 7": [
       "Java Maven build failed or could not find a pom.xml in the project"
     ]

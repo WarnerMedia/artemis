@@ -24,7 +24,6 @@ PLUGIN_LIST_BY_CATEGORY = {
     "vulnerability": {
         "node_dependencies": None,
         "owasp_dependency_check": None,
-        "php_sensio_security_checker": None,
         "bundler_audit": None,
         "trivy": None,
         "trivy_sca": None,

@@ -192,11 +192,6 @@ export const vulnPluginsKeys: ScanPluginKeys = {
 		apiName: "owasp_dependency_check",
 		group: GROUP_VULN,
 	},
-	php_sensio_security_checker: {
-		displayName: t`Sensio Security Check (PHP)`,
-		apiName: "php_sensio_security_checker",
-		group: GROUP_VULN,
-	},
 	snyk: { displayName: t`Snyk`, apiName: "snyk", group: GROUP_VULN },
 	trivy: {
 		displayName: t`Trivy Container Image`,
