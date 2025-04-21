@@ -1,6 +1,0 @@
-{
-    "name": "Sensio Security Scanner",
-    "type": "vulnerability",
-    "image": "$ECR/artemis/php:latest",
-    "writable": true
-}

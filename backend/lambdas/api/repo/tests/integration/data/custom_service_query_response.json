@@ -151,18 +151,6 @@
     "end_time": "2020-03-19T15:05:50.818653+00:00"
   },
   {
-    "name": "Sensio Security Scanner",
-    "type": "vulnerability",
-    "success": true,
-    "truncated": false,
-    "details": [],
-    "errors": [
-      "composer_install failed"
-    ],
-    "start_time": "2020-03-19T15:04:16.997844+00:00",
-    "end_time": "2020-03-19T15:04:24.597822+00:00"
-  },
-  {
     "name": "Pylint Scanner",
     "type": "static_analysis",
     "success": false,

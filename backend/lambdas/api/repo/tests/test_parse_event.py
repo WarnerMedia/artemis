@@ -230,7 +230,6 @@ EXPECTED_EVENT_RESULT_1 = {
         "-node_dependencies",
         "-trufflehog",
         "-bundler_audit",
-        "-php_sensio_security_checker",
         "-github_repo_health",
         "-gitlab_repo_health",
         "-trivy_sbom",
