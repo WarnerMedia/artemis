@@ -1145,7 +1145,7 @@ export const HiddenFindingDialog = (props: {
 				}
 				case "secret": {
 					// To hide a secret, the line must be a number
-					let line = row?.line === "" ? 0 : row?.line
+					let line = row?.line === "" ? 0 : row?.line;
 					request = {
 						url,
 						data: {
