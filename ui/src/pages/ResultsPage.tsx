@@ -1144,6 +1144,8 @@ export const HiddenFindingDialog = (props: {
 					break;
 				}
 				case "secret": {
+					// To hide a secret, the line must be a number
+					let line = row?.line === "" ? 0 : row?.line
 					request = {
 						url,
 						data: {
@@ -1151,7 +1153,7 @@ export const HiddenFindingDialog = (props: {
 							type: "secret",
 							value: {
 								filename: row?.filename ?? "",
-								line: row?.line ?? "",
+								line: line ?? 0,
 								commit: row?.commit ?? "",
 							},
 						},
@@ -4079,7 +4081,7 @@ export const SecretsTabContent = (props: {
 				filename: formatLocationName(filename),
 				location: item?.location ?? "commit",
 
-				line: item.line,
+				line: item.line === 0 ? "" : item.line,
 				resource: item.type,
 				commit: item.commit,
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
