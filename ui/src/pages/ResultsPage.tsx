@@ -4079,7 +4079,7 @@ export const SecretsTabContent = (props: {
 				filename: formatLocationName(filename),
 				location: item?.location ?? "commit",
 
-				line: item.line === 0 ? "" : item.line,
+				line: item.line,
 				resource: item.type,
 				commit: item.commit,
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
