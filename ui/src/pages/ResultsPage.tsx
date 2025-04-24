@@ -4053,10 +4053,15 @@ export const SecretsTabContent = (props: {
 		items.forEach((item: SecretFinding) => {
 			// single matching hidden finding
 			const findings = hiddenFindings.find((hf) => {
+				let item_line = item.line;
+				if (String(item.line) === "") {
+					item_line = 0;
+				}
+
 				return (
 					hf.type === "secret" &&
 					hf.value.filename === filename &&
-					hf.value.line === item.line &&
+					hf.value.line === item_line &&
 					hf.value.commit === item.commit
 				);
 			});
