@@ -1144,8 +1144,6 @@ export const HiddenFindingDialog = (props: {
 					break;
 				}
 				case "secret": {
-					// To hide a secret, the line must be a number
-					let line = row?.line === "" ? 0 : row?.line;
 					request = {
 						url,
 						data: {
@@ -1153,7 +1151,7 @@ export const HiddenFindingDialog = (props: {
 							type: "secret",
 							value: {
 								filename: row?.filename ?? "",
-								line: line ?? 0,
+								line: row?.line ?? "",
 								commit: row?.commit ?? "",
 							},
 						},
@@ -4053,15 +4051,10 @@ export const SecretsTabContent = (props: {
 		items.forEach((item: SecretFinding) => {
 			// single matching hidden finding
 			const findings = hiddenFindings.find((hf) => {
-				let item_line = item.line;
-				if (String(item.line) === "") {
-					item_line = 0;
-				}
-
 				return (
 					hf.type === "secret" &&
 					hf.value.filename === filename &&
-					hf.value.line === item_line &&
+					hf.value.line === item.line &&
 					hf.value.commit === item.commit
 				);
 			});
@@ -4086,7 +4079,7 @@ export const SecretsTabContent = (props: {
 				filename: formatLocationName(filename),
 				location: item?.location ?? "commit",
 
-				line: item.line === 0 ? "" : item.line,
+				line: item.line,
 				resource: item.type,
 				commit: item.commit,
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
