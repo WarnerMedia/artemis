@@ -19,7 +19,7 @@ cmd = [
 def install_package_files(include_dev: bool, path: str, root_path: str, npm_install: bool):
     # Create a package-lock.json file if it doesn't already exist
     logger.info(
-        f'Generating package-lock.json for {path.replace(root_path, "")} (including dev dependencies: {include_dev} (build node modules: {npm_install})'
+        f"Generating package-lock.json for {path.replace(root_path, '')} (including dev dependencies: {include_dev} (build node modules: {npm_install})"
     )
     if not include_dev:
         cmd.append("--only=prod")

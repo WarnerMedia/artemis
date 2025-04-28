@@ -417,7 +417,7 @@ class Validator:
             try:
                 UUID(event["resource_id"])
             except ValueError:
-                raise ValidationError(f'{event["resource_id"]} is not a valid report id.')
+                raise ValidationError(f"{event['resource_id']} is not a valid report id.")
 
     def _validate_report_item(self, req, _):
         if req is None:

@@ -13,7 +13,7 @@ cmd = [
 
 
 def download_packages(path: str, root_path: str):
-    logger.info(f'Downloading Go Mod packages for {path.replace(root_path, "")})')
+    logger.info(f"Downloading Go Mod packages for {path.replace(root_path, '')})")
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
 
 

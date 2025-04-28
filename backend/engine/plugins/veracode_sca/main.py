@@ -117,7 +117,7 @@ def process_vulns(vulns: list, libs: list) -> list:
     unique_vulns = set()
     for vuln in vulns:
         for lib in vuln["libraries"]:
-            ident = f'CVE-{vuln["cve"]}' if vuln["cve"] is not None else vuln.get("_links", {}).get("html", "Unknown")
+            ident = f"CVE-{vuln['cve']}" if vuln["cve"] is not None else vuln.get("_links", {}).get("html", "Unknown")
             unique_vulns.add(ident)
             (name, version, sha, coord_type) = library_lookup(libs, lib["_links"]["ref"])
             advisory_ids = [ident]
@@ -205,13 +205,13 @@ def check_graph(pkg: str, item: dict, parent: str = None, top_level: bool = True
     # which is when the actual dependencies start
     path = None
     if not top_level:
-        path = f'{parent}>{item["coords"]["coordinate1"]}' if parent else item["coords"]["coordinate1"]
+        path = f"{parent}>{item['coords']['coordinate1']}" if parent else item["coords"]["coordinate1"]
 
     # Check the coords and add the source filename if it matches
     if item["coords"] and check_graph_coords(pkg, item["coords"]):
         ret.add(
             # This would be better as a dict or something but a tuple is hashable which means it can go into a set
-            (f'{item["filename"]}: {path}' if path else item["filename"], path, item["filename"], item["lineNumber"])
+            (f"{item['filename']}: {path}" if path else item["filename"], path, item["filename"], item["lineNumber"])
         )
     elif top_level and item["coords"] is None and sha1 is not None and item["sha1"] == sha1:
         # This seems to be the conditions that occur when the dependency is directly in the repo
@@ -225,7 +225,7 @@ def check_graph(pkg: str, item: dict, parent: str = None, top_level: bool = True
 
 
 def check_graph_coords(pkg: str, coords: dict) -> bool:
-    return f'{coords.get("coordinate1")}-{coords.get("version")}' == pkg
+    return f"{coords.get('coordinate1')}-{coords.get('version')}" == pkg
 
 
 def library_lookup(libs: list, link: str) -> Tuple[str, str, str, str]:
@@ -260,13 +260,13 @@ def details_to_remediation(details: list) -> str:
     for detail in details:
         if detail["updateToVersion"]:
             # Use the update version if available
-            return f'Update to: {detail["updateToVersion"]}'
+            return f"Update to: {detail['updateToVersion']}"
         elif detail["fixText"]:
             # Use the fix text if available and there's no update version
             return detail["fixText"]
         elif detail["patch"]:
             # Use the patch information if there's no update version or fix version
-            return f'Patch: {detail["patch"]}'
+            return f"Patch: {detail['patch']}"
 
     # There's no remediation info so return an empty string
     return ""

@@ -194,7 +194,7 @@ def scan_local_images(scanner_image, image_list, scanner_credentials):
             if result["response"]:
                 results["scans"].append(result["response"])
             if not result["status"]:
-                results["errors"].append(f'Aqua CLI Scanner failed to scan {image["dockerfile"]}: {result["error"]}')
+                results["errors"].append(f"Aqua CLI Scanner failed to scan {image['dockerfile']}: {result['error']}")
 
     return results
 
@@ -209,7 +209,7 @@ def setup_requirements(args):
     log.info("Setting up the scan")
     secrets_result = utils.get_secret_with_status(args.registry_url, log)
     secrets_dict = setup_secrets(args)
-    aqua_image = f'{secrets_dict["aqua_credentials"]["registry"]}/{secrets_dict["aqua_credentials"]["image"]}'
+    aqua_image = f"{secrets_dict['aqua_credentials']['registry']}/{secrets_dict['aqua_credentials']['image']}"
     if not secrets_dict["status"]:
         return {
             "login_docker": False,

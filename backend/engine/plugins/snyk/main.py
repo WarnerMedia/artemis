@@ -101,20 +101,20 @@ def process_docker_images(images: list) -> dict:
         try:
             result = execute_snyk_image_scan(image["tag-id"])
             if not result:
-                error_msg = f'Image from Dockerfile {image["dockerfile"]} could not be scanned'
+                error_msg = f"Image from Dockerfile {image['dockerfile']} could not be scanned"
                 logger.warning(error_msg)
                 errors.append(error_msg)
                 continue
             output = utils.convert_string_to_json(result, logger)
             if not output:
-                error_msg = f'Image results from Dockerfile {image["dockerfile"]} could not be converted to JSON'
+                error_msg = f"Image results from Dockerfile {image['dockerfile']} could not be converted to JSON"
                 logger.warning(error_msg)
                 errors.append(error_msg)
             else:
                 output[SOURCE_KEY] = image["dockerfile"]
                 outputs.append(output)
         except Exception as e:
-            error_msg = f'Issue scanning image {image["dockerfile"]}: {e}'
+            error_msg = f"Issue scanning image {image['dockerfile']}: {e}"
             logger.warning(error_msg)
             errors.append(error_msg)
 
@@ -180,7 +180,7 @@ def _process_vulnerabilities(vulns: list, source: str) -> list:
             # This should not be hit, as snyk ID should be available for all vulns.
             logger.warning("Vulnerability Snyk ID is not found. Using Reference Url instead")
             vuln_ids = [_get_reference_url(vuln.get("references"))]
-        component = f'{vuln["name"]}-{vuln["version"]}'
+        component = f"{vuln['name']}-{vuln['version']}"
 
         for vuln_id in vuln_ids:
             if f"{component}-{vuln_id}" in vuln_set:
@@ -297,7 +297,7 @@ def main():
     response = execute_snyk_project_scan(args.path)
     if not response["status"]:
         logger.warning("Project scan output is None. Continuing.")
-        errors.append(f'Project Scan Failed: {response["response"]}')
+        errors.append(f"Project Scan Failed: {response['response']}")
     else:
         output = utils.convert_string_to_json(response["response"], logger)
         result = parse_output(output)

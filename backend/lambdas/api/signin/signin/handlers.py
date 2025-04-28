@@ -60,7 +60,7 @@ def handler(event, context):
             "multiValueHeaders": {
                 "Set-Cookie": [
                     # Set id_token
-                    f'id_token={body["id_token"]}; Secure; SameSite=Lax; Path=/; HttpOnly',
+                    f"id_token={body['id_token']}; Secure; SameSite=Lax; Path=/; HttpOnly",
                     # Delete signin_redirect by setting an expiration in the past
                     f"signin_redirect={location}; Secure; SameSite=Lax; Path=/; Expires={expiration()}",
                 ]

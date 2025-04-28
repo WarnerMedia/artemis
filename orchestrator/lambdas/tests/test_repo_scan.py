@@ -133,13 +133,13 @@ class TestRepoScan(unittest.TestCase):
         github_requests = GITHUB_CONSTRUCTED_REQUEST["github"]
         cls.github_lookup_req = {
             "github": {
-                f'{github_requests[0]["org"]}/{github_requests[0]["repo"]}': github_requests[0],
-                f'{github_requests[1]["org"]}/{github_requests[1]["repo"]}': github_requests[1],
+                f"{github_requests[0]['org']}/{github_requests[0]['repo']}": github_requests[0],
+                f"{github_requests[1]['org']}/{github_requests[1]['repo']}": github_requests[1],
             }
         }
         bitbucket_request = BITBUCKET_CONSTRUCTED_REQUEST["bitbucket"][0]
         cls.bitbucket_lookup_req = {
-            "bitbucket": {f'{bitbucket_request["org"]}/{bitbucket_request["repo"]}': bitbucket_request}
+            "bitbucket": {f"{bitbucket_request['org']}/{bitbucket_request['repo']}": bitbucket_request}
         }
 
     @patch.object(repo_scan, "get_queue_size")

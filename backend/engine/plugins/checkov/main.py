@@ -221,11 +221,11 @@ def parse_checkov(checkov_output: list[dict], sev_path: Path) -> tuple[list[dict
             finding["type"] = check["check_type"]
             finding["filename"] = failed_check["file_path"].strip("/")
             finding["line"] = failed_check["file_line_range"][0]
-            finding["message"] = f'{failed_check["check_id"]} - {failed_check["check_name"]}'
+            finding["message"] = f"{failed_check['check_id']} - {failed_check['check_name']}"
 
             # Not all findings have a vulnerability guideline URL
             if failed_check.get("guideline"):
-                finding["message"] += f' - {failed_check["guideline"]}'
+                finding["message"] += f" - {failed_check['guideline']}"
 
             # If we want up-to-date severities, we need to subscribe to a bridgecrew.io plan
             # and provide the API key to checkov. For now, we can look up the severity in the "ckv_severities_file" file.

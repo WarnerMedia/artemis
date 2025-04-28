@@ -212,9 +212,9 @@ class TestPluginBundlerAudit(unittest.TestCase):
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
                     "id": "CVE-2016-2098",
-                    "description": "Possible remote code execution " "vulnerability in Action Pack",
+                    "description": "Possible remote code execution vulnerability in Action Pack",
                     "severity": "",
-                    "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, " "~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
+                    "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, ~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
                     "inventory": {
                         "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
@@ -265,9 +265,9 @@ class TestPluginBundlerAudit(unittest.TestCase):
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
                     "id": "CVE-2016-2098",
-                    "description": "Possible remote code execution " "vulnerability in Action Pack",
+                    "description": "Possible remote code execution vulnerability in Action Pack",
                     "severity": "",
-                    "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, " "~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
+                    "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, ~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
                     "inventory": {
                         "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
@@ -280,7 +280,7 @@ class TestPluginBundlerAudit(unittest.TestCase):
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
                     "id": "CVE-2015-7576",
-                    "description": "Timing attack vulnerability in basic " "authentication in Action Controller.",
+                    "description": "Timing attack vulnerability in basic authentication in Action Controller.",
                     "severity": "",
                     "remediation": "upgrade to >= 5.0.0.beta1.1, >= 4.2.5.1,"
                     " ~> 4.2.5, >= 4.1.14.1, ~> 4.1.14, "
@@ -346,9 +346,9 @@ class TestPluginBundlerAudit(unittest.TestCase):
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
                     "id": "GHSA-8727-m6gj-mc37",
-                    "description": "Possible remote code execution " "vulnerability in Action Pack",
+                    "description": "Possible remote code execution vulnerability in Action Pack",
                     "severity": "",
-                    "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, " "~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
+                    "remediation": "upgrade to ~> 3.2.22.2, >= 4.2.5.2, ~> 4.2.5, >= 4.1.14.2, ~> 4.1.14",
                     "inventory": {
                         "component": {"name": "actionpack", "version": "4.2.0", "type": "gem"},
                         "advisory_ids": [
@@ -361,7 +361,7 @@ class TestPluginBundlerAudit(unittest.TestCase):
                     "component": "actionpack-4.2.0",
                     "source": "Gemfile.lock",
                     "id": "https://groups.google.com/forum/#!topic/rubyonrails-security/ANv0HDHEC3k",
-                    "description": "Timing attack vulnerability in basic " "authentication in Action Controller.",
+                    "description": "Timing attack vulnerability in basic authentication in Action Controller.",
                     "severity": "",
                     "remediation": "upgrade to >= 5.0.0.beta1.1, >= 4.2.5.1,"
                     " ~> 4.2.5, >= 4.1.14.1, ~> 4.1.14, "

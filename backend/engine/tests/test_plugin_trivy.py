@@ -67,11 +67,11 @@ TEST_IMAGE_VULN_DICT = {
 TEST_IMAGE_VULN_RESULT = [
     {
         "component": "libcrypto1.1-1.1.1i-r0",
-        "description": "OpenSSL 1.0.2 supports SSLv2. If a client attempts to " "negotiate SSLv2...",
+        "description": "OpenSSL 1.0.2 supports SSLv2. If a client attempts to negotiate SSLv2...",
         "id": "CVE-2021-23839",
         "remediation": "Fixed Version: 1.1.1j-r0.",
         "severity": "high",
-        "source": "test-docker-dcff6ea60ec3cbae155abaed414c033b-t-1000 (alpine " "3.12.3)",
+        "source": "test-docker-dcff6ea60ec3cbae155abaed414c033b-t-1000 (alpine 3.12.3)",
         "inventory": {
             "component": {"name": "libcrypto1.1", "version": "1.1.1i-r0", "type": "alpine"},
             "advisory_ids": [
