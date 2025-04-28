@@ -309,6 +309,7 @@ def run_plugin(
     include_dev=False,
     features=None,
     services=None,
+    is_repo_archived=False,
 ) -> Result:
     log.info("--- Plugin log start ---")
     if features is None:
@@ -433,9 +434,9 @@ def run_plugin(
                 # Remove the other secrets from what gets sent to the event stream. They don't get
                 # removed from the plugin output because they still get stored in the DB.
                 filtered_plugin_output = filter_secrets(scan, plugin_output)
-                process_event_info(scan, filtered_plugin_output, settings.plugin_type, settings.name)
+                process_event_info(scan, filtered_plugin_output, settings.plugin_type, settings.name, is_repo_archived)
             else:
-                process_event_info(scan, plugin_output, settings.plugin_type, settings.name)
+                process_event_info(scan, plugin_output, settings.plugin_type, settings.name, is_repo_archived)
 
         if settings.plugin_type == PluginType.SECRETS.value:
             _process_secret_types(plugin_output.get("details", []))
@@ -473,7 +474,7 @@ def run_plugin(
     )
 
 
-def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
+def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str, is_repo_archived: bool):
     log.info("Processing event info")
     timestamp = get_iso_timestamp()
     if plugin_type == PluginType.SECRETS.value and SECRETS_EVENTS_ENABLED:
@@ -504,6 +505,8 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
                 "author-timestamp": item["author-timestamp"],
                 "created_at": item.get("created_at", item["author-timestamp"]),
                 "details": results["event_info"][item["id"]],
+                "isArchived": is_repo_archived,
+                "last_commit": scan.branch_last_commit_timestamp,
                 "state": item.get("state", "open"),
                 "validity": item.get("validity", "unknown"),
                 "secret_type": results["event_info"][item["id"]]["type"],
@@ -525,6 +528,8 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
             "repo": scan.repo.repo,
             "branch": scan.ref,
             "details": results["event_info"],
+            "isArchived": is_repo_archived,
+            "last_commit": scan.branch_last_commit_timestamp,
         }
         queue_event(scan.repo.repo, plugin_type, payload)
     elif plugin_type == PluginType.CONFIGURATION.value and CONFIGURATION_EVENTS_ENABLED:
@@ -541,6 +546,8 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
                 "details": results["event_info"][item["id"]],
                 "report_url": scan.report_url,
                 "plugin_name": plugin_name,
+                "isArchived": is_repo_archived,
+                "last_commit": scan.branch_last_commit_timestamp,
             }
             queue_event(scan.repo.repo, plugin_type, payload)
     elif plugin_type == PluginType.VULN.value and VULNERABILITY_EVENTS_ENABLED:
@@ -553,6 +560,8 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str):
                 "branch": scan.ref,
                 "details": results["event_info"][item["id"]],
                 "report_url": scan.report_url,
+                "isArchived": is_repo_archived,
+                "last_commit": scan.branch_last_commit_timestamp,
             }
             queue_event(scan.repo.repo, plugin_type, payload)
 
