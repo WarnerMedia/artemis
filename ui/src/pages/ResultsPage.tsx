@@ -1151,7 +1151,7 @@ export const HiddenFindingDialog = (props: {
 							type: "secret",
 							value: {
 								filename: row?.filename ?? "",
-								line: row?.line ?? "",
+								line: row?.line || 0,
 								commit: row?.commit ?? "",
 							},
 						},
@@ -4051,12 +4051,17 @@ export const SecretsTabContent = (props: {
 		items.forEach((item: SecretFinding) => {
 			// single matching hidden finding
 			const findings = hiddenFindings.find((hf) => {
-				return (
-					hf.type === "secret" &&
-					hf.value.filename === filename &&
-					hf.value.line === item.line &&
-					hf.value.commit === item.commit
-				);
+				if (hf.type === 'secret'){
+					// Reverts the filename to its original id. if it exists
+					// For example: Commit Message is reverted to commit_message
+					const id = hf.value.filename.toLowerCase()?.split(" ")?.join("_")
+					return (
+						(id === filename || hf.value.filename === filename) &&
+						hf.value.line === item.line &&
+						hf.value.commit === item.commit
+					);
+				}
+				return false
 			});
 			// note: only data passed in the row object will be accessible in the cell's render function ("children" ColDef field)
 			// this is why fields such as url and createdBy are added here
@@ -4079,7 +4084,7 @@ export const SecretsTabContent = (props: {
 				filename: formatLocationName(filename),
 				location: item?.location ?? "commit",
 
-				line: item.line,
+				line: item.line === 0 ? "" : item.line,
 				resource: item.type,
 				commit: item.commit,
 				// Filter Validity. Will show up in URLs, so we shorten "filter" to "f"
