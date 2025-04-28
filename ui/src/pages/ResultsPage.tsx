@@ -4051,17 +4051,17 @@ export const SecretsTabContent = (props: {
 		items.forEach((item: SecretFinding) => {
 			// single matching hidden finding
 			const findings = hiddenFindings.find((hf) => {
-				if (hf.type === 'secret'){
+				if (hf.type === "secret") {
 					// Reverts the filename to its original id. if it exists
 					// For example: Commit Message is reverted to commit_message
-					const id = hf.value.filename.toLowerCase()?.split(" ")?.join("_")
+					const id = hf.value.filename.toLowerCase()?.split(" ")?.join("_");
 					return (
 						(id === filename || hf.value.filename === filename) &&
 						hf.value.line === item.line &&
 						hf.value.commit === item.commit
 					);
 				}
-				return false
+				return false;
 			});
 			// note: only data passed in the row object will be accessible in the cell's render function ("children" ColDef field)
 			// this is why fields such as url and createdBy are added here
