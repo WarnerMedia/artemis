@@ -38,13 +38,15 @@ class MetricHandler:
         r = self.asg.describe_auto_scaling_groups(AutoScalingGroupNames=[autoscaling_name], MaxRecords=1)
         num_engines = int(r["AutoScalingGroups"][0]["DesiredCapacity"]) * ENGINES_PER_INSTANCE
 
+        messages_per_engine = int(num_msg / num_engines) if num_engines > 0 else 0
+
         r = self.cw.put_metric_data(
             MetricData=[
                 {
                     "MetricName": "queued_messages_per_engine",
                     "Dimensions": [{"Name": "QueueName", "Value": queue_urls[0].split("/")[-1]}],
                     "Unit": "Count",
-                    "Value": int(num_msg / num_engines),
+                    "Value": messages_per_engine,
                 },
             ],
             Namespace=APPLICATION,
