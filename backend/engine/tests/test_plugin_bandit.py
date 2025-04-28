@@ -54,7 +54,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 31,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/dao/__init__.py": {
+                "/src/dvpwa/sqli/dao/__init__.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -66,7 +66,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 0,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/dao/course.py": {
+                "/src/dvpwa/sqli/dao/course.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -78,7 +78,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 41,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/dao/mark.py": {
+                "/src/dvpwa/sqli/dao/mark.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -90,7 +90,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 31,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/dao/review.py": {
+                "/src/dvpwa/sqli/dao/review.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -102,7 +102,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 30,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/dao/student.py": {
+                "/src/dvpwa/sqli/dao/student.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 1.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -114,7 +114,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 38,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/dao/user.py": {
+                "/src/dvpwa/sqli/dao/user.py": {
                     "CONFIDENCE.HIGH": 1.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -126,7 +126,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 34,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/middlewares.py": {
+                "/src/dvpwa/sqli/middlewares.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -138,7 +138,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 60,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/routes.py": {
+                "/src/dvpwa/sqli/routes.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -150,7 +150,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 24,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/schema/__init__.py": {
+                "/src/dvpwa/sqli/schema/__init__.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -162,7 +162,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 0,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/schema/config.py": {
+                "/src/dvpwa/sqli/schema/config.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -174,7 +174,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 19,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/schema/forms.py": {
+                "/src/dvpwa/sqli/schema/forms.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -186,7 +186,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 14,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/services/__init__.py": {
+                "/src/dvpwa/sqli/services/__init__.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -198,7 +198,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 0,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/services/db.py": {
+                "/src/dvpwa/sqli/services/db.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -210,7 +210,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 16,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/services/redis.py": {
+                "/src/dvpwa/sqli/services/redis.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -222,7 +222,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 13,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/utils/__init__.py": {
+                "/src/dvpwa/sqli/utils/__init__.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -234,7 +234,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 0,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/utils/auth.py": {
+                "/src/dvpwa/sqli/utils/auth.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -246,7 +246,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 25,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/utils/jinja2.py": {
+                "/src/dvpwa/sqli/utils/jinja2.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -258,7 +258,7 @@ class TestPluginBandit(unittest.TestCase):
                     "loc": 13,
                     "nosec": 0,
                 },
-                "/src/dvpwa" "/sqli/views.py": {
+                "/src/dvpwa/sqli/views.py": {
                     "CONFIDENCE.HIGH": 0.0,
                     "CONFIDENCE.LOW": 0.0,
                     "CONFIDENCE.MEDIUM": 0.0,
@@ -293,15 +293,13 @@ class TestPluginBandit(unittest.TestCase):
                     " ('%(name)s')\" % {'name': name})\n44"
                     "         async with conn.cursor"
                     "() as cur:\n",
-                    "filename": "/src" "/dvpwa/sqli/dao/student.py",
+                    "filename": "/src/dvpwa/sqli/dao/student.py",
                     "issue_confidence": "LOW",
                     "issue_severity": "MEDIUM",
-                    "issue_text": "Possible SQL injection vector" " through string-based query construction.",
+                    "issue_text": "Possible SQL injection vector through string-based query construction.",
                     "line_number": 42,
                     "line_range": [42, 43],
-                    "more_info": "https://bandit.readthedocs.io/en"
-                    "/latest/plugins/"
-                    "b608_hardcoded_sql_expressions.html",
+                    "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b608_hardcoded_sql_expressions.html",
                     "test_id": "B608",
                     "test_name": "hardcoded_sql_expressions",
                 },
@@ -310,13 +308,13 @@ class TestPluginBandit(unittest.TestCase):
                     ":\n41         "
                     "return self.pwd_hash == md5"
                     "(password.encode('utf-8')).hexdigest()\n",
-                    "filename": "/src/dvpwa/" "sqli/dao/user.py",
+                    "filename": "/src/dvpwa/sqli/dao/user.py",
                     "issue_confidence": "HIGH",
                     "issue_severity": "MEDIUM",
-                    "issue_text": "Use of insecure MD2, MD4, MD5," " or SHA1 hash function.",
+                    "issue_text": "Use of insecure MD2, MD4, MD5, or SHA1 hash function.",
                     "line_number": 41,
                     "line_range": [41],
-                    "more_info": "https://bandit.readthedocs.io/" "en/latest/blacklists/blacklist_calls.html#b303-md5",
+                    "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_calls.html#b303-md5",
                     "test_id": "B303",
                     "test_name": "blacklist",
                 },
@@ -326,7 +324,7 @@ class TestPluginBandit(unittest.TestCase):
             {
                 "filename": "/dvpwa/sqli/dao/student.py",
                 "line": 42,
-                "message": "Possible SQL injection vector through string-based query " "construction.",
+                "message": "Possible SQL injection vector through string-based query construction.",
                 "severity": "medium",
                 "type": "B608: hardcoded_sql_expressions",
             },

@@ -28,7 +28,7 @@ def parse_output(output: list) -> list:
 
                 component = vuln.get("PkgName")
                 if vuln.get("InstalledVersion"):
-                    component = f'{component}-{vuln.get("InstalledVersion")}'
+                    component = f"{component}-{vuln.get('InstalledVersion')}"
                 results.append(
                     {
                         "component": component,

@@ -25,7 +25,7 @@ def clean_output_application_sbom(output: dict) -> list:
             logger.error("Unable to parse trivy component: %s", item)
             continue
         if "group" in item:
-            name = f'{item["group"]}/{item["name"]}'
+            name = f"{item['group']}/{item['name']}"
         else:
             name = item["name"]
         version = item.get("version", "none")

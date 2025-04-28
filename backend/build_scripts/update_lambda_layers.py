@@ -23,7 +23,7 @@ def main():
     latest.extend(datadog_layers)
     response = client.update_function_configuration(FunctionName=args.function_name, Layers=latest)
 
-    print(f'Update status: {response["LastUpdateStatus"]}')
+    print(f"Update status: {response['LastUpdateStatus']}")
 
 
 def get_layers(config: dict) -> list:
@@ -45,7 +45,7 @@ def get_latest_layer_versions(layers: str, client: boto3.client) -> list:
     latest = []
     for layer in layers:
         response = client.list_layer_versions(LayerName=layer, MaxItems=1)
-        updated = f'{layer}:{response["LayerVersions"][0]["Version"]}'
+        updated = f"{layer}:{response['LayerVersions'][0]['Version']}"
         print(updated)
         latest.append(updated)
     return latest

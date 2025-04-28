@@ -9,7 +9,7 @@ TEST_DESCRIPTION_1 = (
 
 
 EXPECTED_DESCRIPTION_1 = (
-    "[ini](https://www.npmjs.org/package/ini) is an An ini encoder/decoder for node\n\nBla bla " "bla, bla bla bla bla."
+    "[ini](https://www.npmjs.org/package/ini) is an An ini encoder/decoder for node\n\nBla bla bla, bla bla bla bla."
 )
 
 

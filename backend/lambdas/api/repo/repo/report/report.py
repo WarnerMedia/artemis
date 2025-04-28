@@ -75,7 +75,7 @@ def post_report(event_parser: EventParser, user=None):
             scan_id=scan.scan_id,
             filters=req["filters"],
         )
-        full_id = f'{event["service_id"]}/{event["repo_id"]}/{event["scan_id"]}/report/{item.report_id}'
+        full_id = f"{event['service_id']}/{event['repo_id']}/{event['scan_id']}/report/{item.report_id}"
         if aws.queue_report(item.report_id):
             queued.append(full_id)
         else:

@@ -52,7 +52,7 @@ def parse_message(message):
     if isinstance(message, str):
         return message.split("\n")[0]
     if "__ComposerError__" in message:
-        return f'ERROR: {message["__ComposerError__"].get("context")}'
+        return f"ERROR: {message['__ComposerError__'].get('context')}"
     if isinstance(message, dict):
         return json.dumps(message)
     return "ERROR: message could not be parsed"

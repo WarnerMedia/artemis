@@ -51,8 +51,7 @@ TEST_GOSEC_OUTPUT = {
             "details": "Use of weak cryptographic primitive",
             "file": "/go/golang-examples/beginner/hashing.go",
             "code": (
-                '14: \tinput := "Lorem Ipsum dolor sit Amet"\n15: \tmd5 := md5.New()\n'
-                "16: \tsha_256 := sha256.New()\n"
+                '14: \tinput := "Lorem Ipsum dolor sit Amet"\n15: \tmd5 := md5.New()\n16: \tsha_256 := sha256.New()\n'
             ),
             "line": "15",
             "column": "9",

@@ -116,7 +116,7 @@ class ProcessGitlabRepos:
 
         page_info = self.json_utils.get_object_from_json_dict(resp, ["data", "group", "projects", "pageInfo"])
         if page_info and page_info.get("hasNextPage"):
-            cursor = f"\"{page_info.get('endCursor')}\""
+            cursor = f'"{page_info.get("endCursor")}"'
 
             # Re-queue this org, setting the cursor for the next page of the query
             queue_service_and_org(

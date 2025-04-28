@@ -129,7 +129,7 @@ def process_sbom(graphs: list, libs: list) -> list:
 def process_dep(dep: dict, libs: list, matched: set) -> dict:
     name = dep["coords"]["coordinate1"]
     if dep["coords"]["coordinate2"] is not None and dep["coords"]["coordinate1"] != dep["coords"]["coordinate2"]:
-        name = f'{name}.{dep["coords"]["coordinate2"]}'
+        name = f"{name}.{dep['coords']['coordinate2']}"
 
     ret = {
         "name": name,
@@ -188,7 +188,7 @@ def process_unmatched_libraries(libs: list, matched: set) -> list:
         if lib["name"] == name.replace("_", "-"):  # Weird edge case. Python only?
             name = lib["name"]
         if lib["coordinate2"] and lib["coordinate1"] != lib["coordinate2"]:
-            name = f'{name}.{lib["coordinate2"]}'
+            name = f"{name}.{lib['coordinate2']}"
 
         # Loop through the versions
         for version in lib["versions"]:

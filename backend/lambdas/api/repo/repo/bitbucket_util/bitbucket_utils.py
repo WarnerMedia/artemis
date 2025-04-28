@@ -244,7 +244,7 @@ def get_clone_url(clone_list: list or None) -> str or None:
             clone_url = clone_item.get("href")
             if clone_url and "@" in clone_url:
                 # Strip the username out of the URL
-                return f'https://{clone_url.split("@")[1]}'
+                return f"https://{clone_url.split('@')[1]}"
             return clone_url
     return None
 

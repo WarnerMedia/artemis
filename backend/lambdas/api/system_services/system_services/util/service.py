@@ -237,9 +237,9 @@ class Service:
         repo_auth_url = ""
         if self._org:
             org, repo = self.org.split("/", 1)
-            repo_auth_url = f'{self._service["url"]}/projects/{org}/repos/{repo}'
+            repo_auth_url = f"{self._service['url']}/projects/{org}/repos/{repo}"
 
-        service_auth_url = f'{self._service["url"]}/projects'
+        service_auth_url = f"{self._service['url']}/projects"
         self._test_bitbucket(key, service_auth_url, repo_auth_url)
 
     def _test_bitbucket_v2(self, key: str):
@@ -253,7 +253,7 @@ class Service:
 
     def _test_ado(self, key: str):
         headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
-        response = self._request.get(f'{self._service["url"]}/{self._org}/_apis/projects', headers=headers)
+        response = self._request.get(f"{self._service['url']}/{self._org}/_apis/projects", headers=headers)
         self._reachable = True
         if response.status_code == 200:
             self._auth_successful = True

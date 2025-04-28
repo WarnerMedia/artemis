@@ -15,7 +15,7 @@ def _get_services_from_file(service_file="services.json"):
         with open(service_file) as services_file:
             return json.load(services_file)
     log.error(
-        "%s not found or could not load contents into dictionary," "services will be unrecognized and invalidated",
+        "%s not found or could not load contents into dictionary,services will be unrecognized and invalidated",
         service_file,
     )
     return None

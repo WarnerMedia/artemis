@@ -204,7 +204,7 @@ def construct_repo_requests(repos: list) -> dict:
         if "branch" in repo and repo["branch"] != "HEAD":
             req["branch"] = repo["branch"]
         reqs[service].append(req)
-        req_lookup[service][f'{repo["org"]}/{repo["repo"]}'.lower()] = req
+        req_lookup[service][f"{repo['org']}/{repo['repo']}".lower()] = req
     return {"reqs": reqs, "req_lookup": req_lookup}
 
 

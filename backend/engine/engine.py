@@ -79,7 +79,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
 
     if action.lower() == "scan":
         if not check_disk_space(details.get("repo_size", 0)):
-            log.error("Scan failed because not enough " "disk space (repo size: %d KB)", details["repo_size"])
+            log.error("Scan failed because not enough disk space (repo size: %d KB)", details["repo_size"])
             engine_processor.update_scan_status(
                 "error", end_time=get_utc_datetime(), errors=["Repo too large (%d KB)" % details["repo_size"]]
             )
