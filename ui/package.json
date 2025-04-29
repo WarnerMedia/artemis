@@ -31,7 +31,7 @@
     "@types/react-router-dom": "^5.3.3",
     "autosuggest-highlight": "3.3.4",
     "axios": "^1.9.0",
-    "babel-jest": "^27.4.2",
+    "babel-jest": "^29.7.0",
     "babel-loader": "^8.2.3",
     "babel-plugin-named-asset-import": "^0.3.8",
     "babel-preset-react-app": "^10.1.0",
