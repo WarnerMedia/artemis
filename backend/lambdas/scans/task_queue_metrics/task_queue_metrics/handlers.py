@@ -38,6 +38,9 @@ class MetricHandler:
         r = self.asg.describe_auto_scaling_groups(AutoScalingGroupNames=[autoscaling_name], MaxRecords=1)
         num_engines = int(r["AutoScalingGroups"][0]["DesiredCapacity"]) * ENGINES_PER_INSTANCE
 
+        if num_engines == 0:
+            return
+
         r = self.cw.put_metric_data(
             MetricData=[
                 {
