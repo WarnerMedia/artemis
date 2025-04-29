@@ -381,7 +381,7 @@ class EngineProcessor:
             )
 
         # Send the results for processing into the event queue
-        process_event_info(self.scan.get_scan_object(), results, PluginType.VULN.value, None)
+        process_event_info(self.scan.get_scan_object(), results, PluginType.VULN.value, None, self.details.isArchived)
 
     def _process_metadata_events(self) -> None:
         """
@@ -402,6 +402,7 @@ class EngineProcessor:
                 "type": "metadata",
                 "application_metadata": scan.application_metadata,
                 "isArchived": self.details.isArchived,
+                "last_commit": scan.branch_last_commit_timestamp,
             }
             queue_event(scan.repo.repo, "metadata", payload)
 
