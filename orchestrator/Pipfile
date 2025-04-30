@@ -11,7 +11,7 @@ aws-lambda-powertools = "~=3.9"
 awscli = "~=1.38"
 boto3 = "~=1.37"
 boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.37"}
-cryptography = "~=43.0"
+cryptography = "~=44.0"
 PyGithub = "~=2.6"
 pyjwt = "~=2.10"
 pyyaml = "~=6.0"
