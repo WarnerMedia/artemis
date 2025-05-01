@@ -6,12 +6,12 @@ def parse_cli_output(output_list):
     """
     cli_output = []
     for output in output_list:
-        output_type, message_and_file, line_text = output.split(":")
+        output_type, message_and_file, line_text = parse_line(output)
         try:
             line = int(line_text.replace("[line ", "").replace("]", ""))
         except ValueError:
             line = None
-        message, filename = message_and_file.split("At ")
+        message, filename = parse_message_and_file(message_and_file)
         item = {
             "filename": filename,
             "message": message.strip(),
@@ -20,6 +20,38 @@ def parse_cli_output(output_list):
         }
         cli_output.append(item)
     return cli_output
+
+
+def parse_line(output: str) -> tuple[str, str, str]:
+    split = output.split(":")
+    split_len = len(split)
+
+    if split_len >= 3:
+        output_type = split[0]
+        message_and_file = ":".join(split[1:-1])
+        line_text = split[-1]
+    elif split_len == 2:
+        output_type, message_and_file = split
+        # In at least one case, split_len is 2 because no line number is provided.
+        # So, we set `line_text` to -1 as it will be parsed into an integer.
+        line_text = "-1"
+    else:  # split_len < 2
+        raise Exception(f"Unexpected case. 1 or fewer ':' in output line: {output}")
+
+    return output_type, message_and_file, line_text
+
+
+def parse_message_and_file(output: str) -> tuple[str, str]:
+    split = output.split("At ")
+
+    if len(split) >= 2:
+        message = "At ".join(split[0:-1])
+        filename = split[-1]
+    else:
+        message = output
+        filename = "Not provided"
+
+    return message, filename
 
 
 def parse_cli_results(cli_results):
