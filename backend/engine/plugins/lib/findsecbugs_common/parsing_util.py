@@ -33,8 +33,8 @@ def parse_line(output: str) -> tuple[str, str, str]:
     elif split_len == 2:
         output_type, message_and_file = split
         # In at least one case, split_len is 2 because no line number is provided.
-        # So, we set `line_text` to -1 as it will be parsed into an integer.
-        line_text = "-1"
+        # So, we set `line_text` to empty string
+        line_text = ""
     else:  # split_len < 2
         raise Exception(f"Unexpected case. 1 or fewer ':' in output line: {output}")
 
