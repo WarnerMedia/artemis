@@ -212,7 +212,8 @@ DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # Lambdas
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
-LAMBDA_PYTHON_VER := 3.9
+LAMBDA_PYTHON_VER := 3.9.22
+LAMBDA_RUNTIME_VER := python3.9
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 
@@ -1403,7 +1404,7 @@ deploy_backend_core_layer: move_lambda_bundle_backend_core
 		--layer-name ${BACKEND_CORE_LAMBDA_LAYER} \
 		--region ${REGION} \
 		--content S3Bucket=${S3_BUCKET},S3Key=lambdas/backend_core/v${VERSION}/backend_core.zip \
-		--compatible-runtimes python${LAMBDA_PYTHON_VER}
+		--compatible-runtimes ${LAMBDA_RUNTIME_VER}
 	@echo "${OK}"
 
 deploy_lambda_layers:  ## Deploy lambda layers
