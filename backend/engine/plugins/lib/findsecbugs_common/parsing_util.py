@@ -23,12 +23,14 @@ def parse_cli_output(output_list):
 
 
 def parse_line(output: str) -> tuple[str, str, str]:
-    split = output.split(":")
+    seperator = ":"
+
+    split = output.split(seperator)
     split_len = len(split)
 
     if split_len >= 3:
         output_type = split[0]
-        message_and_file = ":".join(split[1:-1])
+        message_and_file = seperator.join(split[1:-1])
         line_text = split[-1]
     elif split_len == 2:
         output_type, message_and_file = split
@@ -36,16 +38,18 @@ def parse_line(output: str) -> tuple[str, str, str]:
         # So, we set `line_text` to empty string
         line_text = ""
     else:  # split_len < 2
-        raise Exception(f"Unexpected case. 1 or fewer ':' in output line: {output}")
+        raise Exception(f'Unexpected case. 1 or fewer "{seperator}" in output line: {output}')
 
     return output_type, message_and_file, line_text
 
 
 def parse_message_and_file(output: str) -> tuple[str, str]:
-    split = output.split("At ")
+    seperator = "At "
+
+    split = output.split(seperator)
 
     if len(split) >= 2:
-        message = "At ".join(split[0:-1])
+        message = seperator.join(split[0:-1])
         filename = split[-1]
     else:
         message = output
