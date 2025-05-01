@@ -53,7 +53,7 @@ def parse_message_and_file(output: str) -> tuple[str, str]:
         filename = split[-1]
     else:
         message = output
-        filename = "Not provided"
+        filename = "Unknown"
 
     return message, filename
 
