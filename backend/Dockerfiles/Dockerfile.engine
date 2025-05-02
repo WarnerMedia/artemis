@@ -57,6 +57,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && apt-get upgrade -y \
     && apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list \
     && apt-get install -y --no-install-recommends \
+        docker-buildx-plugin \
         docker-ce-cli \
         git \
         openssh-client \
