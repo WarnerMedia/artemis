@@ -1,7 +1,8 @@
 {
-    "name": "Trivy Image Scanner",
-    "type": "vulnerability",
-    "image": "$ECR/artemis/dind:latest",
-    "build_images": true,
-    "enabled": true
+  "name": "Trivy Image Scanner",
+  "type": "vulnerability",
+  "image": "$ECR/artemis/dind:latest",
+  "build_images": true,
+  "enabled": true,
+  "socket": true
 }
