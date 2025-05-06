@@ -151,6 +151,11 @@ export const staticPluginsKeys: ScanPluginKeys = {
 		apiName: "tflint",
 		group: GROUP_ANALYSIS,
 	},
+	psalm: {
+		displayName: t`Psalm (PHP)`,
+		apiName: "psalm",
+		group: GROUP_ANALYSIS,
+	},
 };
 
 export const techPluginsKeys: ScanPluginKeys = {

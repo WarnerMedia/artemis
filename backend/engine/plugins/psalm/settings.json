@@ -1,0 +1,6 @@
+{
+    "name": "Psalm (PHP)",
+    "type": "static_analysis",
+    "image": "$ECR/artemis/php:latest",
+    "runner": "boxed"
+}
