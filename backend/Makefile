@@ -191,7 +191,7 @@ BRANCH_NAME := $(shell git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e
 SEVERITY_LEVELS := critical,high
 
 # Security Scanner
-PHP_SCANNER_VER := 1.0.0
+PHP_SCANNER_VER := 6.10.3
 
 # Trivy
 TRIVY_COMMIT := 6ccc0a554b07b05fd049f882a1825a0e1e0aabe1
@@ -427,7 +427,7 @@ dist/docker/engine: docker-bake.hcl Dockerfiles/Dockerfile.boxed Dockerfiles/Doc
 	ENGINE_TAG=${ENGINE_TAG} \
 	ECR_URL=${ECR_URL} \
 	LATEST_COMMIT=${LATEST_COMMIT} \
-	${DOCKER} buildx bake -f docker-bake.hcl engine ${DOCKER_BUILD_EXTRA_ARGS}
+	${DOCKER} buildx bake --set *.platform=linux/amd64 -f docker-bake.hcl engine ${DOCKER_BUILD_EXTRA_ARGS}
 	mkdir -p ${DIST_DIR}/docker
 	touch $@
 	@echo "${OK}"
