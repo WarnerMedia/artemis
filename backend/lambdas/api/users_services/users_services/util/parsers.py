@@ -30,7 +30,10 @@ def parse_event(event):
 
 
 def parse_body(event, admin):
-    body = json.loads(event.get("body") or "{}")
+    try:
+        body = json.loads(event.get("body") or "{}")
+    except json.JSONDecodeError as e:
+        raise ValidationError("Error decoding json") from e
 
     for field in ["name", "params"]:
         if field not in body:
