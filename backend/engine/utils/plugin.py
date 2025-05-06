@@ -98,7 +98,7 @@ class PluginSettings(BaseModel):
     feature: Optional[str] = None
     timeout: Optional[int] = None
     writable: bool = False
-    socket: bool = False
+    docker: bool = False
     runner: Runner = Runner.CORE
 
     @field_validator("image", mode="after")
@@ -747,7 +747,7 @@ def get_plugin_command(
     ]
 
     # If the plugin doesn't need the docker socket, set it to null.
-    if not settings.socket:
+    if not settings.docker:
         cmd.extend(["-v", "/dev/null:/var/run/docker.sock"])
 
     # The named temporary volume allows a plugin container to share the

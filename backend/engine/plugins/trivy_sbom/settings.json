@@ -5,5 +5,5 @@
   "build_images": true,
   "enabled": true,
   "writable": true,
-  "socket": true
+  "docker": true
 }

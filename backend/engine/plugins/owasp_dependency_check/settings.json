@@ -3,5 +3,5 @@
   "type": "vulnerability",
   "image": "$ECR/artemis/java:11-latest",
   "writable": true,
-  "socket": true
+  "docker": true
 }

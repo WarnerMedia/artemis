@@ -40,6 +40,7 @@ This file contains the plugin's settings. The settings are:
 - timeout: Integer. If set, this is the amount of time, in seconds, to allow the plugin to run before exiting early with an error.
 - writable: Boolean. If true, the working volume is mounted as writable instead of read-only, allowing the plugin to make modifications to the contents. Default is false.
 - runner: (Optional) The method used to run the plugin. May be `core` (default) or `boxed`.  See [Runners](#plugin-runners) below.
+- docker: Boolean. If true, the plugin retains the ability to access the docker socket, in order to run containers. Default is false.
 
 ```json
 {

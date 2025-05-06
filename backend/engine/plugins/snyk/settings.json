@@ -5,5 +5,5 @@
   "feature": "snyk",
   "build_images": true,
   "enabled": "$ARTEMIS_FEATURE_SNYK_ENABLED",
-  "socket": true
+  "docker": true
 }

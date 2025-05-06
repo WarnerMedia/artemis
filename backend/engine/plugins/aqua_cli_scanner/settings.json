@@ -4,5 +4,5 @@
   "image": "$ECR/artemis/dind:latest",
   "build_images": true,
   "enabled": "$ARTEMIS_FEATURE_AQUA_ENABLED",
-  "socket": true
+  "docker": true
 }
