@@ -23,6 +23,7 @@ jobs:
         with:
           node-version-file: "${{ env.UI_PATH }}/.nvmrc"
           cache: npm
+          cache-dependency-path: "${{ env.UI_PATH }}/package-lock.json"
 
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
 
@@ -56,6 +57,7 @@ jobs:
         with:
           node-version-file: "${{ env.UI_PATH }}/.nvmrc"
           cache: npm
+          cache-dependency-path: "${{ env.UI_PATH }}/package-lock.json"
 
       - name: Set up the npm version
         run: npm install --global npm@$NPM_VERSION
