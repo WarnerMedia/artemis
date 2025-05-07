@@ -44,7 +44,7 @@ jobs:
     runs-on: artemis-ui-test-runner-4
     strategy:
       matrix:
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3, 4]
     env:
       UI_PATH: ./ui
       NPM_VERSION: 10
