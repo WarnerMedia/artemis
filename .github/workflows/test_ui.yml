@@ -71,5 +71,5 @@ jobs:
       - name: Save test results
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # actions/upload-artifact@v4.6.2
         with:
-          name: ui-test
-          path: ui/test-report-${{ matrix.shard }}/index.html
+          name: ui-test-${{ matrix.shard }}
+          path: ui/test-report/index.html
