@@ -45,6 +45,16 @@ def run_psalm(path: str) -> tuple[list[str], list[dict]]:
     Runs psalm in a directory with a composer.lock file.
     Returns the errors and a list of results
     """
+    # Install PHP dependencies before running psalm
+    process = subprocess.run(
+        ["composer", "install"],
+        cwd=path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+        text=True,
+    )
+
     process = subprocess.run(
         ["psalm", "--no-cache", "--taint-analysis", "--output-format=sarif", "--report=report.sarif"],
         cwd=path,
