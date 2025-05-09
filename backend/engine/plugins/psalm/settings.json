@@ -2,5 +2,6 @@
     "name": "Psalm (PHP)",
     "type": "static_analysis",
     "image": "$ECR/artemis/php:latest",
+    "writable": true,
     "runner": "boxed"
 }
