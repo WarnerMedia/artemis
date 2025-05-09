@@ -98,6 +98,7 @@ class PluginSettings(BaseModel):
     feature: Optional[str] = None
     timeout: Optional[int] = None
     writable: bool = False
+    docker: bool = False
     runner: Runner = Runner.CORE
 
     @field_validator("image", mode="after")
@@ -155,6 +156,15 @@ def get_engine_vars(
     :param include_dev:
     :return:
     """
+
+    service_type = ""
+    service_hostname = ""
+    service_secret_loc = ""
+    if services:
+        service_type = services[scan.repo.service]["type"]
+        service_hostname = services[scan.repo.service]["hostname"]
+        service_secret_loc = services[scan.repo.service]["secret_loc"]
+
     return json.dumps(
         {
             "scan_id": str(scan.scan_id),
@@ -168,9 +178,9 @@ def get_engine_vars(
             "working_mount": f"{working_src}:{WORKING_DIR}",
             "java_heap_size": PLUGIN_JAVA_HEAP_SIZE,
             "service_name": scan.repo.service,
-            "service_type": services[scan.repo.service]["type"],
-            "service_hostname": services[scan.repo.service]["hostname"],
-            "service_secret_loc": services[scan.repo.service]["secret_loc"],
+            "service_type": service_type,
+            "service_hostname": service_hostname,
+            "service_secret_loc": service_secret_loc,
         }
     )
 
@@ -570,7 +580,8 @@ def queue_event(repo: str, plugin_type: str, payload: dict):
     log.info("Queuing %s event for %s", plugin_type, repo)
     try:
         sqs = boto3.client("sqs", endpoint_url=SQS_ENDPOINT, region_name=REGION)
-        sqs.send_message(QueueUrl=os.environ.get("EVENT_QUEUE"), MessageBody=json.dumps(payload))
+        # If EVENT_QUEUE is missing, this will throw an error, and it will be caught. Ignoring typehint.
+        sqs.send_message(QueueUrl=os.environ.get("EVENT_QUEUE"), MessageBody=json.dumps(payload))  # type:ignore
     except ClientError:
         log.error("Unable to queue %s event for %s", plugin_type, repo)
 
@@ -734,6 +745,10 @@ def get_plugin_command(
         "-v",
         working_mount,
     ]
+
+    # If the plugin doesn't need the docker socket, set it to null.
+    if not settings.docker:
+        cmd.extend(["-v", "/dev/null:/var/run/docker.sock"])
 
     # The named temporary volume allows a plugin container to share the
     # volume with other containers without needing to know anything
