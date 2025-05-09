@@ -20,4 +20,4 @@ RUN apt-get update && \
 
 # Download the Psalm PHAR and place it in /usr/local/bin
 RUN wget https://github.com/vimeo/psalm/releases/download/${PHP_SCANNER_VER}/psalm.phar -O /usr/local/bin/psalm && \
-    chmod +x /usr/local/bin/psalm 
+    chmod a+x /usr/local/bin/psalm 
