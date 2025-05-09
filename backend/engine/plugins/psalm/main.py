@@ -86,7 +86,7 @@ def parse_results(returncode: int, path: str, stderr: str) -> tuple[list[str], l
                 "filename": f"{path}/{result['Location']}",
                 "line": result["Line"],
                 "message": result["Description"],
-                "severity": result["Severity"],
+                "severity": SEVERITY_MAP[result["Severity"]],
                 "type": "psalm",
             }
         )
