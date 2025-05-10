@@ -2,7 +2,6 @@ import json
 import os
 import subprocess
 from engine.plugins.lib import utils
-from sarif import loader
 import glob
 
 SEVERITY_MAP = {"note": "low", "error": "high", "warning": "medium"}
@@ -74,22 +73,29 @@ def parse_results(returncode: int, path: str, stderr: str) -> tuple[list[str], l
         errors.append(stderr)
 
     try:
-        sarif_data = loader.load_sarif_file(f"{path}/report.sarif")
-        records = sarif_data.get_records()
+        with open(f"{path}/report.sarif") as file:
+            sarif_data = json.load(file)
+            records = sarif_data["runs"][0]["results"]
+
     except Exception as e:
         records = []
         errors.append(f"Unable to load SARIF file. Error: {e}")
 
     for result in records:
-        plugin_results.append(
-            {
-                "filename": f"{path}/{result['Location']}",
-                "line": result["Line"],
-                "message": result["Description"],
-                "severity": SEVERITY_MAP[result["Severity"]],
-                "type": "psalm",
-            }
-        )
+        locations = result["locations"]
+        for location in locations:
+            filename = f"{path}/{location['physicalLocation']['artifactLocation']['uri']}"
+            filename = filename.replace(utils.CODE_DIRECTORY, "", 1)
+
+            plugin_results.append(
+                {
+                    "filename": filename,
+                    "line": location["physicalLocation"]["region"]["startLine"],
+                    "message": result["message"]["text"],
+                    "severity": SEVERITY_MAP[result["level"]],
+                    "type": "psalm",
+                }
+            )
 
     return errors, plugin_results
 

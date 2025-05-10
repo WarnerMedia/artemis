@@ -23,7 +23,6 @@ pydantic = "~=2.11"
 PyGithub = "~=2.5"
 pyjwt = "~=2.10"
 requests = "~=2.32"
-sarif-tools = "~=3.0"
 simplejson = "~=3.19"
 sqlparse = "~=0.5"
 
