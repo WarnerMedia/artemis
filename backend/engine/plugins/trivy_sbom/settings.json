@@ -1,8 +1,9 @@
 {
-    "name": "Trivy SBOM",
-    "type": "sbom",
-    "image": "$ECR/artemis/dind:latest",
-    "build_images": true,
-    "enabled": true,
-    "writable": true
+  "name": "Trivy SBOM",
+  "type": "sbom",
+  "image": "$ECR/artemis/dind:latest",
+  "build_images": true,
+  "enabled": true,
+  "writable": true,
+  "docker": true
 }

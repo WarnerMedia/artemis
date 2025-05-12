@@ -1,6 +1,7 @@
 {
-    "name": "OWASP Dependency Scanner",
-    "type": "vulnerability",
-    "image": "$ECR/artemis/java:11-latest",
-    "writable": true
+  "name": "OWASP Dependency Scanner",
+  "type": "vulnerability",
+  "image": "$ECR/artemis/java:11-latest",
+  "writable": true,
+  "docker": true
 }
