@@ -52,7 +52,6 @@ def main():
     alerts.extend(compose_lock_alerts)
     errors.extend(compose_lock_errors)
 
-
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
     logger.debug(output)
@@ -65,11 +64,7 @@ def main():
         results.extend(result)
 
     # Return results
-    print(
-        json.dumps(
-            {"success": not bool(results), "details": results, "errors": errors, "alerts": alerts}
-        )
-    )
+    print(json.dumps({"success": not bool(results), "details": results, "errors": errors, "alerts": alerts}))
 
 
 if __name__ == "__main__":

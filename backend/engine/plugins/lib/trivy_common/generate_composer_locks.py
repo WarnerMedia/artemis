@@ -9,8 +9,8 @@ logger = utils.setup_logging("trivy_sca")
 cmd = [
     "composer",
     "install",
-    "--no-scripts", # Skip execution of scripts
-    "--no-audit", # Don't run an audit
+    "--no-scripts",  # Skip execution of scripts
+    "--no-audit",  # Don't run an audit
 ]
 
 
