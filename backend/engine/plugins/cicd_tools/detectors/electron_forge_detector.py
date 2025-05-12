@@ -29,20 +29,12 @@ class ElectronForgeDetector(Detector):
             "errors": [],
         }
 
-        
         base = Path(path)
 
-        forge_configs = [
-            p for p in base.rglob("**/forge.config.js") if "node_modules" not in p.parts
-        ]
-        forge_configs.extend([
-            p for p in base.rglob("**/forge.config.cjs") if "node_modules" not in p.parts
-        ])
+        forge_configs = [p for p in base.rglob("**/forge.config.js") if "node_modules" not in p.parts]
+        forge_configs.extend([p for p in base.rglob("**/forge.config.cjs") if "node_modules" not in p.parts])
 
-        package_jsons = [
-            p for p in base.rglob("**/package.json") if "node_modules" not in p.parts
-        ]
-
+        package_jsons = [p for p in base.rglob("**/package.json") if "node_modules" not in p.parts]
 
         for config in forge_configs:
             result["in_use"] = True
