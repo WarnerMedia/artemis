@@ -21,6 +21,16 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk upgrade && \
     apk add npm && \
     apk add go && \
+    apk add curl && \
+    apk add php && \
+    apk add php-json && \
+    apk add php-iconv && \
+    apk add gcompat && \
+    apk add gcompat-dev && \
+    apk add libc6-compat && \
+    apk add php-phar && \
+    apk add php-openssl && \
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     pip3 install --upgrade pip setuptools boto3 && \
     pip3 install 'docker~=7.1' && \
     ln -s /usr/bin/python3 /usr/bin/python && \
@@ -39,8 +49,3 @@ RUN if [ "${SNYK_FLAG}" = "true" ]; then \
     mv snyk-alpine snyk && \
     install snyk /usr/local/bin/; \
     fi;
-
-
-FROM php:8.2-cli
-RUN apt-get update && apt-get install -y curl git unzip && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
