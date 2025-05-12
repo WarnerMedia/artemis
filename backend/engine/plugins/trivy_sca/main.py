@@ -5,6 +5,7 @@ trivy SCA plugin
 import json
 import subprocess
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_composer_locks import check_composer_package_files
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
 from engine.plugins.lib.utils import setup_logging
@@ -38,9 +39,19 @@ def main():
     args = parse_args()
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
+    alerts = []
+    errors = []
 
-    # Generate Lock files (without installing npm packages)
-    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, False)
+    # Generate Lock files (and install npm packages for license info)
+    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
+    alerts.extend(lock_file_alerts)
+    errors.extend(lock_file_errors)
+
+    # Run Composer Install for exact version numbers
+    compose_lock_errors, compose_lock_alerts = check_composer_package_files(args.path, include_dev)
+    alerts.extend(compose_lock_alerts)
+    errors.extend(compose_lock_errors)
+
 
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
@@ -56,7 +67,7 @@ def main():
     # Return results
     print(
         json.dumps(
-            {"success": not bool(results), "details": results, "errors": lock_file_errors, "alerts": lock_file_alerts}
+            {"success": not bool(results), "details": results, "errors": errors, "alerts": alerts}
         )
     )
 

@@ -21,6 +21,7 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk upgrade && \
     apk add npm && \
     apk add go && \
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     pip3 install --upgrade pip setuptools boto3 && \
     pip3 install 'docker~=7.1' && \
     ln -s /usr/bin/python3 /usr/bin/python && \
