@@ -23,6 +23,7 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk add go && \
     apk add curl && \
     apk add php && \
+    apk add php-json && \
     apk add php-phar && \
     apk add php-openssl && \
     apk add php-iconv && \
