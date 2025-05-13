@@ -26,7 +26,6 @@ RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk add php-json && \
     apk add php-iconv && \
     apk add gcompat && \
-    apk add gcompat-dev && \
     apk add libc6-compat && \
     apk add php-phar && \
     apk add php-openssl && \
