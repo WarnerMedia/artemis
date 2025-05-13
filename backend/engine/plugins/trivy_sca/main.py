@@ -47,10 +47,10 @@ def main():
     alerts.extend(lock_file_alerts)
     errors.extend(lock_file_errors)
 
-    # # Run Composer Install for exact version numbers
-    # compose_lock_errors, compose_lock_alerts = check_composer_package_files(args.path, include_dev)
-    # alerts.extend(compose_lock_alerts)
-    # errors.extend(compose_lock_errors)
+    # Run Composer Install for exact version numbers
+    compose_lock_errors, compose_lock_alerts = check_composer_package_files(args.path, include_dev)
+    alerts.extend(compose_lock_alerts)
+    errors.extend(compose_lock_errors)
 
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
