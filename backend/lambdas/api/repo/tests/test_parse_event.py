@@ -209,6 +209,7 @@ EXPECTED_EVENT_RESULT_1 = {
         "detekt",
         "eslint",
         "nodejsscan",
+        "psalm",
         "python_code_checker",
         "shell_check",
         "tflint",
