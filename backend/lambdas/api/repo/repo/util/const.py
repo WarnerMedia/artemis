@@ -49,6 +49,7 @@ PLUGIN_LIST_BY_CATEGORY = {
         "gosec": None,
         "swiftlint": None,
         "checkov": None,
+        "psalm": None,
     },
     "inventory": {
         "technology_discovery": None,

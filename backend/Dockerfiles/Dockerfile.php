@@ -1,4 +1,4 @@
-FROM php:7.4.28-alpine3.14
+FROM php:8.4-bookworm
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -11,9 +11,13 @@ ARG PHP_SCANNER_VER
 # - Symlink python3 to python for Analyzer Engine benefit
 # - Setup directory for scanner binary to sit
 # - Download and Install Composer
-RUN apk update && apk --update-cache add git unzip python3 py3-pip && \
-    apk upgrade && \
-    pip3 install --upgrade pip setuptools boto3 requests && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
-    mkdir -p /app && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer 
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends git wget && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+
+# Download the Psalm PHAR and place it in /usr/local/bin
+RUN wget https://github.com/vimeo/psalm/releases/download/${PHP_SCANNER_VER}/psalm.phar -O /usr/local/bin/psalm && \
+    chmod a+x /usr/local/bin/psalm 
