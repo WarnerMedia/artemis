@@ -26,7 +26,6 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
         cmd.append("--no-dev")
 
     # Run Composer in a container
-
     COMPOSER_IMG = "composer:latest"
     container_name = "composer_runner"
     host_working_dir = path
@@ -44,8 +43,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
         stdout=True,
         stderr=True,
     )
-
-    return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
+    return 
 
 
 def check_composer_package_files(path: str, include_dev: bool) -> tuple:
