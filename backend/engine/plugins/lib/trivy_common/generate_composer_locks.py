@@ -2,6 +2,8 @@ import subprocess
 import os
 from glob import glob
 from engine.plugins.lib import utils
+import docker
+import docker.errors
 
 logger = utils.setup_logging("trivy_sca")
 
@@ -12,6 +14,8 @@ cmd = [
     "--no-audit",  # Don't run an audit
 ]
 
+docker_client = docker.from_env()
+
 
 def install_package_files(include_dev: bool, path: str, root_path: str):
     # Create a composer.lock file if it doesn't already exist
@@ -20,6 +24,27 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
     )
     if not include_dev:
         cmd.append("--no-dev")
+
+    # Run Composer in a container
+
+    COMPOSER_IMG = "composer:latest"
+    container_name = "composer_runner"
+    host_working_dir = path
+    container_mount_path = "/app"
+
+    docker_client.containers.run(
+        COMPOSER_IMG,
+        name=container_name,
+        command=cmd,
+        volumes={
+            host_working_dir: {"bind": container_mount_path, "mode": "rw"},
+        },
+        working_dir=container_mount_path,
+        auto_remove=True,
+        stdout=True,
+        stderr=True,
+    )
+
     return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False)
 
 
