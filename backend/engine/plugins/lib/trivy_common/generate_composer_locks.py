@@ -31,7 +31,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
     host_working_dir = path
     container_mount_path = "/app"
 
-    docker_client.containers.run(
+    container = docker_client.containers.run(
         COMPOSER_IMG,
         name=container_name,
         command=cmd,
@@ -39,10 +39,23 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
             host_working_dir: {"bind": container_mount_path, "mode": "rw"},
         },
         working_dir=container_mount_path,
-        auto_remove=True,
+        auto_remove=False,
         stdout=True,
         stderr=True,
+        detach=True,
     )
+
+
+    exit_code = container.wait()
+    logs = container.logs().decode("utf-8")
+
+    logger.error(f'exit code: {exit_code}')
+    logger.error(f'logs: {logs}')
+
+
+    container.remove()
+
+
     return 
 
 
