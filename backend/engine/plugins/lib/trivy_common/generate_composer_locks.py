@@ -96,10 +96,10 @@ def check_composer_package_files(path: str, include_dev: bool) -> tuple:
             logger.warning(msg)
             alerts.append(msg)
             r = install_package_files(include_dev, sub_path, path)
-            if r.returncode != 0:
-                error = r.stderr.decode("utf-8")
-                logger.error(error)
-                errors.append(error)
-                return errors, alerts
+            # if r.returncode != 0:
+            #     error = r.stderr.decode("utf-8")
+            #     logger.error(error)
+            #     errors.append(error)
+            #     return errors, alerts
     # Return the results
     return errors, alerts
