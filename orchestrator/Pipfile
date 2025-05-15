@@ -7,10 +7,10 @@ name = "pypi"
 python_version = "3.9"
 
 [packages]
-aws-lambda-powertools = "~=3.9"
-awscli = "~=1.38"
-boto3 = "~=1.37"
-boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.37"}
+aws-lambda-powertools = "~=3.12"
+awscli = "~=1.40"
+boto3 = "~=1.38"
+boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.38"}
 cryptography = "~=44.0"
 PyGithub = "~=2.6"
 pyjwt = "~=2.10"
