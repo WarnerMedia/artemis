@@ -8,10 +8,10 @@ python_version = "3.9"
 
 [packages]
 aiohttp = "~=3.11"
-awscli = "~=1.38"
-aws-lambda-powertools = "~=3.9"
-boto3 = "~=1.37"
-boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.37"}
+awscli = "~=1.40"
+aws-lambda-powertools = "~=3.12"
+boto3 = "~=1.38"
+boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.38"}
 cryptography = "~=44.0"
 django = "~=4.2"
 docker = "~=7.1"
@@ -20,10 +20,10 @@ joserfc = "~=1.0"
 packaging = "==23.2"  # Must match version in Makefile.
 psycopg2-binary = "==2.9.9" # 2.9.10 does not provide wheels for Python 3.9 + MacOS + ARM.
 pydantic = "~=2.11"
-PyGithub = "~=2.5"
+PyGithub = "~=2.6"
 pyjwt = "~=2.10"
 requests = "~=2.32"
-simplejson = "~=3.19"
+simplejson = "~=3.20"
 sqlparse = "~=0.5"
 
 [dev-packages]
@@ -31,7 +31,7 @@ autopep8 = "~=2.3"
 cfn-lint = "==1.18.1"  # Must match version in Makefile.
 debugpy = "~=1.8"
 flake8 = "~=7.2"
-isort = "~=5.13"
+isort = "~=6.0"
 mock = "~=5.1"
 moto = {extras = ["awslambda", "ec2", "s3", "secretsmanager", "sqs"], version = "~=5.1"}
 pylint = "~=3.3"
