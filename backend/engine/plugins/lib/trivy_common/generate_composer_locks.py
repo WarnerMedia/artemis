@@ -12,6 +12,10 @@ cmd = [
     "install",
     "--no-scripts",  # Skip execution of scripts
     "--no-audit",  # Don't run an audit
+    "&&",
+    "ls",
+    "-l", 
+    "composer.lock"
 ]
 
 docker_client = docker.from_env()
