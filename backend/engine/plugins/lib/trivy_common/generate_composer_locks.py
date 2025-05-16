@@ -57,7 +57,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
     logger.error(f'logs: {logs}')
 
 
-    container.remove()
+    # container.remove()
 
 
     return 
