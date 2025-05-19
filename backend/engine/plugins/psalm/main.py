@@ -85,7 +85,7 @@ def parse_results(returncode: int, path: str, stderr: str) -> tuple[list[str], l
         locations = result["locations"]
         for location in locations:
             filename = f"{path}/{location['physicalLocation']['artifactLocation']['uri']}"
-            filename = filename.replace(utils.CODE_DIRECTORY, "", 1)
+            filename = filename.replace(utils.CODE_DIRECTORY + "/", "", 1)
 
             plugin_results.append(
                 {
