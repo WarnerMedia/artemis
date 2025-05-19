@@ -7,21 +7,21 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA = os.path.join(TEST_DIR, "data/psalm")
 TEST_PARSE_RESULT_1 = [
     {
-        "filename": "data/psalm/main.php",
+        "filename": f"{TEST_DATA}/main.php",
         "line": 8,
         "message": "Detected tainted SQL",
         "severity": "high",
         "type": "psalm",
     },
     {
-        "filename": "data/psalm/post.php",
+        "filename": f"{TEST_DATA}/post.php",
         "line": 3,
         "message": "Detected tainted HTML",
         "severity": "high",
         "type": "psalm",
     },
     {
-        "filename": "data/psalm/post.php",
+        "filename": f"{TEST_DATA}/post.php",
         "line": 3,
         "message": "Detected tainted text with possible quotes",
         "severity": "high",
