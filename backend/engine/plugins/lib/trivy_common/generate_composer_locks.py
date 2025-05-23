@@ -6,59 +6,49 @@ import docker
 import docker.errors
 
 logger = utils.setup_logging("trivy_sca")
-
-cmd = [
-    "composer",
-    "install",
-    "--no-scripts",  # Skip execution of scripts
-    "--no-audit",  # Don't run an audit
-    "&&",
-    "ls",
-    "-l", 
-    "composer.lock"
-]
-
-docker_client = docker.from_env()
-
+docker_client = docker.from_env()  # Ensure docker_client is initialized
 
 def install_package_files(include_dev: bool, path: str, root_path: str):
-    # Create a composer.lock file if it doesn't already exist
     logger.info(
-        f"Generating composer.lock for {path.replace(root_path, '')} (including dev dependencies: {include_dev}"
+        f"Generating composer.lock for {path.replace(root_path, '')} (including dev dependencies: {include_dev})"
     )
+    composer_cmd = "composer install --no-scripts --no-audit"
     if not include_dev:
-        cmd.append("--no-dev")
+        composer_cmd += " --no-dev"
+    composer_cmd += " && ls -l composer.lock"
 
-    # Run Composer in a container
     COMPOSER_IMG = "composer:latest"
     container_name = "composer_runner"
     host_working_dir = path
     container_mount_path = "/app"
 
-    container = docker_client.containers.run(
-        COMPOSER_IMG,
-        name=container_name,
-        command=cmd,
-        volumes={
-            host_working_dir: {"bind": container_mount_path, "mode": "rw"},
-        },
-        working_dir=container_mount_path,
-        auto_remove=False,
-        stdout=True,
-        stderr=True,
-        detach=True,
-    )
+    try:
+        container = docker_client.containers.run(
+            COMPOSER_IMG,
+            name=container_name,
+            command=["sh", "-c", composer_cmd],
+            volumes={
+                host_working_dir: {"bind": container_mount_path, "mode": "rw"},
+            },
+            working_dir=container_mount_path,
+            auto_remove=True,
+            stdout=True,
+            stderr=True,
+            detach=True,
+            user=os.getuid(),
+        )
 
+        result = container.wait()
+        logs = container.logs(stdout=True, stderr=True).decode("utf-8")
+        logger.info(f"Container logs for {path.replace(root_path, '')}:\n{logs}")
+        logger.info(f"Container exit code: {result.get('StatusCode')}")
+    except Exception as e:
+        logger.error(f"Error running composer install in Docker: {e}")
 
-    exit_code = container.wait()
-    logs = container.logs().decode("utf-8")
-
-    logger.error(f'exit code: {exit_code}')
-    logger.error(f'logs: {logs}')
-
-
-    # container.remove()
-
+    # Check if composer.lock was created
+    lockfile = os.path.join(path, "composer.lock")
+    if not os.path.exists(lockfile):
+        logger.error(f"composer.lock was not created in {path}")
 
     return 
 
