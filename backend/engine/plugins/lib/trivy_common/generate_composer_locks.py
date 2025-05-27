@@ -1,5 +1,6 @@
 import subprocess
 import os
+import shutil
 from glob import glob
 from engine.plugins.lib import utils
 import docker
@@ -9,8 +10,8 @@ import uuid
 logger = utils.setup_logging("trivy_sca")
 docker_client = docker.from_env()  # Ensure docker_client is initialized
 
-def install_package_files(include_dev: bool, path: str, root_path: str):
-    logger.info(f"Mounting host dir: {path} to /app in composer container")
+def install_package_files(include_dev: bool, path: str, root_path: str, volname: str):
+    logger.info(f"Mounting volume: {volname} to /tmp/work in composer container")
     logger.info(f"Host dir contents: {os.listdir(path)}")
     logger.info(f"composer.json exists: {os.path.exists(os.path.join(path, 'composer.json'))}")
 
@@ -26,8 +27,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
 
     COMPOSER_IMG = "composer:latest"
     container_name = f"composer_runner_{uuid.uuid4().hex[:8]}"
-    host_working_dir = path
-    container_mount_path = "/app"
+    container_mount_path = "/tmp/work"
 
     try:
         container = docker_client.containers.run(
@@ -35,10 +35,10 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
             name=container_name,
             command=["sh", "-c", composer_cmd],
             volumes={
-                host_working_dir: {"bind": container_mount_path, "mode": "rw"},
+                volname: {"bind": container_mount_path, "mode": "rw"},
             },
             working_dir=container_mount_path,
-            auto_remove=False,  # Set to False to fetch logs, then remove manually
+            auto_remove=False,
             stdout=True,
             stderr=True,
             detach=True,
@@ -52,7 +52,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
     except Exception as e:
         logger.error(f"Error running composer install in Docker: {e}")
 
-    # Check if composer.lock was created
+    # Check if composer.lock was created in the volume mount path
     lockfile = os.path.join(path, "composer.lock")
     if not os.path.exists(lockfile):
         logger.error(f"composer.lock was not created in {path}")
@@ -60,7 +60,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
     return 
 
 
-def check_composer_package_files(path: str, include_dev: bool) -> tuple:
+def check_composer_package_files(path: str, include_dev: bool, volname: str) -> tuple:
     """
     Main Function
     Find all of the composer.json files in the repo and build lock files for them if they dont have one already.
@@ -84,7 +84,6 @@ def check_composer_package_files(path: str, include_dev: bool) -> tuple:
     for filename in files:
         paths.add(os.path.dirname(filename))
 
-    # Loop through paths that have a package file
     for sub_path in paths:
         lockfile = os.path.join(sub_path, "composer.lock")
         lockfile_missing = not os.path.exists(lockfile)
@@ -96,11 +95,23 @@ def check_composer_package_files(path: str, include_dev: bool) -> tuple:
             )
             logger.warning(msg)
             alerts.append(msg)
-            r = install_package_files(include_dev, sub_path, path)
-            # if r.returncode != 0:
-            #     error = r.stderr.decode("utf-8")
-            #     logger.error(error)
-            #     errors.append(error)
-            #     return errors, alerts
-    # Return the results
+
+            # Use the shared volume mount path
+            volume_mount_path = "/tmp/work"
+            if not os.path.exists(volume_mount_path):
+                os.makedirs(volume_mount_path, exist_ok=True)
+            shutil.copy2(os.path.join(sub_path, "composer.json"), os.path.join(volume_mount_path, "composer.json"))
+            # Optionally copy other files if needed (e.g., auth.json, php.ini)
+            for extra_file in ["auth.json", "php.ini"]:
+                src = os.path.join(sub_path, extra_file)
+                dst = os.path.join(volume_mount_path, extra_file)
+                if os.path.exists(src):
+                    shutil.copy2(src, dst)
+
+            install_package_files(include_dev, volume_mount_path, path, volname)
+
+            generated_lockfile = os.path.join(volume_mount_path, "composer.lock")
+            if os.path.exists(generated_lockfile):
+                shutil.copy2(generated_lockfile, os.path.join(sub_path, "composer.lock"))
+
     return errors, alerts
