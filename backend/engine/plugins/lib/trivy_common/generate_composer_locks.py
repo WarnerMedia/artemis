@@ -14,10 +14,15 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
     logger.info(f"Host dir contents: {os.listdir(path)}")
     logger.info(f"composer.json exists: {os.path.exists(os.path.join(path, 'composer.json'))}")
 
-    composer_cmd = "composer install --no-scripts"
+    composer_cmd = (
+        "composer --version && "
+        "ls -l && "
+        "cat composer.json && "
+        "composer install --no-scripts -vvv"
+        " && ls -l composer.lock && ls -l"
+    )
     if not include_dev:
         composer_cmd += " --no-dev"
-    composer_cmd += " && ls -l composer.lock && ls -l"
 
     COMPOSER_IMG = "composer:latest"
     container_name = f"composer_runner_{uuid.uuid4().hex[:8]}"
@@ -37,7 +42,6 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
             stdout=True,
             stderr=True,
             detach=True,
-            user=os.getuid(),
         )
 
         result = container.wait()
