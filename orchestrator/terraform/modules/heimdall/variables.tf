@@ -153,7 +153,7 @@ variable "repo_scan_loop_lambda_timeout" {
 }
 
 variable "lambda_runtime" {
-  default = "python3.9"
+  default = "python3.12"
 }
 
 variable "lambda_architecture" {
