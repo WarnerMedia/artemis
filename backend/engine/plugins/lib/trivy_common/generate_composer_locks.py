@@ -4,21 +4,23 @@ from glob import glob
 from engine.plugins.lib import utils
 import docker
 import docker.errors
+import uuid
 
 logger = utils.setup_logging("trivy_sca")
 docker_client = docker.from_env()  # Ensure docker_client is initialized
 
 def install_package_files(include_dev: bool, path: str, root_path: str):
-    logger.info(
-        f"Generating composer.lock for {path.replace(root_path, '')} (including dev dependencies: {include_dev})"
-    )
-    composer_cmd = "ls -l && composer install --no-scripts --no-audit"
+    logger.info(f"Mounting host dir: {path} to /app in composer container")
+    logger.info(f"Host dir contents: {os.listdir(path)}")
+    logger.info(f"composer.json exists: {os.path.exists(os.path.join(path, 'composer.json'))}")
+
+    composer_cmd = "composer install --no-scripts --no-audit"
     if not include_dev:
         composer_cmd += " --no-dev"
     composer_cmd += " && ls -l composer.lock && ls -l"
 
     COMPOSER_IMG = "composer:latest"
-    container_name = "composer_runner"
+    container_name = f"composer_runner_{uuid.uuid4().hex[:8]}"
     host_working_dir = path
     container_mount_path = "/app"
 
@@ -31,7 +33,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
                 host_working_dir: {"bind": container_mount_path, "mode": "rw"},
             },
             working_dir=container_mount_path,
-            auto_remove=False,
+            auto_remove=False,  # Set to False to fetch logs, then remove manually
             stdout=True,
             stderr=True,
             detach=True,
@@ -42,7 +44,7 @@ def install_package_files(include_dev: bool, path: str, root_path: str):
         logs = container.logs(stdout=True, stderr=True).decode("utf-8")
         logger.info(f"Container logs for {path.replace(root_path, '')}:\n{logs}")
         logger.info(f"Container exit code: {result.get('StatusCode')}")
-        container.remove()  # <-- Remove container manually after fetching logs
+        container.remove()
     except Exception as e:
         logger.error(f"Error running composer install in Docker: {e}")
 
