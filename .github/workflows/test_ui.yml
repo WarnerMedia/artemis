@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: artemis-ui-test-runner-4
+    permissions:
+      contents: read
     env:
       UI_PATH: ./ui
       HADOLINT_URL: https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
