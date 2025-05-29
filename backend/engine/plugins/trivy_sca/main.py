@@ -48,7 +48,8 @@ def main():
     errors.extend(lock_file_errors)
 
     # Run Composer Install for exact version numbers
-    compose_lock_errors, compose_lock_alerts = check_composer_package_files(args.path, include_dev)
+    (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
+    compose_lock_errors, compose_lock_alerts = check_composer_package_files(temp_vol_name, temp_vol_mount, include_dev)
     alerts.extend(compose_lock_alerts)
     errors.extend(compose_lock_errors)
 

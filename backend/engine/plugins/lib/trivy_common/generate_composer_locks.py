@@ -1,24 +1,23 @@
-import subprocess
 import os
 from glob import glob
 from engine.plugins.lib import utils
 import docker
-import docker.errors
 import uuid
 from typing import Optional
 
 logger = utils.setup_logging("trivy_sca")
-docker_client = docker.from_env()  # Ensure docker_client is initialized
+docker_client = docker.from_env()
 
-def install_package_files(include_dev: bool, sub_path: str, mount_path: str, root_path: str):
+def install_package_files(include_dev: bool, sub_path: str, temp_vol_name: str, temp_vol_mount: str, root_path: str):
     # sub_path: absolute path to the composer project inside the parent container (e.g. /tmp/work/foo/bar)
-    # mount_path: the parent container's mount point for the host volume (e.g. /tmp/work)
+    # temp_vol_name: Docker volume name (e.g. artemis-plugin-temp-xxxx)
+    # temp_vol_mount: mount path inside the plugin container (e.g. /tmp/work)
     # root_path: the original root for logging
 
-    rel_subdir = os.path.relpath(sub_path, mount_path)
+    rel_subdir = os.path.relpath(sub_path, temp_vol_mount)
     abs_path_in_container = os.path.join("/app", rel_subdir)
 
-    logger.info(f"Mounting parent container dir: {mount_path} to /app in composer container")
+    logger.info(f"Mounting volume: {temp_vol_name} to /app in composer container")
     logger.info(f"Target subdir in container: {abs_path_in_container}")
     logger.info(f"composer.json exists: {os.path.exists(os.path.join(sub_path, 'composer.json'))}")
 
@@ -42,10 +41,10 @@ def install_package_files(include_dev: bool, sub_path: str, mount_path: str, roo
             name=container_name,
             command=["sh", "-c", composer_cmd],
             volumes={
-                mount_path: {"bind": container_mount_path, "mode": "rw"},
+                temp_vol_name: {"bind": container_mount_path, "mode": "rw"},
             },
             working_dir=abs_path_in_container,
-            auto_remove=False,  # Set to False to fetch logs, then remove manually
+            auto_remove=False,
             stdout=True,
             stderr=True,
             detach=True,
@@ -64,49 +63,34 @@ def install_package_files(include_dev: bool, sub_path: str, mount_path: str, roo
     if not os.path.exists(lockfile):
         logger.error(f"composer.lock was not created in {sub_path}")
 
-    return 
+    return
 
-def check_composer_package_files(mount_path: str, include_dev: bool, root_path: Optional[str] = None) -> tuple:
+def check_composer_package_files(temp_vol_name: str, temp_vol_mount: str, include_dev: bool, root_path: Optional[str] = None) -> tuple:
     """
-    Main Function
-    Find all of the composer.json files in the repo and build lock files for them if they dont have one already.
-    Parses the results and returns them with the errors.
+    Find all composer.json files in the repo and build lock files for them if missing.
     """
-
     errors = []
     alerts = []
 
-    # Find and loop through all the composer.json files in the path
-    files = glob(f"{mount_path}/**/composer.json", recursive=True)
-
+    files = glob(f"{temp_vol_mount}/**/composer.json", recursive=True)
     logger.info("Found %d composer.json files", len(files))
 
-    # If there are no composer.json files, exit function
     if len(files) == 0:
         return errors, alerts
 
-    # Build a set of all directories containing package files
     paths = set()
     for filename in files:
         paths.add(os.path.dirname(filename))
 
-    # Loop through paths that have a package file
     for sub_path in paths:
         lockfile = os.path.join(sub_path, "composer.lock")
         lockfile_missing = not os.path.exists(lockfile)
-        # Generate a lock file if does not exist in path that has a composer.json
         if lockfile_missing:
             msg = (
-                f"No composer.lock file was found in path {sub_path.replace(mount_path, '')}."
+                f"No composer.lock file was found in path {sub_path.replace(temp_vol_mount, '')}."
                 " Please consider creating a composer.lock file for this project."
             )
             logger.warning(msg)
             alerts.append(msg)
-            r = install_package_files(include_dev, sub_path, mount_path, root_path or mount_path)
-            # if r.returncode != 0:
-            #     error = r.stderr.decode("utf-8")
-            #     logger.error(error)
-            #     errors.append(error)
-            #     return errors, alerts
-    # Return the results
+            install_package_files(include_dev, sub_path, temp_vol_name, temp_vol_mount, root_path or temp_vol_mount)
     return errors, alerts
