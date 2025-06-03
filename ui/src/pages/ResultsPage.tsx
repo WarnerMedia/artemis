@@ -126,23 +126,7 @@ import { keyframes } from "tss-react";
 import { makeStyles, withStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
-import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
-// https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/221#issuecomment-566502780
-import json from "react-syntax-highlighter/dist/cjs/languages/prism/json";
-import {
-	a11yDark,
-	atomDark,
-	coy,
-	dracula,
-	materialDark,
-	materialLight,
-	materialOceanic,
-	nord,
-	okaidia,
-	prism,
-	solarizedlight,
-	vs,
-} from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { PrismTheme, Highlight as SyntaxHighlighter, themes as syntaxThemes } from "prism-react-renderer";
 
 import client, {
 	FilterDef,
@@ -239,8 +223,6 @@ import {
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
 const randomMC = require("random-material-color");
-
-SyntaxHighlighter.registerLanguage("json", json);
 
 const TAB_OVERVIEW = 0;
 const TAB_VULN = 1;
@@ -5006,7 +4988,7 @@ interface CodeTabState {
 type SetCodeTabState = (s: CodeTabState) => void;
 
 interface AllStylesT {
-	[key: string]: { [key: string]: React.CSSProperties };
+	[key: string]: PrismTheme;
 }
 
 type DownloadType = "sbom" | "scan";
@@ -5023,20 +5005,7 @@ export const CodeTabContent = (props: {
 	const [creatingJson, setCreatingJson] = useState<DownloadType | null>(null);
 	const [skipDialog, setSkipDialog] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const allStyles: AllStylesT = {
-		a11yDark: { ...a11yDark },
-		atomDark: { ...atomDark },
-		coy: { ...coy },
-		dracula: { ...dracula },
-		materialDark: { ...materialDark },
-		materialLight: { ...materialLight },
-		materialOceanic: { ...materialOceanic },
-		nord: { ...nord },
-		okaidia: { ...okaidia },
-		prism: { ...prism },
-		solarizedlight: { ...solarizedlight },
-		vs: { ...vs },
-	};
+	const allStyles: AllStylesT = syntaxThemes;
 	const hasSbomResults =
 		scan.scan_options.categories?.includes("sbom") ||
 		scan.scan_options.plugins?.some((plugin) => {
@@ -5122,41 +5091,29 @@ export const CodeTabContent = (props: {
 						size="small"
 						onChange={handleStyleChange}
 					>
-						<MenuItem value="a11yDark">
-							a11yDark <Trans>(dark)</Trans>
-						</MenuItem>
-						<MenuItem value="atomDark">
-							atomDark <Trans>(dark)</Trans>
-						</MenuItem>
-						<MenuItem value="coy">
-							coy <Trans>(light)</Trans>
-						</MenuItem>
 						<MenuItem value="dracula">
 							dracula <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="materialDark">
+						<MenuItem value="github">
+							github <Trans>(dark)</Trans>
+						</MenuItem>
+						<MenuItem value="gruvboxMaterialDark">
 							materialDark <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="materialLight">
+						<MenuItem value="gruvboxMaterialLight">
 							materialLight <Trans>(light)</Trans>
 						</MenuItem>
-						<MenuItem value="materialOceanic">
-							materialOceanic <Trans>(dark)</Trans>
-						</MenuItem>
-						<MenuItem value="nord">
-							nord <Trans>(dark)</Trans>
+						<MenuItem value="oceanicNext">
+							oceanic <Trans>(dark)</Trans>
 						</MenuItem>
 						<MenuItem value="okaidia">
 							okaidia <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="prism">
-							prism <Trans>(light)</Trans>
+						<MenuItem value="vsDark">
+							vsDark <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="solarizedlight">
-							solarizedLight <Trans>(light)</Trans>
-						</MenuItem>
-						<MenuItem value="vs">
-							vs <Trans>(light)</Trans>
+						<MenuItem value="vsLight">
+							vsLight <Trans>(light)</Trans>
 						</MenuItem>
 					</MuiTextField>
 				</FormControl>
@@ -5249,11 +5206,33 @@ export const CodeTabContent = (props: {
 
 			<SyntaxHighlighter
 				language="json"
-				style={allStyles[state.style]}
-				showLineNumbers={state.showLineNumbers}
-				wrapLongLines={state.wrapLongLines}
+				theme={allStyles[state.style]}
+				code={JSON.stringify(scan, null, 2)}
+				//wrapLongLines={state.wrapLongLines}
 			>
-				{JSON.stringify(scan, null, 2)}
+				{({className, style, tokens, getLineProps, getTokenProps}) => (
+					<table style={{...style, borderSpacing: "0"}}>
+						{tokens.map((line, i) => (
+							<tr key={i}>
+								{state.showLineNumbers ?
+									<td>
+										<pre style={{...style, userSelect: "none", margin: "0 .5em 0 0", textAlign: "right"}}>{i + 1}</pre>
+									</td> :
+									null
+								}
+								<td>
+									<pre style={{...style, margin: "0 0 0 0"}}>
+										<div {...getLineProps({ line })}>
+											{line.map((token, key) => (
+												<span key={key} {...getTokenProps({ token })} />
+											))}
+										</div>
+									</pre>
+								</td>
+							</tr>
+						))}
+					</table>
+				)}
 			</SyntaxHighlighter>
 		</>
 	);
@@ -6230,7 +6209,7 @@ export const TabContent = (props: {
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const [codeTabState, setCodeTabState] = useState<CodeTabState>({
-		style: theme.palette.mode === "dark" ? "materialDark" : "materialLight",
+		style: theme.palette.mode === "dark" ? "gruvboxMaterialDark" : "gruvboxMaterialLight",
 		showLineNumbers: false,
 		wrapLongLines: false,
 	});
