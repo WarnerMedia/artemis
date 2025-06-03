@@ -492,12 +492,12 @@ export const LinkedAccounts = () => {
 	);
 };
 
+// Fix type for expires in AddKeyForm and onSubmit
 interface AddKeyForm {
 	name: string;
 	scope: string[];
 	admin: boolean;
-	// Luxon DateTime so we can manage time zone
-	expires?: DateTime | null;
+	expires: DateTime; // required
 	snyk: boolean;
 }
 
@@ -1217,8 +1217,7 @@ export default function UserSettings() {
 				.typeError(i18n._(t`Invalid date format`))
 				.min(dateMin.toJSDate(), i18n._(t`Must be a future date`))
 				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMaxStr}`))
-				.nullable()
-				.default(null),
+				.required(i18n._(t`Expiration date is required`)),
 			snyk: Yup.boolean(),
 		});
 
@@ -1228,7 +1227,7 @@ export default function UserSettings() {
 			// DateTimePicker component handles transforming string => Luxon DateTime object
 			// all associated findings should have same expiration date + reason, so use first occurrence
 			admin: false,
-			expires: null,
+			expires: dateMin,
 			snyk: false,
 		};
 
@@ -1236,7 +1235,7 @@ export default function UserSettings() {
 			values: AddKeyForm,
 			actions: FormikHelpers<AddKeyForm>,
 		) => {
-			let expires: string | undefined = undefined;
+			let expires: string = "";
 			if (values?.expires) {
 				// value may be a string instead of Luxon DateTime if
 				// coming from a saved value that hasn't been modified
@@ -1244,7 +1243,7 @@ export default function UserSettings() {
 					expires = values.expires;
 				} else {
 					// Luxon DateTime
-					expires = values?.expires.toUTC().toJSON() ?? undefined;
+					expires = values.expires.toUTC().toJSON();
 				}
 			}
 
@@ -1784,7 +1783,7 @@ export default function UserSettings() {
 										id="expires"
 										name="expires"
 										className={classes.addKeyFormField}
-										label={i18n._(t`Expires (optional)`)}
+										label={i18n._(t`Expires`)}
 										style={{ width: "100%" }}
 										disablePast
 										component={DatePickerField}
@@ -1792,6 +1791,7 @@ export default function UserSettings() {
 										ampm={false}
 										format="yyyy/LL/dd HH:mm"
 										mask="____/__/__ __:__"
+										required
 									/>
 								</Box>
 							</DialogContent>

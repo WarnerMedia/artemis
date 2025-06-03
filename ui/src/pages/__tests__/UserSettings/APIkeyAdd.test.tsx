@@ -107,7 +107,7 @@ describe("UserSettings component", () => {
 
 				// click another field to trigger the form error
 				const expiresField = within(dialog).getByRole("textbox", {
-					name: /expires \(optional\)/i,
+					name: /expires/i,
 				});
 				await user.click(expiresField);
 
@@ -141,7 +141,7 @@ describe("UserSettings component", () => {
 				await user.type(nameField, "testme");
 
 				const expiresField = within(dialog).getByRole("textbox", {
-					name: /expires \(optional\)/i,
+					name: /expires/i,
 				});
 				const pastDate = DateTime.now()
 					.minus({ days: 10 })
@@ -298,7 +298,7 @@ describe("UserSettings component", () => {
 
 					// move to next form field, should generate an error that scope value was not saved
 					const expiresField = within(dialog).getByRole("textbox", {
-						name: /expires \(optional\)/i,
+						name: /expires/i,
 					});
 					await user.click(expiresField);
 

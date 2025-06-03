@@ -8,7 +8,7 @@ export interface Key {
 	name: string;
 	created?: string;
 	last_used?: string | null;
-	expires?: string | null;
+	expires: string;
 	scope: string[];
 	admin: boolean;
 	features?: ScanFeatures | null;
@@ -25,7 +25,7 @@ const keysSchema: Yup.ObjectSchema<Key> = Yup.object()
 		name: Yup.string().defined(),
 		created: Yup.string(),
 		last_used: Yup.string().nullable(),
-		expires: Yup.string().nullable(),
+		expires: Yup.string().required(),
 		scope: Yup.array().of(Yup.string().defined()).defined(),
 		admin: Yup.boolean().defined(),
 		features: Yup.object().nullable(),
