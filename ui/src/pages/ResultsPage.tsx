@@ -5215,43 +5215,52 @@ export const CodeTabContent = (props: {
 				language="json"
 				theme={allStyles[state.style]}
 				code={JSON.stringify(scan, null, 2)}
-				//wrapLongLines={state.wrapLongLines}
 			>
 				{({ className, style, tokens, getLineProps, getTokenProps }) => (
-					<table className={className} style={{ ...style, borderSpacing: "0" }}>
-						<colgroup>
-							<col
-								style={{
-									visibility: state.showLineNumbers ? "visible" : "collapse",
-								}}
-							/>
-						</colgroup>
-						{tokens.map((line, i) => (
-							<tr key={i}>
-								<td>
-									<pre
-										style={{
-											...style,
-											userSelect: "none",
-											margin: "0 .5em 0 0",
-											textAlign: "right",
-										}}
-									>
-										{i + 1}
-									</pre>
-								</td>
-								<td>
-									<pre style={{ ...style, margin: "0 0 0 0" }}>
-										<div {...getLineProps({ line })}>
-											{line.map((token, key) => (
-												<span key={key} {...getTokenProps({ token })} />
-											))}
-										</div>
-									</pre>
-								</td>
-							</tr>
-						))}
-					</table>
+					<div style={{ overflowX: "scroll" }}>
+						<table
+							className={className}
+							style={{ ...style, borderSpacing: "0" }}
+						>
+							<colgroup>
+								<col
+									style={{
+										visibility: state.showLineNumbers ? "visible" : "collapse",
+									}}
+								/>
+							</colgroup>
+							{tokens.map((line, i) => (
+								<tr key={i}>
+									<td>
+										<pre
+											style={{
+												...style,
+												userSelect: "none",
+												margin: "0 .5em 0 0",
+												textAlign: "right",
+											}}
+										>
+											{i + 1}
+										</pre>
+									</td>
+									<td>
+										<pre
+											style={{
+												...style,
+												margin: "0 0 0 0",
+											}}
+										>
+											<div {...getLineProps({ line })}>
+												{line.map((token, key) => (
+													<span key={key} {...getTokenProps({ token })} />
+												))}
+											</div>
+										</pre>
+									</td>
+								</tr>
+							))}
+						</table>
+					</div>
 				)}
 			</SyntaxHighlighter>
 		</>
