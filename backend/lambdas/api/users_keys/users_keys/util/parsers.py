@@ -57,7 +57,7 @@ def parse_body(event, admin, features, user_id):
                 # Python can't handle parsing Zulu Time so replace it with the UTC offset instead
                 body["expires"] = body["expires"].replace("Z", "+00:00")
             body["expires"] = datetime.fromisoformat(body["expires"]).astimezone(tz=timezone.utc)
-        except ValueError:
+        except (ValueError, TypeError):
             raise ValidationError("Invalid expires value")
     else:
         raise ValidationError("'expires' is required")
