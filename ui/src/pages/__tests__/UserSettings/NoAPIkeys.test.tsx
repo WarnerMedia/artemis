@@ -356,9 +356,14 @@ describe("UserSettings component", () => {
 
 				await user.type(nameField, "testme");
 				// Fill in a valid future date for expires
-				const futureDate = DateTime.now().plus({ days: 10 }).set({ second: 0, millisecond: 0 }).toFormat(DATE_FORMAT);
+				const futureDate = DateTime.now()
+					.plus({ days: 10 })
+					.set({ second: 0, millisecond: 0 })
+					.toFormat(DATE_FORMAT);
 				await user.type(expiresField, futureDate);
-				await waitFor(() => expect(expiresField).toHaveDisplayValue(futureDate));
+				await waitFor(() =>
+					expect(expiresField).toHaveDisplayValue(futureDate),
+				);
 
 				expect(within(dialog).queryByText("Required")).not.toBeInTheDocument();
 				expect(addKeyButton).not.toBeDisabled();
