@@ -5211,7 +5211,7 @@ export const CodeTabContent = (props: {
 				//wrapLongLines={state.wrapLongLines}
 			>
 				{({className, style, tokens, getLineProps, getTokenProps}) => (
-					<table style={{...style, borderSpacing: "0"}}>
+					<table className={className} style={{...style, borderSpacing: "0"}}>
 						{tokens.map((line, i) => (
 							<tr key={i}>
 								{state.showLineNumbers ?
