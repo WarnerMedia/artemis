@@ -5095,7 +5095,7 @@ export const CodeTabContent = (props: {
 							dracula <Trans>(dark)</Trans>
 						</MenuItem>
 						<MenuItem value="github">
-							github <Trans>(dark)</Trans>
+							github <Trans>(light)</Trans>
 						</MenuItem>
 						<MenuItem value="gruvboxMaterialDark">
 							materialDark <Trans>(dark)</Trans>
