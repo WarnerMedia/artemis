@@ -126,7 +126,11 @@ import { keyframes } from "tss-react";
 import { makeStyles, withStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
-import { PrismTheme, Highlight as SyntaxHighlighter, themes as syntaxThemes } from "prism-react-renderer";
+import {
+	PrismTheme,
+	Highlight as SyntaxHighlighter,
+	themes as syntaxThemes,
+} from "prism-react-renderer";
 
 import client, {
 	FilterDef,
@@ -5210,18 +5214,31 @@ export const CodeTabContent = (props: {
 				code={JSON.stringify(scan, null, 2)}
 				//wrapLongLines={state.wrapLongLines}
 			>
-				{({className, style, tokens, getLineProps, getTokenProps}) => (
-					<table className={className} style={{...style, borderSpacing: "0"}}>
+				{({ className, style, tokens, getLineProps, getTokenProps }) => (
+					<table className={className} style={{ ...style, borderSpacing: "0" }}>
 						<colgroup>
-							<col style={{visibility: state.showLineNumbers ? "visible" : "collapse"}}/>
+							<col
+								style={{
+									visibility: state.showLineNumbers ? "visible" : "collapse",
+								}}
+							/>
 						</colgroup>
 						{tokens.map((line, i) => (
 							<tr key={i}>
 								<td>
-									<pre style={{...style, userSelect: "none", margin: "0 .5em 0 0", textAlign: "right"}}>{i + 1}</pre>
+									<pre
+										style={{
+											...style,
+											userSelect: "none",
+											margin: "0 .5em 0 0",
+											textAlign: "right",
+										}}
+									>
+										{i + 1}
+									</pre>
 								</td>
 								<td>
-									<pre style={{...style, margin: "0 0 0 0"}}>
+									<pre style={{ ...style, margin: "0 0 0 0" }}>
 										<div {...getLineProps({ line })}>
 											{line.map((token, key) => (
 												<span key={key} {...getTokenProps({ token })} />
@@ -6209,7 +6226,10 @@ export const TabContent = (props: {
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const [codeTabState, setCodeTabState] = useState<CodeTabState>({
-		style: theme.palette.mode === "dark" ? "gruvboxMaterialDark" : "gruvboxMaterialLight",
+		style:
+			theme.palette.mode === "dark"
+				? "gruvboxMaterialDark"
+				: "gruvboxMaterialLight",
 		showLineNumbers: false,
 		wrapLongLines: false,
 	});
