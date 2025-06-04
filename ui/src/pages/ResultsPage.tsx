@@ -5138,6 +5138,8 @@ export const CodeTabContent = (props: {
 					}
 					label={i18n._(t`Show line numbers`)}
 				/>
+				{/* Currently disabled since it's not a built-in feature of
+					prism-react-renderer and the behavior is not well-defined.
 				<FormControlLabel
 					control={
 						<Checkbox
@@ -5154,6 +5156,7 @@ export const CodeTabContent = (props: {
 					}
 					label={i18n._(t`Wrap long lines`)}
 				/>
+				*/}
 
 				<CustomCopyToClipboard size="medium" copyTarget={scan} />
 
