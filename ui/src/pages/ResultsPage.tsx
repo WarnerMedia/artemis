@@ -5212,14 +5212,14 @@ export const CodeTabContent = (props: {
 			>
 				{({className, style, tokens, getLineProps, getTokenProps}) => (
 					<table className={className} style={{...style, borderSpacing: "0"}}>
+						<colgroup>
+							<col style={{visibility: state.showLineNumbers ? "visible" : "collapse"}}/>
+						</colgroup>
 						{tokens.map((line, i) => (
 							<tr key={i}>
-								{state.showLineNumbers ?
-									<td>
-										<pre style={{...style, userSelect: "none", margin: "0 .5em 0 0", textAlign: "right"}}>{i + 1}</pre>
-									</td> :
-									null
-								}
+								<td>
+									<pre style={{...style, userSelect: "none", margin: "0 .5em 0 0", textAlign: "right"}}>{i + 1}</pre>
+								</td>
 								<td>
 									<pre style={{...style, margin: "0 0 0 0"}}>
 										<div {...getLineProps({ line })}>
