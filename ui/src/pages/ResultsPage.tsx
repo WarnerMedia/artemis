@@ -478,6 +478,7 @@ const useStyles = makeStyles()((theme) => ({
 		userSelect: "none",
 		margin: "0",
 		paddingRight: "1rem",
+		opacity: ".5",
 	},
 	rawViewTable: {
 		borderSpacing: "0",
