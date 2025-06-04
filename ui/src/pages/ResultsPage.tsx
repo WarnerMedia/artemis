@@ -463,6 +463,25 @@ const useStyles = makeStyles()((theme) => ({
 		paddingLeft: theme.spacing(3),
 		paddingBottom: theme.spacing(1),
 	},
+	rawViewContainer: {
+		overflowX: "scroll",
+		padding: ".5rem",
+	},
+	rawViewLineContent: {
+		fontFamily: "monospace",
+		whiteSpace: "pre",
+		margin: "0",
+	},
+	rawViewLineNumber: {
+		fontFamily: "monospace",
+		textAlign: "right",
+		userSelect: "none",
+		margin: "0",
+		paddingRight: "1rem",
+	},
+	rawViewTable: {
+		borderSpacing: "0",
+	},
 	refreshSpin: {
 		animation: `${keyframes`
 		from {
@@ -5217,10 +5236,10 @@ export const CodeTabContent = (props: {
 				code={JSON.stringify(scan, null, 2)}
 			>
 				{({ className, style, tokens, getLineProps, getTokenProps }) => (
-					<div style={{ overflowX: "scroll" }}>
+					<div className={classes.rawViewContainer}>
 						<table
-							className={className}
-							style={{ ...style, borderSpacing: "0" }}
+							className={`${className} ${classes.rawViewTable}`}
+							style={{ ...style }}
 						>
 							<colgroup>
 								<col
@@ -5231,31 +5250,13 @@ export const CodeTabContent = (props: {
 							</colgroup>
 							{tokens.map((line, i) => (
 								<tr key={i}>
-									<td>
-										<pre
-											style={{
-												...style,
-												userSelect: "none",
-												margin: "0 .5em 0 0",
-												textAlign: "right",
-											}}
-										>
-											{i + 1}
-										</pre>
-									</td>
-									<td>
-										<pre
-											style={{
-												...style,
-												margin: "0 0 0 0",
-											}}
-										>
-											<div {...getLineProps({ line })}>
-												{line.map((token, key) => (
-													<span key={key} {...getTokenProps({ token })} />
-												))}
-											</div>
-										</pre>
+									<td className={classes.rawViewLineNumber}>{i + 1}</td>
+									<td className={classes.rawViewLineContent}>
+										<div {...getLineProps({ line })}>
+											{line.map((token, key) => (
+												<span key={key} {...getTokenProps({ token })} />
+											))}
+										</div>
 									</td>
 								</tr>
 							))}
