@@ -60,7 +60,7 @@ def parse_body(event, admin, features, user_id):
         except ValueError:
             raise ValidationError("Invalid expires value")
     else:
-        body["expires"] = None
+        raise ValidationError("'expires' is required")
 
     validate_scope(body["scope"], user_id)
     validate_admin(body.get("admin", False), admin)
