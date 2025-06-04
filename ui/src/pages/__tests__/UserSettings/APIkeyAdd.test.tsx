@@ -122,7 +122,9 @@ describe("UserSettings component", () => {
 					.set({ second: 0, millisecond: 0 })
 					.toFormat(DATE_FORMAT);
 				await user.type(expiresField, futureDate);
-				await waitFor(() => expect(expiresField).toHaveDisplayValue(futureDate));
+				await waitFor(() =>
+					expect(expiresField).toHaveDisplayValue(futureDate),
+				);
 				expect(within(dialog).queryByText("Required")).not.toBeInTheDocument();
 				expect(addKeyButton).not.toBeDisabled();
 				expect(within(dialog).queryByText(error)).not.toBeInTheDocument();
