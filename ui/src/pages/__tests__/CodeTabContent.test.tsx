@@ -49,7 +49,7 @@ describe("CodeTabContent component", () => {
 	it("default toolbar elements checked", () => {
 		const scan: AnalysisReport = JSON.parse(JSON.stringify(mockScan001));
 		const state = {
-			style: "a11yDark",
+			style: "vsDark",
 			showLineNumbers: true,
 			wrapLongLines: true,
 		};
@@ -59,15 +59,17 @@ describe("CodeTabContent component", () => {
 		);
 
 		const themeField = screen.getByLabelText(/theme/i);
-		within(themeField).getByText("a11yDark (dark)");
+		within(themeField).getByText("vsDark (dark)");
 
 		const numbers = screen.getByRole("checkbox", {
 			name: /show line numbers/i,
 		});
 		expect(numbers).toBeChecked();
 
+		/* "Wrap Long Lines" is currently disabled.
 		const wrap = screen.getByRole("checkbox", { name: /wrap long lines/i });
 		expect(wrap).toBeChecked();
+		*/
 
 		screen.getByRole("button", { name: /copy to clipboard/i });
 
@@ -82,7 +84,7 @@ describe("CodeTabContent component", () => {
 	it("default toolbar elements unchecked", () => {
 		const scan: AnalysisReport = JSON.parse(JSON.stringify(mockScan001));
 		const state = {
-			style: "nord",
+			style: "oceanicNext",
 			showLineNumbers: false,
 			wrapLongLines: false,
 		};
@@ -92,15 +94,17 @@ describe("CodeTabContent component", () => {
 		);
 
 		const themeField = screen.getByLabelText(/theme/i);
-		within(themeField).getByText("nord (dark)");
+		within(themeField).getByText("oceanic (dark)");
 
 		const numbers = screen.getByRole("checkbox", {
 			name: /show line numbers/i,
 		});
 		expect(numbers).not.toBeChecked();
 
+		/* "Wrap Long Lines" is currently disabled.
 		const wrap = screen.getByRole("checkbox", { name: /wrap long lines/i });
 		expect(wrap).not.toBeChecked();
+		*/
 
 		screen.getByRole("button", { name: /copy to clipboard/i });
 
