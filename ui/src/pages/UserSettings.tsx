@@ -1196,12 +1196,9 @@ export default function UserSettings() {
 	);
 
 	const addKey = () => {
-		// set min date = tomorrow, so user can't create an api keythat immediately expires
-		const dateMin = DateTime.utc().plus({ days: 1 });
-		const dateMaxStr = "2050/12/31";
-		const dateMax = DateTime.fromFormat(dateMaxStr, "yyyy/LL/dd", {
-			zone: "utc",
-		});
+		const now = DateTime.utc();
+		const dateMin = now.plus({ days: 1 });
+		const dateMax = now.plus({ years: 1 });
 		const addKeyFormSchema = Yup.object({
 			name: Yup.string()
 				.required(i18n._(t`Required`))
@@ -1216,7 +1213,7 @@ export default function UserSettings() {
 			expires: Yup.date()
 				.typeError(i18n._(t`Invalid date format`))
 				.min(dateMin.toJSDate(), i18n._(t`Must be a future date`))
-				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMaxStr}`))
+				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMax}`))
 				.required(i18n._(t`Expiration date is required`)),
 			snyk: Yup.boolean(),
 		});
@@ -1792,6 +1789,7 @@ export default function UserSettings() {
 										format="yyyy/LL/dd HH:mm"
 										mask="____/__/__ __:__"
 										required
+										maxDate={dateMax}
 									/>
 								</Box>
 							</DialogContent>
