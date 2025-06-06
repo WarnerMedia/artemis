@@ -7,8 +7,8 @@ from artemislib.logging import Logger
 
 log = Logger(__name__)
 
-REQUIRED_POST_GROUP_KEYS = ["name", "scope"]
-OPTIONAL_POST_GROUP_KEYS = ["features", "expires"]
+REQUIRED_POST_GROUP_KEYS = ["name", "scope", "expires"]
+OPTIONAL_POST_GROUP_KEYS = ["features"]
 
 KEY_OUT_OF_USER_SCOPE = "Requested key scope is not within the user's allowed scope"
 INVALID_KEY_PERMISSIONS = "User/Key does not have permissions for this group"
@@ -17,14 +17,14 @@ FEATURE_DICT_MESSAGE = "Feature must be an object"
 
 def validate_post_group_key_body(body: dict, group: Group) -> dict:
     validate_dict_keys(body, REQUIRED_POST_GROUP_KEYS, OPTIONAL_POST_GROUP_KEYS)
-
-    if "expires" in body:
-        try:
-            if not isinstance(body["expires"], str):
-                raise ValidationError("Invalid expires value, value must be a string")
-            body["expires"] = from_iso_timestamp(body["expires"])
-        except ValueError:
-            raise ValidationError("Invalid expires value")
+    if "expires" not in body:
+        raise ValidationError("Missing required field: expires")
+    try:
+        if not isinstance(body["expires"], str):
+            raise ValidationError("Invalid expires value, value must be a string")
+        body["expires"] = from_iso_timestamp(body["expires"])
+    except ValueError:
+        raise ValidationError("Invalid expires value")
     else:
         body["expires"] = None
 

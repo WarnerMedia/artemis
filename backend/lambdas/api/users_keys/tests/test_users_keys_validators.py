@@ -1,6 +1,8 @@
 import unittest
 
-from users_keys.util.validators import ValidationError, _validate_scope, validate_admin, validate_features
+from users_keys.util.parsers import parse_body
+from artemisapi.validators import ValidationError
+from users_keys.util.validators import _validate_scope, validate_admin, validate_features
 
 
 class TestValidators(unittest.TestCase):
@@ -69,3 +71,18 @@ class TestValidators(unittest.TestCase):
         with self.assertRaises(ValidationError):
             # Fails because must be boolean values
             validate_features({"bar": True}, {"foo": True})
+
+    def test_missing_expires_raises(self):
+        event = {"body": '{"name": "test", "scope": ["service/org"]}'}
+        with self.assertRaises(ValidationError):
+            parse_body(event, admin=False, features=None, user_id="user1")
+
+    def test_invalid_expires_type_raises(self):
+        event = {"body": '{"name": "test", "scope": ["service/org"], "expires": 123}'}
+        with self.assertRaises(ValidationError):
+            parse_body(event, admin=False, features=None, user_id="user1")
+
+    def test_invalid_expires_format_raises(self):
+        event = {"body": '{"name": "test", "scope": ["service/org"], "expires": "notadate"}'}
+        with self.assertRaises(ValidationError):
+            parse_body(event, admin=False, features=None, user_id="user1")

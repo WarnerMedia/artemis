@@ -861,7 +861,7 @@ class APIKey(models.Model):
     last_used = models.DateTimeField(null=True)
 
     # Key expiration (optional)
-    expires = models.DateTimeField(null=True)
+    expires = models.DateTimeField(null=False)
 
     # API key scanning scope. This is set by the user to restrict what the API key is allowed to scan. It will be
     # a subset of the user's scanning scope.

@@ -704,7 +704,7 @@ export const mockHiddenFindings001:HiddenFinding[] = [
 			source: "node/dependency_vulnerability_samples/package-lock.json",
 			component: "debug",
 		},
-		expires: null,
+		expires: "2022-11-24T19:08:28+00:00",
 		reason: "test",
 		created_by: "someperson@example.com",
 	},

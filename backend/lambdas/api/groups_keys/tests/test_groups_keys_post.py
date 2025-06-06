@@ -49,7 +49,7 @@ class TestGroupsKeysPost(unittest.TestCase):
             mock_generate_api_key.return_value = "test_key"
             event = {
                 "pathParameters": {"id": GROUP_ID},
-                "body": json.dumps({"name": "test_key", "scope": ["*"]}),
+                "body": json.dumps({"name": "test_key", "scope": ["*"], "expires": "2099-12-31T23:59:59Z"}),
             }
             resp = post(
                 event,
