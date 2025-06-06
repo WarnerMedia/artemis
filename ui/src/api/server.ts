@@ -877,7 +877,10 @@ export function makeServer() {
 							.minus({ days: Math.floor(Math.random() * 365) })
 							.toJSON() ?? undefined,
 					last_used: formatNewDate(),
-					expires: null,
+					expires: DateTime.utc()
+						.minus({ days: Math.floor(Math.random() * 365) })
+						.plus({ years: 1 })
+						.toJSON(),
 					scope: defaults.currentUserScope,
 					admin: true,
 					features: {
@@ -2853,7 +2856,10 @@ export function makeServer() {
 					name: attrs.name,
 					created: formatNewDate(),
 					last_used: null,
-					expires: attrs.expires ?? null,
+					expires: DateTime.utc()
+						.minus({ days: Math.floor(Math.random() * 365) })
+						.plus({ years: 1 })
+						.toJSON(),
 					scope: attrs.scope,
 					admin: attrs.admin ?? false,
 					features: attrs?.features ? { ...attrs.features } : {},
