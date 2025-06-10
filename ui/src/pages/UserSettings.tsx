@@ -1232,7 +1232,7 @@ export default function UserSettings() {
 			values: AddKeyForm,
 			actions: FormikHelpers<AddKeyForm>,
 		) => {
-			let expires: string = values.expires.toUTC().toJSON();
+			let expires: string = values.expires.toUTC().toJSON()!;
 
 			try {
 				// not using redux-saga here because we aren't storing result in redux store
