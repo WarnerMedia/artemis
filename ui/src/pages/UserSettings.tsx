@@ -1232,17 +1232,7 @@ export default function UserSettings() {
 			values: AddKeyForm,
 			actions: FormikHelpers<AddKeyForm>,
 		) => {
-			let expires: string = "";
-			if (values?.expires) {
-				// value may be a string instead of Luxon DateTime if
-				// coming from a saved value that hasn't been modified
-				if (typeof values.expires === "string") {
-					expires = values.expires;
-				} else {
-					// Luxon DateTime
-					expires = values.expires.toUTC().toJSON();
-				}
-			}
+			let expires: string = values.expires.toUTC().toJSON();
 
 			try {
 				// not using redux-saga here because we aren't storing result in redux store
