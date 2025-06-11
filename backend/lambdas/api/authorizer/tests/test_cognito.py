@@ -2,6 +2,7 @@ import unittest
 
 from joserfc import jwk
 import responses
+from joserfc.errors import MissingKeyError
 
 from authorizer.cognito import load_cognito_public_keys
 
@@ -49,5 +50,5 @@ class TestCognito(unittest.TestCase):
             EXPECTED_COGNITO_PUBLIC_KEY_URL,
             body=b'{"keys":[]}',
         )
-        with self.assertRaises(AssertionError):
+        with pytest.raises(MissingKeyError):
             load_cognito_public_keys(EXAMPLE_REGION, EXAMPLE_USERPOOL_ID)
