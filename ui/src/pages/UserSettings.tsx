@@ -1197,8 +1197,7 @@ export default function UserSettings() {
 
 	const addKey = () => {
 		const now = DateTime.utc();
-		// Add a 10 minute buffer to ensure the prefilled value is always valid
-		const dateMin = now.plus({ days: 1, minutes: 10 });
+		const dateMin = now.plus({ days: 1 }).set({ second: 0, millisecond: 0 });
 		const dateMax = now.plus({ years: 1 });
 		const addKeyFormSchema = Yup.object({
 			name: Yup.string()
