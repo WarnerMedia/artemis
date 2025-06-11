@@ -25,7 +25,7 @@ const keysSchema: Yup.ObjectSchema<Key> = Yup.object()
 		name: Yup.string().defined(),
 		created: Yup.string(),
 		last_used: Yup.string().nullable(),
-		expires: Yup.string().required(),
+		expires: Yup.string().nullable(), // allow null for legacy keys
 		scope: Yup.array().of(Yup.string().defined()).defined(),
 		admin: Yup.boolean().defined(),
 		features: Yup.object().nullable(),
