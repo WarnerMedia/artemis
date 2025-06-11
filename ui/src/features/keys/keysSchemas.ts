@@ -8,7 +8,7 @@ export interface Key {
 	name: string;
 	created?: string;
 	last_used?: string | null;
-	expires: string;
+	expires: string | null;
 	scope: string[];
 	admin: boolean;
 	features?: ScanFeatures | null;
