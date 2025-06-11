@@ -5,30 +5,44 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('artemisdb', '0050_dep_path_trigger'),
+        ("artemisdb", "0050_dep_path_trigger"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='apikey',
-            name='expires',
+            model_name="apikey",
+            name="expires",
             field=models.DateTimeField(),
         ),
         migrations.AlterField(
-            model_name='systemallowlistitem',
-            name='created_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_created_by', to='artemisdb.group'),
+            model_name="systemallowlistitem",
+            name="created_by",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="%(class)s_created_by",
+                to="artemisdb.group",
+            ),
         ),
         migrations.AlterField(
-            model_name='systemallowlistitem',
-            name='updated_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_updated_by', to='artemisdb.group'),
+            model_name="systemallowlistitem",
+            name="updated_by",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="%(class)s_updated_by",
+                to="artemisdb.group",
+            ),
         ),
         migrations.AlterField(
-            model_name='vulnerability',
-            name='updated_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_updated_by', to='artemisdb.group'),
+            model_name="vulnerability",
+            name="updated_by",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="%(class)s_updated_by",
+                to="artemisdb.group",
+            ),
         ),
     ]
