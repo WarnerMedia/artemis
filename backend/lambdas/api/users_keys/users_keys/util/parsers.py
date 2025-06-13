@@ -57,10 +57,14 @@ def parse_body(event, admin, features, user_id):
                 # Python can't handle parsing Zulu Time so replace it with the UTC offset instead
                 body["expires"] = body["expires"].replace("Z", "+00:00")
             body["expires"] = datetime.fromisoformat(body["expires"]).astimezone(tz=timezone.utc)
-        except ValueError:
-            raise ValidationError("Invalid expires value")
+            now = datetime.now(timezone.utc)
+            one_year = now.replace(year=now.year + 1)
+            if body["expires"] > one_year:
+                raise ValidationError("'expiration' must be at most 1 year from now")
+        except (ValueError, TypeError):
+            raise ValidationError("Invalid key expiration value")
     else:
-        body["expires"] = None
+        raise ValidationError("'expires' is required")
 
     validate_scope(body["scope"], user_id)
     validate_admin(body.get("admin", False), admin)
