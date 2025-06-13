@@ -26,3 +26,8 @@ indent_size = 2
 
 [*.{go,js,jsx,ts,tsx}]
 indent_style = tab
+
+; Ejected configuration from Create React App.
+[ui/config/**/*.js]
+indent_style = space
+indent_size = 2
