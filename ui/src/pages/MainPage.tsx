@@ -1346,7 +1346,7 @@ export const PluginsSelector = ({
 									onFocus={(event) => event.stopPropagation()}
 									onClick={(event) => event.stopPropagation()}
 								/>
-								<Box style={{ textAlign: "center" }}>
+								<Box style={{ paddingLeft: "35px" }}>
 									<Typography
 										variant="caption"
 										className={classes.categoryHelpText}
