@@ -1,5 +1,3 @@
-import json
-
 from pathlib import Path
 from typing import Callable
 
@@ -33,22 +31,24 @@ class AWSCodeBuildDetector(Detector):
         }
 
         base = Path(path)
+        try:
+            buildspec_dirs = base.rglob("**/*buildspec*/")
 
-        buildspec_dirs = base.rglob("**/*buildspec*/")
+            buildspec_files = list(base.rglob("**/*buildspec*.yml"))
+            buildspec_files.extend(base.rglob("**/*buildspec*.yaml"))
 
-        buildspec_files = list(base.rglob("**/*buildspec*.yml"))
-        buildspec_files.extend(base.rglob("**/*buildspec*.yaml"))
+            for dir in buildspec_dirs:
+                yaml_files = list(dir.rglob("**/*.yml"))
+                yaml_files.extend(dir.rglob("**/*.yaml"))
 
-        for dir in buildspec_dirs:
-            yaml_files = list(dir.rglob("**/*.yml"))
-            yaml_files.extend(dir.rglob("**/*.yaml"))
+                for file in yaml_files:
+                    result["in_use"] = True
+                    result["configs"].append({"path": str(file.relative_to(path))})
 
-            for file in yaml_files:
+            for config in buildspec_files:
                 result["in_use"] = True
-                result["configs"].append({"path": str(file.relative_to(path))})
+                result["configs"].append({"path": str(config.relative_to(path))})
 
-        for config in buildspec_files:
-            result["in_use"] = True
-            result["configs"].append({"path": str(config.relative_to(path))})
-
+        except OSError as e:
+            result["errors"].append(f"Error during CodeBuild detection: {e}")
         return result

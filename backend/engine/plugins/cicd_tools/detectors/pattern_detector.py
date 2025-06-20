@@ -53,6 +53,8 @@ class PatternDetector(Detector):
         base = Path(path)
 
         for pattern in self.patterns:
-            result.extend(base.rglob(pattern))
-
+            try:
+                result.extend(base.rglob(pattern))
+            except OSError:
+                continue
         return result

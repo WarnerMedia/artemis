@@ -31,22 +31,25 @@ class ElectronForgeDetector(Detector):
 
         base = Path(path)
 
-        forge_configs = list(base.rglob("**/forge.config.js"))
-        forge_configs.extend(base.rglob("**/forge.config.cjs"))
+        try:
+            forge_configs = list(base.rglob("**/forge.config.js"))
+            forge_configs.extend(base.rglob("**/forge.config.cjs"))
 
-        package_jsons = base.rglob("**/package.json")
+            package_jsons = base.rglob("**/package.json")
 
-        for config in forge_configs:
-            result["in_use"] = True
-            result["configs"].append({"path": str(config.relative_to(path))})
+            for config in forge_configs:
+                result["in_use"] = True
+                result["configs"].append({"path": str(config.relative_to(path))})
 
-        for package_json in package_jsons:
-            try:
-                if has_forge_config(package_json):
-                    result["in_use"] = True
-                    result["configs"].append({"path": str(package_json.relative_to(path))})
-            except json.decoder.JSONDecodeError:
-                result["alerts"].append(f"Failed to parse package.json file: {package_json.relative_to(path)}")
+            for package_json in package_jsons:
+                try:
+                    if has_forge_config(package_json):
+                        result["in_use"] = True
+                        result["configs"].append({"path": str(package_json.relative_to(path))})
+                except json.decoder.JSONDecodeError:
+                    result["alerts"].append(f"Failed to parse package.json file: {package_json.relative_to(path)}")
+        except OSError as e:
+            result["errors"].append(f"Error during Electron Forge detection: {e}")
 
         return result
 
