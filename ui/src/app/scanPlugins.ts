@@ -131,6 +131,11 @@ export const staticPluginsKeys: ScanPluginKeys = {
 		apiName: "nodejsscan",
 		group: GROUP_ANALYSIS,
 	},
+	psalm: {
+		displayName: t`Psalm (PHP)`,
+		apiName: "psalm",
+		group: GROUP_ANALYSIS,
+	},
 	python_code_checker: {
 		displayName: t`Pylint (Python)`,
 		apiName: "python_code_checker",

@@ -126,23 +126,11 @@ import { keyframes } from "tss-react";
 import { makeStyles, withStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
-import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
-// https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/221#issuecomment-566502780
-import json from "react-syntax-highlighter/dist/cjs/languages/prism/json";
 import {
-	a11yDark,
-	atomDark,
-	coy,
-	dracula,
-	materialDark,
-	materialLight,
-	materialOceanic,
-	nord,
-	okaidia,
-	prism,
-	solarizedlight,
-	vs,
-} from "react-syntax-highlighter/dist/cjs/styles/prism";
+	PrismTheme,
+	Highlight as SyntaxHighlighter,
+	themes as syntaxThemes,
+} from "prism-react-renderer";
 
 import client, {
 	FilterDef,
@@ -239,8 +227,6 @@ import {
 // generates random Material-UI palette colors we use for graphs
 // after imports to make TypeScript happy
 const randomMC = require("random-material-color");
-
-SyntaxHighlighter.registerLanguage("json", json);
 
 const TAB_OVERVIEW = 0;
 const TAB_VULN = 1;
@@ -476,6 +462,26 @@ const useStyles = makeStyles()((theme) => ({
 		padding: theme.spacing(2),
 		paddingLeft: theme.spacing(3),
 		paddingBottom: theme.spacing(1),
+	},
+	rawViewContainer: {
+		overflowX: "scroll",
+		padding: ".5rem",
+	},
+	rawViewLineContent: {
+		fontFamily: "monospace",
+		whiteSpace: "pre",
+		margin: "0",
+	},
+	rawViewLineNumber: {
+		fontFamily: "monospace",
+		textAlign: "right",
+		userSelect: "none",
+		margin: "0",
+		paddingRight: "1rem",
+		opacity: ".5",
+	},
+	rawViewTable: {
+		borderSpacing: "0",
 	},
 	refreshSpin: {
 		animation: `${keyframes`
@@ -5006,7 +5012,7 @@ interface CodeTabState {
 type SetCodeTabState = (s: CodeTabState) => void;
 
 interface AllStylesT {
-	[key: string]: { [key: string]: React.CSSProperties };
+	[key: string]: PrismTheme;
 }
 
 type DownloadType = "sbom" | "scan";
@@ -5023,20 +5029,7 @@ export const CodeTabContent = (props: {
 	const [creatingJson, setCreatingJson] = useState<DownloadType | null>(null);
 	const [skipDialog, setSkipDialog] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const allStyles: AllStylesT = {
-		a11yDark: { ...a11yDark },
-		atomDark: { ...atomDark },
-		coy: { ...coy },
-		dracula: { ...dracula },
-		materialDark: { ...materialDark },
-		materialLight: { ...materialLight },
-		materialOceanic: { ...materialOceanic },
-		nord: { ...nord },
-		okaidia: { ...okaidia },
-		prism: { ...prism },
-		solarizedlight: { ...solarizedlight },
-		vs: { ...vs },
-	};
+	const allStyles: AllStylesT = syntaxThemes;
 	const hasSbomResults =
 		scan.scan_options.categories?.includes("sbom") ||
 		scan.scan_options.plugins?.some((plugin) => {
@@ -5122,41 +5115,29 @@ export const CodeTabContent = (props: {
 						size="small"
 						onChange={handleStyleChange}
 					>
-						<MenuItem value="a11yDark">
-							a11yDark <Trans>(dark)</Trans>
-						</MenuItem>
-						<MenuItem value="atomDark">
-							atomDark <Trans>(dark)</Trans>
-						</MenuItem>
-						<MenuItem value="coy">
-							coy <Trans>(light)</Trans>
-						</MenuItem>
 						<MenuItem value="dracula">
 							dracula <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="materialDark">
+						<MenuItem value="github">
+							github <Trans>(light)</Trans>
+						</MenuItem>
+						<MenuItem value="gruvboxMaterialDark">
 							materialDark <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="materialLight">
+						<MenuItem value="gruvboxMaterialLight">
 							materialLight <Trans>(light)</Trans>
 						</MenuItem>
-						<MenuItem value="materialOceanic">
-							materialOceanic <Trans>(dark)</Trans>
-						</MenuItem>
-						<MenuItem value="nord">
-							nord <Trans>(dark)</Trans>
+						<MenuItem value="oceanicNext">
+							oceanic <Trans>(dark)</Trans>
 						</MenuItem>
 						<MenuItem value="okaidia">
 							okaidia <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="prism">
-							prism <Trans>(light)</Trans>
+						<MenuItem value="vsDark">
+							vsDark <Trans>(dark)</Trans>
 						</MenuItem>
-						<MenuItem value="solarizedlight">
-							solarizedLight <Trans>(light)</Trans>
-						</MenuItem>
-						<MenuItem value="vs">
-							vs <Trans>(light)</Trans>
+						<MenuItem value="vsLight">
+							vsLight <Trans>(light)</Trans>
 						</MenuItem>
 					</MuiTextField>
 				</FormControl>
@@ -5177,6 +5158,8 @@ export const CodeTabContent = (props: {
 					}
 					label={i18n._(t`Show line numbers`)}
 				/>
+				{/* Currently disabled since it's not a built-in feature of
+					prism-react-renderer and the behavior is not well-defined.
 				<FormControlLabel
 					control={
 						<Checkbox
@@ -5193,6 +5176,7 @@ export const CodeTabContent = (props: {
 					}
 					label={i18n._(t`Wrap long lines`)}
 				/>
+				*/}
 
 				<CustomCopyToClipboard size="medium" copyTarget={scan} />
 
@@ -5249,11 +5233,37 @@ export const CodeTabContent = (props: {
 
 			<SyntaxHighlighter
 				language="json"
-				style={allStyles[state.style]}
-				showLineNumbers={state.showLineNumbers}
-				wrapLongLines={state.wrapLongLines}
+				theme={allStyles[state.style]}
+				code={JSON.stringify(scan, null, 2)}
 			>
-				{JSON.stringify(scan, null, 2)}
+				{({ className, style, tokens, getLineProps, getTokenProps }) => (
+					<div className={classes.rawViewContainer}>
+						<table
+							className={`${className} ${classes.rawViewTable}`}
+							style={{ ...style }}
+						>
+							<colgroup>
+								<col
+									style={{
+										visibility: state.showLineNumbers ? "visible" : "collapse",
+									}}
+								/>
+							</colgroup>
+							{tokens.map((line, i) => (
+								<tr key={i}>
+									<td className={classes.rawViewLineNumber}>{i + 1}</td>
+									<td className={classes.rawViewLineContent}>
+										<div {...getLineProps({ line })}>
+											{line.map((token, key) => (
+												<span key={key} {...getTokenProps({ token })} />
+											))}
+										</div>
+									</td>
+								</tr>
+							))}
+						</table>
+					</div>
+				)}
 			</SyntaxHighlighter>
 		</>
 	);
@@ -6230,7 +6240,10 @@ export const TabContent = (props: {
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const [codeTabState, setCodeTabState] = useState<CodeTabState>({
-		style: theme.palette.mode === "dark" ? "materialDark" : "materialLight",
+		style:
+			theme.palette.mode === "dark"
+				? "gruvboxMaterialDark"
+				: "gruvboxMaterialLight",
 		showLineNumbers: false,
 		wrapLongLines: false,
 	});

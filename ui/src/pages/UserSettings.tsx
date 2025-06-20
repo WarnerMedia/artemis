@@ -492,12 +492,12 @@ export const LinkedAccounts = () => {
 	);
 };
 
+// Fix type for expires in AddKeyForm and onSubmit
 interface AddKeyForm {
 	name: string;
 	scope: string[];
 	admin: boolean;
-	// Luxon DateTime so we can manage time zone
-	expires?: DateTime | null;
+	expires: DateTime; // required
 	snyk: boolean;
 }
 
@@ -1196,12 +1196,9 @@ export default function UserSettings() {
 	);
 
 	const addKey = () => {
-		// set min date = tomorrow, so user can't create an api keythat immediately expires
-		const dateMin = DateTime.utc().plus({ days: 1 });
-		const dateMaxStr = "2050/12/31";
-		const dateMax = DateTime.fromFormat(dateMaxStr, "yyyy/LL/dd", {
-			zone: "utc",
-		});
+		const now = DateTime.utc();
+		const dateMin = now.plus({ days: 1 }).set({ second: 0, millisecond: 0 });
+		const dateMax = now.plus({ years: 1 });
 		const addKeyFormSchema = Yup.object({
 			name: Yup.string()
 				.required(i18n._(t`Required`))
@@ -1216,9 +1213,8 @@ export default function UserSettings() {
 			expires: Yup.date()
 				.typeError(i18n._(t`Invalid date format`))
 				.min(dateMin.toJSDate(), i18n._(t`Must be a future date`))
-				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMaxStr}`))
-				.nullable()
-				.default(null),
+				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMax}`))
+				.required(i18n._(t`Expiration date is required`)),
 			snyk: Yup.boolean(),
 		});
 
@@ -1228,7 +1224,7 @@ export default function UserSettings() {
 			// DateTimePicker component handles transforming string => Luxon DateTime object
 			// all associated findings should have same expiration date + reason, so use first occurrence
 			admin: false,
-			expires: null,
+			expires: dateMin,
 			snyk: false,
 		};
 
@@ -1236,17 +1232,7 @@ export default function UserSettings() {
 			values: AddKeyForm,
 			actions: FormikHelpers<AddKeyForm>,
 		) => {
-			let expires: string | undefined = undefined;
-			if (values?.expires) {
-				// value may be a string instead of Luxon DateTime if
-				// coming from a saved value that hasn't been modified
-				if (typeof values.expires === "string") {
-					expires = values.expires;
-				} else {
-					// Luxon DateTime
-					expires = values?.expires.toUTC().toJSON() ?? undefined;
-				}
-			}
+			let expires: string = values.expires.toUTC().toJSON()!;
 
 			try {
 				// not using redux-saga here because we aren't storing result in redux store
@@ -1784,7 +1770,7 @@ export default function UserSettings() {
 										id="expires"
 										name="expires"
 										className={classes.addKeyFormField}
-										label={i18n._(t`Expires (optional)`)}
+										label={i18n._(t`Expires`)}
 										style={{ width: "100%" }}
 										disablePast
 										component={DatePickerField}
@@ -1792,6 +1778,8 @@ export default function UserSettings() {
 										ampm={false}
 										format="yyyy/LL/dd HH:mm"
 										mask="____/__/__ __:__"
+										required
+										maxDate={dateMax}
 									/>
 								</Box>
 							</DialogContent>

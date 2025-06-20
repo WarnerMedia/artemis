@@ -30,12 +30,11 @@ class ElectronForgeDetector(Detector):
         }
 
         base = Path(path)
-
         try:
-            forge_configs = list(base.rglob("**/forge.config.js"))
-            forge_configs.extend(base.rglob("**/forge.config.cjs"))
+            forge_configs = [p for p in base.rglob("**/forge.config.js") if "node_modules" not in p.parts]
+            forge_configs.extend([p for p in base.rglob("**/forge.config.cjs") if "node_modules" not in p.parts])
 
-            package_jsons = base.rglob("**/package.json")
+            package_jsons = [p for p in base.rglob("**/package.json") if "node_modules" not in p.parts]
 
             for config in forge_configs:
                 result["in_use"] = True
@@ -59,7 +58,11 @@ def has_forge_config(package_json_path: Path) -> bool:
         with package_json_path.open() as file:
             package_json = json.load(file)
 
-            forge_config = package_json.get("config", {}).get("forge", None)
+            config = package_json.get("config")
+            if isinstance(config, dict):
+                forge_config = config.get("forge")
+            else:
+                forge_config = None
 
             return forge_config is not None
     else:
