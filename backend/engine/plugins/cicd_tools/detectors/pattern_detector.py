@@ -32,7 +32,9 @@ class PatternDetector(Detector):
             "errors": [],
         }
 
-        matches = self._get_matches(path)
+        matches, errors = self._get_matches(path)
+        if errors:
+            result["errors"].extend(errors)
 
         if self.validator:
             for match in matches:
@@ -48,13 +50,14 @@ class PatternDetector(Detector):
 
         return result
 
-    def _get_matches(self, path: str) -> list[Path]:
-        result = []
+    def _get_matches(self, path: str) -> tuple[list[Path], list[str]]:
+        result: list[Path] = []
+        errors: list[str] = []
         base = Path(path)
 
         for pattern in self.patterns:
             try:
                 result.extend(base.rglob(pattern))
-            except OSError:
-                continue
-        return result
+            except OSError as e:
+                errors.append(f"Error during pattern detection for '{pattern}': {e}")
+        return result, errors
