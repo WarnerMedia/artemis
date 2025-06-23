@@ -35,6 +35,7 @@ DOCKER := docker
 PYTHON := python3
 PIP := pip3
 TERRAFORM := terraform
+UV := uv
 
 VERSION := 2.0.0
 
@@ -277,20 +278,15 @@ ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy:
 get-trivy: ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy
 .PHONY: get-trivy
 
-install-plugin-dependencies:
-	@echo "${INFO}Installing plugin dependencies..."
-	${PYTHON} -m pipenv run pip install ${ROOT_DIR}/engine/plugins/github_repo_health/lib
-
 define run-pytest
 	@echo "${INFO}Running $1"
 	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
-	export PIPENV_DONT_LOAD_ENV=1; \
-	${PYTHON} -m pipenv sync --dev; \
-	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
+	${UV} sync --active; \
+	${UV} run --active pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
 
-test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy install-plugin-dependencies
+test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy
 .PHONY: test-deps
 
 unit-test-no-deps:
