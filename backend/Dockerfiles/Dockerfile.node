@@ -18,10 +18,10 @@ WORKDIR /opt/eslint
 RUN --mount=type=cache,target=/root/.npm,sharing=locked \
     npm install -g npm@10.9.2 && \
     npm install \
-        eslint@8.57.1 \
-        eslint-plugin-security@3.0.1 \
-        typescript@5.7.2 \
-        @typescript-eslint/parser@8.18.0
+    eslint@8.57.1 \
+    eslint-plugin-security@3.0.1 \
+    typescript@5.7.2 \
+    @typescript-eslint/parser@8.18.0
 
 # Provide our own eslint wrapper to set the plugin search directory.
 # We assume that eslint will always be called with absolute paths.
@@ -32,5 +32,11 @@ RUN printf "#!/bin/sh\ncd /opt/eslint\n"'npx eslint --resolve-plugins-relative-t
 # hadolint ignore=DL3013,DL3042
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --break-system-packages --upgrade pip setuptools && \
-    pip install --break-system-packages \
-        nodejsscan
+    pip install --break-system-packages nodejsscan
+
+# Clean up old python packages.
+RUN apt-get remove -y --purge \
+    python3-distutils \
+    python3-pip \
+    python3-setuptools \
+    python3-wheel
