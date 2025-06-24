@@ -70,6 +70,7 @@ def git_pull(
 
     # Pull the repo
     args = ["git", "pull", url]
+    log.info(url.replace(api_key, "xxx"))
     if branch:
         args.append(branch)
     r = subprocess.run(args, cwd=base, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
