@@ -112,10 +112,8 @@ def _query(
 
 
 def _get_repo(url: str, org_name: str, project: str, repo: str, api_key: str) -> requests.Response:
-    encoded_api_key = _base64_encode(api_key)
-
     req = Template(ADO_REPO_QUERY).substitute(service_url=url, org=org_name, project=project, repo=repo)
-    return _query_azure_api(req, encoded_api_key)
+    return _query_azure_api(req, api_key)
 
 
 def _verify_branch_exists(refs_url: str, branch: str, api_key: str) -> bool:
@@ -147,7 +145,7 @@ def _check_diff(url: str, api_key: str, org_name: str, project: str, repo: str, 
 
 
 def _query_azure_api(url: str, api_key: str) -> requests.Response:
-    headers = {"Authorization": "Basic %s" % api_key, "Accept": "application/json"}
+    headers = {"Authorization": "Basic %s" % _base64_encode(api_key), "Accept": "application/json"}
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         log.error("Error retrieving Azure query: %s", response.text)
