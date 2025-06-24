@@ -1,5 +1,6 @@
 from string import Template
 
+import base64
 import requests
 
 from artemislib.logging import Logger
@@ -52,7 +53,7 @@ def _query(
     if not req_list:
         return queued, failed, unauthorized
 
-    # The stored key is already in the basic auth format: base64(user:pass)
+    # The stored key is already in the format: user:pass
     key = get_api_key(service_secret)
 
     log.info("Querying %s API for %d repos", service, len(req_list))
@@ -111,8 +112,10 @@ def _query(
 
 
 def _get_repo(url: str, org_name: str, project: str, repo: str, api_key: str) -> requests.Response:
+    encoded_api_key = _base64_encode(api_key)
+
     req = Template(ADO_REPO_QUERY).substitute(service_url=url, org=org_name, project=project, repo=repo)
-    return _query_azure_api(req, api_key)
+    return _query_azure_api(req, encoded_api_key)
 
 
 def _verify_branch_exists(refs_url: str, branch: str, api_key: str) -> bool:
@@ -194,3 +197,7 @@ def _queue_repo(
         exclude_paths=options["exclude_paths"],
     )
     return scan_id
+
+
+def _base64_encode(text: str, input_encoding="utf-8", output_encoding="utf-8") -> str:
+    return base64.b64encode(bytes(text, input_encoding)).decode(output_encoding)
