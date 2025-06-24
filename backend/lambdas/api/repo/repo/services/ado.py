@@ -173,7 +173,7 @@ def _queue_repo(
     # Queue the repo
     scan_id = AWSConnect().queue_repo_for_scan(
         name=org_repo,
-        repo_url=repo["remoteUrl"],
+        repo_url=repo["webUrl"],
         # We need to convert from bytes to KiB
         repo_size=int(repo["size"] / 1024),
         service=service,
