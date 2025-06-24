@@ -53,7 +53,8 @@ def _query(
     if not req_list:
         return queued, failed, unauthorized
 
-    # The stored key is already in the format: user:pass
+    # The stored key is in the format: ":api_key" (username:pass, with an empty username)
+    # It is NOT base64 encoded. Encode it before using it for Basic auth
     key = get_api_key(service_secret)
 
     log.info("Querying %s API for %d repos", service, len(req_list))
