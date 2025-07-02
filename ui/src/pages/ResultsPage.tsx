@@ -631,7 +631,7 @@ export const getResultFilters = (
 				filters[field].filter = String(values[f]);
 			}
 		}
-	} catch (err) {
+	} catch {
 		console.warn("invalid result filters, discarding");
 	}
 	return filters;
@@ -6813,7 +6813,7 @@ const ResultsPage = () => {
 						return validValues;
 					}
 					return null;
-				} catch (err) {
+				} catch {
 					return null;
 				}
 			}
