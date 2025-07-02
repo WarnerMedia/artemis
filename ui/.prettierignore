@@ -1,3 +1,9 @@
-# Ignore artifacts:
-build
-coverage
+# Ignore all files by default.
+*
+
+# Source files.
+!/src/**/*.ts
+!/src/**/*.tsx
+
+# Recurse into subdirectories.
+!*/
