@@ -327,7 +327,7 @@ const MainPage = () => {
 						},
 					);
 					return { ...emptyValues, ...validValues };
-				} catch (err) {
+				} catch {
 					return null;
 				}
 			}
