@@ -24,7 +24,7 @@ trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2
 
-[*.{go,js,jsx,ts,tsx}]
+[*.{go,js,jsx,mjs,ts,tsx}]
 indent_style = tab
 
 ; Ejected configuration from Create React App.

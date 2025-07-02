@@ -142,8 +142,8 @@
     "redocly": "env-cmd -f ./redocly.env redocly build-docs --output public/api/index.html",
     "redocly-lint": "env-cmd -f ./redocly.env redocly lint",
     "lint": "npm run eslint && npm run dockerlint && npm run mdlint && npm run redocly-lint",
-    "prettier-check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
-    "prettier-write": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "prettier-check": "prettier . --check",
+    "prettier-write": "prettier . --write",
     "precommit": "npm run lint && npm audit --omit=dev --audit-level=high && npm run prettier-write && npm run extract && npm run compile",
     "typescript-check": "npx tsc"
   },

@@ -1,3 +1,18 @@
-# Ignore artifacts:
-build
-coverage
+# Ignore all files by default.
+*
+
+# Source files.
+!/src/**/*.ts
+!/src/**/*.tsx
+
+# Configuration files.
+!/*.js
+!/*.mjs
+!/config/**/*.js
+!/config/**/*.mjs
+
+# Ejected Create-React-App scripts.
+!/scripts/*.js
+
+# Recurse into subdirectories.
+!*/
