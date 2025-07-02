@@ -11,5 +11,8 @@
 !/config/**/*.js
 !/config/**/*.mjs
 
+# Ejected Create-React-App scripts.
+!/scripts/*.js
+
 # Recurse into subdirectories.
 !*/
