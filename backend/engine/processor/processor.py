@@ -221,6 +221,7 @@ class EngineProcessor:
             self.action_details.branch,
             self.action_details.diff_base,
             self.service_dict.get("http_basic_auth", False),
+            self.service_dict.get("append_dot_git_suffix", True),
             self.scan.get_scan_object().include_paths,
             self.scan.get_scan_object().exclude_paths,
         )

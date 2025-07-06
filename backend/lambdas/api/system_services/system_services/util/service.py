@@ -1,3 +1,4 @@
+import base64
 import functools
 import requests
 from artemisdb.artemisdb.models import Repo, Scan, User
@@ -252,7 +253,7 @@ class Service:
         self._test_bitbucket(key, service_auth_url, repo_auth_url)
 
     def _test_ado(self, key: str):
-        headers = {"Authorization": "Basic %s" % key, "Accept": "application/json"}
+        headers = {"Authorization": "Basic %s" % _base64_encode(key), "Accept": "application/json"}
         response = self._request.get(f"{self._service['url']}/{self._org}/_apis/projects", headers=headers)
         self._reachable = True
         if response.status_code == 200:
@@ -284,3 +285,7 @@ def get_api_key(service_secret):
     except ClientError:
         return None
     return None
+
+
+def _base64_encode(text: str, input_encoding="utf-8", output_encoding="utf-8") -> str:
+    return base64.b64encode(bytes(text, input_encoding)).decode(output_encoding)

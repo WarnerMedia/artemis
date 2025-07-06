@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+cryptography = "~=44.0" # match version constraint in top level
 jsonschema = "~=4.22"
 pygithub = "~=2.5"
 

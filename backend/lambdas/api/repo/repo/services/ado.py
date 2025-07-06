@@ -1,5 +1,6 @@
 from string import Template
 
+import base64
 import requests
 
 from artemislib.logging import Logger
@@ -52,7 +53,8 @@ def _query(
     if not req_list:
         return queued, failed, unauthorized
 
-    # The stored key is already in the basic auth format: base64(user:pass)
+    # The stored key is in the format: ":api_key" (username:pass, with an empty username)
+    # It is NOT base64 encoded. Encode it before using it for Basic auth
     key = get_api_key(service_secret)
 
     log.info("Querying %s API for %d repos", service, len(req_list))
@@ -144,7 +146,7 @@ def _check_diff(url: str, api_key: str, org_name: str, project: str, repo: str, 
 
 
 def _query_azure_api(url: str, api_key: str) -> requests.Response:
-    headers = {"Authorization": "Basic %s" % api_key, "Accept": "application/json"}
+    headers = {"Authorization": "Basic %s" % _base64_encode(api_key), "Accept": "application/json"}
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         log.error("Error retrieving Azure query: %s", response.text)
@@ -172,7 +174,7 @@ def _queue_repo(
     # Queue the repo
     scan_id = AWSConnect().queue_repo_for_scan(
         name=org_repo,
-        repo_url=repo["remoteUrl"],
+        repo_url=repo["webUrl"],
         # We need to convert from bytes to KiB
         repo_size=int(repo["size"] / 1024),
         service=service,
@@ -194,3 +196,7 @@ def _queue_repo(
         exclude_paths=options["exclude_paths"],
     )
     return scan_id
+
+
+def _base64_encode(text: str, input_encoding="utf-8", output_encoding="utf-8") -> str:
+    return base64.b64encode(bytes(text, input_encoding)).decode(output_encoding)
