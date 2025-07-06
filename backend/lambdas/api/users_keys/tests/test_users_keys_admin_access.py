@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from users_keys.users_keys.handlers import handler
+from users_keys.handlers import handler
 
 class TestUsersKeysAdminAccess(unittest.TestCase):
     def setUp(self):
@@ -20,7 +20,7 @@ class TestUsersKeysAdminAccess(unittest.TestCase):
         }
 
     def test_admin_can_access_other_users_keys(self):
-        with patch("users_keys.users_keys.get.get", return_value={"statusCode": 200}) as mock_get, \
+        with patch("users_keys.get.get", return_value={"statusCode": 200}) as mock_get, \
              patch("users_keys.util.parsers.parse_event", return_value={"user_id": "otheruser@example.com"}):
             resp = handler(self.base_event, None)
             self.assertEqual(resp["statusCode"], 200)
@@ -41,7 +41,7 @@ class TestUsersKeysAdminAccess(unittest.TestCase):
         event["requestContext"]["authorizer"] = dict(self.base_event["requestContext"]["authorizer"])
         event["requestContext"]["authorizer"]["principal"] = '{"id": "user@example.com", "type": "user"}'
         event["pathParameters"] = {"id": "user@example.com"}
-        with patch("users_keys.users_keys.get.get", return_value={"statusCode": 200}) as mock_get, \
+        with patch("users_keys.get.get", return_value={"statusCode": 200}) as mock_get, \
              patch("users_keys.util.parsers.parse_event", return_value={"user_id": "user@example.com"}):
             resp = handler(event, None)
             self.assertEqual(resp["statusCode"], 200)
