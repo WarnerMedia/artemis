@@ -5084,7 +5084,6 @@ export const CodeTabContent = (props: {
 		setSkipDialog(
 			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

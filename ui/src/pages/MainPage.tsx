@@ -680,7 +680,6 @@ const MainPage = () => {
 
 	useEffect(() => {
 		setPageTitle();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [i18n]);
 
 	useEffect(() => {
