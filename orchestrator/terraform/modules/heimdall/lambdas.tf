@@ -34,6 +34,7 @@ resource "aws_lambda_function" "org-queue" {
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
       ARTEMIS_API                       = var.artemis_api
+      ARTEMIS_API_KEY                   = aws_secretsmanager_secret.artemis-api-key.name
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
@@ -91,6 +92,7 @@ resource "aws_lambda_function" "repo-queue" {
       HEIMDALL_GITHUB_APP_ID            = var.github_app_id
       HEIMDALL_GITHUB_PRIVATE_KEY       = var.github_private_key
       ARTEMIS_API                       = var.artemis_api
+      ARTEMIS_API_KEY                   = aws_secretsmanager_secret.artemis-api-key.name
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
