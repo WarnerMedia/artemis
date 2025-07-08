@@ -31,7 +31,8 @@ def handler(event, context):
 
     if event.get("httpMethod") == "GET":
         # If admin, allow specifying any user_id; otherwise, use the caller's email
-        target_email = parsed_event.get("user_id") if admin else email
+        user_id = parsed_event.get("user_id")
+        target_email = user_id if admin and user_id else email
         resp = get(parsed_event, email=target_email)
     elif event.get("httpMethod") == "POST":
         try:
