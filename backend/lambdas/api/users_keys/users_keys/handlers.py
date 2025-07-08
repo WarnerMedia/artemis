@@ -30,10 +30,7 @@ def handler(event, context):
         return response(code=HTTPStatus.FORBIDDEN)
 
     if event.get("httpMethod") == "GET":
-        # If admin, allow specifying any user_id; otherwise, use the caller's email
-        user_id = parsed_event.get("user_id")
-        target_email = user_id if admin and user_id else email
-        resp = get(parsed_event, email=target_email)
+        resp = get(parsed_event, email=email)
     elif event.get("httpMethod") == "POST":
         try:
             post_body = parse_body(event, admin, features, email)
