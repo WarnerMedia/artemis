@@ -160,7 +160,7 @@ SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 
 # Engine base image
-ENGINE_BASE := 3.9-slim-bullseye
+ENGINE_BASE := 3.12-slim-bullseye
 
 # Enry Info
 ENRYVER := 1.1.0
@@ -212,8 +212,8 @@ DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # Lambdas
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
-LAMBDA_PYTHON_VER := 3.9.22
-LAMBDA_RUNTIME_VER := python3.9
+LAMBDA_PYTHON_VER := 3.12.6
+LAMBDA_RUNTIME_VER := python3.12
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 

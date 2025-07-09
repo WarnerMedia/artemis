@@ -2,7 +2,7 @@
 
 # Builder for boxed core plugins.
 
-ARG PYTHON_VER=3.9-bookworm
+ARG PYTHON_VER=3.12-bookworm
 
 FROM python:$PYTHON_VER
 
@@ -23,7 +23,7 @@ RUN pipenv requirements > requirements.txt
 
 # Build the self-contained bundle.
 RUN --mount=type=cache,target=/root/.cache/pip \
-    packaged --python-version 3.9 plugin.sh \
+    packaged --python-version 3.12 plugin.sh \
         'pip install -r requirements.txt /src/libs/artemisdb /src/libs/artemislib' \
         'python -m engine.plugins "$@"' \
         /src

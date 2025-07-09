@@ -41,7 +41,7 @@ target "boxed-glibc" {
   dockerfile = "Dockerfiles/Dockerfile.boxed"
 
   args = {
-    PYTHON_VER = "3.9-bookworm"
+    PYTHON_VER = "3.12-bookworm"
   }
 }
 
