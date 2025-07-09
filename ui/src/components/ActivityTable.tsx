@@ -372,7 +372,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 						strict: false, // setting to false will trim fields on validate
 					});
 					return { ...stateDefaults, ...validValues };
-				} catch (err) {
+				} catch {
 					return stateDefaults;
 				}
 			}
