@@ -1,18 +1,10 @@
 import { t, Trans } from "@lingui/macro";
 import { useLingui } from "@lingui/react";
 import {
-	AddCircleOutline as AddCircleOutlineIcon,
-	Add as AddIcon,
 	ArrowBackIos as ArrowBackIosIcon,
-	Category as CategoryIcon,
-	Clear as ClearIcon,
-	Cloud as CloudIcon,
 	ContactMail as ContactMailIcon,
-	Delete as DeleteIcon,
 	FolderShared as FolderSharedIcon,
 	GitHub as GitHubIcon,
-	HelpOutline as HelpOutlineIcon,
-	Info as InfoIcon,
 	KeyboardArrowUp as KeyboardArrowUpIcon,
 	Link as LinkIcon,
 	LinkOff as LinkOffIcon,
@@ -22,8 +14,6 @@ import {
 	RadioButtonUnchecked as RadioButtonUncheckedIcon,
 	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
 	SupervisorAccount as SupervisorAccountIcon,
-	VpnKey as VpnKeyIcon,
-	WatchLater as WatchLaterIcon,
 } from "@mui/icons-material";
 import {
 	Alert,
@@ -78,6 +68,7 @@ import { APP_SERVICE_GITHUB_URL, STORAGE_LOCAL_WELCOME } from "app/globals";
 import { RootState } from "app/rootReducer";
 import { pluginsDisabled } from "app/scanPlugins";
 import { AppDispatch } from "app/store";
+import ApiKeyManager from "components/ApiKeyManager";
 import CustomCopyToClipboard from "components/CustomCopyToClipboard";
 import DateTimeCell, { ExpiringDateTimeCell } from "components/DateTimeCell";
 import DraggableDialog from "components/DraggableDialog";
@@ -86,10 +77,9 @@ import DatePickerField from "components/FormikPickers";
 import MailToLink from "components/MailToLink";
 import ScopeCell from "components/ScopeCell";
 import TooltipCell from "components/TooltipCell";
+import ApiKeyManager from "components/ApiKeyManager";
 import { Key } from "features/keys/keysSchemas";
 import {
-	deleteUserKey,
-	getUserKeys,
 	selectAllKeys,
 } from "features/keys/keysSlice";
 import { addNotification } from "features/notifications/notificationsSlice";
@@ -2133,7 +2123,7 @@ export default function UserSettings() {
 					<Trans>API Keys</Trans>
 				</Typography>
 
-				{listKeys()}
+				<ApiKeyManager />
 			</Paper>
 		</Container>
 	);
