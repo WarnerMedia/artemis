@@ -8,6 +8,7 @@ from unittest.mock import patch
 from oci import remover
 from engine.plugins.trivy_sca import main as Trivy
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_composer_locks import check_composer_package_files
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.utils import setup_logging
 
@@ -122,6 +123,16 @@ class TestPluginTrivySCA(unittest.TestCase):
                         actual = check_package_files("/mocked/path/", False, False)
         self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
 
+    def test_compose_lock_file_exists(self):
+        with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
+            mock_glob.return_value = ["/mocked/path/compose.json"]
+            with patch(f"{GENERATE_LOCKS_PREFIX}os.path.exists", return_value=True):
+                with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
+                    mock_proc.stderr = mock_proc.stdout = None
+                    mock_proc.return_value = CompletedProcess(args="", returncode=0)
+                    actual = check_composer_package_files("/mocked/path/", False)
+        self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
+
     def test_lock_file_missing(self):
         with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
             mock_glob.return_value = ["/mocked/path/package.json"]
@@ -131,6 +142,16 @@ class TestPluginTrivySCA(unittest.TestCase):
                         mock_proc.stderr = mock_proc.stdout = None
                         mock_proc.return_value = CompletedProcess(args="", returncode=0)
                         actual = check_package_files("/mocked/path/", False, False)
+        self.assertEqual(len(actual[1]), 1, "There should be a warning of a lock file missing")
+
+    def test_compose_lock_file_missing(self):
+        with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
+            mock_glob.return_value = ["/mocked/path/compose.json"]
+            with patch(f"{GENERATE_LOCKS_PREFIX}os.path.exists", return_value=False):
+                with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
+                    mock_proc.stderr = mock_proc.stdout = None
+                    mock_proc.return_value = CompletedProcess(args="", returncode=0)
+                    actual = check_composer_package_files("/mocked/path/", False)
         self.assertEqual(len(actual[1]), 1, "There should be a warning of a lock file missing")
 
     def test_check_output(self):
