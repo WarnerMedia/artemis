@@ -42,6 +42,16 @@ target "boxed-glibc" {
 
   args = {
     PYTHON_VER = "3.9-bookworm"
+    LIBC = "glibc"
+  }
+}
+
+target "boxed-musl" {
+  dockerfile = "Dockerfiles/Dockerfile.boxed"
+
+  args = {
+    PYTHON_VER = "3.9-alpine"
+    LIBC = "musl"
   }
 }
 
@@ -52,6 +62,7 @@ target "engine" {
 
   contexts = {
     boxed-glibc = "target:boxed-glibc"
+    boxed-musl = "target:boxed-musl"
   }
 
   args = {
