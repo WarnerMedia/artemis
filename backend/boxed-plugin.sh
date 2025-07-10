@@ -27,5 +27,5 @@ for libc in glibc musl; do
   fi
 done
 
-echo 'No suitable Python intepreter found' >&2
+echo "$0: No suitable Python intepreter found" >&2
 exit 1
