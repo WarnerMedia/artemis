@@ -631,7 +631,7 @@ export const getResultFilters = (
 				filters[field].filter = String(values[f]);
 			}
 		}
-	} catch (err) {
+	} catch {
 		console.warn("invalid result filters, discarding");
 	}
 	return filters;
@@ -5084,7 +5084,6 @@ export const CodeTabContent = (props: {
 		setSkipDialog(
 			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -6813,7 +6812,7 @@ const ResultsPage = () => {
 						return validValues;
 					}
 					return null;
-				} catch (err) {
+				} catch {
 					return null;
 				}
 			}

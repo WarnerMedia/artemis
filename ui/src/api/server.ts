@@ -3773,7 +3773,6 @@ export function makeServer() {
 					}
 				} else {
 					for (const k in obj) {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						const result: any = keyExists(obj[k], key);
 						if (result) {
 							return result;
@@ -3797,7 +3796,6 @@ export function makeServer() {
 				)) {
 					// look for filtering fields
 					if (!["limit", "offset", "order_by"].includes(param)) {
-						// eslint-disable-next-line no-loop-func
 						filteredIds = filteredIds.filter((id: string) => {
 							if (id in adapter.entities) {
 								const entity = adapter.entities[id];
