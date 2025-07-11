@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py312"
 
 [tool.isort]
 profile = "black"
@@ -37,7 +37,7 @@ known_first_party = [
 ]
 
 [tool.pyright]
-pythonVersion = "3.9"
+pythonVersion = "3.12"
 typeCheckingMode = "standard"
 include = [
     "engine",

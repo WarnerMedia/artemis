@@ -3,12 +3,12 @@
 # Builder for boxed core plugins.
 
 # Python base image.
-ARG PYTHON_VER=3.9-bookworm
+ARG PYTHON_VER=3.12-bookworm
 
 FROM python:$PYTHON_VER
 
 # Python target version for installed packages (major.minor).
-ARG PYTHON_TARGET_VER=3.9
+ARG PYTHON_TARGET_VER=3.12
 
 ARG LIBC=glibc
 

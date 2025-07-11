@@ -20,4 +20,4 @@ pythonpath = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py312"

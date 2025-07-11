@@ -94,7 +94,7 @@ The `runner` plugin setting sets how the plugin is run inside a container and wh
 
 These plugins are run via the system Python in the container.
 
-- The container must have Python 3.9 available as `python` in the PATH.
+- The container must have Python 3.12 available as `python` in the PATH.
 - All Python dependencies needed by the plugin must be installed in the system Python.
 
 ### `boxed`
