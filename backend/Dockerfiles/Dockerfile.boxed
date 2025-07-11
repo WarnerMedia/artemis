@@ -2,31 +2,39 @@
 
 # Builder for boxed core plugins.
 
+# Python base image.
 ARG PYTHON_VER=3.9-bookworm
 
 FROM python:$PYTHON_VER
 
+# Python target version for installed packages (major.minor).
+ARG PYTHON_TARGET_VER=3.9
+
+ARG LIBC=glibc
+
 # hadolint ignore=DL3042
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install \
-        'packaged==0.6.0' \
-        'pipenv~=2024.0'
+    pip install 'pipenv~=2024.0'
+COPY --from=ghcr.io/astral-sh/uv:0.7.20 /uv /uvx /bin/
 
 WORKDIR /src
+
+# Download and install standalone Python distribution.
+RUN --mount=type=cache,target=/root/.cache/uv \
+    mkdir -p "_boxed/$LIBC" && \
+    uv python install -i build/tmp "$PYTHON_TARGET_VER" && \
+    mv build/tmp/cpython-* "_boxed/$LIBC/python"
+
 COPY Pipfile.lock .
 COPY libs/ libs/
-COPY engine/plugins/ engine/plugins
+COPY engine/plugins/ _boxed/$LIBC/engine/plugins
 
 # Generate requirements.txt from lockfile so the standalone Python distribution
 # doesn't need pipenv installed.
 RUN pipenv requirements > requirements.txt
 
-# Build the self-contained bundle.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    packaged --python-version 3.9 plugin.sh \
-        'pip install -r requirements.txt /src/libs/artemisdb /src/libs/artemislib' \
-        'python -m engine.plugins "$@"' \
-        /src
-
-# Pre-extract the plugin bundle to improve startup times.
-RUN ./plugin.sh --noexec --target _boxed/glibc
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install -r requirements.txt \
+        libs/artemisdb libs/artemislib \
+        --target "_boxed/$LIBC/python/lib/python$PYTHON_TARGET_VER/site-packages" \
+        --python-version "$PYTHON_TARGET_VER"
