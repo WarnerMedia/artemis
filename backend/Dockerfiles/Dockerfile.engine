@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
-ARG ENGINE_BASE=3.9-slim-bullseye
+ARG ENGINE_BASE=3.12-slim-bullseye
 
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.9-bullseye AS builder
+FROM python:3.12-bullseye AS builder
 
 # Install the Docker repository
 # hadolint ignore=DL3008

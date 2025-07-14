@@ -27,7 +27,7 @@ variable "lambda_architecture" {
 
 variable "lambda_runtime" {
   description = "Runtime of the lambda functions"
-  default     = "python3.9"
+  default     = "python3.12"
 }
 
 variable "s3_analyzer_files_id" {}
