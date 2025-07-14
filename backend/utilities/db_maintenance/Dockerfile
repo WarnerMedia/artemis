@@ -1,7 +1,7 @@
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.9-bullseye AS builder
+FROM python:12-bullseye AS builder
 
 WORKDIR /src
 
@@ -31,7 +31,7 @@ RUN pip install --no-cache-dir ./libs/artemislib ./libs/artemisdb ./api/repo
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python:3.9-slim-bullseye AS app
+FROM python:3.12-slim-bullseye AS app
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
