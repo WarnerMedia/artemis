@@ -1,7 +1,6 @@
 import { Settings } from "luxon";
 /* eslint-disable */
 import { APP_EXPORT_CLASSIFICATION } from "app/globals";
-import { RowDef } from "components/EnhancedTable";
 import formatters from "utils/formatters";
 import { analysisRow } from "../../../testData/testMockData";
 
