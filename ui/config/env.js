@@ -35,7 +35,7 @@ dotenvFiles.forEach((dotenvFile) => {
 		require("dotenv-expand").expand(
 			require("dotenv").config({
 				path: dotenvFile,
-        quiet: true,
+				quiet: true,
 			}),
 		);
 	}
