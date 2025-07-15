@@ -72,7 +72,6 @@ const TableMenu = (props: TableMenuOptions) => {
 		setSkipDialog(
 			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleCsvDownload = async () => {

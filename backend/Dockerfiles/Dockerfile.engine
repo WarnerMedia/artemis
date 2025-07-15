@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
-ARG ENGINE_BASE=3.9-slim-bullseye
+ARG ENGINE_BASE=3.12-slim-bullseye
 
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.9-bullseye AS builder
+FROM python:3.12-bullseye AS builder
 
 # Install the Docker repository
 # hadolint ignore=DL3008
@@ -23,6 +23,8 @@ RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add
 # Built from Dockerfile.boxed by context in the bakefile.
 # hadolint ignore=DL3006
 FROM boxed-glibc AS boxed-glibc
+# hadolint ignore=DL3006
+FROM boxed-musl AS boxed-musl
 
 ###############################################################################
 # App stage
@@ -76,6 +78,7 @@ COPY ./engine/ ./
 COPY ./services.json /srv/engine/
 COPY boxed-plugin.sh /srv/engine/plugins/plugin.sh
 COPY --from=boxed-glibc /src/_boxed/glibc/ /srv/engine/plugins/_boxed/glibc/
+COPY --from=boxed-musl /src/_boxed/musl/ /srv/engine/plugins/_boxed/musl/
 
 VOLUME ["/srv/engine/plugins"]
 

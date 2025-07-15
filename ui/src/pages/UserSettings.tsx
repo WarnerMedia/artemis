@@ -444,7 +444,6 @@ export default function UserSettings() {
 		setHideWelcome(
 			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME))),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {

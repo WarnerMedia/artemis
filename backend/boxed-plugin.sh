@@ -14,9 +14,18 @@ for opt in "$@"; do
   fi
 done
 
-# We assume we are in a glibc-based distribution.
-PACKAGED_ROOT="$(dirname "$0")/_boxed/glibc"
+# Determine which Python binary to use.
+# Using "python --version" is a simple and very fast check.
+root="$(dirname "$0")/_boxed"
+for libc in glibc musl; do
+  if "$root/$libc/python/bin/python" --version > /dev/null 2>&1; then
+    # Execute the plugin using the discovered interpreter.
+    boxed_root="$root/$libc"
+    export PATH="$boxed_root/python/bin:$PATH"
+    cd "$boxed_root" || exit 1
+    exec python -m engine.plugins "$@"
+  fi
+done
 
-export PATH="$PACKAGED_ROOT/.packaged_python/python/bin:$PATH"
-cd "$PACKAGED_ROOT" || exit 1
-exec python -m engine.plugins "$@"
+echo "$0: No suitable Python intepreter found" >&2
+exit 1

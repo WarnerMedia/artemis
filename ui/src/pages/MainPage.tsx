@@ -327,7 +327,7 @@ const MainPage = () => {
 						},
 					);
 					return { ...emptyValues, ...validValues };
-				} catch (err) {
+				} catch {
 					return null;
 				}
 			}
@@ -680,7 +680,6 @@ const MainPage = () => {
 
 	useEffect(() => {
 		setPageTitle();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [i18n]);
 
 	useEffect(() => {
