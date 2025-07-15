@@ -872,10 +872,9 @@ export function makeServer() {
 				{
 					id: generateId(),
 					name: "admin api key",
-					created:
-						DateTime.utc()
-							.minus({ days: Math.floor(Math.random() * 365) })
-							.toJSON() ?? undefined,
+					created: DateTime.utc()
+						.minus({ days: Math.floor(Math.random() * 365) })
+						.toJSON() ?? undefined,
 					last_used: formatNewDate(),
 					expires: DateTime.utc()
 						.minus({ days: Math.floor(Math.random() * 365) })
@@ -889,6 +888,7 @@ export function makeServer() {
 						feature2: false,
 						feature3: true,
 					},
+					userEmail: ""
 				},
 				{
 					id: generateId(),
@@ -899,14 +899,14 @@ export function makeServer() {
 					scope: defaults.currentUserScope,
 					admin: false,
 					features: { snyk: true, feature1: false },
+					userEmail: ""
 				},
 				{
 					id: generateId(),
 					name: "standard api key",
-					created:
-						DateTime.utc()
-							.minus({ days: Math.floor(Math.random() * 365) })
-							.toJSON() ?? undefined,
+					created: DateTime.utc()
+						.minus({ days: Math.floor(Math.random() * 365) })
+						.toJSON() ?? undefined,
 					last_used: null,
 					expires: DateTime.utc()
 						.plus({ days: Math.floor(Math.random() * 365) })
@@ -914,6 +914,7 @@ export function makeServer() {
 					scope: defaults.currentUserScope,
 					admin: false,
 					features: {},
+					userEmail: ""
 				},
 			];
 			const userVcsServices: VcsService[] = [];
@@ -2863,6 +2864,7 @@ export function makeServer() {
 					scope: attrs.scope,
 					admin: attrs.admin ?? false,
 					features: attrs?.features ? { ...attrs.features } : {},
+					userEmail: ""
 				});
 				return {
 					key: generateApiKey(),

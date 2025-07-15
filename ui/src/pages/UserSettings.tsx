@@ -452,7 +452,7 @@ export default function UserSettings() {
 	}, [i18n]);
 
 	useEffect(() => {
-		dispatch(getUserKeys());
+		dispatch(getUserKeys({}));
 		dispatch(getVcsServices());
 
 		// get page query params & validate (e.g., github auth code)

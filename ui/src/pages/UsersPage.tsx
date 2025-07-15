@@ -10,12 +10,14 @@ import {
 	FilterList as FilterListIcon,
 	KeyboardArrowUp as KeyboardArrowUpIcon,
 	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
+	VpnKey as VpnKeyIcon,
 } from "@mui/icons-material";
 import {
 	Alert,
 	Box,
 	Button,
 	Container,
+	Dialog,
 	DialogActions,
 	DialogContent,
 	Fab,
@@ -24,7 +26,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid2 as Grid,
+	Grid,
 	IconButton,
 	InputAdornment,
 	LinearProgress,
@@ -73,6 +75,7 @@ import {
 	SPLIT_MULTILINE_CSN_REGEX,
 	capitalize,
 } from "utils/formatters";
+import ApiKeys from "components/ApiKeys";
 
 const useStyles = makeStyles()((theme) => ({
 	addUserFormField: {
@@ -361,6 +364,9 @@ export default function UsersPage() {
 			filter: "",
 		},
 	});
+	// Add missing state for API Keys dialog and selected user
+	const [apiKeysDialogOpen, setApiKeysDialogOpen] = useState(false);
+	const [apiKeysUser, setApiKeysUser] = useState<User | null>(null);
 	let filterCount = 0;
 	for (const [, opts] of Object.entries(filters)) {
 		if (opts.filter) {
@@ -458,6 +464,21 @@ export default function UsersPage() {
 		const { row } = props;
 		return (
 			<>
+				<Tooltip title={i18n._(t`View API Keys`)}>
+					<span>
+						<IconButton
+							size="small"
+							color="primary"
+							aria-label={i18n._(t`View API Keys`)}
+							onClick={() => {
+								setApiKeysUser(row as User);
+								setApiKeysDialogOpen(true);
+							}}
+						>
+							<VpnKeyIcon />
+						</IconButton>
+					</span>
+				</Tooltip>
 				<Tooltip title={i18n._(t`Remove User`)}>
 					<span>
 						<IconButton
@@ -947,11 +968,11 @@ export default function UsersPage() {
 												{values.scope.map((scope: string, idx: number) => (
 													<Grid
 														container
-														size={12}
+														xs={12}
 														spacing={1}
 														key={`scope-row-${scope}`}
 													>
-														<Grid size={11}>
+														<Grid xs={11}>
 															<MuiTextField
 																id={`scope-${idx}`}
 																label={<Trans>Scope {idx + 1}</Trans>}
@@ -962,7 +983,7 @@ export default function UsersPage() {
 																disabled
 															/>
 														</Grid>
-														<Grid size={1} className={classes.formScopeAction}>
+														<Grid xs={1} className={classes.formScopeAction}>
 															<Tooltip
 																title={<Trans>Remove scope {idx + 1}</Trans>}
 															>
@@ -1018,8 +1039,8 @@ export default function UsersPage() {
 											alignItems="flex-end"
 											className={classes.addNewScopeField}
 										>
-											<Grid container size={12} spacing={1}>
-												<Grid size={11}>
+											<Grid container xs={12} spacing={1}>
+												<Grid xs={11}>
 													<MuiTextField
 														id="add-new-scope-input"
 														label={<Trans>Add Scope</Trans>}
@@ -1095,7 +1116,7 @@ export default function UsersPage() {
 														}}
 													/>
 												</Grid>
-												<Grid size={1} className={classes.formScopeAction}>
+												<Grid xs={1} className={classes.formScopeAction}>
 													<Tooltip title={<Trans>Add to scope</Trans>}>
 														<span>
 															<Fab
@@ -1322,6 +1343,9 @@ export default function UsersPage() {
 					}
 				/>
 			)}
+			<Dialog open={apiKeysDialogOpen} onClose={() => setApiKeysDialogOpen(false)} maxWidth="md" fullWidth>
+				{apiKeysUser && <ApiKeys user={apiKeysUser} />}
+			</Dialog>
 		</>
 	);
 

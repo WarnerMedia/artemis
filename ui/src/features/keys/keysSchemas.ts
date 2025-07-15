@@ -12,6 +12,7 @@ export interface Key {
 	scope: string[];
 	admin: boolean;
 	features?: ScanFeatures | null;
+	userEmail: string;
 }
 
 export interface KeysResponse extends Response {
@@ -29,6 +30,7 @@ const keysSchema: Yup.ObjectSchema<Key> = Yup.object()
 		scope: Yup.array().of(Yup.string().defined()).defined(),
 		admin: Yup.boolean().defined(),
 		features: Yup.object().nullable(),
+		userEmail: Yup.string().defined(), // <-- Add this line
 	})
 	.defined();
 

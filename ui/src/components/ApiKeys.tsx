@@ -254,9 +254,10 @@ interface AddKeyForm {
 // Props that can be passed to ApiKeys component
 interface ApiKeysProps {
 	title?: string;
+	user?: User | null;
 }
 
-const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys" }) => {
+const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
 	const dispatch: AppDispatch = useDispatch();
@@ -280,8 +281,12 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys" }) => {
 	);
 
 	useEffect(() => {
-		dispatch(getUserKeys());
-	}, [dispatch]);
+		if (user && user.id) {
+			dispatch(getUserKeys({ userId: user.id }));
+		} else {
+			dispatch(getUserKeys({}));
+		}
+	}, [dispatch, user]);
 
 	// scroll to last scope item added to current scope in addKeys
 	useEffect(() => {
@@ -594,19 +599,20 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys" }) => {
 				const response = await client.addUserKey({
 					url: "/users/self/keys",
 					data: {
-						name: values?.name.trim(),
-						scope: values?.scope,
-						admin: values?.admin ?? false,
-						expires: expires,
-						features: features,
-					},
+                        name: values?.name.trim(),
+                        scope: values?.scope,
+                        admin: values?.admin ?? false,
+                        expires: expires,
+                        features: features,
+                        userEmail: ""
+                    },
 				});
 
 				setNewKeyValue(response.key);
 				// adding a new user key will _only_ return the created key uuid,
 				// it doesn't return the new key object
 				// need to call getUserKeys() to add new key to redux store
-				dispatch(getUserKeys());
+				dispatch(getUserKeys(user && user.id ? { userId: user.id } : {}));
 				return true;
 			} catch (err: any) {
 				setNewKeyError(err.message);
