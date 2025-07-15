@@ -91,7 +91,7 @@ checkBrowsers(paths.appPath, isInteractive)
 			paths.publicUrlOrPath.slice(0, -1),
 		);
 		// Create a webpack compiler that is configured with custom messages.
-		const compiler = creatCompiler({
+		const compiler = createCompiler({
 			appName,
 			config,
 			urls,
