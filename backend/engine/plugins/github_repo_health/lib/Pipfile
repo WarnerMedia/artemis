@@ -14,4 +14,4 @@ python_version = "3.12"
 [dev-packages]
 isort = "~=6.0"
 pytest = "~=8.3"
-ruff = "~=0.12.3"
+ruff = "==0.12.0"  # match version in vscode extension
