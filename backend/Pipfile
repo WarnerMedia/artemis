@@ -18,7 +18,7 @@ docker = "~=7.1"
 graphql-query = "~=1.4"
 joserfc = "~=1.0"
 packaging = "==23.2"  # Must match version in Makefile.
-psycopg2-binary = "==2.9.9" # 2.9.10 does not provide wheels for Python 3.9 + MacOS + ARM.
+psycopg2-binary = "~=2.9.9"
 pydantic = "~=2.11"
 PyGithub = "~=2.6"
 pyjwt = "~=2.10"

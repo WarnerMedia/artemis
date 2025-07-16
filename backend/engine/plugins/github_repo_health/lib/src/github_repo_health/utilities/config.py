@@ -140,7 +140,9 @@ class Config:
         owner, repo, path = _destructure_github_file(repo_and_path)
 
         if verbose:
-            print(f'[CONFIG] Getting config from Github repo "{owner}/{repo}", file "{path}"')
+            print(
+                f'[CONFIG] Getting config from Github repo "{owner}/{repo}", file "{path}"'
+            )
 
         contents = github.get_repository_content(owner, repo, path)
 
@@ -166,39 +168,47 @@ class Config:
                     "Failed to get Github config, expected base64 encoding. Github's API might have changed"
                 )
         else:
-            raise Exception(f'Failed to get Github config, "{repo_and_path}" - Not a file')
+            raise Exception(
+                f'Failed to get Github config, "{repo_and_path}" - Not a file'
+            )
 
     @staticmethod
     def validate(config):
-        if type(config) != dict:
+        if type(config) is not dict:
             raise Exception("Config failed validation. Expected object")
 
         bad_rules_message = 'Config failed validation. Expected "rules" field that is an array of objects'
 
-        if config.get("name") == None:
+        if config.get("name") is not None:
             raise Exception('Config failed validation. Expected top-level "name" field')
-        if config.get("version") == None:
-            raise Exception('Config failed validation. Expected top-level "version" field')
+        if config.get("version") is not None:
+            raise Exception(
+                'Config failed validation. Expected top-level "version" field'
+            )
 
         rule_configs = config.get("rules")
-        if type(rule_configs) != list:
+        if type(rule_configs) is not list:
             raise Exception(bad_rules_message)
 
         for rule_config in rule_configs:
-            if type(rule_config) != dict:
+            if type(rule_config) is not dict:
                 raise Exception(bad_rules_message)
 
             rule_type = rule_config.get("type")
 
             if rule_type not in rules.rules_dict:
-                raise Exception(f'Config failed validation. Unrecognized rule in config, "{rule_type}"')
+                raise Exception(
+                    f'Config failed validation. Unrecognized rule in config, "{rule_type}"'
+                )
             else:
                 rule = rules.rules_dict.get(rule_type)
 
                 try:
                     validate(instance=rule_config, schema=rule.config_schema)
                 except exceptions.ValidationError as err:
-                    raise Exception(f'Config failed validation for rule, "{rule_type}"') from err
+                    raise Exception(
+                        f'Config failed validation for rule, "{rule_type}"'
+                    ) from err
 
 
 def _destructure_github_file(repo_and_path):
@@ -209,7 +219,9 @@ def _destructure_github_file(repo_and_path):
             owner, repo = owner_and_repo.split("/", 1)
             return (owner, repo, path)
         except ValueError:
-            raise Exception(f'Invalid repo, "{owner_and_repo}. Expected format is <owner>/<repo>') from None
+            raise Exception(
+                f'Invalid repo, "{owner_and_repo}. Expected format is <owner>/<repo>'
+            ) from None
     except ValueError:
         raise Exception(
             f'Invalid github file, "{repo_and_path}". Expected format is <owner>/<repo>:<path-to-file>'

@@ -13,9 +13,7 @@ rules_schemas = {
 class CompositeRule:
     identifier = "composite_rule"
     name = "Composite Rule - This should be overridden with an appropriate name"
-    description = (
-        "This is a composite rule, this should be overridden with an appropriate description in configuration files"
-    )
+    description = "This is a composite rule, this should be overridden with an appropriate description in configuration files"
 
     config_schema = {
         "type": "object",
@@ -43,7 +41,7 @@ class CompositeRule:
 
     @staticmethod
     def check(github, owner, repo, branch, config={}):
-        if CompositeRule._checker == None:
+        if CompositeRule._checker is None:
             # Loads Checker at first run to avoid circular import
             from github_repo_health.utilities import Checker
 
@@ -55,33 +53,45 @@ class CompositeRule:
         any_of_config = subrules.get("any_of")
         none_of_config = subrules.get("none_of")
 
-        (all_of_results, all_of_errors) = _get_results_and_errors(all_of_config, owner, repo, branch)
-        (any_of_results, any_of_errors) = _get_results_and_errors(any_of_config, owner, repo, branch)
-        (none_of_results, none_of_errors) = _get_results_and_errors(none_of_config, owner, repo, branch)
+        (all_of_results, all_of_errors) = _get_results_and_errors(
+            all_of_config, owner, repo, branch
+        )
+        (any_of_results, any_of_errors) = _get_results_and_errors(
+            any_of_config, owner, repo, branch
+        )
+        (none_of_results, none_of_errors) = _get_results_and_errors(
+            none_of_config, owner, repo, branch
+        )
 
         error_messages = list(all_of_errors)
         error_messages.extend(any_of_errors)
         error_messages.extend(none_of_errors)
 
-        all_of_passing = all(all_of_results) or all_of_config == None
-        any_of_passing = any(any_of_results) or any_of_config == None
-        none_of_passing = (not any(none_of_results)) or none_of_config == None
+        all_of_passing = all(all_of_results) or all_of_config is None
+        any_of_passing = any(any_of_results) or any_of_config is None
+        none_of_passing = (not any(none_of_results)) or none_of_config is None
 
         passing = all_of_passing and any_of_passing and none_of_passing
 
-        non_none_error_messages = list(filter(lambda message: message != None, error_messages))
-        combined_error_message = ", ".join(non_none_error_messages)
+        non_none_error_messages = list(
+            filter(lambda message: message is not None, error_messages)
+        )
+        combined_error_message = ", ".join(non_none_error_messages)  # type: ignore
 
-        return add_metadata(passing, CompositeRule, config, error_message=combined_error_message)
+        return add_metadata(
+            passing, CompositeRule, config, error_message=combined_error_message
+        )
 
 
 def _get_results_and_errors(rules_config, owner, repo, branch):
-    if rules_config == None:
+    if rules_config is None:
         return ([], [])
 
     checks = list(
         map(
-            lambda rule_config: CompositeRule._checker.run_check(rule_config, owner, repo, branch),
+            lambda rule_config: CompositeRule._checker.run_check(  # type: ignore
+                rule_config, owner, repo, branch
+            ),
             rules_config,
         )
     )

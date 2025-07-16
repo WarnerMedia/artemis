@@ -53,13 +53,17 @@ def _get_parser():
         type=str,
         help="the branch to run on. Without this parameter, it will run on the repo's default branch",
     )
-    parser.add_argument("-c", "--config", type=str, help="path to file to use as a config")
+    parser.add_argument(
+        "-c", "--config", type=str, help="path to file to use as a config"
+    )
     parser.add_argument(
         "--ghconfig",
         type=str,
         help="Github path to file to use as a config. ex: <owner>/<repo>:<path-to-file>",
     )
-    parser.add_argument("--json", action="store_true", help="print output as a json object")
+    parser.add_argument(
+        "--json", action="store_true", help="print output as a json object"
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument(
         LIST_AVAILABLE_RULES,
@@ -79,7 +83,9 @@ def _get_config(args, github):
         config_file = environment.get_config_file()
 
         if args.verbose:
-            print(f'[CONFIG] Found "{environment.RH_CONFIG_FILE_VAR}" in environment. Proceeding with "{config_file}"')
+            print(
+                f'[CONFIG] Found "{environment.RH_CONFIG_FILE_VAR}" in environment. Proceeding with "{config_file}"'
+            )
 
         return Config.from_file(config_file, verbose=args.verbose)
     elif environment.has_github_config():
@@ -100,7 +106,9 @@ def _destructure_repo(full_repo):
         owner, repo = full_repo.split("/", 1)
         return (owner, repo)
     except ValueError as err:
-        raise Exception(f'Invalid repo, "{full_repo}". Expected format is <owner>/<repo>') from err
+        raise Exception(
+            f'Invalid repo, "{full_repo}". Expected format is <owner>/<repo>'
+        ) from err
 
 
 def _get_full_result(config, owner, repo, branch, results):
@@ -132,7 +140,7 @@ def _pretty_print(full_result, verbose=False):
         print(f"Branch:          {branch}")
         print(f"Ruleset:         {ruleset}")
         print(f"Ruleset Version: {ruleset_version}")
-        print(f"Results:")
+        print("Results:")
 
     for check in full_result.get("results"):
         passing = check.get("pass")

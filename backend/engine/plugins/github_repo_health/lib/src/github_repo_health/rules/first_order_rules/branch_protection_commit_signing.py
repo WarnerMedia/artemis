@@ -6,7 +6,9 @@ from ..helpers import add_metadata, severity_schema
 class BranchProtectionCommitSigning:
     identifier = "branch_protection_commit_signing"
     name = "Branch Protection - Require Commit Signing"
-    description = "Requires that a branch protection rule is enabled to enforce code signing"
+    description = (
+        "Requires that a branch protection rule is enabled to enforce code signing"
+    )
 
     config_schema = {
         "type": "object",
@@ -34,5 +36,8 @@ class BranchProtectionCommitSigning:
                 error_message=e.data.get("message"),
             )
 
-        passing = protection_config.get("required_signatures", {}).get("enabled") == True
+        passing = (
+            protection_config.get("required_signatures", {}).get("enabled") is True
+        )
+
         return add_metadata(passing, BranchProtectionCommitSigning, config)

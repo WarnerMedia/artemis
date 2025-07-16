@@ -11,5 +11,5 @@ test:
 	@python -m pipenv run pytest
 
 format:
-	@python -m pipenv run black src/ --line-length=120 
-	@python -m pipenv run isort src/ --profile black 
+	@python -m pipenv run ruff src/ --line-length=120
+	@python -m pipenv run isort src/ --profile black
