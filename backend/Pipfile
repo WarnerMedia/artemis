@@ -8,11 +8,11 @@ python_version = "3.12"
 
 [packages]
 aiohttp = "~=3.11"
-awscli = "~=1.40"
+awscli = "~=1.41"
 aws-lambda-powertools = "~=3.12"
-boto3 = "~=1.38.43"
+boto3 = "~=1.39"
 boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.38"}
-cryptography = "~=44.0"
+cryptography = "~=45.0"
 django = "~=4.2"
 docker = "~=7.1"
 graphql-query = "~=1.4"
@@ -25,11 +25,11 @@ pyjwt = "~=2.10"
 requests = "~=2.32"
 simplejson = "~=3.20"
 sqlparse = "~=0.5"
-urllib3 = "==1.26.20"
+urllib3 = "~=2.5"
 
 [dev-packages]
 autopep8 = "~=2.3"
-cfn-lint = "==1.18.1"  # Must match version in Makefile.
+cfn-lint = "==1.38.0"  # Must match version in Makefile.
 debugpy = "~=1.8"
 flake8 = "~=7.2"
 isort = "~=6.0"
@@ -44,4 +44,4 @@ pytest-subtests = "==0.14.1"
 pytest-xdist = "~=3.6"
 python-dotenv = "~=1.1"
 responses = "~=0.25.3"
-ruff = "~=0.11.7"
+ruff = "~=0.12.3"
