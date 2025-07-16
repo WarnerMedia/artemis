@@ -27,9 +27,7 @@ class RepoCodeScanning:
         try:
             repository = github.get_repository(owner, repo)
         except GithubException as e:
-            return add_metadata(
-                False, RepoCodeScanning, config, error_message=e.data.get("message")
-            )
+            return add_metadata(False, RepoCodeScanning, config, error_message=e.data.get("message"))
 
         security_and_analysis = repository.get("security_and_analysis")
         if security_and_analysis is None:
@@ -40,8 +38,5 @@ class RepoCodeScanning:
                 error_message="GitHub Advanced Security is not enabled",
             )
 
-        passing = (
-            security_and_analysis.get("advanced_security", {}).get("status")
-            == "enabled"
-        )
+        passing = security_and_analysis.get("advanced_security", {}).get("status") == "enabled"
         return add_metadata(passing, RepoCodeScanning, config)
