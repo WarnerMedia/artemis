@@ -5,7 +5,7 @@ requires-python = ">= 3.12"
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py312"
 
 [tool.isort]
 profile = "black"
