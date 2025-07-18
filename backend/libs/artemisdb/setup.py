@@ -23,11 +23,13 @@ setup(
     setup_requires=["pytest-runner"],
     install_requires=[
         "django~=4.2",
-        "psycopg2-binary==2.9.9",
+        "psycopg2-binary~=2.9.9",
         "simplejson~=3.19",
     ],
     tests_require=["pytest~=8.3"],
-    entry_points={"console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]},
+    entry_points={
+        "console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]
+    },
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
