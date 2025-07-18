@@ -13,7 +13,7 @@ def get_github_token():
 
 
 def has_github_token():
-    return get_github_token() != None
+    return get_github_token() is not None
 
 
 def get_github_installation_id():
@@ -21,7 +21,7 @@ def get_github_installation_id():
 
 
 def has_github_installation_id():
-    return get_github_installation_id() != None
+    return get_github_installation_id() is not None
 
 
 def get_github_installation_private_key():
@@ -29,7 +29,7 @@ def get_github_installation_private_key():
 
 
 def has_github_installation_private_key():
-    return get_github_installation_private_key() != None
+    return get_github_installation_private_key() is not None
 
 
 def get_config_file():
@@ -37,7 +37,7 @@ def get_config_file():
 
 
 def has_config_file():
-    return get_config_file() != None
+    return get_config_file() is not None
 
 
 def get_github_config():
@@ -45,4 +45,4 @@ def get_github_config():
 
 
 def has_github_config():
-    return get_github_config() != None
+    return get_github_config() is not None

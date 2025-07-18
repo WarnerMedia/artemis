@@ -132,7 +132,7 @@ def _pretty_print(full_result, verbose=False):
         print(f"Branch:          {branch}")
         print(f"Ruleset:         {ruleset}")
         print(f"Ruleset Version: {ruleset_version}")
-        print(f"Results:")
+        print("Results:")
 
     for check in full_result.get("results"):
         passing = check.get("pass")

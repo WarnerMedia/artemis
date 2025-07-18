@@ -18,7 +18,7 @@ class Checker:
         # Filter out rules that are explicitly disabled
         # A rule with a config that omits the 'enabled' property will still be run
         rule_configs = self._config.get("rules")
-        checks_to_run = filter(lambda rule_config: rule_config.get("enabled") != False, rule_configs)
+        checks_to_run = filter(lambda rule_config: rule_config.get("enabled"), rule_configs)
 
         results = map(
             lambda rule_config: self.run_check(rule_config, owner, repo, branch),
@@ -31,9 +31,9 @@ class Checker:
         rule_type = rule_config.get("type")
         rule = rules.rules_dict.get(rule_type)
 
-        if rule_type == None:
+        if rule_type is None:
             raise Exception('Rule configurations must have "type" field')
-        if rule == None:
+        if rule is None:
             raise Exception(f'Unrecognized rule type: "{rule_type}"')
 
         return rule.check(self._github, owner, repo, branch, rule_config)
