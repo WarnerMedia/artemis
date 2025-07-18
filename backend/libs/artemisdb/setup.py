@@ -27,9 +27,7 @@ setup(
         "simplejson~=3.19",
     ],
     tests_require=["pytest~=8.3"],
-    entry_points={
-        "console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]
-    },
+    entry_points={"console_scripts": ["artemisdbmanage=artemisdb.artemisdb.manage:main"]},
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
