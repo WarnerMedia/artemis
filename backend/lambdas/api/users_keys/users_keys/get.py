@@ -42,15 +42,14 @@ def _key_list(email, offset, limit, path_user_id):
         user = User.objects.get(email=email, deleted=False)
         keys = user.apikey_set.order_by("-created")
         
-        # Get paged response
-        paged_response = page(keys, offset, limit, f"users/{path_user_id}/keys")
+        # Create a custom to_dict_kwargs function to add userEmail
+        def add_user_email(obj):
+            result = obj.to_dict()
+            result["userEmail"] = user.email
+            return result
         
-        # Add userEmail to each key in the results
-        response_data = paged_response.get("body", {})
-        if "results" in response_data:
-            for key in response_data["results"]:
-                key["userEmail"] = user.email
-        
-        return paged_response
+        # Use the page function with our custom to_dict function
+        return page(keys, offset, limit, f"users/{path_user_id}/keys", 
+                   to_dict_kwargs={"to_dict_func": add_user_email})
     except User.DoesNotExist:
         return response(code=HTTPStatus.NOT_FOUND)
