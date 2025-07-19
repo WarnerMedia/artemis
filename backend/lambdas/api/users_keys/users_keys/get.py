@@ -22,10 +22,18 @@ def get(parsed_event, email=None):
 
 
 def _single_key(email, key_id):
-    key = User.objects.get(email=email, deleted=False).apikey_set.filter(key_id=key_id).first()
+    user = User.objects.get(email=email, deleted=False)
+    key = user.apikey_set.filter(key_id=key_id).first()
     if not key:
         return response(code=HTTPStatus.NOT_FOUND)
-    return response(key.to_dict())
+    
+    # Get the serialized key data
+    key_data = key.to_dict()
+    
+    # Add userEmail field
+    key_data["userEmail"] = user.email
+    
+    return response(key_data)
 
 
 def _key_list(email, offset, limit, path_user_id):
@@ -33,13 +41,16 @@ def _key_list(email, offset, limit, path_user_id):
     try:
         user = User.objects.get(email=email, deleted=False)
         keys = user.apikey_set.order_by("-created")
-        # Serialize keys and add userEmail
-        key_dicts = []
-        for key in keys:
-            d = key.to_dict()
-            d["userEmail"] = user.email
-            key_dicts.append(d)
-        # Use your paging function, but pass the already-serialized list
-        return page(key_dicts, offset, limit, f"users/{path_user_id}/keys", already_serialized=True)
+        
+        # Get paged response
+        paged_response = page(keys, offset, limit, f"users/{path_user_id}/keys")
+        
+        # Add userEmail to each key in the results
+        response_data = paged_response.get("body", {})
+        if "results" in response_data:
+            for key in response_data["results"]:
+                key["userEmail"] = user.email
+        
+        return paged_response
     except User.DoesNotExist:
         return response(code=HTTPStatus.NOT_FOUND)
