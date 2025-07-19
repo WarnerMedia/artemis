@@ -53,9 +53,7 @@ import { pluginsDisabled } from "app/scanPlugins";
 import { AppDispatch } from "app/store";
 import MailToLink from "components/MailToLink";
 import { Key } from "features/keys/keysSchemas";
-import {
-	getUserKeys,
-} from "features/keys/keysSlice";
+import { getUserKeys } from "features/keys/keysSlice";
 import { addNotification } from "features/notifications/notificationsSlice";
 import { selectTheme, setTheme } from "features/theme/themeSlice";
 import { selectCurrentUser } from "features/users/currentUserSlice";
@@ -68,10 +66,7 @@ import {
 	unlinkVcsService,
 } from "features/vcsServices/vcsServicesSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	capitalize,
-	formatDate,
-} from "utils/formatters";
+import { capitalize, formatDate } from "utils/formatters";
 
 const useStyles = makeStyles()((theme) => ({
 	addKeyFormField: {
@@ -223,7 +218,6 @@ const RedButton = withStyles(Button, (theme: Theme) => ({
 		},
 	},
 }));
-
 
 export const BackButton = (props: { fromRedirect?: boolean }) => {
 	const { classes } = useStyles();
@@ -407,7 +401,6 @@ export const LinkedAccounts = () => {
 	);
 };
 
-
 // options that can be passed to page as querystring params /settings?foo=bar
 interface PageQueryParams {
 	code?: string; // response from authentication to GitHub user account for linking
@@ -428,9 +421,7 @@ export default function UserSettings() {
 	const colors = useSelector(selectTheme);
 
 	const [newScopeValue] = useState("");
-	const [scrollTarget] = useState<HTMLElement | undefined>(
-		undefined,
-	);
+	const [scrollTarget] = useState<HTMLElement | undefined>(undefined);
 	const [hideWelcome, setHideWelcome] = useState(false);
 	const [fromRedirect, setFromRedirect] = useState(false);
 
@@ -524,7 +515,6 @@ export default function UserSettings() {
 			});
 		}
 	}, [newScopeValue, scrollTarget]);
-
 
 	const getFeatureTooltipChips = (obj?: User | Key | null) => {
 		const tooltips: string[] = [];

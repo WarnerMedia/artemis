@@ -1343,7 +1343,12 @@ export default function UsersPage() {
 					}
 				/>
 			)}
-			<Dialog open={apiKeysDialogOpen} onClose={() => setApiKeysDialogOpen(false)} maxWidth="md" fullWidth>
+			<Dialog
+				open={apiKeysDialogOpen}
+				onClose={() => setApiKeysDialogOpen(false)}
+				maxWidth="md"
+				fullWidth
+			>
 				{apiKeysUser && <ApiKeys user={apiKeysUser} />}
 			</Dialog>
 		</>

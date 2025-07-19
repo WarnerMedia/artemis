@@ -38,7 +38,6 @@ import {
 	ListItemText,
 	Paper,
 	TextField as MuiTextField,
-
 	Toolbar,
 	Tooltip,
 	Typography,
@@ -599,13 +598,13 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 				const response = await client.addUserKey({
 					url: "/users/self/keys",
 					data: {
-                        name: values?.name.trim(),
-                        scope: values?.scope,
-                        admin: values?.admin ?? false,
-                        expires: expires,
-                        features: features,
-                        userEmail: ""
-                    },
+						name: values?.name.trim(),
+						scope: values?.scope,
+						admin: values?.admin ?? false,
+						expires: expires,
+						features: features,
+						userEmail: "",
+					},
 				});
 
 				setNewKeyValue(response.key);
