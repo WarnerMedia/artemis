@@ -1269,8 +1269,9 @@ const adjustKey = (response: Key) => {
 client.getUserKeys = async ({
 	meta,
 	customConfig = {},
-}: Client = {}): Promise<KeysResponse> => {
-	const id = "self";
+	userId,
+}: Client & { userId?: string } = {}): Promise<KeysResponse> => {
+	const id = userId || "self";
 	try {
 		const response = await client(`/users/${id}/keys`, {
 			...customConfig,

@@ -9,7 +9,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 
-import client, { Client, handleException, UserKeyRequest } from "api/client";
+import client, { handleException, UserKeyRequest } from "api/client";
 import { deleteUserKey, getUserKeys } from "features/keys/keysSlice";
 import { addNotification } from "features/notifications/notificationsSlice";
 import { Key, KeysResponse } from "./keysSchemas";
@@ -36,22 +36,17 @@ function* _deleteUserKeySaga(
 }
 
 function* _getUserKeysSaga(
-	action: PayloadAction<Client>,
+	action: PayloadAction<{ userId?: string }>,
 ): Generator<StrictEffect, void, KeysResponse> {
 	const maxCount = 200;
-	let meta = undefined;
-	if (action?.payload?.meta) {
-		meta = action.payload.meta;
-	} else {
-		// by default get 200 api keys and do sorting client-side
-		meta = {
-			currentPage: 0,
-			itemsPerPage: maxCount,
-		};
-	}
+	const meta = {
+		currentPage: 0,
+		itemsPerPage: maxCount,
+	};
 	try {
 		const response: KeysResponse = yield call(client.getUserKeys, {
 			meta: meta,
+			userId: action.payload?.userId,
 		});
 		yield put({
 			type: getUserKeys.fulfilled.type,
