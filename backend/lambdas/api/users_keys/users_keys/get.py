@@ -31,7 +31,15 @@ def _single_key(email, key_id):
 def _key_list(email, offset, limit, path_user_id):
     # Get the keys for the user
     try:
-        keys = User.objects.get(email=email, deleted=False).apikey_set.order_by("-created")
-        return page(keys, offset, limit, f"users/{path_user_id}/keys")
+        user = User.objects.get(email=email, deleted=False)
+        keys = user.apikey_set.order_by("-created")
+        # Serialize keys and add userEmail
+        key_dicts = []
+        for key in keys:
+            d = key.to_dict()
+            d["userEmail"] = user.email
+            key_dicts.append(d)
+        # Use your paging function, but pass the already-serialized list
+        return page(key_dicts, offset, limit, f"users/{path_user_id}/keys", already_serialized=True)
     except User.DoesNotExist:
         return response(code=HTTPStatus.NOT_FOUND)
