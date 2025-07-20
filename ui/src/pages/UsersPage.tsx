@@ -1354,7 +1354,12 @@ export default function UsersPage() {
 				maxWidth="md"
 				fullWidth
 			>
-				{apiKeysUser && <ApiKeys user={apiKeysUser} />}
+				{apiKeysUser && (
+					<ApiKeys
+						user={apiKeysUser}
+						title={`API Keys - ${apiKeysUser.email}`}
+					/>
+				)}
 			</Dialog>
 		</>
 	);

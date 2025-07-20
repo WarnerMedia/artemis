@@ -794,7 +794,7 @@ msgid "success"
 msgstr "success"
 
 #: src/pages/UserSettings.tsx:887
-#: src/components/ApiKeys.tsx:1465
+#: src/components/ApiKeys.tsx:1469
 msgid "API Keys"
 msgstr "API Keys"
 
@@ -819,7 +819,7 @@ msgstr "Copied to clipboard"
 msgid "info"
 msgstr "info"
 
-#: src/components/ApiKeys.tsx:1476
+#: src/components/ApiKeys.tsx:1481
 msgid "No API keys found. Click the + button to add a new API key"
 msgstr "No API keys found. Click the + button to add a new API key"
 
@@ -1174,7 +1174,7 @@ msgstr "Removing..."
 msgid "Name:"
 msgstr "Name:"
 
-#: src/components/ApiKeys.tsx:1478
+#: src/components/ApiKeys.tsx:1484
 msgid "Fetching API keys..."
 msgstr "Fetching API keys..."
 
@@ -1484,7 +1484,7 @@ msgstr "Error"
 msgid "Unable to link user service"
 msgstr "Unable to link user service"
 
-#: src/pages/UsersPage.tsx:1378
+#: src/pages/UsersPage.tsx:1383
 msgid "Users"
 msgstr "Users"
 
@@ -2169,7 +2169,7 @@ msgstr "Download as JSON"
 msgid "Component license null must be either \"true\" or \"false\""
 msgstr "Component license null must be either \"true\" or \"false\""
 
-#: src/pages/UsersPage.tsx:1372
+#: src/pages/UsersPage.tsx:1377
 #: src/pages/UserSettings.tsx:247
 #: src/pages/SearchPage.tsx:4369
 msgid "Back"
@@ -2370,7 +2370,7 @@ msgstr "This column is filtered"
 msgid "Missing \"Organization/\" Prefix"
 msgstr "Missing \"Organization/\" Prefix"
 
-#: src/components/ApiKeys.tsx:1422
+#: src/components/ApiKeys.tsx:1426
 msgid "API Key Added"
 msgstr "API Key Added"
 
@@ -2383,7 +2383,7 @@ msgstr "Fetching vulnerability results..."
 msgid "Results"
 msgstr "Results"
 
-#: src/components/ApiKeys.tsx:1423
+#: src/components/ApiKeys.tsx:1427
 msgid "Add New API Key"
 msgstr "Add New API Key"
 
@@ -2506,6 +2506,10 @@ msgstr "Hidden finding last updated by:"
 msgid "Select a service or enter a value to search for"
 msgstr "Select a service or enter a value to search for"
 
+#: src/components/ApiKeys.tsx:1483
+msgid "No API keys found for this user."
+msgstr "No API keys found for this user."
+
 #: src/pages/SearchPage.tsx:2567
 #: src/pages/SearchPage.tsx:2621
 #: src/pages/ResultsPage.tsx:2514
@@ -2583,7 +2587,7 @@ msgstr "Default"
 msgid "User removed"
 msgstr "User removed"
 
-#: src/components/ApiKeys.tsx:1410
+#: src/components/ApiKeys.tsx:1413
 msgid "{title}"
 msgstr "{title}"
 

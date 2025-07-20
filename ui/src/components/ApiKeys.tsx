@@ -1404,6 +1404,9 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 		);
 	};
 
+	// Determine if this is the current user's keys or another user's keys
+	const isCurrentUserKeys = !user || user.email === currentUser?.email;
+
 	return (
 		<Paper className={classes.paper}>
 			<Typography component="h2" variant="h6" align="center">
@@ -1411,7 +1414,8 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 			</Typography>
 
 			<>
-				{(keyCount || keysStatus !== "loading") && (
+				{/* Only show the add key functionality for the current user */}
+				{isCurrentUserKeys && (keyCount || keysStatus !== "loading") && (
 					<>
 						{addKeyToolbar()}
 						<DraggableDialog
@@ -1472,9 +1476,11 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 					<NoResults
 						title={
 							keysStatus !== "loading"
-								? i18n._(
-										t`No API keys found. Click the + button to add a new API key`,
-									)
+								? isCurrentUserKeys
+									? i18n._(
+											t`No API keys found. Click the + button to add a new API key`,
+										)
+									: i18n._(t`No API keys found for this user.`)
 								: i18n._(t`Fetching API keys...`)
 						}
 					/>
