@@ -37,9 +37,16 @@ def _single_key(email, key_id):
 
 
 def _key_list(email, offset, limit, path_user_id):
+    # Determine which user to query
+    query_email = email  # Default to the authenticated user
+    
+    # If path_user_id is specified and not "self", use that instead
+    if path_user_id and path_user_id != "self":
+        query_email = path_user_id
+    
     # Get the keys for the user
     try:
-        user = User.objects.get(email=email, deleted=False)
+        user = User.objects.get(email=query_email, deleted=False)
         keys = user.apikey_set.order_by("-created")
         
         # Post-processor function to add userEmail to each key
