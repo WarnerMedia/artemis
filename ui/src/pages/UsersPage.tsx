@@ -471,7 +471,12 @@ export default function UsersPage() {
 							color="primary"
 							aria-label={i18n._(t`View API Keys`)}
 							onClick={() => {
-								setApiKeysUser(row as User);
+								// Create a clean user object without the "id-" prefix in the ID
+								const cleanUser = {
+									...(row as User),
+									id: (row as User).email, // Use the email directly as the ID
+								};
+								setApiKeysUser(cleanUser);
 								setApiKeysDialogOpen(true);
 							}}
 						>
