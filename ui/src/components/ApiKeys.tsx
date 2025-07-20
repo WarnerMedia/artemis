@@ -405,9 +405,11 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 						autoFocus
 						onClick={() => {
 							if (deleteKey?.id) {
+								// Use user.id if available (for other users), otherwise use "self" for the current user
+								const userPath = user?.id ? user.id : "self";
 								dispatch(
 									deleteUserKey({
-										url: `/users/self/keys/${deleteKey.id}`,
+										url: `/users/${userPath}/keys/${deleteKey.id}`,
 									}),
 								);
 							}

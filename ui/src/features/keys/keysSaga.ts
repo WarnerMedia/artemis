@@ -26,6 +26,14 @@ function* _deleteUserKeySaga(
 			payload: response,
 		});
 		yield put(addNotification(i18n._(t`Key removed`), "success"));
+		
+		// Extract user ID from URL path to refresh keys for the same user
+		const url = action.payload.url;
+		const pathParts = url.split('/');
+		const userId = pathParts[2]; // users/{userId}/keys/{keyId}
+		
+		// Refresh keys list after successful deletion
+		yield put(getUserKeys({ userId: userId !== 'self' ? userId : undefined }));
 	} catch (error: any) {
 		yield put({
 			type: deleteUserKey.rejected.type,
