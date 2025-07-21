@@ -22,7 +22,7 @@ RUN mkdir -p /enry && \
 # Base image requirements:
 #   - Go toolchain (gosec)
 #   - glibc (plugin bundle)
-FROM golang:1.15.8-buster
+FROM golang:1.15.8-alpine
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
