@@ -205,11 +205,11 @@ def page(
             if to_dict_kwargs is None:
                 to_dict_kwargs = {}
             item_dict = obj.to_dict(**to_dict_kwargs)
-            
+
             # Apply post-processing if a function was provided
             if post_processor is not None:
                 item_dict = post_processor(obj, item_dict)
-                
+
             obj_list.append(item_dict)
 
     # Build the paging links

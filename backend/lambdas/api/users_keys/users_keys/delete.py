@@ -9,15 +9,15 @@ def delete(parsed_event, email=None):
     if not parsed_event.get("key_id"):
         # Key ID is required
         return response(code=HTTPStatus.BAD_REQUEST)
-    
+
     # Determine which user to query
     query_email = email  # Default to the authenticated user
     path_user_id = parsed_event.get("user_id")
-    
+
     # If path_user_id is specified and not "self", use that instead
     if path_user_id and path_user_id != "self":
         query_email = path_user_id
-    
+
     try:
         # Get the user first to verify they exist
         user = User.objects.get(email=query_email, deleted=False)
