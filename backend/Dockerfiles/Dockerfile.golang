@@ -1,4 +1,4 @@
-FROM alpine:3.12 AS verifier
+FROM alpine:3.22 AS verifier
 
 ARG ENRYVER
 ARG ENRYSHA
@@ -6,16 +6,15 @@ ARG ENRYSHA
 ARG GOSECVER
 ARG GOSECSHA
 
-RUN apk add --no-cache curl=7.79.1-r1 && \
-    mkdir -p /enry && \
+RUN mkdir -p /enry && \
     echo "$ENRYSHA  /enry/enry.tar.gz" > /enry_checksum.txt && \
-    curl https://github.com/go-enry/enry/releases/download/v$ENRYVER/enry-v$ENRYVER-linux-amd64.tar.gz -L -o /enry/enry.tar.gz && \
+    wget -q -O /enry/enry.tar.gz https://github.com/go-enry/enry/releases/download/v$ENRYVER/enry-v$ENRYVER-linux-amd64.tar.gz && \
     sha256sum -c /enry_checksum.txt && \
     tar -xzvf /enry/enry.tar.gz -C /enry && \
     rm /enry/enry.tar.gz && \
     mkdir -p /gosec && \
     echo "$GOSECSHA  /gosec/gosec.tar.gz" > /gosec_checksum.txt && \
-    curl https://github.com/securego/gosec/releases/download/v${GOSECVER}/gosec_${GOSECVER}_linux_amd64.tar.gz -L -o /gosec/gosec.tar.gz && \
+    wget -q -O /gosec/gosec.tar.gz https://github.com/securego/gosec/releases/download/v${GOSECVER}/gosec_${GOSECVER}_linux_amd64.tar.gz && \
     sha256sum -c /gosec_checksum.txt && \
     tar -xzvf /gosec/gosec.tar.gz -C /gosec && \
     rm /gosec/gosec.tar.gz
