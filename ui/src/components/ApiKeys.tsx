@@ -783,7 +783,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 
 								{currentUser?.admin && (
 									<Grid container spacing={2}>
-										<Grid xs={6}>
+										<Grid item xs={6}>
 											<Box className={classes.addKeyFormField}>
 												<FormControlLabel
 													control={
@@ -800,7 +800,10 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 													}
 													label={i18n._(t`Create a user administrator API key`)}
 												/>
-												<FormHelperText style={{ paddingBottom: "1em" }}>
+												<FormHelperText
+													style={{ paddingBottom: "1em" }}
+													component="div"
+												>
 													<Trans>
 														User administrator keys can manage other users
 													</Trans>
@@ -824,7 +827,10 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 													<CustomCopyToClipboard copyTarget={values?.scope} />
 												)}
 										</FormLabel>
-										<FormHelperText style={{ paddingBottom: "1em" }}>
+										<FormHelperText
+											style={{ paddingBottom: "1em" }}
+											component="div"
+										>
 											<Box>
 												<Trans>
 													Restrict API key to only these repositories. Must be
@@ -907,7 +913,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 														spacing={1}
 														key={`scope-row-${scope}`}
 													>
-														<Grid xs={11}>
+														<Grid item xs={11}>
 															<MuiTextField
 																id={`scope-${idx}`}
 																label={<Trans>Scope {idx + 1}</Trans>}
@@ -918,7 +924,11 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 																disabled
 															/>
 														</Grid>
-														<Grid xs={1} className={classes.formScopeAction}>
+														<Grid
+															item
+															xs={1}
+															className={classes.formScopeAction}
+														>
 															<Tooltip
 																title={<Trans>Remove scope {idx + 1}</Trans>}
 															>
@@ -986,7 +996,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 											className={classes.addNewScopeField}
 										>
 											<Grid container spacing={1}>
-												<Grid xs={11}>
+												<Grid item xs={11}>
 													<MuiTextField
 														id="add-new-scope-input"
 														label={<Trans>Add Scope</Trans>}
@@ -1061,7 +1071,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 														}}
 													/>
 												</Grid>
-												<Grid xs={1} className={classes.formScopeAction}>
+												<Grid item xs={1} className={classes.formScopeAction}>
 													<Tooltip title={<Trans>Add to scope</Trans>}>
 														<span>
 															<Fab
@@ -1097,7 +1107,10 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 										<Box marginTop={2} marginBottom={1}>
 											<FormControl component="fieldset">
 												<FormLabel component="legend">Features</FormLabel>
-												<FormHelperText style={{ paddingBottom: "1em" }}>
+												<FormHelperText
+													style={{ paddingBottom: "1em" }}
+													component="div"
+												>
 													<Trans>
 														Allow this key to use additional scan features
 													</Trans>
@@ -1238,7 +1251,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 		return (
 			<Grid container spacing={3}>
 				{/* left column */}
-				<Grid xs={6}>
+				<Grid item xs={6}>
 					<List dense={true}>
 						<ListItem key="key-scope">
 							<ListItemIcon className={classes.scopeItemIcon}>
@@ -1255,6 +1268,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 								<ListItemText
 									classes={{ secondary: classes.listItemText }}
 									primary={i18n._(t`Scope`)}
+									disableTypography={true}
 									secondary={
 										selectedRow?.scope &&
 										Array.isArray(selectedRow.scope) &&
@@ -1290,6 +1304,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							>
 								<ListItemText
 									primary={i18n._(t`Features`)}
+									disableTypography={true}
 									secondary={
 										featuresChips &&
 										Array.isArray(featuresChips) &&
@@ -1319,6 +1334,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							>
 								<ListItemText
 									primary={i18n._(t`Type`)}
+									disableTypography={true}
 									secondary={
 										selectedRow?.admin
 											? i18n._(t`Administrator`)
@@ -1331,7 +1347,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 				</Grid>
 
 				{/* right column */}
-				<Grid xs={6}>
+				<Grid item xs={6}>
 					<List dense={true}>
 						<ListItem key="key-created">
 							<ListItemIcon>
@@ -1339,6 +1355,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							</ListItemIcon>
 							<ListItemText
 								primary={i18n._(t`Created Date`)}
+								disableTypography={true}
 								secondary={
 									selectedRow?.created ? (
 										<DateTimeCell value={selectedRow?.created} format="long" />
@@ -1359,6 +1376,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							</ListItemIcon>
 							<ListItemText
 								primary={i18n._(t`Expiration Date`)}
+								disableTypography={true}
 								secondary={
 									selectedRow?.expires ? (
 										<ExpiringDateTimeCell
@@ -1382,6 +1400,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							</ListItemIcon>
 							<ListItemText
 								primary={i18n._(t`Last Used Date`)}
+								disableTypography={true}
 								secondary={
 									selectedRow?.last_used ? (
 										<DateTimeCell

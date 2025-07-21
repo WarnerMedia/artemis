@@ -1426,73 +1426,11 @@ export const mockStoreEmpty: RootState = {
 		error: null,
 	},
 	keys: {
-		ids: [
-			'c5365468-3e07-31f9-a613-dae804c84efb',
-			'key-arya-1',
-			'key-bronn-1',
-			'key-bronn-2',
-			'key-jon-1'
-		],
-		entities: {
-			'c5365468-3e07-31f9-a613-dae804c84efb': {
-				id: 'c5365468-3e07-31f9-a613-dae804c84efb',
-				name: 'test.me',
-				created: '2021-11-24T19:08:28+00:00',
-				last_used: null,
-				expires: null,
-				scope: ['*'],
-				admin: false,
-				features: { snyk: false },
-				userEmail: 'Brandon.Stark@example.com'
-			},
-			'key-arya-1': {
-				id: 'key-arya-1',
-				name: 'Arya Key',
-				created: '2025-07-01T10:00:00+00:00',
-				last_used: '2025-07-10T12:00:00+00:00',
-				expires: '2025-12-31T23:59:59+00:00',
-				scope: ['goodVcs/goodOrg/regex-[0-9]'],
-				admin: true,
-				features: { snyk: true },
-				userEmail: 'Arya.Stark@example.com'
-			},
-			'key-bronn-1': {
-				id: 'key-bronn-1',
-				name: 'Bronn API 1',
-				created: '2025-06-01T09:00:00+00:00',
-				last_used: '2025-07-12T08:00:00+00:00',
-				expires: '2025-08-01T00:00:00+00:00',
-				scope: ['*'],
-				admin: false,
-				features: { snyk: false },
-				userEmail: 'Bronn@example.com'
-			},
-			'key-bronn-2': {
-				id: 'key-bronn-2',
-				name: 'Bronn API 2',
-				created: '2025-07-13T15:00:00+00:00',
-				last_used: null,
-				expires: null,
-				scope: ['goodVcs/goodOrg'],
-				admin: false,
-				features: { snyk: true },
-				userEmail: 'Bronn@example.com'
-			},
-			'key-jon-1': {
-				id: 'key-jon-1',
-				name: 'Jon Snow Key',
-				created: '2025-06-15T11:00:00+00:00',
-				last_used: '2025-07-14T09:00:00+00:00',
-				expires: '2025-09-01T00:00:00+00:00',
-				scope: ['*'],
-				admin: true,
-				features: { snyk: false },
-				userEmail: 'Jon.Snow@example.com'
-			}
-		},
+		ids: [],
+		entities: {},
 		status: 'succeeded',
 		error: null,
-		totalRecords: 5
+		totalRecords: 0
 	},
 	notifications: {
 		ids: [],
@@ -7173,7 +7111,8 @@ export const mockStoreApiKeys: RootState = {
 				admin: false,
 				features: {
 					snyk: false
-				}
+				},
+				userEmail: 'Brienne.of.Tarth@example.com'
 			}
 		},
 		status: 'succeeded',

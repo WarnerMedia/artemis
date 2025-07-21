@@ -610,7 +610,7 @@ export default function UserSettings() {
 
 				<Grid container spacing={3}>
 					{/* left column */}
-					<Grid size={6}>
+					<Grid xs={6}>
 						<List dense={true}>
 							<ListItem key="user-email">
 								<ListItemIcon>
@@ -653,6 +653,7 @@ export default function UserSettings() {
 								>
 									<ListItemText
 										classes={{ secondary: classes.longListItemText }}
+										disableTypography={true}
 										primary={i18n._(
 											t`Scope  (${
 												currentUser?.scope ? currentUser.scope.length : 0
