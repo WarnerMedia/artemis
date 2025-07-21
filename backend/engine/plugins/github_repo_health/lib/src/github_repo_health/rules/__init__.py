@@ -1,3 +1,5 @@
+# ignore star imports
+# flake8: noqa: F403, F405
 from .composite_rule import CompositeRule
 from .first_order_rules import *
 
