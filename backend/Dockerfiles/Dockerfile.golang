@@ -21,7 +21,6 @@ RUN mkdir -p /enry && \
 
 # Base image requirements:
 #   - Go toolchain (gosec)
-#   - glibc (plugin bundle)
 FROM golang:1.24.5-alpine
 
 ARG MAINTAINER
