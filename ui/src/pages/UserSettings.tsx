@@ -610,7 +610,7 @@ export default function UserSettings() {
 
 				<Grid container spacing={3}>
 					{/* left column */}
-					<Grid xs={6}>
+					<Grid size={6}>
 						<List dense={true}>
 							<ListItem key="user-email">
 								<ListItemIcon>
