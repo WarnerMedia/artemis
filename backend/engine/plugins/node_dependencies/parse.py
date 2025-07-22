@@ -10,7 +10,13 @@ def _normalize_severity(severity: str) -> str:
     return severity
 
 
-def parse_advisory(adv: dict, package_file: str, lockfile: dict, resolver: LineNumberResolver, path: str) -> list:
+def parse_advisory(
+    adv: dict,
+    package_file: str,
+    lockfile: dict,
+    resolver: LineNumberResolver,
+    path: str,
+) -> list:
     results = []
 
     # npm can pull in multiple versions of a module
@@ -21,6 +27,10 @@ def parse_advisory(adv: dict, package_file: str, lockfile: dict, resolver: LineN
         if isinstance(via, str):
             # Skip vias that are strings
             continue
+
+        if not via["url"]:
+            # Make up an id for vias that don't have a URL
+            via["url"] = f"unknown-{via['name']}-vuln-{via['source']}"
 
         # Find the CVEs that go with the advisory URL
         cves = find_cves(via["url"])
@@ -43,7 +53,11 @@ def parse_advisory(adv: dict, package_file: str, lockfile: dict, resolver: LineN
                         "filename": str(ver["filename"] or "").replace(f"{path}", ""),
                         "line": ver["line"],
                         "inventory": {
-                            "component": {"name": adv["name"], "version": ver["version"], "type": "npm"},
+                            "component": {
+                                "name": adv["name"],
+                                "version": ver["version"],
+                                "type": "npm",
+                            },
                             "advisory_ids": sorted(list(set(filter(None, advisory_ids)))),
                         },
                     }
