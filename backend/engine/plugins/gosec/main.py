@@ -5,6 +5,7 @@ GoSec Plugin
 import json
 from pathlib import Path
 import subprocess
+import sys
 from typing import TypedDict
 
 from engine.plugins.lib import utils
@@ -129,7 +130,15 @@ def main():
     """
     args = utils.parse_args()
     output = run_gosec(args.path)
-    print(json.dumps({"success": not bool(output), "details": output}))
+    json.dump(
+        {
+            "success": not bool(output),
+            "truncated": False,
+            "errors": [],
+            "details": output,
+        },
+        sys.stdout,
+    )
 
 
 if __name__ == "__main__":
