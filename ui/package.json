@@ -26,7 +26,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@svgr/webpack": "^8.1.0",
     "autosuggest-highlight": "3.3.4",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "browserslist": "^4.25.1",
     "camelcase": "^8.0.0",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
