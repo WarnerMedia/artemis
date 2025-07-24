@@ -50,7 +50,16 @@ target "boxed-musl" {
   dockerfile = "Dockerfiles/Dockerfile.boxed"
 
   args = {
-    PYTHON_VER = "3.12-alpine"
+    # For Musl, temporarily use Python 3.13 to fix issues with
+    # ModuleNotFoundError at runtime:
+    # https://github.com/python/cpython/issues/95855
+    #
+    # Plugin authors choosing to use Musl-based distributions (e.g. Alpine)
+    # in their containers must check for compatibility.
+    #
+    # This can be reverted if the linked issue is backported to 3.12.
+    PYTHON_VER = "3.13-alpine"
+    PYTHON_TARGET_VER = "3.13"
     LIBC = "musl"
   }
 }

@@ -7,6 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from engine.plugins.gosec.main import amend_rule, get_cwe_reason, parse_scan, run_gosec
+from engine.plugins.gosec.report import Issue, ReportInfo
 from engine.plugins.lib import utils
 
 TEST_GOSEC_OUTPUT = {
@@ -202,7 +203,7 @@ class TestPluginGoSec(unittest.TestCase):
         parsing output is correct
         """
         expected_output = TEST_PARSE_SCAN_OUTPUT
-        output = parse_scan(TEST_GOSEC_OUTPUT, "/go/golang-examples/")
+        output = parse_scan(ReportInfo(**TEST_GOSEC_OUTPUT), "/go/golang-examples/")
         self.assertEqual(expected_output, output)
 
     def test_amend_rule_G404(self):
@@ -211,7 +212,7 @@ class TestPluginGoSec(unittest.TestCase):
         edits a G307 warning severity to low
         """
         expected_output = TEST_AMEND_G404_OUTPUT
-        output = amend_rule(TEST_AMEND_G404_INPUT, "/go/golang-examples/")
+        output = amend_rule(Issue(**TEST_AMEND_G404_INPUT), "/go/golang-examples/")
         self.assertEqual(expected_output, output)
 
     def test_amend_rule_G307(self):
@@ -219,7 +220,7 @@ class TestPluginGoSec(unittest.TestCase):
         tests amend_rule edits a G307 warning severity to low
         """
         expected_output = TEST_AMEND_G307_OUTPUT
-        output = amend_rule(TEST_AMEND_G307_INPUT, "/go/golang-examples/")
+        output = amend_rule(Issue(**TEST_AMEND_G307_INPUT), "/go/golang-examples/")
         self.assertEqual(expected_output, output)
 
     @patch("engine.plugins.gosec.main.subprocess")
