@@ -30,7 +30,7 @@ def run_bandit(path: str) -> tuple[list, list]:
             try:
                 with open(output_json_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                return build_dict(data, path), errors
+                return build_dict(data, path)
             except json.JSONDecodeError as e:
                 error_msg = f"JSON decode error: {e}"
                 LOG.error(error_msg)
@@ -49,7 +49,7 @@ def run_bandit(path: str) -> tuple[list, list]:
         return [], errors
 
 
-def build_dict(data: dict, path: str) -> list:
+def build_dict(data: dict, path: str) -> tuple[list, list]:
     """
     builds the list from the json output
     :return: list
@@ -70,7 +70,7 @@ def build_dict(data: dict, path: str) -> list:
                 items["message"] = "Possible hardcoded password"
 
             results_list.append(items)
-    return results_list
+    return results_list, data["errors"]
 
 
 def main():
