@@ -25,9 +25,8 @@ def handler(event, context):
     except ValidationError as e:
         return response({"message": e.message}, code=e.code)
 
-    # Accessing another's user's config is not currently supported. We will likely add "admin"
-    # support at a later time where this will be supported for those with elevated privileges.
-    if parsed_event.get("user_id") not in (email, "self"):
+    # Allow admins to access any user's keys, but restrict non-admins to their own
+    if parsed_event.get("user_id") not in (email, "self") and not admin:
         return response(code=HTTPStatus.FORBIDDEN)
 
     if event.get("httpMethod") == "GET":

@@ -4,6 +4,7 @@
 # Source files.
 !/src/**/*.ts
 !/src/**/*.tsx
+!/testData/**/*.tsx
 
 # Configuration files.
 !/*.js
