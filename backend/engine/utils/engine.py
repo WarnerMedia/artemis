@@ -64,12 +64,12 @@ def cleanup_images(images: list[BuiltImage]) -> None:
     :param images: list of images.
     :return: None
     """
-    remover.prune_images()
-    if not images:
-        return
     for image in images:
         if not image.remove():
             log.error("Failed to remove image: %s", image.tag_id)
+    # Prune images after removing (untagging), since this may leave
+    # behind unreferenced objects we can clean up.
+    remover.prune_images()
 
 
 def get_key(secret_name: str, region=REGION):
