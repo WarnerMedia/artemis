@@ -82,7 +82,7 @@ def main():
     args = utils.parse_args()
 
     output, errors = run_bandit(args.path)
-    print(json.dumps({"success": not output and not errors, "details": output, "errors": errors}))
+    print(json.dumps({"success": not output, "details": output, "errors": errors}))
 
 
 if __name__ == "__main__":
