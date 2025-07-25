@@ -1,9 +1,10 @@
 import os
 import secrets
 import subprocess
-from dataclasses import dataclass
 from glob import glob
-from typing import TypedDict
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from artemislib.logging import Logger
 from env import ARTEMIS_PRIVATE_DOCKER_REPOS_KEY
@@ -14,13 +15,14 @@ from .remover import remove_docker_image
 log = Logger("oci_builder")
 
 
-@dataclass(slots=True)
-class BuiltImage:
+class BuiltImage(BaseModel):
     """Local container image built by ImageBuilder."""
 
     status: bool  # True if image was built successfully.
-    tag_id: str
+    tag_id: Annotated[str, Field(alias="tag-id")]  # JSON field uses kebab-case for historical reasons.
     dockerfile: str  # Path relative to the base directory.
+
+    model_config = ConfigDict(populate_by_name=True, serialize_by_alias=True)
 
     def remove(self) -> bool:
         """
@@ -30,9 +32,14 @@ class BuiltImage:
         return remove_docker_image(self.tag_id)
 
 
-class BuildResult(TypedDict):
-    results: list[BuiltImage]
-    dockerfile_count: int
+class BuildResult(BaseModel):
+    """
+    Images built by ImageBuilder.
+    This is passed to plugins (as JSON) that scan container images.
+    """
+
+    results: list[BuiltImage] = []
+    dockerfile_count: int = 0
 
 
 class ImageBuilder:
@@ -76,8 +83,7 @@ class ImageBuilder:
             # Build each of the Dockerfiles locally
             results.append(self.build_local_image(filename, secrets.token_hex(16)))
 
-        # Return the results
-        return {"results": results, "dockerfile_count": len(files)}
+        return BuildResult(results=results, dockerfile_count=len(files))
 
     def build_local_image(self, dockerfile: str, tag: str) -> BuiltImage:
         """
@@ -105,7 +111,7 @@ class ImageBuilder:
         status = build_proc.returncode == 0
         log.info("Built %s from %s (success: %s)", tag_id, dockerfile_name, status)
 
-        return BuiltImage(status, tag_id, dockerfile_name)
+        return BuiltImage(status=status, tag_id=tag_id, dockerfile=dockerfile_name)
 
     def untag_base_images(self) -> None:
         """

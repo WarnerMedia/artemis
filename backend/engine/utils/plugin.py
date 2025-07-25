@@ -829,7 +829,7 @@ def get_plugin_command(
     cmd.extend(
         [
             get_engine_vars(scan, temp_vol_name, working_src, depth=depth, include_dev=include_dev, services=services),
-            json.dumps(scan_images),
+            scan_images.model_dump_json(),
             json.dumps(plugin_config),
         ]
     )
