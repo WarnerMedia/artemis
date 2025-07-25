@@ -68,7 +68,8 @@ def cleanup_images(images: list[BuiltImage]) -> None:
     if not images:
         return
     for image in images:
-        remover.remove_docker_image(image)
+        if not image.remove():
+            log.error("Failed to remove image: %s", image.tag_id)
 
 
 def get_key(secret_name: str, region=REGION):

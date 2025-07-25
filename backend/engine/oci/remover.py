@@ -2,21 +2,19 @@ import subprocess
 
 from artemislib.logging import Logger
 
-from .builder import BuiltImage
-
 logger = Logger("oci_remover")
 
 
-def remove_docker_image(image: BuiltImage) -> bool:
+def remove_docker_image(tag: str) -> bool:
     """
     Delete a container image from disk after the scan job is complete.
-    :param image:
+    :param tag: Image tag.
     :return: True if successful.
     """
-    logger.info("Removing image %s", image["tag-id"])
+    logger.info("Removing image %s", tag)
     return (
         subprocess.run(
-            ["docker", "image", "rm", "-f", image["tag-id"]],
+            ["docker", "image", "rm", "-f", tag],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,

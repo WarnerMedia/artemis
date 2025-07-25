@@ -1,6 +1,7 @@
 import os
 import secrets
 import subprocess
+from dataclasses import dataclass
 from glob import glob
 from typing import TypedDict
 
@@ -8,16 +9,25 @@ from artemislib.logging import Logger
 from env import ARTEMIS_PRIVATE_DOCKER_REPOS_KEY
 from plugins.lib import utils
 
+from .remover import remove_docker_image
+
 log = Logger("oci_builder")
 
-BuiltImage = TypedDict(
-    "BuiltImage",
-    {  # Using alternative form due to hyphen in "tag-id".
-        "status": bool,  # True if image was built sucessfully.
-        "tag-id": str,
-        "dockerfile": str,  # Path relative to the base directory.
-    },
-)
+
+@dataclass(slots=True)
+class BuiltImage:
+    """Local container image built by ImageBuilder."""
+
+    status: bool  # True if image was built successfully.
+    tag_id: str
+    dockerfile: str  # Path relative to the base directory.
+
+    def remove(self) -> bool:
+        """
+        Remove the local container image.
+        :return: True if successful.
+        """
+        return remove_docker_image(self.tag_id)
 
 
 class BuildResult(TypedDict):
@@ -95,7 +105,7 @@ class ImageBuilder:
         status = build_proc.returncode == 0
         log.info("Built %s from %s (success: %s)", tag_id, dockerfile_name, status)
 
-        return {"status": status, "tag-id": tag_id, "dockerfile": dockerfile_name}
+        return BuiltImage(status, tag_id, dockerfile_name)
 
     def untag_base_images(self) -> None:
         """

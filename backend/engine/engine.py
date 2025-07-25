@@ -104,10 +104,10 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
                     built = []
                     not_built = []
                     for image in images["results"]:
-                        if image.get("status"):
-                            built.append(image.get("dockerfile"))
+                        if image.status:
+                            built.append(image.dockerfile)
                         else:
-                            not_built.append(image.get("dockerfile"))
+                            not_built.append(image.dockerfile)
 
                     # Note which images were built or not as scan debug messages
                     debug.append(f"Dockerfiles automatically built for scanning: {', '.join(built) or 'None'}")
