@@ -2,6 +2,7 @@ import os
 import secrets
 import subprocess
 from glob import glob
+from typing import TypedDict
 
 from artemislib.logging import Logger
 from env import ARTEMIS_PRIVATE_DOCKER_REPOS_KEY
@@ -21,6 +22,20 @@ from plugins.lib import utils
 
 log = Logger("oci_builder")
 
+BuiltImage = TypedDict(
+    "BuiltImage",
+    {  # Using alternative form due to hyphen in "tag-id".
+        "status": bool,  # True if image was built sucessfully.
+        "tag-id": str,
+        "dockerfile": str,  # Path relative to the base directory.
+    },
+)
+
+
+class BuildResult(TypedDict):
+    results: list[BuiltImage]
+    dockerfile_count: int
+
 
 class ImageBuilder:
     def __init__(self, path, repo_name, ignore_prefixes, engine_id):
@@ -36,20 +51,20 @@ class ImageBuilder:
         self.ignore_prefixes = ignore_prefixes
         self.engine_id = engine_id
 
-    def find_dockerfiles(self):
+    def find_dockerfiles(self) -> list[str]:
         """
-        Find and loop through all the Dockerfile* files in the path
-        return only files
+        Recursively find all Dockerfiles.
+        :return: list
         """
         dockerfiles = glob("%s/**/Dockerfile*" % self.path, recursive=True)
         return [dockerfile for dockerfile in dockerfiles if os.path.isfile(dockerfile)]
 
-    def build_docker_files(self) -> dict:
+    def build_docker_files(self) -> BuildResult:
         """
-        Finds all of the Dockerfile* in the project
-        :return: list
+        Attempt to build all Dockerfiles.
+        :return: BuildResult
         """
-        results = []
+        results: list[BuiltImage] = []
 
         # Find and loop through all the Dockerfile* files in the path
         files = self.find_dockerfiles()
@@ -66,11 +81,11 @@ class ImageBuilder:
         # Return the results
         return {"results": results, "dockerfile_count": len(files)}
 
-    def build_local_image(self, dockerfile: str, tag: str):
+    def build_local_image(self, dockerfile: str, tag: str) -> BuiltImage:
         """
         :param dockerfile: path to dockerfile
         :param tag: tag that we'll use in scan step
-        :return: boolean
+        :return: BuiltImage
         """
         dockerfile_name = dockerfile.replace(self.path, "")
         if dockerfile_name.startswith("/"):

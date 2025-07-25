@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 
 from artemislib.logging import Logger
 from oci import remover
-from oci.builder import ImageBuilder
+from oci.builder import BuildResult, BuiltImage, ImageBuilder
 from env import APPLICATION, ECR, REGION
 
 DYNAMODB_TTL_DAYS = 60
@@ -37,7 +37,7 @@ def get_ttl_expiration():
     return int((datetime.utcnow() + timedelta(days=DYNAMODB_TTL_DAYS)).timestamp())
 
 
-def _build_docker_images(path: str, repo_name: str, engine_id: str, untag_images=True) -> dict:
+def _build_docker_images(path: str, repo_name: str, engine_id: str, untag_images=True) -> BuildResult:
     """
     Using the ImageBuilder, searches the repository for Dockerfiles, and attempts to build them using unique tags.
     Returns a list of image names and whether they built successfully
@@ -57,11 +57,11 @@ def _build_docker_images(path: str, repo_name: str, engine_id: str, untag_images
     return images
 
 
-def cleanup_images(images: list) -> None:
+def cleanup_images(images: list[BuiltImage]) -> None:
     """
     removes the list of images built to be scanned by the image scanning plugins
     prunes any untagged images.
-    :param images: list of dict images. Only one key is necessary for each dict: tag-id
+    :param images: list of images.
     :return: None
     """
     remover.prune_images()

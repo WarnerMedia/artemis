@@ -17,6 +17,7 @@ from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
 from env import APPLICATION, REGION, SQS_ENDPOINT, VULNERABILITY_EVENTS_ENABLED, METADATA_EVENTS_ENABLED
 from metadata.metadata import get_all_metadata
+from oci.builder import BuildResult
 from processor.details import Details
 from processor.sbom import process_sbom
 from processor.sbom_cdx import process_sbom as process_sbom_cdx
@@ -106,7 +107,7 @@ class EngineProcessor:
                 self.details.client_id,
             )
 
-    def process_plugins(self, images: dict, services: dict) -> None:
+    def process_plugins(self, images: BuildResult, services: dict) -> None:
         """
         Executes plugins to scan the repository, updating the DB of the progress.
         :param images: dict of image build results and how many dockerfiles were found and built
