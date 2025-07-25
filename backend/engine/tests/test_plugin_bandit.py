@@ -337,8 +337,9 @@ class TestPluginBandit(unittest.TestCase):
             },
         ]
 
-        actual = bandit.build_dict(data, "/src")
+        actual, errors = bandit.build_dict(data, "/src")
         self.assertEqual(expected, actual)
+        self.assertEqual([], errors)
 
     def test_build_dict_B105(self):
         data = {
@@ -371,8 +372,9 @@ class TestPluginBandit(unittest.TestCase):
             }
         ]
 
-        actual = bandit.build_dict(data, "src")
+        actual, errors = bandit.build_dict(data, "src")
         self.assertEqual(expected, actual)
+        self.assertEqual([], errors)
 
 
 if __name__ == "__main__":
