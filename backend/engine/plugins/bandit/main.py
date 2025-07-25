@@ -4,31 +4,52 @@ Bandit Plugin
 
 import json
 import subprocess
+import tempfile
 
 from engine.plugins.lib import utils
 
 LOG = utils.setup_logging("bandit")
 
 
-def run_bandit(path: str) -> list:
+def run_bandit(path: str) -> tuple[list, list]:
     """
     runs bandit
-    :return: json
+    :return: list of warnings, list of errors
     """
-    process = subprocess.run(
-        ["bandit", "-r", path, "-f", "json"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path, check=False
-    )
-    if process.returncode == 1:
-        return build_dict(json.loads(process.stdout.decode("utf-8")), path)
-    if process.returncode == 0:
-        LOG.info("No issues found.")
-        return []
-    LOG.error(process.stdout.decode("utf-8"))
-    LOG.error(process.stderr.decode("utf-8"))
-    return []
+    errors = []
+    with tempfile.TemporaryDirectory() as temp_dir:
+        output_json_path = f"{temp_dir}/output.json"
+        process = subprocess.run(
+            ["bandit", "-r", path, "-f", "json", "-o", output_json_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=path,
+            check=False,
+        )
+        if process.returncode == 1:
+            try:
+                with open(output_json_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                return build_dict(data, path)
+            except json.JSONDecodeError as e:
+                error_msg = f"JSON decode error: {e}"
+                LOG.error(error_msg)
+                errors.append(error_msg)
+                return [], errors
+        if process.returncode == 0:
+            LOG.info("No issues found.")
+            return [], errors
+        # Other errors
+        stdout_err = process.stdout.decode("utf-8")
+        stderr_err = process.stderr.decode("utf-8")
+        LOG.info(stdout_err)
+        LOG.error(stderr_err)
+        if stderr_err:
+            errors.append(stderr_err)
+        return [], errors
 
 
-def build_dict(data: dict, path: str) -> list:
+def build_dict(data: dict, path: str) -> tuple[list, list]:
     """
     builds the list from the json output
     :return: list
@@ -49,7 +70,7 @@ def build_dict(data: dict, path: str) -> list:
                 items["message"] = "Possible hardcoded password"
 
             results_list.append(items)
-    return results_list
+    return results_list, data["errors"]
 
 
 def main():
@@ -60,8 +81,8 @@ def main():
     LOG.info("Executing Bandit")
     args = utils.parse_args()
 
-    output = run_bandit(args.path)
-    print(json.dumps({"success": not bool(output), "details": output}))
+    output, errors = run_bandit(args.path)
+    print(json.dumps({"success": not output, "details": output, "errors": errors}))
 
 
 if __name__ == "__main__":

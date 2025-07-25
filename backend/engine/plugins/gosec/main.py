@@ -5,8 +5,12 @@ GoSec Plugin
 import json
 from pathlib import Path
 import subprocess
+import sys
+from typing import TypedDict
 
 from engine.plugins.lib import utils
+
+from .report import Issue, ReportInfo
 
 LOG = utils.setup_logging("gosec")
 
@@ -18,7 +22,17 @@ with (PLUGIN_DIR / "cwe.json").open() as f:
     cwe_mapping = json.load(f)
 
 
-def run_gosec(path: str) -> list:
+class Finding(TypedDict):
+    """Filtered finding to include in output report"""
+
+    filename: str
+    severity: str
+    message: str
+    line: int
+    type: str
+
+
+def run_gosec(path: str) -> list[Finding]:
     """
     runs gosec
     :return: json
@@ -34,13 +48,13 @@ def run_gosec(path: str) -> list:
         LOG.info("No issues found.")
         return []
     if process.returncode == 1:
-        return parse_scan(json.loads(process.stdout.decode("utf-8")), path)
+        return parse_scan(ReportInfo.model_validate_json(process.stdout.decode("utf-8")), path)
     LOG.error(process.stdout.decode("utf-8"))
     LOG.error(process.stderr.decode("utf-8"))
     return []
 
 
-def parse_scan(data: dict, path: str) -> list:
+def parse_scan(data: ReportInfo, path: str) -> list[Finding]:
     """
     builds the list from the json output
     :return: list
@@ -48,23 +62,23 @@ def parse_scan(data: dict, path: str) -> list:
     results_list = []
     if data:
         # log stats of a successful scan
-        LOG.info(data["Stats"])
-        for warnings in data["Issues"]:
-            if warnings["rule_id"] == "G404" or warnings["rule_id"] == "G307":
+        LOG.info(data.stats)
+        for warnings in data.issues:
+            if warnings.rule_id == "G404" or warnings.rule_id == "G307":
                 items = amend_rule(warnings, path)
             else:
                 items = {
-                    "filename": warnings["file"].replace(path, "", 1),
-                    "severity": warnings["severity"].lower(),
-                    "message": warnings["details"],
-                    "line": convert_line(warnings["line"]),  # Convert line number string to an int
-                    "type": "{}: {}".format(warnings["cwe"]["id"], get_cwe_reason(warnings["cwe"]["id"])),
+                    "filename": warnings.file.replace(path, "", 1),
+                    "severity": warnings.severity.lower(),
+                    "message": warnings.details,
+                    "line": convert_line(warnings.line),  # Convert line number string to an int
+                    "type": "{}: {}".format(warnings.cwe.id, get_cwe_reason(warnings.cwe.id)),
                 }
             results_list.append(items)
     return results_list
 
 
-def amend_rule(warnings: object, path: str) -> object:
+def amend_rule(warnings: Issue, path: str) -> dict:
     """
     G404 (Insecure random number source (rand)) is a situationally dependent vulnerability.
     Edit the "severity" to low, amend the "message" to explain when cryptorand is needed over rand.
@@ -77,11 +91,11 @@ def amend_rule(warnings: object, path: str) -> object:
         "If the number being generated does not need to be secure, rand can be used."
     )
     items = {
-        "filename": warnings["file"].replace(path, ""),
+        "filename": warnings.file.replace(path, ""),
         "severity": "low",
-        "message": warnings["details"] + context if warnings["rule_id"] == "G404" else warnings["details"],
-        "line": convert_line(warnings["line"]),  # Convert line number string to an int
-        "type": "{}: {}".format(warnings["cwe"]["id"], get_cwe_reason(warnings["cwe"]["id"])),
+        "message": warnings.details + context if warnings.rule_id == "G404" else warnings.details,
+        "line": convert_line(warnings.line),  # Convert line number string to an int
+        "type": "{}: {}".format(warnings.cwe.id, get_cwe_reason(warnings.cwe.id)),
     }
     return items
 
@@ -116,7 +130,15 @@ def main():
     """
     args = utils.parse_args()
     output = run_gosec(args.path)
-    print(json.dumps({"success": not bool(output), "details": output}))
+    json.dump(
+        {
+            "success": not bool(output),
+            "truncated": False,
+            "errors": [],
+            "details": output,
+        },
+        sys.stdout,
+    )
 
 
 if __name__ == "__main__":
