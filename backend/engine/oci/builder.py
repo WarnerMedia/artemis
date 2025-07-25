@@ -8,18 +8,6 @@ from artemislib.logging import Logger
 from env import ARTEMIS_PRIVATE_DOCKER_REPOS_KEY
 from plugins.lib import utils
 
-# A list of private docker repos with creds stored in Secrets Manager (at ARTEMIS_PRIVATE_DOCKER_REPOS_KEY)
-#
-# Structure:
-# [
-#   {
-#     "url": "Docker login url",
-#     "search": "Search string for identifying whether a Dockerful uses this repo",
-#     "username": "Private docker repo username",
-#     "password": "Private docker repo password"
-#   }
-# ]
-
 log = Logger("oci_builder")
 
 BuiltImage = TypedDict(
@@ -175,6 +163,17 @@ class ImageBuilder:
             # Error already logged in convert_string_to_json.
             return
 
+        # A list of private docker repos with creds stored in Secrets Manager (at ARTEMIS_PRIVATE_DOCKER_REPOS_KEY)
+        #
+        # Structure:
+        # [
+        #   {
+        #     "url": "Docker login url",
+        #     "search": "Search string for identifying whether a Dockerfile uses this repo",
+        #     "username": "Private docker repo username",
+        #     "password": "Private docker repo password"
+        #   }
+        # ]
         for repo in private_docker_repos_response:
             log.info("Checking if any Dockerfiles depend on %s", repo["url"])
             if self.docker_login_needed(files, repo["search"], repo["url"]):
