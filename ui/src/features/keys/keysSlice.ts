@@ -22,7 +22,7 @@ const initialState = keysAdapter.getInitialState<SliceState>({
 export const deleteUserKey = createSagaActions<Key["id"], UserKeyRequest>(
 	"users/deleteUserKey",
 );
-export const getUserKeys = createSagaActions<KeysResponse, void>(
+export const getUserKeys = createSagaActions<KeysResponse, { userId?: string }>(
 	"users/getUserKeys",
 );
 

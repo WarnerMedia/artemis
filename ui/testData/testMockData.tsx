@@ -1428,9 +1428,9 @@ export const mockStoreEmpty: RootState = {
 	keys: {
 		ids: [],
 		entities: {},
-		status: "idle",
+		status: 'succeeded',
 		error: null,
-		totalRecords: 0,
+		totalRecords: 0
 	},
 	notifications: {
 		ids: [],
@@ -7111,7 +7111,8 @@ export const mockStoreApiKeys: RootState = {
 				admin: false,
 				features: {
 					snyk: false
-				}
+				},
+				userEmail: 'Brienne.of.Tarth@example.com'
 			}
 		},
 		status: 'succeeded',
