@@ -342,7 +342,7 @@ dist/lambdas/%.zip: $$(shell find lambdas/$$* -type f)
 	${PIP} install lambdas/$* -t ${BUILD_DIR}/lambdas/$* --upgrade --no-deps --python-version ${LAMBDA_PYTHON_VER}
 	cp lambdas/$*/handlers.py ${BUILD_DIR}/lambdas/$*
 	mkdir -p ${DIST_DIR}/lambdas/$*
-	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip *
+	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip * -x "*/__pycache__/*"
 	@echo "${OK}"
 
 lambdas:  ## Build lambdas
@@ -399,7 +399,7 @@ dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_
 	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS}
 
 	mkdir -p ${DIST_DIR}/lambdas/layers/backend_core/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/backend_core; zip -r ${DIST_DIR}/lambdas/layers/backend_core.zip *
+	cd ${LAMBDA_LAYERS_BUILD_DIR}/backend_core; zip -r ${DIST_DIR}/lambdas/layers/backend_core.zip *  -x "*/__pycache__/*"
 	@echo "${OK}"
 
 lambda_layers:  ## Build lambda layers

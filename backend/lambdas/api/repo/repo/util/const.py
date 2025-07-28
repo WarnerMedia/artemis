@@ -116,13 +116,6 @@ if SNYK_ENABLED:
 else:
     DISABLED_PLUGINS.append("snyk")
 
-if SNYK_ENABLED:
-    # Add the Snyk plugin if it is enabled
-    PLUGIN_LIST_BY_CATEGORY["vulnerability"]["snyk"] = "snyk"  # Still feature-flagged
-    QUALIFIED_PLUGINS["sbom"].append(["snyk"])
-else:
-    DISABLED_PLUGINS.append("snyk")
-
 if VERACODE_ENABLED:
     # Add the Veracode plugin if it is enabled
     PLUGIN_LIST_BY_CATEGORY["vulnerability"]["veracode_sca"] = None
