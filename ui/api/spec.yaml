@@ -2185,7 +2185,6 @@ components:
       required:
         - repo
         - branch
-        - timestamp
         - initiated_by
       properties:
         repo:
@@ -2609,7 +2608,6 @@ components:
         - type: object
           required:
             - id
-            - reason
             - created_by
             - created
             - updated
