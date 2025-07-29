@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "report_cleanup"
-version = "0.0.1"
+version = "2021.06"
 description = "Report Cleanup Lambda"
 readme = "README.md"
 authors = [

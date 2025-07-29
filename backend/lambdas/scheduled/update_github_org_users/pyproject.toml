@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "update_github_org_users"
-version = "0.0.1" # Update to match update_github_org_users/__version__.py if needed
+version = "2021.09"
 description = "Get an up-to-date list of GitHub users' organization membership"
 readme = "README.md"
 authors = [

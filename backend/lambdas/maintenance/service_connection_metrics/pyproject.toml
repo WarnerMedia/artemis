@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "service_connection_metrics"
-version = "0.0.1"
+version = "2024.10"
 description = "License Retrieval Lambda"
 readme = "README.md"
 authors = [

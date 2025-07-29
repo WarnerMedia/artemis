@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scheduled_scan_handler"
-version = "0.0.1"
+version = "2021.12"
 description = "Scheduled Scan Handler Lambda"
 readme = "README.md"
 authors = [
