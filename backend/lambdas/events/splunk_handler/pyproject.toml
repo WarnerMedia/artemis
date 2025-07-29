@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "splunk_handler"
+version =  "2021.11"
+description = "Splunk Handler Lambda"
+readme = "README.md"
+authors = [
+    { name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Topic :: Security"
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest~=8.3", "pytest-runner"]
+
+[project.urls]
+Homepage = "https://github.com/warnermedia/artemis/backend/lambdas/events/splunk_handler"
+
+[tool.pytest.ini_options]
+addopts = "-m \"not integtest and not end2end\" --disable-pytest-warnings"
+testpaths = ["tests"]

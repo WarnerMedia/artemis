@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "artemislib"
+version = "2024.8"
+description = "Shared library for Artemis"
+readme = "README.md"
+authors = [
+    { name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Topic :: Security"
+]
+dependencies = [
+    "aws-lambda-powertools~=3.12",
+    "boto3~=1.37",
+    "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.37",
+    "pyjwt[crypto]~=2.10",
+    "requests~=2.32"
+]
+
+[project.optional-dependencies]
+test = ["pytest~=8.3", "pytest-runner"]
+
+[project.urls]
+Homepage = "https://github.com/warnermedia/artemis/backend/libs/artemislib"
