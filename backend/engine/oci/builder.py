@@ -18,9 +18,17 @@ log = Logger("oci_builder")
 class BuiltImage(BaseModel):
     """Local container image built by ImageBuilder."""
 
-    status: bool  # True if image was built successfully.
-    tag_id: Annotated[str, Field(alias="tag-id")]  # JSON field uses kebab-case for historical reasons.
-    dockerfile: str  # Path relative to the base directory.
+    status: bool
+    """True if image was built successfully."""
+
+    tag_id: Annotated[str, Field(alias="tag-id")]
+    """
+    Unique local image reference ("repo:tag" or just "repo").
+    The JSON field name uses kebab-case for historical reasons.
+    """
+
+    dockerfile: str
+    """Path relative to the base directory."""
 
     model_config = ConfigDict(populate_by_name=True, serialize_by_alias=True)
 
