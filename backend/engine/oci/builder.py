@@ -1,9 +1,12 @@
+from contextlib import contextmanager
+from glob import glob
 import os
 import secrets
 import subprocess
-from glob import glob
 from typing import Annotated
+import uuid
 
+from docker.errors import DockerException
 from pydantic import BaseModel, ConfigDict, Field
 
 from artemislib.logging import Logger
@@ -50,6 +53,38 @@ class ScanImages(BaseModel):
     dockerfile_count: int = 0
 
 
+@contextmanager
+def temporary_builder(name_prefix: str):
+    """
+    Creates a temporary buildx builder.
+    The generated name of the builder is passed to the block.
+    The builder is removed automatically, along with any builder-specific
+    cached resources.
+    """
+    name = f"{name_prefix}-{uuid.uuid4()}"
+
+    # We must use the Docker CLI since docker-py does not yet support buildx.
+
+    create_proc = subprocess.run(
+        ["docker", "buildx", "create", "--name", name],
+        capture_output=True,
+    )
+    if create_proc.returncode != 0:
+        raise DockerException(f"Failed to create builder: {create_proc.stderr.decode('utf-8')}")
+
+    try:
+        yield name
+    finally:
+        # Remove the builder.
+        # This is best-effort; if unsuccessful we only log the error.
+        rm_proc = subprocess.run(
+            ["docker", "buildx", "rm", "--builder", name, "-f"],
+            capture_output=True,
+        )
+        if rm_proc.returncode != 0:
+            log.error("Failed to remove builder %s: %s", name, rm_proc.stderr.decode("utf-8"))
+
+
 class ImageBuilder:
     def __init__(self, path, repo_name, ignore_prefixes, engine_id):
         """
@@ -75,6 +110,8 @@ class ImageBuilder:
     def build_docker_files(self) -> ScanImages:
         """
         Attempt to build all Dockerfiles.
+        This is best-effort only. Failure to build a container image is
+        not an error.
         :return: ScanImages
         """
         results: list[BuiltImage] = []
@@ -84,35 +121,42 @@ class ImageBuilder:
 
         self.private_docker_repos_login(files)
 
-        # Build a set of all directories containing Dockerfiles
-        for filename in files:
-            if not os.path.isfile(filename):
-                continue
-            # Build each of the Dockerfiles locally
-            results.append(self.build_local_image(filename, secrets.token_hex(16)))
+        # Perform all builds in an isolated builder so we can clean up all
+        # resources after the build.
+        try:
+            with temporary_builder(self.engine_id) as builder:
+                results = [self.build_local_image(filename, secrets.token_hex(16), builder) for filename in files]
+        except DockerException as ex:
+            log.error("Failed to build images: %s", ex)
 
         return ScanImages(results=results, dockerfile_count=len(files))
 
-    def build_local_image(self, dockerfile: str, tag: str) -> BuiltImage:
+    def build_local_image(self, dockerfile: str, tag: str, builder: str | None = None) -> BuiltImage:
         """
         :param dockerfile: path to dockerfile
         :param tag: tag that we'll use in scan step
+        :param builder: Optional buildx builder to use.
         :return: BuiltImage
         """
         dockerfile_name = dockerfile.replace(self.path, "")
         if dockerfile_name.startswith("/"):
             dockerfile_name = dockerfile_name[1:]
 
-        log.info("Attempting to build %s", dockerfile_name)
+        log.info(
+            "Attempting to build %s using %s",
+            dockerfile_name,
+            f"builder {builder}" if builder else "default builder",
+        )
 
         tag_id = f"{self.repo_name}-{tag}-{self.engine_id}"
-        build_proc = subprocess.run(
-            ["docker", "build", "--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=self.path,
-            check=False,
-        )
+
+        # We must use the Docker CLI since docker-py does not yet support buildx.
+        cmd = ["docker", "buildx", "build"]
+        if builder:
+            cmd += ["--builder", builder]
+        cmd += ["--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id]
+
+        build_proc = subprocess.run(cmd, capture_output=True, cwd=self.path)
         if build_proc.returncode != 0:
             log.warning(build_proc.stderr.decode("utf-8"))
 

@@ -1,9 +1,9 @@
 import json
 import os
+import subprocess
 import unittest
 from unittest.mock import patch
-
-import pytest
+import uuid
 
 from artemislib.logging import Logger
 from oci import builder
@@ -27,6 +27,28 @@ TEST_PRIVATE_DOCKER_REPOS_CONFIGS = [
 TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT = {"status": True, "response": json.dumps(TEST_PRIVATE_DOCKER_REPOS_CONFIGS)}
 
 TEST_LOGGER = Logger("oci_builder")
+
+
+def find_builder(name: str) -> bool:
+    """
+    Search for a builder by name.
+    Raises an exception on failure.
+    """
+
+    # Need to use the Docker CLI since Docker-Py does not yet support buildx.
+    proc = subprocess.run(
+        ["docker", "buildx", "ls", "--format=json"],
+        capture_output=True,
+        check=True,
+    )
+
+    # We assume each object is on a separate line.
+    for ris in proc.stdout.decode("utf-8").splitlines():
+        obj: dict = json.loads(ris)
+        if obj.get("Name") == name:
+            return True
+
+    return False
 
 
 class TestScanImages(unittest.TestCase):
@@ -119,3 +141,11 @@ class TestImageBuilder(unittest.TestCase):
         finally:
             if result:
                 result.remove()
+
+    def test_temporary_builder(self):
+        prefix = f"test-prefix-{uuid.uuid4()}"
+        with builder.temporary_builder(prefix) as name:
+            self.assertTrue(name.startswith(prefix))
+            self.assertTrue(find_builder(name))
+        # Check that the builder was removed.
+        self.assertFalse(find_builder(name))
