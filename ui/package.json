@@ -148,6 +148,9 @@
     "precommit": "npm run lint && npm audit --omit=dev --audit-level=high && npm run prettier-write && npm run extract && npm run compile",
     "typescript-check": "npx tsc"
   },
+  "engines": {
+    "node": ">=22.17.1"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
