@@ -1,7 +1,7 @@
 import os
 import re
 from base64 import b64encode
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import requests
 
@@ -81,5 +81,5 @@ def basic_auth(client_id: str) -> str:
 
 def expiration() -> str:
     # Create a datetime one hour in the past
-    expired = datetime.utcnow() - timedelta(hours=1)
+    expired = datetime.now(timezone.utc) - timedelta(hours=1)
     return expired.strftime("%a %d %b %Y %H:%M:%S GMT")  # Cookie expiration format

@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import boto3
 from botocore.exceptions import ClientError
 
@@ -34,7 +34,7 @@ def check_disk_space(repo_size: int, available_space=None) -> bool:
 
 
 def get_ttl_expiration():
-    return int((datetime.utcnow() + timedelta(days=DYNAMODB_TTL_DAYS)).timestamp())
+    return int((datetime.now(timezone.utc) + timedelta(days=DYNAMODB_TTL_DAYS)).timestamp())
 
 
 def _build_docker_images(path: str, repo_name: str, engine_id: str, untag_images=True) -> ScanImages:

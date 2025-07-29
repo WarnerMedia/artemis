@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -28,7 +28,7 @@ class TestUtils(unittest.TestCase):
 
     def test_get_ttl_expiration(self):
         days_check = 12
-        expected_result = datetime.utcnow() + timedelta(days=days_check)
+        expected_result = datetime.now(timezone.utc) + timedelta(days=days_check)
         expected_result = expected_result.replace(minute=0, second=0, microsecond=0)
 
         result = get_ttl_expiration(days_check).replace(minute=0, second=0, microsecond=0)

@@ -34,7 +34,7 @@ def find_cves(advisory_url) -> list:
         cves = [advisory_url]
 
     # Store the CVEs (or advisory URL) in the DB cache to avoid having to pull the advisory again
-    expires = datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(days=7)  # Cache for 1 week
+    expires = datetime.now(timezone.utc) + timedelta(days=7)  # Cache for 1 week
     cache.store(advisory_url, ",".join(cves), expires)
 
     return cves

@@ -62,7 +62,7 @@ def get_secrets(scan, params):
     allow_list = list(
         scan.repo.allowlistitem_set.filter(
             Q(item_type=AllowListType.SECRET.value),
-            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
         )
     )
 

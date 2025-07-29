@@ -8,7 +8,7 @@ from artemisdb.artemisdb.models import APIKey, Group, User
 from artemislib.audit.logger import AuditLogger
 
 
-def get_api_key(value: str) -> APIKey:
+def get_api_key(value: str) -> APIKey | None:
     """
     API key format is two UUIDs concatenated with a - in the middle. The first UUID is the key ID and the second UUID
     is the key secret. The key ID is used to lookup the key in the database and the secret is used to verify the key
@@ -33,7 +33,7 @@ def get_api_key(value: str) -> APIKey:
         key = APIKey.objects.get(
             Q(key_id=key_id),
             Q(user__deleted=False),
-            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
         )
     except APIKey.DoesNotExist:
         return None
@@ -48,12 +48,12 @@ def get_api_key(value: str) -> APIKey:
 def generate_api_key(
     user: User,
     name: str,
-    group: Group = None,
-    expires: datetime = None,
-    scope: list[str] = None,
+    group: Group | None = None,
+    expires: datetime | None = None,
+    scope: list[str] | None = None,
     admin: bool = False,
-    features: dict = None,
-    audit_log: AuditLogger = None,
+    features: dict | None = None,
+    audit_log: AuditLogger | None = None,
 ) -> str:
     """
     API key format is two UUIDs concatenated with a - in the middle. The first UUID is the key ID and the second UUID
@@ -94,13 +94,13 @@ def get_api_key_scope(api_key):
 
     key = get_api_key(api_key)
     if key:
-        key.last_used = datetime.utcnow().replace(tzinfo=timezone.utc)
+        key.last_used = datetime.now(timezone.utc)
         key.save()
         return key.scope
     return None
 
 
-def get_principal_group(principal_type: str, principal_id: str) -> Group:
+def get_principal_group(principal_type: str, principal_id: str) -> Group | None:
     try:
         if principal_type == "group_api_key":
             return Group.objects.get(group_id=principal_id)

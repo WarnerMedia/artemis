@@ -3,7 +3,7 @@ import json
 import unittest
 from contextlib import redirect_stdout
 
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from engine.plugins.base_images.main import (
     build_event_info,

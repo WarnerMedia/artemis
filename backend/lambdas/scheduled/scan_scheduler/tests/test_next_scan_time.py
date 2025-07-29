@@ -31,7 +31,7 @@ class TestNextScanTime(unittest.TestCase):
 
     def test_next_in_past(self):
         current = datetime(2021, 12, 1, 0, 0, 0, 0, timezone.utc)
-        expected = datetime.utcnow().replace(tzinfo=timezone.utc)
+        expected = datetime.now(timezone.utc)
         SCHEDULE.interval_minutes = 60
         SCHEDULE.next_scan_time = current
         calculate_next_scan_time(SCHEDULE)

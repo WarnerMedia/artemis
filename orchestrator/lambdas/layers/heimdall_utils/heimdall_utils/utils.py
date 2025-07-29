@@ -77,7 +77,7 @@ def get_json_from_file(file_path):
 
 
 def get_ttl_expiration():
-    return int((datetime.utcnow().replace(microsecond=0) + timedelta(days=DYNAMODB_TTL_DAYS)).timestamp())
+    return int((datetime.now(timezone.utc).replace(microsecond=0) + timedelta(days=DYNAMODB_TTL_DAYS)).timestamp())
 
 
 def parse_timestamp(timestamp: Optional[str] = None) -> str:
