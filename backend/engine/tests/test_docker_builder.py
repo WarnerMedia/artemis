@@ -27,9 +27,9 @@ TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT = {"status": True, "response": json.dump
 TEST_LOGGER = Logger("oci_builder")
 
 
-class TestBuildResult(unittest.TestCase):
+class TestScanImages(unittest.TestCase):
     def test_to_json(self):
-        src = builder.BuildResult(
+        src = builder.ScanImages(
             dockerfile_count=1,
             results=[builder.BuiltImage(status=True, tag_id="foo", dockerfile="path/foo/Dockerfile")],
         )
@@ -49,7 +49,7 @@ class TestBuildResult(unittest.TestCase):
                 {"status": true, "tag-id": "bar", "dockerfile": "path/bar/Dockerfile"}
             ]
         }"""
-        loaded = builder.BuildResult.model_validate_json(src)
+        loaded = builder.ScanImages.model_validate_json(src)
         self.assertEqual(loaded.dockerfile_count, 4)
         self.assertEqual(
             loaded.results,

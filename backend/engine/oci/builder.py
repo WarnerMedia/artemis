@@ -32,9 +32,9 @@ class BuiltImage(BaseModel):
         return remove_docker_image(self.tag_id)
 
 
-class BuildResult(BaseModel):
+class ScanImages(BaseModel):
     """
-    Images built by ImageBuilder.
+    Local container images built by ImageBuilder.
     This is passed to plugins (as JSON) that scan container images.
     """
 
@@ -64,10 +64,10 @@ class ImageBuilder:
         dockerfiles = glob("%s/**/Dockerfile*" % self.path, recursive=True)
         return [dockerfile for dockerfile in dockerfiles if os.path.isfile(dockerfile)]
 
-    def build_docker_files(self) -> BuildResult:
+    def build_docker_files(self) -> ScanImages:
         """
         Attempt to build all Dockerfiles.
-        :return: BuildResult
+        :return: ScanImages
         """
         results: list[BuiltImage] = []
 
@@ -83,7 +83,7 @@ class ImageBuilder:
             # Build each of the Dockerfiles locally
             results.append(self.build_local_image(filename, secrets.token_hex(16)))
 
-        return BuildResult(results=results, dockerfile_count=len(files))
+        return ScanImages(results=results, dockerfile_count=len(files))
 
     def build_local_image(self, dockerfile: str, tag: str) -> BuiltImage:
         """

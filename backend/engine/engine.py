@@ -20,7 +20,7 @@ from env import (
     WORKING_DIR,
     reset_log_state,
 )
-from oci.builder import BuildResult
+from oci.builder import ScanImages
 from processor.processor import EngineProcessor
 from utils.engine import _build_docker_images, check_disk_space, cleanup_images
 from utils.services import get_services_dict
@@ -88,7 +88,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
             return
         # Check if docker images need to be built first
         build_images = engine_processor.docker_images_required()
-        images = BuildResult()
+        images = ScanImages()
         try:
             repo_obtained = engine_processor.pull_repo()
             if repo_obtained:

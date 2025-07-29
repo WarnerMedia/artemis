@@ -42,7 +42,7 @@ from env import (
     CONFIGURATION_EVENTS_ENABLED,
     VULNERABILITY_EVENTS_ENABLED,
 )
-from oci.builder import BuildResult
+from oci.builder import ScanImages
 
 log = Logger(__name__)
 
@@ -315,7 +315,7 @@ def temporary_volume(name_prefix: str):
 def run_plugin(
     plugin: str,
     scan: Scan,
-    scan_images: BuildResult,
+    scan_images: ScanImages,
     depth: Optional[str] = None,
     include_dev=False,
     features=None,
@@ -724,7 +724,7 @@ def get_plugin_command(
     depth: Optional[str],
     include_dev: bool,
     temp_vol_name: str,
-    scan_images: BuildResult,
+    scan_images: ScanImages,
     plugin_config,
     services,
 ) -> list[str]:
