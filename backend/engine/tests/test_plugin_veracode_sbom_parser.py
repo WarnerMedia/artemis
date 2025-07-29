@@ -2,9 +2,9 @@ import json
 import os
 import unittest
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
-from mock import PropertyMock
+from unittest.mock import PropertyMock
 
 from artemisdb.artemisdb.models import Scan
 from engine.plugins.veracode_sbom.main import process_sbom as process_veracode_output
@@ -38,9 +38,9 @@ class TestPluginVeracodeSbomParser(unittest.TestCase):
         # process raw Veracode output in the same way SBOM plugin does
         graph = process_veracode_output(graphs=output["records"][0]["graphs"], libs=output["records"][0]["libraries"])
 
-        mock_result = unittest.mock.MagicMock(side_effect=VERACODE_SBOM_RESULT)
+        mock_result = MagicMock(side_effect=VERACODE_SBOM_RESULT)
         type(mock_result).details = PropertyMock(return_value=graph)
-        mock_scan = unittest.mock.MagicMock(side_effect=Scan())
+        mock_scan = MagicMock(side_effect=Scan())
 
         flatten_sbom_and_write_to_s3(mock_result, mock_scan)
 

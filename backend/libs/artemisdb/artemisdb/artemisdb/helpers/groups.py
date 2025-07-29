@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
@@ -13,7 +13,7 @@ GROUP_BINDS = {"hidden": False}
 
 
 class GroupsDBHelper:
-    def __init__(self, audit: AuditLogger = None):
+    def __init__(self, audit: AuditLogger | None = None):
         self.log = Logger(__name__)
         self.group = Group
         self.group_members = GroupMembership
@@ -82,7 +82,7 @@ class GroupsDBHelper:
             # the group is ever re-created
             old_name = group.name
             group.deleted = True
-            group.name = f"{group.name}_DELETED_{int(datetime.utcnow().timestamp())}"
+            group.name = f"{group.name}_DELETED_{int(datetime.now(timezone.utc).timestamp())}"
             group.save()
 
             # Hard delete all of the group's API keys

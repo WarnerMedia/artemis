@@ -26,14 +26,14 @@ def get_vulns(scan: Scan, params: dict) -> PLUGIN_RESULTS:
     allow_list = list(
         scan.repo.allowlistitem_set.filter(
             Q(item_type=AllowListType.VULN.value),
-            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
         )
     )
 
     # Pull the non-expired vulns_raw AllowList once
     raw_allow_object_list = scan.repo.allowlistitem_set.filter(
         Q(item_type=AllowListType.VULN_RAW.value),
-        Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+        Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
     )
 
     # Place all the raw CVEs values into a set for faster searching.

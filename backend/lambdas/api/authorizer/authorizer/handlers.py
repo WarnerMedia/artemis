@@ -264,7 +264,7 @@ def _update_login_timestamp(user: User) -> None:
     """
     Set the last login timestamp
     """
-    user.last_login = datetime.utcnow().replace(tzinfo=timezone.utc)
+    user.last_login = datetime.now(timezone.utc)
     user.save()
 
 
@@ -461,7 +461,7 @@ def process_api_key(event):
 
     api_key = get_api_key(api_key_value)
     if api_key:
-        api_key.last_used = datetime.utcnow().replace(tzinfo=timezone.utc)
+        api_key.last_used = datetime.now(timezone.utc)
         api_key.save()
         audit_log = AuditLogger(principal=api_key.user.email, source_ip=event["requestContext"]["identity"]["sourceIp"])
         audit_log.key_login(key_id=str(api_key.key_id))

@@ -31,7 +31,7 @@ def get_configuration(scan: Scan, params: dict) -> PLUGIN_RESULTS:
     allow_list = list(
         scan.repo.allowlistitem_set.filter(
             Q(item_type=AllowListType.CONFIGURATION.value),
-            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
         )
     )
 

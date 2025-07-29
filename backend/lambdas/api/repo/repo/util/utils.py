@@ -70,10 +70,10 @@ def get_api_key(service_secret):
 
 
 def get_iso_timestamp():
-    return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds")
 
 
-def get_json_from_response(response_text: str) -> dict or None:
+def get_json_from_response(response_text: str) -> dict | None:
     try:
         return json.loads(response_text)
     except (JSONDecodeError, TypeError) as e:
@@ -92,7 +92,7 @@ def get_object_from_json_dict(json_object: dict, traversal_list: list):
 
 
 def get_ttl_expiration(ttl_days=DB_TTL_DAYS):
-    return datetime.utcnow() + timedelta(days=ttl_days)
+    return datetime.now(timezone.utc) + timedelta(days=ttl_days)
 
 
 def is_sbom(plugins: list) -> bool:
@@ -102,7 +102,7 @@ def is_sbom(plugins: list) -> bool:
     return False
 
 
-def is_qualified(plugins: list, qualified_plugins: dict = None) -> bool:
+def is_qualified(plugins: list, qualified_plugins: dict | None = None) -> bool:
     # The qualified plugins structure is a dictionary of the plugin categories. Within each
     # category is a list of lists of plugins. Each index of the list must be matched but within
     # the sub-list only one of the plugins needs to match (i.e. the sub-lists are boolean ORs
