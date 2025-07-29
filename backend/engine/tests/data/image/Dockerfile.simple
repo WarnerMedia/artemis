@@ -1,0 +1,4 @@
+# Simple Dockerfile without external dependencies.
+# Building this should always succeed.
+FROM scratch
+ENTRYPOINT ["/bin/sh"]

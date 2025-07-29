@@ -18,6 +18,8 @@ TEST_DATA_IMAGE_RESULTS = os.path.join(TEST_DATA, "util", "image_results.json")
 
 TEST_DOCKERFILE_LIST = [os.path.join(TEST_DATA, "image", "test_file_for_docker")]
 
+TEST_DOCKERFILE_SIMPLE = os.path.join(TEST_DATA, "image", "Dockerfile.simple")
+
 TEST_PRIVATE_DOCKER_REPOS_CONFIGS = [
     {"url": "test.io", "search": "FROM test", "username": "test-username", "password": "test-password"}
 ]
@@ -59,7 +61,7 @@ class TestScanImages(unittest.TestCase):
         )
 
 
-class TestDockerUtil(unittest.TestCase):
+class TestImageBuilder(unittest.TestCase):
     def setUp(self) -> None:
         with open(TEST_DATA_IMAGE_RESULTS) as output_file:
             self.demo_results_dict = json.load(output_file)
@@ -97,16 +99,23 @@ class TestDockerUtil(unittest.TestCase):
                         TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["password"],
                     )
 
-    @pytest.mark.integtest
     def test_build_local_image(self):
         self.maxDiff = None
         repo_name = "artemis"
         engine_id = "0000000"
-        expected_result = {
-            "dockerfile": "image/test_file_for_docker",
-            "status": True,
-            "tag-id": f"{repo_name}-docker-test-{engine_id}",
-        }
         image_builder = builder.ImageBuilder(TEST_DATA, repo_name, None, engine_id)
-        result = image_builder.build_local_image(TEST_DOCKERFILE_LIST[0], "docker-test")
-        self.assertEqual(expected_result, result)
+
+        result: builder.BuiltImage | None = None
+        try:
+            result = image_builder.build_local_image(TEST_DOCKERFILE_SIMPLE, "artemis-docker-test")
+            self.assertEqual(
+                result,
+                builder.BuiltImage(
+                    status=True,
+                    dockerfile="image/Dockerfile.simple",
+                    tag_id=f"{repo_name}-artemis-docker-test-{engine_id}",
+                ),
+            )
+        finally:
+            if result:
+                result.remove()
