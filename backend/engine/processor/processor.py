@@ -349,14 +349,14 @@ class EngineProcessor:
         allow_list = list(
             self.scan.get_scan_object().repo.allowlistitem_set.filter(
                 Q(item_type=AllowListType.VULN.value),
-                Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+                Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc).replace(tzinfo=timezone.utc)),
             )
         )
 
         # Pull the non-expired vulns_raw AllowList
         raw_allow_object_list = self.scan.get_scan_object().repo.allowlistitem_set.filter(
             Q(item_type=AllowListType.VULN_RAW.value),
-            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
         )
 
         # Place all the raw CVEs values into a set for faster searching.

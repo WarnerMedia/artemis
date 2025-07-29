@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.db.models import QuerySet
 
@@ -8,7 +8,7 @@ BATCH_SIZE = 100
 
 
 def sequential_delete(
-    qs: QuerySet, log: Logger, log_freq: int = 100, name: str = None, delete_check: callable = None
+    qs: QuerySet, log: Logger, log_freq: int = 100, name: str | None = None, delete_check: callable = None
 ) -> None:
     total = 0
     count = 0
@@ -25,9 +25,9 @@ def sequential_delete(
             # deleting items individually we will delete what is possible within this
             # Lambda execution and then pick it up in the next Lambda execution.
             if delete_check is None or delete_check(item) is True:
-                start = datetime.utcnow()
+                start = datetime.now(timezone.utc)
                 d = item.delete()
-                log.debug("Deleted %s in %s (%s)", item, str(datetime.utcnow() - start), d)
+                log.debug("Deleted %s in %s (%s)", item, str(datetime.now(timezone.utc) - start), d)
             else:
                 continue
 

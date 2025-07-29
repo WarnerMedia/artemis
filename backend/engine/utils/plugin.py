@@ -599,7 +599,7 @@ def get_secret_raw_wl(scan):
     wl = []
     for item in scan.repo.allowlistitem_set.filter(
         Q(item_type=AllowListType.SECRET_RAW.value),
-        Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+        Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc).replace(tzinfo=timezone.utc)),
     ):
         wl.append(item.value["value"])
     return wl
@@ -616,7 +616,7 @@ def get_secret_al(scan):
 
     return scan.repo.allowlistitem_set.filter(
         Q(item_type=AllowListType.SECRET.value),
-        Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+        Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc).replace(tzinfo=timezone.utc)),
     )
 
 
@@ -708,7 +708,7 @@ def match_nonallowlisted_secrets(allow_list, item):
 
 
 def get_iso_timestamp() -> str:
-    return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds")
 
 
 def get_container_name() -> str:
