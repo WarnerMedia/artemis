@@ -1,10 +1,16 @@
 import { RootState } from "app/rootReducer";
 import { RowDef } from "components/EnhancedTable";
-import { sampleMetaData2, sampleMetaData3, sampleMetaData4, sampleMetaData5, sampleMetaData6 } from "custom/sampleMetaData";
+import {
+	sampleMetaData2,
+	sampleMetaData3,
+	sampleMetaData4,
+	sampleMetaData5,
+	sampleMetaData6,
+} from "custom/sampleMetaData";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
 import { AnalysisReport } from "features/scans/scansSchemas";
 import { User } from "features/users/usersSchemas";
-import { DateTime, Duration } from 'luxon';
+import { DateTime, Duration } from "luxon";
 import { customAlphabet } from "nanoid";
 
 // Palette
@@ -37,7 +43,7 @@ export const mockColors = [
 ];
 
 // from the mirage API
-export const scanMockData:AnalysisReport = {
+export const scanMockData: AnalysisReport = {
 	repo: "goodOrg/repo",
 	initiated_by: "Bronn@example.com",
 	service: "goodVcs",
@@ -137,7 +143,13 @@ export const mockScan001 = {
 	branch: null,
 	engine_id: "i-123456789-e987654321",
 	scan_options: {
-		categories: ["secret", "inventory", "vulnerability", "-static_analysis", "configuration"],
+		categories: [
+			"secret",
+			"inventory",
+			"vulnerability",
+			"-static_analysis",
+			"configuration",
+		],
 		plugins: [
 			"pluginname01",
 			"pluginname02",
@@ -234,8 +246,7 @@ export const mockScan001 = {
 				"CVE-2019-9999": {
 					source: ["node/some/path/here", "node/some/path/here"],
 					severity: "low",
-					description:
-						'Regular expression denial of service vulnerability',
+					description: "Regular expression denial of service vulnerability",
 					remediation: "Update to a newer version",
 				},
 			},
@@ -243,8 +254,7 @@ export const mockScan001 = {
 				"CVE-2020-9999": {
 					source: ["node/some/path/here1", "node/some/path/here2"],
 					severity: "critical",
-					description:
-						"Prototype Pollution",
+					description: "Prototype Pollution",
 					remediation: "a remediation",
 					source_plugins: ["plugin1", "plugin2", "plugin3", "plugin4"],
 				},
@@ -253,8 +263,7 @@ export const mockScan001 = {
 				"CVE-2021-9999": {
 					source: ["node/some/path/here"],
 					severity: "high",
-					description:
-						"Regular expression denial of service",
+					description: "Regular expression denial of service",
 					remediation: "",
 				},
 			},
@@ -336,55 +345,65 @@ export const mockScan001 = {
 			},
 		},
 		configuration: {
-			"github_branch_check1": {
-				"name": "Branch - Check 1",
-				"description": "Lorem ipsum sit amet justo donec enim diam vulputate ut pharetra sit",
-				"severity": "medium"
+			github_branch_check1: {
+				name: "Branch - Check 1",
+				description:
+					"Lorem ipsum sit amet justo donec enim diam vulputate ut pharetra sit",
+				severity: "medium",
 			},
-			"github_branch_check2": {
-				"name": "Branch - Check 2",
-				"description": "Lorem ipsum ligula ullamcorper malesuada proin libero nunc consequat interdum varius sit",
-				"severity": "critical"
+			github_branch_check2: {
+				name: "Branch - Check 2",
+				description:
+					"Lorem ipsum ligula ullamcorper malesuada proin libero nunc consequat interdum varius sit",
+				severity: "critical",
 			},
-			"github_branch_check3": {
-				"name": "Branch - Check 3",
-				"description": "Lorem ipsum felis bibendum ut tristique et egestas quis ipsum suspendisse ultrices",
-				"severity": ""
+			github_branch_check3: {
+				name: "Branch - Check 3",
+				description:
+					"Lorem ipsum felis bibendum ut tristique et egestas quis ipsum suspendisse ultrices",
+				severity: "",
 			},
-			"github_branch_check4": {
-				"name": "Branch - Check 4",
-				"description": "Lorem ipsum purus semper eget duis at tellus at urna condimentum mattis",
-				"severity": "negligible"
+			github_branch_check4: {
+				name: "Branch - Check 4",
+				description:
+					"Lorem ipsum purus semper eget duis at tellus at urna condimentum mattis",
+				severity: "negligible",
 			},
-			"github_branch_check5": {
-				"name": "Branch - Check 5",
-				"description": "Lorem ipsum ac habitasse platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper",
-				"severity": "high"
+			github_branch_check5: {
+				name: "Branch - Check 5",
+				description:
+					"Lorem ipsum ac habitasse platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper",
+				severity: "high",
 			},
-			"github_repo_check1": {
-				"name": "Repository - Check 1",
-				"description": "Lorem ipsum aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc sed",
-				"severity": ""
+			github_repo_check1: {
+				name: "Repository - Check 1",
+				description:
+					"Lorem ipsum aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc sed",
+				severity: "",
 			},
-			"github_repo_check2": {
-				"name": "Repository - Check 2",
-				"description": "Lorem ipsum ullamcorper morbi tincidunt ornare massa eget egestas purus viverra accumsan",
-				"severity": "high"
+			github_repo_check2: {
+				name: "Repository - Check 2",
+				description:
+					"Lorem ipsum ullamcorper morbi tincidunt ornare massa eget egestas purus viverra accumsan",
+				severity: "high",
 			},
-			"github_repo_check3": {
-				"name": "Repository - Check 3",
-				"description": "Lorem ipsum purus ut faucibus pulvinar elementum integer enim neque volutpat ac",
-				"severity": "high"
+			github_repo_check3: {
+				name: "Repository - Check 3",
+				description:
+					"Lorem ipsum purus ut faucibus pulvinar elementum integer enim neque volutpat ac",
+				severity: "high",
 			},
-			"github_repo_check4": {
-				"name": "Repository - Check 4",
-				"description": "Lorem ipsum non consectetur a erat nam at lectus urna duis convallis",
-				"severity": "critical"
+			github_repo_check4: {
+				name: "Repository - Check 4",
+				description:
+					"Lorem ipsum non consectetur a erat nam at lectus urna duis convallis",
+				severity: "critical",
 			},
-			"github_repo_check5": {
-				"name": "Repository - Check 5",
-				"description": "Lorem ipsum risus quis varius quam quisque id diam vel quam elementum",
-				"severity": "critical"
+			github_repo_check5: {
+				name: "Repository - Check 5",
+				description:
+					"Lorem ipsum risus quis varius quam quisque id diam vel quam elementum",
+				severity: "critical",
 			},
 		},
 	},
@@ -398,7 +417,13 @@ export const mockScan002 = {
 	branch: null,
 	engine_id: "i-0d311engineid-3ead79238510",
 	scan_options: {
-		categories: ["static_analysis", "vulnerability", "-secret", "-inventory", "-configuration"],
+		categories: [
+			"static_analysis",
+			"vulnerability",
+			"-secret",
+			"-inventory",
+			"-configuration",
+		],
 		plugins: [
 			"plugin01",
 			"plugin02",
@@ -558,43 +583,37 @@ export const mockScan002 = {
 				{
 					line: 100,
 					type: "SQL",
-					message:
-						"Statement vulnerable to SQL injection",
+					message: "Statement vulnerable to SQL injection",
 					severity: "",
 				},
 				{
 					line: 200,
 					type: "SQL",
-					message:
-						"Statement vulnerable to SQL injection",
+					message: "Statement vulnerable to SQL injection",
 					severity: "",
 				},
 				{
 					line: 300,
 					type: "SQL",
-					message:
-						"Statement vulnerable to SQL injection",
+					message: "Statement vulnerable to SQL injection",
 					severity: "",
 				},
 				{
 					line: 400,
 					type: "SQL",
-					message:
-						"Statement vulnerable to SQL injection",
+					message: "Statement vulnerable to SQL injection",
 					severity: "",
 				},
 				{
 					line: 500,
 					type: "SQL",
-					message:
-						"Statement vulnerable to SQL injection",
+					message: "Statement vulnerable to SQL injection",
 					severity: "",
 				},
 				{
 					line: 600,
 					type: "SQL",
-					message:
-						"Statement vulnerable to SQL injection",
+					message: "Statement vulnerable to SQL injection",
 					severity: "",
 				},
 			],
@@ -624,7 +643,7 @@ export const mockScan002 = {
 				{
 					line: 44,
 					type: "E0000",
-					message: 'Duplicate resource found',
+					message: "Duplicate resource found",
 					severity: "medium",
 				},
 			],
@@ -632,8 +651,7 @@ export const mockScan002 = {
 				{
 					line: 44,
 					type: "E3001",
-					message:
-						"Invalid or unsupported type",
+					message: "Invalid or unsupported type",
 					severity: "medium",
 				},
 			],
@@ -641,8 +659,7 @@ export const mockScan002 = {
 				{
 					line: 44,
 					type: "E3030",
-					message:
-						"Specify a valid value for type",
+					message: "Specify a valid value for type",
 					severity: "medium",
 				},
 			],
@@ -650,43 +667,37 @@ export const mockScan002 = {
 				{
 					line: 44,
 					type: "W4002",
-					message:
-						'Potential sensitive data in plaintext',
+					message: "Potential sensitive data in plaintext",
 					severity: "low",
 				},
 				{
 					line: 44,
 					type: "W4002",
-					message:
-						'Potential sensitive data in plaintext',
+					message: "Potential sensitive data in plaintext",
 					severity: "low",
 				},
 				{
 					line: 44,
 					type: "W4002",
-					message:
-						'Potential sensitive data in plaintext',
+					message: "Potential sensitive data in plaintext",
 					severity: "low",
 				},
 				{
 					line: 44,
 					type: "W4002",
-					message:
-						'Potential sensitive data in plaintext',
+					message: "Potential sensitive data in plaintext",
 					severity: "low",
 				},
 				{
 					line: 44,
 					type: "W4002",
-					message:
-						'Potential sensitive data in plaintext',
+					message: "Potential sensitive data in plaintext",
 					severity: "low",
 				},
 				{
 					line: 44,
 					type: "W4002",
-					message:
-						'Potential sensitive data in plaintext',
+					message: "Potential sensitive data in plaintext",
 					severity: "low",
 				},
 			],
@@ -695,7 +706,7 @@ export const mockScan002 = {
 	},
 };
 
-export const mockHiddenFindings001:HiddenFinding[] = [
+export const mockHiddenFindings001: HiddenFinding[] = [
 	{
 		id: "0694bbvulnerabilitye-b63b08cea490",
 		type: "vulnerability",
@@ -722,169 +733,173 @@ export const mockHiddenFindings001:HiddenFinding[] = [
 	},
 ];
 
-export const mockHiddenFindings002:HiddenFinding[] = [];
+export const mockHiddenFindings002: HiddenFinding[] = [];
 
-export const mockHiddenFindings003:HiddenFinding[] = [
+export const mockHiddenFindings003: HiddenFinding[] = [
 	{
-		"id": "cec197de-7e6c-6945-f3e6-030e56d7571c",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2020-0000",
-			"component": "",
-			"source": "docker/Dockerfile",
-			"severity": "critical"
+		id: "cec197de-7e6c-6945-f3e6-030e56d7571c",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2020-0000",
+			component: "",
+			source: "docker/Dockerfile",
+			severity: "critical",
 		},
-		"expires": null,
-		"reason": "test existing hidden finding",
-		"created_by": "Jon.Snow@example.com"
+		expires: null,
+		reason: "test existing hidden finding",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "b48d9034-3eb0-2257-3a5c-37552451c508",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2020-0000",
-			"component": "",
-			"source": "docker/Dockerfile.dev",
-			"severity": "critical"
+		id: "b48d9034-3eb0-2257-3a5c-37552451c508",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2020-0000",
+			component: "",
+			source: "docker/Dockerfile.dev",
+			severity: "critical",
 		},
-		"expires": null,
-		"reason": "test existing hidden finding",
-		"created_by": "Jon.Snow@example.com"
+		expires: null,
+		reason: "test existing hidden finding",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "a09657d1-3837-3c9d-918a-1e0f708a7f40",
-		"type": "secret",
-		"value": {
-			"filename": "folder/badfile",
-			"line": 17,
-			"commit": "q3498tlsdf9834tkjsdfg98u34t"
+		id: "a09657d1-3837-3c9d-918a-1e0f708a7f40",
+		type: "secret",
+		value: {
+			filename: "folder/badfile",
+			line: 17,
+			commit: "q3498tlsdf9834tkjsdfg98u34t",
 		},
-		"expires": null,
-		"reason": "test existing hidden finding, secret",
-		"created_by": "Jon.Snow@example.com"
+		expires: null,
+		reason: "test existing hidden finding, secret",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "b3ad1e09-3f4e-6b3e-55ad-97e60712ebc1",
-		"type": "secret",
-		"value": {
-			"filename": "folder/badfile2",
-			"line": 177,
-			"commit": "q3498tlsdf9834tkjsdfg98u34t"
+		id: "b3ad1e09-3f4e-6b3e-55ad-97e60712ebc1",
+		type: "secret",
+		value: {
+			filename: "folder/badfile2",
+			line: 177,
+			commit: "q3498tlsdf9834tkjsdfg98u34t",
 		},
-		"expires": null,
-		"reason": "test existing hidden finding, secret",
-		"created_by": "Jon.Snow@example.com"
+		expires: null,
+		reason: "test existing hidden finding, secret",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "d24d0a7b-691f-06de-3db8-3e5af9322c1b",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2018-00000",
-			"severity": "medium",
-			"component": "",
-			"source": "docker/Dockerfile.multistage"
+		id: "d24d0a7b-691f-06de-3db8-3e5af9322c1b",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2018-00000",
+			severity: "medium",
+			component: "",
+			source: "docker/Dockerfile.multistage",
 		},
-		"expires": "2021-09-15T20:14:46.495Z",
-		"reason": "expired hidden finding",
-		"created_by": "Jon.Snow@example.com"
+		expires: "2021-09-15T20:14:46.495Z",
+		reason: "expired hidden finding",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "8f1677e7-0df9-c6b6-fedc-36bdc1b46cfe",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2019-00000",
-			"component": "component1",
-			"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1"
+		id: "8f1677e7-0df9-c6b6-fedc-36bdc1b46cfe",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2019-00000",
+			component: "component1",
+			source:
+				"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
 		},
-		"expires": "2021-09-20T20:14:46.499Z",
-		"reason": "expiring test hiding a subset of files with vuln finding (1)",
-		"created_by": "Jon.Snow@example.com"
+		expires: "2021-09-20T20:14:46.499Z",
+		reason: "expiring test hiding a subset of files with vuln finding (1)",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "8a3477c0-357d-7522-22a5-b035bac17360",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2019-00000",
-			"component": "component1",
-			"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2"
+		id: "8a3477c0-357d-7522-22a5-b035bac17360",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2019-00000",
+			component: "component1",
+			source:
+				"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
 		},
-		"expires": "2021-09-20T20:14:46.499Z",
-		"reason": "expiring test hiding a subset of files with vuln finding (2)",
-		"created_by": "Jon.Snow@example.com"
+		expires: "2021-09-20T20:14:46.499Z",
+		reason: "expiring test hiding a subset of files with vuln finding (2)",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "c5fb558a-db99-2f77-1e37-9f1879a3c130",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2019-00000",
-			"component": "component1",
-			"source": "docker/Dockerfile.platform7"
+		id: "c5fb558a-db99-2f77-1e37-9f1879a3c130",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2019-00000",
+			component: "component1",
+			source: "docker/Dockerfile.platform7",
 		},
-		"expires": "2021-09-20T20:14:46.500Z",
-		"reason": "expiring test hiding a subset of files with vuln finding (3)",
-		"created_by": "Jon.Snow@example.com"
+		expires: "2021-09-20T20:14:46.500Z",
+		reason: "expiring test hiding a subset of files with vuln finding (3)",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "062264b3-8278-60eb-c05d-2cdfb6aeb3d0",
-		"type": "vulnerability",
-		"value": {
-			"id": "CVE-2019-00000",
-			"component": "component1",
-			"source": "docker/Dockerfile.platform27"
+		id: "062264b3-8278-60eb-c05d-2cdfb6aeb3d0",
+		type: "vulnerability",
+		value: {
+			id: "CVE-2019-00000",
+			component: "component1",
+			source: "docker/Dockerfile.platform27",
 		},
-		"expires": "2021-09-20T20:14:46.500Z",
-		"reason": "expiring test hiding a subset of files with vuln finding (4)",
-		"created_by": "Jon.Snow@example.com"
+		expires: "2021-09-20T20:14:46.500Z",
+		reason: "expiring test hiding a subset of files with vuln finding (4)",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "e084e54d-23b0-103f-6f7d-ceffff32eb6c",
-		"type": "secret_raw",
-		"value": {
-			"value": "test.me"
+		id: "e084e54d-23b0-103f-6f7d-ceffff32eb6c",
+		type: "secret_raw",
+		value: {
+			value: "test.me",
 		},
-		"expires": null,
-		"reason": "test secret_raw type",
-		"created_by": "Jon.Snow@example.com"
+		expires: null,
+		reason: "test secret_raw type",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "a6f41593-c3ef-6380-8721-d275175f91f1",
-		"type": "vulnerability_raw",
-		"value": {
-			"id": "CVE-2021-0101",
-			"severity": "critical"
+		id: "a6f41593-c3ef-6380-8721-d275175f91f1",
+		type: "vulnerability_raw",
+		value: {
+			id: "CVE-2021-0101",
+			severity: "critical",
 		},
-		"expires": "2021-09-20T20:14:46.500Z",
-		"reason": "test expired vulnerability_raw type",
-		"created_by": "Jon.Snow@example.com"
+		expires: "2021-09-20T20:14:46.500Z",
+		reason: "test expired vulnerability_raw type",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "76300da2-d5d4-af3d-0f65-f4d8d4b0ad9f",
-		"type": "static_analysis",
-		"value": {
-			"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-			"line": 14,
-			"type": "Potential template injection"
+		id: "76300da2-d5d4-af3d-0f65-f4d8d4b0ad9f",
+		type: "static_analysis",
+		value: {
+			filename:
+				"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+			line: 14,
+			type: "Potential template injection",
 		},
-		"expires": null,
-		"reason": "test static_analysis type",
-		"created_by": "Jon.Snow@example.com"
+		expires: null,
+		reason: "test static_analysis type",
+		created_by: "Jon.Snow@example.com",
 	},
 	{
-		"id": "eb8abd85-b153-6fbb-5288-9b2dc4d854c5",
-		"type": "static_analysis",
-		"value": {
-			"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-			"line": 33,
-			"type": "XSS"
+		id: "eb8abd85-b153-6fbb-5288-9b2dc4d854c5",
+		type: "static_analysis",
+		value: {
+			filename:
+				"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+			line: 33,
+			type: "XSS",
 		},
-		"expires": "2021-09-23T20:14:46.500Z",
-		"reason": "test expired static_analysis type",
-		"created_by": "Jon.Snow@example.com"
-	}
+		expires: "2021-09-23T20:14:46.500Z",
+		reason: "test expired static_analysis type",
+		created_by: "Jon.Snow@example.com",
+	},
 ];
 
 // note these are consolidated rows, not the raw hidden findings from the api
-export const mockHFRows001:RowDef[] = [
+export const mockHFRows001: RowDef[] = [
 	{
 		keyId: "hiddenFinding-b16c564b-0875-4f8c-b706-59250eecf658",
 		url: "goodVcs/goodOrg/repo",
@@ -1007,7 +1022,7 @@ export const mockHFRows001:RowDef[] = [
 	},
 ];
 
-export const mockHFRows002:RowDef[] = [];
+export const mockHFRows002: RowDef[] = [];
 
 export const mockHiddenFindingsSummaryNone = {
 	critical: 0,
@@ -1026,201 +1041,198 @@ export const mockHiddenFindingsSummaryNone = {
 
 // consolidated hidden finding rows with each finding type, expirations, and unhidden files
 // generated by server.ts mocks
-export const mockHFRows003:RowDef[] = [
+export const mockHFRows003: RowDef[] = [
 	{
-		"keyId": "hiddenFinding-2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "vulnerability",
-		"expires": "Never",
-		"source": [
-			"docker/Dockerfile",
-			"docker/Dockerfile.dev"
-		],
-		"location": "CVE-2020-0000",
-		"component": "",
-		"severity": "critical",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "vulnerability",
+		expires: "Never",
+		source: ["docker/Dockerfile", "docker/Dockerfile.dev"],
+		location: "CVE-2020-0000",
+		component: "",
+		severity: "critical",
+		hiddenFindings: [
 			{
-				"id": "2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2020-0000",
-					"component": "",
-					"source": "docker/Dockerfile",
-					"severity": "critical"
+				id: "2d70ba68-98bc-06d5-1a6e-75f3f6973cca",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2020-0000",
+					component: "",
+					source: "docker/Dockerfile",
+					severity: "critical",
 				},
-				"expires": null,
-				"reason": "test existing hidden finding",
-				"created_by": "Davos.Seaworth@example.com"
+				expires: null,
+				reason: "test existing hidden finding",
+				created_by: "Davos.Seaworth@example.com",
 			},
 			{
-				"id": "6951e173-0f39-5bdb-5e01-585ccdc95a0c",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2020-0000",
-					"component": "",
-					"source": "docker/Dockerfile.dev",
-					"severity": "critical"
+				id: "6951e173-0f39-5bdb-5e01-585ccdc95a0c",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2020-0000",
+					component: "",
+					source: "docker/Dockerfile.dev",
+					severity: "critical",
 				},
-				"expires": null,
-				"reason": "test existing hidden finding",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: null,
+				reason: "test existing hidden finding",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-7ec683a2-d3f7-734f-a948-eb88d1cc8788",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "secret",
-		"expires": "Never",
-		"source": "folder/badfile",
-		"location": 17,
-		"component": "q3498tlsdf9834tkjsdfg98u34t",
-		"severity": "",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-7ec683a2-d3f7-734f-a948-eb88d1cc8788",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "secret",
+		expires: "Never",
+		source: "folder/badfile",
+		location: 17,
+		component: "q3498tlsdf9834tkjsdfg98u34t",
+		severity: "",
+		hiddenFindings: [
 			{
-				"id": "7ec683a2-d3f7-734f-a948-eb88d1cc8788",
-				"type": "secret",
-				"value": {
-					"filename": "folder/badfile",
-					"line": 17,
-					"commit": "q3498tlsdf9834tkjsdfg98u34t"
+				id: "7ec683a2-d3f7-734f-a948-eb88d1cc8788",
+				type: "secret",
+				value: {
+					filename: "folder/badfile",
+					line: 17,
+					commit: "q3498tlsdf9834tkjsdfg98u34t",
 				},
-				"expires": null,
-				"reason": "test existing hidden finding, secret",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: null,
+				reason: "test existing hidden finding, secret",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-bc8b709f-8f47-773b-28b9-0838633e04f3",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "secret",
-		"expires": "Never",
-		"source": "folder/badfile2",
-		"location": 177,
-		"component": "q3498tlsdf9834tkjsdfg98u34t",
-		"severity": "",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-bc8b709f-8f47-773b-28b9-0838633e04f3",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "secret",
+		expires: "Never",
+		source: "folder/badfile2",
+		location: 177,
+		component: "q3498tlsdf9834tkjsdfg98u34t",
+		severity: "",
+		hiddenFindings: [
 			{
-				"id": "bc8b709f-8f47-773b-28b9-0838633e04f3",
-				"type": "secret",
-				"value": {
-					"filename": "folder/badfile2",
-					"line": 177,
-					"commit": "q3498tlsdf9834tkjsdfg98u34t"
+				id: "bc8b709f-8f47-773b-28b9-0838633e04f3",
+				type: "secret",
+				value: {
+					filename: "folder/badfile2",
+					line: 177,
+					commit: "q3498tlsdf9834tkjsdfg98u34t",
 				},
-				"expires": null,
-				"reason": "test existing hidden finding, secret",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: null,
+				reason: "test existing hidden finding, secret",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-158f10a4-cc4e-dc61-29f9-6d1fa262e842",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "vulnerability",
-		"expires": "2021-08-04T20:48:21.467Z",
-		"source": [
-			"docker/Dockerfile.multistage"
-		],
-		"location": "CVE-2018-00000",
-		"component": "",
-		"severity": "medium",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-158f10a4-cc4e-dc61-29f9-6d1fa262e842",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "vulnerability",
+		expires: "2021-08-04T20:48:21.467Z",
+		source: ["docker/Dockerfile.multistage"],
+		location: "CVE-2018-00000",
+		component: "",
+		severity: "medium",
+		hiddenFindings: [
 			{
-				"id": "158f10a4-cc4e-dc61-29f9-6d1fa262e842",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2018-00000",
-					"severity": "medium",
-					"component": "",
-					"source": "docker/Dockerfile.multistage"
+				id: "158f10a4-cc4e-dc61-29f9-6d1fa262e842",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2018-00000",
+					severity: "medium",
+					component: "",
+					source: "docker/Dockerfile.multistage",
 				},
-				"expires": "2021-08-04T20:48:21.467Z",
-				"reason": "expired hidden finding",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: "2021-08-04T20:48:21.467Z",
+				reason: "expired hidden finding",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "vulnerability",
-		"expires": "2021-08-09T20:48:21.479Z",
-		"source": [
+		keyId: "hiddenFinding-2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "vulnerability",
+		expires: "2021-08-09T20:48:21.479Z",
+		source: [
 			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
 			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
 			"docker/Dockerfile.platform7",
-			"docker/Dockerfile.platform27"
+			"docker/Dockerfile.platform27",
 		],
-		"location": "CVE-2019-00000",
-		"component": "component1",
-		"severity": "high",
-		"hiddenFindings": [
+		location: "CVE-2019-00000",
+		component: "component1",
+		severity: "high",
+		hiddenFindings: [
 			{
-				"id": "2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
-					"severity": "high"
+				id: "2d61838e-55bf-d9a9-d4ce-47512e8f1ee4",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2019-00000",
+					component: "component1",
+					source:
+						"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
+					severity: "high",
 				},
-				"expires": "2021-08-09T20:48:21.479Z",
-				"reason": "expiring test hiding a subset of files with vuln finding (1)",
-				"created_by": "Davos.Seaworth@example.com"
+				expires: "2021-08-09T20:48:21.479Z",
+				reason: "expiring test hiding a subset of files with vuln finding (1)",
+				created_by: "Davos.Seaworth@example.com",
 			},
 			{
-				"id": "becb22ea-6127-c0e3-bc7a-f111319cef15",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
-					"severity": "high"
+				id: "becb22ea-6127-c0e3-bc7a-f111319cef15",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2019-00000",
+					component: "component1",
+					source:
+						"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
+					severity: "high",
 				},
-				"expires": "2021-08-09T20:48:21.480Z",
-				"reason": "expiring test hiding a subset of files with vuln finding (2)",
-				"created_by": "Davos.Seaworth@example.com"
+				expires: "2021-08-09T20:48:21.480Z",
+				reason: "expiring test hiding a subset of files with vuln finding (2)",
+				created_by: "Davos.Seaworth@example.com",
 			},
 			{
-				"id": "04112a84-efe8-1893-5eb8-08f4ee34c151",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "docker/Dockerfile.platform7",
-					"severity": "high"
+				id: "04112a84-efe8-1893-5eb8-08f4ee34c151",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2019-00000",
+					component: "component1",
+					source: "docker/Dockerfile.platform7",
+					severity: "high",
 				},
-				"expires": "2021-08-09T20:48:21.480Z",
-				"reason": "expiring test hiding a subset of files with vuln finding (3)",
-				"created_by": "Davos.Seaworth@example.com"
+				expires: "2021-08-09T20:48:21.480Z",
+				reason: "expiring test hiding a subset of files with vuln finding (3)",
+				created_by: "Davos.Seaworth@example.com",
 			},
 			{
-				"id": "68b78d55-74c1-7724-3107-710f638777ef",
-				"type": "vulnerability",
-				"value": {
-					"id": "CVE-2019-00000",
-					"component": "component1",
-					"source": "docker/Dockerfile.platform27",
-					"severity": "high"
+				id: "68b78d55-74c1-7724-3107-710f638777ef",
+				type: "vulnerability",
+				value: {
+					id: "CVE-2019-00000",
+					component: "component1",
+					source: "docker/Dockerfile.platform27",
+					severity: "high",
 				},
-				"expires": "2021-08-09T20:48:21.480Z",
-				"reason": "expiring test hiding a subset of files with vuln finding (4)",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: "2021-08-09T20:48:21.480Z",
+				reason: "expiring test hiding a subset of files with vuln finding (4)",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": [
+		unhiddenFindings: [
 			"node/a_very_long_directory_name_tests_and_samples/package.json: component",
 			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
 			"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
@@ -1250,112 +1262,116 @@ export const mockHFRows003:RowDef[] = [
 			"docker/Dockerfile.platform23",
 			"docker/Dockerfile.platform24",
 			"docker/Dockerfile.platform25",
-			"docker/Dockerfile.platform26"
-		]
+			"docker/Dockerfile.platform26",
+		],
 	},
 	{
-		"keyId": "hiddenFinding-1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "secret_raw",
-		"expires": "Never",
-		"source": "Any",
-		"location": "test.me",
-		"component": "Any",
-		"severity": "",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "secret_raw",
+		expires: "Never",
+		source: "Any",
+		location: "test.me",
+		component: "Any",
+		severity: "",
+		hiddenFindings: [
 			{
-				"id": "1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
-				"type": "secret_raw",
-				"value": {
-					"value": "test.me"
+				id: "1d8ed466-3830-fa77-6fd3-be2ca7a8f174",
+				type: "secret_raw",
+				value: {
+					value: "test.me",
 				},
-				"expires": null,
-				"reason": "test secret_raw type",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: null,
+				reason: "test secret_raw type",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-0515b3d2-c04c-cde3-6082-44b60047e627",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "vulnerability_raw",
-		"expires": "2021-08-09T20:48:21.480Z",
-		"source": "Any",
-		"location": "CVE-2021-0101",
-		"component": "Any",
-		"severity": "critical",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-0515b3d2-c04c-cde3-6082-44b60047e627",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "vulnerability_raw",
+		expires: "2021-08-09T20:48:21.480Z",
+		source: "Any",
+		location: "CVE-2021-0101",
+		component: "Any",
+		severity: "critical",
+		hiddenFindings: [
 			{
-				"id": "0515b3d2-c04c-cde3-6082-44b60047e627",
-				"type": "vulnerability_raw",
-				"value": {
-					"id": "CVE-2021-0101",
-					"severity": "critical"
+				id: "0515b3d2-c04c-cde3-6082-44b60047e627",
+				type: "vulnerability_raw",
+				value: {
+					id: "CVE-2021-0101",
+					severity: "critical",
 				},
-				"expires": "2021-08-09T20:48:21.480Z",
-				"reason": "test expired vulnerability_raw type",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: "2021-08-09T20:48:21.480Z",
+				reason: "test expired vulnerability_raw type",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "static_analysis",
-		"expires": "Never",
-		"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-		"location": 14,
-		"component": "Potential template injection",
-		"severity": "medium",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "static_analysis",
+		expires: "Never",
+		source:
+			"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+		location: 14,
+		component: "Potential template injection",
+		severity: "medium",
+		hiddenFindings: [
 			{
-				"id": "aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
-				"type": "static_analysis",
-				"value": {
-					"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-					"line": 14,
-					"type": "Potential template injection",
-					"severity": "medium"
+				id: "aeaab0ad-7786-038c-4d8e-ebf4d6275b77",
+				type: "static_analysis",
+				value: {
+					filename:
+						"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+					line: 14,
+					type: "Potential template injection",
+					severity: "medium",
 				},
-				"expires": null,
-				"reason": "test static_analysis type",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: null,
+				reason: "test static_analysis type",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
+		unhiddenFindings: [],
 	},
 	{
-		"keyId": "hiddenFinding-12771a01-02a3-f353-3ff3-14deddea2eb8",
-		"url": "goodVcs/goodOrg/repo",
-		"createdBy": "Davos.Seaworth@example.com",
-		"type": "static_analysis",
-		"expires": "2021-08-12T20:48:21.480Z",
-		"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-		"location": 33,
-		"component": "XSS",
-		"severity": "critical",
-		"hiddenFindings": [
+		keyId: "hiddenFinding-12771a01-02a3-f353-3ff3-14deddea2eb8",
+		url: "goodVcs/goodOrg/repo",
+		createdBy: "Davos.Seaworth@example.com",
+		type: "static_analysis",
+		expires: "2021-08-12T20:48:21.480Z",
+		source:
+			"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+		location: 33,
+		component: "XSS",
+		severity: "critical",
+		hiddenFindings: [
 			{
-				"id": "12771a01-02a3-f353-3ff3-14deddea2eb8",
-				"type": "static_analysis",
-				"value": {
-					"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-					"line": 33,
-					"type": "XSS",
-					"severity": "critical"
+				id: "12771a01-02a3-f353-3ff3-14deddea2eb8",
+				type: "static_analysis",
+				value: {
+					filename:
+						"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+					line: 33,
+					type: "XSS",
+					severity: "critical",
 				},
-				"expires": "2021-08-12T20:48:21.480Z",
-				"reason": "test expired static_analysis type",
-				"created_by": "Davos.Seaworth@example.com"
-			}
+				expires: "2021-08-12T20:48:21.480Z",
+				reason: "test expired static_analysis type",
+				created_by: "Davos.Seaworth@example.com",
+			},
 		],
-		"unhiddenFindings": []
-	}
+		unhiddenFindings: [],
+	},
 ];
 
 export const mockHFSummary003 = {
@@ -1374,7 +1390,7 @@ export const mockHFSummary003 = {
 	configuration: 3,
 };
 
-export const mockCurrentUser:User = {
+export const mockCurrentUser: User = {
 	scan_orgs: [
 		"badVcs/badOrg",
 		"goodVcs.goodOrg.com",
@@ -1428,9 +1444,9 @@ export const mockStoreEmpty: RootState = {
 	keys: {
 		ids: [],
 		entities: {},
-		status: 'succeeded',
+		status: "succeeded",
 		error: null,
-		totalRecords: 0
+		totalRecords: 0,
 	},
 	notifications: {
 		ids: [],
@@ -1499,7 +1515,13 @@ mockStoreSingleScan.scans.entities[mockStoreScanId] = {
 	initiated_by: "Brienne.of.Tarth@example.com",
 	service: "goodVcs",
 	scan_options: {
-		categories: ["inventory", "secret", "static_analysis", "vulnerability", "configuration"],
+		categories: [
+			"inventory",
+			"secret",
+			"static_analysis",
+			"vulnerability",
+			"configuration",
+		],
 		plugins: [],
 		depth: 500,
 		include_dev: false,
@@ -1561,109 +1583,109 @@ mockStoreSingleScan.scans.entities[mockStoreScanId] = {
 			negligible: 1,
 			"": 2,
 		},
-	}
+	},
 };
 
 export const mockStore50Scans: RootState = {
 	...mockStoreEmpty,
 	scans: {
 		ids: [
-			'f9c67c93-5042-35b4-22b1-08d7d955b913',
-			'd917d175-17e3-1337-ea53-ce745be2b5a3',
-			'6bfd7612-ef88-288b-7071-5e4cc9384588',
-			'5bfbfc7e-6f92-388c-9b13-0b4cd8ea1c6d',
-			'136a3d03-7509-296a-050f-ebe57bc4800c',
-			'9990a263-b526-e278-e045-71693dc35fb7',
-			'839e437b-fccd-cf4b-6bd2-319ba7cdaa6f',
-			'edc2bd2e-c61f-61b7-fb39-72dedc1cf857',
-			'ba8ca3bf-526c-687d-ff25-c70195c721a5',
-			'c25b4101-e621-bf90-82d7-f72d478da6d8',
-			'adbdaa84-4cc1-f124-69ad-806d97920cd0',
-			'8e469945-27da-48bf-f48a-bb0463e194fd',
-			'a8f407e7-0097-9d85-4c7c-78506f59e556',
-			'82510225-cd71-ca58-becd-7eabb03e16d5',
-			'aae24a4a-f523-dbbb-62bc-bbac3342c4cb',
-			'a4389373-c858-4fa0-26b9-a8f0f19c6e75',
-			'746c5a3c-0ebe-1530-58c4-cf5415f5a097',
-			'548bb3d0-87db-daab-7f5a-270f4f6b474f',
-			'8bc61918-3273-96e2-fe2b-285357753164',
-			'bfc16816-a447-7865-7834-918eddf9f6a9',
-			'7f1e7817-7f39-8493-a7bf-5cb64d0d0a92',
-			'7f0ff371-12d3-41f8-e907-ef7f02061fb4',
-			'32fd0a0f-0161-044f-ad2b-85a6a173e173',
-			'c7234750-f8cc-e2d0-4ac4-07427290835a',
-			'729d38d6-5bc6-6bab-d7e3-a76bc3a371c9',
-			'e00f0bd3-7fd3-1724-de98-875c1f937eb0',
-			'9bf4059e-ecb7-8969-0ffa-7b5d61b42f28',
-			'4af45d21-d607-e7bb-2823-86593124e1d7',
-			'3b232664-30e0-27f0-8390-498018c7b630',
-			'59bb48c1-d0be-0f61-e36f-524a349a731a',
-			'b592f45f-6273-2316-38a5-c93950248e58',
-			'5c8c80c8-e447-1c3c-886e-77c7639ceea1',
-			'33849581-b886-38d0-5d44-7b185bb525db',
-			'a0b1a1dd-1721-130a-148f-e42c8a154af2',
-			'256320ed-75ab-15f7-0b30-5736ea7cfb7f',
-			'18533d5d-c12d-7283-ee63-b7dbe09e3448',
-			'f4b45bc7-36ed-7855-64ab-726df70dbc63',
-			'fd4eee75-896c-086d-e1fe-18a2e1257df5',
-			'13c6e02e-51c9-1092-9a69-7f03079b9e5a',
-			'aea3980a-195a-a279-1404-68fb6b6c02e6',
-			'56c41460-5205-5534-f10e-053c9d796104',
-			'a5c9d666-988d-4c8c-439a-d13205556127',
-			'c1a48134-da5e-647f-1919-a6992e5a4307',
-			'0f27a670-adf7-c6c7-842e-91b5b092f039',
-			'0cdd785c-b11d-e241-ba4c-334a8db75c74',
-			'e5abf5df-f5a7-9077-a82e-8b70a7c47785',
-			'2771d959-ec5f-183d-4e0d-133f6f537ef6',
-			'93bfb10b-b95f-2794-3af6-90346fa8067c',
-			'ca9687dd-78ff-2489-352b-f4ad4235466c',
-			'adf5174c-05f9-0434-2f68-7ff4d4845bb3'
+			"f9c67c93-5042-35b4-22b1-08d7d955b913",
+			"d917d175-17e3-1337-ea53-ce745be2b5a3",
+			"6bfd7612-ef88-288b-7071-5e4cc9384588",
+			"5bfbfc7e-6f92-388c-9b13-0b4cd8ea1c6d",
+			"136a3d03-7509-296a-050f-ebe57bc4800c",
+			"9990a263-b526-e278-e045-71693dc35fb7",
+			"839e437b-fccd-cf4b-6bd2-319ba7cdaa6f",
+			"edc2bd2e-c61f-61b7-fb39-72dedc1cf857",
+			"ba8ca3bf-526c-687d-ff25-c70195c721a5",
+			"c25b4101-e621-bf90-82d7-f72d478da6d8",
+			"adbdaa84-4cc1-f124-69ad-806d97920cd0",
+			"8e469945-27da-48bf-f48a-bb0463e194fd",
+			"a8f407e7-0097-9d85-4c7c-78506f59e556",
+			"82510225-cd71-ca58-becd-7eabb03e16d5",
+			"aae24a4a-f523-dbbb-62bc-bbac3342c4cb",
+			"a4389373-c858-4fa0-26b9-a8f0f19c6e75",
+			"746c5a3c-0ebe-1530-58c4-cf5415f5a097",
+			"548bb3d0-87db-daab-7f5a-270f4f6b474f",
+			"8bc61918-3273-96e2-fe2b-285357753164",
+			"bfc16816-a447-7865-7834-918eddf9f6a9",
+			"7f1e7817-7f39-8493-a7bf-5cb64d0d0a92",
+			"7f0ff371-12d3-41f8-e907-ef7f02061fb4",
+			"32fd0a0f-0161-044f-ad2b-85a6a173e173",
+			"c7234750-f8cc-e2d0-4ac4-07427290835a",
+			"729d38d6-5bc6-6bab-d7e3-a76bc3a371c9",
+			"e00f0bd3-7fd3-1724-de98-875c1f937eb0",
+			"9bf4059e-ecb7-8969-0ffa-7b5d61b42f28",
+			"4af45d21-d607-e7bb-2823-86593124e1d7",
+			"3b232664-30e0-27f0-8390-498018c7b630",
+			"59bb48c1-d0be-0f61-e36f-524a349a731a",
+			"b592f45f-6273-2316-38a5-c93950248e58",
+			"5c8c80c8-e447-1c3c-886e-77c7639ceea1",
+			"33849581-b886-38d0-5d44-7b185bb525db",
+			"a0b1a1dd-1721-130a-148f-e42c8a154af2",
+			"256320ed-75ab-15f7-0b30-5736ea7cfb7f",
+			"18533d5d-c12d-7283-ee63-b7dbe09e3448",
+			"f4b45bc7-36ed-7855-64ab-726df70dbc63",
+			"fd4eee75-896c-086d-e1fe-18a2e1257df5",
+			"13c6e02e-51c9-1092-9a69-7f03079b9e5a",
+			"aea3980a-195a-a279-1404-68fb6b6c02e6",
+			"56c41460-5205-5534-f10e-053c9d796104",
+			"a5c9d666-988d-4c8c-439a-d13205556127",
+			"c1a48134-da5e-647f-1919-a6992e5a4307",
+			"0f27a670-adf7-c6c7-842e-91b5b092f039",
+			"0cdd785c-b11d-e241-ba4c-334a8db75c74",
+			"e5abf5df-f5a7-9077-a82e-8b70a7c47785",
+			"2771d959-ec5f-183d-4e0d-133f6f537ef6",
+			"93bfb10b-b95f-2794-3af6-90346fa8067c",
+			"ca9687dd-78ff-2489-352b-f4ad4235466c",
+			"adf5174c-05f9-0434-2f68-7ff4d4845bb3",
 		],
 		entities: {
-			'f9c67c93-5042-35b4-22b1-08d7d955b913': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Eddard.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'test',
+			"f9c67c93-5042-35b4-22b1-08d7d955b913": {
+				repo: "goodOrg/repo",
+				initiated_by: "Eddard.Stark@example.com",
+				service: "goodVcs",
+				branch: "test",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					depth: 55,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 4,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-a7-0943c4bae81e48',
-				scan_id: 'f9c67c93-5042-35b4-22b1-08d7d955b913',
+				engine_id: "i-a7-0943c4bae81e48",
+				scan_id: "f9c67c93-5042-35b4-22b1-08d7d955b913",
 				success: false,
 				results_summary: {
 					vulnerabilities: {
@@ -1672,7 +1694,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: {
@@ -1681,7 +1703,7 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: {
@@ -1694,65 +1716,61 @@ export const mockStore50Scans: RootState = {
 					},
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'd917d175-17e3-1337-ea53-ce745be2b5a3': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Robb.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'dev',
+			"d917d175-17e3-1337-ea53-ce745be2b5a3": {
+				repo: "goodOrg/repo",
+				initiated_by: "Robb.Stark@example.com",
+				service: "goodVcs",
+				branch: "dev",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"configuration",
 					],
 					depth: 260,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 3,
-					total_plugins: 3
+					total_plugins: 3,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-1b3-d2645c154947e',
-				scan_id: 'd917d175-17e3-1337-ea53-ce745be2b5a3',
+				engine_id: "i-1b3-d2645c154947e",
+				scan_id: "d917d175-17e3-1337-ea53-ce745be2b5a3",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -1763,11 +1781,11 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: {
 						critical: 3,
@@ -1779,65 +1797,61 @@ export const mockStore50Scans: RootState = {
 					},
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'6bfd7612-ef88-288b-7071-5e4cc9384588': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Gendry@example.com',
-				service: 'goodVcs',
-				branch: 'test',
+			"6bfd7612-ef88-288b-7071-5e4cc9384588": {
+				repo: "goodOrg/repo",
+				initiated_by: "Gendry@example.com",
+				service: "goodVcs",
+				branch: "test",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 347,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-aa90cec6ce3f2b8-b',
-				scan_id: '6bfd7612-ef88-288b-7071-5e4cc9384588',
+				engine_id: "i-aa90cec6ce3f2b8-b",
+				scan_id: "6bfd7612-ef88-288b-7071-5e4cc9384588",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -1848,74 +1862,70 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'5bfbfc7e-6f92-388c-9b13-0b4cd8ea1c6d': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Sansa.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"5bfbfc7e-6f92-388c-9b13-0b4cd8ea1c6d": {
+				repo: "goodOrg/repo",
+				initiated_by: "Sansa.Stark@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					depth: 258,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 4,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-7485037f69-6fea09',
-				scan_id: '5bfbfc7e-6f92-388c-9b13-0b4cd8ea1c6d',
+				engine_id: "i-7485037f69-6fea09",
+				scan_id: "5bfbfc7e-6f92-388c-9b13-0b4cd8ea1c6d",
 				success: false,
 				results_summary: {
 					vulnerabilities: {
@@ -1924,7 +1934,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: {
@@ -1933,11 +1943,11 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: {
 						critical: 3,
@@ -1949,65 +1959,61 @@ export const mockStore50Scans: RootState = {
 					},
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'136a3d03-7509-296a-050f-ebe57bc4800c': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Gendry@example.com',
-				service: 'goodVcs',
+			"136a3d03-7509-296a-050f-ebe57bc4800c": {
+				repo: "goodOrg/repo",
+				initiated_by: "Gendry@example.com",
+				service: "goodVcs",
 				branch: null,
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 166,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:43:37+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:43:37+00:00",
 				},
-				engine_id: 'i-434611cf1b8431e35',
-				scan_id: '136a3d03-7509-296a-050f-ebe57bc4800c',
+				engine_id: "i-434611cf1b8431e35",
+				scan_id: "136a3d03-7509-296a-050f-ebe57bc4800c",
 				success: false,
 				results_summary: {
 					vulnerabilities: {
@@ -2016,76 +2022,72 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'9990a263-b526-e278-e045-71693dc35fb7': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Stannis.Baratheon@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"9990a263-b526-e278-e045-71693dc35fb7": {
+				repo: "goodOrg/repo",
+				initiated_by: "Stannis.Baratheon@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 163,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-f29b751550067f15a',
-				scan_id: '9990a263-b526-e278-e045-71693dc35fb7',
+				engine_id: "i-f29b751550067f15a",
+				scan_id: "9990a263-b526-e278-e045-71693dc35fb7",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -2096,104 +2098,88 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'839e437b-fccd-cf4b-6bd2-319ba7cdaa6f': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jeor.Mormont@example.com',
-				service: 'goodVcs',
-				branch: 'qa',
+			"839e437b-fccd-cf4b-6bd2-319ba7cdaa6f": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jeor.Mormont@example.com",
+				service: "goodVcs",
+				branch: "qa",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 9,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T17:43:45+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T17:43:45+00:00",
 					current_plugin: 3,
-					total_plugins: 3
+					total_plugins: 3,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-5dc3-af55e75-cf40',
-				scan_id: '839e437b-fccd-cf4b-6bd2-319ba7cdaa6f',
+				engine_id: "i-5dc3-af55e75-cf40",
+				scan_id: "839e437b-fccd-cf4b-6bd2-319ba7cdaa6f",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -2204,59 +2190,59 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'edc2bd2e-c61f-61b7-fb39-72dedc1cf857': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Eddard.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"edc2bd2e-c61f-61b7-fb39-72dedc1cf857": {
+				repo: "goodOrg/repo",
+				initiated_by: "Eddard.Stark@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability'
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability'
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
 					],
 					depth: 400,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-698fdd77db-a07621',
-				scan_id: 'edc2bd2e-c61f-61b7-fb39-72dedc1cf857',
+				engine_id: "i-698fdd77db-a07621",
+				scan_id: "edc2bd2e-c61f-61b7-fb39-72dedc1cf857",
 				success: true,
 				results_summary: {
 					vulnerabilities: null,
@@ -2264,70 +2250,66 @@ export const mockStore50Scans: RootState = {
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'ba8ca3bf-526c-687d-ff25-c70195c721a5': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Grey.Worm@example.com',
-				service: 'goodVcs',
-				branch: 'dev',
+			"ba8ca3bf-526c-687d-ff25-c70195c721a5": {
+				repo: "goodOrg/repo",
+				initiated_by: "Grey.Worm@example.com",
+				service: "goodVcs",
+				branch: "dev",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 199,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-937ad1981d70363ec',
-				scan_id: 'ba8ca3bf-526c-687d-ff25-c70195c721a5',
+				engine_id: "i-937ad1981d70363ec",
+				scan_id: "ba8ca3bf-526c-687d-ff25-c70195c721a5",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -2338,69 +2320,65 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'c25b4101-e621-bf90-82d7-f72d478da6d8': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Margaery.Tyrell@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"c25b4101-e621-bf90-82d7-f72d478da6d8": {
+				repo: "goodOrg/repo",
+				initiated_by: "Margaery.Tyrell@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability'
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability'
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
 					],
 					depth: 194,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-5ae490ede4cf2e7c9',
-				scan_id: 'c25b4101-e621-bf90-82d7-f72d478da6d8',
+				engine_id: "i-5ae490ede4cf2e7c9",
+				scan_id: "c25b4101-e621-bf90-82d7-f72d478da6d8",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -2411,71 +2389,67 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'adbdaa84-4cc1-f124-69ad-806d97920cd0': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jeor.Mormont@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"adbdaa84-4cc1-f124-69ad-806d97920cd0": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jeor.Mormont@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 228,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 3,
-					total_plugins: 3
+					total_plugins: 3,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:43:45+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:43:45+00:00",
 				},
-				engine_id: 'i-bfa9-cb6446b3e13a',
-				scan_id: 'adbdaa84-4cc1-f124-69ad-806d97920cd0',
+				engine_id: "i-bfa9-cb6446b3e13a",
+				scan_id: "adbdaa84-4cc1-f124-69ad-806d97920cd0",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -2486,74 +2460,70 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'8e469945-27da-48bf-f48a-bb0463e194fd': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Gendry@example.com',
-				service: 'goodVcs',
-				branch: 'test',
+			"8e469945-27da-48bf-f48a-bb0463e194fd": {
+				repo: "goodOrg/repo",
+				initiated_by: "Gendry@example.com",
+				service: "goodVcs",
+				branch: "test",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 28,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-0e4ea35d768460-ce',
-				scan_id: '8e469945-27da-48bf-f48a-bb0463e194fd',
+				engine_id: "i-0e4ea35d768460-ce",
+				scan_id: "8e469945-27da-48bf-f48a-bb0463e194fd",
 				success: false,
 				results_summary: {
 					vulnerabilities: null,
@@ -2561,104 +2531,88 @@ export const mockStore50Scans: RootState = {
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'a8f407e7-0097-9d85-4c7c-78506f59e556': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jon.Snow@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"a8f407e7-0097-9d85-4c7c-78506f59e556": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jon.Snow@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					depth: 370,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin static_analysis scan',
+				status: "running plugin static_analysis scan",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 3,
-					total_plugins: 5
+					total_plugins: 5,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-2a44d30aa2cfb6ec1',
-				scan_id: 'a8f407e7-0097-9d85-4c7c-78506f59e556',
+				engine_id: "i-2a44d30aa2cfb6ec1",
+				scan_id: "a8f407e7-0097-9d85-4c7c-78506f59e556",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -2667,7 +2621,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: {
@@ -2676,7 +2630,7 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: {
@@ -2688,52 +2642,52 @@ export const mockStore50Scans: RootState = {
 						"": 2,
 					},
 				},
-				results: {}
+				results: {},
 			},
-			'82510225-cd71-ca58-becd-7eabb03e16d5': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Tommen.Baratheon@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"82510225-cd71-ca58-becd-7eabb03e16d5": {
+				repo: "goodOrg/repo",
+				initiated_by: "Tommen.Baratheon@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 446,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-dd260d3a5e995e942',
-				scan_id: '82510225-cd71-ca58-becd-7eabb03e16d5',
+				engine_id: "i-dd260d3a5e995e942",
+				scan_id: "82510225-cd71-ca58-becd-7eabb03e16d5",
 				success: false,
 				results_summary: {
 					vulnerabilities: {
@@ -2742,7 +2696,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: null,
@@ -2750,99 +2704,83 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				application_metadata: {},
 			},
-			'aae24a4a-f523-dbbb-62bc-bbac3342c4cb': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jaime.Lannister@example.com',
-				service: 'goodVcs',
-				branch: 'qa',
+			"aae24a4a-f523-dbbb-62bc-bbac3342c4cb": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jaime.Lannister@example.com",
+				service: "goodVcs",
+				branch: "qa",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 160,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T17:43:45+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T17:43:45+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-787b5dcdf51d6305f',
-				scan_id: 'aae24a4a-f523-dbbb-62bc-bbac3342c4cb',
+				engine_id: "i-787b5dcdf51d6305f",
+				scan_id: "aae24a4a-f523-dbbb-62bc-bbac3342c4cb",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -2851,7 +2789,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: null,
@@ -2859,85 +2797,73 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'a4389373-c858-4fa0-26b9-a8f0f19c6e75': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Grey.Worm@example.com',
-				service: 'goodVcs',
+			"a4389373-c858-4fa0-26b9-a8f0f19c6e75": {
+				repo: "goodOrg/repo",
+				initiated_by: "Grey.Worm@example.com",
+				service: "goodVcs",
 				branch: null,
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 450,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin vulnerability scan',
+				status: "running plugin vulnerability scan",
 				status_detail: {
-					plugin_name: 'vulnerability scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "vulnerability scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 1,
-					total_plugins: 3
+					total_plugins: 3,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T17:43:45+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T17:43:45+00:00",
+					end: null,
 				},
-				engine_id: 'i-5473d87ab37d-5a09',
-				scan_id: 'a4389373-c858-4fa0-26b9-a8f0f19c6e75',
+				engine_id: "i-5473d87ab37d-5a09",
+				scan_id: "a4389373-c858-4fa0-26b9-a8f0f19c6e75",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -2946,7 +2872,7 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					secrets: null,
 					static_analysis: {
@@ -2955,58 +2881,58 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'746c5a3c-0ebe-1530-58c4-cf5415f5a097': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Ygritte@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"746c5a3c-0ebe-1530-58c4-cf5415f5a097": {
+				repo: "goodOrg/repo",
+				initiated_by: "Ygritte@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 330,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
 					plugin_name: null,
 					plugin_start_time: null,
 					current_plugin: null,
-					total_plugins: null
+					total_plugins: null,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-2a-7d-c65d6113fe3',
-				scan_id: '746c5a3c-0ebe-1530-58c4-cf5415f5a097',
+				engine_id: "i-2a-7d-c65d6113fe3",
+				scan_id: "746c5a3c-0ebe-1530-58c4-cf5415f5a097",
 				success: true,
 				results_summary: {
 					vulnerabilities: null,
@@ -3016,100 +2942,84 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				application_metadata: {},
 			},
-			'548bb3d0-87db-daab-7f5a-270f4f6b474f': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jon.Snow@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"548bb3d0-87db-daab-7f5a-270f4f6b474f": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jon.Snow@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 332,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin static_analysis scan',
+				status: "running plugin static_analysis scan",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i--aba93a36006ad60a',
-				scan_id: '548bb3d0-87db-daab-7f5a-270f4f6b474f',
+				engine_id: "i--aba93a36006ad60a",
+				scan_id: "548bb3d0-87db-daab-7f5a-270f4f6b474f",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -3118,7 +3028,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: {
@@ -3127,57 +3037,57 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'8bc61918-3273-96e2-fe2b-285357753164': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Melisandre@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"8bc61918-3273-96e2-fe2b-285357753164": {
+				repo: "goodOrg/repo",
+				initiated_by: "Melisandre@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 342,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-06a4b8f86c-dab63f',
-				scan_id: '8bc61918-3273-96e2-fe2b-285357753164',
+				engine_id: "i-06a4b8f86c-dab63f",
+				scan_id: "8bc61918-3273-96e2-fe2b-285357753164",
 				success: true,
 				results_summary: {
 					vulnerabilities: null,
@@ -3185,104 +3095,88 @@ export const mockStore50Scans: RootState = {
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				application_metadata: {},
 			},
-			'bfc16816-a447-7865-7834-918eddf9f6a9': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'This.\'Is\'My.Name?&#<testme>@example.com',
-				service: 'goodVcs',
-				branch: 'integration',
+			"bfc16816-a447-7865-7834-918eddf9f6a9": {
+				repo: "goodOrg/repo",
+				initiated_by: "This.'Is'My.Name?&#<testme>@example.com",
+				service: "goodVcs",
+				branch: "integration",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 70,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin inventory scan',
+				status: "running plugin inventory scan",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-8c116a4224a-5d358',
-				scan_id: 'bfc16816-a447-7865-7834-918eddf9f6a9',
+				engine_id: "i-8c116a4224a-5d358",
+				scan_id: "bfc16816-a447-7865-7834-918eddf9f6a9",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -3291,92 +3185,80 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: null,
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'7f1e7817-7f39-8493-a7bf-5cb64d0d0a92': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jon.Snow@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"7f1e7817-7f39-8493-a7bf-5cb64d0d0a92": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jon.Snow@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 407,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin static_analysis scan',
+				status: "running plugin static_analysis scan",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 2,
-					total_plugins: 3
+					total_plugins: 3,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-52846-599ec95534b',
-				scan_id: '7f1e7817-7f39-8493-a7bf-5cb64d0d0a92',
+				engine_id: "i-52846-599ec95534b",
+				scan_id: "7f1e7817-7f39-8493-a7bf-5cb64d0d0a92",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -3385,7 +3267,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: {
@@ -3394,91 +3276,79 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'7f0ff371-12d3-41f8-e907-ef7f02061fb4': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Sansa.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"7f0ff371-12d3-41f8-e907-ef7f02061fb4": {
+				repo: "goodOrg/repo",
+				initiated_by: "Sansa.Stark@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 5,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-8d826a5432908df3-',
-				scan_id: '7f0ff371-12d3-41f8-e907-ef7f02061fb4',
+				engine_id: "i-8d826a5432908df3-",
+				scan_id: "7f0ff371-12d3-41f8-e907-ef7f02061fb4",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -3488,87 +3358,75 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'32fd0a0f-0161-044f-ad2b-85a6a173e173': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jaime.Lannister@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"32fd0a0f-0161-044f-ad2b-85a6a173e173": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jaime.Lannister@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 103,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-eb-500f7a8529b1d2',
-				scan_id: '32fd0a0f-0161-044f-ad2b-85a6a173e173',
+				engine_id: "i-eb-500f7a8529b1d2",
+				scan_id: "32fd0a0f-0161-044f-ad2b-85a6a173e173",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -3577,93 +3435,81 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: null,
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'c7234750-f8cc-e2d0-4ac4-07427290835a': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Stannis.Baratheon@example.com',
-				service: 'goodVcs',
-				branch: 'integration',
+			"c7234750-f8cc-e2d0-4ac4-07427290835a": {
+				repo: "goodOrg/repo",
+				initiated_by: "Stannis.Baratheon@example.com",
+				service: "goodVcs",
+				branch: "integration",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					depth: 400,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 4,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i--2-818bbe-82900e7',
-				scan_id: 'c7234750-f8cc-e2d0-4ac4-07427290835a',
+				engine_id: "i--2-818bbe-82900e7",
+				scan_id: "c7234750-f8cc-e2d0-4ac4-07427290835a",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -3672,7 +3518,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: {
@@ -3681,11 +3527,11 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: {
 						critical: 3,
@@ -3696,86 +3542,74 @@ export const mockStore50Scans: RootState = {
 						"": 2,
 					},
 				},
-				results: {}
+				results: {},
 			},
-			'729d38d6-5bc6-6bab-d7e3-a76bc3a371c9': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jorah.Mormont@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"729d38d6-5bc6-6bab-d7e3-a76bc3a371c9": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jorah.Mormont@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 485,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin inventory scan',
+				status: "running plugin inventory scan",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-ec2753919d36b5c4c',
-				scan_id: '729d38d6-5bc6-6bab-d7e3-a76bc3a371c9',
+				engine_id: "i-ec2753919d36b5c4c",
+				scan_id: "729d38d6-5bc6-6bab-d7e3-a76bc3a371c9",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -3784,85 +3618,73 @@ export const mockStore50Scans: RootState = {
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'e00f0bd3-7fd3-1724-de98-875c1f937eb0': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Roose.Bolton@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"e00f0bd3-7fd3-1724-de98-875c1f937eb0": {
+				repo: "goodOrg/repo",
+				initiated_by: "Roose.Bolton@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 123,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'vulnerability scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "vulnerability scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-f-11854d26db1deed',
-				scan_id: 'e00f0bd3-7fd3-1724-de98-875c1f937eb0',
+				engine_id: "i-f-11854d26db1deed",
+				scan_id: "e00f0bd3-7fd3-1724-de98-875c1f937eb0",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -3871,7 +3693,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: null,
@@ -3879,85 +3701,73 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'9bf4059e-ecb7-8969-0ffa-7b5d61b42f28': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Tormund.Giantsbane@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"9bf4059e-ecb7-8969-0ffa-7b5d61b42f28": {
+				repo: "goodOrg/repo",
+				initiated_by: "Tormund.Giantsbane@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 123,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin static_analysis scan',
+				status: "running plugin static_analysis scan",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-637dca6bff2e23fc5',
-				scan_id: '9bf4059e-ecb7-8969-0ffa-7b5d61b42f28',
+				engine_id: "i-637dca6bff2e23fc5",
+				scan_id: "9bf4059e-ecb7-8969-0ffa-7b5d61b42f28",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -3968,92 +3778,80 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'4af45d21-d607-e7bb-2823-86593124e1d7': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Brienne.of.Tarth@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"4af45d21-d607-e7bb-2823-86593124e1d7": {
+				repo: "goodOrg/repo",
+				initiated_by: "Brienne.of.Tarth@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 83,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'terminated',
+				status: "terminated",
 				status_detail: {
 					plugin_name: null,
 					plugin_start_time: null,
 					current_plugin: null,
-					total_plugins: null
+					total_plugins: null,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-52d1b523afa-96e58',
-				scan_id: '4af45d21-d607-e7bb-2823-86593124e1d7',
+				engine_id: "i-52d1b523afa-96e58",
+				scan_id: "4af45d21-d607-e7bb-2823-86593124e1d7",
 				application_metadata: {},
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4062,86 +3860,74 @@ export const mockStore50Scans: RootState = {
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'3b232664-30e0-27f0-8390-498018c7b630': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Ygritte@example.com',
-				service: 'goodVcs',
+			"3b232664-30e0-27f0-8390-498018c7b630": {
+				repo: "goodOrg/repo",
+				initiated_by: "Ygritte@example.com",
+				service: "goodVcs",
 				branch: null,
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 446,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-797a5-1e-9d47de-a',
-				scan_id: '3b232664-30e0-27f0-8390-498018c7b630',
+				engine_id: "i-797a5-1e-9d47de-a",
+				scan_id: "3b232664-30e0-27f0-8390-498018c7b630",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4152,91 +3938,79 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'59bb48c1-d0be-0f61-e36f-524a349a731a': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Davos.Seaworth@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"59bb48c1-d0be-0f61-e36f-524a349a731a": {
+				repo: "goodOrg/repo",
+				initiated_by: "Davos.Seaworth@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 309,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-ac1e-59-87b0c96fa',
-				scan_id: '59bb48c1-d0be-0f61-e36f-524a349a731a',
+				engine_id: "i-ac1e-59-87b0c96fa",
+				scan_id: "59bb48c1-d0be-0f61-e36f-524a349a731a",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -4245,97 +4019,85 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'b592f45f-6273-2316-38a5-c93950248e58': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Cersei.Lannister@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"b592f45f-6273-2316-38a5-c93950248e58": {
+				repo: "goodOrg/repo",
+				initiated_by: "Cersei.Lannister@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 478,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'processing',
+				status: "processing",
 				status_detail: {
 					plugin_name: null,
 					plugin_start_time: null,
 					current_plugin: null,
-					total_plugins: null
+					total_plugins: null,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T17:44:57+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T17:44:57+00:00",
+					end: null,
 				},
-				engine_id: 'i-37868b26d5a8db757',
-				scan_id: 'b592f45f-6273-2316-38a5-c93950248e58',
+				engine_id: "i-37868b26d5a8db757",
+				scan_id: "b592f45f-6273-2316-38a5-c93950248e58",
 				application_metadata: {},
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4344,85 +4106,73 @@ export const mockStore50Scans: RootState = {
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'5c8c80c8-e447-1c3c-886e-77c7639ceea1': {
-				repo: 'goodOrg/repo',
+			"5c8c80c8-e447-1c3c-886e-77c7639ceea1": {
+				repo: "goodOrg/repo",
 				initiated_by: null,
-				service: 'goodVcs',
-				branch: 'main',
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"configuration",
 					],
 					depth: 422,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin secret scan',
+				status: "running plugin secret scan",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 1,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i--382e526160713c59',
-				scan_id: '5c8c80c8-e447-1c3c-886e-77c7639ceea1',
+				engine_id: "i--382e526160713c59",
+				scan_id: "5c8c80c8-e447-1c3c-886e-77c7639ceea1",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4433,7 +4183,7 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: {
@@ -4446,86 +4196,74 @@ export const mockStore50Scans: RootState = {
 					},
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'33849581-b886-38d0-5d44-7b185bb525db': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Sandor.Clegane@example.com',
-				service: 'goodVcs',
-				branch: 'dev',
+			"33849581-b886-38d0-5d44-7b185bb525db": {
+				repo: "goodOrg/repo",
+				initiated_by: "Sandor.Clegane@example.com",
+				service: "goodVcs",
+				branch: "dev",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 27,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'error',
+				status: "error",
 				status_detail: {
 					plugin_name: null,
 					plugin_start_time: null,
 					current_plugin: null,
-					total_plugins: null
+					total_plugins: null,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-4-27f963e98ea9d8e',
-				scan_id: '33849581-b886-38d0-5d44-7b185bb525db',
+				engine_id: "i-4-27f963e98ea9d8e",
+				scan_id: "33849581-b886-38d0-5d44-7b185bb525db",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'Repo too large (all the many KB)'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "Repo too large (all the many KB)",
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4535,86 +4273,74 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'a0b1a1dd-1721-130a-148f-e42c8a154af2': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jeor.Mormont@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"a0b1a1dd-1721-130a-148f-e42c8a154af2": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jeor.Mormont@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 427,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-5daa9b6c569b4eaa0',
-				scan_id: 'a0b1a1dd-1721-130a-148f-e42c8a154af2',
+				engine_id: "i-5daa9b6c569b4eaa0",
+				scan_id: "a0b1a1dd-1721-130a-148f-e42c8a154af2",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4625,90 +4351,78 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'256320ed-75ab-15f7-0b30-5736ea7cfb7f': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Joffrey.Baratheon@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"256320ed-75ab-15f7-0b30-5736ea7cfb7f": {
+				repo: "goodOrg/repo",
+				initiated_by: "Joffrey.Baratheon@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 98,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-7b0600-9a06c6e-cb',
-				scan_id: '256320ed-75ab-15f7-0b30-5736ea7cfb7f',
+				engine_id: "i-7b0600-9a06c6e-cb",
+				scan_id: "256320ed-75ab-15f7-0b30-5736ea7cfb7f",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4716,90 +4430,78 @@ export const mockStore50Scans: RootState = {
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'18533d5d-c12d-7283-ee63-b7dbe09e3448': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Theon.Greyjoy@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"18533d5d-c12d-7283-ee63-b7dbe09e3448": {
+				repo: "goodOrg/repo",
+				initiated_by: "Theon.Greyjoy@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 216,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-65301ba511-1d196-',
-				scan_id: '18533d5d-c12d-7283-ee63-b7dbe09e3448',
+				engine_id: "i-65301ba511-1d196-",
+				scan_id: "18533d5d-c12d-7283-ee63-b7dbe09e3448",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4810,96 +4512,84 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'f4b45bc7-36ed-7855-64ab-726df70dbc63': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Varys@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"f4b45bc7-36ed-7855-64ab-726df70dbc63": {
+				repo: "goodOrg/repo",
+				initiated_by: "Varys@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 161,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-f1b720f991be7b-ff',
-				scan_id: 'f4b45bc7-36ed-7855-64ab-726df70dbc63',
+				engine_id: "i-f1b720f991be7b-ff",
+				scan_id: "f4b45bc7-36ed-7855-64ab-726df70dbc63",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -4908,85 +4598,73 @@ export const mockStore50Scans: RootState = {
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'fd4eee75-896c-086d-e1fe-18a2e1257df5': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Ramsay.Bolton@example.com',
-				service: 'goodVcs',
-				branch: 'dev',
+			"fd4eee75-896c-086d-e1fe-18a2e1257df5": {
+				repo: "goodOrg/repo",
+				initiated_by: "Ramsay.Bolton@example.com",
+				service: "goodVcs",
+				branch: "dev",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 238,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin vulnerability scan',
+				status: "running plugin vulnerability scan",
 				status_detail: {
-					plugin_name: 'vulnerability scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "vulnerability scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 1,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-102e2cc2f88b783db',
-				scan_id: 'fd4eee75-896c-086d-e1fe-18a2e1257df5',
+				engine_id: "i-102e2cc2f88b783db",
+				scan_id: "fd4eee75-896c-086d-e1fe-18a2e1257df5",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -4995,7 +4673,7 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					secrets: 0,
 					static_analysis: null,
@@ -5003,86 +4681,74 @@ export const mockStore50Scans: RootState = {
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'13c6e02e-51c9-1092-9a69-7f03079b9e5a': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Joffrey.Baratheon@example.com',
-				service: 'goodVcs',
-				branch: 'dev',
+			"13c6e02e-51c9-1092-9a69-7f03079b9e5a": {
+				repo: "goodOrg/repo",
+				initiated_by: "Joffrey.Baratheon@example.com",
+				service: "goodVcs",
+				branch: "dev",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 477,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin secret scan',
+				status: "running plugin secret scan",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-0cedb-c51dfaef-4c',
-				scan_id: '13c6e02e-51c9-1092-9a69-7f03079b9e5a',
+				engine_id: "i-0cedb-c51dfaef-4c",
+				scan_id: "13c6e02e-51c9-1092-9a69-7f03079b9e5a",
 				application_metadata: {},
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -5091,87 +4757,75 @@ export const mockStore50Scans: RootState = {
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'aea3980a-195a-a279-1404-68fb6b6c02e6': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Eddard.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"aea3980a-195a-a279-1404-68fb6b6c02e6": {
+				repo: "goodOrg/repo",
+				initiated_by: "Eddard.Stark@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					depth: 479,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 4,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-20ecf8-f25b725af7',
-				scan_id: 'aea3980a-195a-a279-1404-68fb6b6c02e6',
+				engine_id: "i-20ecf8-f25b725af7",
+				scan_id: "aea3980a-195a-a279-1404-68fb6b6c02e6",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -5180,13 +4834,13 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: {
 						critical: 3,
@@ -5197,86 +4851,74 @@ export const mockStore50Scans: RootState = {
 						"": 2,
 					},
 				},
-				results: {}
+				results: {},
 			},
-			'56c41460-5205-5534-f10e-053c9d796104': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Viserys.Targaryen@example.com',
-				service: 'goodVcs',
-				branch: 'prod',
+			"56c41460-5205-5534-f10e-053c9d796104": {
+				repo: "goodOrg/repo",
+				initiated_by: "Viserys.Targaryen@example.com",
+				service: "goodVcs",
+				branch: "prod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 120,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-78bb0f9e1cbab77c4',
-				scan_id: '56c41460-5205-5534-f10e-053c9d796104',
+				engine_id: "i-78bb0f9e1cbab77c4",
+				scan_id: "56c41460-5205-5534-f10e-053c9d796104",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -5287,90 +4929,78 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'a5c9d666-988d-4c8c-439a-d13205556127': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Jon.Snow@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"a5c9d666-988d-4c8c-439a-d13205556127": {
+				repo: "goodOrg/repo",
+				initiated_by: "Jon.Snow@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"-inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 4,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin secret scan',
+				status: "running plugin secret scan",
 				status_detail: {
-					plugin_name: 'secret scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "secret scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 1,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-3203ea778e4a65592',
-				scan_id: 'a5c9d666-988d-4c8c-439a-d13205556127',
+				engine_id: "i-3203ea778e4a65592",
+				scan_id: "a5c9d666-988d-4c8c-439a-d13205556127",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -5381,91 +5011,79 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'c1a48134-da5e-647f-1919-a6992e5a4307': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Shae@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"c1a48134-da5e-647f-1919-a6992e5a4307": {
+				repo: "goodOrg/repo",
+				initiated_by: "Shae@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 154,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin inventory scan',
+				status: "running plugin inventory scan",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 3,
-					total_plugins: 3
+					total_plugins: 3,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-be6-29a9-92b-7118',
-				scan_id: 'c1a48134-da5e-647f-1919-a6992e5a4307',
+				engine_id: "i-be6-29a9-92b-7118",
+				scan_id: "c1a48134-da5e-647f-1919-a6992e5a4307",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -5476,91 +5094,80 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'0f27a670-adf7-c6c7-842e-91b5b092f039': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"0f27a670-adf7-c6c7-842e-91b5b092f039": {
+				repo: "goodOrg/repo",
+				initiated_by:
+					"Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 165,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin vulnerability scan',
+				status: "running plugin vulnerability scan",
 				status_detail: {
-					plugin_name: 'vulnerability scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "vulnerability scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 1,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-9d588f314849c-4-a',
-				scan_id: '0f27a670-adf7-c6c7-842e-91b5b092f039',
+				engine_id: "i-9d588f314849c-4-a",
+				scan_id: "0f27a670-adf7-c6c7-842e-91b5b092f039",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -5569,7 +5176,7 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					secrets: 0,
 					static_analysis: {
@@ -5578,92 +5185,80 @@ export const mockStore50Scans: RootState = {
 						medium: 0,
 						low: 0,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'0cdd785c-b11d-e241-ba4c-334a8db75c74': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'This.\'Is\'My.Name?&#<testme>@example.com',
-				service: 'goodVcs',
-				branch: 'nonprod',
+			"0cdd785c-b11d-e241-ba4c-334a8db75c74": {
+				repo: "goodOrg/repo",
+				initiated_by: "This.'Is'My.Name?&#<testme>@example.com",
+				service: "goodVcs",
+				branch: "nonprod",
 				scan_options: {
 					categories: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'-inventory',
-						'-secret',
-						'static_analysis',
-						'vulnerability',
-						'-configuration',
+						"-inventory",
+						"-secret",
+						"static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 301,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'static_analysis scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "static_analysis scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-bfb1-3ff-1507246f',
-				scan_id: '0cdd785c-b11d-e241-ba4c-334a8db75c74',
+				engine_id: "i-bfb1-3ff-1507246f",
+				scan_id: "0cdd785c-b11d-e241-ba4c-334a8db75c74",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -5672,7 +5267,7 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: {
@@ -5681,91 +5276,79 @@ export const mockStore50Scans: RootState = {
 						medium: 1,
 						low: 1,
 						negligible: 0,
-						'': 0
+						"": 0,
 					},
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'e5abf5df-f5a7-9077-a82e-8b70a7c47785': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Tommen.Baratheon@example.com',
-				service: 'goodVcs',
-				branch: 'test',
+			"e5abf5df-f5a7-9077-a82e-8b70a7c47785": {
+				repo: "goodOrg/repo",
+				initiated_by: "Tommen.Baratheon@example.com",
+				service: "goodVcs",
+				branch: "test",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 291,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 1,
-					total_plugins: 1
+					total_plugins: 1,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-f--02195a0ee6f02e',
-				scan_id: 'e5abf5df-f5a7-9077-a82e-8b70a7c47785',
+				engine_id: "i-f--02195a0ee6f02e",
+				scan_id: "e5abf5df-f5a7-9077-a82e-8b70a7c47785",
 				application_metadata: {},
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -5773,90 +5356,78 @@ export const mockStore50Scans: RootState = {
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'2771d959-ec5f-183d-4e0d-133f6f537ef6': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Brienne.of.Tarth@example.com',
-				service: 'goodVcs',
-				branch: 'integration',
+			"2771d959-ec5f-183d-4e0d-133f6f537ef6": {
+				repo: "goodOrg/repo",
+				initiated_by: "Brienne.of.Tarth@example.com",
+				service: "goodVcs",
+				branch: "integration",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 0,
 					include_dev: false,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'failed',
+				status: "failed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T16:10:50+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T16:10:50+00:00",
 				},
-				engine_id: 'i-cc00cca5320bd-666',
-				scan_id: '2771d959-ec5f-183d-4e0d-133f6f537ef6',
+				engine_id: "i-cc00cca5320bd-666",
+				scan_id: "2771d959-ec5f-183d-4e0d-133f6f537ef6",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					],
-					failed: 'An unexpected error occurred unexpectedly'
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
+					failed: "An unexpected error occurred unexpectedly",
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -5865,96 +5436,84 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: null,
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'93bfb10b-b95f-2794-3af6-90346fa8067c': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Catelyn.Stark@example.com',
-				service: 'goodVcs',
-				branch: 'main',
+			"93bfb10b-b95f-2794-3af6-90346fa8067c": {
+				repo: "goodOrg/repo",
+				initiated_by: "Catelyn.Stark@example.com",
+				service: "goodVcs",
+				branch: "main",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'configuration'
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'vulnerability',
-						'configuration'
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"vulnerability",
+						"configuration",
 					],
 					depth: 170,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'completed',
+				status: "completed",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T16:10:50+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T16:10:50+00:00",
 					current_plugin: 4,
-					total_plugins: 4
+					total_plugins: 4,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: '2021-11-22T17:44:57+00:00'
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: "2021-11-22T17:44:57+00:00",
 				},
-				engine_id: 'i-8bbdff1c-a31deafc',
-				scan_id: '93bfb10b-b95f-2794-3af6-90346fa8067c',
+				engine_id: "i-8bbdff1c-a31deafc",
+				scan_id: "93bfb10b-b95f-2794-3af6-90346fa8067c",
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -5963,13 +5522,13 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: 4,
 					static_analysis: null,
 					inventory: {
 						base_images: 3,
-						technology_discovery: 12
+						technology_discovery: 12,
 					},
 					configuration: {
 						critical: 3,
@@ -5981,86 +5540,74 @@ export const mockStore50Scans: RootState = {
 					},
 				},
 				results: {},
-				application_metadata: {}
+				application_metadata: {},
 			},
-			'ca9687dd-78ff-2489-352b-f4ad4235466c': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Daario.Naharis@example.com',
-				service: 'goodVcs',
-				branch: 'qa',
+			"ca9687dd-78ff-2489-352b-f4ad4235466c": {
+				repo: "goodOrg/repo",
+				initiated_by: "Daario.Naharis@example.com",
+				service: "goodVcs",
+				branch: "qa",
 				scan_options: {
 					categories: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'-secret',
-						'-static_analysis',
-						'vulnerability',
-						'-configuration',
+						"inventory",
+						"-secret",
+						"-static_analysis",
+						"vulnerability",
+						"-configuration",
 					],
 					depth: 186,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'running plugin inventory scan',
+				status: "running plugin inventory scan",
 				status_detail: {
-					plugin_name: 'inventory scan',
-					plugin_start_time: '2021-11-22T17:44:57+00:00',
+					plugin_name: "inventory scan",
+					plugin_start_time: "2021-11-22T17:44:57+00:00",
 					current_plugin: 2,
-					total_plugins: 2
+					total_plugins: 2,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T16:10:50+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T16:10:50+00:00",
+					end: null,
 				},
-				engine_id: 'i-d38340af57db779b4',
-				scan_id: 'ca9687dd-78ff-2489-352b-f4ad4235466c',
+				engine_id: "i-d38340af57db779b4",
+				scan_id: "ca9687dd-78ff-2489-352b-f4ad4235466c",
 				application_metadata: {},
 				success: false,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: {
@@ -6069,92 +5616,80 @@ export const mockStore50Scans: RootState = {
 						medium: 2,
 						low: 2,
 						negligible: 1,
-						'': 2
+						"": 2,
 					},
 					secrets: null,
 					static_analysis: null,
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
+				results: {},
 			},
-			'adf5174c-05f9-0434-2f68-7ff4d4845bb3': {
-				repo: 'goodOrg/repo',
-				initiated_by: 'Tywin.Lannister@example.com',
-				service: 'goodVcs',
-				branch: 'qa',
+			"adf5174c-05f9-0434-2f68-7ff4d4845bb3": {
+				repo: "goodOrg/repo",
+				initiated_by: "Tywin.Lannister@example.com",
+				service: "goodVcs",
+				branch: "qa",
 				scan_options: {
 					categories: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					plugins: [
-						'inventory',
-						'secret',
-						'-static_analysis',
-						'-vulnerability',
-						'-configuration',
+						"inventory",
+						"secret",
+						"-static_analysis",
+						"-vulnerability",
+						"-configuration",
 					],
 					depth: 211,
 					include_dev: true,
 					callback: {
 						url: null,
-						client_id: null
+						client_id: null,
 					},
 					batch_priority: false,
 					include_paths: [],
 					exclude_paths: [],
 				},
-				status: 'processing',
+				status: "processing",
 				status_detail: {
 					plugin_name: null,
 					plugin_start_time: null,
 					current_plugin: null,
-					total_plugins: null
+					total_plugins: null,
 				},
 				timestamps: {
-					queued: '2021-11-22T16:10:50+00:00',
-					start: '2021-11-22T17:44:57+00:00',
-					end: null
+					queued: "2021-11-22T16:10:50+00:00",
+					start: "2021-11-22T17:44:57+00:00",
+					end: null,
 				},
-				engine_id: 'i-53a-a0337cd0c5aa-',
-				scan_id: 'adf5174c-05f9-0434-2f68-7ff4d4845bb3',
+				engine_id: "i-53a-a0337cd0c5aa-",
+				scan_id: "adf5174c-05f9-0434-2f68-7ff4d4845bb3",
 				success: true,
 				truncated: false,
 				errors: {
-					'Some Scanner': [
-						'Plugin returned invalid output: ',
-						'Error1',
-						'Error2',
-						'Error3'
+					"Some Scanner": [
+						"Plugin returned invalid output: ",
+						"Error1",
+						"Error2",
+						"Error3",
 					],
-					'Some Other Scanner': [
-						'Make the scan alerts scroll'
-					],
-					'Yet One Other Scanner': [
-						'Make the scan alerts scroll some more'
-					]
+					"Some Other Scanner": ["Make the scan alerts scroll"],
+					"Yet One Other Scanner": ["Make the scan alerts scroll some more"],
 				},
 				alerts: {
-					'An array of things': [
-						'Thing1',
-						'Thing2',
-						'Anotherthing'
-					],
-					'This Alert': [
-						'Whoo, an array'
-					],
-					'That Alert': [
-						'Make these alerts scroll'
-					]
+					"An array of things": ["Thing1", "Thing2", "Anotherthing"],
+					"This Alert": ["Whoo, an array"],
+					"That Alert": ["Make these alerts scroll"],
 				},
 				debug: {
 					Setup: [
-						'Dockerfiles automatically built for scanning: All the Dockerfiles'
-					]
+						"Dockerfiles automatically built for scanning: All the Dockerfiles",
+					],
 				},
 				results_summary: {
 					vulnerabilities: null,
@@ -6163,961 +5698,919 @@ export const mockStore50Scans: RootState = {
 					inventory: null,
 					configuration: null,
 				},
-				results: {}
-			}
+				results: {},
+			},
 		},
-		status: 'succeeded',
+		status: "succeeded",
 		error: null,
-		totalRecords: 260
-	}
+		totalRecords: 260,
+	},
 };
 
 export const mockUsers: RootState = {
 	...mockStoreEmpty,
 	users: {
 		ids: [
-			'Arya.Stark@example.com',
-			'Brandon.Stark@example.com',
-			'Brienne.of.Tarth@example.com',
-			'Bronn@example.com',
-			'Catelyn.Stark@example.com',
-			'Cersei.Lannister@example.com',
-			'Daario.Naharis@example.com',
-			'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
-			'Davos.Seaworth@example.com',
-			'Eddard.Stark@example.com',
-			'Ellaria.Sand@example.com',
-			'Gendry@example.com',
-			'Gilly@example.com',
-			'Grey.Worm@example.com',
-			'Jaime.Lannister@example.com',
-			'Jaqen.H\'ghar@example.com',
-			'Jeor.Mormont@example.com',
-			'Joffrey.Baratheon@example.com',
-			'Jon.Snow@example.com',
-			'Jorah.Mormont@example.com',
-			'Margaery.Tyrell@example.com',
-			'Melisandre@example.com',
-			'Missandei@example.com',
-			'Petyr.Baelish@example.com',
-			'Ramsay.Bolton@example.com',
-			'Robb.Stark@example.com',
-			'Robert.Baratheon@example.com',
-			'Roose.Bolton@example.com',
-			'Samwell.Tarly@example.com',
-			'Sandor.Clegane@example.com',
-			'Sansa.Stark@example.com',
-			'Shae@example.com',
-			'Stannis.Baratheon@example.com',
-			'Talisa.Maegyr@example.com',
-			'Theon.Greyjoy@example.com',
-			'This.\'Is\'My.Name?&#<testme>@example.com',
-			'Tommen.Baratheon@example.com',
-			'Tormund.Giantsbane@example.com',
-			'Tyrion.Lannister@example.com',
-			'Tywin.Lannister@example.com',
-			'Varys@example.com',
-			'Viserys.Targaryen@example.com',
-			'Ygritte@example.com'
+			"Arya.Stark@example.com",
+			"Brandon.Stark@example.com",
+			"Brienne.of.Tarth@example.com",
+			"Bronn@example.com",
+			"Catelyn.Stark@example.com",
+			"Cersei.Lannister@example.com",
+			"Daario.Naharis@example.com",
+			"Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com",
+			"Davos.Seaworth@example.com",
+			"Eddard.Stark@example.com",
+			"Ellaria.Sand@example.com",
+			"Gendry@example.com",
+			"Gilly@example.com",
+			"Grey.Worm@example.com",
+			"Jaime.Lannister@example.com",
+			"Jaqen.H'ghar@example.com",
+			"Jeor.Mormont@example.com",
+			"Joffrey.Baratheon@example.com",
+			"Jon.Snow@example.com",
+			"Jorah.Mormont@example.com",
+			"Margaery.Tyrell@example.com",
+			"Melisandre@example.com",
+			"Missandei@example.com",
+			"Petyr.Baelish@example.com",
+			"Ramsay.Bolton@example.com",
+			"Robb.Stark@example.com",
+			"Robert.Baratheon@example.com",
+			"Roose.Bolton@example.com",
+			"Samwell.Tarly@example.com",
+			"Sandor.Clegane@example.com",
+			"Sansa.Stark@example.com",
+			"Shae@example.com",
+			"Stannis.Baratheon@example.com",
+			"Talisa.Maegyr@example.com",
+			"Theon.Greyjoy@example.com",
+			"This.'Is'My.Name?&#<testme>@example.com",
+			"Tommen.Baratheon@example.com",
+			"Tormund.Giantsbane@example.com",
+			"Tyrion.Lannister@example.com",
+			"Tywin.Lannister@example.com",
+			"Varys@example.com",
+			"Viserys.Targaryen@example.com",
+			"Ygritte@example.com",
 		],
 		entities: {
-			'Arya.Stark@example.com': {
-				email: 'Arya.Stark@example.com',
+			"Arya.Stark@example.com": {
+				email: "Arya.Stark@example.com",
 				admin: true,
-				last_login: '2020-12-30T16:00:05.019Z',
+				last_login: "2020-12-30T16:00:05.019Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Brandon.Stark@example.com': {
-				email: 'Brandon.Stark@example.com',
+			"Brandon.Stark@example.com": {
+				email: "Brandon.Stark@example.com",
 				admin: false,
-				last_login: '2021-10-11T16:00:05.019Z',
+				last_login: "2021-10-11T16:00:05.019Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Brienne.of.Tarth@example.com': {
-				email: 'Brienne.of.Tarth@example.com',
+			"Brienne.of.Tarth@example.com": {
+				email: "Brienne.of.Tarth@example.com",
 				admin: false,
-				last_login: '2021-08-07T16:00:05.020Z',
+				last_login: "2021-08-07T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Bronn@example.com': {
-				email: 'Bronn@example.com',
+			"Bronn@example.com": {
+				email: "Bronn@example.com",
 				admin: false,
-				last_login: '2020-11-25T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2020-11-25T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Catelyn.Stark@example.com': {
-				email: 'Catelyn.Stark@example.com',
+			"Catelyn.Stark@example.com": {
+				email: "Catelyn.Stark@example.com",
 				admin: false,
-				last_login: '2021-05-21T16:00:05.018Z',
+				last_login: "2021-05-21T16:00:05.018Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Cersei.Lannister@example.com': {
-				email: 'Cersei.Lannister@example.com',
+			"Cersei.Lannister@example.com": {
+				email: "Cersei.Lannister@example.com",
 				admin: false,
-				last_login: '2021-08-29T16:00:05.018Z',
+				last_login: "2021-08-29T16:00:05.018Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Daario.Naharis@example.com': {
-				email: 'Daario.Naharis@example.com',
+			"Daario.Naharis@example.com": {
+				email: "Daario.Naharis@example.com",
 				admin: true,
-				last_login: '2020-12-15T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2020-12-15T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com': {
-				email: 'Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com',
+			"Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com":
+				{
+					email:
+						"Daenerys.Stormborn.First.Of.Her.Name.The.Unburnt.Queen.Of.The.Andals.And.The.First.Men.Khaleesi.Of.The.Great.Grass.Sea.Breaker.Of.Chains.And.Mother.Of.Dragons.Targaryen@example.com",
+					admin: false,
+					last_login: "2021-06-12T16:00:05.018Z",
+					scope: [
+						"goodVcs/goodOrg/regex-[0-9]",
+						"goodVcs/goodOrg/org/path/not/[!0-9]",
+						"goodVcs/goodOrg/org/path/?",
+						"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+						"goodVcs.goodOrg.com/interpret[?]",
+					],
+					features: {
+						snyk: false,
+					},
+					scan_orgs: [
+						"goodVcs.goodOrg.com]",
+						"goodVcs/goodOrg",
+						"goodVcs/goodOrg/org/path",
+						"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					],
+				},
+			"Davos.Seaworth@example.com": {
+				email: "Davos.Seaworth@example.com",
 				admin: false,
-				last_login: '2021-06-12T16:00:05.018Z',
-				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
-				],
+				last_login: "2021-07-06T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Davos.Seaworth@example.com': {
-				email: 'Davos.Seaworth@example.com',
+			"Eddard.Stark@example.com": {
+				email: "Eddard.Stark@example.com",
 				admin: false,
-				last_login: '2021-07-06T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-02-06T16:00:05.018Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Eddard.Stark@example.com': {
-				email: 'Eddard.Stark@example.com',
+			"Ellaria.Sand@example.com": {
+				email: "Ellaria.Sand@example.com",
 				admin: false,
-				last_login: '2021-02-06T16:00:05.018Z',
+				last_login: "2021-08-06T16:00:05.020Z",
 				scope: [
-					'*'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Ellaria.Sand@example.com': {
-				email: 'Ellaria.Sand@example.com',
+			"Gendry@example.com": {
+				email: "Gendry@example.com",
 				admin: false,
-				last_login: '2021-08-06T16:00:05.020Z',
+				last_login: "2021-07-31T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
-			},
-			'Gendry@example.com': {
-				email: 'Gendry@example.com',
-				admin: false,
-				last_login: '2021-07-31T16:00:05.020Z',
-				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
 				],
-				features: {
-					snyk: false
-				},
-				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
 			},
-			'Gilly@example.com': {
-				email: 'Gilly@example.com',
+			"Gilly@example.com": {
+				email: "Gilly@example.com",
 				admin: true,
-				last_login: '2021-06-05T16:00:05.020Z',
+				last_login: "2021-06-05T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Grey.Worm@example.com': {
-				email: 'Grey.Worm@example.com',
+			"Grey.Worm@example.com": {
+				email: "Grey.Worm@example.com",
 				admin: false,
-				last_login: '2021-05-26T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-05-26T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Jaime.Lannister@example.com': {
-				email: 'Jaime.Lannister@example.com',
+			"Jaime.Lannister@example.com": {
+				email: "Jaime.Lannister@example.com",
 				admin: false,
-				last_login: '2021-11-02T16:00:05.018Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-11-02T16:00:05.018Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Jaqen.H\'ghar@example.com': {
-				email: 'Jaqen.H\'ghar@example.com',
+			"Jaqen.H'ghar@example.com": {
+				email: "Jaqen.H'ghar@example.com",
 				admin: false,
-				last_login: '2021-10-08T16:00:05.020Z',
+				last_login: "2021-10-08T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Jeor.Mormont@example.com': {
-				email: 'Jeor.Mormont@example.com',
+			"Jeor.Mormont@example.com": {
+				email: "Jeor.Mormont@example.com",
 				admin: false,
-				last_login: '2021-04-18T16:00:05.019Z',
+				last_login: "2021-04-18T16:00:05.019Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Joffrey.Baratheon@example.com': {
-				email: 'Joffrey.Baratheon@example.com',
+			"Joffrey.Baratheon@example.com": {
+				email: "Joffrey.Baratheon@example.com",
 				admin: false,
-				last_login: '2020-12-02T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2020-12-02T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Jon.Snow@example.com': {
-				email: 'Jon.Snow@example.com',
+			"Jon.Snow@example.com": {
+				email: "Jon.Snow@example.com",
 				admin: true,
-				last_login: '2021-05-20T16:00:05.018Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-05-20T16:00:05.018Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Jorah.Mormont@example.com': {
-				email: 'Jorah.Mormont@example.com',
+			"Jorah.Mormont@example.com": {
+				email: "Jorah.Mormont@example.com",
 				admin: false,
-				last_login: '2020-11-29T16:00:05.018Z',
+				last_login: "2020-11-29T16:00:05.018Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Margaery.Tyrell@example.com': {
-				email: 'Margaery.Tyrell@example.com',
+			"Margaery.Tyrell@example.com": {
+				email: "Margaery.Tyrell@example.com",
 				admin: false,
-				last_login: '2021-11-14T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-11-14T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Melisandre@example.com': {
-				email: 'Melisandre@example.com',
+			"Melisandre@example.com": {
+				email: "Melisandre@example.com",
 				admin: false,
-				last_login: '2021-11-09T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-11-09T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Missandei@example.com': {
-				email: 'Missandei@example.com',
+			"Missandei@example.com": {
+				email: "Missandei@example.com",
 				admin: true,
-				last_login: '2021-05-19T16:00:05.020Z',
+				last_login: "2021-05-19T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Petyr.Baelish@example.com': {
-				email: 'Petyr.Baelish@example.com',
+			"Petyr.Baelish@example.com": {
+				email: "Petyr.Baelish@example.com",
 				admin: true,
-				last_login: '2021-08-03T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-08-03T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Ramsay.Bolton@example.com': {
-				email: 'Ramsay.Bolton@example.com',
+			"Ramsay.Bolton@example.com": {
+				email: "Ramsay.Bolton@example.com",
 				admin: false,
-				last_login: '2021-03-12T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-03-12T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Robb.Stark@example.com': {
-				email: 'Robb.Stark@example.com',
+			"Robb.Stark@example.com": {
+				email: "Robb.Stark@example.com",
 				admin: false,
-				last_login: '2020-12-02T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2020-12-02T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Robert.Baratheon@example.com': {
-				email: 'Robert.Baratheon@example.com',
+			"Robert.Baratheon@example.com": {
+				email: "Robert.Baratheon@example.com",
 				admin: true,
-				last_login: '2021-02-05T16:00:05.018Z',
+				last_login: "2021-02-05T16:00:05.018Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Roose.Bolton@example.com': {
-				email: 'Roose.Bolton@example.com',
+			"Roose.Bolton@example.com": {
+				email: "Roose.Bolton@example.com",
 				admin: true,
-				last_login: '2020-12-10T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2020-12-10T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Samwell.Tarly@example.com': {
-				email: 'Samwell.Tarly@example.com',
+			"Samwell.Tarly@example.com": {
+				email: "Samwell.Tarly@example.com",
 				admin: false,
-				last_login: '2021-02-24T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-02-24T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Sandor.Clegane@example.com': {
-				email: 'Sandor.Clegane@example.com',
+			"Sandor.Clegane@example.com": {
+				email: "Sandor.Clegane@example.com",
 				admin: false,
-				last_login: '2021-04-26T16:00:05.019Z',
+				last_login: "2021-04-26T16:00:05.019Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Sansa.Stark@example.com': {
-				email: 'Sansa.Stark@example.com',
+			"Sansa.Stark@example.com": {
+				email: "Sansa.Stark@example.com",
 				admin: false,
-				last_login: '2021-07-12T16:00:05.019Z',
+				last_login: "2021-07-12T16:00:05.019Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Shae@example.com': {
-				email: 'Shae@example.com',
+			"Shae@example.com": {
+				email: "Shae@example.com",
 				admin: false,
-				last_login: '2021-01-03T16:00:05.020Z',
+				last_login: "2021-01-03T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Stannis.Baratheon@example.com': {
-				email: 'Stannis.Baratheon@example.com',
+			"Stannis.Baratheon@example.com": {
+				email: "Stannis.Baratheon@example.com",
 				admin: true,
-				last_login: '2021-08-01T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-08-01T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Talisa.Maegyr@example.com': {
-				email: 'Talisa.Maegyr@example.com',
+			"Talisa.Maegyr@example.com": {
+				email: "Talisa.Maegyr@example.com",
 				admin: true,
-				last_login: '2021-04-08T16:00:05.020Z',
+				last_login: "2021-04-08T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Theon.Greyjoy@example.com': {
-				email: 'Theon.Greyjoy@example.com',
+			"Theon.Greyjoy@example.com": {
+				email: "Theon.Greyjoy@example.com",
 				admin: false,
-				last_login: '2021-09-21T16:00:05.019Z',
+				last_login: "2021-09-21T16:00:05.019Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'This.\'Is\'My.Name?&#<testme>@example.com': {
-				email: 'This.\'Is\'My.Name?&#<testme>@example.com',
+			"This.'Is'My.Name?&#<testme>@example.com": {
+				email: "This.'Is'My.Name?&#<testme>@example.com",
 				admin: false,
-				last_login: '2021-05-12T16:00:05.017Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-05-12T16:00:05.017Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Tommen.Baratheon@example.com': {
-				email: 'Tommen.Baratheon@example.com',
+			"Tommen.Baratheon@example.com": {
+				email: "Tommen.Baratheon@example.com",
 				admin: true,
-				last_login: '2021-11-11T16:00:05.020Z',
+				last_login: "2021-11-11T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Tormund.Giantsbane@example.com': {
-				email: 'Tormund.Giantsbane@example.com',
+			"Tormund.Giantsbane@example.com": {
+				email: "Tormund.Giantsbane@example.com",
 				admin: false,
-				last_login: '2021-03-05T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-03-05T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Tyrion.Lannister@example.com': {
-				email: 'Tyrion.Lannister@example.com',
+			"Tyrion.Lannister@example.com": {
+				email: "Tyrion.Lannister@example.com",
 				admin: false,
-				last_login: '2021-07-20T16:00:05.019Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-07-20T16:00:05.019Z",
+				scope: ["*"],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
 			},
-			'Tywin.Lannister@example.com': {
-				email: 'Tywin.Lannister@example.com',
+			"Tywin.Lannister@example.com": {
+				email: "Tywin.Lannister@example.com",
 				admin: false,
-				last_login: '2021-03-20T16:00:05.020Z',
+				last_login: "2021-03-20T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Varys@example.com': {
-				email: 'Varys@example.com',
+			"Varys@example.com": {
+				email: "Varys@example.com",
 				admin: false,
-				last_login: '2021-10-24T16:00:05.020Z',
+				last_login: "2021-10-24T16:00:05.020Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Viserys.Targaryen@example.com': {
-				email: 'Viserys.Targaryen@example.com',
+			"Viserys.Targaryen@example.com": {
+				email: "Viserys.Targaryen@example.com",
 				admin: false,
-				last_login: '2021-09-30T16:00:05.018Z',
+				last_login: "2021-09-30T16:00:05.018Z",
 				scope: [
-					'goodVcs/goodOrg/regex-[0-9]',
-					'goodVcs/goodOrg/org/path/not/[!0-9]',
-					'goodVcs/goodOrg/org/path/?',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo',
-					'goodVcs.goodOrg.com/interpret[?]'
+					"goodVcs/goodOrg/regex-[0-9]",
+					"goodVcs/goodOrg/org/path/not/[!0-9]",
+					"goodVcs/goodOrg/org/path/?",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField/repo",
+					"goodVcs.goodOrg.com/interpret[?]",
 				],
 				features: {
-					snyk: false
+					snyk: false,
 				},
 				scan_orgs: [
-					'goodVcs.goodOrg.com]',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField'
-				]
+					"goodVcs.goodOrg.com]",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+				],
 			},
-			'Ygritte@example.com': {
-				email: 'Ygritte@example.com',
+			"Ygritte@example.com": {
+				email: "Ygritte@example.com",
 				admin: false,
-				last_login: '2021-07-18T16:00:05.020Z',
-				scope: [
-					'*'
-				],
+				last_login: "2021-07-18T16:00:05.020Z",
+				scope: ["*"],
 				features: {
-					snyk: true
+					snyk: true,
 				},
 				scan_orgs: [
-					'badVcs/badOrg',
-					'goodVcs.goodOrg.com',
-					'goodVcs/goodOrg',
-					'goodVcs/goodOrg/org/path',
-					'goodVcs/goodOrgThisIsAVeryLongNameForTheField',
-					'session/timeout'
-				]
-			}
+					"badVcs/badOrg",
+					"goodVcs.goodOrg.com",
+					"goodVcs/goodOrg",
+					"goodVcs/goodOrg/org/path",
+					"goodVcs/goodOrgThisIsAVeryLongNameForTheField",
+					"session/timeout",
+				],
+			},
 		},
-		status: 'succeeded',
+		status: "succeeded",
 		action: null,
 		error: null,
-		totalRecords: 43
+		totalRecords: 43,
 	},
 };
 
 export const mockStoreApiKeys: RootState = {
 	...mockStoreEmpty,
 	keys: {
-		ids: [
-			'c5365468-3e07-31f9-a613-dae804c84efb'
-		],
+		ids: ["c5365468-3e07-31f9-a613-dae804c84efb"],
 		entities: {
-			'c5365468-3e07-31f9-a613-dae804c84efb': {
-				id: 'c5365468-3e07-31f9-a613-dae804c84efb',
-				name: 'test.me',
-				created: '2021-11-24T19:08:28+00:00',
+			"c5365468-3e07-31f9-a613-dae804c84efb": {
+				id: "c5365468-3e07-31f9-a613-dae804c84efb",
+				name: "test.me",
+				created: "2021-11-24T19:08:28+00:00",
 				last_used: null,
 				expires: null,
-				scope: [
-					'*'
-				],
+				scope: ["*"],
 				admin: false,
 				features: {
-					snyk: false
+					snyk: false,
 				},
-				userEmail: 'Brienne.of.Tarth@example.com'
-			}
+				userEmail: "Brienne.of.Tarth@example.com",
+			},
 		},
-		status: 'succeeded',
+		status: "succeeded",
 		error: null,
-		totalRecords: 1
+		totalRecords: 1,
 	},
 };
 
@@ -7341,66 +6834,68 @@ export const mockStoreScanSlice: RootState = {
 };
 
 export const vulnRow = {
-	"keyId": "vulnerability-component1-CVE-2019-00000-high",
-	"type": "vulnerability",
-	"url": "goodVcs/goodOrg/repo",
-	"createdBy": "Ellaria.Sand@example.com",
-	"hasHiddenFindings": true,
-	"hiddenFindings": [
+	keyId: "vulnerability-component1-CVE-2019-00000-high",
+	type: "vulnerability",
+	url: "goodVcs/goodOrg/repo",
+	createdBy: "Ellaria.Sand@example.com",
+	hasHiddenFindings: true,
+	hiddenFindings: [
 		{
-			"id": "596ee47d-65de-8c12-98c3-ca9eff3b4224",
-			"type": "vulnerability",
-			"value": {
-				"id": "CVE-2019-00000",
-				"component": "component1",
-				"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
-				"severity": "high"
+			id: "596ee47d-65de-8c12-98c3-ca9eff3b4224",
+			type: "vulnerability",
+			value: {
+				id: "CVE-2019-00000",
+				component: "component1",
+				source:
+					"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
+				severity: "high",
 			},
-			"expires": "2021-08-11T02:00:47.269Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (1)",
-			"created_by": "Ellaria.Sand@example.com"
+			expires: "2021-08-11T02:00:47.269Z",
+			reason: "expiring test hiding a subset of files with vuln finding (1)",
+			created_by: "Ellaria.Sand@example.com",
 		},
 		{
-			"id": "69438fcb-13da-8b50-fe71-dfd0ccd91be1",
-			"type": "vulnerability",
-			"value": {
-				"id": "CVE-2019-00000",
-				"component": "component1",
-				"source": "node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
-				"severity": "high"
+			id: "69438fcb-13da-8b50-fe71-dfd0ccd91be1",
+			type: "vulnerability",
+			value: {
+				id: "CVE-2019-00000",
+				component: "component1",
+				source:
+					"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
+				severity: "high",
 			},
-			"expires": "2021-08-11T02:00:47.269Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (2)",
-			"created_by": "Ellaria.Sand@example.com"
+			expires: "2021-08-11T02:00:47.269Z",
+			reason: "expiring test hiding a subset of files with vuln finding (2)",
+			created_by: "Ellaria.Sand@example.com",
 		},
 		{
-			"id": "ed1edfd8-4056-a73a-77bb-d117a4b31f23",
-			"type": "vulnerability",
-			"value": {
-				"id": "CVE-2019-00000",
-				"component": "component1",
-				"source": "docker/Dockerfile.platform7",
-				"severity": "high"
+			id: "ed1edfd8-4056-a73a-77bb-d117a4b31f23",
+			type: "vulnerability",
+			value: {
+				id: "CVE-2019-00000",
+				component: "component1",
+				source: "docker/Dockerfile.platform7",
+				severity: "high",
 			},
-			"expires": "2021-08-11T02:00:47.270Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (3)",
-			"created_by": "Ellaria.Sand@example.com"
+			expires: "2021-08-11T02:00:47.270Z",
+			reason: "expiring test hiding a subset of files with vuln finding (3)",
+			created_by: "Ellaria.Sand@example.com",
 		},
 		{
-			"id": "9a016aed-40f7-7a26-3477-b399337db20f",
-			"type": "vulnerability",
-			"value": {
-				"id": "CVE-2019-00000",
-				"component": "component1",
-				"source": "docker/Dockerfile.platform27",
-				"severity": "high"
+			id: "9a016aed-40f7-7a26-3477-b399337db20f",
+			type: "vulnerability",
+			value: {
+				id: "CVE-2019-00000",
+				component: "component1",
+				source: "docker/Dockerfile.platform27",
+				severity: "high",
 			},
-			"expires": "2021-08-11T02:00:47.270Z",
-			"reason": "expiring test hiding a subset of files with vuln finding (4)",
-			"created_by": "Ellaria.Sand@example.com"
-		}
+			expires: "2021-08-11T02:00:47.270Z",
+			reason: "expiring test hiding a subset of files with vuln finding (4)",
+			created_by: "Ellaria.Sand@example.com",
+		},
 	],
-	"unhiddenFindings": [
+	unhiddenFindings: [
 		"node/a_very_long_directory_name_tests_and_samples/package.json: component",
 		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency3",
 		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency4",
@@ -7430,12 +6925,12 @@ export const vulnRow = {
 		"docker/Dockerfile.platform23",
 		"docker/Dockerfile.platform24",
 		"docker/Dockerfile.platform25",
-		"docker/Dockerfile.platform26"
+		"docker/Dockerfile.platform26",
 	],
-	"component": "component1",
-	"id": "CVE-2019-00000",
-	"severity": "high",
-	"source": [
+	component: "component1",
+	id: "CVE-2019-00000",
+	severity: "high",
+	source: [
 		"node/a_very_long_directory_name_tests_and_samples/package.json: component",
 		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency1",
 		"node/a_very_long_directory_name_tests_and_samples/package.json: component>component-thingy>anothercomponent>dependency1>dependency2>dependency3>dependency4>dependency5>dependency6>target-dependency2",
@@ -7469,149 +6964,158 @@ export const vulnRow = {
 		"docker/Dockerfile.platform24",
 		"docker/Dockerfile.platform25",
 		"docker/Dockerfile.platform26",
-		"docker/Dockerfile.platform27"
+		"docker/Dockerfile.platform27",
 	],
-	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-	"remediation": "imagine a remediation here"
+	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+	remediation: "imagine a remediation here",
 };
 
 export const findingVulnRawRow = {
 	component: "Any",
 	createdBy: "Tywin.Lannister@example.com",
 	expires: "2021-08-14T02:52:39.848Z",
-	hiddenFindings: [{
-		created_by: "Tywin.Lannister@example.com",
-		expires: "2021-08-14T02:52:39.848Z",
-		id: "623df464-4681-b71c-1094-60de27944170",
-		reason: "test expired vulnerability_raw type",
-		type: "vulnerability_raw",
-		value: {
-			id: "CVE-2021-0101",
-			severity: "critical",
-		}
-	}],
+	hiddenFindings: [
+		{
+			created_by: "Tywin.Lannister@example.com",
+			expires: "2021-08-14T02:52:39.848Z",
+			id: "623df464-4681-b71c-1094-60de27944170",
+			reason: "test expired vulnerability_raw type",
+			type: "vulnerability_raw",
+			value: {
+				id: "CVE-2021-0101",
+				severity: "critical",
+			},
+		},
+	],
 	keyId: "hiddenFinding-623df464-4681-b71c-1094-60de27944170",
 	location: "CVE-2021-0101",
 	severity: "critical",
 	source: "Any",
 	type: "vulnerability_raw",
 	unhiddenFindings: [],
-	url: "goodVcs/goodOrg/repo"
+	url: "goodVcs/goodOrg/repo",
 };
 
 export const analysisRow = {
-	"keyId": "static_analysis-/this/is/a/really/long/path/to/a/file/identified/as/a/static/analysis/finding/filename/is/code.py-7--critical",
-	"type": "static_analysis",
-	"url": "goodVcs/goodOrg/repo",
-	"createdBy": "Jaqen.H'ghar@example.com",
-	"hasHiddenFindings": false,
-	"filename": "/this/is/a/really/long/path/to/a/file/identified/as/a/static/analysis/finding/filename/is/code.py",
-	"line": 7,
-	"resource": "XSS",
-	"message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel pellentesque sem",
-	"severity": "critical",
-	"commit": "b55b138109624e5cb44c4c77c88b3eaa",
-	"repo": "secretproject/bleading-edge-repo",
-	"service": "github",
-	"branch": "unique-branch",
+	keyId:
+		"static_analysis-/this/is/a/really/long/path/to/a/file/identified/as/a/static/analysis/finding/filename/is/code.py-7--critical",
+	type: "static_analysis",
+	url: "goodVcs/goodOrg/repo",
+	createdBy: "Jaqen.H'ghar@example.com",
+	hasHiddenFindings: false,
+	filename:
+		"/this/is/a/really/long/path/to/a/file/identified/as/a/static/analysis/finding/filename/is/code.py",
+	line: 7,
+	resource: "XSS",
+	message:
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel pellentesque sem",
+	severity: "critical",
+	commit: "b55b138109624e5cb44c4c77c88b3eaa",
+	repo: "secretproject/bleading-edge-repo",
+	service: "github",
+	branch: "unique-branch",
 };
 
 export const findingAnalysisRow = {
-	"keyId": "hiddenFinding-4afb7b09-1aa9-2d4d-60df-de796de080d6",
-	"url": "goodVcs/goodOrg/repo",
-	"createdBy": "Arya.Stark@example.com",
-	"type": "static_analysis",
-	"expires": "Never",
-	"source": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-	"location": 14,
-	"component": "Potential template injection",
-	"severity": "medium",
-	"hiddenFindings": [
+	keyId: "hiddenFinding-4afb7b09-1aa9-2d4d-60df-de796de080d6",
+	url: "goodVcs/goodOrg/repo",
+	createdBy: "Arya.Stark@example.com",
+	type: "static_analysis",
+	expires: "Never",
+	source:
+		"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+	location: 14,
+	component: "Potential template injection",
+	severity: "medium",
+	hiddenFindings: [
 		{
-			"id": "4afb7b09-1aa9-2d4d-60df-de796de080d6",
-			"type": "static_analysis",
-			"value": {
-				"filename": "app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
-				"line": 14,
-				"type": "Potential template injection",
-				"severity": "medium"
+			id: "4afb7b09-1aa9-2d4d-60df-de796de080d6",
+			type: "static_analysis",
+			value: {
+				filename:
+					"app/src/ruby/files/mvc/controllers/controllers_for_the_application/application_controller.rb",
+				line: 14,
+				type: "Potential template injection",
+				severity: "medium",
 			},
-			"expires": null,
-			"reason": "test static_analysis type",
-			"created_by": "Arya.Stark@example.com",
-			"created": "2021-01-01T13:01:01Z",
-			"updated_by": "Bron@example.com",
-			"updated": "2021-02-02T14:02:02Z",
-		}
+			expires: null,
+			reason: "test static_analysis type",
+			created_by: "Arya.Stark@example.com",
+			created: "2021-01-01T13:01:01Z",
+			updated_by: "Bron@example.com",
+			updated: "2021-02-02T14:02:02Z",
+		},
 	],
-	"unhiddenFindings": []
+	unhiddenFindings: [],
 };
 
 export const secretRow = {
-	"keyId": "secret-/this/is/a/really/long/path/to/a/file/identified/as/a/secret/filename/is/slack.pass-2-slack-deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-	"type": "secret",
-	"url": "goodVcs/goodOrg/repo",
-	"createdBy": "Jaqen.H'ghar@example.com",
-	"hasHiddenFindings": false,
-	"filename": "/this/is/a/really/long/path/to/a/file/identified/as/a/secret/filename/is/slack.pass",
-	"line": 2,
-	"resource": "slack",
-	"commit": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+	keyId:
+		"secret-/this/is/a/really/long/path/to/a/file/identified/as/a/secret/filename/is/slack.pass-2-slack-deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+	type: "secret",
+	url: "goodVcs/goodOrg/repo",
+	createdBy: "Jaqen.H'ghar@example.com",
+	hasHiddenFindings: false,
+	filename:
+		"/this/is/a/really/long/path/to/a/file/identified/as/a/secret/filename/is/slack.pass",
+	line: 2,
+	resource: "slack",
+	commit: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
 };
 
 // note: no created, updated, updated_by fields to test legacy support
 export const findingSecretRow = {
-	"keyId": "hiddenFinding-41b79a3b-9ff5-84c6-2249-6311b0a2249f",
-	"url": "goodVcs/goodOrg/repo",
-	"createdBy": "Arya.Stark@example.com",
-	"type": "secret",
-	"expires": "Never",
-	"source": "folder/badfile2",
-	"location": 177,
-	"component": "q3498tlsdf9834tkjsdfg98u34t",
-	"severity": "",
-	"hiddenFindings": [
+	keyId: "hiddenFinding-41b79a3b-9ff5-84c6-2249-6311b0a2249f",
+	url: "goodVcs/goodOrg/repo",
+	createdBy: "Arya.Stark@example.com",
+	type: "secret",
+	expires: "Never",
+	source: "folder/badfile2",
+	location: 177,
+	component: "q3498tlsdf9834tkjsdfg98u34t",
+	severity: "",
+	hiddenFindings: [
 		{
-			"id": "41b79a3b-9ff5-84c6-2249-6311b0a2249f",
-			"type": "secret",
-			"value": {
-				"filename": "folder/badfile2",
-				"line": 177,
-				"commit": "q3498tlsdf9834tkjsdfg98u34t"
+			id: "41b79a3b-9ff5-84c6-2249-6311b0a2249f",
+			type: "secret",
+			value: {
+				filename: "folder/badfile2",
+				line: 177,
+				commit: "q3498tlsdf9834tkjsdfg98u34t",
 			},
-			"expires": null,
-			"reason": "test existing hidden finding, secret",
-			"created_by": "Arya.Stark@example.com"
-		}
+			expires: null,
+			reason: "test existing hidden finding, secret",
+			created_by: "Arya.Stark@example.com",
+		},
 	],
-	"unhiddenFindings": []
+	unhiddenFindings: [],
 };
 
 // finding created but not updated
 export const findingSecretRawRow = {
-	"keyId": "hiddenFinding-accf20ee-243e-36ab-3ca7-4384ebf3ad50",
-	"url": "goodVcs/goodOrg/repo",
-	"createdBy": "Arya.Stark@example.com",
-	"type": "secret_raw",
-	"expires": "Never",
-	"source": "Any",
-	"location": "test.me",
-	"component": "Any",
-	"severity": "",
-	"hiddenFindings": [
+	keyId: "hiddenFinding-accf20ee-243e-36ab-3ca7-4384ebf3ad50",
+	url: "goodVcs/goodOrg/repo",
+	createdBy: "Arya.Stark@example.com",
+	type: "secret_raw",
+	expires: "Never",
+	source: "Any",
+	location: "test.me",
+	component: "Any",
+	severity: "",
+	hiddenFindings: [
 		{
-			"id": "accf20ee-243e-36ab-3ca7-4384ebf3ad50",
-			"type": "secret_raw",
-			"value": {
-				"value": "test.me"
+			id: "accf20ee-243e-36ab-3ca7-4384ebf3ad50",
+			type: "secret_raw",
+			value: {
+				value: "test.me",
 			},
-			"expires": null,
-			"reason": "test secret_raw type",
-			"created_by": "Arya.Stark@example.com",
-			"created": "2021-01-01T13:01:01Z",
-		}
+			expires: null,
+			reason: "test secret_raw type",
+			created_by: "Arya.Stark@example.com",
+			created: "2021-01-01T13:01:01Z",
+		},
 	],
-	"unhiddenFindings": []
+	unhiddenFindings: [],
 };
 
 export const mockSearchComponents = {
@@ -7826,16 +7330,20 @@ export const mockSearchComponentRepos = {
 	next: null,
 	previous: null,
 	results: [
-		{ service: 'azure', repo: 'tv/dev', risk: 'priority' },
-		{ service: 'azure', repo: 'tv/qa', risk: 'priority' },
-		{ service: 'azure', repo: 'tv/test', risk: 'critical' },
-		{ service: 'azure', repo: 'tv/new-show', risk: 'high' },
-		{ service: 'azure', repo: 'tv/game-of-chairs', risk: null },
-		{ service: 'azure', repo: 'tv/dragon-house', risk: null },
-		{ service: 'azure', repo: 'tv/peasmaker/season2', risk: null },
-		{ service: 'bigrepo.example.com', repo: 'cartoons-we-love', risk: null },
-		{ service: 'bitbucket', repo: 'movies/2quick2angry', risk: null },
-		{ service: 'bitbucket', repo: 'movies/another_superhero_movie', risk: null },
+		{ service: "azure", repo: "tv/dev", risk: "priority" },
+		{ service: "azure", repo: "tv/qa", risk: "priority" },
+		{ service: "azure", repo: "tv/test", risk: "critical" },
+		{ service: "azure", repo: "tv/new-show", risk: "high" },
+		{ service: "azure", repo: "tv/game-of-chairs", risk: null },
+		{ service: "azure", repo: "tv/dragon-house", risk: null },
+		{ service: "azure", repo: "tv/peasmaker/season2", risk: null },
+		{ service: "bigrepo.example.com", repo: "cartoons-we-love", risk: null },
+		{ service: "bitbucket", repo: "movies/2quick2angry", risk: null },
+		{
+			service: "bitbucket",
+			repo: "movies/another_superhero_movie",
+			risk: null,
+		},
 	],
 };
 
@@ -7854,13 +7362,15 @@ let lastScanMetadataOffset = 0;
 const lastScanMetadataBase = DateTime.fromISO("2025-01-01T12:00:00Z");
 
 const generateLastScanMetadata = () => {
-	const created = lastScanMetadataBase.plus(
-		Duration.fromObject({
-			days: lastScanMetadataOffset,
-			hours: lastScanMetadataOffset,
-			minutes: lastScanMetadataOffset,
-		}),
-	).toISO();
+	const created = lastScanMetadataBase
+		.plus(
+			Duration.fromObject({
+				days: lastScanMetadataOffset,
+				hours: lastScanMetadataOffset,
+				minutes: lastScanMetadataOffset,
+			}),
+		)
+		.toISO();
 	lastScanMetadataOffset += 1;
 
 	const scan_id = generateId();
@@ -7879,12 +7389,12 @@ export const mockSearchRepos = {
 			risk: "priority",
 			qualified_scan: {
 				created: "2022-02-02T14:00:00Z",
-				scan_id: "9cb02b99-fdcb-4234-5127-4e418d600f46"
+				scan_id: "9cb02b99-fdcb-4234-5127-4e418d600f46",
 			},
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData2,
-			}
+			},
 		},
 		{
 			service: "azure",
@@ -7894,7 +7404,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData3,
-			}
+			},
 		},
 		{
 			service: "azure",
@@ -7902,12 +7412,12 @@ export const mockSearchRepos = {
 			risk: "critical",
 			qualified_scan: {
 				created: "2022-03-02T12:00:00Z",
-				scan_id: "a4d915a7-2ce0-c42e-9ab6-d6e95843160e"
+				scan_id: "a4d915a7-2ce0-c42e-9ab6-d6e95843160e",
 			},
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData4,
-			}
+			},
 		},
 		{
 			service: "azure",
@@ -7917,7 +7427,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData5,
-			}
+			},
 		},
 		{
 			service: "azure",
@@ -7927,7 +7437,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "azure",
@@ -7937,7 +7447,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "azure",
@@ -7947,7 +7457,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "bigrepo.example.com",
@@ -7955,12 +7465,12 @@ export const mockSearchRepos = {
 			risk: null,
 			qualified_scan: {
 				created: "2022-02-22T14:22:22Z",
-				scan_id: "3446feae-1480-d43f-680e-7087bff49d38"
+				scan_id: "3446feae-1480-d43f-680e-7087bff49d38",
 			},
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "bitbucket",
@@ -7970,7 +7480,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "bitbucket",
@@ -7980,7 +7490,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "bitbucket",
@@ -7990,7 +7500,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "bitbucket",
@@ -7998,12 +7508,12 @@ export const mockSearchRepos = {
 			risk: null,
 			qualified_scan: {
 				created: "2021-12-12T12:12:12Z",
-				scan_id: "32bc93b8-c337-f25d-aa33-9fb961b520b5"
+				scan_id: "32bc93b8-c337-f25d-aa33-9fb961b520b5",
 			},
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "allthecodes.example.com",
@@ -8011,7 +7521,7 @@ export const mockSearchRepos = {
 			risk: null,
 			qualified_scan: null,
 			scan: generateLastScanMetadata(),
-			application_metadata: null
+			application_metadata: null,
 		},
 		{
 			service: "github",
@@ -8019,12 +7529,12 @@ export const mockSearchRepos = {
 			risk: null,
 			qualified_scan: {
 				created: "2022-01-01T11:01:01Z",
-				scan_id: "f4fa42b2-0640-d16e-e387-7e54e37ead88"
+				scan_id: "f4fa42b2-0640-d16e-e387-7e54e37ead88",
 			},
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "github",
@@ -8034,7 +7544,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "github",
@@ -8044,7 +7554,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "gitlab.com",
@@ -8052,10 +7562,10 @@ export const mockSearchRepos = {
 			risk: null,
 			qualified_scan: {
 				created: "2021-01-11T11:11:11Z",
-				scan_id: "0ddda3a0-09c7-62df-9141-5db71833f439"
+				scan_id: "0ddda3a0-09c7-62df-9141-5db71833f439",
 			},
 			scan: generateLastScanMetadata(),
-			application_metadata: null
+			application_metadata: null,
 		},
 		{
 			service: "gitlab.com",
@@ -8063,7 +7573,7 @@ export const mockSearchRepos = {
 			risk: null,
 			qualified_scan: null,
 			scan: generateLastScanMetadata(),
-			application_metadata: null
+			application_metadata: null,
 		},
 		{
 			service: "our-source.example.com",
@@ -8073,7 +7583,7 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
+			},
 		},
 		{
 			service: "teamstar.example.com",
@@ -8083,94 +7593,91 @@ export const mockSearchRepos = {
 			scan: generateLastScanMetadata(),
 			application_metadata: {
 				...sampleMetaData6,
-			}
-		}
+			},
+		},
 	],
 	count: 20,
 	next: null,
-	previous: null
+	previous: null,
 };
 
 export const mockSearchVulnerabilities = {
-	results: [{
-		id: "a63626e9-my-pretend-id-8698bedd967b",
-		advisory_ids: [
-			"https://github.com/advisories/GHSA-00000",
-			"CVE-2022-0101",
-		],
-		description: "This is a vulnerability description",
-		severity: "high",
-		remediation: "Fix it, asap",
-		components: {
-			"component1-name": ["1.0.0", "1.0.1", "1.0.2"],
-			"component2-name": ["2.0.0", "2.0.1", "2.0.2"],
+	results: [
+		{
+			id: "a63626e9-my-pretend-id-8698bedd967b",
+			advisory_ids: [
+				"https://github.com/advisories/GHSA-00000",
+				"CVE-2022-0101",
+			],
+			description: "This is a vulnerability description",
+			severity: "high",
+			remediation: "Fix it, asap",
+			components: {
+				"component1-name": ["1.0.0", "1.0.1", "1.0.2"],
+				"component2-name": ["2.0.0", "2.0.1", "2.0.2"],
+			},
+			source_plugins: [
+				"node_dependencies",
+				"aqua_cli_scanner",
+				"trivy",
+				"veracode_sca",
+				"snyk",
+				"a_totes_new_plugin",
+				"youve_never_seen_this_plugin_before",
+			],
 		},
-		source_plugins: [
-			"node_dependencies",
-			"aqua_cli_scanner",
-			"trivy",
-			"veracode_sca",
-			"snyk",
-			"a_totes_new_plugin",
-			"youve_never_seen_this_plugin_before",
-		],
-	},
-	{
-		id: "b73626e9-my-pretend-id-8698bedd968c",
-		advisory_ids: ["CVE-2022-0202"],
-		description: "This is another vulnerability description",
-		severity: "critical",
-		remediation: "This is another remediation text",
-		components: {
-			"component3-name": ["7.1.2"],
+		{
+			id: "b73626e9-my-pretend-id-8698bedd968c",
+			advisory_ids: ["CVE-2022-0202"],
+			description: "This is another vulnerability description",
+			severity: "critical",
+			remediation: "This is another remediation text",
+			components: {
+				"component3-name": ["7.1.2"],
+			},
+			source_plugins: ["snyk", "veracode_sca"],
 		},
-		source_plugins: ["snyk", "veracode_sca"],
-	},
-	{
-		id: "c83626e9-my-pretend-id-8698bedd969d",
-		advisory_ids: [
-			"https://github.com/advisories/GHSA-9999",
-			"https://github.com/advisories/GHSA-9998",
-			"CVE-2014-0101",
-			"CVE-2014-0111",
-		],
-		description: "What is this still doing here?",
-		severity: "high",
-		remediation: "This should have been remediated by now",
-		components: {
-			"legacy-component": ["0.0.1", "0.0.2", "0.0.3"],
+		{
+			id: "c83626e9-my-pretend-id-8698bedd969d",
+			advisory_ids: [
+				"https://github.com/advisories/GHSA-9999",
+				"https://github.com/advisories/GHSA-9998",
+				"CVE-2014-0101",
+				"CVE-2014-0111",
+			],
+			description: "What is this still doing here?",
+			severity: "high",
+			remediation: "This should have been remediated by now",
+			components: {
+				"legacy-component": ["0.0.1", "0.0.2", "0.0.3"],
+			},
+			source_plugins: ["veracode_sca"],
 		},
-		source_plugins: ["veracode_sca"],
-	},
-	{
-		id: "d93626e9-my-pretend-id-8698bedd96ae",
-		advisory_ids: ["CVE-2024-9999"],
-		description: "This vuln is so new it's a -1 day",
-		severity: "critical",
-		remediation:
-			"No patches available yet, better use some other security controls",
-		components: {
-			javathing: ["4.3.2"],
+		{
+			id: "d93626e9-my-pretend-id-8698bedd96ae",
+			advisory_ids: ["CVE-2024-9999"],
+			description: "This vuln is so new it's a -1 day",
+			severity: "critical",
+			remediation:
+				"No patches available yet, better use some other security controls",
+			components: {
+				javathing: ["4.3.2"],
+			},
+			source_plugins: ["veracode_sca", "snyk", "aqua_cli_scanner", "trivy"],
 		},
-		source_plugins: [
-			"veracode_sca",
-			"snyk",
-			"aqua_cli_scanner",
-			"trivy",
-		],
-	},
-	{
-		id: "ea3626e9-my-pretend-id-8698bedd96bf",
-		advisory_ids: ["CVE-2000-9999"],
-		description: "Oh noes, y2k",
-		severity: "",
-		remediation: "Rollback all clocks to 1999, party on.",
-		components: {
-			allthethings: ["1.9.99"],
+		{
+			id: "ea3626e9-my-pretend-id-8698bedd96bf",
+			advisory_ids: ["CVE-2000-9999"],
+			description: "Oh noes, y2k",
+			severity: "",
+			remediation: "Rollback all clocks to 1999, party on.",
+			components: {
+				allthethings: ["1.9.99"],
+			},
+			source_plugins: ["aqua_cli_scanner", "trivy"],
 		},
-		source_plugins: ["aqua_cli_scanner", "trivy"],
-	}],
+	],
 	count: 5,
 	next: null,
-	previous: null
+	previous: null,
 };
