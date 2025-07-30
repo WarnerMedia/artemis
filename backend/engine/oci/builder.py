@@ -56,14 +56,15 @@ class ScanImages(BaseModel):
 @contextmanager
 def temporary_builder(name_prefix: str):
     """
-    Creates a temporary buildx builder.
+    Creates a temporary BuildKit builder.
     The generated name of the builder is passed to the block.
     The builder is removed automatically, along with any builder-specific
     cached resources.
     """
     name = f"{name_prefix}-{uuid.uuid4()}"
 
-    # We must use the Docker CLI since docker-py does not yet support buildx.
+    # We must use the Docker CLI since docker-py does not yet support BuildKit:
+    # https://github.com/docker/docker-py/issues/2230
 
     create_proc = subprocess.run(
         ["docker", "buildx", "create", "--name", name],
@@ -135,9 +136,10 @@ class ImageBuilder:
 
     def build_local_image(self, dockerfile: str, tag: str, builder: str | None = None) -> BuiltImage:
         """
-        :param dockerfile: path to dockerfile
-        :param tag: tag that we'll use in scan step
-        :param builder: Optional buildx builder to use.
+        Attempt to build a Dockerfile using Docker BuildKit.
+        :param dockerfile: Absolute path to the Dockerfile.
+        :param tag: Tag to use for built container image.
+        :param builder: Optional BuildKit builder to use.
         :return: BuiltImage
         """
         dockerfile_name = dockerfile.replace(self.path, "")
@@ -152,7 +154,7 @@ class ImageBuilder:
 
         tag_id = f"{self.repo_name}-{tag}-{self.engine_id}"
 
-        # We must use the Docker CLI since docker-py does not yet support buildx.
+        # We must use the Docker CLI since docker-py does not yet support BuildKit.
         cmd = ["docker", "buildx", "build"]
         if builder:
             cmd += ["--builder", builder, "--load"]

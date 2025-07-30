@@ -19,8 +19,6 @@ TEST_DATA = os.path.join(TEST_DIR, "data")
 
 TEST_DATA_IMAGE_RESULTS = os.path.join(TEST_DATA, "util", "image_results.json")
 
-TEST_DOCKERFILE_LIST = [os.path.join(TEST_DATA, "image", "test_file_for_docker")]
-
 TEST_DOCKERFILE_ERROR = os.path.join(TEST_DATA, "image", "Dockerfile.error")
 TEST_DOCKERFILE_SIMPLE = os.path.join(TEST_DATA, "image", "Dockerfile.simple")
 
@@ -39,7 +37,8 @@ def find_builder(name: str) -> bool:
     Raises an exception on failure.
     """
 
-    # Need to use the Docker CLI since Docker-Py does not yet support buildx.
+    # Need to use the Docker CLI since Docker-Py does not yet support BuildKit:
+    # https://github.com/docker/docker-py/issues/2230
     proc = subprocess.run(
         ["docker", "buildx", "ls", "--format=json"],
         capture_output=True,
