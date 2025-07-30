@@ -155,7 +155,7 @@ class ImageBuilder:
         # We must use the Docker CLI since docker-py does not yet support buildx.
         cmd = ["docker", "buildx", "build"]
         if builder:
-            cmd += ["--builder", builder]
+            cmd += ["--builder", builder, "--load"]
         cmd += ["--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id]
 
         build_proc = subprocess.run(cmd, capture_output=True, cwd=self.path)
