@@ -123,8 +123,10 @@ class ImageBuilder:
 
         # Perform all builds in an isolated builder so we can clean up all
         # resources after the build.
+        # Builder names must start with a letter and may not contain symbols,
+        # except the symbols: ._-
         try:
-            with temporary_builder(self.engine_id) as builder:
+            with temporary_builder(f"artemis-{self.engine_id}") as builder:
                 results = [self.build_local_image(filename, secrets.token_hex(16), builder) for filename in files]
         except DockerException as ex:
             log.error("Failed to build images: %s", ex)
