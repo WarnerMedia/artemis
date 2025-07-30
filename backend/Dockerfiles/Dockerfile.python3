@@ -9,6 +9,7 @@ ARG TFLINT_SHA
 ARG SHELL_CHECK_VER
 ARG SHELL_CHECK_SHA
 ARG CFN_VER
+ARG BANDIT_VER
 ARG PACKAGING_VER
 
 # Copy Artemis libraries into /src for installation
@@ -18,7 +19,7 @@ COPY ./libs/ /src/
 # gitsecrets requires git
 RUN apk add -q --no-cache gcc musl-dev git make bash grep xz && \
     pip install -q --upgrade pip && \
-    pip install -q --no-cache-dir awscli pylint packaging==$PACKAGING_VER boto3 bandit cfn-lint==$CFN_VER && \
+    pip install -q --no-cache-dir awscli pylint packaging==$PACKAGING_VER boto3 bandit==$BANDIT_VER cfn-lint==$CFN_VER && \
     pip install /src/artemislib cryptography && \
     pip install /src/artemisdb && \
     rm -r /src

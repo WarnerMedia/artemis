@@ -183,6 +183,9 @@ TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 # CFN Python Lint
 CFN_VER = 1.38.0
 
+# Bandit
+BANDIT_VER = 1.8.6
+
 # Python Packaging Library Version
 PACKAGING_VER = 23.2
 
@@ -442,6 +445,7 @@ dist/docker/python3: Dockerfiles/Dockerfile.python3
 		--build-arg SHELL_CHECK_SHA=${SHELLCHECKSHA} \
 		--build-arg TFLINT_VER=${TFLINT_VER} \
 		--build-arg TFLINT_SHA=${TFLINT_SHA} \
+		--build-arg BANDIT_VER=${BANDIT_VER} \
 		--build-arg CFN_VER=${CFN_VER} \
 		--build-arg PACKAGING_VER=${PACKAGING_VER}
 	mkdir -p ${DIST_DIR}/docker
