@@ -32,7 +32,3 @@ Homepage = "https://github.com/warnermedia/artemis/backend/lambdas/scheduled/sca
 [tool.pytest.ini_options]
 addopts = "-m \"not integtest and not end2end\" --disable-pytest-warnings"
 testpaths = ["tests"]
-
-[tool.pytest.ini_options]
-addopts = "-m \"not integtest and not end2end\" --disable-pytest-warnings"
-testpaths = ["tests"]
