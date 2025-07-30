@@ -8,6 +8,9 @@ import uuid
 from artemislib.logging import Logger
 from oci import builder
 
+import docker
+import docker.errors
+
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TEST_ROOT = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
@@ -18,6 +21,7 @@ TEST_DATA_IMAGE_RESULTS = os.path.join(TEST_DATA, "util", "image_results.json")
 
 TEST_DOCKERFILE_LIST = [os.path.join(TEST_DATA, "image", "test_file_for_docker")]
 
+TEST_DOCKERFILE_ERROR = os.path.join(TEST_DATA, "image", "Dockerfile.error")
 TEST_DOCKERFILE_SIMPLE = os.path.join(TEST_DATA, "image", "Dockerfile.simple")
 
 TEST_PRIVATE_DOCKER_REPOS_CONFIGS = [
@@ -123,6 +127,7 @@ class TestImageBuilder(unittest.TestCase):
 
     def test_build_local_image(self):
         self.maxDiff = None
+        docker_client = docker.from_env()
         repo_name = "artemis"
         engine_id = "0000000"
         image_builder = builder.ImageBuilder(TEST_DATA, repo_name, None, engine_id)
@@ -138,7 +143,65 @@ class TestImageBuilder(unittest.TestCase):
                     tag_id=f"{repo_name}-artemis-docker-test-{engine_id}",
                 ),
             )
+            # Confirm that the image was built.
+            # Raises ImageNotFound if the image is missing.
+            docker_client.images.get(result.tag_id)
         finally:
+            if result:
+                self.assertTrue(result.remove())
+
+    def test_build_local_image_with_builder(self):
+        self.maxDiff = None
+        docker_client = docker.from_env()
+        repo_name = "artemis"
+        engine_id = "00001111"
+        image_builder = builder.ImageBuilder(TEST_DATA, repo_name, None, engine_id)
+
+        result: builder.BuiltImage | None = None
+        try:
+            prefix = f"test-prefix-{uuid.uuid4()}"
+            with builder.temporary_builder(prefix) as name:
+                result = image_builder.build_local_image(TEST_DOCKERFILE_SIMPLE, "artemis-docker-test", name)
+                self.assertEqual(
+                    result,
+                    builder.BuiltImage(
+                        status=True,
+                        dockerfile="image/Dockerfile.simple",
+                        tag_id=f"{repo_name}-artemis-docker-test-{engine_id}",
+                    ),
+                )
+            # Confirm that the image was built.
+            # Raises ImageNotFound if the image is missing.
+            docker_client.images.get(result.tag_id)
+        finally:
+            if result:
+                self.assertTrue(result.remove())
+
+    def test_build_local_image_failed(self):
+        self.maxDiff = None
+        docker_client = docker.from_env()
+        repo_name = "artemis"
+        engine_id = "11112222"
+        image_builder = builder.ImageBuilder(TEST_DATA, repo_name, None, engine_id)
+
+        result: builder.BuiltImage | None = None
+        try:
+            prefix = f"test-prefix-{uuid.uuid4()}"
+            with builder.temporary_builder(prefix) as name:
+                result = image_builder.build_local_image(TEST_DOCKERFILE_ERROR, "artemis-docker-test", name)
+                self.assertEqual(
+                    result,
+                    builder.BuiltImage(
+                        status=False,
+                        dockerfile="image/Dockerfile.error",
+                        tag_id=f"{repo_name}-artemis-docker-test-{engine_id}",
+                    ),
+                )
+            # Confirm that the image was not built.
+            with self.assertRaises(docker.errors.ImageNotFound):
+                docker_client.images.get(result.tag_id)
+        finally:
+            # Clean up in case the image was built successfully.
             if result:
                 result.remove()
 
