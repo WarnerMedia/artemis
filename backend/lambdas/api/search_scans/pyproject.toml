@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "search_scans"
+version = "2022.6"
+description = "Search Scans API Lambda"
+readme = "README.md"
+authors = [
+    { name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }
+]
+license = "MIT"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Topic :: Security"
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest~=8.3", "pytest-runner"]
+
+[project.urls]
+Homepage = "https://github.com/warnermedia/artemis/backend/lambdas/api/search_scans"
+
+[tool.pytest.ini_options]
+addopts = "-m \"not integtest and not end2end\" --disable-pytest-warnings"
+testpaths = ["tests"]

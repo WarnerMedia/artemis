@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "artemisdb"
+version = "2023.5"
+description = "Shared library for the Artemis database"
+readme = "README.md"
+authors = [{ name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }]
+license = "MIT"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Topic :: Security",
+]
+dependencies = ["django~=4.2", "psycopg2-binary~=2.9.9", "simplejson~=3.19"]
+
+[project.optional-dependencies]
+test = ["pytest~=8.3", "pytest-runner"]
+
+[project.urls]
+Homepage = "https://github.com/warnermedia/artemis/backend/libs/artemisdb"
+
+[project.scripts]
+artemisdbmanage = "artemisdb.artemisdb.manage:main"

@@ -1,4 +1,4 @@
-FROM docker:20.10.14-dind
+FROM docker:28.3-dind
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -24,13 +24,16 @@ COPY ./libs/ /src/
 RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
     apk upgrade && \
     apk add npm && \
-    pip3 install --upgrade pip setuptools boto3 && \
-    pip3 install 'docker~=7.1' && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
+    python3 -m venv /venv && \
+    . /venv/bin/activate && \
+    pip install --upgrade pip setuptools boto3 && \
+    pip install 'docker~=7.1' && \
     wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/$TRIVY_COMMIT/contrib/install.sh | sh -s -- -b /usr/local/bin $TRIVY_VER && \
-    pip3 install /src/artemislib && \
-    pip3 install /src/artemisdb && \
+    pip install /src/artemislib && \
+    pip install /src/artemisdb && \
     rm -r /src
+
+ENV PATH="/venv/bin:$PATH"
 
 RUN wget -O - https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_COMMIT/scripts/install.sh | sh -s -- -b /usr/local/bin $TRUFFLEHOG_VER
 
