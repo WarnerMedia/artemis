@@ -8,11 +8,10 @@ version = "2023.5"
 description = "Shared library for the Artemis database"
 readme = "README.md"
 authors = [{ name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }]
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
