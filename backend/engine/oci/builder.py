@@ -87,7 +87,7 @@ def temporary_builder(name_prefix: str):
 
 
 class ImageBuilder:
-    def __init__(self, path, repo_name, ignore_prefixes, engine_id):
+    def __init__(self, path: str, repo_name: str, ignore_prefixes: list[str] | None, engine_id: str):
         """
         Finds and builds any docker images within the path.
         :param path: path to images, typically the root of the repo.
@@ -97,7 +97,7 @@ class ImageBuilder:
         """
         self.path = path
         self.repo_name = repo_name
-        self.ignore_prefixes = ignore_prefixes
+        self.ignore_prefixes = ignore_prefixes or []
         self.engine_id = engine_id
 
     def find_dockerfiles(self) -> list[str]:
@@ -178,9 +178,7 @@ class ImageBuilder:
         pulled from the Artemis ECR should be excluded from this and are identified by the passed in prefix.
         :return: None
         """
-        if self.ignore_prefixes is None:
-            self.ignore_prefixes = []
-        to_remove = []
+        to_remove: list[str] = []
 
         # Get a list of all the image:tag and digests
         r = subprocess.run(
@@ -216,7 +214,7 @@ class ImageBuilder:
                 # Log the error but keep going
                 log.error(r.stderr.decode("utf-8"))
 
-    def private_docker_repos_login(self, files) -> None:
+    def private_docker_repos_login(self, files: list[str]) -> None:
         """
         Gets Private Docker Repo Config/Credentials from Secrets Manager and login to the Docker Repo if needed.
         :param files: List of Dockerfiles to check
@@ -253,7 +251,7 @@ class ImageBuilder:
             else:
                 log.info("No Dockerfiles depend on %s", repo["url"])
 
-    def docker_login_needed(self, files: list, search: str, url: str) -> bool:
+    def docker_login_needed(self, files: list[str], search: str, url: str) -> bool:
         """
         Determine if any Dockerfiles in the list depend on the private repo
         :param files: List of Dockerfiles to check
