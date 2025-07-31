@@ -152,7 +152,7 @@ install: package.json package-lock.json  ## Install all NPM dependency packages
 	$(NPM) ls -a
 	@echo "${OK}"
 
-.PHONY: start	
+.PHONY: start
 start: $(SRC)  ## Serve the app in development mode
 	@echo "${INFO}Serving the app in development mode"
 	-$(NPM) start
@@ -221,6 +221,8 @@ check: $(SRC)  ## Check code style
 	@echo "${INFO}Checking code style"
 	$(NPM) run prettier-check
 	$(TERRAFORM) fmt -check -recursive terraform
+	$(SHELL) $(CURDIR)/../tests/test_shellcheck.sh
+	$(SHELL) $(CURDIR)/../tests/test_shfmt.sh
 	@echo "${OK}"
 
 # run coding standards auto-fix

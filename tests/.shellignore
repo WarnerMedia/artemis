@@ -1,0 +1,3 @@
+backend/engine/tests/data/test_shell_check/issue_dir/test_shell_check.sh
+.venv
+node_modules

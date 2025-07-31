@@ -87,10 +87,10 @@ if [ -z "${ARTEMIS_API_KEY:-}" ]; then
 fi
 
 # Scan parameters
-ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
-ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}"  # Allow Artemis API prefix to be directly specified (e.g. for testing)
+ARTEMIS="https://${ARTEMIS_FQDN:-}"           # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
+ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}" # Allow Artemis API prefix to be directly specified (e.g. for testing)
 ARTEMIS_RESULTS="$ARTEMIS/results"
-ARTEMIS_STATUS_INTERVAL="${ARTEMIS_STATUS_INTERVAL:-10}"  # Time in seconds between status checks.
+ARTEMIS_STATUS_INTERVAL="${ARTEMIS_STATUS_INTERVAL:-10}" # Time in seconds between status checks.
 SERVICE=$1
 RESOURCE=$2
 BRANCH=$3
