@@ -27,7 +27,7 @@ EOD
 # This is to provide a friendlier error message instead of Docker Compose
 # attempting (and failing) to pull the image from a remote registry.
 function check_local_image {
-  docker image inspect --format=none "$1" > /dev/null 2>&1 || return 1
+  docker image inspect --format=none "$1" >/dev/null 2>&1 || return 1
 }
 
 # Install one of the optional JSON files used for plugin arguments.
@@ -52,7 +52,7 @@ function install_plugin_arg_file {
 
   if [[ -f $src ]]; then
     echo "--> Using arg file: $src"
-    if ! jq empty "$src" > /dev/null; then
+    if ! jq empty "$src" >/dev/null; then
       echo "*** Error: Invalid JSON detected: $src" >&2
       return 1
     fi
@@ -61,19 +61,25 @@ function install_plugin_arg_file {
 
   # Merge the JSON objects together.
   merged_json="$(echo "${base_json}${src_json}" | jq '. + input')" || return 1
-  echo "$merged_json" > "$dest" || return 1
+  echo "$merged_json" >"$dest" || return 1
 }
 
 # Generate the environment and Docker Compose files.
 # This always regenerates the files, so we expect that any previous Docker
 # Compose stack will have been shutdown.
 function init_compose {
-  local plugin="$1"; shift
-  local plugin_image="$1"; shift
-  local plugin_type="$1"; shift
-  local target="$1"; shift
-  local runner="$1"; shift
-  local writable="$1"; shift
+  local plugin="$1"
+  shift
+  local plugin_image="$1"
+  shift
+  local plugin_type="$1"
+  shift
+  local target="$1"
+  shift
+  local runner="$1"
+  shift
+  local writable="$1"
+  shift
   local debug_shell=("$@")
 
   echo "==> Generating configuration for plugin: $plugin"
@@ -87,7 +93,7 @@ function init_compose {
 
   local plugin_entry="$plugindir/entrypoint.sh"
   echo "--> Generating: $plugin_entry"
-  cat <<EOD > "$plugin_entry" || return 1
+  cat <<EOD >"$plugin_entry" || return 1
 #!/opt/artemis-plugin-toolbox/bin/sh
 exec /opt/artemis-plugin-toolbox/bin/run-plugin $plugin $plugin_type $runner
 EOD
@@ -95,7 +101,7 @@ EOD
 
   local plugin_debug_entry="$plugindir/entrypoint-debug.sh"
   echo "--> Generating: $plugin_debug_entry"
-  cat <<EOD > "$plugin_debug_entry" || return 1
+  cat <<EOD >"$plugin_debug_entry" || return 1
 #!/opt/artemis-plugin-toolbox/bin/sh
 /opt/artemis-run-plugin/entrypoint.sh
 echo "==> Starting debug shell: ${debug_shell[@]}"
@@ -136,7 +142,7 @@ EOD
   fi
 
   echo "--> Generating: $COMPOSEFILE"
-  cat <<EOD > "$COMPOSEFILE" || return 1
+  cat <<EOD >"$COMPOSEFILE" || return 1
 name: artemis-run-plugin
 services:
   toolbox:
@@ -185,8 +191,10 @@ EOD
 
 # Start the plugin container and any dependent containers.
 function do_run {
-  local plugin="$1"; shift
-  local target="$1"; shift
+  local plugin="$1"
+  shift
+  local target="$1"
+  shift
   local debug_shell=("$@")
 
   if [[ $plugin = '' || $target = '' ]]; then
@@ -213,11 +221,16 @@ function do_run {
 
   # Determine the local image name and runnner for the plugin.
   local image type runner writable
-  { read -r image; read -r type; read -r runner; read -r writable; } < \
+  {
+    read -r image
+    read -r type
+    read -r runner
+    read -r writable
+  } < \
     <(jq -r '.image,.type,.runner,(.writable|not|not)' \
       "$plugindir/settings.json") || return 1
   # shellcheck disable=SC2016
-  image="${image#'$ECR/'}"  # Trim repo placeholder (assume images are local).
+  image="${image#'$ECR/'}" # Trim repo placeholder (assume images are local).
   if [[ $image = '' || $image = 'null' ]]; then
     echo "Unable to determine image name for plugin: $plugin" >&2
     return 1
@@ -259,7 +272,8 @@ function do_clean {
   fi
 }
 
-readonly cmd="$1"; shift
+readonly cmd="$1"
+shift
 if [[ $cmd = '' ]]; then
   usage
   exit 1
@@ -280,4 +294,5 @@ case "$cmd" in
     echo "Unknown command: $cmd" >&2
     usage
     exit 1
+    ;;
 esac

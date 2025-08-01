@@ -40,33 +40,33 @@ excludePaths=()
 
 while getopts ":bch:C:P:i:e:" opt; do
   case "$opt" in
-  b)
-    BASELINE=1
-    ;;
-  c)
-    FAIL_CLOSED=1
-    ;;
-  h)
-    usage
-    exit 0
-    ;;
-  C)
-    userCategories+=("${OPTARG}")
-    ;;
-  P)
-    userPlugins+=("${OPTARG}")
-    ;;
-  i)
-    includePaths+=("${OPTARG}")
-    ;;
-  e)
-    excludePaths+=("${OPTARG}")
-    ;;
-  *)
-    echo "artemis-scan.sh: invalid option -- '${OPTARG}'" >&2
-    usage >&2
-    exit 1
-    ;;
+    b)
+      BASELINE=1
+      ;;
+    c)
+      FAIL_CLOSED=1
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    C)
+      userCategories+=("${OPTARG}")
+      ;;
+    P)
+      userPlugins+=("${OPTARG}")
+      ;;
+    i)
+      includePaths+=("${OPTARG}")
+      ;;
+    e)
+      excludePaths+=("${OPTARG}")
+      ;;
+    *)
+      echo "artemis-scan.sh: invalid option -- '${OPTARG}'" >&2
+      usage >&2
+      exit 1
+      ;;
   esac
 done
 
@@ -87,10 +87,10 @@ if [ -z "${ARTEMIS_API_KEY:-}" ]; then
 fi
 
 # Scan parameters
-ARTEMIS="https://${ARTEMIS_FQDN:-}"  # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
-ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}"  # Allow Artemis API prefix to be directly specified (e.g. for testing)
+ARTEMIS="https://${ARTEMIS_FQDN:-}"           # This either uses the ARTEMIS_FQDN env var or is set to a static value during the build
+ARTEMIS_API="${ARTEMIS_API:-$ARTEMIS/api/v1}" # Allow Artemis API prefix to be directly specified (e.g. for testing)
 ARTEMIS_RESULTS="$ARTEMIS/results"
-ARTEMIS_STATUS_INTERVAL="${ARTEMIS_STATUS_INTERVAL:-10}"  # Time in seconds between status checks.
+ARTEMIS_STATUS_INTERVAL="${ARTEMIS_STATUS_INTERVAL:-10}" # Time in seconds between status checks.
 SERVICE=$1
 RESOURCE=$2
 BRANCH=$3

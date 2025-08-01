@@ -113,6 +113,8 @@ style-test:
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
+	$(CURDIR)/../tests/test_shellcheck.sh
+	$(CURDIR)/../tests/test_shfmt.sh
 	@echo "${OK}"
 .PHONY: style-test
 
@@ -145,7 +147,7 @@ dist/lambdas/layers/heimdall_core.zip: ${HEIMDALL_ORGS_SRC} ${HEIMDALL_UTILS_SRC
 
 	@echo "{INFO} Adding dependencies to Lambda Layer"
 	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
-	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS} 
+	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS}
 
 	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_core/python
 	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core; zip -r ${DIST_DIR}/lambdas/layers/heimdall_core.zip *

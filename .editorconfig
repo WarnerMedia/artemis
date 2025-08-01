@@ -31,3 +31,16 @@ indent_style = tab
 [ui/config/**/*.js]
 indent_style = space
 indent_size = 2
+
+[*.sh]
+switch_case_indent = true
+
+; Should match .shellignore in /tests
+[.venv/**]
+ignore = true
+
+[node_modules/**]
+ignore = true
+
+[backend/engine/tests/data/test_shell_check/issue_dir/test_shell_check.sh]
+ignore = true

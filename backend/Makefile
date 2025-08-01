@@ -323,6 +323,8 @@ style-test:
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
+	$(CURDIR)/../tests/test_shellcheck.sh
+	$(CURDIR)/../tests/test_shfmt.sh
 	@echo "${OK}"
 .PHONY: style-test
 
@@ -1605,19 +1607,19 @@ deploy_swift_image:
 .PHONY: deploy_swift_image
 
 deploy_images: deploy_engine_image \
-        	   deploy_python_image \
-        	   deploy_node_image \
-        	   deploy_php_image \
-        	   deploy_dind_image \
-        	   deploy_golang_image \
-        	   deploy_java8_image \
-        	   deploy_java11_image \
-        	   deploy_java17_image \
-        	   deploy_java21_image \
-        	   deploy_ruby_image \
-        	   deploy_db_maint_image \
-        	   deploy_veracode_image \
-        	   deploy_swift_image
+			   deploy_python_image \
+			   deploy_node_image \
+			   deploy_php_image \
+			   deploy_dind_image \
+			   deploy_golang_image \
+			   deploy_java8_image \
+			   deploy_java11_image \
+			   deploy_java17_image \
+			   deploy_java21_image \
+			   deploy_ruby_image \
+			   deploy_db_maint_image \
+			   deploy_veracode_image \
+			   deploy_swift_image
 .PHONY: deploy_images
 
 deploy_engine:  ## Deploy the engine
