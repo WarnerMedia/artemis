@@ -18,7 +18,7 @@ class Checker:
         # Filter out rules that are explicitly disabled
         # A rule with a config that omits the 'enabled' property will still be run
         rule_configs = self._config.get("rules")
-        checks_to_run = filter(lambda rule_config: rule_config.get("enabled"), rule_configs)
+        checks_to_run = filter(lambda rule_config: rule_config.get("enabled", True), rule_configs)
 
         results = map(
             lambda rule_config: self.run_check(rule_config, owner, repo, branch),
