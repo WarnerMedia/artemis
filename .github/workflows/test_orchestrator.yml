@@ -24,11 +24,10 @@ jobs:
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
-      - uses: actions/setup-go@8e57b58e57be52ac95949151e2777ffda8501267 # actions/setup-go@v3.1.2
       - name: Install shfmt
-        env:
-          GOBIN: /usr/local/bin
-        run: go install mvdan.cc/sh/v3/cmd/shfmt@8202166b7d1e3473a7c65eeac53ddbdb55d5b808 # mvdan/sh@v3.12.0
+        run: |
+          curl -sSL https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_linux_amd64 -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
       - name: Run code style tests
         run: make -C orchestrator style-test ENV=example
       - name: Run orchestrator tests

@@ -113,8 +113,8 @@ style-test:
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
-	$(SHELL) $(CURDIR)/../tests/test_shellcheck.sh
-	$(SHELL) $(CURDIR)/../tests/test_shfmt.sh
+	$(CURDIR)/../tests/test_shellcheck.sh
+	$(CURDIR)/../tests/test_shfmt.sh
 	@echo "${OK}"
 .PHONY: style-test
 

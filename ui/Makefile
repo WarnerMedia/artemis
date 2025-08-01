@@ -221,8 +221,8 @@ check: $(SRC)  ## Check code style
 	@echo "${INFO}Checking code style"
 	$(NPM) run prettier-check
 	$(TERRAFORM) fmt -check -recursive terraform
-	$(SHELL) $(CURDIR)/../tests/test_shellcheck.sh
-	$(SHELL) $(CURDIR)/../tests/test_shfmt.sh
+	$(CURDIR)/../tests/test_shellcheck.sh
+	$(CURDIR)/../tests/test_shfmt.sh
 	@echo "${OK}"
 
 # run coding standards auto-fix
