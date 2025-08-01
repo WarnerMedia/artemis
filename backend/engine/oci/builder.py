@@ -70,8 +70,11 @@ def temporary_builder(name_prefix: str):
         ["docker", "buildx", "create", "--name", name],
         capture_output=True,
     )
+    errout = create_proc.stderr.decode("utf-8").strip()
     if create_proc.returncode != 0:
-        raise DockerException(f"Failed to create builder: {create_proc.stderr.decode('utf-8')}")
+        raise DockerException(f"Failed to create builder: {errout}")
+    elif errout != "":
+        log.warning("Docker builder create warning: %s", errout)
 
     try:
         yield name
@@ -82,8 +85,11 @@ def temporary_builder(name_prefix: str):
             ["docker", "buildx", "rm", "--builder", name, "-f"],
             capture_output=True,
         )
+        errout = rm_proc.stderr.decode("utf-8").strip()
         if rm_proc.returncode != 0:
-            log.error("Failed to remove builder %s: %s", name, rm_proc.stderr.decode("utf-8"))
+            log.error("Failed to remove builder %s: %s", name, errout)
+        elif errout != "":
+            log.warning("Docker builder remove warning: %s", errout)
 
 
 class ImageBuilder:
@@ -161,8 +167,11 @@ class ImageBuilder:
         cmd += ["--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id]
 
         build_proc = subprocess.run(cmd, capture_output=True, cwd=self.path)
-        if build_proc.returncode != 0:
-            log.warning(build_proc.stderr.decode("utf-8"))
+
+        # Always log stderr, even if build succeeded.
+        # Since we invoke the build via the CLI, we want to capture CLI warnings.
+        if errout := build_proc.stderr.decode("utf-8").strip() != "":
+            log.warning("Docker build warnings: %s", errout)
 
         status = build_proc.returncode == 0
         log.info("Built %s from %s (success: %s)", tag_id, dockerfile_name, status)
