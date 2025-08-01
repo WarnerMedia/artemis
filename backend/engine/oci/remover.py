@@ -1,8 +1,11 @@
-import subprocess
+import docker
+import docker.errors
 
 from artemislib.logging import Logger
 
 logger = Logger("oci_remover")
+
+docker_client = docker.from_env()
 
 
 def remove_docker_image(tag: str) -> bool:
@@ -11,16 +14,13 @@ def remove_docker_image(tag: str) -> bool:
     :param tag: Image tag.
     :return: True if successful.
     """
-    logger.info("Removing image %s", tag)
-    return (
-        subprocess.run(
-            ["docker", "image", "rm", "-f", tag],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        ).returncode
-        == 0
-    )
+    logger.info("Removing image: %s", tag)
+    try:
+        docker_client.images.remove(image=tag, force=True)
+    except docker.errors.DockerException:
+        logger.warning("Failed to remove image: %s", tag, exc_info=True)
+        return False
+    return True
 
 
 def prune_images() -> None:
@@ -28,8 +28,7 @@ def prune_images() -> None:
     Prune the docker images. This removes all the dangling images.
     """
     logger.info("Cleaning up unused images")
-    r = subprocess.run(
-        ["docker", "image", "prune", "--force"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False
-    )
-    if r.returncode != 0:
-        logger.error(r.stderr.decode("utf-8"))
+    try:
+        docker_client.images.prune()
+    except docker.errors.DockerException:
+        logger.warning("Failed to prune images", exc_info=True)
