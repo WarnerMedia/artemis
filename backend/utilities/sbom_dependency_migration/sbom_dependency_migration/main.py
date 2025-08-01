@@ -1,15 +1,19 @@
 import argparse
 import simplejson as json
+import tomllib
 
 from artemisdb.artemisdb.models import Scan
 from artemislib.aws import AWSConnect
 from artemislib.consts import SBOM_JSON_S3_KEY
 from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
-from sbom_dependency_migration.__version__ import __version__
 from sbom_report.report import get_report
 
 LOG = Logger(__name__)
+
+with open("pyproject.toml", "rb") as f:
+    pyproject = tomllib.load(f)
+__version__ = pyproject["project"]["version"]
 
 
 def main():

@@ -1,10 +1,14 @@
 import argparse
+import tomllib
 from getpass import getpass
 
-from plugin_comparer.__version__ import __version__
 from plugin_comparer.csv import write_file
 from plugin_comparer.processor import process_scans
 from plugin_comparer.scans import parse_scan_ids, retrieve_scans
+
+with open("pyproject.toml", "rb") as f:
+    pyproject = tomllib.load(f)
+__version__ = pyproject["project"]["version"]
 
 
 def main():
