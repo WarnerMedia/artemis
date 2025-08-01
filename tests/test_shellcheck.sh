@@ -62,7 +62,7 @@ if [[ $FAILED -ne 0 ]]; then
   echo
   echo -e "${RED}ERROR: One or more tests have failed! See above for details.${NC}"
   echo
-  echo -e "${RED}If you beleive a file should be ignored, add the path to the .shfmtignore file in the root of this project.${NC}" | fold
+  echo -e "${RED}If you believe a file should be ignored, add the path to the .shellignore file in the root of this project.${NC}" | fold
   echo
   exit 1
 fi

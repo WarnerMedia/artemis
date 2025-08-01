@@ -40,33 +40,33 @@ excludePaths=()
 
 while getopts ":bch:C:P:i:e:" opt; do
   case "$opt" in
-  b)
-    BASELINE=1
-    ;;
-  c)
-    FAIL_CLOSED=1
-    ;;
-  h)
-    usage
-    exit 0
-    ;;
-  C)
-    userCategories+=("${OPTARG}")
-    ;;
-  P)
-    userPlugins+=("${OPTARG}")
-    ;;
-  i)
-    includePaths+=("${OPTARG}")
-    ;;
-  e)
-    excludePaths+=("${OPTARG}")
-    ;;
-  *)
-    echo "artemis-scan.sh: invalid option -- '${OPTARG}'" >&2
-    usage >&2
-    exit 1
-    ;;
+    b)
+      BASELINE=1
+      ;;
+    c)
+      FAIL_CLOSED=1
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    C)
+      userCategories+=("${OPTARG}")
+      ;;
+    P)
+      userPlugins+=("${OPTARG}")
+      ;;
+    i)
+      includePaths+=("${OPTARG}")
+      ;;
+    e)
+      excludePaths+=("${OPTARG}")
+      ;;
+    *)
+      echo "artemis-scan.sh: invalid option -- '${OPTARG}'" >&2
+      usage >&2
+      exit 1
+      ;;
   esac
 done
 

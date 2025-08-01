@@ -280,19 +280,19 @@ if [[ $cmd = '' ]]; then
 fi
 
 case "$cmd" in
-run)
-  do_run "$@" || exit 1
-  ;;
-run-writable)
-  workdir_readonly=false
-  do_run "$@" || exit 1
-  ;;
-clean)
-  do_clean "$@" || exit 1
-  ;;
-*)
-  echo "Unknown command: $cmd" >&2
-  usage
-  exit 1
-  ;;
+  run)
+    do_run "$@" || exit 1
+    ;;
+  run-writable)
+    workdir_readonly=false
+    do_run "$@" || exit 1
+    ;;
+  clean)
+    do_clean "$@" || exit 1
+    ;;
+  *)
+    echo "Unknown command: $cmd" >&2
+    usage
+    exit 1
+    ;;
 esac

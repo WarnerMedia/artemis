@@ -21,12 +21,12 @@ readonly platform
 
 arch="$(uname -m)" || exit 1
 case "$arch" in
-aarch64 | x86_64) ;;
-arm64) arch=aarch64 ;;
-*)
-  echo "Unsupported ShellCheck release architecture: $arch" >&2
-  exit 1
-  ;;
+  aarch64 | x86_64) ;;
+  arm64) arch=aarch64 ;;
+  *)
+    echo "Unsupported ShellCheck release architecture: $arch" >&2
+    exit 1
+    ;;
 esac
 readonly arch
 
