@@ -4,6 +4,7 @@ import json
 import sys
 from datetime import datetime, timedelta, timezone
 from json.decoder import JSONDecodeError
+import importlib.metadata
 
 from artemisapi.handler import handler as api_handler
 from groups.handlers import handler as groups_handler
@@ -42,9 +43,7 @@ APIS = {
     "groups_keys": {"handler": groups_keys_handler, "kwargs": {}},
 }
 
-with open("pyproject.toml", "rb") as f:
-    pyproject = tomllib.load(f)
-__version__ = pyproject["project"]["version"]
+__version__ = importlib.metadata.version("api_runner")
 
 
 def main():
