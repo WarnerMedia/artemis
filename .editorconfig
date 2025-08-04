@@ -35,12 +35,10 @@ indent_size = 2
 [*.sh]
 switch_case_indent = true
 
-; Should match .shellignore in /tests
-[.venv/**]
+; Should match .editorignore
+[**/.venv/**]
 ignore = true
-
-[node_modules/**]
+[**/node_modules/**]
 ignore = true
-
 [backend/engine/tests/data/test_shell_check/issue_dir/test_shell_check.sh]
 ignore = true
