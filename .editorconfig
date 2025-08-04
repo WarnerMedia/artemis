@@ -36,6 +36,8 @@ indent_size = 2
 switch_case_indent = true
 
 ; Should match .editorignore
+[**/.temp/**]
+ignore = true
 [**/.venv/**]
 ignore = true
 [**/node_modules/**]
