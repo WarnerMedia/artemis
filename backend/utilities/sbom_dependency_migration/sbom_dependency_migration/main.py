@@ -11,7 +11,7 @@ from sbom_report.report import get_report
 
 LOG = Logger(__name__)
 
-__version__ = importlib.metadata.version("api_runner")
+__version__ = importlib.metadata.version("sbom_dependency_migration")
 
 
 def main():

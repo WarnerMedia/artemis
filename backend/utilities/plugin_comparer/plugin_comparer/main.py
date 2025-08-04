@@ -6,7 +6,7 @@ from plugin_comparer.csv import write_file
 from plugin_comparer.processor import process_scans
 from plugin_comparer.scans import parse_scan_ids, retrieve_scans
 
-__version__ = importlib.metadata.version("api_runner")
+__version__ = importlib.metadata.version("plugin_comparer")
 
 
 def main():
