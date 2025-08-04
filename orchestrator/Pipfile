@@ -7,12 +7,12 @@ name = "pypi"
 python_version = "3.12"
 
 [packages]
-aws-lambda-powertools = "~=3.12"
-awscli = "~=1.40"
-boto3 = "~=1.38"
-boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.38"}
+aws-lambda-powertools = "~=3.18"
+awscli = "~=1.42"
+boto3 = "~=1.40"
+boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.40"}
 cryptography = "~=45.0"
-PyGithub = "~=2.6"
+PyGithub = "~=2.7"
 pyjwt = "~=2.10"
 pyyaml = "~=6.0"
 requests = "~=2.32"
