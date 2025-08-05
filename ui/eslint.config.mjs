@@ -410,6 +410,7 @@ export default defineConfig([
 			...jest.configs.recommended.rules,
 			...jest.configs.style.rules,
 			"jest/no-conditional-expect": "off", // Needs additional review.
+			"jest/no-disabled-tests": "off", // We purposefully skip some flaky tests pending investigation.
 			"jest/expect-expect": [
 				"warn",
 				{
