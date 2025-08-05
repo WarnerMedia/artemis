@@ -85,7 +85,7 @@ describe("AutoCompleteField component", () => {
 				"MuiInputAdornment-positionStart",
 			);
 		} else {
-			fail("Autocomplete did not match the expected element tree");
+			throw new Error("Autocomplete did not match the expected element tree");
 		}
 	});
 

@@ -15,15 +15,15 @@ import { VpnKey as VpnKeyIcon } from "@mui/icons-material";
 // if number, if > 0, we have findings, make chart data
 
 describe("Overview Card Secrets test", () => {
-	const mockTinyChartData = [
-		{
-			name: "name",
-			value: 0,
-			palette: { background: "#000000", text: "#fff" },
-		},
-	];
-
 	test("when the results_summary.secrets are null, then it says 'This scan option was not used'", async () => {
+		const mockTinyChartData = [
+			{
+				name: "name",
+				value: 0,
+				palette: { background: "#000000", text: "#fff" },
+			},
+		];
+
 		const results_summary = {
 			vulnerabilities: null,
 			secrets: null,
@@ -46,18 +46,16 @@ describe("Overview Card Secrets test", () => {
 			screen.getByText(/This scan option was not used/),
 		).toBeInTheDocument();
 	});
-});
-
-describe("Overview Card Secrets test", () => {
-	const mockTinyChartData = [
-		{
-			name: "name",
-			value: 0,
-			palette: { background: "#000000", text: "#fff" },
-		},
-	];
 
 	test("when the results_summary.secrets are ZERO, then it says 'No secrets detected'", async () => {
+		const mockTinyChartData = [
+			{
+				name: "name",
+				value: 0,
+				palette: { background: "#000000", text: "#fff" },
+			},
+		];
+
 		const results_summary = {
 			vulnerabilities: null,
 			secrets: 0,
@@ -78,18 +76,16 @@ describe("Overview Card Secrets test", () => {
 
 		expect(screen.getByText(/No secrets detected/)).toBeInTheDocument();
 	});
-});
-
-describe("Overview Card Secrets test", () => {
-	const mockTinyChartData = [
-		{
-			name: "someSecretTypeName",
-			value: 8,
-			palette: { background: "#FFFFFF", text: "#000" },
-		},
-	];
 
 	test("when the results_summary.secrets are 8, it renders a chart", async () => {
+		const mockTinyChartData = [
+			{
+				name: "someSecretTypeName",
+				value: 8,
+				palette: { background: "#FFFFFF", text: "#000" },
+			},
+		];
+
 		const results_summary = {
 			vulnerabilities: null,
 			secrets: 8,
