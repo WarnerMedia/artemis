@@ -2,6 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 import react from "eslint-plugin-react";
 import _import from "eslint-plugin-import";
+import jest from "eslint-plugin-jest";
 import jsxA11Y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 
@@ -35,7 +36,6 @@ export default defineConfig([
 
 			parserOptions: {
 				requireConfigFile: false,
-
 				babelOptions: {
 					presets: ["react-app"],
 				},
@@ -395,6 +395,27 @@ export default defineConfig([
 
 			"no-useless-constructor": "off",
 			"@typescript-eslint/no-useless-constructor": "warn",
+		},
+	},
+	{
+		files: ["**/__tests__/*.test.tsx"],
+		plugins: { jest },
+		languageOptions: {
+			parser: tsParser,
+			ecmaVersion: 2018,
+			sourceType: "module",
+			globals: jest.environments.globals.globals,
+		},
+		rules: {
+			...jest.configs.recommended.rules,
+			...jest.configs.style.rules,
+			"jest/no-conditional-expect": "off", // Needs additional review.
+			"jest/expect-expect": ["warn", {
+				assertFunctionNames: [
+					"expect", // Default.
+					"within", // @testing-library queries are also assertions.
+				],
+			}],
 		},
 	},
 ]);
