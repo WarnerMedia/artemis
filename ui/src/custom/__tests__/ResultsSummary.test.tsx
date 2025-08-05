@@ -144,7 +144,7 @@ describe("ResultsSummary component", () => {
 			expect(alert).toBeInTheDocument();
 		});
 		if (!alert) {
-			fail("alert is not defined");
+			throw new Error("alert is not defined");
 		}
 
 		// verify alert content
