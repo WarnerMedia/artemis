@@ -90,8 +90,45 @@ resource "aws_wafv2_web_acl" "on_demand_api" {
   description = "ACL for ${var.app} On-Demand API"
   scope       = "REGIONAL"
 
-  default_action {
-    allow {}
+  # Sets the default action to allow or block based on the value of var.waf_default_action
+  # (This is logically an if/else statement, but there is no way to do that for blocks in Terraform)
+  dynamic "default_action" {
+    for_each = var.waf_default_action == "allow" ? [1] : []
+    content {
+      allow {}
+    }
+  }
+  dynamic "default_action" {
+    for_each = var.waf_default_action == "block" ? [1] : []
+    content {
+      block {}
+    }
+  }
+
+  # Dynamically load all rule groups provided as part of var.waf_rule_groups
+  dynamic "rule" {
+    for_each = var.waf_rule_groups
+
+    content {
+      name     = "${rule.value.name}-rule"
+      priority = index(var.waf_rule_groups, rule.value) + 1
+
+      override_action {
+        none {}
+      }
+
+      statement {
+        rule_group_reference_statement {
+          arn = rule.value.arn
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = false
+        metric_name                = "${rule.value.name}-rule-metric"
+        sampled_requests_enabled   = false
+      }
+    }
   }
 
   visibility_config {
