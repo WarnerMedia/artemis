@@ -410,12 +410,15 @@ export default defineConfig([
 			...jest.configs.recommended.rules,
 			...jest.configs.style.rules,
 			"jest/no-conditional-expect": "off", // Needs additional review.
-			"jest/expect-expect": ["warn", {
-				assertFunctionNames: [
-					"expect", // Default.
-					"within", // @testing-library queries are also assertions.
-				],
-			}],
+			"jest/expect-expect": [
+				"warn",
+				{
+					assertFunctionNames: [
+						"expect", // Default.
+						"within", // @testing-library queries are also assertions.
+					],
+				},
+			],
 		},
 	},
 ]);
