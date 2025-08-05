@@ -49,9 +49,7 @@ describe("OverviewTabContent", () => {
 		expect(screen.getByText(/Hidden Findings/)).toBeInTheDocument();
 		expect(screen.getByText(/5 hidden findings/)).toBeInTheDocument();
 	});
-});
 
-describe("OverviewTabContent", () => {
 	it("with no vulns detected, unused secrets, no hidden", async () => {
 		const tabsStatus = {
 			isDisabledVulns: false,

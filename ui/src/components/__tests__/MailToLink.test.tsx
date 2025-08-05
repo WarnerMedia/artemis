@@ -127,14 +127,6 @@ describe("MailToLink component", () => {
 		expect(link).toHaveAttribute("href", `mailto:${recipient}`);
 	});
 
-	test("uses supplied recipient if valid email address", () => {
-		const recipient = "test@example.com";
-		const text = "Test Me";
-		render(<MailToLink text={text} recipient={recipient} />);
-		const link = screen.getByRole("link", { name: text });
-		expect(link).toHaveAttribute("href", `mailto:${recipient}`);
-	});
-
 	test("link has default security attributes", () => {
 		const recipient = "test@example.com";
 		const text = "Test Me";
