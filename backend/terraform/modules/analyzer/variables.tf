@@ -473,7 +473,10 @@ variable "waf_default_action" {
 }
 
 variable "waf_rule_groups" {
-  description = "ARNs of AWS WAF Rule Groups to apply to the WAF configuration"
+  description = "AWS WAF Rule Groups to apply to the WAF configuration"
   default     = []
-  type        = list(object)
+  type = list(object({
+    name = string
+    arn  = string
+  }))
 }
