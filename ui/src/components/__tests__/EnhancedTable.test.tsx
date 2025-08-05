@@ -485,7 +485,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={0}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -510,7 +510,7 @@ describe("EnhancedTable component", () => {
 					filters={filters}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: 0,
 				filters: filters,
@@ -533,7 +533,7 @@ describe("EnhancedTable component", () => {
 					filters={filters}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: 0,
 				filters: filters,
@@ -573,7 +573,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={reloadCount}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -592,7 +592,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={reloadCount}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -611,7 +611,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={reloadCount}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(3);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(3);
 			expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -636,7 +636,7 @@ describe("EnhancedTable component", () => {
 					totalRows={totalRows}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -655,7 +655,7 @@ describe("EnhancedTable component", () => {
 			await screen.findByText(`11–${totalRows} of ${totalRows}`);
 
 			currentPage += 1;
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -679,7 +679,7 @@ describe("EnhancedTable component", () => {
 					totalRows={totalRows}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(3);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(3);
 			expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -704,7 +704,7 @@ describe("EnhancedTable component", () => {
 					totalRows={totalRows}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -727,7 +727,7 @@ describe("EnhancedTable component", () => {
 					totalRows={totalRows}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -750,7 +750,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={0}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -769,7 +769,7 @@ describe("EnhancedTable component", () => {
 			await screen.findByText(`11–${totalRows} of ${totalRows}`);
 
 			currentPage += 1;
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: currentPage,
 				filters: {},
@@ -792,7 +792,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={0}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -821,7 +821,7 @@ describe("EnhancedTable component", () => {
 			await user.click(items20);
 
 			// ensure mock callback called again with 20 itemsPerPage
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -861,7 +861,7 @@ describe("EnhancedTable component", () => {
 					reloadCount={0}
 				/>,
 			);
-			expect(mockOnDataLoad.mock.calls.length).toBe(1);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 			expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -879,7 +879,7 @@ describe("EnhancedTable component", () => {
 				screen.getByRole("button", { name: "Data sorted descending" }),
 			).toBeInTheDocument();
 
-			expect(mockOnDataLoad.mock.calls.length).toBe(2);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 			expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -893,7 +893,7 @@ describe("EnhancedTable component", () => {
 				screen.getByRole("button", { name: "Data sorted ascending" }),
 			).toBeInTheDocument();
 
-			expect(mockOnDataLoad.mock.calls.length).toBe(3);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(3);
 			expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -909,7 +909,7 @@ describe("EnhancedTable component", () => {
 				screen.getByRole("button", { name: "Name sorted ascending" }),
 			).toBeInTheDocument();
 
-			expect(mockOnDataLoad.mock.calls.length).toBe(4);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(4);
 			expect(mockOnDataLoad.mock.calls[3][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -923,7 +923,7 @@ describe("EnhancedTable component", () => {
 				screen.getByRole("button", { name: "Name sorted descending" }),
 			).toBeInTheDocument();
 
-			expect(mockOnDataLoad.mock.calls.length).toBe(5);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(5);
 			expect(mockOnDataLoad.mock.calls[4][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -937,7 +937,7 @@ describe("EnhancedTable component", () => {
 				screen.getByRole("button", { name: "Name sorted ascending" }),
 			).toBeInTheDocument();
 
-			expect(mockOnDataLoad.mock.calls.length).toBe(6);
+			expect(mockOnDataLoad.mock.calls).toHaveLength(6);
 			expect(mockOnDataLoad.mock.calls[5][0]).toStrictEqual({
 				currentPage: 0,
 				filters: {},
@@ -1031,7 +1031,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={0}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(1);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1067,7 +1067,7 @@ describe("EnhancedTable component", () => {
 						filters={filters}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(1);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 					currentPage: 0,
 					filters: filters,
@@ -1101,7 +1101,7 @@ describe("EnhancedTable component", () => {
 						filters={filters}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(2);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 					currentPage: 0,
 					filters: filters,
@@ -1133,7 +1133,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={reloadCount}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(1);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1163,7 +1163,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={reloadCount}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(2);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1193,7 +1193,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={reloadCount}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(3);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(3);
 				expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1227,7 +1227,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={0}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(1);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 					currentPage: currentPage,
 					filters: {},
@@ -1258,7 +1258,7 @@ describe("EnhancedTable component", () => {
 				await screen.findByText(`11–${totalRows} of ${totalRows}`);
 
 				currentPage += 1;
-				expect(mockOnDataLoad.mock.calls.length).toBe(2);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 					currentPage: currentPage,
 					filters: {},
@@ -1292,7 +1292,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={0}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(1);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1333,7 +1333,7 @@ describe("EnhancedTable component", () => {
 				await user.click(items20);
 
 				// ensure mock callback called again with 20 itemsPerPage
-				expect(mockOnDataLoad.mock.calls.length).toBe(2);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1384,7 +1384,7 @@ describe("EnhancedTable component", () => {
 						reloadCount={0}
 					/>,
 				);
-				expect(mockOnDataLoad.mock.calls.length).toBe(1);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(1);
 				expect(mockOnDataLoad.mock.calls[0][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1414,7 +1414,7 @@ describe("EnhancedTable component", () => {
 					screen.getByRole("button", { name: "Data sorted ascending" }),
 				).toBeInTheDocument();
 
-				expect(mockOnDataLoad.mock.calls.length).toBe(2);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(2);
 				expect(mockOnDataLoad.mock.calls[1][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1428,7 +1428,7 @@ describe("EnhancedTable component", () => {
 					screen.getByRole("button", { name: "Data sorted descending" }),
 				).toBeInTheDocument();
 
-				expect(mockOnDataLoad.mock.calls.length).toBe(3);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(3);
 				expect(mockOnDataLoad.mock.calls[2][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1444,7 +1444,7 @@ describe("EnhancedTable component", () => {
 					screen.getByRole("button", { name: "Name sorted ascending" }),
 				).toBeInTheDocument();
 
-				expect(mockOnDataLoad.mock.calls.length).toBe(4);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(4);
 				expect(mockOnDataLoad.mock.calls[3][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1458,7 +1458,7 @@ describe("EnhancedTable component", () => {
 					screen.getByRole("button", { name: "Name sorted descending" }),
 				).toBeInTheDocument();
 
-				expect(mockOnDataLoad.mock.calls.length).toBe(5);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(5);
 				expect(mockOnDataLoad.mock.calls[4][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
@@ -1472,7 +1472,7 @@ describe("EnhancedTable component", () => {
 					screen.getByRole("button", { name: "Name sorted ascending" }),
 				).toBeInTheDocument();
 
-				expect(mockOnDataLoad.mock.calls.length).toBe(6);
+				expect(mockOnDataLoad.mock.calls).toHaveLength(6);
 				expect(mockOnDataLoad.mock.calls[5][0]).toStrictEqual({
 					currentPage: 0,
 					filters: {},
