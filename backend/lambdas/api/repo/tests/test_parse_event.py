@@ -251,7 +251,7 @@ TEST_CATEGORY_LIST_FEATURE_FLAGS = {
     "cat1": {"cat1_plugin1": None, "cat1_plugin2": "test_flag"},
 }
 
-# Note: Each o fthe FEATURE_FLAG_IDENTITY constants are the args to construct
+# Note: Each of the FEATURE_FLAG_IDENTITY constants are the args to construct
 # an Identity. We don't construct the Identity immediately since the values
 # in the subtest test cases must be serializable.
 
