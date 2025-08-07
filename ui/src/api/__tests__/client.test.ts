@@ -33,7 +33,7 @@ describe("api client", () => {
 			exportsForTesting._formatError(error, "default");
 		};
 		expect(exception).toThrow(AuthError);
-		expect(exception).toThrowError(/session expired/i);
+		expect(exception).toThrow(/session expired/i);
 	});
 
 	test("formatError should throw failed.error if set in response", () => {
@@ -47,7 +47,7 @@ describe("api client", () => {
 		const exception = () => {
 			exportsForTesting._formatError(error, "default");
 		};
-		expect(exception).toThrowError("it failed");
+		expect(exception).toThrow("it failed");
 	});
 
 	test("formatError should throw statusText if set in response", () => {
@@ -59,7 +59,7 @@ describe("api client", () => {
 		const exception = () => {
 			exportsForTesting._formatError(error, "default");
 		};
-		expect(exception).toThrowError("it failed");
+		expect(exception).toThrow("it failed");
 	});
 
 	test("formatError should throw defaultError instead of error messsage", () => {
@@ -69,7 +69,7 @@ describe("api client", () => {
 		const exception = () => {
 			exportsForTesting._formatError(error, "default");
 		};
-		expect(exception).toThrowError("default");
+		expect(exception).toThrow("default");
 	});
 
 	test("formatError should throw defaulted error instead of error messsage", () => {
@@ -79,7 +79,7 @@ describe("api client", () => {
 		const exception = () => {
 			exportsForTesting._formatError(error);
 		};
-		expect(exception).toThrowError(/unknown error/i);
+		expect(exception).toThrow(/unknown error/i);
 	});
 
 	// test if a function calls a redux dispatch

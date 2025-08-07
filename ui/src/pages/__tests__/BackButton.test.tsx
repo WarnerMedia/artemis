@@ -39,7 +39,7 @@ describe("BackButton component", () => {
 		expect(button).toBeInTheDocument();
 
 		await user.click(button);
-		expect(mockNavigate).toBeCalledWith("/");
+		expect(mockNavigate).toHaveBeenCalledWith("/");
 	});
 
 	it("navigation to page goes back to prior page", async () => {
@@ -50,7 +50,7 @@ describe("BackButton component", () => {
 		expect(button).toBeInTheDocument();
 
 		await user.click(button);
-		expect(mockNavigate).toBeCalledWith(-1);
+		expect(mockNavigate).toHaveBeenCalledWith(-1);
 	});
 
 	it("redirection back to this page goes back 2 pages", async () => {
@@ -59,6 +59,6 @@ describe("BackButton component", () => {
 		expect(button).toBeInTheDocument();
 
 		await user.click(button);
-		expect(mockNavigate).toBeCalledWith(-2);
+		expect(mockNavigate).toHaveBeenCalledWith(-2);
 	});
 });
