@@ -1,11 +1,11 @@
 module github.com/warnermedia/artemis/backend/utilities/plugin_runner/toolbox
 
-go 1.23.4
+go 1.24.5
 
 require (
 	github.com/fatih/color v1.18.0
-	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
-	golang.org/x/sys v0.25.0
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
+	golang.org/x/sys v0.34.0
 )
 
 require (

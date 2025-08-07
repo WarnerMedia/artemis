@@ -1,10 +1,12 @@
 import argparse
+import importlib.metadata
 from getpass import getpass
 
-from plugin_comparer.__version__ import __version__
 from plugin_comparer.csv import write_file
 from plugin_comparer.processor import process_scans
 from plugin_comparer.scans import parse_scan_ids, retrieve_scans
+
+__version__ = importlib.metadata.version("plugin_comparer")
 
 
 def main():

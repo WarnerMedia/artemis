@@ -7,7 +7,7 @@
 # so we can safely trim all args before that.
 i=0
 for opt in "$@"; do
-  i=$((i+1))
+  i=$((i + 1))
   if [ "$opt" = '--' ]; then
     shift $i
     break
@@ -18,7 +18,7 @@ done
 # Using "python --version" is a simple and very fast check.
 root="$(dirname "$0")/_boxed"
 for libc in glibc musl; do
-  if "$root/$libc/python/bin/python" --version > /dev/null 2>&1; then
+  if "$root/$libc/python/bin/python" --version >/dev/null 2>&1; then
     # Execute the plugin using the discovered interpreter.
     boxed_root="$root/$libc"
     export PATH="$boxed_root/python/bin:$PATH"

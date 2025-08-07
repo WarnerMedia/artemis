@@ -977,7 +977,7 @@ describe("ActivityTable component", () => {
 					toCsv={mockToCsv}
 				/>,
 			);
-			expect(mockOnDataLoad).toBeCalledWith({
+			expect(mockOnDataLoad).toHaveBeenCalledWith({
 				currentPage: 0,
 				filters: {},
 				itemsPerPage: defaultRowsPerPage,
@@ -1043,7 +1043,7 @@ describe("ActivityTable component", () => {
 					toCsv={mockToCsv}
 				/>,
 			);
-			expect(mockOnDataLoad).toBeCalledWith({
+			expect(mockOnDataLoad).toHaveBeenCalledWith({
 				currentPage: 0,
 				filters: {},
 				itemsPerPage: defaultRowsPerPage,
@@ -1095,7 +1095,7 @@ describe("ActivityTable component", () => {
 					toCsv={mockToCsv}
 				/>,
 			);
-			expect(mockOnDataLoad).toBeCalledWith({
+			expect(mockOnDataLoad).toHaveBeenCalledWith({
 				currentPage: 0,
 				filters: {},
 				itemsPerPage: defaultRowsPerPage,
@@ -1147,7 +1147,7 @@ describe("ActivityTable component", () => {
 					toCsv={mockToCsv}
 				/>,
 			);
-			expect(mockOnDataLoad).toBeCalledWith({
+			expect(mockOnDataLoad).toHaveBeenCalledWith({
 				currentPage: 0,
 				filters: {},
 				itemsPerPage: defaultRowsPerPage,
@@ -1213,7 +1213,7 @@ describe("ActivityTable component", () => {
 					toCsv={mockToCsv}
 				/>,
 			);
-			expect(mockOnDataLoad).toBeCalledWith({
+			expect(mockOnDataLoad).toHaveBeenCalledWith({
 				currentPage: 0,
 				filters: {},
 				itemsPerPage: defaultRowsPerPage,
@@ -1281,7 +1281,7 @@ describe("ActivityTable component", () => {
 					toCsv={mockToCsv}
 				/>,
 			);
-			expect(mockOnDataLoad).toBeCalledWith({
+			expect(mockOnDataLoad).toHaveBeenCalledWith({
 				currentPage: 0,
 				filters: {},
 				itemsPerPage: defaultRowsPerPage,

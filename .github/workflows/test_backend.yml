@@ -27,6 +27,10 @@ jobs:
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
+      - name: Install shfmt
+        run: |
+          curl -sSL https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_linux_amd64 -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests

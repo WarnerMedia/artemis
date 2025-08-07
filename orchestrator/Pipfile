@@ -7,12 +7,12 @@ name = "pypi"
 python_version = "3.12"
 
 [packages]
-aws-lambda-powertools = "~=3.12"
-awscli = "~=1.40"
-boto3 = "~=1.38"
-boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.38"}
+aws-lambda-powertools = "~=3.18"
+awscli = "~=1.42"
+boto3 = "~=1.40"
+boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.40"}
 cryptography = "~=45.0"
-PyGithub = "~=2.6"
+PyGithub = "~=2.7"
 pyjwt = "~=2.10"
 pyyaml = "~=6.0"
 requests = "~=2.32"
@@ -27,4 +27,4 @@ pyright = "~=1.1"
 pytest = "~=8.3"
 pytest-cov = "~=6.0"
 responses = "~=0.25.3"
-ruff = "==0.12.0"  # match version in vscode extension
+ruff = "==0.12.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff

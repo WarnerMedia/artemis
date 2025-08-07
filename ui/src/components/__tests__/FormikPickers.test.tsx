@@ -480,7 +480,7 @@ test("value not matching format cannot be entered", async () => {
 
 	const inputField = screen.getByRole("textbox", { name: "Test Me" });
 	await user.type(inputField, "foo");
-	expect(inputField.nodeValue).toEqual(null);
+	expect(inputField.nodeValue).toBeNull();
 
 	await waitFor(() => {
 		expect(screen.queryByText(/invalid date format/i)).not.toBeInTheDocument();

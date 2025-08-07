@@ -97,7 +97,7 @@ describe("UserSettings component", () => {
 			expect(button).toBeInTheDocument();
 
 			await user.click(button);
-			expect(mockNavigate).toBeCalledWith("/");
+			expect(mockNavigate).toHaveBeenCalledWith("/");
 		});
 
 		it("back button should call fromRedirect if an auth code is passed in the page URL", async () => {

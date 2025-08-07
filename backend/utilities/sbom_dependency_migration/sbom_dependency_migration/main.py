@@ -1,4 +1,5 @@
 import argparse
+import importlib.metadata
 import simplejson as json
 
 from artemisdb.artemisdb.models import Scan
@@ -6,10 +7,11 @@ from artemislib.aws import AWSConnect
 from artemislib.consts import SBOM_JSON_S3_KEY
 from artemislib.env import SCAN_DATA_S3_BUCKET, SCAN_DATA_S3_ENDPOINT
 from artemislib.logging import Logger
-from sbom_dependency_migration.__version__ import __version__
 from sbom_report.report import get_report
 
 LOG = Logger(__name__)
+
+__version__ = importlib.metadata.version("sbom_dependency_migration")
 
 
 def main():
