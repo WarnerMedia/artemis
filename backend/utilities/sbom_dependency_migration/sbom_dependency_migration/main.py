@@ -1,6 +1,6 @@
 import argparse
+import importlib.metadata
 import simplejson as json
-import tomllib
 
 from artemisdb.artemisdb.models import Scan
 from artemislib.aws import AWSConnect
@@ -11,9 +11,7 @@ from sbom_report.report import get_report
 
 LOG = Logger(__name__)
 
-with open("pyproject.toml", "rb") as f:
-    pyproject = tomllib.load(f)
-__version__ = pyproject["project"]["version"]
+__version__ = importlib.metadata.version("sbom_dependency_migration")
 
 
 def main():
