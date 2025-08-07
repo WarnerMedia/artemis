@@ -30,3 +30,7 @@ output "backend_core_lambda_layer" {
   value       = data.aws_lambda_layer_version.backend_core_latest.arn
   description = "The ARN of the latest version of the Backend Core Lambda Layer"
 }
+
+output "waf_acl" {
+  value = aws_wafv2_web_acl.api
+}
