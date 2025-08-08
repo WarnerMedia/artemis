@@ -70,8 +70,11 @@ def temporary_builder(name_prefix: str):
         ["docker", "buildx", "create", "--name", name],
         capture_output=True,
     )
+    errout = create_proc.stderr.decode("utf-8").strip()
     if create_proc.returncode != 0:
-        raise DockerException(f"Failed to create builder: {create_proc.stderr.decode('utf-8')}")
+        raise DockerException(f"Failed to create builder: {errout}")
+    elif errout != "":
+        log.warning("Docker builder create warning: %s", errout)
 
     try:
         yield name
@@ -82,12 +85,15 @@ def temporary_builder(name_prefix: str):
             ["docker", "buildx", "rm", "--builder", name, "-f"],
             capture_output=True,
         )
+        errout = rm_proc.stderr.decode("utf-8").strip()
         if rm_proc.returncode != 0:
-            log.error("Failed to remove builder %s: %s", name, rm_proc.stderr.decode("utf-8"))
+            log.error("Failed to remove builder %s: %s", name, errout)
+        elif errout != "":
+            log.warning("Docker builder remove warning: %s", errout)
 
 
 class ImageBuilder:
-    def __init__(self, path, repo_name, ignore_prefixes, engine_id):
+    def __init__(self, path: str, repo_name: str, ignore_prefixes: list[str] | None, engine_id: str):
         """
         Finds and builds any docker images within the path.
         :param path: path to images, typically the root of the repo.
@@ -97,7 +103,7 @@ class ImageBuilder:
         """
         self.path = path
         self.repo_name = repo_name
-        self.ignore_prefixes = ignore_prefixes
+        self.ignore_prefixes = ignore_prefixes or []
         self.engine_id = engine_id
 
     def find_dockerfiles(self) -> list[str]:
@@ -161,8 +167,11 @@ class ImageBuilder:
         cmd += ["--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id]
 
         build_proc = subprocess.run(cmd, capture_output=True, cwd=self.path)
-        if build_proc.returncode != 0:
-            log.warning(build_proc.stderr.decode("utf-8"))
+
+        # Always log stderr, even if build succeeded.
+        # Since we invoke the build via the CLI, we want to capture CLI warnings.
+        if errout := build_proc.stderr.decode("utf-8").strip() != "":
+            log.warning("Docker build warnings: %s", errout)
 
         status = build_proc.returncode == 0
         log.info("Built %s from %s (success: %s)", tag_id, dockerfile_name, status)
@@ -178,9 +187,7 @@ class ImageBuilder:
         pulled from the Artemis ECR should be excluded from this and are identified by the passed in prefix.
         :return: None
         """
-        if self.ignore_prefixes is None:
-            self.ignore_prefixes = []
-        to_remove = []
+        to_remove: list[str] = []
 
         # Get a list of all the image:tag and digests
         r = subprocess.run(
@@ -216,7 +223,7 @@ class ImageBuilder:
                 # Log the error but keep going
                 log.error(r.stderr.decode("utf-8"))
 
-    def private_docker_repos_login(self, files) -> None:
+    def private_docker_repos_login(self, files: list[str]) -> None:
         """
         Gets Private Docker Repo Config/Credentials from Secrets Manager and login to the Docker Repo if needed.
         :param files: List of Dockerfiles to check
@@ -253,7 +260,7 @@ class ImageBuilder:
             else:
                 log.info("No Dockerfiles depend on %s", repo["url"])
 
-    def docker_login_needed(self, files: list, search: str, url: str) -> bool:
+    def docker_login_needed(self, files: list[str], search: str, url: str) -> bool:
         """
         Determine if any Dockerfiles in the list depend on the private repo
         :param files: List of Dockerfiles to check
