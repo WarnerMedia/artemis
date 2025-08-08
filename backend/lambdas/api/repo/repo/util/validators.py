@@ -312,6 +312,9 @@ class Validator:
             raise ValidationError("callback client_id must be a string")
 
     def _validate_whitelist_item(self, req, _):
+        """
+        Warning: req may be modified.
+        """
         for key in WL_REQUIRED_KEYS:
             if key not in req:
                 raise ValidationError(f'Missing key: "{key}"')
