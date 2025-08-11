@@ -59,7 +59,7 @@ msgstr "Scans"
 #: src/pages/ResultsPage.tsx:4034
 #: src/pages/ResultsPage.tsx:4212
 #: src/pages/ResultsPage.tsx:4362
-#: src/components/ApiKeys.tsx:1336
+#: src/components/ApiKeys.tsx:1332
 #: src/components/ActivityTable.tsx:790
 msgid "Type"
 msgstr "Type"
@@ -326,7 +326,7 @@ msgstr "Component name required"
 
 #: src/pages/UsersPage.tsx:1196
 #: src/pages/ResultsPage.tsx:2073
-#: src/components/ApiKeys.tsx:1191
+#: src/components/ApiKeys.tsx:1187
 msgid "Adding..."
 msgstr "Adding..."
 
@@ -394,7 +394,7 @@ msgid "Artemis - User Management"
 msgstr "Artemis - User Management"
 
 #: src/pages/UsersPage.tsx:1125
-#: src/components/ApiKeys.tsx:1075
+#: src/components/ApiKeys.tsx:1071
 msgid "Add to scope"
 msgstr "Add to scope"
 
@@ -713,16 +713,16 @@ msgstr "Trivy SBOM"
 #: src/pages/ResultsPage.tsx:5885
 #: src/pages/ResultsPage.tsx:5908
 #: src/components/ApiKeys.tsx:875
-#: src/components/ApiKeys.tsx:1265
-#: src/components/ApiKeys.tsx:1283
-#: src/components/ApiKeys.tsx:1302
-#: src/components/ApiKeys.tsx:1315
-#: src/components/ApiKeys.tsx:1363
-#: src/components/ApiKeys.tsx:1365
-#: src/components/ApiKeys.tsx:1387
-#: src/components/ApiKeys.tsx:1389
-#: src/components/ApiKeys.tsx:1411
-#: src/components/ApiKeys.tsx:1413
+#: src/components/ApiKeys.tsx:1261
+#: src/components/ApiKeys.tsx:1279
+#: src/components/ApiKeys.tsx:1298
+#: src/components/ApiKeys.tsx:1311
+#: src/components/ApiKeys.tsx:1359
+#: src/components/ApiKeys.tsx:1361
+#: src/components/ApiKeys.tsx:1383
+#: src/components/ApiKeys.tsx:1385
+#: src/components/ApiKeys.tsx:1407
+#: src/components/ApiKeys.tsx:1409
 msgid "None"
 msgstr "None"
 
@@ -780,8 +780,8 @@ msgstr "No matching scans to display"
 #: src/pages/UsersPage.tsx:920
 #: src/pages/UserSettings.tsx:799
 #: src/pages/UserSettings.tsx:809
-#: src/components/ApiKeys.tsx:1331
-#: src/components/ApiKeys.tsx:1340
+#: src/components/ApiKeys.tsx:1327
+#: src/components/ApiKeys.tsx:1336
 msgid "Administrator"
 msgstr "Administrator"
 
@@ -794,7 +794,7 @@ msgid "success"
 msgstr "success"
 
 #: src/pages/UserSettings.tsx:888
-#: src/components/ApiKeys.tsx:1488
+#: src/components/ApiKeys.tsx:1484
 msgid "API Keys"
 msgstr "API Keys"
 
@@ -819,7 +819,7 @@ msgstr "Copied to clipboard"
 msgid "info"
 msgstr "info"
 
-#: src/components/ApiKeys.tsx:1500
+#: src/components/ApiKeys.tsx:1496
 msgid "No API keys found. Click the + button to add a new API key"
 msgstr "No API keys found. Click the + button to add a new API key"
 
@@ -974,7 +974,7 @@ msgid "On-Demand Scan"
 msgstr "On-Demand Scan"
 
 #: src/pages/UsersPage.tsx:1093
-#: src/components/ApiKeys.tsx:1043
+#: src/components/ApiKeys.tsx:1039
 msgid "Click + icon to add this value to the Current Scope list above"
 msgstr "Click + icon to add this value to the Current Scope list above"
 
@@ -1108,7 +1108,7 @@ msgstr "Exclude Paths ({0})"
 
 #: src/pages/ResultsPage.tsx:5393
 #: src/components/ApiKeys.tsx:464
-#: src/components/ApiKeys.tsx:1143
+#: src/components/ApiKeys.tsx:1139
 msgid "Expires"
 msgstr "Expires"
 
@@ -1126,7 +1126,7 @@ msgstr "Select Version Control System or type to autocomplete"
 msgid "Date must be before {dateMaxStr}"
 msgstr "Date must be before {dateMaxStr}"
 
-#: src/components/ApiKeys.tsx:1114
+#: src/components/ApiKeys.tsx:1110
 msgid "Allow this key to use additional scan features"
 msgstr "Allow this key to use additional scan features"
 
@@ -1174,7 +1174,7 @@ msgstr "Removing..."
 msgid "Name:"
 msgstr "Name:"
 
-#: src/components/ApiKeys.tsx:1503
+#: src/components/ApiKeys.tsx:1499
 msgid "Fetching API keys..."
 msgstr "Fetching API keys..."
 
@@ -1206,7 +1206,7 @@ msgstr "Results for the specified scan can not be found."
 msgid "Justification for hiding this security finding"
 msgstr "Justification for hiding this security finding"
 
-#: src/components/ApiKeys.tsx:1402
+#: src/components/ApiKeys.tsx:1398
 msgid "Last Used Date"
 msgstr "Last Used Date"
 
@@ -1245,7 +1245,7 @@ msgid "After"
 msgstr "After"
 
 #: src/pages/UsersPage.tsx:1081
-#: src/components/ApiKeys.tsx:1031
+#: src/components/ApiKeys.tsx:1027
 msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 
@@ -1349,7 +1349,7 @@ msgid "Modify Hidden Finding"
 msgstr "Modify Hidden Finding"
 
 #: src/pages/UserSettings.tsx:771
-#: src/components/ApiKeys.tsx:1306
+#: src/components/ApiKeys.tsx:1302
 msgid "Features"
 msgstr "Features"
 
@@ -1385,7 +1385,7 @@ msgstr "Unable to update hidden finding"
 
 #. placeholder {0}: idx + 1
 #: src/pages/UsersPage.tsx:993
-#: src/components/ApiKeys.tsx:933
+#: src/components/ApiKeys.tsx:929
 msgid "Remove scope {0}"
 msgstr "Remove scope {0}"
 
@@ -1471,7 +1471,7 @@ msgstr "Unable to unlink user service"
 msgid "{user} (Deleted {0})"
 msgstr "{user} (Deleted {0})"
 
-#: src/components/ApiKeys.tsx:1378
+#: src/components/ApiKeys.tsx:1374
 msgid "Expiration Date"
 msgstr "Expiration Date"
 
@@ -1522,8 +1522,8 @@ msgstr "Include paths: {0} ; Exclude paths: {1}"
 
 #: src/pages/UserSettings.tsx:800
 #: src/pages/UserSettings.tsx:811
-#: src/components/ApiKeys.tsx:1332
-#: src/components/ApiKeys.tsx:1341
+#: src/components/ApiKeys.tsx:1328
+#: src/components/ApiKeys.tsx:1337
 msgid "Standard"
 msgstr "Standard"
 
@@ -1541,7 +1541,7 @@ msgid "Required"
 msgstr "Required"
 
 #: src/pages/UsersPage.tsx:1129
-#: src/components/ApiKeys.tsx:1079
+#: src/components/ApiKeys.tsx:1075
 msgid "Add this item to scope"
 msgstr "Add this item to scope"
 
@@ -1680,7 +1680,7 @@ msgid "NPM Audit (NodeJS)"
 msgstr "NPM Audit (NodeJS)"
 
 #: src/pages/UsersPage.tsx:1031
-#: src/components/ApiKeys.tsx:982
+#: src/components/ApiKeys.tsx:978
 msgid "Top"
 msgstr "Top"
 
@@ -1870,7 +1870,7 @@ msgstr "FindSecBugs (Java 8)"
 #: src/pages/UsersPage.tsx:583
 #: src/pages/UsersPage.tsx:1284
 #: src/components/ApiKeys.tsx:453
-#: src/components/ApiKeys.tsx:1270
+#: src/components/ApiKeys.tsx:1266
 msgid "Scope"
 msgstr "Scope"
 
@@ -1910,8 +1910,8 @@ msgstr "Configuration: {count}"
 
 #: src/pages/UsersPage.tsx:1018
 #: src/pages/UsersPage.tsx:1028
-#: src/components/ApiKeys.tsx:968
-#: src/components/ApiKeys.tsx:979
+#: src/components/ApiKeys.tsx:964
+#: src/components/ApiKeys.tsx:975
 msgid "Scroll to top"
 msgstr "Scroll to top"
 
@@ -1990,7 +1990,7 @@ msgstr "Batch Priority"
 #: src/components/FormikPickers.tsx:61
 #: src/components/ApiKeys.tsx:422
 #: src/components/ApiKeys.tsx:429
-#: src/components/ApiKeys.tsx:1204
+#: src/components/ApiKeys.tsx:1200
 #: src/components/ActivityTable.tsx:774
 #: src/components/ActivityTable.tsx:780
 msgid "Cancel"
@@ -2230,7 +2230,7 @@ msgstr "Artemis - Scan Results"
 msgid "Remove API key"
 msgstr "Remove API key"
 
-#: src/components/ApiKeys.tsx:947
+#: src/components/ApiKeys.tsx:943
 msgid "At least 1 scope is required"
 msgstr "At least 1 scope is required"
 
@@ -2245,7 +2245,7 @@ msgstr "Unable to get user details"
 msgid "{0} (not run)"
 msgstr "{0} (not run)"
 
-#: src/components/ApiKeys.tsx:1357
+#: src/components/ApiKeys.tsx:1353
 msgid "Created Date"
 msgstr "Created Date"
 
@@ -2370,7 +2370,7 @@ msgstr "This column is filtered"
 msgid "Missing \"Organization/\" Prefix"
 msgstr "Missing \"Organization/\" Prefix"
 
-#: src/components/ApiKeys.tsx:1445
+#: src/components/ApiKeys.tsx:1441
 msgid "API Key Added"
 msgstr "API Key Added"
 
@@ -2383,12 +2383,12 @@ msgstr "Fetching vulnerability results..."
 msgid "Results"
 msgstr "Results"
 
-#: src/components/ApiKeys.tsx:1446
+#: src/components/ApiKeys.tsx:1442
 msgid "Add New API Key"
 msgstr "Add New API Key"
 
 #: src/pages/UsersPage.tsx:1051
-#: src/components/ApiKeys.tsx:1002
+#: src/components/ApiKeys.tsx:998
 msgid "Add Scope"
 msgstr "Add Scope"
 
@@ -2462,7 +2462,7 @@ msgstr "Any"
 
 #: src/pages/UsersPage.tsx:1201
 #: src/pages/ResultsPage.tsx:2075
-#: src/components/ApiKeys.tsx:1193
+#: src/components/ApiKeys.tsx:1189
 msgid "Add"
 msgstr "Add"
 
@@ -2506,7 +2506,7 @@ msgstr "Hidden finding last updated by:"
 msgid "Select a service or enter a value to search for"
 msgstr "Select a service or enter a value to search for"
 
-#: src/components/ApiKeys.tsx:1502
+#: src/components/ApiKeys.tsx:1498
 msgid "No API keys found for this user."
 msgstr "No API keys found for this user."
 
@@ -2563,7 +2563,7 @@ msgstr "Repositories"
 
 #: src/pages/UsersPage.tsx:1165
 #: src/pages/ResultsPage.tsx:2008
-#: src/components/ApiKeys.tsx:1162
+#: src/components/ApiKeys.tsx:1158
 msgid "This form contains unresolved errors. Please resolve these errors"
 msgstr "This form contains unresolved errors. Please resolve these errors"
 
@@ -2587,7 +2587,7 @@ msgstr "Default"
 msgid "User removed"
 msgstr "User removed"
 
-#: src/components/ApiKeys.tsx:1432
+#: src/components/ApiKeys.tsx:1428
 msgid "{title}"
 msgstr "{title}"
 
@@ -2929,7 +2929,7 @@ msgstr "SwiftLint (Swift)"
 msgid "Vulnerability id must be less than {VULN_ID_LENGTH} characters"
 msgstr "Vulnerability id must be less than {VULN_ID_LENGTH} characters"
 
-#: src/components/ApiKeys.tsx:1131
+#: src/components/ApiKeys.tsx:1127
 msgid "Snyk Vulnerability Plugin"
 msgstr "Snyk Vulnerability Plugin"
 
@@ -3024,7 +3024,7 @@ msgid "Location"
 msgstr "Location"
 
 #: src/pages/UsersPage.tsx:998
-#: src/components/ApiKeys.tsx:938
+#: src/components/ApiKeys.tsx:934
 msgid "Remove this scope item"
 msgstr "Remove this scope item"
 
@@ -3083,8 +3083,8 @@ msgstr "Must be between 1-254 characters"
 #: src/pages/UsersPage.tsx:1103
 #: src/pages/UsersPage.tsx:1107
 #: src/components/FormikPickers.tsx:64
+#: src/components/ApiKeys.tsx:1049
 #: src/components/ApiKeys.tsx:1053
-#: src/components/ApiKeys.tsx:1057
 msgid "Clear"
 msgstr "Clear"
 
