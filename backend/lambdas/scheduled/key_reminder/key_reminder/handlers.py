@@ -1,3 +1,4 @@
+from .env import KEY_REMINDER_FROM_EMAIL, KEY_REMINDER_SES_REGION
 from artemislib.logging import Logger
 from artemisdb.artemisdb.models import APIKey
 from django.utils import timezone
@@ -15,33 +16,34 @@ def handler(_event=None, _context=None):
     in_7_days = []
     in_2_days = []
     in_1_day = []
-    just_expired = []
+    expired = []
 
     for key in api_keys:
         expires = key.expires
         if expires is None:
             continue
         delta = expires - now
-        if 7 < delta.days <= 30:
+        if delta.days == 30:
             in_30_days.append((key))
-        if 2 < delta.days <= 7:
+        if delta.days == 7:
             in_7_days.append((key))
-        if 1 < delta.days <= 2:
+        if delta.days == 2:
             in_2_days.append((key))
-        if 0 <= delta.days <= 1:
+        if delta.days == 1:
             in_1_day.append((key))
-        if -1 <= delta.days <= 0 and expires <= now:
-            just_expired.append((key))
+        if delta.days <= 0:
+            expired.append((key))
     notify_user(30, in_30_days)
     notify_user(7, in_7_days)
     notify_user(2, in_2_days)
     notify_user(1, in_1_day)
-    notify_user(0, just_expired)
+    notify_user(0, expired)
 
 
 def notify_user(days: int, keys):
     message = (
         'Your key "{name}" will expire {expiration}.'
+        "\n"
         "You can see a list of your keys here: https://artemis.appsec.cso.warnermedia.com/settings"
     )
     for key in keys:
@@ -59,6 +61,7 @@ def notify_user(days: int, keys):
             case 0:
                 message = (
                     'Your key "{name}" has expired.'
+                    "\n"
                     "You can see a list of your keys here: https://artemis.appsec.cso.warnermedia.com/settings"
                 )
                 expiration = ""
@@ -69,10 +72,10 @@ def notify_user(days: int, keys):
 def send_email(message, email):
     LOG.info("sending message to email %s", email)
     LOG.info(message)
-    ses = boto3.client("ses", region_name="us-east-1")
+    ses = boto3.client("ses", region_name=KEY_REMINDER_SES_REGION)
 
     ses.send_email(
-        Source="matt.fleury@wbd.com",
+        Source=KEY_REMINDER_FROM_EMAIL,
         Destination={"ToAddresses": [email]},
         Message={
             "Subject": {"Data": "Artemis API Key Expiration Notice"},
