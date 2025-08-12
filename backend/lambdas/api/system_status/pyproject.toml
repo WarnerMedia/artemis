@@ -31,3 +31,6 @@ Homepage = "https://github.com/warnermedia/artemis/backend/lambdas/api/system_st
 [tool.pytest.ini_options]
 addopts = "-m \"not integtest and not end2end\" --disable-pytest-warnings"
 testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+"system_status" = ["data/*"]
