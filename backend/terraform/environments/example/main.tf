@@ -204,3 +204,21 @@ module "secrets_management" {
   secrets_enabled      = false
 }
 */
+
+/* Uncomment this if implementing a key reminder lambda
+module "key_reminder" {
+  source = "../../modules/key_reminder"
+  app                           = local.app
+  ver                           = local.version
+  environment                   = local.environment
+  aws_region                    = local.region
+  tags                          = local.tags
+  lambda_architecture           = local.lambda_architecture
+  s3_analyzer_files_id          = module.s3.s3_analyzer_files_id
+  key_reminder_email            = local.key_reminder_from_email
+  domain                        = ARTEMIS_ROUTE53_FQDN
+  maintenance_mode              = var.maintenance_mode
+  key_reminder_ses_region       = local.ses_region
+  key_reminder_enabled          = local.key_reminder_enabled
+}
+*/
