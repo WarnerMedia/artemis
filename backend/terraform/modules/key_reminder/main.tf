@@ -104,3 +104,19 @@ data "aws_iam_policy_document" "lambda-assume-policy" {
     }
   }
 }
+
+module "write-logs" {
+  source = "../role_policy_attachment"
+  actions = [
+    "logs:CreateLogGroup",
+    "logs:CreateLogStream",
+    "logs:PutLogEvents",
+  ]
+  iam_role_names = [
+    aws_iam_role.key-reminder-role.name
+  ]
+  name = "${var.app}-key-reminder-write-logs"
+  resources = [
+    "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.app}*:*"
+  ]
+}
