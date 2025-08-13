@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 ###############################################################################
 # Key Reminder Lambda
 ###############################################################################
@@ -12,18 +14,10 @@ resource "aws_lambda_function" "key_reminder" {
   architectures = [var.lambda_architecture]
   memory_size   = 1024
   timeout       = 900
-  role          = aws_iam_role.lambda-assume-role.arn
+  role          = aws_iam_role.key-reminder-role.arn
 
   logging_config {
     log_format = "JSON"
-  }
-
-  vpc_config {
-    subnet_ids = [
-      aws_subnet.lambdas.id,
-    ]
-
-    security_group_ids = [aws_security_group.lambda-sg.id]
   }
 
   environment {
@@ -81,14 +75,32 @@ resource "aws_lambda_permission" "key-reminder-from-cloudwatch" {
 # IAM
 ###############################################################################
 
-module "lambda-invoke-policy_key-reminder" {
-  source = "../role_policy_attachment"
-  actions = [
-    "lambda:InvokeFunction"
-  ]
-  iam_role_names = [aws_iam_role.lambda-assume-role.name]
-  name           = "${var.app}-lamba-invoke_key-reminder"
-  resources = [
-    aws_lambda_function.key_reminder.arn
-  ]
+resource "aws_iam_role" "key-reminder-role" {
+  name               = "${var.app}-key-reminder-lambda"
+  assume_role_policy = data.aws_iam_policy_document.lambda-assume-policy.json
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "Artemis Key Reminder Lambda Role"
+    }
+  )
+}
+
+data "aws_iam_policy_document" "lambda-assume-policy" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type = "Service"
+
+      identifiers = [
+        "lambda.amazonaws.com",
+      ]
+    }
+  }
 }
