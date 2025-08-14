@@ -214,6 +214,8 @@ module "key_reminder" {
   aws_region                    = local.region
   tags                          = local.tags
   lambda_architecture           = local.lambda_architecture
+  lambda_subnet                 = module.analyzer.lambda_subnet
+  lambda_security_group         = module.analyzer.lambda_security_group
   s3_analyzer_files_id          = module.s3.s3_analyzer_files_id
   key_reminder_email            = local.key_reminder_from_email
   domain                        = ARTEMIS_ROUTE53_FQDN

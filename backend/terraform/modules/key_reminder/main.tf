@@ -20,6 +20,14 @@ resource "aws_lambda_function" "key_reminder" {
     log_format = "JSON"
   }
 
+  vpc_config {
+    subnet_ids = [
+      var.lambda_subnet.id
+    ]
+
+    security_group_ids = [var.lambda_security_group.id]
+  }
+
   environment {
     variables = merge({
       DATADOG_ENABLED                 = var.datadog_enabled
@@ -105,6 +113,18 @@ data "aws_iam_policy_document" "lambda-assume-policy" {
   }
 }
 
+module "access-secret-manager-keys" {
+  source  = "../role_policy_attachment"
+  actions = ["secretsmanager:GetSecretValue"]
+  iam_role_names = [
+    aws_iam_role.key-reminder-role.name
+  ]
+  name = "${var.app}-key-reminder-access-secret-manager-keys"
+  resources = [
+    "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/*"
+  ]
+}
+
 module "write-logs" {
   source = "../role_policy_attachment"
   actions = [
@@ -118,5 +138,33 @@ module "write-logs" {
   name = "${var.app}-key-reminder-write-logs"
   resources = [
     "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.app}*:*"
+  ]
+}
+
+module "vpc-lambda-policy" {
+  source = "../role_policy_attachment"
+  actions = [
+    "ec2:CreateNetworkInterface",
+    "ec2:DescribeNetworkInterfaces",
+    "ec2:DeleteNetworkInterface",
+  ]
+  iam_role_names = [
+    aws_iam_role.key-reminder-role.name
+  ]
+  name      = "${var.app}-key-reminder-lambda-vpc"
+  resources = ["*"]
+}
+
+module "ses-sendmail-policy" {
+  source = "../role_policy_attachment"
+  actions = [
+    "ses:SendEmail",
+  ]
+  iam_role_names = [
+    aws_iam_role.key-reminder-role.name
+  ]
+  name = "${var.app}-key-reminder-ses"
+  resources = [
+    "arn:aws:ses:${var.key_reminder_ses_region}:${data.aws_caller_identity.current.account_id}:identity/*"
   ]
 }

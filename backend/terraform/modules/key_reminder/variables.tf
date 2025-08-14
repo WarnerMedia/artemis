@@ -25,6 +25,14 @@ variable "lambda_runtime" {
   default     = "python3.12"
 }
 
+variable "lambda_subnet" {
+  description = "Subnet of Artemis Lambdas"
+}
+
+variable "lambda_security_group" {
+  description = "Security Group of Artemis Lambdas"
+}
+
 variable "s3_analyzer_files_id" {
   description = "ID of S3 Bucket where files are located"
   type        = string
