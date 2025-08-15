@@ -2,6 +2,7 @@ from .env import KEY_REMINDER_FROM_EMAIL, KEY_REMINDER_SES_REGION, ARTEMIS_DOMAI
 from artemislib.logging import Logger
 from artemisdb.artemisdb.models import APIKey
 from django.utils import timezone
+from datetime import datetime
 import boto3
 
 LOG = Logger(__name__)
@@ -12,10 +13,8 @@ def handler(_event=None, _context=None):
         LOG.error("One or more required environment variables are missing or empty.")
         return
 
-    yesterday = timezone.now() - timezone.timedelta(days=1)
     now = timezone.now()
-    api_keys = list(APIKey.objects.filter(expires__gte=yesterday, expires__lte=now + timezone.timedelta(days=30)))
-    now = timezone.now()
+    api_keys = get_expiring_api_keys(now)
     in_30_days = []
     in_7_days = []
     in_3_days = []
@@ -46,6 +45,11 @@ def handler(_event=None, _context=None):
     notify_user(2, in_2_days)
     notify_user(1, in_1_day)
     notify_user(0, expired)
+
+
+def get_expiring_api_keys(now: datetime) -> list[APIKey]:
+    yesterday = now - timezone.timedelta(days=1)
+    return list(APIKey.objects.filter(expires__gte=yesterday, expires__lte=now + timezone.timedelta(days=30)))
 
 
 def notify_user(days: int, keys):
@@ -82,11 +86,14 @@ def notify_user(days: int, keys):
 def send_email(message, email):
     ses = boto3.client("ses", region_name=KEY_REMINDER_SES_REGION)
 
-    ses.send_email(
-        Source=KEY_REMINDER_FROM_EMAIL,
-        Destination={"ToAddresses": [email]},
-        Message={
-            "Subject": {"Data": "Artemis API Key Expiration Notice"},
-            "Body": {"Text": {"Data": message}},
-        },
-    )
+    try:
+        ses.send_email(
+            Source=KEY_REMINDER_FROM_EMAIL,
+            Destination={"ToAddresses": [email]},
+            Message={
+                "Subject": {"Data": "Artemis API Key Expiration Notice"},
+                "Body": {"Text": {"Data": message}},
+            },
+        )
+    except Exception as e:
+        LOG.error(f"Unexpected error when sending email to {email}: {e}")
