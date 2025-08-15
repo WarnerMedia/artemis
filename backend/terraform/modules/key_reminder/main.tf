@@ -167,4 +167,9 @@ module "ses-sendmail-policy" {
   resources = [
     "arn:aws:ses:${var.key_reminder_ses_region}:${data.aws_caller_identity.current.account_id}:identity/*"
   ]
+  conditions = [{
+    test     = "StringEquals"
+    variable = "ses:FromAddress"
+    values   = [var.key_reminder_email]
+  }]
 }
