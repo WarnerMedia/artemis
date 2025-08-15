@@ -24,6 +24,29 @@ def mock_timezone_now():
         yield mock_timezone
 
 
+@pytest.fixture(autouse=True)
+def patch_key_reminder_envs():
+    with (
+        patch("key_reminder.handlers.KEY_REMINDER_FROM_EMAIL", "from@example.com"),
+        patch("key_reminder.handlers.KEY_REMINDER_SES_REGION", "us-east-2"),
+        patch("key_reminder.handlers.ARTEMIS_DOMAIN", "artemis.com"),
+    ):
+        yield
+
+
+def test_missing_envs(caplog: pytest.LogCaptureFixture):
+    with (
+        patch("key_reminder.handlers.KEY_REMINDER_FROM_EMAIL", ""),
+        patch("key_reminder.handlers.KEY_REMINDER_SES_REGION", ""),
+        patch("key_reminder.handlers.ARTEMIS_DOMAIN", ""),
+    ):
+        with caplog.at_level(1):
+            handler()
+
+        assert any("One or more required environment variables are missing or empty" in msg for msg in caplog.messages)
+        assert any(record.levelname == "ERROR" for record in caplog.records)
+
+
 def test_remind_keys_no_expiring_keys(mock_api_keys: MagicMock | AsyncMock, mock_send_mail: MagicMock | AsyncMock):
     mock_api_keys.return_value = []
     handler()
