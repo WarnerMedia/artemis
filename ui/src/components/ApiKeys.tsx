@@ -910,6 +910,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 												{values.scope.map((scope: string, idx: number) => (
 													<Grid
 														container
+														size={12}
 														spacing={1}
 														key={`scope-row-${scope}`}
 													>
