@@ -221,8 +221,6 @@ LAMBDA_RUNTIME_VER := python3.12
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 
-PYTEST_INI := ${WORKING_DIR}/pytest.ini
-
 # Artemis scan configuration
 ARTEMIS_SCAN_ARGS :=
 
@@ -292,7 +290,7 @@ define run-pytest
 	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
 	export PIPENV_DONT_LOAD_ENV=1; \
 	${PYTHON} -m pipenv sync --dev; \
-	${PYTHON} -m pipenv run pytest -c "${PYTEST_INI}" $2 ${PYTEST_EXTRA_ARGS};
+	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
 
@@ -300,7 +298,7 @@ test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy install-plugi
 .PHONY: test-deps
 
 unit-test-no-deps:
-	${PYTHON} -m pipenv run pytest -c "${PYTEST_INI}" $2 ${PYTEST_EXTRA_ARGS};
+	$(call run-pytest,unit tests,-m "not integtest and not end2end")
 .PHONY: unit-test-no-deps
 
 unit-test: test-deps
