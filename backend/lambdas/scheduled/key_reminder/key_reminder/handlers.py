@@ -23,22 +23,26 @@ def handler(_event=None, _context=None):
     expired = []
 
     for key in api_keys:
-        expires = key.expires
-        if expires is None:
+        if key.expires is None:
             continue
-        delta = expires - now
-        if delta.days == 30:
-            in_30_days.append((key))
-        if delta.days == 7:
-            in_7_days.append((key))
-        if delta.days == 3:
-            in_3_days.append((key))
-        if delta.days == 2:
-            in_2_days.append((key))
-        if delta.days == 1:
-            in_1_day.append((key))
+        delta = key.expires - now
+
+        match delta.days:
+            case 30:
+                in_30_days.append((key))
+            case 7:
+                in_7_days.append((key))
+            case 3:
+                in_3_days.append((key))
+            case 2:
+                in_2_days.append((key))
+            case 1:
+                in_1_day.append((key))
+
+        # 0 could mean its about to expire, but close enough.
         if delta.days <= 0:
             expired.append((key))
+
     notify_user(30, in_30_days)
     notify_user(7, in_7_days)
     notify_user(3, in_3_days)
@@ -56,31 +60,30 @@ def notify_user(days: int, keys):
     message = (
         'Your key "{name}" will expire {expiration}.\nYou can see a list of your keys here: https://{domain}/settings'
     )
+    expiration = ""
+
+    match days:
+        case 30:
+            expiration = "in the next 30 days"
+        case 7:
+            expiration = "in the next 7 days"
+        case 3:
+            expiration = "in the next 3 days"
+        case 2:
+            expiration = "in the next 2 days"
+        case 1:
+            expiration = "within the next day"
+        case 0:
+            message = 'Your key "{name}" has expired.\nYou can see a list of your keys here: https://{domain}/settings'
+            expiration = ""
+
     for key in keys:
-        name = key.name
-        expiration = ""
-        match days:
-            case 30:
-                expiration = "in the next 30 days"
-            case 7:
-                expiration = "in the next 7 days"
-            case 3:
-                expiration = "in the next 3 days"
-            case 2:
-                expiration = "in the next 2 days"
-            case 1:
-                expiration = "within the next day"
-            case 0:
-                message = (
-                    'Your key "{name}" has expired.\nYou can see a list of your keys here: https://{domain}/settings'
-                )
-                expiration = ""
         LOG.info(
             'Notifying user {email} about key "{name}"" expiring in {days} days ({expiration})'.format(
                 email=key.user.email, name=key.name, days=days, expiration=key.expires
             )
         )
-        send_email(message.format(name=name, expiration=expiration, domain=ARTEMIS_DOMAIN), key.user.email)
+        send_email(message.format(name=key.name, expiration=expiration, domain=ARTEMIS_DOMAIN), key.user.email)
 
 
 def send_email(message, email):
