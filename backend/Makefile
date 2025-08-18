@@ -88,6 +88,7 @@ SBOM_COMPONENTS_LAMBDA := ${PREFIX}-sbom-components-handler
 SBOM_LICENSES_LAMBDA := ${PREFIX}-sbom-licenses-handler
 SBOM_REPORT_LAMBDA := ${PREFIX}-sbom-report
 AUDIT_EVENT_LAMBDA := ${PREFIX}-audit-event-handler
+KEY_REMINDER_LAMBDA := ${PREFIX}-key-reminder
 SCAN_SCHEDULER_LAMBDA := ${PREFIX}-scan-scheduler
 SCHEDULED_SCAN_HANDLER_LAMBDA := ${PREFIX}-scheduled-scan-handler
 SEARCH_REPOSITORIES_LAMBDA := ${PREFIX}-search-repositories-handler
@@ -382,6 +383,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/scans/callback.zip \
 		 dist/lambdas/scans/scale_down.zip \
 		 dist/lambdas/scans/task_queue_metrics.zip \
+		 dist/lambdas/scheduled/key_reminder.zip \
 		 dist/lambdas/scheduled/scan_scheduler.zip \
 		 dist/lambdas/scheduled/scheduled_scan_handler.zip \
 		 dist/lambdas/scheduled/update_github_org_users.zip \
@@ -801,6 +803,7 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-scans-callback \
 				upload_lambda_lambdas-scans-scale_down \
 				upload_lambda_lambdas-scans-task_queue_metrics \
+				upload_lambda_lambdas-scheduled-key_reminder \
 				upload_lambda_lambdas-scheduled-update_github_org_users \
 				upload_lambda_lambdas-scheduled-scan_scheduler \
 				upload_lambda_lambdas-scheduled-scheduled_scan_handler
@@ -867,6 +870,7 @@ move_lambda_bundles: move_lambda_bundle_backend_core \
 					 move_lambda_bundle_sbom_report \
 					 move_lambda_bundle_report_cleanup \
 					 move_lambda_bundle_update_github_org_users \
+ 					 move_lambda_bundle_key_reminder \
 					 move_lambda_bundle_scan_scheduler \
 					 move_lambda_bundle_scheduled_scan_handler \
 					 move_lambda_bundle_scans_batch \
@@ -1311,6 +1315,21 @@ deploy_update_github_org_users: move_lambda_bundle_update_github_org_users
 	@echo "${OK}"
 .PHONY: deploy_update_github_org_users
 
+deploy_key_reminder: move_lambda_bundle_key_reminder
+	@echo "${INFO}Deploying ${KEY_REMINDER_LAMBDA} lambda"
+	aws lambda update-function-code \
+		--function-name ${KEY_REMINDER_LAMBDA} \
+		--region ${REGION} \
+		--s3-bucket ${S3_BUCKET} \
+		--s3-key lambdas/key_reminder/v${VERSION}/key_reminder.zip
+	@echo "${INFO}Waiting for ${KEY_REMINDER_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${KEY_REMINDER_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${KEY_REMINDER_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${KEY_REMINDER_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+.PHONY: deploy_key_reminder
+
 deploy_scan_scheduler: move_lambda_bundle_scan_scheduler
 	@echo "${INFO}Deploying ${SCAN_SCHEDULER_LAMBDA} lambda"
 	aws lambda update-function-code \
@@ -1445,6 +1464,7 @@ deploy_lambdas: deploy_repo \
 				deploy_sbom_report \
 				deploy_report_cleanup \
 				deploy_update_github_org_users \
+				deploy_key_reminder \
 				deploy_scan_scheduler \
 				deploy_scheduled_scan_handler \
 				deploy_ci_tools \
