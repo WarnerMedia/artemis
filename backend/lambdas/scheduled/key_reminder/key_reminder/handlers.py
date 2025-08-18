@@ -57,9 +57,8 @@ def get_expiring_api_keys(now: datetime) -> list[APIKey]:
 
 
 def notify_user(days: int, keys):
-    message = (
-        'Your key "{name}" will expire {expiration}.\nYou can see a list of your keys here: https://{domain}/settings'
-    )
+    message = 'Your key "{name}" will expire {expiration}.'
+
     expiration = ""
 
     match days:
@@ -74,8 +73,10 @@ def notify_user(days: int, keys):
         case 1:
             expiration = "within the next day"
         case 0:
-            message = 'Your key "{name}" has expired.\nYou can see a list of your keys here: https://{domain}/settings'
+            message = 'Your key "{name}" has expired.'
             expiration = ""
+
+    message += "\nYou can see a list of your keys here: https://{domain}/settings"
 
     for key in keys:
         LOG.info(
