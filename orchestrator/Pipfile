@@ -7,7 +7,7 @@ name = "pypi"
 python_version = "3.12"
 
 [packages]
-aws-lambda-powertools = "~=3.18"
+aws-lambda-powertools = "~=3.19"
 awscli = "~=1.42"
 boto3 = "~=1.40"
 boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.40"}

@@ -7,16 +7,16 @@ name = "pypi"
 python_version = "3.12"
 
 [packages]
-aiohttp = "~=3.11"
+aiohttp = "~=3.12"
 awscli = "~=1.42"
-aws-lambda-powertools = "~=3.12"
+aws-lambda-powertools = "~=3.19"
 boto3 = "~=1.40"
 boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.40"}
 cryptography = "~=45.0"
 django = "~=4.2"
 docker = "~=7.1"
 graphql-query = "~=1.4"
-joserfc = "~=1.0"
+joserfc = "~=1.2"
 packaging = "==23.2"  # Must match version in Makefile.
 psycopg2-binary = "~=2.9.9"
 pydantic = "~=2.11"
@@ -42,5 +42,5 @@ pytest-httpserver = "~=1.1"
 pytest-subtests = "~=0.14"
 pytest-xdist = "~=3.6"
 python-dotenv = "~=1.1"
-responses = "~=0.25.3"
+responses = "~=0.25"
 ruff = "==0.12.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
