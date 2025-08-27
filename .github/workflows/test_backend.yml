@@ -9,11 +9,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # actions/checkout@v4.2.2
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # actions/setup-python@v5.6.0
         with:
-          python-version: "3.9"
+          python-version: "3.12"
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
@@ -25,6 +27,10 @@ jobs:
       - name: Install Test Dependencies
         run: |
           pip install --upgrade pipenv wheel
+      - name: Install shfmt
+        run: |
+          curl -sSL https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_linux_amd64 -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
       - name: Run code style tests
         run: make -C backend style-test ENV=example
       - name: Run backend tests

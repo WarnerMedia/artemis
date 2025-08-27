@@ -12,9 +12,7 @@ def process_retries() -> None:
     LOG.info("Processing retries")
 
     # Get all of the retries where the retry time is in the past and has retries left
-    retries = ScanScheduleRetry.objects.filter(
-        retry_time__lt=datetime.utcnow().replace(tzinfo=timezone.utc), count_remaining__gt=0
-    )
+    retries = ScanScheduleRetry.objects.filter(retry_time__lt=datetime.now(timezone.utc), count_remaining__gt=0)
 
     LOG.debug("Found %s scheduled scans to retry", retries.count())
     for retry in retries:

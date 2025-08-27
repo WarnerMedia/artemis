@@ -105,11 +105,7 @@ def blame(scan_path: str, file: str, line_num: int) -> GIT_BLAME_RESULT:
         elif line.startswith("author-time "):
             split = line.split(maxsplit=1)
             if len(split) > 1:
-                timestamp = (
-                    datetime.utcfromtimestamp(int(split[1]))
-                    .replace(tzinfo=timezone.utc)
-                    .isoformat(timespec="microseconds")
-                )
+                timestamp = datetime.fromtimestamp(int(split[1]), timezone.utc).isoformat(timespec="microseconds")
     return GIT_BLAME_RESULT(f"{name} {email}", commit, timestamp)
 
 

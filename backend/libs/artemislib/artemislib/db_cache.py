@@ -18,11 +18,9 @@ class DBLookupCache(metaclass=Singleton):
 
         try:
             item = self.cache_item_model.objects.get(key=key)
-            if item.expires is not None and item.expires.replace(tzinfo=timezone.utc) < datetime.utcnow().replace(
-                tzinfo=timezone.utc
-            ):
+            if item.expires is not None and item.expires.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
                 return None
-            item.accessed = datetime.utcnow().replace(tzinfo=timezone.utc)
+            item.accessed = datetime.now(timezone.utc)
             item.save()
             return item.value
         except self.cache_item_model.DoesNotExist:

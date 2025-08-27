@@ -30,7 +30,7 @@ class RepoCodeScanning:
             return add_metadata(False, RepoCodeScanning, config, error_message=e.data.get("message"))
 
         security_and_analysis = repository.get("security_and_analysis")
-        if security_and_analysis == None:
+        if security_and_analysis is None:
             return add_metadata(
                 False,
                 RepoCodeScanning,

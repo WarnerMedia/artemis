@@ -2,9 +2,9 @@
 # Build stages
 ###############################################################################
 
-ARG PYTHON_IMG_VER=python:3.9-bookworm
+ARG PYTHON_IMG_VER=python:3.12-bookworm
 
-ARG PYTHON_SLIM_IMG_VER=python:3.9-slim-bookworm
+ARG PYTHON_SLIM_IMG_VER=python:3.12-slim-bookworm
 
 ARG PHP_IMG_VER=php:8.2-cli-bookworm
 

@@ -17,7 +17,7 @@ def update_running_scans(instance_id):
         .update(
             status=ScanStatus.TERMINATED.value,  # Set status to "terminated"
             errors=["One or more plugins were unable to execute. Please try again."],  # Give some direction
-            end_time=datetime.utcnow().replace(tzinfo=timezone.utc),  # Set the end time
+            end_time=datetime.now(timezone.utc),  # Set the end time
         )
     )
     if objects > 0:

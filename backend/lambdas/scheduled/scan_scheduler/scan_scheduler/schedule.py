@@ -14,9 +14,7 @@ def process_schedules() -> None:
     LOG.info("Processing scan schedules")
 
     # Get all of the schedules where the next scan time is in the past
-    schedules = ScanSchedule.objects.filter(
-        next_scan_time__lt=datetime.utcnow().replace(tzinfo=timezone.utc), enabled=True
-    )
+    schedules = ScanSchedule.objects.filter(next_scan_time__lt=datetime.now(timezone.utc), enabled=True)
     LOG.debug("Found %s schedules to process", schedules.count())
 
     for schedule in schedules:
@@ -63,15 +61,15 @@ def calculate_next_scan_time(schedule: ScanSchedule):
     if schedule.interval_minutes is not None:
         # The schedule is interval based so calculate the next scan time by adding the interval to the previous time
         schedule.next_scan_time = schedule.next_scan_time + timedelta(minutes=schedule.interval_minutes)
-        if schedule.next_scan_time.replace(tzinfo=timezone.utc) < datetime.utcnow().replace(tzinfo=timezone.utc):
+        if schedule.next_scan_time.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
             # If the next scan time after offset is in the past go ahead and forward it to now
-            schedule.next_scan_time = datetime.utcnow().replace(tzinfo=timezone.utc)
+            schedule.next_scan_time = datetime.now(timezone.utc)
     elif schedule.day_of_week is not None:
         next_scan = _get_next_day_of_week(get_utc_datetime(), schedule.day_of_week)
         next_scan = _set_time(next_scan, schedule.time_of_day)
         schedule.next_scan_time = next_scan
     elif schedule.day_of_month is not None:
-        next_scan = _get_next_day_of_month(get_utc_datetime, schedule.day_of_month)
+        next_scan = _get_next_day_of_month(get_utc_datetime(), schedule.day_of_month)
         next_scan = _set_time(next_scan, schedule.time_of_day)
         schedule.next_scan_time = next_scan
 
@@ -97,7 +95,7 @@ def _get_next_day_of_month(dt: datetime, day_of_month: int) -> datetime:
         return (dt.replace(day=1) + timedelta(days=31)).replace(day=day_of_month)
 
 
-def _set_time(dt: datetime, t: time = None) -> datetime:
+def _set_time(dt: datetime, t: time | None = None) -> datetime:
     if t is not None:
         return dt.replace(hour=t.hour, minute=t.minute, second=t.second)
     else:

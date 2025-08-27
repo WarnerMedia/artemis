@@ -629,7 +629,7 @@ export function makeServer() {
 						source: "docker/Dockerfile",
 						severity: "critical",
 					},
-					expires: null,
+					expires: "2022-01-01T13:01:01Z",
 					reason: "test existing hidden finding",
 					created_by: defaultEmail,
 					created: "2021-01-01T13:01:01Z",
@@ -643,7 +643,7 @@ export function makeServer() {
 						source: "docker/Dockerfile.dev",
 						severity: "critical",
 					},
-					expires: null,
+					expires: "2022-01-01T13:01:01Z",
 					reason: "test existing hidden finding",
 					created_by: defaultEmail,
 					created: "2021-01-01T13:01:01Z",
@@ -877,7 +877,10 @@ export function makeServer() {
 							.minus({ days: Math.floor(Math.random() * 365) })
 							.toJSON() ?? undefined,
 					last_used: formatNewDate(),
-					expires: null,
+					expires: DateTime.utc()
+						.minus({ days: Math.floor(Math.random() * 365) })
+						.plus({ years: 1 })
+						.toJSON(),
 					scope: defaults.currentUserScope,
 					admin: true,
 					features: {
@@ -886,6 +889,7 @@ export function makeServer() {
 						feature2: false,
 						feature3: true,
 					},
+					userEmail: "",
 				},
 				{
 					id: generateId(),
@@ -896,6 +900,7 @@ export function makeServer() {
 					scope: defaults.currentUserScope,
 					admin: false,
 					features: { snyk: true, feature1: false },
+					userEmail: "",
 				},
 				{
 					id: generateId(),
@@ -911,6 +916,7 @@ export function makeServer() {
 					scope: defaults.currentUserScope,
 					admin: false,
 					features: {},
+					userEmail: "",
 				},
 			];
 			const userVcsServices: VcsService[] = [];
@@ -2853,10 +2859,14 @@ export function makeServer() {
 					name: attrs.name,
 					created: formatNewDate(),
 					last_used: null,
-					expires: attrs.expires ?? null,
+					expires: DateTime.utc()
+						.minus({ days: Math.floor(Math.random() * 365) })
+						.plus({ years: 1 })
+						.toJSON(),
 					scope: attrs.scope,
 					admin: attrs.admin ?? false,
 					features: attrs?.features ? { ...attrs.features } : {},
+					userEmail: "",
 				});
 				return {
 					key: generateApiKey(),
@@ -3767,7 +3777,6 @@ export function makeServer() {
 					}
 				} else {
 					for (const k in obj) {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						const result: any = keyExists(obj[k], key);
 						if (result) {
 							return result;
@@ -3791,7 +3800,6 @@ export function makeServer() {
 				)) {
 					// look for filtering fields
 					if (!["limit", "offset", "order_by"].includes(param)) {
-						// eslint-disable-next-line no-loop-func
 						filteredIds = filteredIds.filter((id: string) => {
 							if (id in adapter.entities) {
 								const entity = adapter.entities[id];

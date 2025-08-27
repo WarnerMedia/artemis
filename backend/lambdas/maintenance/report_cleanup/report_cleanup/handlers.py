@@ -13,7 +13,7 @@ LOG = Logger("report_cleanup")
 def handler(_event=None, _context=None):
     aws = AWSConnect()
 
-    age = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(minutes=MAX_REPORT_AGE)
+    age = datetime.now(timezone.utc) - timedelta(minutes=MAX_REPORT_AGE)
 
     LOG.info("Cleaning up reports older than %s", format_timestamp(age))
 

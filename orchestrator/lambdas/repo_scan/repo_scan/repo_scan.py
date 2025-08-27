@@ -109,8 +109,8 @@ def submit_repos(repos: list, analyzer_url: str, api_key: str) -> list:
         if success or response.status_code == 207:
             repo_dict = get_repo_scan_items(service, response.text)
             all_scan_items.extend(repo_dict["scan_items"])
-        if response.status_code == 504:
-            log.error("Artemis API Timed out")
+        if response.status_code == 504 or response.status_code == 401:
+            log.error(f"Error submitting repos. API Error Code: {response.status_code}")
             requeue_failed_repos(service, requests_by_service["req_lookup"][service], request_items)
         if "failed" in response_dict:
             requeue_failed_repos(service, requests_by_service["req_lookup"][service], response_dict["failed"])

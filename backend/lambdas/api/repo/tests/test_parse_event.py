@@ -209,6 +209,7 @@ EXPECTED_EVENT_RESULT_1 = {
         "detekt",
         "eslint",
         "nodejsscan",
+        "psalm",
         "python_code_checker",
         "shell_check",
         "tflint",
@@ -250,8 +251,12 @@ TEST_CATEGORY_LIST_FEATURE_FLAGS = {
     "cat1": {"cat1_plugin1": None, "cat1_plugin2": "test_flag"},
 }
 
+# Note: Each of the FEATURE_FLAG_IDENTITY constants are the args to construct
+# an Identity. We don't construct the Identity immediately since the values
+# in the subtest test cases must be serializable.
+
 # Identity has no feature flags
-FEATURE_FLAG_IDENTIY_1 = Identity("test@example.com", [], {})
+FEATURE_FLAG_IDENTIY_1 = ["test@example.com", [], {}]
 TEST_FEATURE_FLAG_REQUEST_1 = {"categories": ["cat1"]}
 EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_1 = {
     "categories": ["cat1"],
@@ -259,7 +264,7 @@ EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_1 = {
 }
 
 # Identity has feature flags present but disabled
-FEATURE_FLAG_IDENTIY_2 = Identity("test@example.com", [], {"test_flag": False})
+FEATURE_FLAG_IDENTIY_2 = ["test@example.com", [], {"test_flag": False}]
 TEST_FEATURE_FLAG_REQUEST_2 = {"categories": ["cat1"]}
 EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_2 = {
     "categories": ["cat1"],
@@ -267,7 +272,7 @@ EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_2 = {
 }
 
 # Identity has feature flags present and enabled
-FEATURE_FLAG_IDENTIY_3 = Identity("test@example.com", [], {"test_flag": True})
+FEATURE_FLAG_IDENTIY_3 = ["test@example.com", [], {"test_flag": True}]
 TEST_FEATURE_FLAG_REQUEST_3 = {"categories": ["cat1"]}
 EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_3 = {
     "categories": ["cat1"],
@@ -275,7 +280,7 @@ EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_3 = {
 }
 
 # Identity has no feature flags but explicitly requests a flagged feature
-FEATURE_FLAG_IDENTIY_4 = Identity("test@example.com", [], {})
+FEATURE_FLAG_IDENTIY_4 = ["test@example.com", [], {}]
 TEST_FEATURE_FLAG_REQUEST_4 = {"plugins": ["cat1_plugin2"]}
 EXPECTED_FEATURE_FLAGS_REQUEST_RESULT_4 = {
     "categories": ["-cat1"],
@@ -409,7 +414,8 @@ class TestParseEvent(unittest.TestCase):
         ]
         for test_case in test_cases:
             with self.subTest(test_case=test_case):
-                event_parser = EventParser(None, services_loc=self.services_loc, identity=test_case[0])
+                identity = Identity(*test_case[0]) if test_case[0] else None
+                event_parser = EventParser(None, services_loc=self.services_loc, identity=identity)
                 result = event_parser._check_and_replace_plugins_with_category(
                     [test_case[1]], TEST_CATEGORY_LIST_FEATURE_FLAGS, []
                 )

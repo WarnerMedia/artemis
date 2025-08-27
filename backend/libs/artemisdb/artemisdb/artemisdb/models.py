@@ -1,6 +1,6 @@
 import importlib
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import quote_plus
 
 import simplejson
@@ -622,10 +622,12 @@ class Scan(models.Model):
         # This is a performance enhancement to bypass the cascade deletion of dependencies by instead
         # having the database delete the rows associated with the scan being deleted directly instead of
         # having Django do it.
-        start = datetime.utcnow()
+        start = datetime.now(timezone.utc)
         with connection.cursor() as cursor:
             cursor.execute(f"DELETE FROM {Dependency._meta.db_table} WHERE scan_id = %s", [self.pk])
-        LOG.debug("Bulk dependency deletion of scan %s completed in %s", self.scan_id, str(datetime.utcnow() - start))
+        LOG.debug(
+            "Bulk dependency deletion of scan %s completed in %s", self.scan_id, str(datetime.now(timezone.utc) - start)
+        )
 
     def delete(self):
         LOG.debug("Deleting %s", self.scan_id)
@@ -861,7 +863,7 @@ class APIKey(models.Model):
     last_used = models.DateTimeField(null=True)
 
     # Key expiration (optional)
-    expires = models.DateTimeField(null=True)
+    expires = models.DateTimeField(null=False)
 
     # API key scanning scope. This is set by the user to restrict what the API key is allowed to scan. It will be
     # a subset of the user's scanning scope.

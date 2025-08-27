@@ -24,5 +24,23 @@ trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2
 
-[*.{go,js,jsx,ts,tsx}]
+[*.{go,js,jsx,mjs,ts,tsx}]
 indent_style = tab
+
+; Ejected configuration from Create React App.
+[ui/config/**/*.js]
+indent_style = space
+indent_size = 2
+
+[*.sh]
+switch_case_indent = true
+
+; Should match .editorignore
+[**/.temp/**]
+ignore = true
+[**/.venv/**]
+ignore = true
+[**/node_modules/**]
+ignore = true
+[backend/engine/tests/data/test_shell_check/issue_dir/test_shell_check.sh]
+ignore = true

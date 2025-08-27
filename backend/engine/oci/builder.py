@@ -1,25 +1,89 @@
+from contextlib import contextmanager
+from glob import glob
 import os
 import secrets
 import subprocess
-from glob import glob
+from typing import Annotated
+import uuid
+
+from docker.errors import DockerException
+from pydantic import BaseModel, ConfigDict, Field
 
 from artemislib.logging import Logger
 from env import ARTEMIS_PRIVATE_DOCKER_REPOS_KEY
 from plugins.lib import utils
 
-# A list of private docker repos with creds stored in Secrets Manager (at ARTEMIS_PRIVATE_DOCKER_REPOS_KEY)
-#
-# Structure:
-# [
-#   {
-#     "url": "Docker login url",
-#     "search": "Search string for identifying whether a Dockerful uses this repo",
-#     "username": "Private docker repo username",
-#     "password": "Private docker repo password"
-#   }
-# ]
+from .remover import remove_docker_image
 
 log = Logger("oci_builder")
+
+
+class BuiltImage(BaseModel):
+    """Local container image built by ImageBuilder."""
+
+    status: bool
+    """True if image was built successfully."""
+
+    tag_id: Annotated[str, Field(alias="tag-id")]
+    """
+    Unique local image reference ("repo:tag" or just "repo").
+    The JSON field name uses kebab-case for historical reasons.
+    """
+
+    dockerfile: str
+    """Path relative to the base directory."""
+
+    model_config = ConfigDict(populate_by_name=True, serialize_by_alias=True)
+
+    def remove(self) -> bool:
+        """
+        Remove the local container image.
+        :return: True if successful.
+        """
+        return remove_docker_image(self.tag_id)
+
+
+class ScanImages(BaseModel):
+    """
+    Local container images built by ImageBuilder.
+    This is passed to plugins (as JSON) that scan container images.
+    """
+
+    results: list[BuiltImage] = []
+    dockerfile_count: int = 0
+
+
+@contextmanager
+def temporary_builder(name_prefix: str):
+    """
+    Creates a temporary BuildKit builder.
+    The generated name of the builder is passed to the block.
+    The builder is removed automatically, along with any builder-specific
+    cached resources.
+    """
+    name = f"{name_prefix}-{uuid.uuid4()}"
+
+    # We must use the Docker CLI since docker-py does not yet support BuildKit:
+    # https://github.com/docker/docker-py/issues/2230
+
+    create_proc = subprocess.run(
+        ["docker", "buildx", "create", "--name", name],
+        capture_output=True,
+    )
+    if create_proc.returncode != 0:
+        raise DockerException(f"Failed to create builder: {create_proc.stderr.decode('utf-8')}")
+
+    try:
+        yield name
+    finally:
+        # Remove the builder.
+        # This is best-effort; if unsuccessful we only log the error.
+        rm_proc = subprocess.run(
+            ["docker", "buildx", "rm", "--builder", name, "-f"],
+            capture_output=True,
+        )
+        if rm_proc.returncode != 0:
+            log.error("Failed to remove builder %s: %s", name, rm_proc.stderr.decode("utf-8"))
 
 
 class ImageBuilder:
@@ -36,63 +100,74 @@ class ImageBuilder:
         self.ignore_prefixes = ignore_prefixes
         self.engine_id = engine_id
 
-    def find_dockerfiles(self):
+    def find_dockerfiles(self) -> list[str]:
         """
-        Find and loop through all the Dockerfile* files in the path
-        return only files
+        Recursively find all Dockerfiles.
+        :return: list
         """
         dockerfiles = glob("%s/**/Dockerfile*" % self.path, recursive=True)
         return [dockerfile for dockerfile in dockerfiles if os.path.isfile(dockerfile)]
 
-    def build_docker_files(self) -> dict:
+    def build_docker_files(self) -> ScanImages:
         """
-        Finds all of the Dockerfile* in the project
-        :return: list
+        Attempt to build all Dockerfiles.
+        This is best-effort only. Failure to build a container image is
+        not an error.
+        :return: ScanImages
         """
-        results = []
+        results: list[BuiltImage] = []
 
         # Find and loop through all the Dockerfile* files in the path
         files = self.find_dockerfiles()
 
         self.private_docker_repos_login(files)
 
-        # Build a set of all directories containing Dockerfiles
-        for filename in files:
-            if not os.path.isfile(filename):
-                continue
-            # Build each of the Dockerfiles locally
-            results.append(self.build_local_image(filename, secrets.token_hex(16)))
+        # Perform all builds in an isolated builder so we can clean up all
+        # resources after the build.
+        # Builder names must start with a letter and may not contain symbols,
+        # except the symbols: ._-
+        try:
+            with temporary_builder(f"artemis-{self.engine_id}") as builder:
+                results = [self.build_local_image(filename, secrets.token_hex(16), builder) for filename in files]
+        except DockerException as ex:
+            log.error("Failed to build images: %s", ex)
 
-        # Return the results
-        return {"results": results, "dockerfile_count": len(files)}
+        return ScanImages(results=results, dockerfile_count=len(files))
 
-    def build_local_image(self, dockerfile: str, tag: str):
+    def build_local_image(self, dockerfile: str, tag: str, builder: str | None = None) -> BuiltImage:
         """
-        :param dockerfile: path to dockerfile
-        :param tag: tag that we'll use in scan step
-        :return: boolean
+        Attempt to build a Dockerfile using Docker BuildKit.
+        :param dockerfile: Absolute path to the Dockerfile.
+        :param tag: Tag to use for built container image.
+        :param builder: Optional BuildKit builder to use.
+        :return: BuiltImage
         """
         dockerfile_name = dockerfile.replace(self.path, "")
         if dockerfile_name.startswith("/"):
             dockerfile_name = dockerfile_name[1:]
 
-        log.info("Attempting to build %s", dockerfile_name)
+        log.info(
+            "Attempting to build %s using %s",
+            dockerfile_name,
+            f"builder {builder}" if builder else "default builder",
+        )
 
         tag_id = f"{self.repo_name}-{tag}-{self.engine_id}"
-        build_proc = subprocess.run(
-            ["docker", "build", "--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=self.path,
-            check=False,
-        )
+
+        # We must use the Docker CLI since docker-py does not yet support BuildKit.
+        cmd = ["docker", "buildx", "build"]
+        if builder:
+            cmd += ["--builder", builder, "--load"]
+        cmd += ["--pull", "--no-cache", "--force-rm", "-q", ".", "-f", dockerfile, "-t", tag_id]
+
+        build_proc = subprocess.run(cmd, capture_output=True, cwd=self.path)
         if build_proc.returncode != 0:
             log.warning(build_proc.stderr.decode("utf-8"))
 
         status = build_proc.returncode == 0
         log.info("Built %s from %s (success: %s)", tag_id, dockerfile_name, status)
 
-        return {"status": status, "tag-id": tag_id, "dockerfile": dockerfile_name}
+        return BuiltImage(status=status, tag_id=tag_id, dockerfile=dockerfile_name)
 
     def untag_base_images(self) -> None:
         """
@@ -160,6 +235,17 @@ class ImageBuilder:
             # Error already logged in convert_string_to_json.
             return
 
+        # A list of private docker repos with creds stored in Secrets Manager (at ARTEMIS_PRIVATE_DOCKER_REPOS_KEY)
+        #
+        # Structure:
+        # [
+        #   {
+        #     "url": "Docker login url",
+        #     "search": "Search string for identifying whether a Dockerfile uses this repo",
+        #     "username": "Private docker repo username",
+        #     "password": "Private docker repo password"
+        #   }
+        # ]
         for repo in private_docker_repos_response:
             log.info("Checking if any Dockerfiles depend on %s", repo["url"])
             if self.docker_login_needed(files, repo["search"], repo["url"]):

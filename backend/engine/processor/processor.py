@@ -17,6 +17,7 @@ from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
 from env import APPLICATION, REGION, SQS_ENDPOINT, VULNERABILITY_EVENTS_ENABLED, METADATA_EVENTS_ENABLED
 from metadata.metadata import get_all_metadata
+from oci.builder import ScanImages
 from processor.details import Details
 from processor.sbom import process_sbom
 from processor.sbom_cdx import process_sbom as process_sbom_cdx
@@ -106,7 +107,7 @@ class EngineProcessor:
                 self.details.client_id,
             )
 
-    def process_plugins(self, images: dict, services: dict) -> None:
+    def process_plugins(self, images: ScanImages, services: dict) -> None:
         """
         Executes plugins to scan the repository, updating the DB of the progress.
         :param images: dict of image build results and how many dockerfiles were found and built
@@ -221,6 +222,7 @@ class EngineProcessor:
             self.action_details.branch,
             self.action_details.diff_base,
             self.service_dict.get("http_basic_auth", False),
+            self.service_dict.get("append_dot_git_suffix", True),
             self.scan.get_scan_object().include_paths,
             self.scan.get_scan_object().exclude_paths,
         )
@@ -348,14 +350,14 @@ class EngineProcessor:
         allow_list = list(
             self.scan.get_scan_object().repo.allowlistitem_set.filter(
                 Q(item_type=AllowListType.VULN.value),
-                Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+                Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc).replace(tzinfo=timezone.utc)),
             )
         )
 
         # Pull the non-expired vulns_raw AllowList
         raw_allow_object_list = self.scan.get_scan_object().repo.allowlistitem_set.filter(
             Q(item_type=AllowListType.VULN_RAW.value),
-            Q(expires=None) | Q(expires__gt=datetime.utcnow().replace(tzinfo=timezone.utc)),
+            Q(expires=None) | Q(expires__gt=datetime.now(timezone.utc)),
         )
 
         # Place all the raw CVEs values into a set for faster searching.

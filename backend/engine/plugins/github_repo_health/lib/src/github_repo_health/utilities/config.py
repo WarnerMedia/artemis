@@ -170,22 +170,22 @@ class Config:
 
     @staticmethod
     def validate(config):
-        if type(config) != dict:
+        if type(config) is not dict:
             raise Exception("Config failed validation. Expected object")
 
         bad_rules_message = 'Config failed validation. Expected "rules" field that is an array of objects'
 
-        if config.get("name") == None:
+        if config.get("name") is None:
             raise Exception('Config failed validation. Expected top-level "name" field')
-        if config.get("version") == None:
+        if config.get("version") is None:
             raise Exception('Config failed validation. Expected top-level "version" field')
 
         rule_configs = config.get("rules")
-        if type(rule_configs) != list:
+        if type(rule_configs) is not list:
             raise Exception(bad_rules_message)
 
         for rule_config in rule_configs:
-            if type(rule_config) != dict:
+            if type(rule_config) is not dict:
                 raise Exception(bad_rules_message)
 
             rule_type = rule_config.get("type")

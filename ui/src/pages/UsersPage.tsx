@@ -10,12 +10,14 @@ import {
 	FilterList as FilterListIcon,
 	KeyboardArrowUp as KeyboardArrowUpIcon,
 	RemoveCircleOutlineOutlined as RemoveCircleOutlineOutlinedIcon,
+	VpnKey as VpnKeyIcon,
 } from "@mui/icons-material";
 import {
 	Alert,
 	Box,
 	Button,
 	Container,
+	Dialog,
 	DialogActions,
 	DialogContent,
 	Fab,
@@ -73,6 +75,7 @@ import {
 	SPLIT_MULTILINE_CSN_REGEX,
 	capitalize,
 } from "utils/formatters";
+import ApiKeys from "components/ApiKeys";
 
 const useStyles = makeStyles()((theme) => ({
 	addUserFormField: {
@@ -361,6 +364,9 @@ export default function UsersPage() {
 			filter: "",
 		},
 	});
+	// Add missing state for API Keys dialog and selected user
+	const [apiKeysDialogOpen, setApiKeysDialogOpen] = useState(false);
+	const [apiKeysUser, setApiKeysUser] = useState<User | null>(null);
 	let filterCount = 0;
 	for (const [, opts] of Object.entries(filters)) {
 		if (opts.filter) {
@@ -458,6 +464,26 @@ export default function UsersPage() {
 		const { row } = props;
 		return (
 			<>
+				<Tooltip title={i18n._(t`View API Keys`)}>
+					<span>
+						<IconButton
+							size="small"
+							color="primary"
+							aria-label={i18n._(t`View API Keys`)}
+							onClick={() => {
+								// Create a clean user object without the "id-" prefix in the ID
+								const cleanUser = {
+									...(row as User),
+									id: (row as User).email, // Use the email directly as the ID
+								};
+								setApiKeysUser(cleanUser);
+								setApiKeysDialogOpen(true);
+							}}
+						>
+							<VpnKeyIcon />
+						</IconButton>
+					</span>
+				</Tooltip>
 				<Tooltip title={i18n._(t`Remove User`)}>
 					<span>
 						<IconButton
@@ -1322,6 +1348,19 @@ export default function UsersPage() {
 					}
 				/>
 			)}
+			<Dialog
+				open={apiKeysDialogOpen}
+				onClose={() => setApiKeysDialogOpen(false)}
+				maxWidth="md"
+				fullWidth
+			>
+				{apiKeysUser && (
+					<ApiKeys
+						user={apiKeysUser}
+						title={`API Keys - ${apiKeysUser.email}`}
+					/>
+				)}
+			</Dialog>
 		</>
 	);
 

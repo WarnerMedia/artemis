@@ -20,6 +20,7 @@ from env import (
     WORKING_DIR,
     reset_log_state,
 )
+from oci.builder import ScanImages
 from processor.processor import EngineProcessor
 from utils.engine import _build_docker_images, check_disk_space, cleanup_images
 from utils.services import get_services_dict
@@ -87,7 +88,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
             return
         # Check if docker images need to be built first
         build_images = engine_processor.docker_images_required()
-        images = {}
+        images = ScanImages()
         try:
             repo_obtained = engine_processor.pull_repo()
             if repo_obtained:
@@ -99,11 +100,11 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
                     images = _build_docker_images(repo_path, repo, ENGINE_ID, untag_images=True)
                     built = []
                     not_built = []
-                    for image in images["results"]:
-                        if image.get("status"):
-                            built.append(image.get("dockerfile"))
+                    for image in images.results:
+                        if image.status:
+                            built.append(image.dockerfile)
                         else:
-                            not_built.append(image.get("dockerfile"))
+                            not_built.append(image.dockerfile)
 
                     # Note which images were built or not as scan debug messages
                     debug.append(f"Dockerfiles automatically built for scanning: {', '.join(built) or 'None'}")
@@ -122,7 +123,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
         finally:
             # Make sure we always clean up
             cleanup(WORKING_DIR, str(engine_processor.get_scan_id()))
-            cleanup_images(images.get("results"))
+            cleanup_images(images.results)
 
         log.info("Scan %s of %s completed", engine_processor.action_details.scan_id, repo)
     engine_processor.update_scan_status("completed", end_time=get_utc_datetime(), errors=errors, debug=debug)

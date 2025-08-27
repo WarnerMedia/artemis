@@ -8,10 +8,11 @@ export interface Key {
 	name: string;
 	created?: string;
 	last_used?: string | null;
-	expires?: string | null;
+	expires: string | null;
 	scope: string[];
 	admin: boolean;
 	features?: ScanFeatures | null;
+	userEmail: string;
 }
 
 export interface KeysResponse extends Response {
@@ -25,10 +26,11 @@ const keysSchema: Yup.ObjectSchema<Key> = Yup.object()
 		name: Yup.string().defined(),
 		created: Yup.string(),
 		last_used: Yup.string().nullable(),
-		expires: Yup.string().nullable(),
+		expires: Yup.string().nullable().defined(), // ensure always defined, even if null. Allow null for legacy keys
 		scope: Yup.array().of(Yup.string().defined()).defined(),
 		admin: Yup.boolean().defined(),
 		features: Yup.object().nullable(),
+		userEmail: Yup.string().defined(), // <-- Add this line
 	})
 	.defined();
 

@@ -153,7 +153,7 @@ variable "repo_scan_loop_lambda_timeout" {
 }
 
 variable "lambda_runtime" {
-  default = "python3.9"
+  default = "python3.12"
 }
 
 variable "lambda_architecture" {
@@ -205,4 +205,28 @@ variable "datadog_environment_variables" {
   default = {
     DD_SERVICE = "heimdall"
   }
+}
+
+################################################
+# AWS WAF Customization
+################################################
+
+variable "waf_default_action" {
+  description = "AWS WAF default action. Should be either 'allow' or 'block'"
+  default     = "allow"
+  type        = string
+
+  validation {
+    condition     = contains(["allow", "block"], var.waf_default_action)
+    error_message = "waf_default_action must be one of 'allow' or 'block'"
+  }
+}
+
+variable "waf_rule_groups" {
+  description = "AWS WAF Rule Groups to apply to the WAF configuration"
+  default     = []
+  type = list(object({
+    name = string
+    arn  = string
+  }))
 }

@@ -5,23 +5,22 @@ from artemislib.logging import Logger
 logger = Logger("oci_remover")
 
 
-def remove_docker_image(image: dict):
+def remove_docker_image(tag: str) -> bool:
     """
-    Delete docker image from disk after aqua scans it
-    :param image:
-    :return:
+    Delete a container image from disk after the scan job is complete.
+    :param tag: Image tag.
+    :return: True if successful.
     """
-    logger.info("Removing image %s", image["tag-id"])
-    return {
-        "image-id": image["tag-id"],
-        "status": subprocess.run(
-            ["docker", "image", "rm", "-f", image["tag-id"]],
+    logger.info("Removing image %s", tag)
+    return (
+        subprocess.run(
+            ["docker", "image", "rm", "-f", tag],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
         ).returncode
-        == 0,
-    }
+        == 0
+    )
 
 
 def prune_images() -> None:

@@ -4,13 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-jsonschema = "~=4.22"
-pygithub = "~=2.5"
+cryptography = "~=44.0" # match version constraint in top level
+jsonschema = "~=4.25"
+pygithub = "~=2.7"
 
 [requires]
-python_version = "3.9"
+python_version = "3.12"
 
 [dev-packages]
-isort = "~=5.13"
+isort = "~=6.0"
 pytest = "~=8.3"
-ruff = "~=0.8.1"
+ruff = "==0.12.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff

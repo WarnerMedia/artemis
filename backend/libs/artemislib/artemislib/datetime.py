@@ -1,20 +1,20 @@
 from datetime import datetime, timedelta, timezone
 
 
-def format_timestamp(utc_dt=None) -> str:
+def format_timestamp(utc_dt=None) -> str | None:
     if utc_dt:
         return utc_dt.replace(tzinfo=timezone.utc).isoformat(timespec="microseconds")
     return None
 
 
 def get_utc_datetime(offset_minutes=None):
-    now = datetime.utcnow().replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
     if offset_minutes is not None:
         now = now + timedelta(minutes=offset_minutes)
     return now
 
 
-def format_unix_time(timestamp) -> datetime:
+def format_unix_time(timestamp) -> str:
     return datetime.fromtimestamp(timestamp, tz=timezone.utc).isoformat(timespec="microseconds")
 
 

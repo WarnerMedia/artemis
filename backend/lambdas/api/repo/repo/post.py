@@ -125,7 +125,12 @@ def post_repo(event_parser: EventParser, identity=None):
         )
     elif service_type == "ado":
         s_response = process_ado(
-            req_list, event["service_id"], service_dict.get("url"), service_dict.get("secret_loc"), identity=identity
+            req_list,
+            event["service_id"],
+            service_dict.get("url"),
+            service_dict.get("secret_loc"),
+            service_dict.get("nat_connect"),
+            identity=identity,
         )
     else:
         s_response = PROCESS_RESPONSE_TUPLE([], [], [])

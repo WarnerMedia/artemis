@@ -4,28 +4,41 @@ set -euo pipefail
 
 # Variables inherited from terraform
 # ShellCheck will throw a warning if these are not exported
+export "application"
 export "aqua_enabled"
 export "aws_region"
+export "configuration_events_enabled"
 export "datadog_enabled"
 export "docker_compose_ver"
+export "domain_name"
 export "engine_block_device"
-export "repos_block_device"
+export "ghas_enabled"
 export "github_app_id"
+export "inventory_events_enabled"
+export "log_level"
+export "mandatory_include_paths"
+export "metadata_events_enabled"
+export "metadata_scheme_modules"
 export "plugin_java_heap_size"
 export "private_docker_repos_key"
+export "region"
+export "repos_block_device"
+export "revproxy_domain_substring"
+export "revproxy_secret"
+export "revproxy_secret_region"
 export "s3_bucket"
 export "s3_bucket"
+export "secrets_events_enabled"
+export "snyk_enabled"
 export "status_lambda"
 export "type"
 export "ver"
 export "veracode_enabled"
-export "snyk_enabled"
-export "ghas_enabled"
-export "revproxy_domain_substring"
+export "vulnerability_events_enabled"
 
 # Format and mount data volume
 if mount | grep -q "${engine_block_device}"; then
-  echo "${engine_block_device} is already mounted. Skipping format and mount." >> /var/log/my-script-log.log
+  echo "${engine_block_device} is already mounted. Skipping format and mount." >>/var/log/my-script-log.log
 else
   mkfs -t ext4 "${engine_block_device}"
   mkdir -p /data
@@ -35,9 +48,9 @@ fi
 
 # Format and mount repo volume
 if mount | grep -q "${repos_block_device}"; then
-  echo "${repos_block_device} is already mounted. Skipping format and mount." >> /var/log/my-script-log.log
+  echo "${repos_block_device} is already mounted. Skipping format and mount." >>/var/log/my-script-log.log
 else
-  echo "Formatting ${repos_block_device}..." >> /var/log/my-script-log.log
+  echo "Formatting ${repos_block_device}..." >>/var/log/my-script-log.log
   mkfs -t ext4 "${repos_block_device}"
   mkdir -p /cloned_repos
   mount "${repos_block_device}" /cloned_repos

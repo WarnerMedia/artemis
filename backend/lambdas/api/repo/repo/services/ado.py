@@ -1,5 +1,6 @@
 from string import Template
 
+import base64
 import requests
 
 from artemislib.logging import Logger
@@ -25,13 +26,26 @@ ADO_DIFF_QUERY = (
 )
 
 
-def process_ado(req_list: list, service: str, service_url: str, service_secret: str, identity: Identity):
+def process_ado(
+    req_list: list,
+    service: str,
+    service_url: str,
+    service_secret: str,
+    nat_connect: bool,
+    identity: Identity,
+):
     options_map = build_options_map(req_list)
-    return _query(req_list, options_map, service, service_url, service_secret, identity=identity)
+    return _query(req_list, options_map, service, service_url, service_secret, nat_connect, identity=identity)
 
 
 def _query(
-    req_list: list, options_map: dict, service: str, service_url: str, service_secret: str, identity: Identity
+    req_list: list,
+    options_map: dict,
+    service: str,
+    service_url: str,
+    service_secret: str,
+    nat_connect: bool,
+    identity: Identity,
 ) -> PROCESS_RESPONSE_TUPLE:
     unauthorized = []
     queued = []
@@ -39,7 +53,8 @@ def _query(
     if not req_list:
         return queued, failed, unauthorized
 
-    # The stored key is already in the basic auth format: base64(user:pass)
+    # The stored key is in the format: ":api_key" (username:pass, with an empty username)
+    # It is NOT base64 encoded. Encode it before using it for Basic auth
     key = get_api_key(service_secret)
 
     log.info("Querying %s API for %d repos", service, len(req_list))
@@ -87,7 +102,9 @@ def _query(
 
         log.info("Queuing repo")
 
-        scan_id = _queue_repo(service, org_repo, repo_dict, branch_name, options_map[org_repo], identity=identity)
+        scan_id = _queue_repo(
+            service, org_repo, repo_dict, branch_name, options_map[org_repo], nat_connect, identity=identity
+        )
         full_scan_id = f"{org_repo}/{scan_id}"
         queued.append(full_scan_id)
         log.info("Queued %s", full_scan_id)
@@ -129,7 +146,7 @@ def _check_diff(url: str, api_key: str, org_name: str, project: str, repo: str, 
 
 
 def _query_azure_api(url: str, api_key: str) -> requests.Response:
-    headers = {"Authorization": "Basic %s" % api_key, "Accept": "application/json"}
+    headers = {"Authorization": "Basic %s" % _base64_encode(api_key), "Accept": "application/json"}
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         log.error("Error retrieving Azure query: %s", response.text)
@@ -145,11 +162,19 @@ def _get_api_response_error(status_code: int, response_dict: dict or None) -> st
     return default_error
 
 
-def _queue_repo(service: str, org_repo: str, repo: dict, branch_name: str, options: dict, identity: Identity) -> str:
+def _queue_repo(
+    service: str,
+    org_repo: str,
+    repo: dict,
+    branch_name: str,
+    options: dict,
+    nat_connect: bool,
+    identity: Identity,
+) -> str:
     # Queue the repo
     scan_id = AWSConnect().queue_repo_for_scan(
         name=org_repo,
-        repo_url=repo["remoteUrl"],
+        repo_url=repo["webUrl"],
         # We need to convert from bytes to KiB
         repo_size=int(repo["size"] / 1024),
         service=service,
@@ -166,7 +191,12 @@ def _queue_repo(service: str, org_repo: str, repo: dict, branch_name: str, optio
         diff_base=options["diff_base"],
         schedule_run=options["schedule_run"],
         batch_id=options["batch_id"],
+        nat_queue=nat_connect,
         include_paths=options["include_paths"],
         exclude_paths=options["exclude_paths"],
     )
     return scan_id
+
+
+def _base64_encode(text: str, input_encoding="utf-8", output_encoding="utf-8") -> str:
+    return base64.b64encode(bytes(text, input_encoding)).decode(output_encoding)

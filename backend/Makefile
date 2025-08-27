@@ -88,6 +88,7 @@ SBOM_COMPONENTS_LAMBDA := ${PREFIX}-sbom-components-handler
 SBOM_LICENSES_LAMBDA := ${PREFIX}-sbom-licenses-handler
 SBOM_REPORT_LAMBDA := ${PREFIX}-sbom-report
 AUDIT_EVENT_LAMBDA := ${PREFIX}-audit-event-handler
+KEY_REMINDER_LAMBDA := ${PREFIX}-key-reminder
 SCAN_SCHEDULER_LAMBDA := ${PREFIX}-scan-scheduler
 SCHEDULED_SCAN_HANDLER_LAMBDA := ${PREFIX}-scheduled-scan-handler
 SEARCH_REPOSITORIES_LAMBDA := ${PREFIX}-search-repositories-handler
@@ -160,15 +161,15 @@ SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 
 # Engine base image
-ENGINE_BASE := 3.9-slim-bullseye
+ENGINE_BASE := 3.12-slim-bullseye
 
 # Enry Info
 ENRYVER := 1.1.0
 ENRYSHA := 9bab0ea9498fd473263f4fc1efc3c710570422771d2c78c837fb3cdc10ec0d79
 
 #GoSec Info
-GOSECVER := 2.18.2
-GOSECSHA := 9f1113983f1f206cbf91eeb82bc8e14ba73b56b127fab4119c3d8e5980ab4833
+GOSECVER := 2.22.7
+GOSECSHA := d294907637f8724892eabc4b142552407e5b067c6c9e8f766ec26f8b5198b648
 
 # Shell Check Info
 SHELLCHECKVER := 0.10.0
@@ -181,7 +182,10 @@ TFLINT_VER := 0.20.2
 TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 
 # CFN Python Lint
-CFN_VER = 1.18.1
+CFN_VER = 1.38.0
+
+# Bandit
+BANDIT_VER = 1.8.6
 
 # Python Packaging Library Version
 PACKAGING_VER = 23.2
@@ -191,7 +195,7 @@ BRANCH_NAME := $(shell git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e
 SEVERITY_LEVELS := critical,high
 
 # Security Scanner
-PHP_SCANNER_VER := 1.0.0
+PHP_SCANNER_VER := 6.10.3
 
 # Trivy
 TRIVY_COMMIT := 6ccc0a554b07b05fd049f882a1825a0e1e0aabe1
@@ -212,8 +216,8 @@ DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
 # Lambdas
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
-LAMBDA_PYTHON_VER := 3.9.22
-LAMBDA_RUNTIME_VER := python3.9
+LAMBDA_PYTHON_VER := 3.12.6
+LAMBDA_RUNTIME_VER := python3.12
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 
@@ -320,6 +324,8 @@ style-test:
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
+	$(CURDIR)/../tests/test_shellcheck.sh
+	$(CURDIR)/../tests/test_shfmt.sh
 	@echo "${OK}"
 .PHONY: style-test
 
@@ -342,7 +348,7 @@ dist/lambdas/%.zip: $$(shell find lambdas/$$* -type f)
 	${PIP} install lambdas/$* -t ${BUILD_DIR}/lambdas/$* --upgrade --no-deps --python-version ${LAMBDA_PYTHON_VER}
 	cp lambdas/$*/handlers.py ${BUILD_DIR}/lambdas/$*
 	mkdir -p ${DIST_DIR}/lambdas/$*
-	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip *
+	cd ${BUILD_DIR}/lambdas/$*; zip -r ${DIST_DIR}/lambdas/$*.zip * -x "*/__pycache__/*"
 	@echo "${OK}"
 
 lambdas:  ## Build lambdas
@@ -377,6 +383,7 @@ lambdas: dist/lambdas/api/authorizer.zip \
 		 dist/lambdas/scans/callback.zip \
 		 dist/lambdas/scans/scale_down.zip \
 		 dist/lambdas/scans/task_queue_metrics.zip \
+		 dist/lambdas/scheduled/key_reminder.zip \
 		 dist/lambdas/scheduled/scan_scheduler.zip \
 		 dist/lambdas/scheduled/scheduled_scan_handler.zip \
 		 dist/lambdas/scheduled/update_github_org_users.zip \
@@ -399,7 +406,7 @@ dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_
 	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS}
 
 	mkdir -p ${DIST_DIR}/lambdas/layers/backend_core/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/backend_core; zip -r ${DIST_DIR}/lambdas/layers/backend_core.zip *
+	cd ${LAMBDA_LAYERS_BUILD_DIR}/backend_core; zip -r ${DIST_DIR}/lambdas/layers/backend_core.zip *  -x "*/__pycache__/*"
 	@echo "${OK}"
 
 lambda_layers:  ## Build lambda layers
@@ -427,7 +434,7 @@ dist/docker/engine: docker-bake.hcl Dockerfiles/Dockerfile.boxed Dockerfiles/Doc
 	ENGINE_TAG=${ENGINE_TAG} \
 	ECR_URL=${ECR_URL} \
 	LATEST_COMMIT=${LATEST_COMMIT} \
-	${DOCKER} buildx bake -f docker-bake.hcl engine ${DOCKER_BUILD_EXTRA_ARGS}
+	${DOCKER} buildx bake --set *.platform=linux/amd64 -f docker-bake.hcl engine ${DOCKER_BUILD_EXTRA_ARGS}
 	mkdir -p ${DIST_DIR}/docker
 	touch $@
 	@echo "${OK}"
@@ -442,6 +449,7 @@ dist/docker/python3: Dockerfiles/Dockerfile.python3
 		--build-arg SHELL_CHECK_SHA=${SHELLCHECKSHA} \
 		--build-arg TFLINT_VER=${TFLINT_VER} \
 		--build-arg TFLINT_SHA=${TFLINT_SHA} \
+		--build-arg BANDIT_VER=${BANDIT_VER} \
 		--build-arg CFN_VER=${CFN_VER} \
 		--build-arg PACKAGING_VER=${PACKAGING_VER}
 	mkdir -p ${DIST_DIR}/docker
@@ -795,6 +803,7 @@ upload_lambdas: lambdas \
 				upload_lambda_lambdas-scans-callback \
 				upload_lambda_lambdas-scans-scale_down \
 				upload_lambda_lambdas-scans-task_queue_metrics \
+				upload_lambda_lambdas-scheduled-key_reminder \
 				upload_lambda_lambdas-scheduled-update_github_org_users \
 				upload_lambda_lambdas-scheduled-scan_scheduler \
 				upload_lambda_lambdas-scheduled-scheduled_scan_handler
@@ -861,6 +870,7 @@ move_lambda_bundles: move_lambda_bundle_backend_core \
 					 move_lambda_bundle_sbom_report \
 					 move_lambda_bundle_report_cleanup \
 					 move_lambda_bundle_update_github_org_users \
+ 					 move_lambda_bundle_key_reminder \
 					 move_lambda_bundle_scan_scheduler \
 					 move_lambda_bundle_scheduled_scan_handler \
 					 move_lambda_bundle_scans_batch \
@@ -1305,6 +1315,21 @@ deploy_update_github_org_users: move_lambda_bundle_update_github_org_users
 	@echo "${OK}"
 .PHONY: deploy_update_github_org_users
 
+deploy_key_reminder: move_lambda_bundle_key_reminder
+	@echo "${INFO}Deploying ${KEY_REMINDER_LAMBDA} lambda"
+	aws lambda update-function-code \
+		--function-name ${KEY_REMINDER_LAMBDA} \
+		--region ${REGION} \
+		--s3-bucket ${S3_BUCKET} \
+		--s3-key lambdas/key_reminder/v${VERSION}/key_reminder.zip
+	@echo "${INFO}Waiting for ${KEY_REMINDER_LAMBDA} update to complete"
+	aws lambda wait function-updated --function-name ${KEY_REMINDER_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+	@echo "${INFO}Updating ${KEY_REMINDER_LAMBDA} layer configuration"
+	@build_scripts/update_lambda_layers.py --function-name ${KEY_REMINDER_LAMBDA} --region ${REGION}
+	@echo "${OK}"
+.PHONY: deploy_key_reminder
+
 deploy_scan_scheduler: move_lambda_bundle_scan_scheduler
 	@echo "${INFO}Deploying ${SCAN_SCHEDULER_LAMBDA} lambda"
 	aws lambda update-function-code \
@@ -1439,6 +1464,7 @@ deploy_lambdas: deploy_repo \
 				deploy_sbom_report \
 				deploy_report_cleanup \
 				deploy_update_github_org_users \
+				deploy_key_reminder \
 				deploy_scan_scheduler \
 				deploy_scheduled_scan_handler \
 				deploy_ci_tools \
@@ -1601,19 +1627,19 @@ deploy_swift_image:
 .PHONY: deploy_swift_image
 
 deploy_images: deploy_engine_image \
-        	   deploy_python_image \
-        	   deploy_node_image \
-        	   deploy_php_image \
-        	   deploy_dind_image \
-        	   deploy_golang_image \
-        	   deploy_java8_image \
-        	   deploy_java11_image \
-        	   deploy_java17_image \
-        	   deploy_java21_image \
-        	   deploy_ruby_image \
-        	   deploy_db_maint_image \
-        	   deploy_veracode_image \
-        	   deploy_swift_image
+			   deploy_python_image \
+			   deploy_node_image \
+			   deploy_php_image \
+			   deploy_dind_image \
+			   deploy_golang_image \
+			   deploy_java8_image \
+			   deploy_java11_image \
+			   deploy_java17_image \
+			   deploy_java21_image \
+			   deploy_ruby_image \
+			   deploy_db_maint_image \
+			   deploy_veracode_image \
+			   deploy_swift_image
 .PHONY: deploy_images
 
 deploy_engine:  ## Deploy the engine

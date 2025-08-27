@@ -46,8 +46,7 @@ func NewPluginOutput(pluginType string, output []byte, exitCode int) *PluginOutp
 
 // usage prints the command-line help and exits.
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: "+
-		os.Args[0]+" plugin plugin_type runner\n")
+	fmt.Fprintf(os.Stderr, "Usage: %s plugin plugin_type runner\n", os.Args[0])
 	os.Exit(1)
 }
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from http import HTTPStatus
 
 from django.db import transaction
@@ -38,7 +38,7 @@ def delete(event, email=None, admin: bool = False):
 
         # Soft-delete the user and update the email to a unique string to prevent potential future conflicts if
         # the user is ever re-added
-        suffix = f"_DELETED_{int(datetime.utcnow().timestamp())}"
+        suffix = f"_DELETED_{int(datetime.now(timezone.utc).timestamp())}"
         user.deleted = True
         user.email = f"{parsed_event.user_id}{suffix}"
         user.save()

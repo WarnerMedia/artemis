@@ -4,7 +4,7 @@ import json
 import unittest
 from contextlib import redirect_stdout
 
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.secrets_common.enums import SecretValidity

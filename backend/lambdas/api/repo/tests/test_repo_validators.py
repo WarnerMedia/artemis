@@ -349,7 +349,11 @@ class TestValidators(unittest.TestCase):
         ]
         for test_case in test_cases:
             with self.subTest(test_case=test_case):
-                self.validator.validate_request_body([test_case], None, self.validator._validate_whitelist_item)
+                # _validate_whitelist_item() modifies the request, so we need
+                # to make a copy.
+                self.validator.validate_request_body(
+                    [copy.deepcopy(test_case)], None, self.validator._validate_whitelist_item
+                )
 
     def test_validate_secret_allowlist_values_invalid_types(self):
         al1 = copy.deepcopy(TEST_SECRET_ALLOWLIST)

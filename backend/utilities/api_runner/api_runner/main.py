@@ -3,8 +3,8 @@ import json
 import sys
 from datetime import datetime, timedelta, timezone
 from json.decoder import JSONDecodeError
+import importlib.metadata
 
-from api_runner.__version__ import __version__
 from artemisapi.handler import handler as api_handler
 from groups.handlers import handler as groups_handler
 from groups_keys.handlers import handler as groups_keys_handler
@@ -41,6 +41,8 @@ APIS = {
     "groups_members": {"handler": groups_members_handler, "kwargs": {}},
     "groups_keys": {"handler": groups_keys_handler, "kwargs": {}},
 }
+
+__version__ = importlib.metadata.version("api_runner")
 
 
 def main():
@@ -131,9 +133,7 @@ def build_lambda_event(args):
                 "scheduler": args.scheduler,
                 "maintenance_mode": "true" if args.maintenance else "false",
                 "maintenance_mode_message": "Test message" if args.maintenance else None,
-                "maintenance_mode_retry_after": datetime.isoformat(
-                    datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(hours=1)
-                )
+                "maintenance_mode_retry_after": datetime.isoformat(datetime.now(timezone.utc) + timedelta(hours=1))
                 if args.maintenance
                 else None,
                 "allowlist_denied": args.allowlist_denied,

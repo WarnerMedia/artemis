@@ -33,6 +33,7 @@ def git_pull(
     branch: str = None,
     diff_base: str = None,
     http_basic_auth: bool = False,
+    append_dot_git_suffix: bool = True,
     include: list = None,
     exclude: list = None,
 ) -> bool:
@@ -50,7 +51,7 @@ def git_pull(
     url = repo
     if not public and not http_basic_auth:
         url = repo.replace("https://", "https://%s@" % api_key)
-        if not url.endswith(".git"):
+        if not url.endswith(".git") and append_dot_git_suffix:
             url += ".git"
     # !!! IMPORTANT !!!
     # Doing 'git init' then 'git pull' rather than 'git clone' so that the

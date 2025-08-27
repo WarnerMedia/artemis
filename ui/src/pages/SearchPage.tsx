@@ -3747,7 +3747,7 @@ const SearchPage = () => {
 						}
 						return values;
 					}
-				} catch (err) {
+				} catch {
 					return null;
 				}
 			}
