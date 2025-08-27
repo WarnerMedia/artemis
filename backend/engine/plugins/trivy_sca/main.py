@@ -49,6 +49,9 @@ def main():
 
     # Run Composer Install for exact version numbers
     (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
+    if not temp_vol_name or not temp_vol_mount:
+        errors.append("Temporary volume not provided")
+
     compose_lock_errors, compose_lock_alerts = check_composer_package_files(temp_vol_name, temp_vol_mount, include_dev)
     alerts.extend(compose_lock_alerts)
     errors.extend(compose_lock_errors)

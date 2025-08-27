@@ -8,6 +8,7 @@ from typing import Optional
 logger = utils.setup_logging("trivy_sca")
 docker_client = docker.from_env()
 
+
 def install_package_files(include_dev: bool, sub_path: str, temp_vol_name: str, temp_vol_mount: str, root_path: str):
     # sub_path: absolute path to the composer project inside the parent container (e.g. /tmp/work/foo/bar)
     # temp_vol_name: Docker volume name (e.g. artemis-plugin-temp-xxxx)
@@ -16,9 +17,9 @@ def install_package_files(include_dev: bool, sub_path: str, temp_vol_name: str, 
 
     rel_subdir = os.path.relpath(sub_path, temp_vol_mount)
     abs_path_in_container = os.path.join("/app", rel_subdir)
-
-    logger.info(f"Mounting volume: {temp_vol_name} to /app in composer container")
+    logger.info(f"Mounting volume: {temp_vol_mount} to /app in composer container")
     logger.info(f"Target subdir in container: {abs_path_in_container}")
+    logger.info(f"composer.json: {os.path.join(sub_path, 'composer.json')}")
     logger.info(f"composer.json exists: {os.path.exists(os.path.join(sub_path, 'composer.json'))}")
 
     composer_cmd = (
@@ -28,6 +29,7 @@ def install_package_files(include_dev: bool, sub_path: str, temp_vol_name: str, 
         "composer install --no-scripts -vvv"
         " && ls -l composer.lock && ls -l"
     )
+
     if not include_dev:
         composer_cmd += " --no-dev"
 
@@ -65,13 +67,16 @@ def install_package_files(include_dev: bool, sub_path: str, temp_vol_name: str, 
 
     return
 
-def check_composer_package_files(temp_vol_name: str, temp_vol_mount: str, include_dev: bool, root_path: Optional[str] = None) -> tuple:
+
+def check_composer_package_files(
+    temp_vol_name: str, temp_vol_mount: str, include_dev: bool, root_path: Optional[str] = None
+) -> tuple:
     """
     Find all composer.json files in the repo and build lock files for them if missing.
     """
     errors = []
     alerts = []
-
+    logger.info("Searching %s for composer files", temp_vol_mount)
     files = glob(f"{temp_vol_mount}/**/composer.json", recursive=True)
     logger.info("Found %d composer.json files", len(files))
 
