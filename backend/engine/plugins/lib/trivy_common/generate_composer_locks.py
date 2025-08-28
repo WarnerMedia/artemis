@@ -68,16 +68,14 @@ def install_package_files(include_dev: bool, sub_path: str, working_src: str, ro
     return
 
 
-def check_composer_package_files(
-    path: str, working_src: str, include_dev: bool, root_path: Optional[str] = None
-) -> tuple:
+def check_composer_package_files(working_src: str, include_dev: bool, root_path: Optional[str] = None) -> tuple:
     """
     Find all composer.json files in the repo and build lock files for them if missing.
     """
     errors = []
     alerts = []
-    logger.info("Searching %s for composer files", path)
-    files = glob(f"{path}/**/composer.json", recursive=True)
+    logger.info("Searching %s for composer files", working_src)
+    files = glob(f"{working_src}/**/composer.json", recursive=True)
     logger.info("Found %d composer.json files", len(files))
 
     if len(files) == 0:
