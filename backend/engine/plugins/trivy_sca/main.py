@@ -55,7 +55,7 @@ def main():
     if not working_src or not working_mount:
         errors.append("Working volume not provided")
 
-    compose_lock_errors, compose_lock_alerts = check_composer_package_files(path, working_src, include_dev)
+    compose_lock_errors, compose_lock_alerts = check_composer_package_files(path, working_mount, include_dev)
     alerts.extend(compose_lock_alerts)
     errors.extend(compose_lock_errors)
 
