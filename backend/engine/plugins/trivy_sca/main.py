@@ -39,6 +39,7 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 def main():
     logger.info("Executing Trivy SCA")
     args = parse_args()
+    path = abspath(args.path)
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
     alerts = []

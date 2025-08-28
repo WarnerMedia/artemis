@@ -9,13 +9,13 @@ logger = utils.setup_logging("trivy_sca")
 docker_client = docker.from_env()
 
 
-def install_package_files(include_dev: bool, sub_path: str, working_src: str, root_path: str):
+def install_package_files(path: str, include_dev: bool, sub_path: str, working_src: str, root_path: str):
     # sub_path: absolute path to the composer project inside the parent container (e.g. /tmp/work/foo/bar)
     # temp_vol_name: Docker volume name (e.g. artemis-plugin-temp-xxxx)
     # temp_vol_mount: mount path inside the plugin container (e.g. /tmp/work)
     # root_path: the original root for logging
 
-    rel_subdir = os.path.relpath(sub_path, working_src)
+    rel_subdir = os.path.relpath(sub_path, path)
     abs_path_in_container = os.path.join("/app", rel_subdir)
     logger.info(f"Mounting volume: {working_src} to /app in composer container")
     logger.info(f"Target subdir in container: {abs_path_in_container}")
@@ -68,14 +68,16 @@ def install_package_files(include_dev: bool, sub_path: str, working_src: str, ro
     return
 
 
-def check_composer_package_files(working_src: str, include_dev: bool, root_path: Optional[str] = None) -> tuple:
+def check_composer_package_files(
+    path: str, working_src: str, include_dev: bool, root_path: Optional[str] = None
+) -> tuple:
     """
     Find all composer.json files in the repo and build lock files for them if missing.
     """
     errors = []
     alerts = []
-    logger.info("Searching %s for composer files", working_src)
-    files = glob(f"{working_src}/**/composer.json", recursive=True)
+    logger.info("Searching %s for composer files", path)
+    files = glob(f"{path}/**/composer.json", recursive=True)
     logger.info("Found %d composer.json files", len(files))
 
     if len(files) == 0:
@@ -89,5 +91,5 @@ def check_composer_package_files(working_src: str, include_dev: bool, root_path:
         lockfile = os.path.join(sub_path, "composer.lock")
         lockfile_missing = not os.path.exists(lockfile)
         if lockfile_missing:
-            install_package_files(include_dev, sub_path, working_src, root_path or working_src)
+            install_package_files(path, include_dev, sub_path, working_src, root_path or working_src)
     return errors, alerts
