@@ -2,6 +2,8 @@
 trivy SCA plugin
 """
 
+from os.path import abspath
+
 import json
 import subprocess
 from engine.plugins.lib.trivy_common.generate_locks import check_package_files
@@ -37,6 +39,7 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 def main():
     logger.info("Executing Trivy SCA")
     args = parse_args()
+    path = abspath(args.path)
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
     alerts = []
@@ -48,11 +51,11 @@ def main():
     errors.extend(lock_file_errors)
 
     # Run Composer Install for exact version numbers
-    (temp_vol_name, temp_vol_mount) = str(args.engine_vars.get("temp_vol_name", "")).split(":")
-    if not temp_vol_name or not temp_vol_mount:
-        errors.append("Temporary volume not provided")
+    (working_src, working_mount) = str(args.engine_vars.get("working_mount", "")).split(":")
+    if not working_src or not working_mount:
+        errors.append("Working volume not provided")
 
-    compose_lock_errors, compose_lock_alerts = check_composer_package_files(temp_vol_name, temp_vol_mount, include_dev)
+    compose_lock_errors, compose_lock_alerts = check_composer_package_files(path, working_src, include_dev)
     alerts.extend(compose_lock_alerts)
     errors.extend(compose_lock_errors)
 
