@@ -5,7 +5,7 @@ trivy SBOM plugin
 import json
 import subprocess
 from typing import Optional
-from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_npm_locks import check_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
 from engine.plugins.trivy_sbom.parser import edit_application_sbom_path

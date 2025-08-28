@@ -30,8 +30,8 @@ def install_package_files(path: str, include_dev: bool, sub_path: str, working_s
         " && ls -l composer.lock && ls -l"
     )
 
-    if not include_dev:
-        composer_cmd += " --no-dev"
+    # if not include_dev:
+    #     composer_cmd += " --no-dev"
 
     COMPOSER_IMG = "composer:latest"
     container_name = f"composer_runner_{uuid.uuid4().hex[:8]}"
@@ -91,5 +91,11 @@ def check_composer_package_files(
         lockfile = os.path.join(sub_path, "composer.lock")
         lockfile_missing = not os.path.exists(lockfile)
         if lockfile_missing:
+            msg = (
+                f"No composer.lock file was found in path {sub_path.replace(path, '')}."
+                " Please consider creating a composer.lock file for this project."
+            )
+            logger.warning(msg)
+            alerts.append(msg)
             install_package_files(path, include_dev, sub_path, working_src, root_path or working_src)
     return errors, alerts

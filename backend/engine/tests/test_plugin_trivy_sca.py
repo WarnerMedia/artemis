@@ -7,7 +7,7 @@ from subprocess import CompletedProcess
 from unittest.mock import patch
 from oci import remover
 from engine.plugins.trivy_sca import main as Trivy
-from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_npm_locks import check_package_files
 from engine.plugins.lib.trivy_common.generate_composer_locks import check_composer_package_files
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.utils import setup_logging
