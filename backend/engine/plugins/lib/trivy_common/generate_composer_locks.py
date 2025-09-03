@@ -9,7 +9,7 @@ logger = utils.setup_logging("trivy_sca")
 docker_client = docker.from_env()
 
 
-def install_package_files(path: str, include_dev: bool, sub_path: str, working_mnt: str, root_path: str):
+def install_package_files(path: str, include_dev: bool, sub_path: str, working_src: str, root_path: str):
     # sub_path: absolute path to the composer project inside the parent container (e.g. /tmp/work/foo/bar)
     # temp_vol_name: Docker volume name (e.g. artemis-plugin-temp-xxxx)
     # temp_vol_mount: mount path inside the plugin container (e.g. /tmp/work)
@@ -17,7 +17,7 @@ def install_package_files(path: str, include_dev: bool, sub_path: str, working_m
 
     rel_subdir = os.path.relpath(sub_path, path)
     abs_path_in_container = os.path.join("/app", rel_subdir)
-    logger.info(f"Mounting volume: {working_mnt} to /app in composer container")
+    logger.info(f"Mounting volume: {working_src} to /app in composer container")
     logger.info(f"Target subdir in container: {abs_path_in_container}")
     logger.info(f"composer.json: {os.path.join(sub_path, 'composer.json')}")
     logger.info(f"composer.json exists: {os.path.exists(os.path.join(sub_path, 'composer.json'))}")
@@ -33,7 +33,7 @@ def install_package_files(path: str, include_dev: bool, sub_path: str, working_m
     # if not include_dev:
     #     composer_cmd += " --no-dev"
 
-    COMPOSER_IMG = "composer:latest"
+    COMPOSER_IMG = "composer:2.8.11"
     container_name = f"composer_runner_{uuid.uuid4().hex[:8]}"
     container_mount_path = "/app"
 
@@ -43,7 +43,7 @@ def install_package_files(path: str, include_dev: bool, sub_path: str, working_m
             name=container_name,
             command=["sh", "-c", composer_cmd],
             volumes={
-                working_mnt: {"bind": container_mount_path, "mode": "rw"},
+                working_src: {"bind": container_mount_path, "mode": "rw"},
             },
             working_dir=abs_path_in_container,
             auto_remove=False,
@@ -69,7 +69,7 @@ def install_package_files(path: str, include_dev: bool, sub_path: str, working_m
 
 
 def check_composer_package_files(
-    path: str, working_mnt: str, include_dev: bool, root_path: Optional[str] = None
+    path: str, working_src: str, include_dev: bool, root_path: Optional[str] = None
 ) -> tuple:
     """
     Find all composer.json files in the repo and build lock files for them if missing.
@@ -97,5 +97,5 @@ def check_composer_package_files(
             )
             logger.warning(msg)
             alerts.append(msg)
-            install_package_files(path, include_dev, sub_path, working_mnt, root_path or working_mnt)
+            install_package_files(path, include_dev, sub_path, working_src, root_path or working_src)
     return errors, alerts
