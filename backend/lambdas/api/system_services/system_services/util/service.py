@@ -66,6 +66,7 @@ class Service:
         result = client.get(key)
 
         if result:
+            log.info(f"Cache hit for service: {key}")
             return json.loads(result.decode())
 
         self._test_auth()
@@ -80,8 +81,10 @@ class Service:
 
         if not self._auth_successful or not self._reachable:
             # Cache negative results for 10 minutes
+            log.info(f"Caching negative result for 10 minutes for {key}")
             client.set(key, json.dumps(connection_status), 600)
         else:
+            log.info(f"Caching positive result for 30 minutes for {key}")
             # Cache positive results for 30 minutes
             client.set(key, json.dumps(connection_status), 1800)
 
