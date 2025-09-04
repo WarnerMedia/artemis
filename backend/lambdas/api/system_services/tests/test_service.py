@@ -2,7 +2,7 @@ import requests
 import responses
 from responses import matchers
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from system_services.util.service import Service
 from system_services.util.const import ServiceType
@@ -12,7 +12,15 @@ MOCK_KEY = "fake_key"
 MOCK_KEY_BASE64 = "ZmFrZV9rZXk="
 
 
+def get_mock_memcache_client():
+    mock_client = MagicMock()
+    mock_client.get.return_value = None
+    mock_client.set.return_value = None
+    return mock_client
+
+
 class TestService(unittest.TestCase):
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: None)
     def test_missing_auth_key(self):
         service_dict = {"services": {"test_org": {"type": ServiceType.GITHUB, "secret_loc": "foo"}}}
@@ -34,6 +42,7 @@ class TestService(unittest.TestCase):
     #       is the simplest implementation.
 
     @responses.activate
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.SERVICE_AUTH_CHECK_TIMEOUT", 123)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: MOCK_KEY)
     def test_configured_timeout(self):
@@ -51,6 +60,7 @@ class TestService(unittest.TestCase):
         self.assertNotEqual(actual["error"], "Connection error")
 
     @responses.activate
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: MOCK_KEY)
     def test_timeout_error(self):
         service_dict = {
@@ -72,6 +82,7 @@ class TestService(unittest.TestCase):
         )
 
     @responses.activate
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: MOCK_KEY)
     def test_connect_error(self):
         service_dict = {
@@ -93,6 +104,7 @@ class TestService(unittest.TestCase):
         )
 
     @responses.activate
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: MOCK_KEY)
     def test_generic_request_error(self):
         service_dict = {
@@ -120,6 +132,7 @@ class TestADOService(unittest.TestCase):
     """Tests specific to the ADO service"""
 
     @responses.activate
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: MOCK_KEY)
     def test_ado_auth_failed(self):
         service_dict = {
@@ -141,6 +154,7 @@ class TestADOService(unittest.TestCase):
         )
 
     @responses.activate
+    @patch("system_services.util.service.get_memcache_client", new=get_mock_memcache_client)
     @patch("system_services.util.service.get_api_key", lambda *x, **y: MOCK_KEY)
     def test_ado_success(self):
         service_dict = {

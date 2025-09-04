@@ -248,6 +248,8 @@ resource "aws_lambda_function" "system_services" {
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
       ARTEMIS_REVPROXY_SECRET_REGION    = var.revproxy_secret_region
       S3_BUCKET                         = var.s3_analyzer_files_id
+      ARTEMIS_MEMCACHE_ENDPOINT         = aws_elasticache_cluster.memcached.cache_nodes[0].address
+      ARTEMIS_MEMCACHE_PORT             = var.memcached_port
       },
       var.datadog_enabled ? merge({
         DD_LAMBDA_HANDLER = "handlers.handler"
