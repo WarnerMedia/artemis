@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
@@ -59,13 +60,29 @@ def validate_plugin_name(name: str) -> bool:
     return name != "lib" and bool(name_rx.match(name))
 
 
-def parse_args(in_args=None, extra_args=None):
-    # Allow the path to be overridden on the command line. This lets the
-    # plugin be tested against any path, not just the engine work path.
+def parse_args(
+    in_args: list[str] | None = None,
+    extra_args: list[tuple[list[str], Any]] | None = None,
+) -> argparse.Namespace:
+    """
+    Load the standard plugin invocation data from the command-line.
+
+    If args is specified, then it will be used instead of the process args
+    from the command-line.
+
+    Additional command-like arguments may be defined by setting extra_args.
+    Each will be passed directly to argparse.ArgumentParser.add_argument().
+    """
+
+    log = logging.getLogger(__name__)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("engine_vars", type=str, nargs="?", default="{}")
     parser.add_argument("images", type=str, nargs="?", default="{}")
     parser.add_argument("config", type=str, nargs="?", default="{}")
+
+    # Allow the path to be overridden on the command line. This lets the
+    # plugin be tested against any path, not just the engine work path.
     parser.add_argument("path", type=str, nargs="?", default=CODE_DIRECTORY)
 
     for arg in extra_args or []:
@@ -80,19 +97,22 @@ def parse_args(in_args=None, extra_args=None):
     # Load the engine vars
     try:
         args.engine_vars = json.loads(args.engine_vars)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as ex:
+        log.error("Invalid engine vars argument", exc_info=ex)
         args.engine_vars = {}
 
     # Load the config dict
     try:
         args.config = json.loads(args.config)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as ex:
+        log.error("Invalid plugin config argument", exc_info=ex)
         args.config = {}
 
     # Load the images dict
     try:
         args.images = json.loads(args.images)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as ex:
+        log.error("Invalid scan images argument", exc_info=ex)
         args.images = {}
 
     return args
