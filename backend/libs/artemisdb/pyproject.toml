@@ -18,7 +18,7 @@ classifiers = [
     "Environment :: Console",
     "Topic :: Security",
 ]
-dependencies = ["django~=4.2", "psycopg2-binary~=2.9.9", "simplejson~=3.19"]
+dependencies = ["django~=4.2", "psycopg2-binary~=2.9.9", "simplejson~=3.20"]
 
 [project.optional-dependencies]
 test = ["pytest~=8.3", "pytest-runner"]
