@@ -1,10 +1,13 @@
 import base64
 import functools
 import requests
+import json
+from typing import TypedDict, Literal, Optional
 from artemisdb.artemisdb.models import Repo, Scan, User
 from artemislib.datetime import format_timestamp
 from artemislib.github.app import GithubApp
 from artemislib.logging import Logger
+from artemislib.memcached import get_memcache_client
 from system_services.util.const import AuthType, ServiceType
 from system_services.util.env import (
     APPLICATION,
@@ -16,6 +19,19 @@ from system_services.util.env import (
 )
 
 log = Logger(__name__)
+
+
+class ServiceConnectionStatus(TypedDict):
+    """Represents the connection status of a service"""
+
+    service: str
+    service_type: Literal["ado", "bitbucket_v1", "bitbucket_v2", "github", "gitlab"]
+    reachable: bool
+    auth_successful: bool
+    auth_type: Literal["app", "service_account"]
+
+    # An optional error message if there was an issue with the service or authentication
+    error: Optional[str]
 
 
 class Service:
@@ -44,9 +60,16 @@ class Service:
         self._auth_type = AuthType.SVC
         self._error = None
 
-    def to_dict(self):
+    def to_dict(self) -> ServiceConnectionStatus:
+        client = get_memcache_client()
+        key = f"service:{self.name}"
+        result = client.get(key)
+
+        if result:
+            return json.loads(result.decode())
+
         self._test_auth()
-        return {
+        connection_status: ServiceConnectionStatus = {
             "service": self.name,
             "service_type": self._service["type"],
             "reachable": self._reachable,
@@ -54,6 +77,15 @@ class Service:
             "auth_type": self._auth_type.value,
             "error": self._error,
         }
+
+        if not self._auth_successful or not self._reachable:
+            # Cache negative results for 10 minutes
+            client.set(key, json.dumps(connection_status), 600)
+        else:
+            # Cache positive results for 30 minutes
+            client.set(key, json.dumps(connection_status), 1800)
+
+        return connection_status
 
     def stats_to_dict(self, scope: list[list[list[str]]]):
         self._get_service_stats(scope)
