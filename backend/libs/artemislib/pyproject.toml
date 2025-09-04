@@ -21,9 +21,9 @@ classifiers = [
     "Topic :: Security"
 ]
 dependencies = [
-    "aws-lambda-powertools~=3.12",
-    "boto3~=1.37",
-    "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.37",
+    "aws-lambda-powertools~=3.19",
+    "boto3~=1.40",
+    "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.40",
     "pyjwt[crypto]~=2.10",
     "requests~=2.32"
 ]
