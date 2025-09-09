@@ -62,7 +62,7 @@ class Service:
 
     def to_dict(self) -> ServiceConnectionStatus:
         client = get_memcache_client()
-        key = f"service:{self.name}"
+        key = f"service_connection_status:{self.name}"
         result = client.get(key)
 
         if result:
