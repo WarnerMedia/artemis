@@ -155,6 +155,11 @@ resource "aws_lambda_function" "repo-scan" {
     : {})
   }
 
+  vpc_config {
+    subnet_ids         = [aws_subnet.lambdas.id]
+    security_group_ids = [aws_security_group.lambda-sg.id]
+  }
+
   tags = merge(
     var.tags,
     {
@@ -198,6 +203,11 @@ resource "aws_lambda_function" "repo-scan-loop" {
         DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
+  }
+
+  vpc_config {
+    subnet_ids         = [aws_subnet.lambdas.id]
+    security_group_ids = [aws_security_group.lambda-sg.id]
   }
 
   tags = merge(
