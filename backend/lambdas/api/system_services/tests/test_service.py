@@ -1,7 +1,4 @@
 import json
-import requests
-import responses
-from responses import matchers
 import unittest
 from unittest.mock import patch, MagicMock
 
