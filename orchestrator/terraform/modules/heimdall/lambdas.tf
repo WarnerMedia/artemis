@@ -135,7 +135,7 @@ resource "aws_lambda_function" "repo-scan" {
   architectures = [var.lambda_architecture]
   timeout       = var.repo_scan_lambda_timeout
   memory_size   = 256
-  role          = aws_iam_role.lambda-assume-role.arn
+  role          = aws_iam_role.vpc-lambda-assume-role.arn
   layers        = var.lambda_layers
   environment {
     variables = merge({
@@ -186,7 +186,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
   timeout       = 900
   memory_size   = 256
 
-  role = aws_iam_role.lambda-assume-role.arn
+  role = aws_iam_role.vpc-lambda-assume-role.arn
 
   layers = var.lambda_layers
 
