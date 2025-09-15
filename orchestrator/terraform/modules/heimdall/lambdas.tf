@@ -440,6 +440,11 @@ resource "aws_iam_role_policy_attachment" "repo-scan-lambda-invoke" {
   policy_arn = aws_iam_policy.repo-scan-lambda-invoke.arn
 }
 
+resource "aws_iam_role_policy_attachment" "vpc-repo-scan-lambda-invoke" {
+  role       = aws_iam_role.vpc-lambda-assume-role.name
+  policy_arn = aws_iam_policy.repo-scan-lambda-invoke.arn
+}
+
 ###############################################################################
 # Lambda Scheduling
 ###############################################################################
