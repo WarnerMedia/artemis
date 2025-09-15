@@ -11,12 +11,7 @@ LOG = Logger(__name__)
 
 # Create a session with retry logic once
 session = requests.Session()
-retry_strategy = Retry(
-    total=3,
-    backoff_factor=1,
-    status_forcelist=[429, 500, 502, 503, 504],
-    allowed_methods=["GET"]
-)
+retry_strategy = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
 adapter = HTTPAdapter(max_retries=retry_strategy)
 session.mount("https://", adapter)
 
@@ -34,7 +29,7 @@ def get_package_info(name: str, version: str) -> dict:
 
     try:
         r = session.get(url, timeout=30)
-        
+
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 404:
@@ -43,7 +38,7 @@ def get_package_info(name: str, version: str) -> dict:
         else:
             LOG.error('Unexpected error for "%s@%s": HTTP %s', name, version, r.status_code)
             return {}
-            
+
     except requests.exceptions.RequestException as e:
         LOG.error('Request failed for "%s@%s": %s', name, version, str(e))
         return {}
