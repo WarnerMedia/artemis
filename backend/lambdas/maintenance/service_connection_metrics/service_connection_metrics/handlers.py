@@ -1,6 +1,6 @@
-from os import environ
 from asyncio import gather, run
 from aiohttp import ClientSession
+from json import dumps
 
 from artemislib.memcached import get_memcache_client
 from artemislib.logging import Logger
@@ -110,8 +110,8 @@ async def main(artemis_services: list[ArtemisService]):
             if isinstance(result, Exception):
                 logger.exception(result)
             elif isinstance(result, dict):
-                key = f"service_connection_status:{result["service"]}"
-                client.set(key, result)
+                key = f"service_connection_status:{result['service']}"
+                client.set(key, dumps(result))
                 report_metrics(result)
         await session.close()
         return results
