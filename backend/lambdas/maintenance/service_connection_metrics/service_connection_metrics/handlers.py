@@ -111,8 +111,11 @@ async def main(artemis_services: list[ArtemisService]):
                 logger.exception(result)
             elif isinstance(result, dict):
                 key = f"service_connection_status:{result['service']}"
-                client.set(key, dumps(result))
-                report_metrics(result)
+                try:
+                    client.set(key, dumps(result))
+                except Exception as err:
+                    logger.error(f"Failed to cache result for {key}: {err}")
+            report_metrics(result)
         await session.close()
         return results
 
