@@ -61,7 +61,7 @@ GPL_OR_MIT_SPDX = f"({GPL} OR {MIT})"
         ),
     ],
 )
-@patch("requests.get")
+@patch("license_retriever.retrievers.npm.session.get")
 def test_retrieve_npm_licenses(mock_get, npm_response, expected_result):
     mock_get.return_value = FakeGetResponse(npm_response)
 

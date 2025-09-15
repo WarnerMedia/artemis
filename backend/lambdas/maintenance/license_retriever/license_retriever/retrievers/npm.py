@@ -2,10 +2,18 @@ from time import sleep
 from typing import Optional, Union
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from artemislib.logging import Logger
 
 LOG = Logger(__name__)
+
+# Create a session with retry logic once
+session = requests.Session()
+retry_strategy = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
+adapter = HTTPAdapter(max_retries=retry_strategy)
+session.mount("https://", adapter)
 
 
 def retrieve_npm_licenses(name: str, version: str) -> list:
@@ -19,20 +27,21 @@ def retrieve_npm_licenses(name: str, version: str) -> list:
 def get_package_info(name: str, version: str) -> dict:
     url = f"https://registry.npmjs.org/{name}/{version}"
 
-    while True:
-        r = requests.get(url)
+    try:
+        r = session.get(url, timeout=30)
+
         if r.status_code == 200:
             return r.json()
-        elif r.status_code == 429:
-            retry = int(r.headers.get("Retry-After", 5))
-            LOG.info("Rate limit reached, retrying after %s seconds", retry)
-            sleep(retry)
         elif r.status_code == 404:
             LOG.warning('Unable to find package info for "%s@%s" on registry.npmjs.org', name, version)
             return {}
         else:
             LOG.error('Unexpected error for "%s@%s": HTTP %s', name, version, r.status_code)
             return {}
+
+    except requests.exceptions.RequestException as e:
+        LOG.error('Request failed for "%s@%s": %s', name, version, str(e))
+        return {}
 
 
 def get_package_license(package_info: dict, package_name: str) -> list[str]:
