@@ -151,17 +151,6 @@ resource "aws_iam_role_policy_attachment" "vpc-lambda-repo-queue-send-and-receiv
   policy_arn = aws_iam_policy.repo-queue-send-and-receive.arn
 }
 
-resource "aws_iam_role_policy_attachment" "lambda-repo-queue-send-and-receive" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-send-and-receive.arn
-}
-
-resource "aws_iam_role_policy_attachment" "api-sqs-repo-queue-send" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-send.arn
-}
-
-
 ###############################################################################
 # Output
 ###############################################################################

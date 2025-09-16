@@ -255,18 +255,6 @@ data "aws_iam_policy_document" "lambda-assume-policy" {
   }
 }
 
-resource "aws_iam_role" "lambda-assume-role" {
-  name               = "${var.app}-lambda"
-  assume_role_policy = data.aws_iam_policy_document.lambda-assume-policy.json
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "Heimdall Lambda Role"
-    }
-  )
-}
-
 resource "aws_iam_role" "vpc-lambda-assume-role" {
   name               = "${var.app}-vpc-lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda-assume-policy.json
@@ -317,11 +305,6 @@ resource "aws_iam_policy" "access-secrets" {
   policy = data.aws_iam_policy_document.access-secrets.json
 }
 
-resource "aws_iam_role_policy_attachment" "access-secrets" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.access-secrets.arn
-}
-
 resource "aws_iam_role_policy_attachment" "vpc-access-secrets" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.access-secrets.arn
@@ -348,11 +331,6 @@ resource "aws_iam_policy" "write-logs" {
   policy = data.aws_iam_policy_document.write-logs.json
 }
 
-resource "aws_iam_role_policy_attachment" "api-write-logs" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.write-logs.arn
-}
-
 resource "aws_iam_role_policy_attachment" "vpc-write-logs" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.write-logs.arn
@@ -375,11 +353,6 @@ data "aws_iam_policy_document" "batch-write-dynamodb-records" {
 resource "aws_iam_policy" "batch-write-dynamodb-records" {
   name   = "${var.app}-batch-write-dynamodb-records"
   policy = data.aws_iam_policy_document.batch-write-dynamodb-records.json
-}
-
-resource "aws_iam_role_policy_attachment" "api-batch-write-dynamodb-records" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.batch-write-dynamodb-records.arn
 }
 
 resource "aws_iam_role_policy_attachment" "vpc-batch-write-dynamodb-records" {
@@ -406,11 +379,6 @@ resource "aws_iam_policy" "analyzer-s3-services-json-lambda-policy" {
   policy = data.aws_iam_policy_document.analyzer-s3-services-json-lambda-policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "api-get-s3-services-json" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.analyzer-s3-services-json-lambda-policy.arn
-}
-
 resource "aws_iam_role_policy_attachment" "vpc-get-s3-services-json" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.analyzer-s3-services-json-lambda-policy.arn
@@ -433,11 +401,6 @@ data "aws_iam_policy_document" "repo-scan-lambda-invoke" {
 resource "aws_iam_policy" "repo-scan-lambda-invoke" {
   name   = "${var.app}-repo-scan-lambda-invoke"
   policy = data.aws_iam_policy_document.repo-scan-lambda-invoke.json
-}
-
-resource "aws_iam_role_policy_attachment" "repo-scan-lambda-invoke" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-scan-lambda-invoke.arn
 }
 
 resource "aws_iam_role_policy_attachment" "vpc-repo-scan-lambda-invoke" {
