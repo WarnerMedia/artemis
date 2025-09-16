@@ -42,7 +42,8 @@ def parse_service(services_dict: dict[str, VCSConfig], service_name: str) -> Art
     service = services_dict[name]
 
     # Update Bitbucket Service Type based on URL
-    if service["type"] == ServiceType.BITBUCKET_V2.value:
+    if service["type"] == "bitbucket":
+        service["type"] = ServiceType.BITBUCKET_V2.value
         if "/1.0" in service["url"]:
             service["type"] = ServiceType.BITBUCKET_V1.value
 
