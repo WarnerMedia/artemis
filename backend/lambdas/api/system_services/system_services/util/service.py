@@ -32,7 +32,7 @@ class Service:
         result = client.get(key)
 
         if result:
-            log.info(f"Cache hit for service: {key}")
+            log.debug(f"Cache hit for service: {key}")
             return json.loads(result.decode())
 
         return {
