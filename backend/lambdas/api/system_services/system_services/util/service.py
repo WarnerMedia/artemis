@@ -4,22 +4,9 @@ from artemisdb.artemisdb.models import Repo, Scan, User
 from artemislib.datetime import format_timestamp
 from artemislib.logging import Logger
 from artemislib.memcached import get_memcache_client
-from artemislib.services import ServiceType, AuthType
+from artemislib.services import ServiceType, AuthType, ServiceConnectionStatus
 
 log = Logger(__name__)
-
-
-class ServiceConnectionStatus(TypedDict):
-    """Represents the connection status of a service"""
-
-    service: str
-    service_type: Literal["ado", "bitbucket_v1", "bitbucket_v2", "github", "gitlab"]
-    reachable: bool
-    auth_successful: bool
-    auth_type: Literal["app", "service_account"]
-
-    # An optional error message if there was an issue with the service or authentication
-    error: Optional[str]
 
 
 class Service:

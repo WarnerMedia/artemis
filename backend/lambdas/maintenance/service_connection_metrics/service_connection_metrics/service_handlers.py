@@ -5,7 +5,7 @@ from typing import TypedDict, Literal, Optional
 
 from artemislib.env import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 from artemislib.github.app import GithubApp
-from artemislib.services import VCSConfig, AuthType
+from artemislib.services import VCSConfig, AuthType, ServiceConnectionStatus
 from service_connection_metrics.aws import GetProxySecret
 
 
@@ -14,19 +14,6 @@ class ArtemisService:
     org: str
     service_name: str
     service: VCSConfig
-
-
-class ServiceConnectionStatus(TypedDict):
-    """Represents the connection status of a service"""
-
-    service: str
-    service_type: Literal["ado", "bitbucket_v1", "bitbucket_v2", "github", "gitlab"]
-    reachable: bool
-    auth_successful: bool
-    auth_type: Literal["app", "service_account"]
-
-    # An optional error message if there was an issue with the service or authentication
-    error: Optional[str]
 
 
 async def test_github(

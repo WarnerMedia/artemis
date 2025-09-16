@@ -3,7 +3,7 @@ from enum import Enum
 import json
 import os
 from fnmatch import fnmatch
-from typing import Any, Union, TypedDict, Literal
+from typing import Any, Union, TypedDict, Literal, Optional
 
 from artemislib.aws import S3_BUCKET, AWSConnect
 from artemislib.consts import SERVICES_S3_KEY
@@ -23,6 +23,19 @@ class ServiceType(str, Enum):
     BITBUCKET_V2 = "bitbucket_v2"
     GITHUB = "github"
     GITLAB = "gitlab"
+
+
+class ServiceConnectionStatus(TypedDict):
+    """Represents the connection status of a service"""
+
+    service: str
+    service_type: Literal["ado", "bitbucket_v1", "bitbucket_v2", "github", "gitlab"]
+    reachable: bool
+    auth_successful: bool
+    auth_type: Literal["app", "service_account"]
+
+    # An optional error message if there was an issue with the service or authentication
+    error: Optional[str]
 
 
 class VCSConfig(TypedDict):
