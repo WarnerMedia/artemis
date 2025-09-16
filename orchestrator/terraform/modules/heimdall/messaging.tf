@@ -100,11 +100,12 @@ data "aws_iam_policy_document" "repo-queue-send" {
   }
 }
 
-data "aws_iam_policy_document" "repo-queue-receive" {
+data "aws_iam_policy_document" "repo-queue-send-and-receive" {
   statement {
     effect = "Allow"
 
     actions = [
+      "sqs:SendMessage",
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
       "sqs:GetQueueAttributes",
@@ -131,9 +132,9 @@ resource "aws_iam_policy" "repo-queue-send" {
   policy = data.aws_iam_policy_document.repo-queue-send.json
 }
 
-resource "aws_iam_policy" "repo-queue-receive" {
-  name   = "${var.app}-repo-queue-receive"
-  policy = data.aws_iam_policy_document.repo-queue-receive.json
+resource "aws_iam_policy" "repo-queue-send-and-receive" {
+  name   = "${var.app}-repo-queue-send-and-receive"
+  policy = data.aws_iam_policy_document.repo-queue-send-and-receive.json
 }
 
 #######################################
@@ -145,14 +146,14 @@ resource "aws_iam_role_policy_attachment" "vpc-lambda-org-queue-send-and-receive
   policy_arn = aws_iam_policy.org-queue-send-and-receive.arn
 }
 
-resource "aws_iam_role_policy_attachment" "vpc-lambda-repo-queue-send" {
+resource "aws_iam_role_policy_attachment" "vpc-lambda-repo-queue-send-and-receive" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-send.arn
+  policy_arn = aws_iam_policy.repo-queue-send-and-receive.arn
 }
 
-resource "aws_iam_role_policy_attachment" "lambda-repo-queue-receive" {
+resource "aws_iam_role_policy_attachment" "lambda-repo-queue-send-and-receive" {
   role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-receive.arn
+  policy_arn = aws_iam_policy.repo-queue-send-and-receive.arn
 }
 
 resource "aws_iam_role_policy_attachment" "api-sqs-repo-queue-send" {
