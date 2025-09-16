@@ -203,7 +203,7 @@ variable "lambda_cidr" {
 }
 
 variable "elasticache_cidr" {
-  description = "CIDR for the API Lambdas"
+  description = "CIDR for the Elasticache Cluster"
   default     = "10.0.17.0/20"
 }
 
