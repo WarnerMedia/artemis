@@ -135,7 +135,7 @@ resource "aws_lambda_function" "repo-scan" {
   architectures = [var.lambda_architecture]
   timeout       = var.repo_scan_lambda_timeout
   memory_size   = 256
-  role          = aws_iam_role.lambda-assume-role.arn
+  role          = aws_iam_role.vpc-lambda-assume-role.arn
   layers        = var.lambda_layers
   environment {
     variables = merge({
@@ -153,6 +153,11 @@ resource "aws_lambda_function" "repo-scan" {
         DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
+  }
+
+  vpc_config {
+    subnet_ids         = [aws_subnet.lambdas.id]
+    security_group_ids = [aws_security_group.lambda-sg.id]
   }
 
   tags = merge(
@@ -181,7 +186,7 @@ resource "aws_lambda_function" "repo-scan-loop" {
   timeout       = 900
   memory_size   = 256
 
-  role = aws_iam_role.lambda-assume-role.arn
+  role = aws_iam_role.vpc-lambda-assume-role.arn
 
   layers = var.lambda_layers
 
@@ -198,6 +203,11 @@ resource "aws_lambda_function" "repo-scan-loop" {
         DD_SERVICE        = "${var.app}"
       }, var.datadog_environment_variables)
     : {})
+  }
+
+  vpc_config {
+    subnet_ids         = [aws_subnet.lambdas.id]
+    security_group_ids = [aws_security_group.lambda-sg.id]
   }
 
   tags = merge(
@@ -243,18 +253,6 @@ data "aws_iam_policy_document" "lambda-assume-policy" {
       ]
     }
   }
-}
-
-resource "aws_iam_role" "lambda-assume-role" {
-  name               = "${var.app}-lambda"
-  assume_role_policy = data.aws_iam_policy_document.lambda-assume-policy.json
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "Heimdall Lambda Role"
-    }
-  )
 }
 
 resource "aws_iam_role" "vpc-lambda-assume-role" {
@@ -307,11 +305,6 @@ resource "aws_iam_policy" "access-secrets" {
   policy = data.aws_iam_policy_document.access-secrets.json
 }
 
-resource "aws_iam_role_policy_attachment" "access-secrets" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.access-secrets.arn
-}
-
 resource "aws_iam_role_policy_attachment" "vpc-access-secrets" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.access-secrets.arn
@@ -338,11 +331,6 @@ resource "aws_iam_policy" "write-logs" {
   policy = data.aws_iam_policy_document.write-logs.json
 }
 
-resource "aws_iam_role_policy_attachment" "api-write-logs" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.write-logs.arn
-}
-
 resource "aws_iam_role_policy_attachment" "vpc-write-logs" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.write-logs.arn
@@ -365,11 +353,6 @@ data "aws_iam_policy_document" "batch-write-dynamodb-records" {
 resource "aws_iam_policy" "batch-write-dynamodb-records" {
   name   = "${var.app}-batch-write-dynamodb-records"
   policy = data.aws_iam_policy_document.batch-write-dynamodb-records.json
-}
-
-resource "aws_iam_role_policy_attachment" "api-batch-write-dynamodb-records" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.batch-write-dynamodb-records.arn
 }
 
 resource "aws_iam_role_policy_attachment" "vpc-batch-write-dynamodb-records" {
@@ -396,11 +379,6 @@ resource "aws_iam_policy" "analyzer-s3-services-json-lambda-policy" {
   policy = data.aws_iam_policy_document.analyzer-s3-services-json-lambda-policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "api-get-s3-services-json" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.analyzer-s3-services-json-lambda-policy.arn
-}
-
 resource "aws_iam_role_policy_attachment" "vpc-get-s3-services-json" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.analyzer-s3-services-json-lambda-policy.arn
@@ -425,8 +403,8 @@ resource "aws_iam_policy" "repo-scan-lambda-invoke" {
   policy = data.aws_iam_policy_document.repo-scan-lambda-invoke.json
 }
 
-resource "aws_iam_role_policy_attachment" "repo-scan-lambda-invoke" {
-  role       = aws_iam_role.lambda-assume-role.name
+resource "aws_iam_role_policy_attachment" "vpc-repo-scan-lambda-invoke" {
+  role       = aws_iam_role.vpc-lambda-assume-role.name
   policy_arn = aws_iam_policy.repo-scan-lambda-invoke.arn
 }
 
