@@ -26,8 +26,6 @@ resource "aws_lambda_function" "service-connection-metrics" {
     variables = merge({
       DATADOG_ENABLED                   = var.datadog_enabled
       APPLICATION_TAG                   = var.app
-      ARTEMIS_API_BASE_URL              = var.artemis_api_base_url
-      ARTEMIS_API_SECRET_ARN            = aws_secretsmanager_secret.artemis-api-secret.arn
       ARTEMIS_GITHUB_APP_ID             = var.github_app_id
       ARTEMIS_REVPROXY_DOMAIN_SUBSTRING = var.revproxy_domain_substring
       ARTEMIS_REVPROXY_SECRET           = var.revproxy_secret
