@@ -10,8 +10,6 @@ This Lambda runs on a schedule and reports connection metrics for each version c
 
 ### Lambda-specific Environment Variables
 
--   `ARTEMIS_API_SECRET_ARN` — ARN for the secret to store the Artemis API key.
--   `ARTEMIS_API_BASE_URL` — Base URL for the Artemis API.
 -   `ARTEMIS_MEMCACHED_ENDPOINT` — Hostname for the Memcached cluster.
 -   `MEMCACHED_PORT` — Port for Memcached (default: 11211).
 -   `REV_PROXY_SECRET_HEADER` — Header name for reverse proxy authentication.
