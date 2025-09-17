@@ -1,5 +1,4 @@
 import json
-from typing import TypedDict, Literal, Optional
 from artemisdb.artemisdb.models import Repo, Scan, User
 from artemislib.datetime import format_timestamp
 from artemislib.logging import Logger

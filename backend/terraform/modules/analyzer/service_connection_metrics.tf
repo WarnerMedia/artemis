@@ -87,14 +87,3 @@ resource "aws_lambda_permission" "run-service-connections-lambda-from-cloudwatch
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.run-service-connection-metrics.arn
 }
-
-
-module "service-connection-metrics-api-key" {
-  source         = "../role_policy_attachment"
-  actions        = ["secretsmanager:GetSecretValue"]
-  iam_role_names = [aws_iam_role.service-connections-role.name]
-  name           = "${var.app}-service-connection-metrics-api-key"
-  resources = [
-    "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.app}/service-connection-test-api-key-*",
-  ]
-}
