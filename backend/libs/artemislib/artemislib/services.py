@@ -1,14 +1,62 @@
 # pylint: disable=no-member
+from enum import Enum
 import json
 import os
 from fnmatch import fnmatch
-from typing import Any, Union
+from typing import Any, Union, TypedDict, Literal, Optional
 
 from artemislib.aws import S3_BUCKET, AWSConnect
 from artemislib.consts import SERVICES_S3_KEY
 from artemislib.logging import Logger
 
 log = Logger(__name__)
+
+
+class AuthType(Enum):
+    APP = "app"
+    SVC = "service_account"
+
+
+class ServiceType(str, Enum):
+    ADO = "ado"
+    BITBUCKET_V1 = "bitbucket_v1"
+    BITBUCKET_V2 = "bitbucket_v2"
+    GITHUB = "github"
+    GITLAB = "gitlab"
+
+
+class ServiceConnectionStatus(TypedDict):
+    """Represents the connection status of a service"""
+
+    service: str
+    service_type: Literal["ado", "bitbucket_v1", "bitbucket_v2", "github", "gitlab"]
+    reachable: bool
+    auth_successful: bool
+    auth_type: Literal["app", "service_account"]
+
+    # An optional error message if there was an issue with the service or authentication
+    error: Optional[str]
+
+
+class VCSConfig(TypedDict):
+    """Configuration of a VCS service integration"""
+
+    secret_loc: str
+    type: Literal["ado", "bitbucket_v1", "bitbucket_v2", "github", "gitlab"]
+    hostname: str
+    url: str
+    branch_url: str
+    diff_url: str
+    allow_all: bool
+    api_key_add: str
+    use_deploy_key: bool
+    batch_queries: bool
+    nat_connect: bool
+    app_integration: bool
+    http_basic_auth: bool
+    initial_page: str
+    secrets_management: dict
+    application_metadata: dict
 
 
 def _get_services_from_file(service_file="services.json") -> Union[Any, None]:
