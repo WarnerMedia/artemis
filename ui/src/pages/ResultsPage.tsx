@@ -4834,7 +4834,6 @@ const InventoryTabContent = (props: {
 		scan.results?.inventory?.technology_discovery ?? {},
 	)) {
 		techData.push({
-			key: name,
 			name,
 			value,
 			palette: sharedColors[i % sharedColors.length],
