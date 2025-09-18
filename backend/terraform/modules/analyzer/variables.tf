@@ -28,6 +28,10 @@ variable "lambda_availability_zone" {
   description = "The AZ in which to deploy VPC Lambdas"
 }
 
+variable "elasticache_availability_zone" {
+  description = "The AZ in which to deploy the Elasticache Cluster"
+}
+
 variable "database_availability_zones" {
   description = "The AZs to deploy the database"
 }
@@ -196,6 +200,11 @@ variable "nat_gw_cidr" {
 variable "lambda_cidr" {
   description = "CIDR for the API Lambdas"
   default     = "10.0.16.0/20"
+}
+
+variable "elasticache_cidr" {
+  description = "CIDR for the Elasticache Cluster"
+  default     = "10.0.17.0/20"
 }
 
 variable "lambda_architecture" {
@@ -479,4 +488,26 @@ variable "waf_rule_groups" {
     name = string
     arn  = string
   }))
+}
+
+
+################################################
+# AWS Elasticache Customization
+################################################
+variable "memcached_cluster_id" {
+  description = "Name of the Cluster"
+  default     = "memcached-cluster"
+  type        = string
+}
+
+variable "memcached_node_type" {
+  description = "The Engine Node Type"
+  default     = "cache.t3.small"
+  type        = string
+}
+
+variable "memcached_port" {
+  description = "The port number on which each of the cache nodes will accept connections"
+  default     = 11211
+  type        = string
 }

@@ -67,26 +67,12 @@ resource "aws_sqs_queue" "repo-deadletter-queue" {
 # Policy Documents
 #######################################
 
-data "aws_iam_policy_document" "org-queue-send" {
+data "aws_iam_policy_document" "org-queue-send-and-receive" {
   statement {
     effect = "Allow"
 
     actions = [
       "sqs:SendMessage",
-    ]
-
-    resources = [
-      "${aws_sqs_queue.org-queue.arn}",
-      "${aws_sqs_queue.org-deadletter-queue.arn}",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "org-queue-receive" {
-  statement {
-    effect = "Allow"
-
-    actions = [
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
       "sqs:GetQueueAttributes",
@@ -114,11 +100,12 @@ data "aws_iam_policy_document" "repo-queue-send" {
   }
 }
 
-data "aws_iam_policy_document" "repo-queue-receive" {
+data "aws_iam_policy_document" "repo-queue-send-and-receive" {
   statement {
     effect = "Allow"
 
     actions = [
+      "sqs:SendMessage",
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
       "sqs:GetQueueAttributes",
@@ -135,14 +122,9 @@ data "aws_iam_policy_document" "repo-queue-receive" {
 # Policies
 #######################################
 
-resource "aws_iam_policy" "org-queue-send" {
-  name   = "${var.app}-org-queue-send"
-  policy = data.aws_iam_policy_document.org-queue-send.json
-}
-
-resource "aws_iam_policy" "org-queue-receive" {
-  name   = "${var.app}-org-queue-receive"
-  policy = data.aws_iam_policy_document.org-queue-receive.json
+resource "aws_iam_policy" "org-queue-send-and-receive" {
+  name   = "${var.app}-org-queue-send-and-receive"
+  policy = data.aws_iam_policy_document.org-queue-send-and-receive.json
 }
 
 resource "aws_iam_policy" "repo-queue-send" {
@@ -150,40 +132,24 @@ resource "aws_iam_policy" "repo-queue-send" {
   policy = data.aws_iam_policy_document.repo-queue-send.json
 }
 
-resource "aws_iam_policy" "repo-queue-receive" {
-  name   = "${var.app}-repo-queue-receive"
-  policy = data.aws_iam_policy_document.repo-queue-receive.json
+resource "aws_iam_policy" "repo-queue-send-and-receive" {
+  name   = "${var.app}-repo-queue-send-and-receive"
+  policy = data.aws_iam_policy_document.repo-queue-send-and-receive.json
 }
 
 #######################################
 # Policy Attachments
 #######################################
 
-resource "aws_iam_role_policy_attachment" "vpc-lambda-org-queue-send" {
+resource "aws_iam_role_policy_attachment" "vpc-lambda-org-queue-send-and-receive" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
-  policy_arn = aws_iam_policy.org-queue-send.arn
+  policy_arn = aws_iam_policy.org-queue-send-and-receive.arn
 }
 
-resource "aws_iam_role_policy_attachment" "vpc-lambda-org-queue-receive" {
+resource "aws_iam_role_policy_attachment" "vpc-lambda-repo-queue-send-and-receive" {
   role       = aws_iam_role.vpc-lambda-assume-role.name
-  policy_arn = aws_iam_policy.org-queue-receive.arn
+  policy_arn = aws_iam_policy.repo-queue-send-and-receive.arn
 }
-
-resource "aws_iam_role_policy_attachment" "vpc-lambda-repo-queue-send" {
-  role       = aws_iam_role.vpc-lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-send.arn
-}
-
-resource "aws_iam_role_policy_attachment" "lambda-repo-queue-receive" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-receive.arn
-}
-
-resource "aws_iam_role_policy_attachment" "api-sqs-repo-queue-send" {
-  role       = aws_iam_role.lambda-assume-role.name
-  policy_arn = aws_iam_policy.repo-queue-send.arn
-}
-
 
 ###############################################################################
 # Output

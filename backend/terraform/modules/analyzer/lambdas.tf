@@ -447,7 +447,7 @@ module "access-secret-manager-keys" {
 module "s3-lambda-policy" {
   source         = "../role_policy_attachment"
   actions        = ["s3:GetObject"]
-  iam_role_names = [aws_iam_role.lambda-assume-role.name]
+  iam_role_names = [aws_iam_role.lambda-assume-role.name, aws_iam_role.service-connections-role.name]
   name           = "${var.app}-lambda-s3"
   resources = [
     "${var.s3_analyzer_files_arn}/scans/*",

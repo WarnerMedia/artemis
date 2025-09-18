@@ -1,119 +1,132 @@
-from os import environ
 from asyncio import gather, run
 from aiohttp import ClientSession
-from typing import TypedDict, Optional
+from json import dumps
 
-from artemislib.aws import AWSConnect
+from artemislib.memcached import get_memcache_client
 from artemislib.logging import Logger
 from artemislib.metrics.factory import get_metrics
-
-ARTEMIS_API_BASE_URL = environ.get("ARTEMIS_API_BASE_URL")
-ARTEMIS_API_KEY = environ.get("ARTEMIS_API_SECRET_ARN")
-
+from artemislib.services import get_services_dict, ServiceType, VCSConfig, AuthType
+from service_connection_metrics.aws import get_api_key
+from service_connection_metrics.service_handlers import (
+    ArtemisService,
+    ServiceConnectionStatus,
+    test_github,
+    test_gitlab,
+    test_ado,
+    test_bitbucket_v1,
+    test_bitbucket_v2,
+)
 
 logger = Logger(__name__)
 metrics = get_metrics()
 
+SERVICE_HANDLERS = {
+    ServiceType.GITHUB: test_github,
+    ServiceType.GITLAB: test_gitlab,
+    ServiceType.BITBUCKET_V1: test_bitbucket_v1,
+    ServiceType.BITBUCKET_V2: test_bitbucket_v2,
+    ServiceType.ADO: test_ado,
+}
 
-class ConnectionResult(TypedDict):
-    service: str
-    service_type: str
-    reachable: bool
-    auth_successful: bool
-    auth_type: str
-    error: str
+
+def parse_service(services_dict: dict[str, VCSConfig], service_name: str) -> ArtemisService:
+    name = service_name.lower()
+    org = ""
+
+    # Extract organization if present
+    if "/*" in name:
+        service_name = name = name.split("/*", 1)[0]
+    elif "/" in name:
+        name, org = name.split("/", 1)
+
+    service = services_dict[name]
+
+    # Update Bitbucket Service Type based on URL
+    if service["type"] == "bitbucket":
+        service["type"] = ServiceType.BITBUCKET_V2.value
+        if "/1.0" in service["url"]:
+            service["type"] = ServiceType.BITBUCKET_V1.value
+
+    return ArtemisService(service_name=service_name, org=org, service=service)
 
 
-class ArtemisApiResponse(TypedDict):
+def report_metrics(status: ServiceConnectionStatus):
     """
-    API response from the /system/services endpoint
+    Add metrics for each Service Connection Result
     """
+    tags = {
+        "service_name": status["service"],
+        "auth_type": status["auth_type"],
+        "service_type": status["service_type"],
+    }
+    if status["auth_successful"]:
+        metrics.add_metric("successful_service_auth.count", 1, **tags)
+    else:
+        metrics.add_metric("failed_service_auth.count", 1, **tags)
 
-    count: int
-    previous: Optional[str]
-    next: Optional[str]
-    results: list[ConnectionResult]
+    if status["reachable"]:
+        metrics.add_metric("reachable_services.count", 1, **tags)
+    else:
+        metrics.add_metric("unreachable_services.count", 1, **tags)
+
+
+async def check_service(session, svc: ArtemisService, key: str) -> ServiceConnectionStatus:
+    # Negative Connection Result
+    status: ServiceConnectionStatus = {
+        "service": svc.service_name,
+        "service_type": svc.service["type"],
+        "reachable": False,
+        "auth_successful": False,
+        "auth_type": AuthType.SVC.value,
+        "error": None,
+    }
+    handler = SERVICE_HANDLERS.get(ServiceType(svc.service["type"]))
+    try:
+        if handler:
+            return await handler(session, key, svc, status)
+        else:
+            status["reachable"] = False
+            status["auth_successful"] = False
+            status["error"] = "Unsupported service type"
+            return status
+    except Exception as err:
+        logger.exception(err)
+        status["error"] = "An unexpected error occurred in Artemis"
+
+    return status
+
+
+async def main(artemis_services: list[ArtemisService]):
+    async with ClientSession() as session:
+        tasks = []
+        for svc in artemis_services:
+            key: str = get_api_key(svc.service["secret_loc"])
+            tasks.append(check_service(session, svc, key))
+
+        results = await gather(*tasks, return_exceptions=True)
+
+        # Cache Results & Report Metrics
+        client = get_memcache_client()
+        for result in results:
+            if isinstance(result, Exception):
+                logger.exception(result)
+            elif isinstance(result, dict):
+                key = f"service_connection_status:{result['service']}"
+                try:
+                    client.set(key, dumps(result))
+                except Exception as err:
+                    logger.error(f"Failed to cache result for {key}: {err}")
+            report_metrics(result)
+        await session.close()
+        return results
 
 
 @metrics.log_metrics
 def handler(event, context):
-    if not ARTEMIS_API_BASE_URL:
-        logger.error("Artemis API endpoint not configured")
-        return
-
-    api_key = get_api_key()
-    if not api_key:
-        logger.error("Missing API token")
-        return
-
-    run(main(api_key))
+    services = get_services_dict()
+    artemis_services = [parse_service(services["services"], org) for org in services["scan_orgs"]]
+    return run(main(artemis_services))
 
 
-async def main(artemis_api_key: str):
-    async with ClientSession() as session:
-        # Get current count of service connections
-        query = f"{ARTEMIS_API_BASE_URL}/system/services?limit=1"
-        headers = get_headers(artemis_api_key)
-        session = ClientSession(headers=headers)
-        result = await query_artemis_api(session, query)
-
-        # Build services endpoint queries
-        service_count = result["count"]
-        urls = build_queries(service_count)
-
-        # Run all coroutines
-        tasks = [query_artemis_api(session, url) for url in urls]
-        service_connection_results = await gather(*tasks)
-
-        for result in service_connection_results:
-            report_metrics(result)
-
-        await session.close()
-
-
-def build_queries(service_count: int):
-    urls = []
-    for offset in range(0, service_count, 20):
-        query = f"{ARTEMIS_API_BASE_URL}/system/services?limit=20&offset={offset}"
-        urls.append(query)
-
-    return urls
-
-
-def get_api_key() -> str:
-    aws = AWSConnect()
-    return aws.get_secret(ARTEMIS_API_KEY).get("key")
-
-
-def get_headers(artemis_api_key: str) -> dict:
-    return {
-        "x-api-key": f"{artemis_api_key}",
-        "Content-Type": "application/json",
-    }
-
-
-def report_metrics(response: ArtemisApiResponse):
-    """
-    Add metrics for each Service Connection Result
-    """
-    for service in response["results"]:
-        tags = {
-            "service_name": service["service"],
-            "auth_type": service["auth_type"],
-            "service_type": service["service_type"],
-        }
-        if service["auth_successful"]:
-            metrics.add_metric("successful_service_auth.count", 1, **tags)
-        else:
-            metrics.add_metric("failed_service_auth.count", 1, **tags)
-
-        if service["reachable"]:
-            metrics.add_metric("reachable_services.count", 1, **tags)
-        else:
-            metrics.add_metric("unreachable_services.count", 1, **tags)
-
-
-# Define an asynchronous function to fetch a URL
-async def query_artemis_api(session: ClientSession, url: str):
-    async with session.get(url) as response:
-        return await response.json()
+if __name__ == "__main__":
+    handler("", "")
