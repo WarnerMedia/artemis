@@ -2195,6 +2195,7 @@ interface Palette {
 }
 
 interface ChartData {
+	[key: string]: any;
 	name: string;
 	value: number;
 	palette: Palette;
@@ -4821,6 +4822,7 @@ const InventoryTabContent = (props: {
 	};
 
 	interface TechData {
+		[key: string]: any;
 		name: string;
 		value: number;
 		palette: Palette;
@@ -4832,6 +4834,7 @@ const InventoryTabContent = (props: {
 		scan.results?.inventory?.technology_discovery ?? {},
 	)) {
 		techData.push({
+			key: name,
 			name,
 			value,
 			palette: sharedColors[i % sharedColors.length],
