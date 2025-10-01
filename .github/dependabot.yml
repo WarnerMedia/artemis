@@ -5,6 +5,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 1
     groups:
       actions:
         # Group together updates from common, official sources.
