@@ -102,7 +102,7 @@ distclean: clean  ## Remove all build and dev transients
 upgrade-interactive:  # CLI tool to review and select packages to upgrade
 #	Filter out dependencies locked to specific versions.
 #	We assume that version specifiers without a prefix are locked.
-	npx npm-check-updates -i --format group \
+	npx npm-check-updates --cooldown 1 -i --format group \
 		--reject "$$(jq -r '\
 			(.dependencies + .devDependencies) | to_entries | \
 			map(select(.value | test("^[0-9]")))[].key' \
