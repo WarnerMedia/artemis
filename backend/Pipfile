@@ -38,7 +38,7 @@ moto = {extras = ["awslambda", "ec2", "s3", "secretsmanager", "sqs"], version = 
 pylint = "~=3.3"
 pyright = "~=1.1"
 pytest = "~=8.3"
-pytest-cov = "~=6.0"
+pytest-cov = "~=7.0"
 pytest-httpserver = "~=1.1"
 pytest-subtests = "~=0.14"
 pytest-xdist = "~=3.6"
