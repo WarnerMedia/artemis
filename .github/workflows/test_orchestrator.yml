@@ -32,4 +32,4 @@ jobs:
         run: make -C orchestrator style-test ENV=example
       - name: Run orchestrator tests
         run: |
-          make -C orchestrator unit-test ENV=example
+          make -C orchestrator unit-test ENV=example PYTEST_EXTRA_ARGS='--cov-report=term-missing'
