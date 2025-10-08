@@ -33,7 +33,7 @@ def clean_output_application_sbom(output: dict) -> list:
         licenses_list = item.get("licenses", [])
         for lic in licenses_list:
             # Handles edge case where Licenses array exists with a license object but the license obj is empty. This ensures that licenses stays an empty array so that the processor does not try to override this value
-            if lic.get("license").get("name", None) == None:
+            if lic.get("license", {}).get("name", None) == None:
                 break
             licenses.append({"id": lic.get("license").get("name"), "name": lic.get("license").get("name")})
         properties = item.get("properties", [])
