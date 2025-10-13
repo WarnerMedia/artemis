@@ -44,5 +44,5 @@ pytest-subtests = "~=0.14"
 pytest-xdist = "~=3.6"
 python-dotenv = "~=1.1"
 responses = "~=0.25"
-ruff = "==0.13.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
+ruff = "==0.14.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
 xmltodict = "~=1.0"
