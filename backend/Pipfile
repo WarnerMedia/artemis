@@ -19,7 +19,7 @@ graphql-query = "~=1.4"
 joserfc = "~=1.2"
 packaging = "==23.2"  # Must match version in Makefile.
 psycopg2-binary = "~=2.9.9"
-pydantic = "~=2.11"
+pydantic = "<2.12"
 PyGithub = "~=2.7"
 pyjwt = "~=2.10"
 pymemcache = "~=4.0"
