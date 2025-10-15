@@ -14,4 +14,4 @@ python_version = "3.12"
 [dev-packages]
 isort = "~=6.0"
 pytest = "~=8.3"
-ruff = "==0.12.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
+ruff = "==0.14.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
