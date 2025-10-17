@@ -23,7 +23,6 @@ describe("HiddenFindingDialog component", () => {
 		"This form contains unresolved errors. Please resolve these errors";
 	const fieldReasonLabel = "Reason";
 	const fieldHideForLabel = "Hide For";
-	const fieldExpiresLabel = "Expires (optional)";
 	const fieldSecretStringLabel =
 		"String to exclude from secret findings (future scans only)";
 	const buttonAddLabel = "Add";
@@ -294,7 +293,11 @@ describe("HiddenFindingDialog component", () => {
 			await user.tab();
 			expect(secretStringField).toHaveFocus();
 			await user.tab();
-			expect(screen.getByLabelText(fieldExpiresLabel)).toHaveFocus();
+			expect(
+				screen.getByRole("spinbutton", {
+					name: "Year",
+				}),
+			).toHaveFocus();
 			await waitFor(() => {
 				expect(screen.queryByText("Required")).toBeInTheDocument();
 			});

@@ -7,7 +7,7 @@ import {
 	Routes,
 	Route,
 } from "react-router-dom";
-import "typeface-roboto";
+import "@fontsource/roboto";
 
 import store, { AppDispatch } from "app/store";
 import { Provider } from "react-redux";
@@ -15,7 +15,7 @@ import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
 import { messages as enMessages } from "locale/en/messages";
 
-// apply material-ui cross-browser style normalizaion
+// apply material-ui cross-browser style normalization
 import CssBaseline from "@mui/material/CssBaseline";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { makeStyles } from "tss-react/mui";
@@ -283,7 +283,7 @@ const ThemedApp = () => {
 	);
 
 	// TODO i18n: Date/Time pickers have changed the way they handle i18n
-	// instead of overriding indivudal strings like okText, cancelText, etc. you now wrap the component in a <LocalizationProvider> with an "adapterLocale" set
+	// instead of overriding individual strings like okText, cancelText, etc. you now wrap the component in a <LocalizationProvider> with an "adapterLocale" set
 	// this is more complete, since it also translates items like calendar month names
 	// see:  https://mui.com/x/react-date-pickers/date-picker/#localization
 

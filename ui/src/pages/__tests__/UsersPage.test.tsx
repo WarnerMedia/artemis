@@ -197,7 +197,7 @@ describe("UsersPage component", () => {
 					name: "Email Address",
 				});
 				expect(emailLabel).toBeInTheDocument();
-				const administratorCheckbox = screen.getByRole("checkbox", {
+				const administratorCheckbox = screen.getByRole("switch", {
 					name: "Administrator",
 				});
 				expect(administratorCheckbox).toBeInTheDocument();
@@ -353,8 +353,8 @@ describe("UsersPage component", () => {
 					within(dialog).getByDisplayValue(scopeInput),
 				).toBeInTheDocument();
 
-				// there is a known issue in user-events v4 where if you fire an event on an actve element after
-				// visting a disabled element, the event (click, type, etc.) will fail with the error:
+				// there is a known issue in user-events v4 where if you fire an event on an active element after
+				// visiting a disabled element, the event (click, type, etc.) will fail with the error:
 				//   "Unable to perform pointer interaction as the element has `pointer-events: none"
 				//
 				// this is what happens here, because after adding a scope the "addScopeButton" is disabled
@@ -437,7 +437,7 @@ describe("UsersPage component", () => {
 				expect(emailLabel).toBeInTheDocument();
 				expect(emailLabel.value).toEqual(mockAppState.users.entities[id].email);
 
-				const administratorCheckbox = screen.getByRole("checkbox", {
+				const administratorCheckbox = screen.getByRole("switch", {
 					name: "Administrator",
 				});
 				expect(administratorCheckbox).toBeInTheDocument();

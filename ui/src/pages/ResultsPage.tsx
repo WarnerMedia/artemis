@@ -66,7 +66,7 @@ import {
 	FormControlLabel,
 	FormGroup,
 	FormLabel,
-	Grid2 as Grid,
+	Grid,
 	IconButton,
 	InputAdornment,
 	InputBaseComponentProps,
@@ -94,7 +94,6 @@ import {
 	Zoom,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import createPalette from "@mui/material/styles/createPalette";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Select, TextField } from "formik-mui";
 import { DateTime } from "luxon";
@@ -993,7 +992,7 @@ export const HiddenFindingDialog = (props: {
 			.max(512, i18n._(t`Must be between 1-512 characters`)),
 	});
 
-	// form submission succeeds, reset hiddingFinding redux status
+	// form submission succeeds, reset hiddenFinding redux status
 	// and close the dialog
 	// success notification will be viewed as a global app notification
 	useEffect(() => {
@@ -1265,7 +1264,7 @@ export const HiddenFindingDialog = (props: {
 			);
 
 			// form submitted and encountered an error
-			// reset form submittion state (isSubmitting)
+			// reset form submission state (isSubmitting)
 			// so form fields are editable again
 			if (isSubmitting) {
 				setSubmitting(false);
@@ -1345,7 +1344,7 @@ export const HiddenFindingDialog = (props: {
 			);
 		}
 
-		// last unshifted item, so this will appear as first item in list
+		// last un-shifted item, so this will appear as first item in list
 		if (createdBy) {
 			details.unshift(
 				<FindingListItem
@@ -3330,7 +3329,7 @@ export const VulnTabContent = (props: {
 				url: scan.service + "/" + scan.repo,
 				createdBy: currentUser.email,
 				// hidden finding data stored in "hiddenFindings" field
-				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
+				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sorting
 				hasHiddenFindings: Boolean(findings.length),
 				hiddenFindings: findings.length ? findings : undefined,
 				unhiddenFindings,
@@ -3713,7 +3712,7 @@ export const AnalysisTabContent = (props: {
 				url: scan.service + "/" + scan.repo,
 				createdBy: currentUser.email,
 				// hidden finding data stored in "hiddenFindings" field
-				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
+				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sorting
 				hasHiddenFindings: Boolean(findings),
 				hiddenFindings: findings ? [findings] : undefined,
 				filename,
@@ -4085,7 +4084,7 @@ export const SecretsTabContent = (props: {
 						: item.url,
 				createdBy: currentUser.email,
 				// hidden finding data stored in "hiddenFindings" field
-				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
+				// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sorting
 				hasHiddenFindings: Boolean(findings),
 				hiddenFindings: findings ? [findings] : undefined,
 				filename: formatLocationName(filename),
@@ -4520,7 +4519,7 @@ export const ConfigTabContent = (props: {
 			url: scan.service + "/" + scan.repo,
 			createdBy: currentUser.email,
 			// hidden finding data stored in "hiddenFindings" field
-			// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sortability
+			// boolean "hasHiddenFindings" used for column definition bc boolean provides for column sorting
 			hasHiddenFindings: Boolean(findings),
 			hiddenFindings: findings ? [findings] : undefined,
 			rule,
@@ -5105,7 +5104,7 @@ export const CodeTabContent = (props: {
 
 			<FormGroup row className={classes.rawToolbar}>
 				<FormControl variant="outlined" className={classes.formControl}>
-					{/* not using Formik fields here as its overkill for just an unvalidated immediate-change selector */}
+					{/* not using Formik fields here as its overkill for just an un-validated immediate-change selector */}
 					<MuiTextField
 						select
 						id="theme-select"
@@ -6957,19 +6956,18 @@ const ResultsPage = () => {
 				theme.palette.mode === "dark"
 					? ["100", "200"] // how light or dark to make pie chart segment colors
 					: ["400", "500"];
+			// Palette object shape: { background: string, text: string }
+			// Used for chart segment colors and text contrast in graphs and tables.
 			for (let i = 0; i < count; i += 1) {
 				let color = randomMC.getColor({ shades: shades });
 				// don't reuse an existing selected color
 				while (colors.indexOf(color) !== -1) {
 					color = randomMC.getColor({ shades: shades });
 				}
-				// create a mui palette for this color so we can get the contrasting text color
-				const palette = createPalette({
-					primary: { main: color },
-				});
+				const textColor = theme.palette.getContrastText(color);
 				colors.push({
 					background: color,
-					text: palette.primary.contrastText,
+					text: textColor,
 				});
 			}
 
@@ -6978,7 +6976,7 @@ const ResultsPage = () => {
 
 		const numberOfColors = 25; // beyond approx 35, generating colors becomes an infinite loop, there must be a limited number of material ui colors available.
 		setSharedColors(generateChartColors(numberOfColors));
-	}, [theme.palette.mode]);
+	}, [theme.palette]);
 
 	const ErrorContent = () => (
 		<Container className={classes.alertContainer}>

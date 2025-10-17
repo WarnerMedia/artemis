@@ -14,7 +14,6 @@ import {
 	AppBar,
 	Box,
 	CircularProgress,
-	Hidden,
 	IconButton,
 	ListItemIcon,
 	ListItemText,
@@ -261,20 +260,19 @@ const NavBar = (props: INavBar) => {
 					{systemStatus.maintenance.message}
 				</Alert>
 			)}
-			<Hidden mdDown>
-				<Box
-					displayPrint="none"
-					style={{ position: "absolute", right: "1rem" }}
-				>
-					{currentUser?.last_login && (
-						<Typography variant="caption">
-							<Trans>
-								Last Login: {formatDate(currentUser.last_login, "long")}
-							</Trans>
-						</Typography>
-					)}
-				</Box>
-			</Hidden>
+			<Box
+				sx={{ display: { xs: "none", md: "block" } }}
+				displayPrint="none"
+				style={{ position: "absolute", right: "1rem" }}
+			>
+				{currentUser?.last_login && (
+					<Typography variant="caption">
+						<Trans>
+							Last Login: {formatDate(currentUser.last_login, "long")}
+						</Trans>
+					</Typography>
+				)}
+			</Box>
 		</div>
 	);
 };

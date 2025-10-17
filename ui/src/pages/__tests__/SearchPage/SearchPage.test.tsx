@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "test-utils";
+import { fireEvent, render, screen, waitFor, within } from "test-utils";
 import axios, { AxiosRequestConfig } from "axios";
 import client from "api/client";
 import { DateTime, Settings } from "luxon";
@@ -233,7 +233,6 @@ describe("SearchPage component", () => {
 					["Component Version", /component version/i, "", ""],
 					["License", /license/i, "", ""],
 					["Repository", /repository/i, "", ""],
-					["Scan Time", /scan time/i, "", DATE_PLACEHOLDER],
 				])(
 					"%p text field",
 					async (_fieldName, label, defaultValue, placeholder) => {
@@ -243,6 +242,32 @@ describe("SearchPage component", () => {
 						const field = await screen.findByRole("textbox", {
 							name: label,
 						});
+						expect(field).not.toBeDisabled();
+						expect(field).toHaveDisplayValue(defaultValue);
+						if (placeholder) {
+							expect(field).toHaveAttribute("placeholder", placeholder);
+						}
+					},
+				);
+
+				// test date input fields
+				test.each([
+					[
+						"Scan Time",
+						/scan time/i,
+						"",
+						DATE_PLACEHOLDER,
+						"last_scan_date_input",
+					],
+				])(
+					"%p date field",
+					async (_fieldName, label, defaultValue, placeholder, inputName) => {
+						mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
+						render(<SearchPage />);
+
+						const field = await screen.findByTestId("last_scan_date_input");
+
+						inputName;
 						expect(field).not.toBeDisabled();
 						expect(field).toHaveDisplayValue(defaultValue);
 						if (placeholder) {
@@ -434,12 +459,12 @@ describe("SearchPage component", () => {
 					const scanTimeMatch = screen.getByRole("combobox", {
 						name: /scan time match/i,
 					});
-					const scanTime = screen.getByRole("textbox", { name: /scan time/i });
+					const scanTime = await screen.findByTestId("last_scan_date_input");
 					const submitButton = screen.getByRole("button", {
 						name: /^search$/i,
 					});
 
-					// Mui selecion elements use aria-disabled instead of disabled attribute
+					// Mui selection elements use aria-disabled instead of disabled attribute
 					expect(componentNameMatch).not.toHaveAttribute("aria-disabled");
 					expect(componentName).not.toBeDisabled();
 					expect(componentVersionMatch).not.toHaveAttribute("aria-disabled");
@@ -522,10 +547,14 @@ describe("SearchPage component", () => {
 					});
 					await user.type(repoField, repoValue);
 
-					const scanTimeField = await screen.findByRole("textbox", {
-						name: /scan time/i,
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
+
+					fireEvent.change(scanTimeField, {
+						target: { value: dt.toFormat(DATE_FORMAT) },
 					});
-					await user.type(scanTimeField, dt.toFormat(DATE_FORMAT));
+
 					await waitFor(() => {
 						expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					});
@@ -892,10 +921,12 @@ describe("SearchPage component", () => {
 						user,
 					});
 
-					const scanTimeField = await screen.findByRole("textbox", {
-						name: /scan time/i,
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
+					fireEvent.change(scanTimeField, {
+						target: { value: dt.toFormat(DATE_FORMAT) },
 					});
-					await user.type(scanTimeField, dt.toFormat(DATE_FORMAT));
 					await waitFor(() => {
 						expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					});
@@ -963,10 +994,12 @@ describe("SearchPage component", () => {
 						user,
 					});
 
-					const scanTimeField = await screen.findByRole("textbox", {
-						name: /scan time/i,
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
+					fireEvent.change(scanTimeField, {
+						target: { value: dt.toFormat(DATE_FORMAT) },
 					});
-					await user.type(scanTimeField, dt.toFormat(DATE_FORMAT));
 					await waitFor(() => {
 						expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					});
@@ -1200,9 +1233,9 @@ describe("SearchPage component", () => {
 					expect(repoField).toHaveDisplayValue(repoValue);
 
 					screen.getByRole("combobox", { name: /scan time match/i });
-					const scanTimeField = screen.getByRole("textbox", {
-						name: /scan time/i,
-					});
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
 					expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					expect(scanTimeField).toBeEnabled();
 
@@ -1325,9 +1358,9 @@ describe("SearchPage component", () => {
 					screen.getByRole("combobox", {
 						name: /scan time match/i,
 					});
-					const scanTimeField = screen.getByRole("textbox", {
-						name: /scan time/i,
-					});
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
 					expect(scanTimeField).toHaveDisplayValue("");
 					expect(scanTimeField).toBeEnabled();
 
@@ -1575,9 +1608,9 @@ describe("SearchPage component", () => {
 					screen.getByRole("combobox", {
 						name: /scan time match/i,
 					});
-					const scanTimeField = screen.getByRole("textbox", {
-						name: /scan time/i,
-					});
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
 					expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					expect(scanTimeField).toBeEnabled();
 
@@ -1680,9 +1713,9 @@ describe("SearchPage component", () => {
 					screen.getByRole("combobox", {
 						name: /scan time match/i,
 					});
-					const scanTimeField = screen.getByRole("textbox", {
-						name: /scan time/i,
-					});
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
 					expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					expect(scanTimeField).toBeEnabled();
 
@@ -1780,9 +1813,9 @@ describe("SearchPage component", () => {
 					screen.getByRole("combobox", {
 						name: /scan time match/i,
 					});
-					const scanTimeField = screen.getByRole("textbox", {
-						name: /scan time/i,
-					});
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
 					expect(scanTimeField).toHaveDisplayValue(dt.toFormat(DATE_FORMAT));
 					expect(scanTimeField).toBeEnabled();
 
@@ -1863,9 +1896,9 @@ describe("SearchPage component", () => {
 					screen.getByRole("combobox", {
 						name: /scan time match/i,
 					});
-					const scanTimeField = screen.getByRole("textbox", {
-						name: /scan time/i,
-					});
+					const scanTimeField = await screen.findByTestId(
+						"last_scan_date_input",
+					);
 					expect(scanTimeField).toHaveDisplayValue("");
 					expect(scanTimeField).toBeEnabled();
 
@@ -2120,17 +2153,21 @@ describe("SearchPage component", () => {
 
 				it('"Scan Time" field allows valid datetime', async () => {
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
-					const { user } = render(<SearchPage />);
-
-					const testComponent = await screen.findByRole("textbox", {
-						name: "Scan Time",
-					});
+					render(<SearchPage />);
 
 					const dt = DateTime.now()
 						.minus({ minute: 5 }) // past
 						.set({ second: 0, millisecond: 0 })
 						.toFormat(DATE_FORMAT);
-					await user.type(testComponent, dt);
+
+					const testComponent = await screen.findByTestId(
+						"last_scan_date_input",
+					);
+
+					fireEvent.change(testComponent, {
+						target: { value: dt },
+					});
+
 					await waitFor(() => expect(testComponent).toHaveDisplayValue(dt));
 					await waitFor(() =>
 						expect(
@@ -2209,17 +2246,21 @@ describe("SearchPage component", () => {
 
 				it('"Scan Time" field disallows invalid datetime', async () => {
 					mockAppState = JSON.parse(JSON.stringify(mockStoreEmpty));
-					const { user } = render(<SearchPage />);
-
-					const testComponent = await screen.findByRole("textbox", {
-						name: "Scan Time",
-					});
+					render(<SearchPage />);
 
 					const dt = DateTime.now()
 						.plus({ minute: 5 }) // future
 						.set({ second: 0, millisecond: 0 })
 						.toFormat(DATE_FORMAT);
-					await user.type(testComponent, dt);
+
+					const testComponent = await screen.findByTestId(
+						"last_scan_date_input",
+					);
+
+					fireEvent.change(testComponent, {
+						target: { value: dt },
+					});
+
 					await waitFor(() => expect(testComponent).toHaveDisplayValue(dt));
 					await waitFor(() =>
 						expect(
@@ -2329,7 +2370,7 @@ describe("SearchPage component", () => {
 					const licenseField = within(dialog).getByText(
 						`Licenses (${licenseCount})`,
 					);
-					// no copy-to-clipbard button since there are no licenses
+					// no copy-to-clipboard button since there are no licenses
 					expect(
 						within(licenseField).queryByRole("button", {
 							name: /copy to clipboard/i,
@@ -2421,14 +2462,14 @@ describe("SearchPage component", () => {
 						fail("Component Name value missing");
 					}
 
-					const componenVersionField =
+					const componentVersionField =
 						within(dialog).getByText(/component version/i);
-					within(componenVersionField).getByRole("button", {
+					within(componentVersionField).getByRole("button", {
 						name: /copy to clipboard/i,
 					});
-					if (componenVersionField.parentElement) {
+					if (componentVersionField.parentElement) {
 						expect(
-							within(componenVersionField.parentElement).getByText(
+							within(componentVersionField.parentElement).getByText(
 								componentVersion,
 							),
 						).toBeInTheDocument();

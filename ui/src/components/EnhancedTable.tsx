@@ -83,7 +83,7 @@ interface MenuOptions {
 }
 
 interface EnhancedTableProps {
-	id?: string; // row field to use for unique key, defaults to keyId if unsupplied
+	id?: string; // row field to use for unique key, defaults to keyId if not supplied
 	columns: ColDef[];
 	rows: RowDef[];
 	defaultOrder?: Order; // how all columns will be ordered initially unless overridden in ColDef.order, default: "asc"
@@ -660,6 +660,13 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		};
 	}
 
+	const newLastPage = Math.max(0, Math.ceil(count / rowsPerPage) - 1);
+
+	let showPage = page;
+	if (newLastPage < page) {
+		showPage = 0;
+	}
+
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
@@ -769,7 +776,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 					component="div"
 					count={count}
 					rowsPerPage={rowsPerPage}
-					page={page}
+					page={showPage}
 					onPageChange={handleChangePage}
 					onRowsPerPageChange={handleChangeRowsPerPage}
 				/>

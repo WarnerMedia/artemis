@@ -319,7 +319,10 @@ describe("EnhancedTable component", () => {
 			await screen.findByText(`11–${rows.length} of ${rows.length}`);
 
 			// change filter, expect page to reset to 1
-			filters.data.filter = "row 1";
+			const newFilters = {
+				...filters,
+				data: { ...filters.data, filter: "row 1" },
+			};
 			rowsPerPage = 3; // filtered matches
 			rerender(
 				<EnhancedTable
@@ -327,7 +330,7 @@ describe("EnhancedTable component", () => {
 					rows={rows}
 					id="data"
 					defaultOrderBy="data"
-					filters={filters}
+					filters={newFilters}
 				/>,
 			);
 			await screen.findByText(`1–${rowsPerPage} of ${rowsPerPage}`);

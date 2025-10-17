@@ -36,11 +36,11 @@ interface AllTheProvidersProps {
 	children: React.ReactNode;
 }
 
-const AllTheProviders = ({ children }: AllTheProvidersProps) => {
-	const locale = "en";
-	i18n.load(locale, enMessages);
-	i18n.activate(locale);
+const locale = "en";
+i18n.load(locale, enMessages);
+i18n.activate(locale);
 
+const AllTheProviders = ({ children }: AllTheProvidersProps) => {
 	return (
 		<Provider store={store}>
 			<I18nProvider i18n={i18n}>
