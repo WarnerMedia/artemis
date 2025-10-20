@@ -1,5 +1,5 @@
 import { DateTime, Settings } from "luxon";
-import { act, fireEvent, render, screen, waitFor } from "test-utils";
+import { act, render, screen, waitFor } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
 import { vulnRow } from "../../../../testData/testMockData";
 

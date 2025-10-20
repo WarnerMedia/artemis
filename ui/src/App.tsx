@@ -47,6 +47,7 @@ const ResultsPage = React.lazy(() => import("pages/ResultsPage"));
 const SearchPage = React.lazy(() => import("pages/SearchPage"));
 const UsersPage = React.lazy(() => import("pages/UsersPage"));
 const UserSettings = React.lazy(() => import("pages/UserSettings"));
+const DatePickerTestPage = React.lazy(() => import("pages/DatePickerTestPage"));
 
 // browser language preference
 // currently used for displaying times in locale-specific format
@@ -143,6 +144,12 @@ export const AppRoutes = () => {
 							)}
 							<Route path="/settings" element={<UserSettings />} />
 							<Route path="/search" element={<SearchPage />} />
+							{process.env.NODE_ENV === "development" && (
+								<Route
+									path="/datepicker-test"
+									element={<DatePickerTestPage />}
+								/>
+							)}
 							<Route path="*" element={<Navigate to="/" />} />
 						</Routes>
 					</React.Suspense>
