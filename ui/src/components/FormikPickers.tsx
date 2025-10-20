@@ -12,18 +12,13 @@ import { browserLanguage } from "App";
 import { InputBaseProps } from "@mui/material";
 
 // Formik wrapper for Material UI date/time pickers
-// adapted from Material-UI picker Formik sample:
-// https://next.material-ui-pickers.dev/guides/forms#validation-props
 //
 // also adds i18n for component labels
 //
 // usage:
 // <Field ...attrs component={DateTimePicker} />
-
-interface DatePickerFieldProps
-	extends FieldProps,
-		DesktopDateTimePickerProps<DateTime> {
-	id?: string;
+interface DatePickerFieldProps extends FieldProps, DesktopDateTimePickerProps {
+	id: string;
 	getShouldDisableDateError: (date: DateTime | null) => string;
 	size?: "small" | "medium";
 	style?: React.CSSProperties;
@@ -44,7 +39,6 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 		field,
 		form,
 		getShouldDisableDateError,
-		onChange,
 		invalidDateMessage,
 		minDateMessage,
 		maxDateMessage,
@@ -72,23 +66,19 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 	if (!localeText?.nextMonth) {
 		localeText.nextMonth = i18n._(t`Next month`);
 	}
-	// x-date-pickers v6 expects the picker's field value to be in the adapter's date/time format - it no longer performs this conversion
-	// so this wrapper will now handle this conversion
-	// Luxon adapter doesn't accept Date objects, so convert to a string first.
+
 	if (field.value && typeof field.value.toISOString === "function") {
 		field.value = field.value.toISOString();
 	}
-	const adapter = new DateAdapter({ locale: browserLanguage });
-	const fieldValue = adapter.date(field.value);
+	let fieldValue = field.value || null;
+	if (field.value && typeof field.value === "string") {
+		const adapter = new DateAdapter({ locale: browserLanguage });
+		fieldValue = adapter.date(field.value);
+	}
 
-	// for a11y assign an additional title to the input field separate from the value, since v6 x-date-pickers picker value contains additional non-display characters
-	// const displayValue = fieldValue
-	// 	? fieldValue.toFormat(other.format ?? "yyyy/LL/dd HH:mm")
-	// 	: "";
-	const displayValue = "";
 	const inputProps: InputBaseProps["inputProps"] = {
 		id: props.id,
-		title: displayValue,
+		"data-testid": `${field.name}_date_input`,
 	};
 	if (props.placeholder) {
 		inputProps.placeholder = props.placeholder;
@@ -125,11 +115,13 @@ const DatePickerField = (props: DatePickerFieldProps) => {
 			label={props?.label}
 			onChange={(date) => {
 				form.setFieldTouched(field.name, true, false);
-				if (muiError) {
-					form.setFieldValue(field.name, date, false);
-					form.setFieldError(field.name, muiError);
-				} else {
-					form.setFieldValue(field.name, date, true);
+				if (date) {
+					if (muiError) {
+						form.setFieldValue(field.name, date, false);
+						form.setFieldError(field.name, muiError);
+					} else {
+						form.setFieldValue(field.name, date, true);
+					}
 				}
 			}}
 			onError={(code, value) => {
