@@ -79,6 +79,7 @@ import {
 	MenuItem,
 	TextField as MuiTextField,
 	Paper,
+	Stack,
 	Tab,
 	Table,
 	TableBody,
@@ -408,9 +409,7 @@ const useStyles = makeStyles()((theme) => ({
 	},
 	navButtons: {
 		marginBottom: theme.spacing(1),
-		"& > *": {
-			marginLeft: theme.spacing(2),
-		},
+		marginLeft: theme.spacing(2),
 	},
 	numberedList: {
 		paddingLeft: 0,
@@ -7102,7 +7101,55 @@ const ResultsPage = () => {
 
 	return (
 		<Container>
-			<Box displayPrint="none" className={classes.navButtons}>
+			<DraggableDialog
+				open={rescanDialogOpen}
+				title={i18n._(t`New Scan`)}
+				maxWidth="md"
+			>
+				<DialogContent dividers={true}>
+					<Trans>
+						Start a new scan using the same options used in this scan?
+						<br />
+						Initiating a new scan will navigate to the main scan page to display
+						scan progress.
+					</Trans>
+				</DialogContent>
+
+				<DialogActions>
+					<Button
+						aria-label={i18n._(t`Start Scan`)}
+						size="small"
+						variant="contained"
+						startIcon={<PlayCircleOutlineIcon />}
+						disabled={!scan || scansStatus === "loading" || startingRescan}
+						autoFocus={rescanDialogOpen}
+						onClick={() => {
+							setRescanDialogOpen(false);
+							if (scan) {
+								handleRescan(scan);
+							}
+						}}
+					>
+						<Trans>Start Scan</Trans>
+					</Button>
+
+					<Button
+						aria-label={i18n._(t`Cancel`)}
+						size="small"
+						onClick={() => {
+							setRescanDialogOpen(false);
+						}}
+					>
+						<Trans>Cancel</Trans>
+					</Button>
+				</DialogActions>
+			</DraggableDialog>
+			<Stack
+				displayPrint="none"
+				direction={"row"}
+				spacing={2}
+				className={classes.navButtons}
+			>
 				<BackButton />
 
 				<Button
@@ -7128,50 +7175,6 @@ const ResultsPage = () => {
 					<Trans>Refresh Scan Results</Trans>
 				</Button>
 
-				<DraggableDialog
-					open={rescanDialogOpen}
-					title={i18n._(t`New Scan`)}
-					maxWidth="md"
-				>
-					<DialogContent dividers={true}>
-						<Trans>
-							Start a new scan using the same options used in this scan?
-							<br />
-							Initiating a new scan will navigate to the main scan page to
-							display scan progress.
-						</Trans>
-					</DialogContent>
-
-					<DialogActions>
-						<Button
-							aria-label={i18n._(t`Start Scan`)}
-							size="small"
-							variant="contained"
-							startIcon={<PlayCircleOutlineIcon />}
-							disabled={!scan || scansStatus === "loading" || startingRescan}
-							autoFocus={rescanDialogOpen}
-							onClick={() => {
-								setRescanDialogOpen(false);
-								if (scan) {
-									handleRescan(scan);
-								}
-							}}
-						>
-							<Trans>Start Scan</Trans>
-						</Button>
-
-						<Button
-							aria-label={i18n._(t`Cancel`)}
-							size="small"
-							onClick={() => {
-								setRescanDialogOpen(false);
-							}}
-						>
-							<Trans>Cancel</Trans>
-						</Button>
-					</DialogActions>
-				</DraggableDialog>
-
 				<Button
 					startIcon={<PlayCircleOutlineIcon />}
 					disabled={!scan || scansStatus === "loading" || startingRescan}
@@ -7179,7 +7182,7 @@ const ResultsPage = () => {
 				>
 					<Trans>New scan with these options</Trans>
 				</Button>
-			</Box>
+			</Stack>
 
 			{scansStatus === "loading" || usersStatus === "loading" ? (
 				<LoadingContent />
