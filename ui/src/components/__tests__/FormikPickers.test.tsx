@@ -1,6 +1,6 @@
 import { DateTime, Settings } from "luxon";
 import * as Yup from "yup";
-import { act, fireEvent, render, screen, waitFor } from "test-utils";
+import { fireEvent, render, screen, waitFor } from "test-utils";
 import { Field, Formik, Form } from "formik";
 import DatePickerField from "components/FormikPickers";
 
