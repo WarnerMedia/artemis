@@ -24,7 +24,6 @@ describe("HiddenFindingDialog component", () => {
 		"This form contains unresolved errors. Please resolve these errors";
 	const fieldReasonLabel = "Reason";
 	const fieldHideForLabel = "Hide For";
-	const fieldExpiresLabel = "Expires (optional)";
 	const buttonUpdateLabel = "Update";
 	const findingLabelHiddenBy = "Hidden finding created by:";
 	const findingLabelHiddenDate = "Hidden finding created:";
