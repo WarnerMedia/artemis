@@ -723,7 +723,7 @@
   "939": "Improper Authorization in Handler for Custom URL Scheme",
   "940": "Improper Verification of Source of a Communication Channel",
   "941": "Incorrectly Specified Destination in a Communication Channel",
-  "942": "Permissive Cross-domain Policy with Untrusted Domains",
+  "942": "Permissive Cross-domain Security Policy with Untrusted Domains",
   "943": "Improper Neutralization of Special Elements in Data Query Logic",
   "1004": "Sensitive Cookie Without 'HttpOnly' Flag",
   "1007": "Insufficient Visual Distinction of Homoglyphs Presented to User",
@@ -734,7 +734,7 @@
   "1025": "Comparison Using Wrong Factors",
   "1037": "Processor Optimization Removal or Modification of Security-critical Code",
   "1038": "Insecure Automated Optimizations",
-  "1039": "Automated Recognition Mechanism with Inadequate Detection or Handling of Adversarial Input Perturbations",
+  "1039": "Inadequate Detection or Handling of Adversarial Input Perturbations in Automated Recognition Mechanism",
   "1041": "Use of Redundant Code",
   "1042": "Static Member Data Element outside of a Singleton Class Element",
   "1043": "Data Element Aggregating an Excessively Large Number of Non-Primitive Elements",
@@ -963,5 +963,9 @@
   "1422": "Exposure of Sensitive Information caused by Incorrect Data Forwarding during Transient Execution",
   "1423": "Exposure of Sensitive Information caused by Shared Microarchitectural Predictor State that Influences Transient Execution",
   "1426": "Improper Validation of Generative AI Output",
-  "1427": "Improper Neutralization of Input Used for LLM Prompting"
+  "1427": "Improper Neutralization of Input Used for LLM Prompting",
+  "1428": "Reliance on HTTP instead of HTTPS",
+  "1429": "Missing Security-Relevant Feedback for Unexecuted Operations in Hardware Interface",
+  "1431": "Driving Intermediate Cryptographic State/Results to Hardware Module Outputs",
+  "1434": "Insecure Setting of Generative AI/ML Model Inference Parameters"
 }
