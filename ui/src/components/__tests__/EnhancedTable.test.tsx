@@ -623,6 +623,9 @@ describe("EnhancedTable component", () => {
 			});
 		});
 
+		/**
+		 * This test throws a warning/error in dev mode, not sure what to do with it.
+		 */
 		it("if no items on current page, table reload should decrement page count", async () => {
 			let reloadCount = 0;
 			let currentPage = 0;

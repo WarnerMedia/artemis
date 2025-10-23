@@ -660,13 +660,6 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		};
 	}
 
-	const newLastPage = Math.max(0, Math.ceil(count / rowsPerPage) - 1);
-
-	let showPage = page;
-	if (newLastPage < page) {
-		showPage = 0;
-	}
-
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
@@ -776,7 +769,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 					component="div"
 					count={count}
 					rowsPerPage={rowsPerPage}
-					page={showPage}
+					page={page}
 					onPageChange={handleChangePage}
 					onRowsPerPageChange={handleChangeRowsPerPage}
 				/>
