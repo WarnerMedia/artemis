@@ -28,7 +28,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid2 as Grid,
+	Grid,
 	IconButton,
 	InputAdornment,
 	LinearProgress,
@@ -199,7 +199,7 @@ interface ScrollToTopProps {
 }
 
 // element that will appear as user approaches bottom of target element
-// and will scroll back to element indentified by selector
+// and will scroll back to element identified by selector
 // will usually wrap a <Fab> child element
 function ScrollTop(props: ScrollToTopProps) {
 	const { children, selector, target } = props;
@@ -1265,7 +1265,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 								<ListItemText
 									classes={{ secondary: classes.listItemText }}
 									primary={i18n._(t`Scope`)}
-									disableTypography={true}
 									secondary={
 										selectedRow?.scope &&
 										Array.isArray(selectedRow.scope) &&
@@ -1281,6 +1280,11 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 											</i>
 										)
 									}
+									slotProps={{
+										secondary: {
+											component: "span",
+										},
+									}}
 								/>
 							</Tooltip>
 						</ListItem>
@@ -1301,7 +1305,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							>
 								<ListItemText
 									primary={i18n._(t`Features`)}
-									disableTypography={true}
 									secondary={
 										featuresChips &&
 										Array.isArray(featuresChips) &&
@@ -1313,6 +1316,11 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 											</i>
 										)
 									}
+									slotProps={{
+										secondary: {
+											component: "span",
+										},
+									}}
 								/>
 							</Tooltip>
 						</ListItem>
@@ -1331,7 +1339,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							>
 								<ListItemText
 									primary={i18n._(t`Type`)}
-									disableTypography={true}
 									secondary={
 										selectedRow?.admin
 											? i18n._(t`Administrator`)
@@ -1352,7 +1359,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							</ListItemIcon>
 							<ListItemText
 								primary={i18n._(t`Created Date`)}
-								disableTypography={true}
 								secondary={
 									selectedRow?.created ? (
 										<DateTimeCell value={selectedRow?.created} format="long" />
@@ -1373,7 +1379,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							</ListItemIcon>
 							<ListItemText
 								primary={i18n._(t`Expiration Date`)}
-								disableTypography={true}
 								secondary={
 									selectedRow?.expires ? (
 										<ExpiringDateTimeCell
@@ -1397,7 +1402,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							</ListItemIcon>
 							<ListItemText
 								primary={i18n._(t`Last Used Date`)}
-								disableTypography={true}
 								secondary={
 									selectedRow?.last_used ? (
 										<DateTimeCell

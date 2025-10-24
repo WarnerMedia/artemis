@@ -152,9 +152,9 @@ describe("MainPage component", () => {
 			const { user } = render(<MainPage />);
 
 			// 1. onboarding link appears when form first loaded
-			const onboardingLink = screen.getByRole("link", {
-				name: "Missing an option? Request access",
-			});
+			const onboardingLink = screen.getByText(
+				"Missing an option? Request access",
+			);
 			expect(onboardingLink).toBeInTheDocument();
 
 			// 2. onboarding link remains there are no vcs validation errors

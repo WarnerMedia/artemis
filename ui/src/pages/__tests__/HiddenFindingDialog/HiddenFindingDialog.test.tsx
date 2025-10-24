@@ -23,7 +23,6 @@ describe("HiddenFindingDialog component", () => {
 		"This form contains unresolved errors. Please resolve these errors";
 	const fieldReasonLabel = "Reason";
 	const fieldHideForLabel = "Hide For";
-	const fieldExpiresLabel = "Expires (optional)";
 	const buttonAddLabel = "Add";
 	const buttonUpdateLabel = "Update";
 	const buttonRemoveLabel = "Remove";
@@ -114,7 +113,7 @@ describe("HiddenFindingDialog component", () => {
 
 		describe("expires field", () => {
 			it("date min value", async () => {
-				const expiresField = screen.getByLabelText(fieldExpiresLabel);
+				const expiresField = await screen.findByTestId("expires_date_input");
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveAttribute(
 					"placeholder",
@@ -144,7 +143,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 
 			it("date max value", async () => {
-				const expiresField = screen.getByLabelText(fieldExpiresLabel);
+				const expiresField = await screen.findByTestId("expires_date_input");
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveValue("");
 				const dateMax = "2051/01/01 00:00";
@@ -172,7 +171,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 
 			it("date not max value", async () => {
-				const expiresField = screen.getByLabelText(fieldExpiresLabel);
+				const expiresField = await screen.findByTestId("expires_date_input");
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveValue("");
 				const notMax = "2050/12/29 23:59";
@@ -188,7 +187,7 @@ describe("HiddenFindingDialog component", () => {
 			});
 
 			it("disallow invalid characters", async () => {
-				const expiresField = screen.getByLabelText(fieldExpiresLabel);
+				const expiresField = await screen.findByTestId("expires_date_input");
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveValue("");
 				await act(async () => {
@@ -196,12 +195,12 @@ describe("HiddenFindingDialog component", () => {
 					await user.type(expiresField, "testme!");
 				});
 				await waitFor(() => {
-					expect(expiresField).toHaveValue("YYYY/MM/DD hh:mm"); // can't type invalid chars in field
+					expect(expiresField).toHaveValue(""); // can't type invalid chars in field
 				});
 			});
 
 			it("disallow invalid date", async () => {
-				const expiresField = screen.getByLabelText(fieldExpiresLabel);
+				const expiresField = await screen.findByTestId("expires_date_input");
 				expect(expiresField).toBeInTheDocument();
 				expect(expiresField).toHaveValue("");
 				await user.type(expiresField, "2030/02/31 13:00"); // Feb 31 invalid

@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "test-utils";
+import { fireEvent, render, screen, waitFor, within } from "test-utils";
 import { DateTime, Settings } from "luxon";
 import { useSelector, useDispatch } from "react-redux";
 import ApiKeys from "components/ApiKeys";
@@ -345,9 +345,7 @@ describe("ApiKeys component", () => {
 			});
 
 			// click another field to trigger the form error
-			const expiresField = within(dialog).getByRole("textbox", {
-				name: /expires/i,
-			});
+			const expiresField = within(dialog).getByTestId("expires_date_input");
 			await user.click(expiresField);
 
 			await within(dialog).findByText("Required");
@@ -383,12 +381,13 @@ describe("ApiKeys component", () => {
 			});
 			await user.type(nameField, "testme");
 
-			const expiresField = within(dialog).getByRole("textbox", {
-				name: /expires/i,
-			});
+			const expiresField = within(dialog).getByTestId("expires_date_input");
 			// Use a past date
 			const pastDate = DateTime.now().minus({ days: 10 }).toFormat(DATE_FORMAT);
-			await user.type(expiresField, pastDate);
+
+			fireEvent.change(expiresField, {
+				target: { value: pastDate },
+			});
 
 			await waitFor(() => {
 				expect(
@@ -397,12 +396,14 @@ describe("ApiKeys component", () => {
 			});
 
 			// Fix with a future date
-			await user.clear(expiresField);
 			const futureDate = DateTime.now()
 				.plus({ days: 10 })
 				.set({ second: 0, millisecond: 0 })
 				.toFormat(DATE_FORMAT);
-			await user.type(expiresField, futureDate);
+
+			fireEvent.change(expiresField, {
+				target: { value: futureDate },
+			});
 
 			await waitFor(() => {
 				expect(
@@ -479,7 +480,7 @@ describe("ApiKeys component", () => {
 			const nameField = within(dialog).getByRole("textbox", { name: /name/i });
 			await user.type(nameField, "My Test Key");
 
-			const expiresField = within(dialog).getByRole("textbox", {
+			const expiresField = within(dialog).getByRole("group", {
 				name: /expires/i,
 			});
 			const futureDate = DateTime.now()
@@ -546,7 +547,7 @@ describe("ApiKeys component", () => {
 			const nameField = within(dialog).getByRole("textbox", { name: /name/i });
 			await user.type(nameField, "My Test Key");
 
-			const expiresField = within(dialog).getByRole("textbox", {
+			const expiresField = within(dialog).getByRole("group", {
 				name: /expires/i,
 			});
 			const futureDate = DateTime.now()
@@ -599,12 +600,12 @@ describe("ApiKeys component", () => {
 			await user.type(nameField, "Admin Test Key");
 
 			// Since we properly set up the user as an admin, the checkbox should exist
-			const adminCheckbox = within(dialog).getByRole("checkbox", {
+			const adminCheckbox = within(dialog).getByRole("switch", {
 				name: /create a user administrator api key/i,
 			});
 			await user.click(adminCheckbox);
 
-			const expiresField = within(dialog).getByRole("textbox", {
+			const expiresField = within(dialog).getByRole("group", {
 				name: /expires/i,
 			});
 			const futureDate = DateTime.now()

@@ -37,7 +37,7 @@ import {
 	FormControlLabel,
 	FormGroup,
 	FormLabel,
-	Grid2 as Grid,
+	Grid,
 	GridSize,
 	IconButton,
 	InputAdornment,
@@ -1188,7 +1188,11 @@ const getTableFilters = (values: AddQueryParams) => {
 
 const NoResults = (props: { title: string }) => (
 	<Paper elevation={2}>
-		<Typography align="center" style={{ fontStyle: "italic", padding: "2em" }}>
+		<Typography
+			component="div"
+			align="center"
+			style={{ fontStyle: "italic", padding: "2em" }}
+		>
 			{props.title}
 		</Typography>
 	</Paper>
@@ -2205,6 +2209,11 @@ const ComponentDialogContent = (props: {
 											})}
 										</ol>
 									}
+									slotProps={{
+										secondary: {
+											component: "span",
+										},
+									}}
 								/>
 							</ListItem>
 						</List>
