@@ -2,9 +2,12 @@
 trivy SCA plugin
 """
 
+from os.path import abspath
+
 import json
 import subprocess
-from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_npm_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_composer_locks import check_composer_package_files
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
 from engine.plugins.lib.utils import setup_logging
@@ -36,11 +39,25 @@ def execute_trivy_lock_scan(path: str, include_dev: bool):
 def main():
     logger.info("Executing Trivy SCA")
     args = parse_args()
+    path = abspath(args.path)
     include_dev = args.engine_vars.get("include_dev", False)
     results = []
+    alerts = []
+    errors = []
 
-    # Generate Lock files (without installing npm packages)
-    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, False)
+    # Generate Lock files (and install npm packages for license info)
+    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
+    alerts.extend(lock_file_alerts)
+    errors.extend(lock_file_errors)
+
+    # Run Composer Install for exact version numbers
+    (working_src, working_mount) = str(args.engine_vars.get("working_mount", "")).split(":")
+    if not working_src or not working_mount:
+        errors.append("Working volume not provided")
+
+    compose_lock_errors, compose_lock_alerts = check_composer_package_files(path, working_src, include_dev)
+    alerts.extend(compose_lock_alerts)
+    errors.extend(compose_lock_errors)
 
     # Scan local lock files
     output = execute_trivy_lock_scan(args.path, include_dev)
@@ -54,11 +71,7 @@ def main():
         results.extend(result)
 
     # Return results
-    print(
-        json.dumps(
-            {"success": not bool(results), "details": results, "errors": lock_file_errors, "alerts": lock_file_alerts}
-        )
-    )
+    print(json.dumps({"success": not bool(results), "details": results, "errors": errors, "alerts": alerts}))
 
 
 if __name__ == "__main__":
