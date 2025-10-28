@@ -23,7 +23,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-runner"]
+test = ["pytest", "pytest-runner", "pytest-asyncio"]
 
 [project.urls]
 Homepage = "https://github.com/warnermedia/artemis/backend/lambdas/maintenance/license_retriever"
@@ -34,3 +34,6 @@ artemis_license_retriever = "license_retriever.handlers:handler"
 [tool.pytest.ini_options]
 addopts = "-m \"not integtest and not end2end\" --disable-pytest-warnings"
 testpaths = ["tests"]
+markers = [
+    "asyncio: marks tests as async (deselect with '-m \"not asyncio\"')"
+]
