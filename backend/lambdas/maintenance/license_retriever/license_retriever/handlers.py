@@ -4,6 +4,7 @@ from typing import Tuple
 
 import requests
 from django.db.models import Q
+from asgiref.sync import sync_to_async
 
 from artemisdb.artemisdb.consts import ComponentType
 from artemisdb.artemisdb.models import Component, License
@@ -34,19 +35,23 @@ async def async_handler():
     spdx_licenses = None
 
     # Get all components that need license information - only supported types
-    components = Component.objects.filter(
+    # Use sync_to_async to properly handle Django ORM in async context
+    components_queryset = await sync_to_async(lambda: Component.objects.filter(
         Q(component_type__in=list(BATCH_RETRIEVERS.keys())) | Q(component_type__isnull=True), 
         licenses__isnull=True
-    )
+    ))()
+    
+    components_count = await sync_to_async(components_queryset.count)()
+    components_list = await sync_to_async(list)(components_queryset)
 
-    if components.count() > 0:
+    if components_count > 0:
         spdx_licenses = download_spdx_licenses()
         
         # Group components by type for batch processing
         components_by_type = {}
         unknown_components = []
         
-        for component in components:
+        for component in components_list:
             if component.component_type is None:
                 unknown_components.append(component)
             elif component.component_type in BATCH_RETRIEVERS:
@@ -68,11 +73,10 @@ async def async_handler():
         LOG.info("No components to process")
 
     # Report on unsupported types
-    not_supported = (
-        Component.objects.filter(licenses__isnull=True, component_type__isnull=False)
-        .exclude(component_type__in=list(BATCH_RETRIEVERS.keys()))
-        .count()
-    )
+    not_supported = await sync_to_async(lambda: Component.objects.filter(
+        licenses__isnull=True, 
+        component_type__isnull=False
+    ).exclude(component_type__in=list(BATCH_RETRIEVERS.keys())).count())()
     LOG.info("%s components with unsupported types are missing licenses", not_supported)
 
 
@@ -111,13 +115,13 @@ async def create_and_assign_licenses(component, licenses: list, spdx_licenses: d
         license_id, license_name = license_lookup(license, spdx_licenses)
         if license_id is not None:
             LOG.info("Found license: %s", license_id)
-            license_obj, _ = License.objects.get_or_create(
+            license_obj, _ = await sync_to_async(License.objects.get_or_create)(
                 license_id=license_id, defaults={"name": license_name}
             )
             license_objs.append(license_obj)
 
     if license_objs:
-        component.licenses.set(license_objs)
+        await sync_to_async(component.licenses.set)(license_objs)
     else:
         LOG.info("No licenses found for %s", component)
 
@@ -140,7 +144,7 @@ async def process_unknown_component(component, spdx_licenses: dict):
                 # Got a match - record the component type and process licenses
                 LOG.info("%s is identified as a %s package", component, component_type)
                 component.component_type = component_type
-                component.save()
+                await sync_to_async(component.save)()
                 
                 await create_and_assign_licenses(component, licenses, spdx_licenses)
                 return
@@ -151,7 +155,7 @@ async def process_unknown_component(component, spdx_licenses: dict):
     # Package type was not identified by any batch retriever
     LOG.info("Package type was not identified for %s", component)
     component.component_type = ComponentType.UNKNOWN.value
-    component.save()
+    await sync_to_async(component.save)()
 
 
 def license_lookup(license, spdx_licenses) -> Tuple[str | None, str | None]:
