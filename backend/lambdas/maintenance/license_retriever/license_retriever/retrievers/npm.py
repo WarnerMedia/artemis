@@ -1,45 +1,73 @@
-from time import sleep
+import asyncio
 from typing import Optional, Union
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+import aiohttp
 
 from artemislib.logging import Logger
 
 LOG = Logger(__name__)
 
-# Create a session with retry logic once
-session = requests.Session()
-retry_strategy = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
-adapter = HTTPAdapter(max_retries=retry_strategy)
-session.mount("https://", adapter)
+
+async def retrieve_npm_licenses_batch(packages: list[tuple[str, str]], max_concurrent: int = 10) -> dict[str, list[str]]:
+    """
+    Retrieve licenses for multiple packages concurrently using asyncio.
+    
+    Args:
+        packages: List of (name, version) tuples
+        max_concurrent: Maximum number of concurrent requests
+    
+    Returns:
+        Dict mapping "name@version" to list of licenses
+    """
+    connector = aiohttp.TCPConnector(limit=max_concurrent)
+    timeout = aiohttp.ClientTimeout(total=30)
+    
+    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+        tasks = [
+            get_package_license_async(session, name, version)
+            for name, version in packages
+        ]
+        
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Format results as dict
+        license_data = {}
+        for i, (name, version) in enumerate(packages):
+            key = f"{name}@{version}"
+            if isinstance(results[i], Exception):
+                LOG.error('Failed to get license for "%s": %s', key, results[i])
+                license_data[key] = []
+            else:
+                license_data[key] = results[i]
+        
+        return license_data
 
 
-def retrieve_npm_licenses(name: str, version: str) -> list:
-    package_info = get_package_info(name, version)
+async def get_package_license_async(session: aiohttp.ClientSession, name: str, version: str) -> list[str]:
+    """Async version of license retrieval for a single package"""
+    package_info = await get_package_info(session, name, version)
     if not package_info:
         return []
-
+    
     return get_package_license(package_info, f"{name}@{version}")
 
 
-def get_package_info(name: str, version: str) -> dict:
+async def get_package_info(session: aiohttp.ClientSession, name: str, version: str) -> dict:
+    """Async version of package info retrieval using aiohttp"""
     url = f"https://registry.npmjs.org/{name}/{version}"
 
     try:
-        r = session.get(url, timeout=30)
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.json()
+            elif response.status == 404:
+                LOG.warning('Unable to find package info for "%s@%s" on registry.npmjs.org', name, version)
+                return {}
+            else:
+                LOG.error('Unexpected error for "%s@%s": HTTP %s', name, version, response.status)
+                return {}
 
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 404:
-            LOG.warning('Unable to find package info for "%s@%s" on registry.npmjs.org', name, version)
-            return {}
-        else:
-            LOG.error('Unexpected error for "%s@%s": HTTP %s', name, version, r.status_code)
-            return {}
-
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         LOG.error('Request failed for "%s@%s": %s', name, version, str(e))
         return {}
 
