@@ -10,25 +10,22 @@ LOG = Logger(__name__)
 async def retrieve_go_licenses_batch(packages: list[tuple[str, str]], max_concurrent: int = 10) -> dict[str, list[str]]:
     """
     Retrieve licenses for multiple GO packages concurrently using asyncio.
-    
+
     Args:
         packages: List of (name, version) tuples
         max_concurrent: Maximum number of concurrent requests
-    
+
     Returns:
         Dict mapping "name@version" to list of licenses
     """
     connector = aiohttp.TCPConnector(limit=max_concurrent)
     timeout = aiohttp.ClientTimeout(total=30)
-    
+
     async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
-        tasks = [
-            get_package_license_async(session, name, version)
-            for name, version in packages
-        ]
-        
+        tasks = [get_package_license_async(session, name, version) for name, version in packages]
+
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Format results as dict
         license_data = {}
         for i, (name, version) in enumerate(packages):
@@ -38,7 +35,7 @@ async def retrieve_go_licenses_batch(packages: list[tuple[str, str]], max_concur
                 license_data[key] = []
             else:
                 license_data[key] = results[i]
-        
+
         return license_data
 
 
@@ -47,7 +44,7 @@ async def get_package_license_async(session: aiohttp.ClientSession, name: str, v
     package_info = await get_package_info(session, name)
     if not package_info:
         return []
-    
+
     return extract_licenses(package_info)
 
 
@@ -57,7 +54,7 @@ async def get_package_info(session: aiohttp.ClientSession, name: str) -> str:
 
     max_retries = 5
     retry_count = 0
-    
+
     while retry_count < max_retries:
         try:
             async with session.get(url) as response:
@@ -80,7 +77,7 @@ async def get_package_info(session: aiohttp.ClientSession, name: str) -> str:
         except Exception as e:
             LOG.error('Request failed for "%s": %s', name, str(e))
             return ""
-    
+
     LOG.error('Max retries exceeded for "%s" due to rate limiting', name)
     return ""
 

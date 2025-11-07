@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "license_retriever"
-version = "2023.3"
+version = "2025.11"
 description = "License Retrieval Lambda"
 readme = "README.md"
 authors = [
