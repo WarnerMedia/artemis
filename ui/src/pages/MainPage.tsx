@@ -36,7 +36,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid2 as Grid,
+	Grid,
 	InputAdornment,
 	LinearProgress,
 	Paper,
@@ -279,7 +279,7 @@ const MainPage = () => {
 
 	// empty form values for initializing form on first load or resetting form
 	const emptyValues: ScanOptionsForm = {
-		vcsOrg: null, // Autoselect component - when no option selected defaults to null
+		vcsOrg: null, // Auto-select component - when no option selected defaults to null
 		repo: "",
 		branch: "",
 		secrets: true, // all scan categories except sbom selected by default
@@ -292,7 +292,7 @@ const MainPage = () => {
 		depth: "",
 		includeDev: false,
 		submitContext: "view" as SubmitContext,
-		// We need the api names for the formik initial state in order to create the prechecked checkboxes.
+		// We need the api names for the formik initial state in order to create the pre-checked checkboxes.
 		secretPlugins,
 		staticPlugins: staticPlugins.filter((p) => !excludePlugins.includes(p)),
 		techPlugins,

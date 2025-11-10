@@ -215,9 +215,7 @@ describe("UserSettings component", () => {
 				const welcomeField = screen.getByText("Show Welcome Message");
 				expect(welcomeField).toBeInTheDocument();
 				if (welcomeField.parentElement) {
-					const toggle = within(welcomeField.parentElement).getByRole(
-						"checkbox",
-					);
+					const toggle = within(welcomeField.parentElement).getByRole("switch");
 					expect(toggle).toBeInTheDocument();
 					expect(toggle).toBeChecked();
 
@@ -238,9 +236,7 @@ describe("UserSettings component", () => {
 				const welcomeField = screen.getByText("Show Welcome Message");
 				expect(welcomeField).toBeInTheDocument();
 				if (welcomeField.parentElement) {
-					const toggle = within(welcomeField.parentElement).getByRole(
-						"checkbox",
-					);
+					const toggle = within(welcomeField.parentElement).getByRole("switch");
 					expect(toggle).toBeInTheDocument();
 					expect(toggle).toBeChecked();
 
@@ -261,9 +257,7 @@ describe("UserSettings component", () => {
 				const welcomeField = screen.getByText("Show Welcome Message");
 				expect(welcomeField).toBeInTheDocument();
 				if (welcomeField.parentElement) {
-					const toggle = within(welcomeField.parentElement).getByRole(
-						"checkbox",
-					);
+					const toggle = within(welcomeField.parentElement).getByRole("switch");
 					expect(toggle).toBeInTheDocument();
 					expect(toggle).not.toBeChecked();
 

@@ -110,7 +110,7 @@ describe("ActivityTable component", () => {
 			screen.getByRole("button", { name: /refresh/i }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByRole("checkbox", { name: /auto refresh/i }),
+			screen.getByRole("switch", { name: /auto refresh/i }),
 		).toBeInTheDocument();
 		expect(
 			screen.getByRole("columnheader", { name: /actions/i }),
@@ -739,7 +739,7 @@ describe("ActivityTable component", () => {
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
 			// check default auto-reload toggle state is checked/enabled
-			const checkbox = screen.getByRole("checkbox", {
+			const checkbox = screen.getByRole("switch", {
 				name: /auto refresh/i,
 			}) as HTMLInputElement;
 			expect(checkbox.checked).toEqual(true);
@@ -772,7 +772,7 @@ describe("ActivityTable component", () => {
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
 			// check default auto-reload toggle state is checked/enabled
-			const checkbox = screen.getByRole("checkbox", {
+			const checkbox = screen.getByRole("switch", {
 				name: /auto refresh/i,
 			}) as HTMLInputElement;
 			expect(checkbox.checked).toEqual(true);
@@ -811,7 +811,7 @@ describe("ActivityTable component", () => {
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
 			// check default auto-reload toggle state is checked/enabled
-			const checkbox = screen.getByRole("checkbox", {
+			const checkbox = screen.getByRole("switch", {
 				name: /auto refresh/i,
 			}) as HTMLInputElement;
 			expect(checkbox.checked).toEqual(true);
@@ -849,7 +849,7 @@ describe("ActivityTable component", () => {
 			expect(mockOnDataLoad.mock.calls.length).toBe(1); // called once as data initially loaded
 
 			// check default auto-reload toggle state is checked/enabled
-			const checkbox = screen.getByRole("checkbox", {
+			const checkbox = screen.getByRole("switch", {
 				name: /auto refresh/i,
 			}) as HTMLInputElement;
 			expect(checkbox.checked).toEqual(true);
@@ -984,13 +984,13 @@ describe("ActivityTable component", () => {
 			});
 
 			// associated filter toggles should be disabled
-			const toggleShowScans = screen.getByRole("checkbox", {
+			const toggleShowScans = screen.getByRole("switch", {
 				name: /Show only my scans/i,
 			});
 			expect(toggleShowScans).toBeEnabled();
 			expect(toggleShowScans).not.toBeChecked();
 
-			const toggleIncludeBatch = screen.getByRole("checkbox", {
+			const toggleIncludeBatch = screen.getByRole("switch", {
 				name: /Include batched scans/i,
 			});
 			expect(toggleIncludeBatch).toBeEnabled();
@@ -1015,12 +1015,12 @@ describe("ActivityTable component", () => {
 				/>,
 			);
 			// associated filter toggles should be disabled
-			const toggleShowScans = screen.getByRole("checkbox", {
+			const toggleShowScans = screen.getByRole("switch", {
 				name: /Show only my scans/i,
 			});
 			expect(toggleShowScans).toBeDisabled();
 
-			const toggleIncludeBatch = screen.getByRole("checkbox", {
+			const toggleIncludeBatch = screen.getByRole("switch", {
 				name: /Include batched scans/i,
 			});
 			expect(toggleIncludeBatch).toBeDisabled();
@@ -1049,7 +1049,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleShowScans = screen.getByRole("checkbox", {
+			const toggleShowScans = screen.getByRole("switch", {
 				name: /Show only my scans/i,
 			});
 			expect(toggleShowScans).toBeEnabled();
@@ -1101,7 +1101,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleIncludeBatch = screen.getByRole("checkbox", {
+			const toggleIncludeBatch = screen.getByRole("switch", {
 				name: /Include batched scans/i,
 			});
 			expect(toggleIncludeBatch).toBeEnabled();
@@ -1153,7 +1153,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleIncludeBatch = screen.getByRole("checkbox", {
+			const toggleIncludeBatch = screen.getByRole("switch", {
 				name: /Include batched scans/i,
 			});
 			expect(toggleIncludeBatch).toBeEnabled();
@@ -1172,7 +1172,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleShowScans = screen.getByRole("checkbox", {
+			const toggleShowScans = screen.getByRole("switch", {
 				name: /Show only my scans/i,
 			});
 			expect(toggleShowScans).toBeEnabled();
@@ -1219,7 +1219,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleShowScans = screen.getByRole("checkbox", {
+			const toggleShowScans = screen.getByRole("switch", {
 				name: /Show only my scans/i,
 			});
 			expect(toggleShowScans).toBeEnabled();
@@ -1238,7 +1238,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleIncludeBatch = screen.getByRole("checkbox", {
+			const toggleIncludeBatch = screen.getByRole("switch", {
 				name: /Include batched scans/i,
 			});
 			expect(toggleIncludeBatch).toBeEnabled();
@@ -1287,7 +1287,7 @@ describe("ActivityTable component", () => {
 				itemsPerPage: defaultRowsPerPage,
 			});
 
-			const toggleIncludeBatch = screen.getByRole("checkbox", {
+			const toggleIncludeBatch = screen.getByRole("switch", {
 				name: /Include batched scans/i,
 			});
 			expect(toggleIncludeBatch).toBeEnabled();

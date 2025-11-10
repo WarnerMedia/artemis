@@ -8,7 +8,7 @@
 * [tgayvert](https://github.com/tgayvert)
 * [Tigenzero](https://github.com/Tigenzero)
 * [jlegarreta](https://github.com/jlegarreta)
-* [nlapierre-isp](https://github.com/nlapierre-isp)
+* Nicholas LaPierre
 * [timmliu16888](https://github.com/timmliu16888)
 * [bsloan334](https://github.com/bsloan334)
 * [CTownsdin](https://github.com/CTownsdin)

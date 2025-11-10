@@ -39,13 +39,15 @@ const AutoCompleteField = React.forwardRef(
 								ref={ref}
 								name={allParams.name}
 								error={allParams.error}
-								InputProps={InputProps}
 								helperText={allParams.helperText}
 								label={
 									loading ? i18n._(t`Loading options...`) : allParams.label
 								}
 								placeholder={allParams.placeholder}
 								variant="outlined"
+								slotProps={{
+									input: InputProps,
+								}}
 							/>
 						);
 					}}
@@ -62,9 +64,10 @@ const AutoCompleteField = React.forwardRef(
 						}
 						const matches = match(optionLabel, inputValue);
 						const parts = parse(optionLabel, matches);
-
+						// don't pass key in with rest of props
+						const { key, ...otherProps } = renderProps;
 						return (
-							<li {...renderProps}>
+							<li key={key} {...otherProps}>
 								<div>
 									{parts.map((part, index) => (
 										<span

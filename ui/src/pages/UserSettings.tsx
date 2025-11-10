@@ -28,7 +28,7 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-	Grid2 as Grid,
+	Grid,
 	List,
 	ListItem,
 	ListItemIcon,
@@ -653,7 +653,6 @@ export default function UserSettings() {
 								>
 									<ListItemText
 										classes={{ secondary: classes.longListItemText }}
-										disableTypography={true}
 										primary={i18n._(
 											t`Scope  (${
 												currentUser?.scope ? currentUser.scope.length : 0
@@ -678,6 +677,11 @@ export default function UserSettings() {
 												<Skeleton />
 											)
 										}
+										slotProps={{
+											secondary: {
+												component: "span",
+											},
+										}}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -713,6 +717,11 @@ export default function UserSettings() {
 								<ListItemText
 									primary={i18n._(t`Theme`)}
 									secondary={themeChips}
+									slotProps={{
+										secondary: {
+											component: "span",
+										},
+									}}
 								/>
 							</ListItem>
 						</List>
@@ -784,6 +793,11 @@ export default function UserSettings() {
 												<Skeleton />
 											)
 										}
+										slotProps={{
+											secondary: {
+												component: "span",
+											},
+										}}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -858,6 +872,11 @@ export default function UserSettings() {
 												<Skeleton />
 											)
 										}
+										slotProps={{
+											secondary: {
+												component: "span",
+											},
+										}}
 									/>
 								</Tooltip>
 							</ListItem>
@@ -869,6 +888,11 @@ export default function UserSettings() {
 								<ListItemText
 									primary={i18n._(t`Linked Accounts`)}
 									secondary={<LinkedAccounts />}
+									slotProps={{
+										secondary: {
+											component: "span",
+										},
+									}}
 								/>
 							</ListItem>
 						</List>

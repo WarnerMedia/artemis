@@ -1,5 +1,5 @@
 import { DateTime, Settings } from "luxon";
-import { act, render, screen, waitFor, within } from "test-utils";
+import { act, fireEvent, render, screen, waitFor, within } from "test-utils";
 import { HiddenFindingDialog } from "pages/ResultsPage";
 import { vulnRow, findingVulnRawRow } from "../../../../testData/testMockData";
 
@@ -24,7 +24,6 @@ describe("HiddenFindingDialog component", () => {
 		"This form contains unresolved errors. Please resolve these errors";
 	const fieldReasonLabel = "Reason";
 	const fieldHideForLabel = "Hide For";
-	const fieldExpiresLabel = "Expires (optional)";
 	const buttonUpdateLabel = "Update";
 	const findingLabelHiddenBy = "Hidden finding created by:";
 	const findingLabelHiddenDate = "Hidden finding created:";
@@ -150,7 +149,7 @@ describe("HiddenFindingDialog component", () => {
 				within(hideForField).getByText("This vulnerability in THIS component"),
 			).toBeInTheDocument();
 
-			const expiresField = screen.getByLabelText(fieldExpiresLabel);
+			const expiresField = await screen.findByTestId("expires_date_input");
 			expect(expiresField).toBeInTheDocument();
 			expect(expiresField).toHaveValue(
 				formatDateForExpirationField(vulnRow.hiddenFindings[0].expires),
@@ -168,7 +167,10 @@ describe("HiddenFindingDialog component", () => {
 			act(() => {
 				/* fire events that update state */
 				user.clear(expiresField); // clear prior entry
-				user.type(expiresField, tomorrow);
+
+				fireEvent.change(expiresField, {
+					target: { value: tomorrow },
+				});
 			});
 
 			await waitFor(() => {
@@ -289,7 +291,7 @@ describe("HiddenFindingDialog component", () => {
 				within(hideForField).getByText("This vulnerability in ALL components"),
 			).toBeInTheDocument();
 
-			const expiresField = screen.getByLabelText(fieldExpiresLabel);
+			const expiresField = await screen.findByTestId("expires_date_input");
 			expect(expiresField).toBeInTheDocument();
 			expect(expiresField).toHaveValue(
 				formatDateForExpirationField(
@@ -310,7 +312,9 @@ describe("HiddenFindingDialog component", () => {
 			act(() => {
 				/* fire events that update state */
 				user.clear(expiresField); // clear prior entry
-				user.type(expiresField, tomorrow);
+			});
+			fireEvent.change(expiresField, {
+				target: { value: tomorrow },
 			});
 			await waitFor(() => {
 				expect(expiresField).toHaveValue(tomorrow);

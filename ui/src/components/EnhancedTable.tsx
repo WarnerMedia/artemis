@@ -83,7 +83,7 @@ interface MenuOptions {
 }
 
 interface EnhancedTableProps {
-	id?: string; // row field to use for unique key, defaults to keyId if unsupplied
+	id?: string; // row field to use for unique key, defaults to keyId if not supplied
 	columns: ColDef[];
 	rows: RowDef[];
 	defaultOrder?: Order; // how all columns will be ordered initially unless overridden in ColDef.order, default: "asc"

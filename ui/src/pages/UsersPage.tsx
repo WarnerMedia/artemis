@@ -26,7 +26,7 @@ import {
 	FormGroup,
 	FormHelperText,
 	FormLabel,
-	Grid2 as Grid,
+	Grid,
 	IconButton,
 	InputAdornment,
 	LinearProgress,
@@ -272,8 +272,8 @@ interface ScrollToTopProps {
 }
 
 // element that will appear as user approaches bottom of target element
-// and will scroll back to element indentified by selector
-// will usually wray a <Fab> child element
+// and will scroll back to element identified by selector
+// will usually wrap a <Fab> child element
 function ScrollTop(props: ScrollToTopProps) {
 	const { children, selector, target } = props;
 	const { classes } = useStyles();

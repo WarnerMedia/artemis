@@ -546,7 +546,7 @@ describe("SearchPage component", () => {
 						name: /^search$/i,
 					});
 
-					// Mui selecion elements use aria-disabled instead of disabled attribute
+					// Mui selection elements use aria-disabled instead of disabled attribute
 					expect(vulnMatch).not.toHaveAttribute("aria-disabled");
 					expect(vuln).not.toBeDisabled();
 					expect(descMatch).not.toHaveAttribute("aria-disabled");
@@ -1863,15 +1863,11 @@ describe("SearchPage component", () => {
 					within(dialog).getByRole("combobox", {
 						name: /last scan time match/i,
 					});
-					within(dialog).getByRole("textbox", {
-						name: /last scan time/i,
-					});
+					within(dialog).findByTestId("last_scan_date_input");
 					within(dialog).getByRole("combobox", {
 						name: /last qualified scan time match/i,
 					});
-					within(dialog).getByRole("textbox", {
-						name: /last qualified scan time/i,
-					});
+					within(dialog).findByTestId("last_qualified_scan_date_input");
 					const repoSearchButton = within(dialog).getByRole("button", {
 						name: /^search$/i,
 					});
