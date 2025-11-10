@@ -12,7 +12,9 @@ from license_retriever.retrievers import pypi
             {"info": {"license": "gpl-3.0"}}, ["gpl-3.0"], id="should return single license from info.license"
         ),
         pytest.param(
-            {"info": {"classifiers": ["License :: OSI Approved :: MIT License"]}}, [], id="should handle classifiers"
+            {"info": {"classifiers": ["License :: OSI Approved :: MIT License"]}},
+            ["mit"],
+            id="should handle classifiers",
         ),
     ],
 )

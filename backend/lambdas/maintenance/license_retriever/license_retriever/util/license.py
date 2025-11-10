@@ -13,7 +13,7 @@ async def retrieve_licenses_batch(
     max_concurrent: int = 10,
 ) -> dict[str, list[str]]:
     """
-    Retrieve licenses for multiple PHP packages concurrently using asyncio.
+    Retrieve licenses for multiple packages concurrently using asyncio.
 
     Args:
         packages: List of (name, version) tuples
