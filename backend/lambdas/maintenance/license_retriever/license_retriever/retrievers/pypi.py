@@ -1,8 +1,7 @@
-import asyncio
-
 import aiohttp
 from artemislib.logging import Logger
 from license_retriever.util.github import get_license
+from license_retriever.util.license import retrieve_licenses_batch
 
 LOG = Logger(__name__)
 
@@ -10,35 +9,7 @@ LOG = Logger(__name__)
 async def retrieve_pypi_licenses_batch(
     packages: list[tuple[str, str]], max_concurrent: int = 10
 ) -> dict[str, list[str]]:
-    """
-    Retrieve licenses for multiple PYPI packages concurrently using asyncio.
-
-    Args:
-        packages: List of (name, version) tuples
-        max_concurrent: Maximum number of concurrent requests
-
-    Returns:
-        Dict mapping "name@version" to list of licenses
-    """
-    connector = aiohttp.TCPConnector(limit=max_concurrent)
-    timeout = aiohttp.ClientTimeout(total=30)
-
-    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
-        tasks = [get_package_license_async(session, name, version) for name, version in packages]
-
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        # Format results as dict
-        license_data = {}
-        for i, (name, version) in enumerate(packages):
-            key = f"{name}@{version}"
-            if isinstance(results[i], Exception):
-                LOG.error('Failed to get license for "%s": %s', key, results[i])
-                license_data[key] = []
-            else:
-                license_data[key] = results[i]
-
-        return license_data
+    return await retrieve_licenses_batch(packages, get_package_license_async, max_concurrent)
 
 
 async def get_package_license_async(session: aiohttp.ClientSession, name: str, version: str) -> list[str]:
@@ -47,7 +18,7 @@ async def get_package_license_async(session: aiohttp.ClientSession, name: str, v
     if not package_info:
         return []
 
-    return await process_pypi_licenses(session, package_info, f"{name}@{version}")
+    return await extract_licenses(package_info)
 
 
 async def get_package_info(session: aiohttp.ClientSession, name: str, version: str) -> dict:
@@ -70,7 +41,7 @@ async def get_package_info(session: aiohttp.ClientSession, name: str, version: s
         return {}
 
 
-async def process_pypi_licenses(session: aiohttp.ClientSession, package_info: dict, package_name: str) -> list[str]:
+async def extract_licenses(package_info: dict) -> list[str]:
     """Process PYPI package info to extract licenses (async version)"""
     if package_info.get("info", {}).get("license"):
         return [package_info["info"]["license"].lower()]
