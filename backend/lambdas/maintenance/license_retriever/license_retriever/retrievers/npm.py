@@ -1,50 +1,28 @@
-from time import sleep
-from typing import Optional, Union
-
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+import aiohttp
 
 from artemislib.logging import Logger
+from license_retriever.util.license import retrieve_licenses_batch
+from license_retriever.util.package import get_package_info
+
 
 LOG = Logger(__name__)
 
-# Create a session with retry logic once
-session = requests.Session()
-retry_strategy = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
-adapter = HTTPAdapter(max_retries=retry_strategy)
-session.mount("https://", adapter)
+
+async def retrieve_npm_licenses_batch(
+    packages: list[tuple[str, str]], max_concurrent: int = 10
+) -> dict[str, list[str]]:
+    return await retrieve_licenses_batch(packages, get_package_license_async, max_concurrent)
 
 
-def retrieve_npm_licenses(name: str, version: str) -> list:
-    package_info = get_package_info(name, version)
+async def get_package_license_async(session: aiohttp.ClientSession, name: str, version: str) -> list[str]:
+    url = f"https://registry.npmjs.org/{name}/{version}"
+    package_info = await get_package_info(session, url)
     if not package_info:
         return []
-
-    return get_package_license(package_info, f"{name}@{version}")
-
-
-def get_package_info(name: str, version: str) -> dict:
-    url = f"https://registry.npmjs.org/{name}/{version}"
-
-    try:
-        r = session.get(url, timeout=30)
-
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 404:
-            LOG.warning('Unable to find package info for "%s@%s" on registry.npmjs.org', name, version)
-            return {}
-        else:
-            LOG.error('Unexpected error for "%s@%s": HTTP %s', name, version, r.status_code)
-            return {}
-
-    except requests.exceptions.RequestException as e:
-        LOG.error('Request failed for "%s@%s": %s', name, version, str(e))
-        return {}
+    return extract_licenses(package_info, name)
 
 
-def get_package_license(package_info: dict, package_name: str) -> list[str]:
+def extract_licenses(package_info: dict, package_name: str) -> list[str]:
     # Official Spec: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#license
     # We support the official spec, as well as the "deprecated" syntax with objects/arrays in a
     # `license` or `licenses` property
@@ -92,7 +70,7 @@ def get_package_license(package_info: dict, package_name: str) -> list[str]:
             return []
 
 
-def get_license(item: Union[dict, str], package_name: str) -> Optional[str]:
+def get_license(item: dict | str, package_name: str) -> str | None:
     if type(item) is str:
         return item.lower()
     elif type(item) is dict:

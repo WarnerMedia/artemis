@@ -1,38 +1,27 @@
 import re
-from time import sleep
 
-import requests
-
+import aiohttp
+from license_retriever.util.license import retrieve_licenses_batch
+from license_retriever.util.package import get_package_info
 from artemislib.logging import Logger
 
 LOG = Logger(__name__)
 
 
-def retrieve_go_licenses(name: str, _version: str) -> list:
-    package_info = get_package_info(name)
+async def retrieve_go_licenses_batch(packages: list[tuple[str, str]], max_concurrent: int = 10) -> dict[str, list[str]]:
+    return await retrieve_licenses_batch(packages, get_package_license_async, max_concurrent)
+
+
+async def get_package_license_async(session: aiohttp.ClientSession, name: str, version: str) -> list[str]:
+    url = f"https://pkg.go.dev/{name}?tab=licenses"
+    package_info = await get_package_info(session, url, "text")
     if not package_info:
         return []
-
-    return extract_licenses(package_info)
-
-
-def get_package_info(name: str) -> str:
-    url = f"https://pkg.go.dev/{name}?tab=licenses"
-
-    while True:
-        r = requests.get(url)
-        if r.status_code == 200:
-            return r.text
-        elif r.status_code == 429:
-            retry = int(r.headers.get("Retry-After", 5))
-            LOG.info("Rate limit reached, retrying after %s seconds", retry)
-            sleep(retry)
-        else:
-            LOG.error("Unable to find package info for %s: HTTP %s", name, r.status_code)
-            return ""
+    return extract_licenses(package_info.get("response", ""))
 
 
-def extract_licenses(html: str) -> list:
+def extract_licenses(html: str) -> list[str]:
+    """Extract licenses from GO package HTML page"""
     licenses = []
     matches = re.findall(r'<div id="#lic-\d+">(.+)</div>', html)
     for match in matches:

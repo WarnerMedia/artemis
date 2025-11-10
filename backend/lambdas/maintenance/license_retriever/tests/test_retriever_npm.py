@@ -1,6 +1,5 @@
 import pytest
-
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock, MagicMock
 from license_retriever.retrievers import npm
 
 GPL = "GPL-3.0"
@@ -61,19 +60,27 @@ GPL_OR_MIT_SPDX = f"({GPL} OR {MIT})"
         ),
     ],
 )
-@patch("license_retriever.retrievers.npm.session.get")
-def test_retrieve_npm_licenses(mock_get, npm_response, expected_result):
-    mock_get.return_value = FakeGetResponse(npm_response)
+@pytest.mark.asyncio
+async def test_retrieve_npm_licenses_batch(npm_response, expected_result):
+    """Test batch function with mocked responses"""
 
-    result = npm.retrieve_npm_licenses("name", "version")
+    # Mock the aiohttp session and response with proper async context manager
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.json.return_value = npm_response
 
-    assert result == expected_result
+    mock_get_cm = AsyncMock()
+    mock_get_cm.__aenter__.return_value = mock_response
 
+    mock_session = MagicMock()
+    mock_session.get.return_value = mock_get_cm
 
-class FakeGetResponse:
-    def __init__(self, response: dict):
-        self.response = response
-        self.status_code = 200
+    with patch("aiohttp.ClientSession") as mock_session_class:
+        mock_session_class.return_value.__aenter__.return_value = mock_session
 
-    def json(self) -> dict:
-        return self.response
+        # Test single package batch
+        packages = [("name", "version")]
+        result = await npm.retrieve_npm_licenses_batch(packages)
+
+        assert "name@version" in result
+        assert result["name@version"] == expected_result

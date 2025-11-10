@@ -1,37 +1,44 @@
-from time import sleep
-
-import requests
+import aiohttp
+from urllib3.util import parse_url
 
 from artemislib.logging import Logger
+from license_retriever.util.license import retrieve_licenses_batch
+from license_retriever.util.package import get_package_info
 from license_retriever.util.github import get_license
 
 LOG = Logger(__name__)
 
 
-def retrieve_gem_licenses(name: str, version: str) -> list:
-    package_info = get_package_info(name, version)
+async def retrieve_gem_licenses_batch(
+    packages: list[tuple[str, str]], max_concurrent: int = 10
+) -> dict[str, list[str]]:
+    return await retrieve_licenses_batch(packages, get_package_license_async, max_concurrent)
+
+
+async def get_package_license_async(session: aiohttp.ClientSession, name: str, version: str) -> list[str]:
+    url = f"https://rubygems.org/api/v2/rubygems/{name}/versions/{version}.json"
+    package_info = await get_package_info(session, url)
+    if not package_info:
+        return []
+    return await extract_licenses(package_info)
+
+
+async def extract_licenses(package_info: dict) -> list[str]:
+    """Process GEM package info to extract licenses (async version)"""
     if not package_info or not package_info.get("licenses"):
+        # Try GitHub fallback if no licenses found
+        if parse_url(package_info.get("homepage_uri", "")).hostname == "github.com":
+            repo_license = await get_license(package_info["homepage_uri"])
+            if repo_license:
+                return [repo_license]
         return []
 
     licenses = [license.lower() for license in package_info["licenses"]]
-    if not licenses and package_info.get("homepage_uri", "").startswith("https://github.com"):
-        repo_license = get_license(package_info["homepage_uri"])
+
+    # If no licenses found but has GitHub homepage, try to get license from repo
+    if not licenses and parse_url(package_info.get("homepage_uri", "")).hostname == "github.com":
+        repo_license = await get_license(package_info["homepage_uri"])
         if repo_license:
             licenses.append(repo_license)
+
     return licenses
-
-
-def get_package_info(name: str, version: str) -> dict:
-    url = f"https://rubygems.org/api/v2/rubygems/{name}/versions/{version}.json"
-
-    while True:
-        r = requests.get(url)
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 429:
-            retry = int(r.headers.get("Retry-After", 5))
-            LOG.info("Rate limit reached, retrying after %s seconds", retry)
-            sleep(retry)
-        else:
-            LOG.error("Unable to find package info for %s %s: HTTP %s", name, version, r.status_code)
-            return {}
