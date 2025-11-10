@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
 from license_retriever.retrievers import go
 
+
 @pytest.mark.parametrize(
     "go_response,expected_result",
     [
