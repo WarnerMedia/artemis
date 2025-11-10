@@ -84,12 +84,3 @@ async def test_retrieve_npm_licenses_batch(npm_response, expected_result):
 
         assert "name@version" in result
         assert result["name@version"] == expected_result
-
-
-class FakeGetResponse:
-    def __init__(self, response: dict):
-        self.response = response
-        self.status_code = 200
-
-    def json(self) -> dict:
-        return self.response
