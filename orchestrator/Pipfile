@@ -22,7 +22,7 @@ autopep8 = "~=2.3"
 flake8 = "~=7.2"
 mock = "~=5.1"
 moto = {extras = ["awslambda", "ec2", "s3", "secretsmanager", "sqs"], version = "~=5.1"}
-pylint = "~=3.3"
+pylint = "~=4.0"
 pyright = "~=1.1"
 pytest = "~=8.3"
 pytest-cov = "~=7.0"

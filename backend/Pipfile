@@ -30,12 +30,12 @@ urllib3 = "~=2.5"
 
 [dev-packages]
 autopep8 = "~=2.3"
-cfn-lint = "==1.39.1"  # Must match version in Makefile.
+cfn-lint = "==1.40.4"  # Must match version in Makefile.
 debugpy = "~=1.8"
 flake8 = "~=7.2"
 isort = "~=6.0"
 moto = {extras = ["awslambda", "ec2", "s3", "secretsmanager", "sqs"], version = "~=5.1"}
-pylint = "~=3.3"
+pylint = "~=4.0"
 pyright = "~=1.1"
 pytest = "~=8.3"
 pytest-asyncio = "~=1.3"
