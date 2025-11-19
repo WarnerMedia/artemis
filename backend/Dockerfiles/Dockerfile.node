@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Install eslint and dependencies for eslint plugin.
 WORKDIR /opt/eslint
 RUN --mount=type=cache,target=/root/.npm,sharing=locked \
-    npm install -g npm@10.9.2 && \
+    npm install -g npm@10.9.2 glob@latest && \
     npm install \
     eslint@8.57.1 \
     eslint-plugin-security@3.0.1 \
