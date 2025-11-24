@@ -7,18 +7,18 @@ name = "pypi"
 python_version = "3.12"
 
 [packages]
-aiohttp = "~=3.12"
-awscli = "~=1.42"
+aiohttp = "~=3.13"
+awscli = "~=1.43"
 aws-lambda-powertools = "~=3.19"
-boto3 = "~=1.40"
-boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.40"}
+boto3 = "~=1.41"
+boto3-stubs = {extras = ["ec2", "lambda", "s3", "secretsmanager", "sqs"], version = "~=1.41"}
 cryptography = "~=45.0"
 django = "~=4.2"
 docker = "~=7.1"
 graphql-query = "~=1.4"
 joserfc = "~=1.2"
 packaging = "==23.2"  # Must match version in Makefile.
-psycopg2-binary = "~=2.9.9"
+psycopg2-binary = "~=2.9"
 pydantic = "<2.12"
 PyGithub = "~=2.7"
 pyjwt = "~=2.10"
