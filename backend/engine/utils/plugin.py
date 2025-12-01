@@ -600,6 +600,7 @@ def queue_event(repo: str, plugin_type: str, payload: dict):
 def get_truncated_hash(value: str, chars=24) -> str:
     aws = AWSConnect()
     pepper = aws.get_secret(f"{APPLICATION}/pepper")
+    pepper = bytes.fromhex(pepper)
     hash = hashlib.new("sha3_256")
     hash.update(pepper)
     hash.update(value.encode())

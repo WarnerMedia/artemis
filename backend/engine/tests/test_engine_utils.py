@@ -188,7 +188,7 @@ class TestEngineUtils(unittest.TestCase):
     @patch("engine.utils.plugin.queue_event")
     @patch("engine.utils.plugin.SECRETS_EVENTS_ENABLED", True)
     @patch("engine.utils.plugin.PROCESS_SECRETS_WITH_PATH_EXCLUSIONS", True)
-    @patch("engine.utils.plugin._get_truncated_hash")
+    @patch("engine.utils.plugin.get_truncated_hash")
     def test_process_event_info_secret_hash(self, mock_hash, mock_queue_event):
         """
         Test that process_event_info generates a secret_hash and passes it to queue_event.
@@ -237,7 +237,7 @@ class TestEngineUtils(unittest.TestCase):
         Test that get_truncated_hash uses the pepper from AWS secrets to generate hash.
         """
         mock_aws_instance = Mock()
-        mock_aws_instance.get_secret.return_value = "test-pepper-123"
+        mock_aws_instance.get_secret.return_value = "11f450d9c976c012eeaac9eb8047ef5ad1963c12f8b928c6392d1306b9cf5796"
         mock_aws_connect.return_value = mock_aws_instance
 
         test_value = "test-secret-value"
