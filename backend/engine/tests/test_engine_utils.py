@@ -237,7 +237,7 @@ class TestEngineUtils(unittest.TestCase):
         Test that get_truncated_hash uses the pepper from AWS secrets to generate hash.
         """
         mock_aws_instance = Mock()
-        mock_aws_instance.get_secret.return_value = "11f450d9c976c012eeaac9eb8047ef5ad1963c12f8b928c6392d1306b9cf5796"
+        mock_aws_instance.get_secret_raw.return_value = "11f450d9c976c012eeaac9eb8047ef5ad1963c12f8b928c6392d1306b9cf5796"
         mock_aws_connect.return_value = mock_aws_instance
 
         test_value = "test-secret-value"
