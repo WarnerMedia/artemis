@@ -11,6 +11,7 @@ from urllib.parse import quote_plus
 import uuid
 
 import boto3
+import hashlib
 from botocore.exceptions import ClientError
 from django.db.models import Q
 from django.db import transaction
@@ -19,6 +20,7 @@ import docker.errors
 from pydantic import BaseModel, Field, field_validator
 
 from artemisdb.artemisdb.models import PluginConfig, SecretType, PluginType, Scan
+from artemislib.aws import AWSConnect
 from artemislib.github.app import GITHUB_APP_ID
 from artemislib.logging import Logger, LOG_LEVEL, inject_plugin_logs
 from artemislib.util import dict_eq
@@ -499,6 +501,13 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str, 
                 org = scan.repo.repo
                 repository = scan.repo.repo
 
+            secret_details = results["event_info"][item["id"]]["match"]
+            if isinstance(secret_details, list) and secret_details:
+                secret_details = str(secret_details[0])
+            else:
+                secret_details = ""
+            secret_hash = get_truncated_hash(secret_details)
+
             payload = {
                 "timestamp": timestamp,
                 "type": plugin_type,
@@ -530,6 +539,10 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str, 
                     f"&st_resource={results['event_info'][item['id']]['type']}"  # Filter on secrets type
                 ),
             }
+
+            # Add the secret_hash field if the secret details are available
+            if secret_details:
+                payload["secret_hash"] = secret_hash
             queue_event(scan.repo.repo, plugin_type, payload)
     elif plugin_type in PluginType.INVENTORY.value and INVENTORY_EVENTS_ENABLED:
         payload = {
@@ -585,6 +598,17 @@ def queue_event(repo: str, plugin_type: str, payload: dict):
         sqs.send_message(QueueUrl=os.environ.get("EVENT_QUEUE"), MessageBody=json.dumps(payload))  # type:ignore
     except ClientError:
         log.error("Unable to queue %s event for %s", plugin_type, repo)
+
+
+def get_truncated_hash(value: str, chars=24) -> str:
+    aws = AWSConnect()
+    pepper = aws.get_secret_raw(f"{APPLICATION}/pepper")
+    pepper = bytes.fromhex(pepper)
+    hash = hashlib.new("sha3_256")
+    hash.update(pepper)
+    hash.update(value.encode())
+
+    return hash.hexdigest()[:chars]
 
 
 def get_secret_raw_wl(scan):

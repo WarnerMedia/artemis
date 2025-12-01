@@ -354,6 +354,17 @@ resource "aws_secretsmanager_secret_version" "private_docker_repo_creds" {
   ])
 }
 
+resource "aws_secretsmanager_secret" "pepper" {
+  name        = "${var.app}/pepper"
+  description = "Artemis Pepper for deduping secret results"
+}
+resource "aws_secretsmanager_secret_version" "artemis-pepper" {
+  secret_id = aws_secretsmanager_secret.pepper.id
+  secret_string = jsonencode({
+    "key" : "REPLACEVALUE",
+  })
+}
+
 ###############################################################################
 # Datadog
 ###############################################################################
