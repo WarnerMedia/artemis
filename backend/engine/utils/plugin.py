@@ -529,7 +529,6 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str, 
                 "last_commit": scan.branch_last_commit_timestamp,
                 "state": item.get("state", "open"),
                 "validity": item.get("validity", "unknown"),
-                "secret_hash": secret_hash,
                 "secret_type": results["event_info"][item["id"]]["type"],
                 "secret_type_display_name": results["event_info"][item["id"]]["type"],
                 "report_url": (
@@ -540,6 +539,10 @@ def process_event_info(scan: Scan, results, plugin_type: str, plugin_name: str, 
                     f"&st_resource={results['event_info'][item['id']]['type']}"  # Filter on secrets type
                 ),
             }
+
+            # Add the secret_hash field if the secret details are available
+            if secret_details:
+                payload["secret_hash"] = secret_hash
             queue_event(scan.repo.repo, plugin_type, payload)
     elif plugin_type in PluginType.INVENTORY.value and INVENTORY_EVENTS_ENABLED:
         payload = {

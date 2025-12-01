@@ -191,7 +191,8 @@ class TestEngineUtils(unittest.TestCase):
     @patch("engine.utils.plugin.get_truncated_hash")
     def test_process_event_info_secret_hash(self, mock_hash, mock_queue_event):
         """
-        Test that process_event_info generates a secret_hash and passes it to queue_event.
+        Test that process_event_info generates a secret_hash when secret details exist,
+        and does not include secret_hash when no secret details are available.
         """
         mock_hash.return_value = "abcd1234567890abcd1234"
 
@@ -204,7 +205,7 @@ class TestEngineUtils(unittest.TestCase):
         mock_scan.exclude_paths = None
         mock_scan.report_url = "https://example.com/report"
 
-        # Dummy output from Secret scanner
+        # Test Result with secret details
         results = {
             "details": [
                 {
@@ -230,6 +231,21 @@ class TestEngineUtils(unittest.TestCase):
         payload = call_args[2]
         self.assertIn("secret_hash", payload)
         self.assertEqual(payload["secret_hash"], "abcd1234567890abcd1234")
+
+        # Reset mocks
+        mock_queue_event.reset_mock()
+        mock_hash.reset_mock()
+
+        # Modify test result
+        results["event_info"]["secret-1"]["match"] = [""]
+
+        process_event_info(mock_scan, results, "secrets", "test-plugin", False)
+        mock_hash.assert_called_once_with("")
+
+        # Verify that the payload does NOT include secret_hash
+        call_args = mock_queue_event.call_args[0]
+        payload = call_args[2]
+        self.assertNotIn("secret_hash", payload)
 
     @patch("engine.utils.plugin.AWSConnect")
     def test_get_truncated_hash_with_pepper(self, mock_aws_connect):
