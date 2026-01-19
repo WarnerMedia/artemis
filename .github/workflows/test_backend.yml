@@ -19,7 +19,7 @@ jobs:
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
-      - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # actions/cache@v5.0.1
+      - uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # actions/cache@v5.0.2
         with:
           # Tool versions are defined in the Makefile.
           key: backend-unit-test-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/Makefile') }}
