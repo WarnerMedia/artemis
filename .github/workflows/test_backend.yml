@@ -12,14 +12,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # actions/checkout@v6.0.1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # actions/setup-python@v6.1.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # actions/checkout@v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
-      - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # actions/cache@v5.0.1
+      - uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # actions/cache@v5.0.2
         with:
           # Tool versions are defined in the Makefile.
           key: backend-unit-test-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/Makefile') }}
