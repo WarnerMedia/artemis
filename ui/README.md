@@ -273,9 +273,13 @@ This project is using the following checks for code style and standards:
 
 - ESLint - JavaScript linting
 - Prettier - JavaScript code style
-- NPM Audit - JavaScript dependency vulnerability auditing
 - Hadolint - Dockerfile linting
 - Markdownlint - Markdown linting
+
+Additionally, we are using the following tools for dependency security scanning:
+
+- GitHub Dependabot
+- Artemis
 
 ### 🛡️ Secure Coding
 
