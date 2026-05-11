@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
           cache: pipenv
           cache-dependency-path: backend/Pipfile.lock
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
+      - uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # hashicorp/setup-terraform@v4.0.0
       - uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # actions/cache@v5.0.2
         with:
           # Tool versions are defined in the Makefile.
