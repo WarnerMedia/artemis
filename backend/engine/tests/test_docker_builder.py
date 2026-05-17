@@ -92,12 +92,16 @@ class TestImageBuilder(unittest.TestCase):
             self.demo_results_dict = json.load(output_file)
 
     def test_find_dockerfiles(self):
-        image_builder = builder.ImageBuilder(os.path.join(TEST_ROOT, "Dockerfiles"), None, None, None)
+        image_builder = builder.ImageBuilder(
+            os.path.join(TEST_ROOT, "Dockerfiles"), "test_repo", None, "test_engine_id"
+        )
         result = image_builder.find_dockerfiles()
         self.assertGreater(len(result), 5)
 
     def test_private_docker_repos_login(self):
-        image_builder = builder.ImageBuilder(os.path.join(TEST_ROOT, "Dockerfiles"), None, None, None)
+        image_builder = builder.ImageBuilder(
+            os.path.join(TEST_ROOT, "Dockerfiles"), "test_repo", None, "test_engine_id"
+        )
         with patch("plugins.lib.utils.get_secret_with_status") as mock_get_secret_with_status:
             with patch("oci.builder.ImageBuilder.docker_login_needed") as mock_docker_login_needed:
                 mock_get_secret_with_status.return_value = TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT
@@ -108,11 +112,11 @@ class TestImageBuilder(unittest.TestCase):
                 with patch("plugins.lib.utils.docker_login") as mock_docker_login:
                     mock_docker_login.return_value = True
 
-                    image_builder.private_docker_repos_login(os.path.join(TEST_ROOT, "Dockerfiles"))
+                    image_builder.private_docker_repos_login([os.path.join(TEST_ROOT, "Dockerfiles")])
                     mock_get_secret_with_status.assert_called_once()
 
                     mock_docker_login_needed.assert_called_once_with(
-                        os.path.join(TEST_ROOT, "Dockerfiles"),
+                        [os.path.join(TEST_ROOT, "Dockerfiles")],
                         TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["search"],
                         TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["url"],
                     )
