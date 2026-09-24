@@ -207,7 +207,7 @@ describe("AutoCompleteField component", () => {
 		global.document.createRange = () => ({
 			setStart: () => {},
 			setEnd: () => {},
-			// @ts-ignore
+			// @ts-expect-error mock DOM API
 			commonAncestorContainer: {
 				nodeName: "BODY",
 				ownerDocument: document,
@@ -261,7 +261,7 @@ describe("AutoCompleteField component", () => {
 		global.document.createRange = () => ({
 			setStart: () => {},
 			setEnd: () => {},
-			// @ts-ignore
+			// @ts-expect-error mock DOM API
 			commonAncestorContainer: {
 				nodeName: "BODY",
 				ownerDocument: document,

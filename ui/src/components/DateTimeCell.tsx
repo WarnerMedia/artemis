@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { DateTime } from "luxon";
 import { Tooltip } from "@mui/material";
 import { ReportProblemOutlined as ReportProblemOutlinedIcon } from "@mui/icons-material";
 import { makeStyles } from "tss-react/mui";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 import { formatDate } from "utils/formatters";
 
@@ -41,22 +41,14 @@ export const ExpiringDateTimeCell = (props: {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
 	const { value, format = "short" } = props;
-	const [isExpired, setIsExpired] = useState(false);
-
-	useEffect(() => {
+	const isExpired = useMemo(() => {
 		if (value && typeof value === "string") {
 			const expirationDate = DateTime.fromISO(value);
 			if (expirationDate.isValid) {
-				const diff = expirationDate.diffNow();
-				if (diff.milliseconds < 0) {
-					setIsExpired(true);
-				} else {
-					setIsExpired(false);
-				}
-			} else {
-				setIsExpired(false); // 'Never' == not expired
+				return expirationDate.diffNow().milliseconds < 0;
 			}
 		}
+		return false;
 	}, [value]);
 
 	let cell = <></>;

@@ -6,9 +6,9 @@ import {
 	DesktopDateTimePickerProps,
 } from "@mui/x-date-pickers";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { useState } from "react";
-import { browserLanguage } from "App";
+import { browserLanguage } from "locale/browserLanguage";
 import { InputBaseProps } from "@mui/material";
 
 // Formik wrapper for Material UI date/time pickers

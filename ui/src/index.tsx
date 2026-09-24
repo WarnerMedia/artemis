@@ -5,8 +5,9 @@
 // and unregistering the serviceWorker
 import React from "react";
 import { createRoot } from "react-dom/client";
-import * as serviceWorker from "serviceWorker";
+import * as serviceWorker from "./serviceWorker";
 import { makeServer } from "api/server";
+import App from "App";
 
 // only include the MirageJS test REST API server in Dev mode
 // tests will create a custom server themselves
@@ -16,8 +17,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 function render() {
-	const App = require("App").default;
-
 	const container = document.getElementById("root");
 	const root = createRoot(container!);
 	root.render(

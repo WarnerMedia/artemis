@@ -24,7 +24,7 @@ import {
 } from "./usersSlice";
 import { addNotification } from "features/notifications/notificationsSlice";
 import { i18n } from "@lingui/core";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 function* _addUserSaga(
 	action: PayloadAction<UserRequest>,

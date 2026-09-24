@@ -1,7 +1,7 @@
 import { Chip, ChipProps, Tooltip } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 import { colorHigh, colorLow, colorNegligible } from "app/colors";
 import { SecretDetail, SecretValidity } from "features/scans/scansSchemas";

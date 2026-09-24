@@ -1,13 +1,13 @@
 import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
 
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 import createSagaActions from "utils/createSagaActions";
 import {
 	AnalysisReport,
 	ScanHistoryResponse,
 	ScanOptionsForm,
 } from "features/scans/scansSchemas";
-import { Client, ScanByIdRequest, ScanRequest } from "api/client";
+import type { Client, ScanByIdRequest, ScanRequest } from "api/client";
 
 type SliceState = {
 	status: "idle" | "loading" | "succeeded" | "failed";

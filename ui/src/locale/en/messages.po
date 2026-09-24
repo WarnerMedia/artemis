@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2023-04-28 10:52-0400\n"
+"POT-Creation-Date: 2022-10-28 15:43-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,10 +13,82 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/CustomCopyToClipboard.tsx:37
+msgid "Copy to clipboard"
+msgstr "Copy to clipboard"
+
+#: src/custom/SearchMetaField.tsx:64
+#: src/pages/ResultsPage.tsx:3432
+#: src/pages/ResultsPage.tsx:3441
+#: src/pages/ResultsPage.tsx:3881
+#: src/pages/ResultsPage.tsx:3899
+#: src/pages/ResultsPage.tsx:4344
+#: src/pages/ResultsPage.tsx:4362
+#: src/pages/ResultsPage.tsx:4375
+#: src/pages/ResultsPage.tsx:4673
+#: src/pages/ResultsPage.tsx:4682
+#: src/pages/ResultsPage.tsx:5619
+#: src/pages/ResultsPage.tsx:5628
+#: src/pages/ResultsPage.tsx:5637
+#: src/pages/SearchPage.tsx:2656
+msgid "Contains"
+msgstr "Contains"
+
+#: src/pages/ResultsPage.tsx:1988
+msgid "Expires (optional)"
+msgstr "Expires (optional)"
+
+#: src/pages/ResultsPage.tsx:1977
+msgid "This should not be a real secret"
+msgstr "This should not be a real secret"
+
+#: src/utils/formatters.ts:260
+msgid "Discussion Comment"
+msgstr "Discussion Comment"
+
+#: src/pages/ResultsPage.tsx:3042
+#: src/pages/ResultsPage.tsx:3044
+msgid "View in external site"
+msgstr "View in external site"
+
+#. placeholder {0}: row?.unhiddenFindings.length
+#: src/pages/ResultsPage.tsx:1619
+msgid "Source files <0>not</0> covered by this hidden finding ({0}):"
+msgstr "Source files <0>not</0> covered by this hidden finding ({0}):"
+
+#: src/pages/UsersPage.tsx:1345
+msgid "No users found. Click the + button to add a new user"
+msgstr "No users found. Click the + button to add a new user"
+
+#: src/custom/WelcomeDialogContent.tsx:105
+msgid "Once your access is provisioned, enter the Version Control System for the repo you want to scan in the <0>Version Control System</0> field and the repo name in the <1>Repository</1> field. Click the <2>Start Scan</2> button to start a scan or the <3>View Scans</3> button to view existing scans for this repo."
+msgstr "Once your access is provisioned, enter the Version Control System for the repo you want to scan in the <0>Version Control System</0> field and the repo name in the <1>Repository</1> field. Click the <2>Start Scan</2> button to start a scan or the <3>View Scans</3> button to view existing scans for this repo."
+
+#: src/pages/MainPage.tsx:1092
+msgid "Include these files or directories in the scan. Defined alone, limits the scan to only these paths"
+msgstr "Include these files or directories in the scan. Defined alone, limits the scan to only these paths"
+
+#: src/components/ChipCell.tsx:69
+#: src/components/ChipCell.tsx:128
+msgid "Critical: {count}"
+msgstr "Critical: {count}"
+
+#: src/components/AutoCompleteField.tsx:44
+msgid "Loading options..."
+msgstr "Loading options..."
+
+#: src/components/SecretValidityCell.tsx:110
+msgid "Not tested"
+msgstr "Not tested"
+
+#: src/custom/WelcomeDialogContent.tsx:146
+msgid "View your user settings, create API keys, link a GitHub account, and show or hide this welcome message"
+msgstr "View your user settings, create API keys, link a GitHub account, and show or hide this welcome message"
+
+#: src/pages/ResultsPage.tsx:3633
 #: src/pages/ResultsPage.tsx:3634
-#: src/pages/ResultsPage.tsx:3635
+#: src/pages/ResultsPage.tsx:3990
 #: src/pages/ResultsPage.tsx:3991
-#: src/pages/ResultsPage.tsx:3992
 msgid "Line must be a positive integer"
 msgstr "Line must be a positive integer"
 
@@ -24,18 +96,22 @@ msgstr "Line must be a positive integer"
 msgid "Key removed"
 msgstr "Key removed"
 
-#: src/pages/ResultsPage.tsx:6105
+#: src/pages/ResultsPage.tsx:6163
 msgid "Scan ID"
 msgstr "Scan ID"
 
-#: src/pages/SearchPage.tsx:1328
+#: src/pages/SearchPage.tsx:1332
 msgid "Invalid scan time matcher"
 msgstr "Invalid scan time matcher"
 
-#: src/pages/SearchPage.tsx:1326
-#: src/pages/SearchPage.tsx:1433
+#: src/pages/SearchPage.tsx:1330
+#: src/pages/SearchPage.tsx:1437
 msgid "Invalid repository matcher"
 msgstr "Invalid repository matcher"
+
+#: src/pages/MainPage.tsx:1201
+msgid "Scans"
+msgstr "Scans"
 
 #: src/components/SecretValidityCell.tsx:147
 msgid "Mixed"
@@ -50,93 +126,15 @@ msgstr "{0, plural, one {# Medium static analysis result} other {# Medium static
 msgid "Must be a supported cicd tool name:"
 msgstr "Must be a supported cicd tool name:"
 
-#: src/pages/MainPage.tsx:1201
-msgid "Scans"
-msgstr "Scans"
-
-#: src/pages/ResultsPage.tsx:3666
-#: src/pages/ResultsPage.tsx:3899
-#: src/pages/ResultsPage.tsx:4034
-#: src/pages/ResultsPage.tsx:4212
-#: src/pages/ResultsPage.tsx:4362
-#: src/components/ApiKeys.tsx:1332
 #: src/components/ActivityTable.tsx:790
+#: src/components/ApiKeys.tsx:1341
+#: src/pages/ResultsPage.tsx:3665
+#: src/pages/ResultsPage.tsx:3898
+#: src/pages/ResultsPage.tsx:4033
+#: src/pages/ResultsPage.tsx:4211
+#: src/pages/ResultsPage.tsx:4361
 msgid "Type"
 msgstr "Type"
-
-#: src/components/CustomCopyToClipboard.tsx:37
-msgid "Copy to clipboard"
-msgstr "Copy to clipboard"
-
-#: src/pages/SearchPage.tsx:2647
-#: src/pages/ResultsPage.tsx:3433
-#: src/pages/ResultsPage.tsx:3442
-#: src/pages/ResultsPage.tsx:3882
-#: src/pages/ResultsPage.tsx:3900
-#: src/pages/ResultsPage.tsx:4345
-#: src/pages/ResultsPage.tsx:4363
-#: src/pages/ResultsPage.tsx:4376
-#: src/pages/ResultsPage.tsx:4674
-#: src/pages/ResultsPage.tsx:4683
-#: src/pages/ResultsPage.tsx:5561
-#: src/pages/ResultsPage.tsx:5570
-#: src/pages/ResultsPage.tsx:5579
-#: src/custom/SearchMetaField.tsx:53
-msgid "Contains"
-msgstr "Contains"
-
-#: src/custom/SearchMetaField.tsx:77
-msgid "Meta Data Field2 Match"
-msgstr "Meta Data Field2 Match"
-
-#: src/pages/ResultsPage.tsx:1990
-msgid "Expires (optional)"
-msgstr "Expires (optional)"
-
-#: src/pages/ResultsPage.tsx:1979
-msgid "This should not be a real secret"
-msgstr "This should not be a real secret"
-
-#: src/pages/ResultsPage.tsx:3043
-#: src/pages/ResultsPage.tsx:3045
-msgid "View in external site"
-msgstr "View in external site"
-
-#: src/pages/UsersPage.tsx:1345
-msgid "No users found. Click the + button to add a new user"
-msgstr "No users found. Click the + button to add a new user"
-
-#: src/components/AutoCompleteField.tsx:45
-msgid "Loading options..."
-msgstr "Loading options..."
-
-#: src/components/SecretValidityCell.tsx:110
-msgid "Not tested"
-msgstr "Not tested"
-
-#: src/utils/formatters.ts:260
-msgid "Discussion Comment"
-msgstr "Discussion Comment"
-
-#. placeholder {0}: row?.unhiddenFindings.length
-#: src/pages/ResultsPage.tsx:1621
-msgid "Source files <0>not</0> covered by this hidden finding ({0}):"
-msgstr "Source files <0>not</0> covered by this hidden finding ({0}):"
-
-#: src/pages/MainPage.tsx:1092
-msgid "Include these files or directories in the scan. Defined alone, limits the scan to only these paths"
-msgstr "Include these files or directories in the scan. Defined alone, limits the scan to only these paths"
-
-#: src/components/ChipCell.tsx:69
-#: src/components/ChipCell.tsx:128
-msgid "Critical: {count}"
-msgstr "Critical: {count}"
-
-#: src/custom/searchMetaSchemas.ts:36
-#: src/custom/searchMetaSchemas.ts:64
-#: src/custom/searchMetaSchemas.ts:75
-msgid "Meta data field1 must be less than {META_FIELD1_LENGTH} characters"
-msgstr "Meta data field1 must be less than {META_FIELD1_LENGTH} characters"
 
 #: src/features/hiddenFindings/hiddenFindingsSaga.ts:31
 msgid "Hidden finding added"
@@ -150,113 +148,126 @@ msgstr "Fetching configuration results..."
 msgid "Invalid notification type"
 msgstr "Invalid notification type"
 
+#: src/components/ApiKeys.tsx:336
+#: src/pages/UserSettings.tsx:548
+msgid "(disabled)"
+msgstr "(disabled)"
+
+#: src/custom/ListItemMetaMultiField.tsx:424
+msgid "Invalid Operational Metadata"
+msgstr "Invalid Operational Metadata"
+
+#: src/pages/ResultsPage.tsx:5011
+msgid "Potential CI/CD Tools"
+msgstr "Potential CI/CD Tools"
+
+#: src/pages/ResultsPage.tsx:5240
+#: src/pages/ResultsPage.tsx:5243
+msgid "Download scan results"
+msgstr "Download scan results"
+
+#: src/pages/ResultsPage.tsx:3635
+#: src/pages/ResultsPage.tsx:3992
+msgid "Line must be less than {LINE_MAX}"
+msgstr "Line must be less than {LINE_MAX}"
+
+#: src/pages/ResultsPage.tsx:1927
+#: src/pages/ResultsPage.tsx:1934
+msgid "Hide For"
+msgstr "Hide For"
+
 #: src/features/users/usersSaga.ts:55
 msgid "User updated"
 msgstr "User updated"
 
-#: src/pages/UserSettings.tsx:548
-#: src/components/ApiKeys.tsx:336
-msgid "(disabled)"
-msgstr "(disabled)"
-
-#: src/pages/ResultsPage.tsx:4979
-msgid "Potential CI/CD Tools"
-msgstr "Potential CI/CD Tools"
-
-#: src/pages/ResultsPage.tsx:5182
-#: src/pages/ResultsPage.tsx:5185
-msgid "Download scan results"
-msgstr "Download scan results"
-
-#: src/pages/ResultsPage.tsx:3636
-#: src/pages/ResultsPage.tsx:3993
-msgid "Line must be less than {LINE_MAX}"
-msgstr "Line must be less than {LINE_MAX}"
-
-#: src/pages/ResultsPage.tsx:1929
-#: src/pages/ResultsPage.tsx:1936
-msgid "Hide For"
-msgstr "Hide For"
-
-#: src/pages/ResultsPage.tsx:1354
+#: src/pages/ResultsPage.tsx:1352
 msgid "Hidden finding created by:"
 msgstr "Hidden finding created by:"
 
-#. placeholder {0}: props.version
-#. placeholder {1}: props.year
-#: src/custom/Footer.tsx:31
-msgid "v{0} ({1}), REPLACE ME: ADD A PAGE FOOTER HERE"
-msgstr "v{0} ({1}), REPLACE ME: ADD A PAGE FOOTER HERE"
+#: src/custom/ListItemMetaMultiField.tsx:175
+msgid "Missing Repo Metadata"
+msgstr "Missing Repo Metadata"
 
-#: src/pages/ResultsPage.tsx:5777
-#: src/pages/ResultsPage.tsx:5786
-#: src/pages/ResultsPage.tsx:5803
-#: src/pages/ResultsPage.tsx:5812
-msgid "No"
-msgstr "No"
+#: src/pages/DatePickerTestPage.tsx:29
+msgid "Test Date Picker"
+msgstr "Test Date Picker"
 
-#: src/pages/ResultsPage.tsx:6166
-msgid "End Date / Scan Time Elapsed"
-msgstr "End Date / Scan Time Elapsed"
-
-#: src/pages/SearchPage.tsx:2591
 #: src/components/ChipCell.tsx:57
+#: src/pages/SearchPage.tsx:2600
 msgid "Priority"
 msgstr "Priority"
 
-#: src/pages/ResultsPage.tsx:7133
 #: src/components/ActivityTable.tsx:743
+#: src/pages/ResultsPage.tsx:7164
 msgid "New Scan"
 msgstr "New Scan"
 
-#: src/components/FormikPickers.tsx:70
+#: src/pages/ResultsPage.tsx:5835
+#: src/pages/ResultsPage.tsx:5844
+#: src/pages/ResultsPage.tsx:5861
+#: src/pages/ResultsPage.tsx:5870
+msgid "No"
+msgstr "No"
+
+#: src/pages/ResultsPage.tsx:6224
+msgid "End Date / Scan Time Elapsed"
+msgstr "End Date / Scan Time Elapsed"
+
+#: src/components/FormikPickers.tsx:64
 msgid "Previous month"
 msgstr "Previous month"
 
-#: src/pages/ResultsPage.tsx:965
+#: src/pages/ResultsPage.tsx:963
 msgid "Remove Hidden Finding"
 msgstr "Remove Hidden Finding"
 
-#: src/custom/ListItemMetaMultiField.tsx:101
-msgid "Meta Data Sample1 / Sample2"
-msgstr "Meta Data Sample1 / Sample2"
-
-#: src/pages/UsersPage.tsx:1343
-#: src/pages/SearchPage.tsx:2086
-#: src/pages/SearchPage.tsx:4349
-#: src/components/EnhancedTable.tsx:760
-msgid "No results match current filters"
-msgstr "No results match current filters"
-
-#: src/pages/ResultsPage.tsx:5310
+#: src/pages/ResultsPage.tsx:5368
 msgid "Id/Line location must be less than {VULN_ID_LENGTH} characters"
 msgstr "Id/Line location must be less than {VULN_ID_LENGTH} characters"
+
+#. placeholder {0}: component?.omd_jira_project?.name
+#: src/custom/ListItemMetaMultiField.tsx:289
+msgid "Open {0} Jira board"
+msgstr "Open {0} Jira board"
+
+#: src/components/EnhancedTable.tsx:760
+#: src/pages/SearchPage.tsx:2090
+#: src/pages/SearchPage.tsx:4358
+#: src/pages/UsersPage.tsx:1343
+msgid "No results match current filters"
+msgstr "No results match current filters"
 
 #: src/components/ActivityTable.tsx:701
 msgid "Include batched scans"
 msgstr "Include batched scans"
 
-#: src/custom/ListItemMetaMultiField.tsx:92
-msgid "Meta Data Field2 Missing"
-msgstr "Meta Data Field2 Missing"
+#: src/pages/ResultsPage.tsx:3745
+#: src/pages/ResultsPage.tsx:4118
+msgid "Found in Source File"
+msgstr "Found in Source File"
+
+#: src/components/ApiKeys.tsx:574
+msgid "Expiration date is required"
+msgstr "Expiration date is required"
 
 #: src/pages/MainPage.tsx:1078
 msgid "Include Paths (optional)"
 msgstr "Include Paths (optional)"
 
 #. placeholder {0}: currentUser?.scope ? currentUser.scope.length : 0
-#: src/pages/UserSettings.tsx:658
+#: src/pages/UserSettings.tsx:657
 msgid "Scope  ({0})"
 msgstr "Scope  ({0})"
 
-#: src/pages/ResultsPage.tsx:1409
-#: src/pages/ResultsPage.tsx:1486
+#: src/pages/ResultsPage.tsx:1407
+#: src/pages/ResultsPage.tsx:1484
 msgid "Commit:"
 msgstr "Commit:"
 
-#: src/components/ActivityTable.tsx:237
-msgid "More Actions..."
-msgstr "More Actions..."
+#: src/pages/UsersPage.tsx:467
+#: src/pages/UsersPage.tsx:472
+msgid "View API Keys"
+msgstr "View API Keys"
 
 #. placeholder {0}: err.errors.join(", ")
 #. placeholder {0}: err.message
@@ -265,25 +276,15 @@ msgstr "More Actions..."
 msgid "Unable to link service account: {0}"
 msgstr "Unable to link service account: {0}"
 
-#: src/pages/ResultsPage.tsx:3746
-#: src/pages/ResultsPage.tsx:4119
-msgid "Found in Source File"
-msgstr "Found in Source File"
+#: src/components/ActivityTable.tsx:237
+msgid "More Actions..."
+msgstr "More Actions..."
 
-#: src/components/ApiKeys.tsx:574
-msgid "Expiration date is required"
-msgstr "Expiration date is required"
-
-#: src/pages/UsersPage.tsx:467
-#: src/pages/UsersPage.tsx:472
-msgid "View API Keys"
-msgstr "View API Keys"
-
-#: src/pages/ResultsPage.tsx:791
+#: src/pages/ResultsPage.tsx:789
 msgid "Static Analysis: {count}"
 msgstr "Static Analysis: {count}"
 
-#: src/app/NavBar.tsx:166
+#: src/app/NavBar.tsx:165
 msgid "Close Settings Menu"
 msgstr "Close Settings Menu"
 
@@ -291,7 +292,7 @@ msgstr "Close Settings Menu"
 msgid "Unable to get repo hidden findings"
 msgstr "Unable to get repo hidden findings"
 
-#: src/pages/SearchPage.tsx:2867
+#: src/pages/SearchPage.tsx:2876
 msgid "Last Scan Time Match"
 msgstr "Last Scan Time Match"
 
@@ -299,11 +300,19 @@ msgstr "Last Scan Time Match"
 msgid "Service account linked"
 msgstr "Service account linked"
 
+#: src/custom/WelcomeDialogContent.tsx:58
+msgid "Getting Started"
+msgstr "Getting Started"
+
 #: src/app/colors.ts:42
 msgid "Orange"
 msgstr "Orange"
 
-#: src/app/NavBar.tsx:167
+#: src/pages/ResultsPage.tsx:4458
+msgid "Name must be less than {NAME_LENGTH} characters"
+msgstr "Name must be less than {NAME_LENGTH} characters"
+
+#: src/app/NavBar.tsx:166
 msgid "Open Settings Menu"
 msgstr "Open Settings Menu"
 
@@ -311,10 +320,6 @@ msgstr "Open Settings Menu"
 #: src/pages/UsersPage.tsx:492
 msgid "Remove User"
 msgstr "Remove User"
-
-#: src/pages/ResultsPage.tsx:4459
-msgid "Name must be less than {NAME_LENGTH} characters"
-msgstr "Name must be less than {NAME_LENGTH} characters"
 
 #: src/pages/UsersPage.tsx:1347
 msgid "Fetching users..."
@@ -324,25 +329,36 @@ msgstr "Fetching users..."
 msgid "Component name required"
 msgstr "Component name required"
 
+#. placeholder {0}: index + 1
+#: src/custom/ListItemMetaMultiField.tsx:286
+msgid "Unknown Component {0}"
+msgstr "Unknown Component {0}"
+
+#: src/components/ApiKeys.tsx:1188
+#: src/pages/ResultsPage.tsx:2071
 #: src/pages/UsersPage.tsx:1196
-#: src/pages/ResultsPage.tsx:2073
-#: src/components/ApiKeys.tsx:1187
 msgid "Adding..."
 msgstr "Adding..."
 
-#: src/pages/ResultsPage.tsx:2147
 #: src/components/DateTimeCell.tsx:68
 #: src/components/DateTimeCell.tsx:71
+#: src/pages/ResultsPage.tsx:2145
 msgid "This item has expired"
 msgstr "This item has expired"
+
+#. placeholder {0}: missingComponentFields.join( ", ", )
+#: src/custom/ListItemMetaMultiField.tsx:317
+msgid "Missing file .omd/{componentName}/now.yaml or fields: {0}"
+msgstr "Missing file .omd/{componentName}/now.yaml or fields: {0}"
 
 #: src/pages/UserSettings.tsx:441
 msgid "Artemis - User Settings"
 msgstr "Artemis - User Settings"
 
-#: src/custom/ListItemMetaMultiField.tsx:127
-msgid "Missing Metadata"
-msgstr "Missing Metadata"
+#: src/pages/ResultsPage.tsx:1575
+#: src/pages/ResultsPage.tsx:1688
+msgid "Vulnerability:"
+msgstr "Vulnerability:"
 
 #. placeholder {0}: row?.results_summary?.vulnerabilities?.critical || 0
 #: src/components/StatusCell.tsx:274
@@ -353,39 +369,42 @@ msgstr "{0, plural, one {# Critical vulnerability} other {# Critical vulnerabili
 msgid "Prism"
 msgstr "Prism"
 
-#: src/pages/ResultsPage.tsx:1577
-#: src/pages/ResultsPage.tsx:1690
-msgid "Vulnerability:"
-msgstr "Vulnerability:"
+#: src/custom/ListItemMetaMultiField.tsx:398
+msgid "Operational Metadata"
+msgstr "Operational Metadata"
 
-#: src/pages/ResultsPage.tsx:5368
-#: src/pages/ResultsPage.tsx:5569
+#: src/pages/ResultsPage.tsx:5426
+#: src/pages/ResultsPage.tsx:5627
 msgid "Id/Line"
 msgstr "Id/Line"
 
-#: src/pages/ResultsPage.tsx:6521
+#: src/pages/ResultsPage.tsx:6579
 msgid "Overview"
 msgstr "Overview"
 
-#: src/pages/ResultsPage.tsx:2389
+#: src/pages/ResultsPage.tsx:2388
 msgid "Scan Errors"
 msgstr "Scan Errors"
 
-#: src/pages/ResultsPage.tsx:2653
+#: src/pages/UserSettings.tsx:315
+msgid "Unlink"
+msgstr "Unlink"
+
+#: src/pages/ResultsPage.tsx:2652
 msgid "No technology inventory detected"
 msgstr "No technology inventory detected"
 
-#: src/pages/SearchPage.tsx:1301
-#: src/pages/SearchPage.tsx:1622
-#: src/pages/SearchPage.tsx:3279
-#: src/pages/SearchPage.tsx:3287
-#: src/pages/SearchPage.tsx:3560
-#: src/pages/SearchPage.tsx:3568
+#: src/pages/SearchPage.tsx:1305
+#: src/pages/SearchPage.tsx:1626
+#: src/pages/SearchPage.tsx:3288
+#: src/pages/SearchPage.tsx:3296
+#: src/pages/SearchPage.tsx:3569
+#: src/pages/SearchPage.tsx:3577
 msgid "Component name must be less than {COMPONENT_NAME_LENGTH} characters"
 msgstr "Component name must be less than {COMPONENT_NAME_LENGTH} characters"
 
-#: src/pages/ResultsPage.tsx:3516
-#: src/pages/ResultsPage.tsx:3518
+#: src/pages/ResultsPage.tsx:3515
+#: src/pages/ResultsPage.tsx:3517
 msgid "View Documentation"
 msgstr "View Documentation"
 
@@ -393,10 +412,18 @@ msgstr "View Documentation"
 msgid "Artemis - User Management"
 msgstr "Artemis - User Management"
 
+#: src/features/notifications/Notifications.tsx:21
+msgid "warning"
+msgstr "warning"
+
+#: src/components/ApiKeys.tsx:1072
 #: src/pages/UsersPage.tsx:1125
-#: src/components/ApiKeys.tsx:1071
 msgid "Add to scope"
 msgstr "Add to scope"
+
+#: src/pages/ResultsPage.tsx:2303
+msgid "This scan option was not used"
+msgstr "This scan option was not used"
 
 #: src/components/CustomCopyToClipboard.tsx:94
 #: src/components/CustomCopyToClipboard.tsx:98
@@ -407,32 +434,20 @@ msgstr "Copied"
 msgid "Scope value not within user's scan organizations or does not end with /repo or /path_name_pattern"
 msgstr "Scope value not within user's scan organizations or does not end with /repo or /path_name_pattern"
 
-#: src/pages/SearchPage.tsx:4108
-#: src/pages/ResultsPage.tsx:4486
-#: src/pages/ResultsPage.tsx:4673
 #: src/components/ApiKeys.tsx:439
 #: src/components/ApiKeys.tsx:778
+#: src/pages/ResultsPage.tsx:4485
+#: src/pages/ResultsPage.tsx:4672
+#: src/pages/SearchPage.tsx:4117
 msgid "Name"
 msgstr "Name"
-
-#: src/pages/UserSettings.tsx:315
-msgid "Unlink"
-msgstr "Unlink"
-
-#: src/features/notifications/Notifications.tsx:21
-msgid "warning"
-msgstr "warning"
-
-#: src/pages/ResultsPage.tsx:2304
-msgid "This scan option was not used"
-msgstr "This scan option was not used"
 
 #: src/components/StatusCell.tsx:730
 msgid "Failed"
 msgstr "Failed"
 
-#: src/pages/SearchPage.tsx:1945
-#: src/pages/SearchPage.tsx:4209
+#: src/pages/SearchPage.tsx:1949
+#: src/pages/SearchPage.tsx:4218
 msgid "Last Qualified Scan"
 msgstr "Last Qualified Scan"
 
@@ -440,18 +455,30 @@ msgstr "Last Qualified Scan"
 msgid "GitHub Repo Health Check"
 msgstr "GitHub Repo Health Check"
 
+#: src/pages/SearchPage.tsx:1325
+#: src/pages/SearchPage.tsx:3320
+#: src/pages/SearchPage.tsx:3331
+msgid "Component license must be less than {COMPONENT_LICENSE_LENGTH} characters"
+msgstr "Component license must be less than {COMPONENT_LICENSE_LENGTH} characters"
+
+#. placeholder {0}: component?.omd_sdm_owner_email
+#. placeholder {1}: component?.omd_team
+#: src/custom/ListItemMetaMultiField.tsx:332
+msgid "Email SDM owner: {0} ({1})"
+msgstr "Email SDM owner: {0} ({1})"
+
 #. placeholder {0}: row?.results_summary?.secrets || 0
 #: src/components/StatusCell.tsx:470
 msgid "{0, plural, one {# Secret detected} other {# Secrets detected}}"
 msgstr "{0, plural, one {# Secret detected} other {# Secrets detected}}"
 
-#: src/pages/UsersPage.tsx:601
-#: src/pages/ResultsPage.tsx:3278
-#: src/pages/ResultsPage.tsx:3675
-#: src/pages/ResultsPage.tsx:4045
-#: src/pages/ResultsPage.tsx:4495
-#: src/components/ApiKeys.tsx:474
 #: src/components/ActivityTable.tsx:808
+#: src/components/ApiKeys.tsx:474
+#: src/pages/ResultsPage.tsx:3277
+#: src/pages/ResultsPage.tsx:3674
+#: src/pages/ResultsPage.tsx:4044
+#: src/pages/ResultsPage.tsx:4494
+#: src/pages/UsersPage.tsx:601
 msgid "Actions"
 msgstr "Actions"
 
@@ -459,31 +486,25 @@ msgstr "Actions"
 msgid "Priority: {count}"
 msgstr "Priority: {count}"
 
-#: src/pages/SearchPage.tsx:1312
-#: src/pages/SearchPage.tsx:1633
-#: src/pages/SearchPage.tsx:3295
-#: src/pages/SearchPage.tsx:3303
-#: src/pages/SearchPage.tsx:3576
-#: src/pages/SearchPage.tsx:3584
+#: src/pages/SearchPage.tsx:1316
+#: src/pages/SearchPage.tsx:1637
+#: src/pages/SearchPage.tsx:3304
+#: src/pages/SearchPage.tsx:3312
+#: src/pages/SearchPage.tsx:3585
+#: src/pages/SearchPage.tsx:3593
 msgid "Component version must be less than {COMPONENT_VERSION_LENGTH} characters"
 msgstr "Component version must be less than {COMPONENT_VERSION_LENGTH} characters"
 
-#: src/pages/SearchPage.tsx:1321
-#: src/pages/SearchPage.tsx:3311
-#: src/pages/SearchPage.tsx:3322
-msgid "Component license must be less than {COMPONENT_LICENSE_LENGTH} characters"
-msgstr "Component license must be less than {COMPONENT_LICENSE_LENGTH} characters"
-
-#: src/pages/ResultsPage.tsx:792
-#: src/pages/ResultsPage.tsx:2524
-#: src/pages/ResultsPage.tsx:2622
-#: src/pages/ResultsPage.tsx:6544
 #: src/app/scanPlugins.ts:20
+#: src/pages/ResultsPage.tsx:790
+#: src/pages/ResultsPage.tsx:2523
+#: src/pages/ResultsPage.tsx:2621
+#: src/pages/ResultsPage.tsx:6602
 msgid "Static Analysis"
 msgstr "Static Analysis"
 
-#: src/pages/ResultsPage.tsx:2660
-#: src/pages/ResultsPage.tsx:6615
+#: src/pages/ResultsPage.tsx:2659
+#: src/pages/ResultsPage.tsx:6673
 msgid "Hidden Findings"
 msgstr "Hidden Findings"
 
@@ -491,86 +512,149 @@ msgstr "Hidden Findings"
 msgid "This scan ran with a subset of plugins."
 msgstr "This scan ran with a subset of plugins."
 
+#: src/custom/searchMetaSchemas.ts:43
+#: src/custom/searchMetaSchemas.ts:75
+msgid "Application id must be less than {REPO_APP_ID_LENGTH} characters"
+msgstr "Application id must be less than {REPO_APP_ID_LENGTH} characters"
+
 #: src/app/scanPlugins.ts:24
 msgid "Secret Detection"
 msgstr "Secret Detection"
 
-#: src/pages/ResultsPage.tsx:762
-msgid "Secret"
-msgstr "Secret"
-
 #. placeholder {0}: formatDate(currentUser.last_login, "long")
-#: src/app/NavBar.tsx:271
+#: src/app/NavBar.tsx:270
 msgid "Last Login: {0}"
 msgstr "Last Login: {0}"
+
+#: src/pages/ResultsPage.tsx:760
+msgid "Secret"
+msgstr "Secret"
 
 #: src/components/StatusCell.tsx:186
 msgid "Queued"
 msgstr "Queued"
 
-#: src/pages/ResultsPage.tsx:6515
+#: src/custom/SearchMetaField.tsx:61
+msgid "Any Repository Contact"
+msgstr "Any Repository Contact"
+
+#: src/pages/ResultsPage.tsx:6573
 msgid "Report Sections Tabs"
 msgstr "Report Sections Tabs"
 
-#: src/app/scanPlugins.ts:200
+#: src/app/scanPlugins.ts:205
 msgid "Snyk"
 msgstr "Snyk"
 
-#: src/pages/SearchPage.tsx:2060
-#: src/pages/SearchPage.tsx:4383
-#: src/pages/SearchPage.tsx:4450
+#: src/pages/SearchPage.tsx:2064
+#: src/pages/SearchPage.tsx:4392
+#: src/pages/SearchPage.tsx:4459
 msgid "Search"
 msgstr "Search"
+
+#: src/pages/ResultsPage.tsx:5360
+msgid "Location/File path must be less than {FILEPATH_LENGTH} characters"
+msgstr "Location/File path must be less than {FILEPATH_LENGTH} characters"
+
+#: src/pages/ResultsPage.tsx:1710
+msgid "Hidden in source files:"
+msgstr "Hidden in source files:"
+
+#: src/components/ApiKeys.tsx:532
+msgid "This will be the only time this key will be displayed! Do not close this dialog until you record this key in an approved secret manager"
+msgstr "This will be the only time this key will be displayed! Do not close this dialog until you record this key in an approved secret manager"
+
+#: src/components/ChipCell.tsx:177
+#: src/pages/ResultsPage.tsx:2514
+#: src/pages/SearchPage.tsx:2624
+msgid "Negligible"
+msgstr "Negligible"
+
+#: src/app/scanPlugins.ts:105
+msgid "FindSecBugs (Java 8)"
+msgstr "FindSecBugs (Java 8)"
+
+#: src/components/ApiKeys.tsx:453
+#: src/components/ApiKeys.tsx:1267
+#: src/pages/UsersPage.tsx:583
+#: src/pages/UsersPage.tsx:1284
+msgid "Scope"
+msgstr "Scope"
 
 #: src/app/scanPlugins.ts:90
 msgid "Checkov (IaC)"
 msgstr "Checkov (IaC)"
 
+#. placeholder {0}: plugin?.displayName
+#. placeholder {1}: values.displayName
+#: src/pages/UsersPage.tsx:812
+msgid "{0} {1} Plugin"
+msgstr "{0} {1} Plugin"
+
 #: src/components/ActivityTable.tsx:829
 msgid "Batched Scan"
 msgstr "Batched Scan"
+
+#: src/components/ChipCell.tsx:153
+#: src/pages/ResultsPage.tsx:2512
+#: src/pages/SearchPage.tsx:2636
+msgid "Medium"
+msgstr "Medium"
+
+#: src/utils/formatters.ts:262
+msgid "Discussion Title"
+msgstr "Discussion Title"
+
+#: src/components/ActivityTable.tsx:687
+msgid "Show only my scans"
+msgstr "Show only my scans"
 
 #: src/components/StatusCell.tsx:434
 msgid "Fetching static analysis results..."
 msgstr "Fetching static analysis results..."
 
-#: src/pages/ResultsPage.tsx:7128
+#: src/pages/ResultsPage.tsx:7233
 msgid "Refresh Scan Results"
 msgstr "Refresh Scan Results"
+
+#: src/components/StatusCell.tsx:701
+#: src/components/StatusCell.tsx:704
+msgid "View info"
+msgstr "View info"
+
+#: src/custom/WelcomeDialogContent.tsx:39
+msgid "Artemis is a unified security platform developed within WarnerMedia CSO that enables development teams to run multiple “zero-configured-required” security source code scanning tools at scale to <0>“Shift Left” security</0>"
+msgstr "Artemis is a unified security platform developed within WarnerMedia CSO that enables development teams to run multiple “zero-configured-required” security source code scanning tools at scale to <0>“Shift Left” security</0>"
+
+#: src/pages/ResultsPage.tsx:990
+#: src/pages/ResultsPage.tsx:991
+msgid "Must be between 1-512 characters"
+msgstr "Must be between 1-512 characters"
+
+#: src/components/FormikPickers.tsx:149
+msgid "Must be a past date"
+msgstr "Must be a past date"
 
 #. placeholder {0}: row?.results_summary?.configuration?.critical || 0
 #: src/components/StatusCell.tsx:513
 msgid "{0, plural, one {# Critical configuration result} other {# Critical configuration results}}"
 msgstr "{0, plural, one {# Critical configuration result} other {# Critical configuration results}}"
 
-#: src/pages/SearchPage.tsx:2981
-#: src/pages/SearchPage.tsx:4271
-#: src/pages/ResultsPage.tsx:2871
-#: src/pages/ResultsPage.tsx:3272
-#: src/pages/ResultsPage.tsx:3669
-#: src/pages/ResultsPage.tsx:4489
-#: src/pages/ResultsPage.tsx:5387
+#: src/pages/ResultsPage.tsx:2870
+#: src/pages/ResultsPage.tsx:3271
+#: src/pages/ResultsPage.tsx:3668
+#: src/pages/ResultsPage.tsx:4488
+#: src/pages/ResultsPage.tsx:5445
+#: src/pages/SearchPage.tsx:2990
+#: src/pages/SearchPage.tsx:4280
 msgid "Severity"
 msgstr "Severity"
 
-#: src/pages/ResultsPage.tsx:2529
-#: src/pages/ResultsPage.tsx:2535
-#: src/pages/ResultsPage.tsx:2541
+#: src/pages/ResultsPage.tsx:2528
+#: src/pages/ResultsPage.tsx:2534
+#: src/pages/ResultsPage.tsx:2540
 msgid "Not Specified"
 msgstr "Not Specified"
-
-#: src/pages/ResultsPage.tsx:6748
-#: src/pages/ResultsPage.tsx:6757
-msgid "Service or org required"
-msgstr "Service or org required"
-
-#: src/pages/ResultsPage.tsx:5318
-msgid "Component/commit must be less than {COMPONENT_LENGTH} characters"
-msgstr "Component/commit must be less than {COMPONENT_LENGTH} characters"
-
-#: src/components/FormikPickers.tsx:157
-msgid "Must be a past date"
-msgstr "Must be a past date"
 
 #: src/app/scanPlugins.ts:80
 msgid "Bandit (Python)"
@@ -580,13 +664,82 @@ msgstr "Bandit (Python)"
 msgid "Unable to get component search results"
 msgstr "Unable to get component search results"
 
+#: src/pages/ResultsPage.tsx:6806
+#: src/pages/ResultsPage.tsx:6815
+msgid "Service or org required"
+msgstr "Service or org required"
+
+#: src/custom/SearchMetaField.tsx:74
+msgid "Repository Contact Match"
+msgstr "Repository Contact Match"
+
+#: src/pages/ResultsPage.tsx:744
+msgid "Configuration: {count}"
+msgstr "Configuration: {count}"
+
+#: src/app/NavBar.tsx:197
+msgid "Manage Users"
+msgstr "Manage Users"
+
+#: src/custom/SearchMetaField.tsx:95
+msgid "Application ID"
+msgstr "Application ID"
+
+#: src/components/ApiKeys.tsx:965
+#: src/components/ApiKeys.tsx:976
+#: src/pages/UsersPage.tsx:1018
+#: src/pages/UsersPage.tsx:1028
+msgid "Scroll to top"
+msgstr "Scroll to top"
+
 #: src/pages/UsersPage.tsx:451
 msgid "Add New User"
 msgstr "Add New User"
 
-#: src/pages/UserSettings.tsx:691
+#: src/pages/ResultsPage.tsx:1839
+msgid "What are hidden findings?"
+msgstr "What are hidden findings?"
+
+#: src/pages/SearchPage.tsx:1596
+msgid "Invalid description matcher"
+msgstr "Invalid description matcher"
+
+#: src/pages/ResultsPage.tsx:5376
+msgid "Component/commit must be less than {COMPONENT_LENGTH} characters"
+msgstr "Component/commit must be less than {COMPONENT_LENGTH} characters"
+
+#: src/custom/SearchMetaField.tsx:53
+#: src/custom/SearchMetaField.tsx:67
+#: src/pages/ResultsPage.tsx:3890
+#: src/pages/ResultsPage.tsx:4353
+#: src/pages/SearchPage.tsx:2659
+msgid "Exact"
+msgstr "Exact"
+
+#: src/pages/ResultsPage.tsx:1318
+msgid "Hidden finding last updated:"
+msgstr "Hidden finding last updated:"
+
+#: src/pages/UserSettings.tsx:695
 msgid "Show Welcome Message"
 msgstr "Show Welcome Message"
+
+#: src/components/ApiKeys.tsx:840
+#: src/components/ApiKeys.tsx:845
+msgid "What are my scan organizations?"
+msgstr "What are my scan organizations?"
+
+#: src/pages/ResultsPage.tsx:6043
+msgid "Copy link to these scan results"
+msgstr "Copy link to these scan results"
+
+#: src/components/FormikPickers.tsx:208
+msgid "Time can not be after {format}"
+msgstr "Time can not be after {format}"
+
+#: src/pages/ResultsPage.tsx:1888
+msgid "Include a clear and meaningful reason for why this finding is being hidden"
+msgstr "Include a clear and meaningful reason for why this finding is being hidden"
 
 #: src/components/StatusCell.tsx:695
 msgid "Info"
@@ -600,150 +753,283 @@ msgstr "Start a new scan using the same options used in this scan?<0/>Initiating
 msgid "GitHub Advanced Security Secrets"
 msgstr "GitHub Advanced Security Secrets"
 
+#: src/pages/ResultsPage.tsx:5998
+msgid "{dt} / {elapsed} Elapsed"
+msgstr "{dt} / {elapsed} Elapsed"
+
+#: src/components/ApiKeys.tsx:755
+#: src/features/notifications/Notifications.tsx:18
+#: src/pages/ResultsPage.tsx:1253
+#: src/pages/UsersPage.tsx:872
+msgid "error"
+msgstr "error"
+
+#: src/pages/MainPage.tsx:1069
+#: src/pages/ResultsPage.tsx:5840
+msgid "Scan Developer Dependencies"
+msgstr "Scan Developer Dependencies"
+
 #: src/app/scanPlugins.ts:145
 msgid "Shell Check (Shell)"
 msgstr "Shell Check (Shell)"
 
-#: src/pages/ResultsPage.tsx:6147
+#: src/components/ApiKeys.tsx:459
+msgid "Created"
+msgstr "Created"
+
+#: src/pages/ResultsPage.tsx:6205
 msgid "Start Date"
 msgstr "Start Date"
+
+#: src/pages/ResultsPage.tsx:5866
+msgid "Batch Priority"
+msgstr "Batch Priority"
 
 #: src/api/client.ts:1229
 msgid "Unable to add user key"
 msgstr "Unable to add user key"
 
-#: src/pages/ResultsPage.tsx:2122
+#: src/pages/ResultsPage.tsx:2120
 msgid "Hide this finding"
 msgstr "Hide this finding"
-
-#: src/pages/SearchPage.tsx:3020
-msgid "Discovered by Plugin"
-msgstr "Discovered by Plugin"
-
-#: src/pages/MainPage.tsx:794
-msgid "Scan Information"
-msgstr "Scan Information"
-
-#: src/pages/MainPage.tsx:1039
-msgid "Commit History (optional)"
-msgstr "Commit History (optional)"
 
 #: src/pages/UserSettings.tsx:321
 msgid "Link a Version Control System account to scan additional repositories within that account"
 msgstr "Link a Version Control System account to scan additional repositories within that account"
 
+#: src/components/ActivityTable.tsx:774
+#: src/components/ActivityTable.tsx:780
+#: src/components/ApiKeys.tsx:422
+#: src/components/ApiKeys.tsx:429
+#: src/components/ApiKeys.tsx:1201
+#: src/components/FormikPickers.tsx:55
+#: src/components/WelcomeDialog.tsx:95
+#: src/pages/ResultsPage.tsx:1811
+#: src/pages/ResultsPage.tsx:2085
+#: src/pages/ResultsPage.tsx:7195
+#: src/pages/ResultsPage.tsx:7201
+#: src/pages/UsersPage.tsx:551
+#: src/pages/UsersPage.tsx:558
+#: src/pages/UsersPage.tsx:1212
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/pages/SearchPage.tsx:3029
+msgid "Discovered by Plugin"
+msgstr "Discovered by Plugin"
+
 #: src/features/users/usersSaga.ts:38
 msgid "User added"
 msgstr "User added"
+
+#: src/pages/ResultsPage.tsx:3267
+#: src/pages/ResultsPage.tsx:3431
+#: src/pages/SearchPage.tsx:4168
+msgid "Component"
+msgstr "Component"
+
+#: src/pages/ResultsPage.tsx:6118
+msgid "Not specified"
+msgstr "Not specified"
+
+#: src/custom/searchMetaSchemas.ts:34
+#: src/custom/searchMetaSchemas.ts:56
+#: src/custom/searchMetaSchemas.ts:67
+msgid "Repository contact must be less than {REPO_CONTACT_LENGTH} characters"
+msgstr "Repository contact must be less than {REPO_CONTACT_LENGTH} characters"
+
+#: src/pages/MainPage.tsx:1123
+msgid "Exclude these files or directories from the scan"
+msgstr "Exclude these files or directories from the scan"
+
+#: src/components/FormikPickers.tsx:230
+msgid "Time can not be before {format}"
+msgstr "Time can not be before {format}"
 
 #: src/components/SecretValidityCell.tsx:89
 msgid "This finding was tested and determined to be inactive"
 msgstr "This finding was tested and determined to be inactive"
 
-#: src/pages/ResultsPage.tsx:1385
+#: src/components/ActivityTable.tsx:617
+#: src/components/ActivityTable.tsx:629
+msgid "Refreshing..."
+msgstr "Refreshing..."
+
+#: src/pages/MainPage.tsx:794
+msgid "Scan Information"
+msgstr "Scan Information"
+
+#: src/pages/MainPage.tsx:1316
+msgid "Hide {label} plugins"
+msgstr "Hide {label} plugins"
+
+#: src/pages/ResultsPage.tsx:1383
 msgid "Description:"
 msgstr "Description:"
 
-#: src/custom/SearchMetaField.tsx:70
-msgid "Meta Data Field1"
-msgstr "Meta Data Field1"
+#: src/custom/ListItemMetaMultiField.tsx:149
+msgid "Repo Owner / Contact"
+msgstr "Repo Owner / Contact"
+
+#: src/components/ChipCell.tsx:94
+#: src/pages/SearchPage.tsx:2582
+msgid "Moderate"
+msgstr "Moderate"
+
+#: src/pages/ResultsPage.tsx:2643
+msgid "No configuration findings detected"
+msgstr "No configuration findings detected"
+
+#: src/pages/MainPage.tsx:1039
+msgid "Commit History (optional)"
+msgstr "Commit History (optional)"
+
+#: src/components/ChipCell.tsx:93
+msgid "Moderate: {count}"
+msgstr "Moderate: {count}"
+
+#: src/pages/UserSettings.tsx:431
+msgid "Invalid authorization code"
+msgstr "Invalid authorization code"
 
 #: src/api/client.ts:658
 msgid "Unable to remove user"
 msgstr "Unable to remove user"
 
-#: src/pages/ResultsPage.tsx:5118
-#: src/pages/ResultsPage.tsx:5124
-#: src/pages/ResultsPage.tsx:5130
-#: src/pages/ResultsPage.tsx:5133
-#: src/pages/ResultsPage.tsx:5136
+#: src/pages/ResultsPage.tsx:5176
+#: src/pages/ResultsPage.tsx:5182
+#: src/pages/ResultsPage.tsx:5188
+#: src/pages/ResultsPage.tsx:5191
+#: src/pages/ResultsPage.tsx:5194
 msgid "(dark)"
 msgstr "(dark)"
 
-#: src/pages/SearchPage.tsx:3411
+#: src/custom/ListItemMetaMultiField.tsx:140
+msgid "No Contact Found"
+msgstr "No Contact Found"
+
+#: src/pages/SearchPage.tsx:3420
 msgid "Scan time null must be either \"true\" or \"false\""
 msgstr "Scan time null must be either \"true\" or \"false\""
-
-#: src/pages/UsersPage.tsx:252
-#: src/pages/SearchPage.tsx:3237
-#: src/pages/ResultsPage.tsx:2834
-msgid "Clear field"
-msgstr "Clear field"
-
-#: src/app/NavBar.tsx:223
-#: src/app/NavBar.tsx:226
-msgid "Open documentation"
-msgstr "Open documentation"
-
-#. placeholder {0}: selectedRow?.filename ?? ""
-#. placeholder {1}: selectedRow?.line
-#: src/pages/ResultsPage.tsx:3757
-msgid "{0} (Line {1}) "
-msgstr "{0} (Line {1}) "
-
-#: src/pages/ResultsPage.tsx:1943
-msgid "This vulnerability in THIS component"
-msgstr "This vulnerability in THIS component"
-
-#: src/pages/ResultsPage.tsx:1420
-#: src/pages/ResultsPage.tsx:1500
-#: src/pages/ResultsPage.tsx:1540
-msgid "Hidden in source file:"
-msgstr "Hidden in source file:"
 
 #: src/app/scanPlugins.ts:49
 msgid "Trivy SBOM"
 msgstr "Trivy SBOM"
 
-#: src/pages/UserSettings.tsx:651
-#: src/pages/UserSettings.tsx:674
-#: src/pages/UserSettings.tsx:733
-#: src/pages/UserSettings.tsx:745
-#: src/pages/UserSettings.tsx:767
-#: src/pages/UserSettings.tsx:780
-#: src/pages/UserSettings.tsx:830
-#: src/pages/UserSettings.tsx:854
-#: src/pages/SearchPage.tsx:2609
-#: src/pages/ResultsPage.tsx:2891
-#: src/pages/ResultsPage.tsx:2982
-#: src/pages/ResultsPage.tsx:5518
-#: src/pages/ResultsPage.tsx:5748
-#: src/pages/ResultsPage.tsx:5843
-#: src/pages/ResultsPage.tsx:5866
-#: src/pages/ResultsPage.tsx:5885
-#: src/pages/ResultsPage.tsx:5908
 #: src/components/ApiKeys.tsx:875
-#: src/components/ApiKeys.tsx:1261
+#: src/components/ApiKeys.tsx:1262
 #: src/components/ApiKeys.tsx:1279
-#: src/components/ApiKeys.tsx:1298
-#: src/components/ApiKeys.tsx:1311
-#: src/components/ApiKeys.tsx:1359
-#: src/components/ApiKeys.tsx:1361
-#: src/components/ApiKeys.tsx:1383
-#: src/components/ApiKeys.tsx:1385
-#: src/components/ApiKeys.tsx:1407
-#: src/components/ApiKeys.tsx:1409
+#: src/components/ApiKeys.tsx:1303
+#: src/components/ApiKeys.tsx:1315
+#: src/components/ApiKeys.tsx:1366
+#: src/components/ApiKeys.tsx:1368
+#: src/components/ApiKeys.tsx:1389
+#: src/components/ApiKeys.tsx:1391
+#: src/components/ApiKeys.tsx:1412
+#: src/components/ApiKeys.tsx:1414
+#: src/pages/ResultsPage.tsx:2890
+#: src/pages/ResultsPage.tsx:2981
+#: src/pages/ResultsPage.tsx:5576
+#: src/pages/ResultsPage.tsx:5806
+#: src/pages/ResultsPage.tsx:5901
+#: src/pages/ResultsPage.tsx:5924
+#: src/pages/ResultsPage.tsx:5943
+#: src/pages/ResultsPage.tsx:5966
+#: src/pages/SearchPage.tsx:2618
+#: src/pages/UserSettings.tsx:651
+#: src/pages/UserSettings.tsx:673
+#: src/pages/UserSettings.tsx:742
+#: src/pages/UserSettings.tsx:754
+#: src/pages/UserSettings.tsx:776
+#: src/pages/UserSettings.tsx:789
+#: src/pages/UserSettings.tsx:844
+#: src/pages/UserSettings.tsx:868
 msgid "None"
 msgstr "None"
 
-#: src/pages/UserSettings.tsx:632
-#: src/custom/SearchMetaField.tsx:112
-#: src/custom/ResultsMetaField.tsx:24
+#: src/pages/SearchPage.tsx:4130
+msgid "Version"
+msgstr "Version"
+
 #: src/components/SecretValidityCell.tsx:98
 #: src/components/SecretValidityCell.tsx:140
+#: src/custom/ResultsMetaField.tsx:36
+#: src/custom/ResultsMetaField.tsx:43
+#: src/custom/SearchMetaField.tsx:146
+#: src/pages/UserSettings.tsx:632
 msgid "Unknown"
 msgstr "Unknown"
 
+#: src/custom/WelcomeDialogContent.tsx:144
+msgid "User Settings"
+msgstr "User Settings"
+
+#: src/pages/ResultsPage.tsx:2068
 #: src/pages/UsersPage.tsx:1199
-#: src/pages/ResultsPage.tsx:2070
 msgid "Update"
 msgstr "Update"
 
-#: src/pages/SearchPage.tsx:2520
+#: src/pages/SearchPage.tsx:2529
 msgid "Before"
 msgstr "Before"
 
-#: src/features/scans/scansSchemas.ts:478
+#: src/pages/ResultsPage.tsx:4825
+msgid "Version Number"
+msgstr "Version Number"
+
+#: src/pages/MainPage.tsx:889
+msgid "Branch Name (optional)"
+msgstr "Branch Name (optional)"
+
+#: src/custom/WelcomeDialogContent.tsx:89
+msgid "For other supported<0>1</0> Version Control Systems, use the <1>on-boarding form</1> to request access."
+msgstr "For other supported<0>1</0> Version Control Systems, use the <1>on-boarding form</1> to request access."
+
+#: src/pages/SearchPage.tsx:3896
+msgid "Artemis - Search"
+msgstr "Artemis - Search"
+
+#: src/pages/SearchPage.tsx:2756
+#: src/pages/SearchPage.tsx:2849
+msgid "Repository Match"
+msgstr "Repository Match"
+
+#: src/pages/ResultsPage.tsx:2833
+#: src/pages/SearchPage.tsx:3246
+#: src/pages/UsersPage.tsx:252
+msgid "Clear field"
+msgstr "Clear field"
+
+#: src/app/NavBar.tsx:222
+#: src/app/NavBar.tsx:225
+msgid "Open documentation"
+msgstr "Open documentation"
+
+#. placeholder {0}: selectedRow?.filename ?? ""
+#. placeholder {1}: selectedRow?.line
+#: src/pages/ResultsPage.tsx:3756
+msgid "{0} (Line {1}) "
+msgstr "{0} (Line {1}) "
+
+#: src/pages/ResultsPage.tsx:4246
+msgid "No details"
+msgstr "No details"
+
+#: src/pages/ResultsPage.tsx:1941
+msgid "This vulnerability in THIS component"
+msgstr "This vulnerability in THIS component"
+
+#: src/pages/ResultsPage.tsx:1418
+#: src/pages/ResultsPage.tsx:1498
+#: src/pages/ResultsPage.tsx:1538
+msgid "Hidden in source file:"
+msgstr "Hidden in source file:"
+
+#: src/api/client.ts:1127
+msgid "Unable to add hidden finding"
+msgstr "Unable to add hidden finding"
+
+#: src/features/scans/scansSchemas.ts:477
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /"
 
@@ -760,32 +1046,15 @@ msgstr "Active"
 msgid "Pylint (Python)"
 msgstr "Pylint (Python)"
 
-#: src/pages/UserSettings.tsx:714
-#: src/pages/ResultsPage.tsx:5110
-msgid "Theme"
-msgstr "Theme"
-
-#: src/app/scanPlugins.ts:44
-msgid "Veracode SBOM"
-msgstr "Veracode SBOM"
-
-#: src/pages/ResultsPage.tsx:5627
-msgid "No hidden findings"
-msgstr "No hidden findings"
-
-#: src/components/ActivityTable.tsx:318
-msgid "No matching scans to display"
-msgstr "No matching scans to display"
-
-#: src/pages/UsersPage.tsx:920
-#: src/pages/UserSettings.tsx:799
-#: src/pages/UserSettings.tsx:809
-#: src/components/ApiKeys.tsx:1327
 #: src/components/ApiKeys.tsx:1336
+#: src/components/ApiKeys.tsx:1344
+#: src/pages/UserSettings.tsx:813
+#: src/pages/UserSettings.tsx:823
+#: src/pages/UsersPage.tsx:920
 msgid "Administrator"
 msgstr "Administrator"
 
-#: src/pages/SearchPage.tsx:2767
+#: src/pages/SearchPage.tsx:2776
 msgid "Scan Time"
 msgstr "Scan Time"
 
@@ -793,14 +1062,61 @@ msgstr "Scan Time"
 msgid "success"
 msgstr "success"
 
-#: src/pages/UserSettings.tsx:888
-#: src/components/ApiKeys.tsx:1484
+#: src/pages/ResultsPage.tsx:5037
+msgid "Potential API Specs"
+msgstr "Potential API Specs"
+
+#: src/custom/SearchMetaField.tsx:88
+msgid "Application ID Match"
+msgstr "Application ID Match"
+
+#: src/pages/ResultsPage.tsx:5168
+#: src/pages/UserSettings.tsx:718
+msgid "Theme"
+msgstr "Theme"
+
+#: src/components/ApiKeys.tsx:1489
+#: src/pages/UserSettings.tsx:912
 msgid "API Keys"
 msgstr "API Keys"
 
-#: src/custom/searchMetaSchemas.ts:68
-msgid "Meta data field1 null must be either \"true\" or \"false\""
-msgstr "Meta data field1 null must be either \"true\" or \"false\""
+#: src/components/ActivityTable.tsx:307
+#: src/pages/ResultsPage.tsx:7241
+msgid "New scan with these options"
+msgstr "New scan with these options"
+
+#: src/components/ActivityTable.tsx:242
+msgid "Close More Actions Menu"
+msgstr "Close More Actions Menu"
+
+#: src/components/ChipCell.tsx:81
+#: src/components/ChipCell.tsx:140
+msgid "High: {count}"
+msgstr "High: {count}"
+
+#: src/app/scanPlugins.ts:44
+msgid "Veracode SBOM"
+msgstr "Veracode SBOM"
+
+#: src/custom/SearchMetaField.tsx:58
+msgid "No Repository Contact"
+msgstr "No Repository Contact"
+
+#: src/utils/formatters.ts:280
+msgid "Wiki Commit"
+msgstr "Wiki Commit"
+
+#: src/pages/ResultsPage.tsx:5685
+msgid "No hidden findings"
+msgstr "No hidden findings"
+
+#: src/components/ActivityTable.tsx:318
+msgid "No matching scans to display"
+msgstr "No matching scans to display"
+
+#: src/app/scanPlugins.ts:201
+msgid "OWASP Check (Java)"
+msgstr "OWASP Check (Java)"
 
 #: src/pages/MainPage.tsx:824
 msgid "Version Control System"
@@ -810,8 +1126,12 @@ msgstr "Version Control System"
 msgid "View Scans"
 msgstr "View Scans"
 
-#: src/components/CustomCopyToClipboard.tsx:103
+#: src/components/ActivityTable.tsx:175
+msgid "View results in new tab"
+msgstr "View results in new tab"
+
 #: src/components/ActivityTable.tsx:281
+#: src/components/CustomCopyToClipboard.tsx:103
 msgid "Copied to clipboard"
 msgstr "Copied to clipboard"
 
@@ -819,25 +1139,32 @@ msgstr "Copied to clipboard"
 msgid "info"
 msgstr "info"
 
-#: src/components/ApiKeys.tsx:1496
+#: src/components/ApiKeys.tsx:1501
 msgid "No API keys found. Click the + button to add a new API key"
 msgstr "No API keys found. Click the + button to add a new API key"
 
-#: src/custom/ListItemMetaMultiField.tsx:131
-msgid "REPLACE ME: PROVIDE USER ASSISTANCE INFORMATION HERE."
-msgstr "REPLACE ME: PROVIDE USER ASSISTANCE INFORMATION HERE."
+#: src/features/scans/scansSchemas.ts:525
+#: src/features/scans/scansSchemas.ts:543
+msgid "Invalid path, must be relative to repository base directory and contain valid characters"
+msgstr "Invalid path, must be relative to repository base directory and contain valid characters"
 
-#: src/components/ApiKeys.tsx:835
-msgid "Restrict API key to only these repositories. Must be within a user's scan organizations."
-msgstr "Restrict API key to only these repositories. Must be within a user's scan organizations."
+#: src/pages/SearchPage.tsx:666
+msgid "Clear options"
+msgstr "Clear options"
 
-#: src/pages/SearchPage.tsx:2655
-msgid "No License"
-msgstr "No License"
+#: src/pages/ResultsPage.tsx:1583
+#: src/pages/ResultsPage.tsx:1696
+msgid "Component:"
+msgstr "Component:"
 
-#: src/pages/UsersPage.tsx:923
-msgid "Administrators can manage all other users and groups"
-msgstr "Administrators can manage all other users and groups"
+#: src/components/FormikPickers.tsx:67
+msgid "Next month"
+msgstr "Next month"
+
+#: src/components/TableMenu.tsx:116
+#: src/pages/ResultsPage.tsx:5157
+msgid "I Acknowledge"
+msgstr "I Acknowledge"
 
 #: src/app/scanPlugins.ts:155
 msgid "TFLint (Terraform)"
@@ -847,18 +1174,51 @@ msgstr "TFLint (Terraform)"
 msgid "Date must be before {dateMax}"
 msgstr "Date must be before {dateMax}"
 
-#: src/pages/SearchPage.tsx:2706
-#: src/pages/SearchPage.tsx:2799
+#: src/pages/SearchPage.tsx:2715
+#: src/pages/SearchPage.tsx:2808
 msgid "Service Match"
 msgstr "Service Match"
+
+#: src/components/ApiKeys.tsx:835
+msgid "Restrict API key to only these repositories. Must be within a user's scan organizations."
+msgstr "Restrict API key to only these repositories. Must be within a user's scan organizations."
+
+#: src/custom/WelcomeDialogContent.tsx:61
+msgid "By default, all users are provisioned with access to scan a demo repository, <0>{APP_DEMO_USER_VCSORG}/{APP_DEMO_USER_REPO}</0>. This repository includes test results you can use to exercise Artemis features."
+msgstr "By default, all users are provisioned with access to scan a demo repository, <0>{APP_DEMO_USER_VCSORG}/{APP_DEMO_USER_REPO}</0>. This repository includes test results you can use to exercise Artemis features."
+
+#: src/custom/SearchMetaField.tsx:47
+msgid "No Application ID"
+msgstr "No Application ID"
+
+#: src/pages/SearchPage.tsx:2664
+msgid "No License"
+msgstr "No License"
+
+#: src/custom/searchMetaSchemas.ts:37
+msgid "Invalid application id matcher"
+msgstr "Invalid application id matcher"
 
 #: src/api/client.ts:454
 msgid "Unable to get repository search results"
 msgstr "Unable to get repository search results"
 
+#: src/pages/UsersPage.tsx:923
+msgid "Administrators can manage all other users and groups"
+msgstr "Administrators can manage all other users and groups"
+
 #: src/components/StatusCell.tsx:678
 msgid "Software Bill of Materials (SBOM)"
 msgstr "Software Bill of Materials (SBOM)"
+
+#: src/pages/SearchPage.tsx:2301
+#: src/pages/SearchPage.tsx:2900
+msgid "Last Qualified Scan Time"
+msgstr "Last Qualified Scan Time"
+
+#: src/pages/ResultsPage.tsx:775
+msgid "Secret Raw"
+msgstr "Secret Raw"
 
 #: src/api/client.ts:337
 msgid "Unexpected response format"
@@ -869,7 +1229,7 @@ msgstr "Unexpected response format"
 msgid "Unlinking GitHub User..."
 msgstr "Unlinking GitHub User..."
 
-#: src/pages/ResultsPage.tsx:1947
+#: src/pages/ResultsPage.tsx:1945
 msgid "This secret in THIS specific location"
 msgstr "This secret in THIS specific location"
 
@@ -877,84 +1237,135 @@ msgstr "This secret in THIS specific location"
 msgid "View successful results"
 msgstr "View successful results"
 
-#: src/pages/ResultsPage.tsx:761
+#: src/components/ApiKeys.tsx:632
+#: src/pages/UsersPage.tsx:738
+msgid "Duplicate scope"
+msgstr "Duplicate scope"
+
+#: src/pages/ResultsPage.tsx:759
 msgid "Secret: {count}"
 msgstr "Secret: {count}"
 
-#: src/pages/SearchPage.tsx:3658
-#: src/pages/ResultsPage.tsx:5296
+#: src/pages/ResultsPage.tsx:5354
+#: src/pages/SearchPage.tsx:3667
 msgid "Invalid category"
 msgstr "Invalid category"
+
+#: src/pages/ResultsPage.tsx:6015
+msgid "Issues Found"
+msgstr "Issues Found"
+
+#: src/pages/ResultsPage.tsx:7085
+msgid "Back to Scans"
+msgstr "Back to Scans"
+
+#: src/pages/ResultsPage.tsx:4760
+msgid "Image"
+msgstr "Image"
 
 #: src/components/SecretValidityCell.tsx:113
 msgid "This finding was not tested for validity"
 msgstr "This finding was not tested for validity"
 
-#: src/components/ActivityTable.tsx:293
-msgid "Copy link to these results"
-msgstr "Copy link to these results"
-
-#: src/components/StatusCell.tsx:256
-msgid "Results may vary compared to scans run with other options. View scan results for additional details"
-msgstr "Results may vary compared to scans run with other options. View scan results for additional details"
-
-#: src/pages/ResultsPage.tsx:1766
-msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
-msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
-
-#: src/app/scanPlugins.ts:202
-msgid "Trivy Container Image"
-msgstr "Trivy Container Image"
-
-#: src/pages/ResultsPage.tsx:5158
-msgid "Show line numbers"
-msgstr "Show line numbers"
-
-#. placeholder {0}: row?.results_summary?.vulnerabilities?.high || 0
-#: src/components/StatusCell.tsx:295
-msgid "{0, plural, one {# High vulnerability} other {# High vulnerabilities}}"
-msgstr "{0, plural, one {# High vulnerability} other {# High vulnerabilities}}"
-
-#: src/pages/ResultsPage.tsx:5957
-msgid "Issues Found"
-msgstr "Issues Found"
+#: src/pages/SearchPage.tsx:2893
+msgid "Last Qualified Scan Time Match"
+msgstr "Last Qualified Scan Time Match"
 
 #: src/api/client.ts:1287
 msgid "Unable to get user keys"
 msgstr "Unable to get user keys"
 
 #. placeholder {0}: idx + 1
+#: src/components/ApiKeys.tsx:920
 #: src/pages/UsersPage.tsx:983
-#: src/components/ApiKeys.tsx:919
 msgid "Scope {0}"
 msgstr "Scope {0}"
 
-#: src/app/scanPlugins.ts:207
+#: src/components/ActivityTable.tsx:293
+msgid "Copy link to these results"
+msgstr "Copy link to these results"
+
+#: src/app/scanPlugins.ts:212
 msgid "Trivy SCA"
 msgstr "Trivy SCA"
+
+#: src/pages/SearchPage.tsx:1773
+msgid "No repositories match current filters"
+msgstr "No repositories match current filters"
 
 #: src/app/scanPlugins.ts:25
 msgid "Vulnerability Detection"
 msgstr "Vulnerability Detection"
 
+#: src/components/StatusCell.tsx:256
+msgid "Results may vary compared to scans run with other options. View scan results for additional details"
+msgstr "Results may vary compared to scans run with other options. View scan results for additional details"
+
+#: src/pages/ResultsPage.tsx:1843
+msgid "<0><1>Hidden findings are global to this repository. They will be applied to <2>all</2> scan results for this repository (past, present, future, and for all branches), with the exception of \"Secret Raw\" types, that will only apply to future scans</1><3>Findings can be hidden on the applicable finding type scan results tab (\"Vulnerability\", \"Static Analysis\", \"Secrets\", \"Configuration\")</3><4>Once a finding is hidden, it can be viewed or managed (removed/modified) on the \"Hidden Findings\" scan results tab</4><5>Hiding a finding <6>DOES NOT</6> remediate the underlying security issue, it <7>only</7> prevents it from appearing in scan results. Hidden findings allow hiding of false-positive (F+) results or to temporarily hide a finding that does not yet have an upstream vendor fix available</5></0>"
+msgstr "<0><1>Hidden findings are global to this repository. They will be applied to <2>all</2> scan results for this repository (past, present, future, and for all branches), with the exception of \"Secret Raw\" types, that will only apply to future scans</1><3>Findings can be hidden on the applicable finding type scan results tab (\"Vulnerability\", \"Static Analysis\", \"Secrets\", \"Configuration\")</3><4>Once a finding is hidden, it can be viewed or managed (removed/modified) on the \"Hidden Findings\" scan results tab</4><5>Hiding a finding <6>DOES NOT</6> remediate the underlying security issue, it <7>only</7> prevents it from appearing in scan results. Hidden findings allow hiding of false-positive (F+) results or to temporarily hide a finding that does not yet have an upstream vendor fix available</5></0>"
+
+#: src/pages/ResultsPage.tsx:1764
+msgid "Remove this hidden finding? This finding will again appear in scan results for this repository."
+msgstr "Remove this hidden finding? This finding will again appear in scan results for this repository."
+
+#: src/app/scanPlugins.ts:207
+msgid "Trivy Container Image"
+msgstr "Trivy Container Image"
+
+#: src/pages/ResultsPage.tsx:5216
+msgid "Show line numbers"
+msgstr "Show line numbers"
+
 #: src/api/client.ts:792
 msgid "Unable to get SBOM scan by id"
 msgstr "Unable to get SBOM scan by id"
 
-#: src/pages/ResultsPage.tsx:1367
-#: src/pages/ResultsPage.tsx:1521
-#: src/pages/ResultsPage.tsx:1568
-#: src/pages/ResultsPage.tsx:1681
-msgid "Severity:"
-msgstr "Severity:"
+#: src/pages/UsersPage.tsx:895
+msgid "Email Address"
+msgstr "Email Address"
+
+#. placeholder {0}: row?.results_summary?.vulnerabilities?.high || 0
+#: src/components/StatusCell.tsx:295
+msgid "{0, plural, one {# High vulnerability} other {# High vulnerabilities}}"
+msgstr "{0, plural, one {# High vulnerability} other {# High vulnerabilities}}"
 
 #: src/utils/formatters.ts:268
 msgid "Issue Title"
 msgstr "Issue Title"
 
-#: src/pages/ResultsPage.tsx:5719
+#: src/pages/ResultsPage.tsx:1365
+#: src/pages/ResultsPage.tsx:1519
+#: src/pages/ResultsPage.tsx:1566
+#: src/pages/ResultsPage.tsx:1679
+msgid "Severity:"
+msgstr "Severity:"
+
+#: src/pages/ResultsPage.tsx:5777
 msgid "Scan Options"
 msgstr "Scan Options"
+
+#: src/pages/ResultsPage.tsx:6025
+#: src/pages/ResultsPage.tsx:6144
+msgid "No Issues Found"
+msgstr "No Issues Found"
+
+#: src/components/TableMenu.tsx:198
+msgid "Download as JSON"
+msgstr "Download as JSON"
+
+#: src/custom/ListItemMetaMultiField.tsx:290
+msgid "Unknown Jira board"
+msgstr "Unknown Jira board"
+
+#: src/components/ApiKeys.tsx:359
+#: src/components/ApiKeys.tsx:364
+msgid "Remove API key"
+msgstr "Remove API key"
+
+#: src/pages/ResultsPage.tsx:6904
+msgid "Artemis - Scan Results"
+msgstr "Artemis - Scan Results"
 
 #: src/api/client.ts:593
 #: src/api/client.ts:617
@@ -969,1219 +1380,31 @@ msgstr "Data required"
 msgid "Running plugin {current} of {total}: {pluginName}"
 msgstr "Running plugin {current} of {total}: {pluginName}"
 
-#: src/components/ActivityTable.tsx:830
-msgid "On-Demand Scan"
-msgstr "On-Demand Scan"
-
-#: src/pages/UsersPage.tsx:1093
-#: src/components/ApiKeys.tsx:1039
-msgid "Click + icon to add this value to the Current Scope list above"
-msgstr "Click + icon to add this value to the Current Scope list above"
-
-#: src/pages/SearchPage.tsx:1715
-#: src/pages/SearchPage.tsx:1928
-#: src/pages/SearchPage.tsx:2263
-#: src/pages/SearchPage.tsx:2753
-#: src/pages/SearchPage.tsx:2846
-#: src/pages/SearchPage.tsx:4192
-#: src/pages/SearchPage.tsx:4240
-#: src/pages/MainPage.tsx:846
-msgid "Repository"
-msgstr "Repository"
-
-#: src/app/scanPlugins.ts:62
-msgid "Git Secrets"
-msgstr "Git Secrets"
-
-#. placeholder {0}: values.label
-#. placeholder {0}: props.label
-#. placeholder {0}: getFeatureName(apiName, pluginCatalog)
-#: src/pages/SearchPage.tsx:706
-#: src/pages/SearchPage.tsx:720
-#: src/pages/SearchPage.tsx:763
-#: src/pages/SearchPage.tsx:780
-#: src/pages/SearchPage.tsx:794
-#: src/pages/SearchPage.tsx:816
-#: src/pages/SearchPage.tsx:3963
-#: src/pages/ResultsPage.tsx:5692
-#: src/pages/ResultsPage.tsx:5698
-msgid "{0}"
-msgstr "{0}"
-
-#: src/pages/ResultsPage.tsx:3664
-#: src/pages/ResultsPage.tsx:3881
-msgid "File"
-msgstr "File"
-
-#: src/pages/UserSettings.tsx:608
-msgid "User Information"
-msgstr "User Information"
-
-#: src/pages/SearchPage.tsx:2585
-#: src/pages/SearchPage.tsx:2639
-#: src/pages/ResultsPage.tsx:2511
-#: src/components/ChipCell.tsx:70
-#: src/components/ChipCell.tsx:129
-msgid "Critical"
-msgstr "Critical"
-
-#: src/pages/MainPage.tsx:774
-msgid "Welcome to Artemis"
-msgstr "Welcome to Artemis"
-
-#: src/pages/ResultsPage.tsx:3569
-#: src/pages/ResultsPage.tsx:3571
-msgid "View in Version Control"
-msgstr "View in Version Control"
-
-#. placeholder {0}: tooltipTitle.length - 1
-#. placeholder {0}: licenseNames.length - 1
-#. placeholder {0}: pluginNames.length - 1
-#: src/pages/SearchPage.tsx:876
-#: src/pages/SearchPage.tsx:1000
-#: src/pages/SearchPage.tsx:1024
-#: src/pages/SearchPage.tsx:1043
-#: src/pages/SearchPage.tsx:4258
-#: src/pages/ResultsPage.tsx:883
-#: src/components/ScopeCell.tsx:24
-msgid "{0} more"
-msgstr "{0} more"
-
-#: src/app/scanPlugins.ts:120
-msgid "FindSecBugs (Java 21)"
-msgstr "FindSecBugs (Java 21)"
-
-#: src/api/client.ts:1054
-msgid "Unable to get scan history"
-msgstr "Unable to get scan history"
-
-#: src/pages/ResultsPage.tsx:1835
-msgid "Click for more information"
-msgstr "Click for more information"
-
-#: src/components/TableMenu.tsx:196
-msgid "Generating JSON File..."
-msgstr "Generating JSON File..."
-
-#: src/pages/ResultsPage.tsx:4434
-msgid "No secrets found"
-msgstr "No secrets found"
-
-#: src/components/SecretValidityCell.tsx:76
-msgid "This finding was tested and determined to be valid and active"
-msgstr "This finding was tested and determined to be valid and active"
-
-#: src/pages/UserSettings.tsx:870
-msgid "Linked Accounts"
-msgstr "Linked Accounts"
-
-#: src/app/scanPlugins.ts:181
-msgid "Aqua CLI Scanner (Docker)"
-msgstr "Aqua CLI Scanner (Docker)"
-
-#: src/pages/ResultsPage.tsx:5353
-#: src/pages/ResultsPage.tsx:5496
-msgid "Category"
-msgstr "Category"
-
-#: src/components/ApiKeys.tsx:501
-#: src/components/ApiKeys.tsx:504
-msgid "Add API key"
-msgstr "Add API key"
-
-#: src/pages/MainPage.tsx:194
-msgid "{enabledCount} of {totalCount} plugins selected"
-msgstr "{enabledCount} of {totalCount} plugins selected"
-
-#: src/features/search/searchSchemas.ts:145
-msgid "Must be a valid service name [azure|bitbucket|github] or hostname"
-msgstr "Must be a valid service name [azure|bitbucket|github] or hostname"
-
-#: src/api/client.ts:180
-msgid "Not found"
-msgstr "Not found"
-
-#. placeholder {0}: scan?.scan_options?.exclude_paths ? scan?.scan_options?.exclude_paths.length : 0
-#: src/pages/ResultsPage.tsx:5891
-msgid "Exclude Paths ({0})"
-msgstr "Exclude Paths ({0})"
-
-#: src/pages/ResultsPage.tsx:5393
-#: src/components/ApiKeys.tsx:464
-#: src/components/ApiKeys.tsx:1139
-msgid "Expires"
-msgstr "Expires"
-
-#: src/pages/SearchPage.tsx:2174
-#: src/pages/SearchPage.tsx:2685
-#: src/pages/SearchPage.tsx:3007
-msgid "Component Version"
-msgstr "Component Version"
-
-#: src/pages/MainPage.tsx:826
-msgid "Select Version Control System or type to autocomplete"
-msgstr "Select Version Control System or type to autocomplete"
-
-#: src/pages/ResultsPage.tsx:986
-msgid "Date must be before {dateMaxStr}"
-msgstr "Date must be before {dateMaxStr}"
-
-#: src/components/ApiKeys.tsx:1110
-msgid "Allow this key to use additional scan features"
-msgstr "Allow this key to use additional scan features"
-
-#: src/pages/UsersPage.tsx:937
-#: src/components/ApiKeys.tsx:823
-msgid "Current Scope"
-msgstr "Current Scope"
-
-#: src/pages/SearchPage.tsx:2936
-msgid "Vulnerability Match"
-msgstr "Vulnerability Match"
-
-#: src/pages/ResultsPage.tsx:4794
-msgid "Tool"
-msgstr "Tool"
-
-#: src/pages/ResultsPage.tsx:1422
-#: src/pages/ResultsPage.tsx:1502
-#: src/pages/ResultsPage.tsx:1542
-msgid "Found in source file:"
-msgstr "Found in source file:"
-
-#: src/api/client.ts:535
-msgid "Vulnerability ID required"
-msgstr "Vulnerability ID required"
-
-#. placeholder {0}: row?.results_summary?.configuration?.high || 0
-#: src/components/StatusCell.tsx:534
-msgid "{0, plural, one {# High configuration result} other {# High configuration results}}"
-msgstr "{0, plural, one {# High configuration result} other {# High configuration results}}"
-
-#: src/components/TableMenu.tsx:125
-msgid "Close Table Menu"
-msgstr "Close Table Menu"
-
-#: src/custom/ExportDialogContent.tsx:7
-msgid "You are about to download Artemis scan data. REPLACE ME: ADD ANY ADDITIONAL INFORMATION HERE."
-msgstr "You are about to download Artemis scan data. REPLACE ME: ADD ANY ADDITIONAL INFORMATION HERE."
-
-#: src/pages/ResultsPage.tsx:1800
-msgid "Removing..."
-msgstr "Removing..."
-
-#: src/pages/ResultsPage.tsx:1376
-msgid "Name:"
-msgstr "Name:"
-
-#: src/components/ApiKeys.tsx:1499
-msgid "Fetching API keys..."
-msgstr "Fetching API keys..."
-
-#: src/pages/ResultsPage.tsx:3631
-#: src/pages/ResultsPage.tsx:3988
-msgid "File path must be less than {FILEPATH_LENGTH} characters"
-msgstr "File path must be less than {FILEPATH_LENGTH} characters"
-
-#: src/pages/ResultsPage.tsx:2522
-#: src/pages/ResultsPage.tsx:2631
-#: src/pages/ResultsPage.tsx:6560
-msgid "Secrets"
-msgstr "Secrets"
-
-#. placeholder {0}: row.batch_description
-#: src/components/ActivityTable.tsx:827
-msgid "Batched Scan: {0}"
-msgstr "Batched Scan: {0}"
-
-#: src/pages/SearchPage.tsx:1581
-msgid "Invalid vulnerability id matcher"
-msgstr "Invalid vulnerability id matcher"
-
-#: src/pages/ResultsPage.tsx:6987
-msgid "Results for the specified scan can not be found."
-msgstr "Results for the specified scan can not be found."
-
-#: src/pages/ResultsPage.tsx:1907
-msgid "Justification for hiding this security finding"
-msgstr "Justification for hiding this security finding"
-
-#: src/components/ApiKeys.tsx:1398
-msgid "Last Used Date"
-msgstr "Last Used Date"
-
-#: src/app/NavBar.tsx:206
-#: src/app/NavBar.tsx:212
-msgid "Search for Components, Licenses, and Repositories"
-msgstr "Search for Components, Licenses, and Repositories"
-
-#: src/pages/ResultsPage.tsx:2126
-msgid "Modify hidden finding"
-msgstr "Modify hidden finding"
-
-#: src/pages/SearchPage.tsx:2679
-#: src/pages/SearchPage.tsx:3001
-msgid "Component Version Match"
-msgstr "Component Version Match"
-
-#: src/pages/SearchPage.tsx:2001
-msgid "Close repository details"
-msgstr "Close repository details"
-
-#: src/pages/ResultsPage.tsx:2626
-msgid "No static analysis findings detected"
-msgstr "No static analysis findings detected"
-
-#: src/pages/ResultsPage.tsx:5735
-msgid "Categories"
-msgstr "Categories"
-
-#: src/pages/MainPage.tsx:878
-msgid "New Scan Options..."
-msgstr "New Scan Options..."
-
-#: src/pages/SearchPage.tsx:2523
-msgid "After"
-msgstr "After"
-
-#: src/pages/UsersPage.tsx:1081
-#: src/components/ApiKeys.tsx:1027
-msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
-msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
-
-#: src/components/SecretValidityCell.tsx:85
-#: src/components/SecretValidityCell.tsx:135
-msgid "Inactive"
-msgstr "Inactive"
-
-#: src/features/hiddenFindings/hiddenFindingsSaga.ts:51
-msgid "Hidden finding removed"
-msgstr "Hidden finding removed"
-
-#: src/pages/SearchPage.tsx:2402
-#: src/pages/SearchPage.tsx:2955
-#: src/pages/ResultsPage.tsx:3177
-#: src/pages/ResultsPage.tsx:4551
-#: src/pages/ResultsPage.tsx:4682
-msgid "Description"
-msgstr "Description"
-
-#: src/api/client.ts:721
-msgid "Unable to get users"
-msgstr "Unable to get users"
-
-#: src/pages/ResultsPage.tsx:2601
-msgid "{hfCount, plural, one {{hfCount} hidden finding} other {{hfCount} hidden findings}}"
-msgstr "{hfCount, plural, one {{hfCount} hidden finding} other {{hfCount} hidden findings}}"
-
-#: src/pages/UsersPage.tsx:568
-#: src/pages/UsersPage.tsx:1275
-#: src/pages/UserSettings.tsx:621
-msgid "Email"
-msgstr "Email"
-
-#: src/pages/SearchPage.tsx:1295
-#: src/pages/SearchPage.tsx:1615
-msgid "Invalid component name matcher"
-msgstr "Invalid component name matcher"
-
-#: src/components/ApiKeys.tsx:525
-msgid "API Key:"
-msgstr "API Key:"
-
-#: src/app/scanPlugins.ts:23
-msgid "Software Bill of Materials"
-msgstr "Software Bill of Materials"
-
-#: src/features/scans/scansSchemas.ts:527
-#: src/features/scans/scansSchemas.ts:545
-msgid "Invalid path, longer than {MAX_PATH_LENGTH} characters"
-msgstr "Invalid path, longer than {MAX_PATH_LENGTH} characters"
-
-#: src/api/client.ts:525
-msgid "Unable to get vulnerability search results"
-msgstr "Unable to get vulnerability search results"
-
-#: src/components/FormikPickers.tsx:175
-#: src/components/FormikPickers.tsx:217
-msgid "Date can not be after {format}"
-msgstr "Date can not be after {format}"
-
-#: src/pages/MainPage.tsx:1184
-msgid "Reset"
-msgstr "Reset"
-
-#: src/pages/ResultsPage.tsx:4942
-msgid "No technologies found"
-msgstr "No technologies found"
-
-#: src/pages/MainPage.tsx:850
-msgid "Repository Path"
-msgstr "Repository Path"
-
-#: src/components/ApiKeys.tsx:657
-msgid "No repository or path name pattern supplied after scan organization prefix"
-msgstr "No repository or path name pattern supplied after scan organization prefix"
-
-#: src/pages/ResultsPage.tsx:3033
-#: src/pages/ResultsPage.tsx:3035
-msgid "View in the National Vulnerability Database"
-msgstr "View in the National Vulnerability Database"
-
-#: src/pages/ResultsPage.tsx:6761
-msgid "User does not have access to this service"
-msgstr "User does not have access to this service"
-
-#: src/pages/SearchPage.tsx:1331
-#: src/pages/SearchPage.tsx:1442
-#: src/pages/SearchPage.tsx:1452
-#: src/pages/SearchPage.tsx:3121
-msgid "Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)"
-msgstr "Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)"
-
-#: src/pages/UserSettings.tsx:805
-msgid "User Category"
-msgstr "User Category"
-
-#: src/pages/ResultsPage.tsx:967
-#: src/pages/ResultsPage.tsx:2722
-msgid "Modify Hidden Finding"
-msgstr "Modify Hidden Finding"
-
-#: src/pages/UserSettings.tsx:771
-#: src/components/ApiKeys.tsx:1302
-msgid "Features"
-msgstr "Features"
-
-#: src/pages/UserSettings.tsx:359
-msgid "Username:"
-msgstr "Username:"
-
-#: src/pages/ResultsPage.tsx:3641
-#: src/pages/ResultsPage.tsx:3998
-msgid "Resource must be less than {RESOURCE_LENGTH} characters"
-msgstr "Resource must be less than {RESOURCE_LENGTH} characters"
-
-#: src/app/scanPlugins.ts:173
-msgid "Enry Technology Discovery"
-msgstr "Enry Technology Discovery"
-
-#: src/pages/ResultsPage.tsx:4729
-msgid "No Name"
-msgstr "No Name"
-
-#: src/features/vcsServices/vcsServicesSaga.ts:55
-msgid "Service account unlinked"
-msgstr "Service account unlinked"
-
-#: src/components/StatusCell.tsx:754
-#: src/components/StatusCell.tsx:757
-msgid "View errors"
-msgstr "View errors"
-
-#: src/api/client.ts:1207
-msgid "Unable to update hidden finding"
-msgstr "Unable to update hidden finding"
-
-#. placeholder {0}: idx + 1
-#: src/pages/UsersPage.tsx:993
-#: src/components/ApiKeys.tsx:929
-msgid "Remove scope {0}"
-msgstr "Remove scope {0}"
-
-#: src/utils/formatters.ts:256
-msgid "Commit Message"
-msgstr "Commit Message"
-
-#: src/app/colors.ts:52
-msgid "Yellow"
-msgstr "Yellow"
-
-#: src/custom/SearchMetaField.tsx:50
-msgid "Any Meta Data Field"
-msgstr "Any Meta Data Field"
-
-#: src/pages/ResultsPage.tsx:2523
-msgid "Secrets (Raw)"
-msgstr "Secrets (Raw)"
-
-#: src/components/StatusCell.tsx:251
-msgid "This scan ran against a subset of source code due to include/exclude paths."
-msgstr "This scan ran against a subset of source code due to include/exclude paths."
-
-#: src/components/StatusCell.tsx:654
-msgid "Fetching inventory results..."
-msgstr "Fetching inventory results..."
-
-#: src/pages/ResultsPage.tsx:1342
-msgid "Hidden finding created:"
-msgstr "Hidden finding created:"
-
-#: src/pages/SearchPage.tsx:2437
-#: src/pages/SearchPage.tsx:4277
-msgid "Components"
-msgstr "Components"
-
-#: src/pages/UsersPage.tsx:1194
-#: src/pages/ResultsPage.tsx:2068
-msgid "Updating..."
-msgstr "Updating..."
-
-#: src/pages/SearchPage.tsx:2942
-#: src/pages/SearchPage.tsx:4256
-#: src/pages/ResultsPage.tsx:807
-#: src/pages/ResultsPage.tsx:3269
-#: src/pages/ResultsPage.tsx:3441
-msgid "Vulnerability"
-msgstr "Vulnerability"
-
-#. placeholder {0}: row?.results_summary?.inventory?.technology_discovery || 0
-#: src/components/StatusCell.tsx:609
-msgid "{0, plural, one {# Technology} other {# Technologies}}"
-msgstr "{0, plural, one {# Technology} other {# Technologies}}"
-
-#: src/pages/ResultsPage.tsx:2635
-msgid "No secrets detected"
-msgstr "No secrets detected"
-
-#: src/pages/ResultsPage.tsx:963
-#: src/pages/ResultsPage.tsx:2731
-msgid "Hide This Finding"
-msgstr "Hide This Finding"
-
-#: src/pages/ResultsPage.tsx:3108
-msgid "Component must be less than {COMPONENT_LENGTH} characters"
-msgstr "Component must be less than {COMPONENT_LENGTH} characters"
-
-#: src/pages/ResultsPage.tsx:4746
-msgid "No configuration findings"
-msgstr "No configuration findings"
-
-#: src/components/FormikPickers.tsx:58
-msgid "Select date"
-msgstr "Select date"
-
-#: src/api/client.ts:1329
-msgid "Unable to unlink user service"
-msgstr "Unable to unlink user service"
-
-#. placeholder {0}: dt.toFormat("yyyy-LL-dd")
-#: src/components/MailToLink.tsx:61
-#: src/components/MailToLink.tsx:71
-msgid "{user} (Deleted {0})"
-msgstr "{user} (Deleted {0})"
-
-#: src/components/ApiKeys.tsx:1374
-msgid "Expiration Date"
-msgstr "Expiration Date"
-
-#: src/pages/ResultsPage.tsx:6985
-#: src/components/StatusCell.tsx:734
-msgid "Error"
-msgstr "Error"
-
-#: src/api/client.ts:1309
-msgid "Unable to link user service"
-msgstr "Unable to link user service"
-
-#: src/pages/UsersPage.tsx:1383
-msgid "Users"
-msgstr "Users"
-
-#: src/pages/SearchPage.tsx:918
-#: src/pages/SearchPage.tsx:922
-#: src/pages/SearchPage.tsx:971
-#: src/pages/SearchPage.tsx:975
-msgid "Open this scan in a new tab"
-msgstr "Open this scan in a new tab"
-
-#: src/pages/ResultsPage.tsx:6087
-msgid "Potential Security Issues Found"
-msgstr "Potential Security Issues Found"
-
-#: src/pages/SearchPage.tsx:1701
-#: src/pages/SearchPage.tsx:1914
-#: src/pages/SearchPage.tsx:2248
-#: src/pages/SearchPage.tsx:2712
-#: src/pages/SearchPage.tsx:2805
-#: src/pages/SearchPage.tsx:4178
-#: src/pages/ResultsPage.tsx:6014
-msgid "Service"
-msgstr "Service"
-
-#: src/pages/ResultsPage.tsx:5207
-#: src/pages/ResultsPage.tsx:5210
-msgid "Download SBOM results"
-msgstr "Download SBOM results"
-
-#. placeholder {0}: row?.scan_options?.include_paths.length > 0 ? row?.scan_options?.include_paths.join( ", ", ) : "None"
-#. placeholder {1}: row?.scan_options?.exclude_paths.length > 0 ? row?.scan_options?.exclude_paths.join( ", ", ) : "None"
-#: src/components/ActivityTable.tsx:851
-msgid "Include paths: {0} ; Exclude paths: {1}"
-msgstr "Include paths: {0} ; Exclude paths: {1}"
-
-#: src/pages/UserSettings.tsx:800
-#: src/pages/UserSettings.tsx:811
-#: src/components/ApiKeys.tsx:1328
-#: src/components/ApiKeys.tsx:1337
-msgid "Standard"
-msgstr "Standard"
-
-#: src/pages/UsersPage.tsx:660
-#: src/pages/SearchPage.tsx:3657
-#: src/pages/ResultsPage.tsx:977
-#: src/pages/ResultsPage.tsx:990
-#: src/features/scans/scansSchemas.ts:471
-#: src/features/scans/scansSchemas.ts:475
-#: src/components/ApiKeys.tsx:561
-#: src/components/ApiKeys.tsx:566
-#: src/components/ApiKeys.tsx:568
-#: src/components/ApiKeys.tsx:569
-msgid "Required"
-msgstr "Required"
-
-#: src/pages/UsersPage.tsx:1129
-#: src/components/ApiKeys.tsx:1075
-msgid "Add this item to scope"
-msgstr "Add this item to scope"
-
-#: src/app/scanPlugins.ts:100
-msgid "ESlint (JavaScript)"
-msgstr "ESlint (JavaScript)"
-
-#. placeholder {0}: row?.results_summary?.static_analysis?.high || 0
-#: src/components/StatusCell.tsx:393
-msgid "{0, plural, one {# High static analysis result} other {# High static analysis results}}"
-msgstr "{0, plural, one {# High static analysis result} other {# High static analysis results}}"
-
-#: src/pages/SearchPage.tsx:2027
-#: src/pages/SearchPage.tsx:4421
-msgid "Search Filters"
-msgstr "Search Filters"
-
-#. placeholder {0}: row?.results_summary?.static_analysis?.critical || 0
-#: src/components/StatusCell.tsx:372
-msgid "{0, plural, one {# Critical static analysis result} other {# Critical static analysis results}}"
-msgstr "{0, plural, one {# Critical static analysis result} other {# Critical static analysis results}}"
-
-#: src/pages/ResultsPage.tsx:822
-msgid "Vulnerability Raw"
-msgstr "Vulnerability Raw"
-
-#: src/components/ChipCell.tsx:105
-#: src/components/ChipCell.tsx:164
-msgid "Low: {count}"
-msgstr "Low: {count}"
-
-#: src/pages/UsersPage.tsx:589
-msgid "Admin"
-msgstr "Admin"
-
-#: src/pages/ResultsPage.tsx:4762
-msgid "Tag"
-msgstr "Tag"
-
-#: src/pages/MainPage.tsx:849
-msgid "Organization/Repository Path"
-msgstr "Organization/Repository Path"
-
-#: src/pages/SearchPage.tsx:1781
-#: src/pages/SearchPage.tsx:2104
-#: src/pages/ResultsPage.tsx:3777
-msgid "Details"
-msgstr "Details"
-
-#: src/components/ApiKeys.tsx:495
-msgid "API keys can not be modified after creation, they can only be removed and re-added"
-msgstr "API keys can not be modified after creation, they can only be removed and re-added"
-
-#: src/pages/SearchPage.tsx:2282
-#: src/pages/SearchPage.tsx:2874
-msgid "Last Scan Time"
-msgstr "Last Scan Time"
-
-#: src/pages/ResultsPage.tsx:1955
-msgid "This vulnerability in ALL components"
-msgstr "This vulnerability in ALL components"
-
-#: src/components/StatusCell.tsx:748
-msgid "Errors"
-msgstr "Errors"
-
-#: src/api/client.ts:1249
-msgid "Unable to remove user key"
-msgstr "Unable to remove user key"
-
-#: src/components/ApiKeys.tsx:801
-msgid "Create a user administrator API key"
-msgstr "Create a user administrator API key"
-
-#. placeholder {0}: row?.results_summary?.configuration?.medium || 0
-#: src/components/StatusCell.tsx:553
-msgid "{0, plural, one {# Medium configuration result} other {# Medium configuration results}}"
-msgstr "{0, plural, one {# Medium configuration result} other {# Medium configuration results}}"
-
-#: src/pages/SearchPage.tsx:1599
-#: src/pages/SearchPage.tsx:3527
-#: src/pages/SearchPage.tsx:3535
-#: src/pages/ResultsPage.tsx:4466
-msgid "Description must be less than {DESCRIPTION_LENGTH} characters"
-msgstr "Description must be less than {DESCRIPTION_LENGTH} characters"
-
-#: src/pages/ResultsPage.tsx:1596
-msgid "Hidden in source files ({hiddenFindingCount}):"
-msgstr "Hidden in source files ({hiddenFindingCount}):"
-
-#: src/pages/ResultsPage.tsx:978
-msgid "Must be 4 or more characters"
-msgstr "Must be 4 or more characters"
-
-#: src/pages/ResultsPage.tsx:985
-#: src/components/FormikPickers.tsx:151
-#: src/components/ApiKeys.tsx:572
-msgid "Must be a future date"
-msgstr "Must be a future date"
-
-#: src/pages/ResultsPage.tsx:1905
-msgid "Reason"
-msgstr "Reason"
-
-#: src/app/scanPlugins.ts:168
-msgid "CI/CD Tool Discovery"
-msgstr "CI/CD Tool Discovery"
-
-#: src/pages/SearchPage.tsx:2692
-msgid "License Match"
-msgstr "License Match"
-
-#: src/pages/ResultsPage.tsx:5477
-msgid "These findings will be excluded from all results for this repository, including all branches"
-msgstr "These findings will be excluded from all results for this repository, including all branches"
-
-#: src/components/ApiKeys.tsx:807
-msgid "User administrator keys can manage other users"
-msgstr "User administrator keys can manage other users"
-
-#: src/components/ApiKeys.tsx:567
-msgid "Must have at least 1 item"
-msgstr "Must have at least 1 item"
-
-#: src/app/colors.ts:62
-msgid "Teal"
-msgstr "Teal"
-
-#: src/api/client.ts:845
-#: src/api/client.ts:1036
-msgid "VCS/Org required"
-msgstr "VCS/Org required"
-
-#: src/app/scanPlugins.ts:191
-msgid "NPM Audit (NodeJS)"
-msgstr "NPM Audit (NodeJS)"
-
-#: src/pages/UsersPage.tsx:1031
-#: src/components/ApiKeys.tsx:978
-msgid "Top"
-msgstr "Top"
-
-#: src/app/scanPlugins.ts:85
-msgid "Brakeman (Ruby)"
-msgstr "Brakeman (Ruby)"
-
-#. placeholder {0}: userToDelete?.email ?? ""
-#: src/pages/UsersPage.tsx:527
-msgid "Remove user \"{0}\"?"
-msgstr "Remove user \"{0}\"?"
-
-#: src/pages/ResultsPage.tsx:4795
-msgid "Config Files"
-msgstr "Config Files"
-
-#: src/pages/ResultsPage.tsx:1975
-msgid "String to exclude from secret findings (future scans only)"
-msgstr "String to exclude from secret findings (future scans only)"
-
-#: src/custom/WelcomeDialogContent.tsx:8
-msgid "REPLACE ME: ADD A WELCOME MESSAGE AND/OR INFORMATION TO GET THE USER STARTED HERE."
-msgstr "REPLACE ME: ADD A WELCOME MESSAGE AND/OR INFORMATION TO GET THE USER STARTED HERE."
-
-#: src/pages/ResultsPage.tsx:4999
-msgid "No CI/CD tools found"
-msgstr "No CI/CD tools found"
-
-#: src/pages/SearchPage.tsx:2459
-#: src/pages/SearchPage.tsx:4283
-#: src/pages/ResultsPage.tsx:3240
-msgid "Discovered By Plugins"
-msgstr "Discovered By Plugins"
-
-#: src/components/SecretValidityCell.tsx:102
-msgid "This finding could not be determined to be either active or inactive"
-msgstr "This finding could not be determined to be either active or inactive"
-
-#: src/api/client.ts:811
-msgid "Unable to get scan by id"
-msgstr "Unable to get scan by id"
-
-#: src/pages/ResultsPage.tsx:984
-#: src/components/FormikPickers.tsx:145
-#: src/components/ApiKeys.tsx:571
-msgid "Invalid date format"
-msgstr "Invalid date format"
-
-#: src/pages/UsersPage.tsx:667
-msgid "Invalid email address"
-msgstr "Invalid email address"
-
-#: src/app/scanPlugins.ts:95
-msgid "Detekt (Kotlin)"
-msgstr "Detekt (Kotlin)"
-
-#: src/pages/SearchPage.tsx:1335
-#: src/pages/SearchPage.tsx:1446
-#: src/pages/SearchPage.tsx:1456
-#: src/pages/SearchPage.tsx:2772
-#: src/pages/SearchPage.tsx:2879
-#: src/pages/SearchPage.tsx:2896
-#: src/pages/SearchPage.tsx:3332
-#: src/pages/SearchPage.tsx:3336
-#: src/pages/SearchPage.tsx:3404
-#: src/pages/SearchPage.tsx:3408
-#: src/pages/SearchPage.tsx:3415
-#: src/pages/SearchPage.tsx:3419
-msgid "Scan time can not be in the future"
-msgstr "Scan time can not be in the future"
-
-#: src/pages/SearchPage.tsx:2417
-#: src/pages/SearchPage.tsx:2968
-#: src/pages/ResultsPage.tsx:3192
-#: src/pages/ResultsPage.tsx:4567
-msgid "Remediation"
-msgstr "Remediation"
-
-#: src/custom/SearchMetaField.tsx:63
-msgid "Meta Data Field1 Match"
-msgstr "Meta Data Field1 Match"
-
-#: src/pages/ResultsPage.tsx:3500
-msgid "No vulnerabilities found"
-msgstr "No vulnerabilities found"
-
-#: src/pages/ResultsPage.tsx:821
-msgid "Vulnerability Raw: {count}"
-msgstr "Vulnerability Raw: {count}"
-
-#: src/app/scanPlugins.ts:115
-msgid "FindSecBugs (Java 17)"
-msgstr "FindSecBugs (Java 17)"
-
-#: src/pages/SearchPage.tsx:1720
-#: src/pages/SearchPage.tsx:1933
-#: src/pages/SearchPage.tsx:2860
-#: src/pages/SearchPage.tsx:4197
-msgid "Risk"
-msgstr "Risk"
-
-#: src/api/client.ts:174
-msgid "Not authorized"
-msgstr "Not authorized"
-
-#: src/pages/MainPage.tsx:837
-msgid "Missing an option? Request access"
-msgstr "Missing an option? Request access"
-
-#: src/utils/formatters.ts:276
-msgid "Pull Request Review Comment"
-msgstr "Pull Request Review Comment"
-
-#: src/api/client.ts:1145
-msgid "Unable to remove hidden finding"
-msgstr "Unable to remove hidden finding"
-
-#: src/pages/SearchPage.tsx:1324
-#: src/pages/SearchPage.tsx:1431
-msgid "Invalid service matcher"
-msgstr "Invalid service matcher"
-
-#: src/pages/SearchPage.tsx:1603
-msgid "Invalid remediation matcher"
-msgstr "Invalid remediation matcher"
-
-#: src/pages/ResultsPage.tsx:5049
-#: src/components/TableMenu.tsx:93
-msgid "Generating JSON File"
-msgstr "Generating JSON File"
-
-#. placeholder {0}: item?.filename ?? ""
-#. placeholder {1}: item?.line ?? ""
-#: src/pages/ResultsPage.tsx:1549
-msgid "{0} (Line {1})"
-msgstr "{0} (Line {1})"
-
-#: src/app/colors.ts:72
-msgid "Blue"
-msgstr "Blue"
-
-#: src/api/client.ts:700
-msgid "Unable to get current user details"
-msgstr "Unable to get current user details"
-
-#: src/pages/ResultsPage.tsx:2649
-#: src/pages/ResultsPage.tsx:6592
-msgid "Inventory"
-msgstr "Inventory"
-
-#: src/pages/MainPage.tsx:1083
-#: src/pages/MainPage.tsx:1114
-msgid "One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)"
-msgstr "One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)"
-
-#. placeholder {0}: scan?.scan_options?.include_paths ? scan?.scan_options?.include_paths.length : 0
-#: src/pages/ResultsPage.tsx:5849
-msgid "Include Paths ({0})"
-msgstr "Include Paths ({0})"
-
-#: src/app/scanPlugins.ts:125
-msgid "GoSec (Golang)"
-msgstr "GoSec (Golang)"
-
-#: src/pages/ResultsPage.tsx:5302
-msgid "Location/File path must be less than {FILEPATH_LENGTH} characters"
-msgstr "Location/File path must be less than {FILEPATH_LENGTH} characters"
-
-#: src/pages/ResultsPage.tsx:1712
-msgid "Hidden in source files:"
-msgstr "Hidden in source files:"
-
-#: src/components/ApiKeys.tsx:532
-msgid "This will be the only time this key will be displayed! Do not close this dialog until you record this key in an approved secret manager"
-msgstr "This will be the only time this key will be displayed! Do not close this dialog until you record this key in an approved secret manager"
-
-#: src/pages/SearchPage.tsx:2615
-#: src/pages/ResultsPage.tsx:2515
-#: src/components/ChipCell.tsx:177
-msgid "Negligible"
-msgstr "Negligible"
-
-#: src/app/scanPlugins.ts:105
-msgid "FindSecBugs (Java 8)"
-msgstr "FindSecBugs (Java 8)"
-
-#: src/pages/UsersPage.tsx:583
-#: src/pages/UsersPage.tsx:1284
-#: src/components/ApiKeys.tsx:453
-#: src/components/ApiKeys.tsx:1266
-msgid "Scope"
-msgstr "Scope"
-
-#. placeholder {0}: plugin?.displayName
-#. placeholder {1}: values.displayName
-#: src/pages/UsersPage.tsx:812
-msgid "{0} {1} Plugin"
-msgstr "{0} {1} Plugin"
-
-#: src/utils/formatters.ts:262
-msgid "Discussion Title"
-msgstr "Discussion Title"
-
-#: src/components/ActivityTable.tsx:687
-msgid "Show only my scans"
-msgstr "Show only my scans"
-
-#: src/pages/SearchPage.tsx:2627
-#: src/pages/ResultsPage.tsx:2513
-#: src/components/ChipCell.tsx:153
-msgid "Medium"
-msgstr "Medium"
-
-#: src/components/StatusCell.tsx:701
-#: src/components/StatusCell.tsx:704
-msgid "View info"
-msgstr "View info"
-
-#: src/pages/ResultsPage.tsx:992
-#: src/pages/ResultsPage.tsx:993
-msgid "Must be between 1-512 characters"
-msgstr "Must be between 1-512 characters"
-
-#: src/pages/ResultsPage.tsx:746
-msgid "Configuration: {count}"
-msgstr "Configuration: {count}"
-
-#: src/pages/UsersPage.tsx:1018
-#: src/pages/UsersPage.tsx:1028
-#: src/components/ApiKeys.tsx:964
-#: src/components/ApiKeys.tsx:975
-msgid "Scroll to top"
-msgstr "Scroll to top"
-
-#: src/pages/ResultsPage.tsx:1841
-msgid "What are hidden findings?"
-msgstr "What are hidden findings?"
-
-#: src/pages/SearchPage.tsx:2650
-#: src/pages/ResultsPage.tsx:3891
-#: src/pages/ResultsPage.tsx:4354
-#: src/custom/SearchMetaField.tsx:56
-msgid "Exact"
-msgstr "Exact"
-
-#: src/app/NavBar.tsx:198
-msgid "Manage Users"
-msgstr "Manage Users"
-
-#: src/pages/SearchPage.tsx:1592
-msgid "Invalid description matcher"
-msgstr "Invalid description matcher"
-
-#: src/pages/ResultsPage.tsx:1320
-msgid "Hidden finding last updated:"
-msgstr "Hidden finding last updated:"
-
-#: src/components/ApiKeys.tsx:840
-#: src/components/ApiKeys.tsx:845
-msgid "What are my scan organizations?"
-msgstr "What are my scan organizations?"
-
-#: src/pages/ResultsPage.tsx:5985
-msgid "Copy link to these scan results"
-msgstr "Copy link to these scan results"
-
-#: src/components/FormikPickers.tsx:216
-msgid "Time can not be after {format}"
-msgstr "Time can not be after {format}"
-
-#: src/pages/ResultsPage.tsx:5782
-#: src/pages/MainPage.tsx:1069
-msgid "Scan Developer Dependencies"
-msgstr "Scan Developer Dependencies"
-
-#: src/pages/ResultsPage.tsx:1890
-msgid "Include a clear and meaningful reason for why this finding is being hidden"
-msgstr "Include a clear and meaningful reason for why this finding is being hidden"
-
-#: src/pages/ResultsPage.tsx:5940
-msgid "{dt} / {elapsed} Elapsed"
-msgstr "{dt} / {elapsed} Elapsed"
-
-#: src/pages/UsersPage.tsx:872
-#: src/pages/ResultsPage.tsx:1255
-#: src/features/notifications/Notifications.tsx:18
-#: src/components/ApiKeys.tsx:755
-msgid "error"
-msgstr "error"
-
-#: src/components/ApiKeys.tsx:459
-msgid "Created"
-msgstr "Created"
-
-#: src/pages/ResultsPage.tsx:5808
-msgid "Batch Priority"
-msgstr "Batch Priority"
-
-#: src/pages/UsersPage.tsx:551
-#: src/pages/UsersPage.tsx:558
-#: src/pages/UsersPage.tsx:1212
-#: src/pages/ResultsPage.tsx:1813
-#: src/pages/ResultsPage.tsx:2087
-#: src/pages/ResultsPage.tsx:7164
-#: src/pages/ResultsPage.tsx:7170
-#: src/components/WelcomeDialog.tsx:95
-#: src/components/FormikPickers.tsx:61
-#: src/components/ApiKeys.tsx:422
-#: src/components/ApiKeys.tsx:429
-#: src/components/ApiKeys.tsx:1200
-#: src/components/ActivityTable.tsx:774
-#: src/components/ActivityTable.tsx:780
-msgid "Cancel"
-msgstr "Cancel"
-
-#: src/pages/SearchPage.tsx:4159
-#: src/pages/ResultsPage.tsx:3268
-#: src/pages/ResultsPage.tsx:3432
-msgid "Component"
-msgstr "Component"
-
-#: src/pages/MainPage.tsx:1123
-msgid "Exclude these files or directories from the scan"
-msgstr "Exclude these files or directories from the scan"
-
-#: src/pages/ResultsPage.tsx:2644
-msgid "No configuration findings detected"
-msgstr "No configuration findings detected"
-
-#: src/components/ChipCell.tsx:93
-msgid "Moderate: {count}"
-msgstr "Moderate: {count}"
-
-#: src/pages/ResultsPage.tsx:6060
-msgid "Not specified"
-msgstr "Not specified"
-
-#: src/components/FormikPickers.tsx:238
-msgid "Time can not be before {format}"
-msgstr "Time can not be before {format}"
-
-#: src/components/ActivityTable.tsx:617
-#: src/components/ActivityTable.tsx:629
-msgid "Refreshing..."
-msgstr "Refreshing..."
-
-#: src/pages/MainPage.tsx:1316
-msgid "Hide {label} plugins"
-msgstr "Hide {label} plugins"
-
-#: src/pages/SearchPage.tsx:2573
-#: src/components/ChipCell.tsx:94
-msgid "Moderate"
-msgstr "Moderate"
-
-#: src/pages/UserSettings.tsx:431
-msgid "Invalid authorization code"
-msgstr "Invalid authorization code"
-
-#: src/pages/SearchPage.tsx:4121
-msgid "Version"
-msgstr "Version"
-
-#: src/pages/MainPage.tsx:889
-msgid "Branch Name (optional)"
-msgstr "Branch Name (optional)"
-
-#: src/pages/SearchPage.tsx:3887
-msgid "Artemis - Search"
-msgstr "Artemis - Search"
-
-#: src/pages/ResultsPage.tsx:4247
-msgid "No details"
-msgstr "No details"
-
-#: src/api/client.ts:1127
-msgid "Unable to add hidden finding"
-msgstr "Unable to add hidden finding"
-
-#: src/pages/SearchPage.tsx:2747
-#: src/pages/SearchPage.tsx:2840
-msgid "Repository Match"
-msgstr "Repository Match"
-
-#: src/pages/ResultsPage.tsx:7180
-#: src/components/ActivityTable.tsx:307
-msgid "New scan with these options"
-msgstr "New scan with these options"
-
-#: src/utils/formatters.ts:280
-msgid "Wiki Commit"
-msgstr "Wiki Commit"
-
-#: src/components/ActivityTable.tsx:175
-msgid "View results in new tab"
-msgstr "View results in new tab"
-
-#: src/components/ActivityTable.tsx:242
-msgid "Close More Actions Menu"
-msgstr "Close More Actions Menu"
-
-#: src/components/ChipCell.tsx:81
-#: src/components/ChipCell.tsx:140
-msgid "High: {count}"
-msgstr "High: {count}"
-
-#: src/app/scanPlugins.ts:196
-msgid "OWASP Check (Java)"
-msgstr "OWASP Check (Java)"
-
-#: src/custom/ListItemMetaMultiField.tsx:76
-msgid "Meta Data Field1 Missing"
-msgstr "Meta Data Field1 Missing"
-
-#: src/features/scans/scansSchemas.ts:526
-#: src/features/scans/scansSchemas.ts:544
-msgid "Invalid path, must be relative to repository base directory and contain valid characters"
-msgstr "Invalid path, must be relative to repository base directory and contain valid characters"
-
-#: src/pages/SearchPage.tsx:666
-msgid "Clear options"
-msgstr "Clear options"
-
-#: src/pages/ResultsPage.tsx:1585
-#: src/pages/ResultsPage.tsx:1698
-msgid "Component:"
-msgstr "Component:"
-
-#: src/components/FormikPickers.tsx:73
-msgid "Next month"
-msgstr "Next month"
-
-#: src/pages/ResultsPage.tsx:5099
-#: src/components/TableMenu.tsx:116
-msgid "I Acknowledge"
-msgstr "I Acknowledge"
-
-#: src/pages/ResultsPage.tsx:777
-msgid "Secret Raw"
-msgstr "Secret Raw"
-
-#: src/pages/UsersPage.tsx:738
-#: src/components/ApiKeys.tsx:632
-msgid "Duplicate scope"
-msgstr "Duplicate scope"
-
-#: src/pages/SearchPage.tsx:2292
-#: src/pages/SearchPage.tsx:2891
-msgid "Last Qualified Scan Time"
-msgstr "Last Qualified Scan Time"
-
-#: src/pages/ResultsPage.tsx:4761
-msgid "Image"
-msgstr "Image"
-
-#: src/pages/ResultsPage.tsx:7028
-msgid "Back to Scans"
-msgstr "Back to Scans"
-
-#: src/pages/SearchPage.tsx:2884
-msgid "Last Qualified Scan Time Match"
-msgstr "Last Qualified Scan Time Match"
-
-#: src/pages/SearchPage.tsx:1769
-msgid "No repositories match current filters"
-msgstr "No repositories match current filters"
-
-#: src/pages/ResultsPage.tsx:1845
-msgid "<0><1>Hidden findings are global to this repository. They will be applied to <2>all</2> scan results for this repository (past, present, future, and for all branches), with the exception of \"Secret Raw\" types, that will only apply to future scans</1><3>Findings can be hidden on the applicable finding type scan results tab (\"Vulnerability\", \"Static Analysis\", \"Secrets\", \"Configuration\")</3><4>Once a finding is hidden, it can be viewed or managed (removed/modified) on the \"Hidden Findings\" scan results tab</4><5>Hiding a finding <6>DOES NOT</6> remediate the underlying security issue, it <7>only</7> prevents it from appearing in scan results. Hidden findings allow hiding of false-positive (F+) results or to temporarily hide a finding that does not yet have an upstream vendor fix available</5></0>"
-msgstr "<0><1>Hidden findings are global to this repository. They will be applied to <2>all</2> scan results for this repository (past, present, future, and for all branches), with the exception of \"Secret Raw\" types, that will only apply to future scans</1><3>Findings can be hidden on the applicable finding type scan results tab (\"Vulnerability\", \"Static Analysis\", \"Secrets\", \"Configuration\")</3><4>Once a finding is hidden, it can be viewed or managed (removed/modified) on the \"Hidden Findings\" scan results tab</4><5>Hiding a finding <6>DOES NOT</6> remediate the underlying security issue, it <7>only</7> prevents it from appearing in scan results. Hidden findings allow hiding of false-positive (F+) results or to temporarily hide a finding that does not yet have an upstream vendor fix available</5></0>"
-
-#: src/pages/UsersPage.tsx:895
-msgid "Email Address"
-msgstr "Email Address"
-
-#: src/pages/ResultsPage.tsx:5967
-#: src/pages/ResultsPage.tsx:6086
-msgid "No Issues Found"
-msgstr "No Issues Found"
-
-#: src/components/TableMenu.tsx:198
-msgid "Download as JSON"
-msgstr "Download as JSON"
-
-#: src/pages/SearchPage.tsx:3315
+#: src/components/ApiKeys.tsx:944
+msgid "At least 1 scope is required"
+msgstr "At least 1 scope is required"
+
+#: src/pages/SearchPage.tsx:3324
 msgid "Component license null must be either \"true\" or \"false\""
 msgstr "Component license null must be either \"true\" or \"false\""
 
-#: src/pages/UsersPage.tsx:1377
+#: src/pages/SearchPage.tsx:4378
 #: src/pages/UserSettings.tsx:247
-#: src/pages/SearchPage.tsx:4369
+#: src/pages/UsersPage.tsx:1377
 msgid "Back"
 msgstr "Back"
 
 #. placeholder {0}: scan?.repo
-#: src/pages/ResultsPage.tsx:6912
+#: src/pages/ResultsPage.tsx:6970
 msgid "Artemis - Scan Results: {0} (default)"
 msgstr "Artemis - Scan Results: {0} (default)"
 
+#: src/components/ActivityTable.tsx:830
+msgid "On-Demand Scan"
+msgstr "On-Demand Scan"
+
+#: src/pages/UserSettings.tsx:747
 #: src/pages/UsersPage.tsx:595
-#: src/pages/UserSettings.tsx:738
 msgid "Last Login"
 msgstr "Last Login"
 
@@ -2189,30 +1412,50 @@ msgstr "Last Login"
 msgid "Issue Comment"
 msgstr "Issue Comment"
 
-#: src/pages/SearchPage.tsx:2085
-#: src/pages/SearchPage.tsx:4348
+#: src/pages/SearchPage.tsx:2089
+#: src/pages/SearchPage.tsx:4357
 msgid "Fetching results..."
 msgstr "Fetching results..."
+
+#: src/components/ApiKeys.tsx:1040
+#: src/pages/UsersPage.tsx:1093
+msgid "Click + icon to add this value to the Current Scope list above"
+msgstr "Click + icon to add this value to the Current Scope list above"
 
 #: src/app/scanPlugins.ts:67
 msgid "Trufflehog"
 msgstr "Trufflehog"
 
-#: src/pages/SearchPage.tsx:2699
+#: src/custom/ListItemMetaMultiField.tsx:343
+msgid "Unknown SDM owner"
+msgstr "Unknown SDM owner"
+
+#: src/pages/SearchPage.tsx:2708
 msgid "License"
 msgstr "License"
+
+#: src/pages/MainPage.tsx:846
+#: src/pages/SearchPage.tsx:1719
+#: src/pages/SearchPage.tsx:1932
+#: src/pages/SearchPage.tsx:2272
+#: src/pages/SearchPage.tsx:2762
+#: src/pages/SearchPage.tsx:2855
+#: src/pages/SearchPage.tsx:4201
+#: src/pages/SearchPage.tsx:4249
+msgid "Repository"
+msgstr "Repository"
 
 #. placeholder {0}: row?.results_summary?.inventory?.base_images || 0
 #: src/components/StatusCell.tsx:632
 msgid "{0, plural, one {# Base image} other {# Base images}}"
 msgstr "{0, plural, one {# Base image} other {# Base images}}"
 
-#: src/app/NavBar.tsx:233
-#: src/app/NavBar.tsx:236
+#: src/app/NavBar.tsx:232
+#: src/app/NavBar.tsx:235
 msgid "Manage User Settings"
 msgstr "Manage User Settings"
 
-#: src/pages/SearchPage.tsx:1315
+#: src/pages/SearchPage.tsx:1319
 msgid "Invalid license matcher"
 msgstr "Invalid license matcher"
 
@@ -2221,18 +1464,63 @@ msgstr "Invalid license matcher"
 msgid "Linking GitHub User..."
 msgstr "Linking GitHub User..."
 
-#: src/pages/ResultsPage.tsx:6846
-msgid "Artemis - Scan Results"
-msgstr "Artemis - Scan Results"
+#: src/custom/ListItemMetaMultiField.tsx:391
+msgid "missing .omd/<component>/now.yaml file(s) or 'omd_component field'"
+msgstr "missing .omd/<component>/now.yaml file(s) or 'omd_component field'"
 
-#: src/components/ApiKeys.tsx:359
-#: src/components/ApiKeys.tsx:364
-msgid "Remove API key"
-msgstr "Remove API key"
+#. placeholder {0}: getFeatureName(apiName, pluginCatalog)
+#. placeholder {0}: getFeatureName(apiName, pluginKeys)
+#. placeholder {0}: props.label
+#: src/pages/ResultsPage.tsx:5750
+#: src/pages/ResultsPage.tsx:5756
+#: src/pages/SearchPage.tsx:706
+#: src/pages/SearchPage.tsx:720
+#: src/pages/SearchPage.tsx:763
+#: src/pages/SearchPage.tsx:780
+#: src/pages/SearchPage.tsx:794
+#: src/pages/SearchPage.tsx:816
+#: src/pages/SearchPage.tsx:3972
+msgid "{0}"
+msgstr "{0}"
 
-#: src/components/ApiKeys.tsx:943
-msgid "At least 1 scope is required"
-msgstr "At least 1 scope is required"
+#: src/app/scanPlugins.ts:62
+msgid "Git Secrets"
+msgstr "Git Secrets"
+
+#: src/pages/ResultsPage.tsx:3663
+#: src/pages/ResultsPage.tsx:3880
+#: src/pages/ResultsPage.tsx:4823
+msgid "File"
+msgstr "File"
+
+#: src/pages/ResultsPage.tsx:5057
+msgid "No API specs found"
+msgstr "No API specs found"
+
+#: src/components/ChipCell.tsx:70
+#: src/components/ChipCell.tsx:129
+#: src/pages/ResultsPage.tsx:2510
+#: src/pages/SearchPage.tsx:2594
+#: src/pages/SearchPage.tsx:2648
+msgid "Critical"
+msgstr "Critical"
+
+#: src/pages/UserSettings.tsx:608
+msgid "User Information"
+msgstr "User Information"
+
+#. placeholder {0}: count - 1
+#. placeholder {0}: licenseNames.length - 1
+#. placeholder {0}: pluginNames.length - 1
+#: src/components/ScopeCell.tsx:24
+#: src/pages/ResultsPage.tsx:881
+#: src/pages/SearchPage.tsx:876
+#: src/pages/SearchPage.tsx:1000
+#: src/pages/SearchPage.tsx:1024
+#: src/pages/SearchPage.tsx:1043
+#: src/pages/SearchPage.tsx:4267
+msgid "{0} more"
+msgstr "{0} more"
 
 #: src/api/client.ts:681
 msgid "Unable to get user details"
@@ -2240,30 +1528,60 @@ msgstr "Unable to get user details"
 
 #. placeholder {0}: getFeatureName(apiName, pluginCatalog)
 #. placeholder {0}: getFeatureName(apiName, pluginKeys)
-#: src/pages/ResultsPage.tsx:5691
-#: src/pages/ResultsPage.tsx:5697
+#: src/pages/ResultsPage.tsx:5749
+#: src/pages/ResultsPage.tsx:5755
 msgid "{0} (not run)"
 msgstr "{0} (not run)"
 
-#: src/components/ApiKeys.tsx:1353
+#: src/components/ApiKeys.tsx:1361
 msgid "Created Date"
 msgstr "Created Date"
 
-#: src/pages/SearchPage.tsx:2949
+#: src/pages/SearchPage.tsx:2958
 msgid "Description Match"
 msgstr "Description Match"
+
+#: src/pages/MainPage.tsx:774
+msgid "Welcome to Artemis"
+msgstr "Welcome to Artemis"
+
+#: src/custom/ListItemMetaMultiField.tsx:247
+#: src/custom/ListItemMetaMultiField.tsx:250
+msgid "Unknown Service"
+msgstr "Unknown Service"
 
 #: src/app/scanPlugins.ts:135
 msgid "Psalm (PHP)"
 msgstr "Psalm (PHP)"
 
-#: src/app/NavBar.tsx:148
+#: src/pages/ResultsPage.tsx:3568
+#: src/pages/ResultsPage.tsx:3570
+msgid "View in Version Control"
+msgstr "View in Version Control"
+
+#: src/app/scanPlugins.ts:120
+msgid "FindSecBugs (Java 21)"
+msgstr "FindSecBugs (Java 21)"
+
+#: src/app/NavBar.tsx:147
 msgid "ARTEMIS"
 msgstr "ARTEMIS"
 
-#: src/pages/ResultsPage.tsx:4856
+#: src/pages/ResultsPage.tsx:4888
 msgid "Technology"
 msgstr "Technology"
+
+#: src/api/client.ts:1054
+msgid "Unable to get scan history"
+msgstr "Unable to get scan history"
+
+#: src/pages/ResultsPage.tsx:1833
+msgid "Click for more information"
+msgstr "Click for more information"
+
+#: src/components/TableMenu.tsx:196
+msgid "Generating JSON File..."
+msgstr "Generating JSON File..."
 
 #: src/components/ActivityTable.tsx:243
 msgid "Open More Actions Menu"
@@ -2273,58 +1591,98 @@ msgstr "Open More Actions Menu"
 msgid "Don't show this dialog again on this browser"
 msgstr "Don't show this dialog again on this browser"
 
-#: src/pages/ResultsPage.tsx:3425
-#: src/pages/ResultsPage.tsx:3874
-#: src/pages/ResultsPage.tsx:4337
-#: src/pages/ResultsPage.tsx:4666
-#: src/pages/ResultsPage.tsx:5488
+#: src/pages/ResultsPage.tsx:3424
+#: src/pages/ResultsPage.tsx:3873
+#: src/pages/ResultsPage.tsx:4336
+#: src/pages/ResultsPage.tsx:4665
+#: src/pages/ResultsPage.tsx:5546
 msgid "Filter Results"
 msgstr "Filter Results"
 
-#: src/pages/ResultsPage.tsx:4948
+#: src/pages/ResultsPage.tsx:4433
+msgid "No secrets found"
+msgstr "No secrets found"
+
+#: src/components/SecretValidityCell.tsx:76
+msgid "This finding was tested and determined to be valid and active"
+msgstr "This finding was tested and determined to be valid and active"
+
+#: src/pages/UserSettings.tsx:889
+msgid "Linked Accounts"
+msgstr "Linked Accounts"
+
+#: src/pages/ResultsPage.tsx:4980
 msgid "Base Images"
 msgstr "Base Images"
 
-#: src/pages/ResultsPage.tsx:6608
+#: src/pages/ResultsPage.tsx:6666
 msgid "Raw"
 msgstr "Raw"
 
-#: src/custom/SearchMetaField.tsx:84
-msgid "Meta Data Field2"
-msgstr "Meta Data Field2"
+#: src/custom/ListItemMetaMultiField.tsx:155
+#: src/custom/ListItemMetaMultiField.tsx:158
+msgid "How do I add repo owner/contact?"
+msgstr "How do I add repo owner/contact?"
 
-#: src/pages/ResultsPage.tsx:2664
+#: src/pages/ResultsPage.tsx:2663
 msgid "No findings are hidden"
 msgstr "No findings are hidden"
 
-#: src/pages/ResultsPage.tsx:5980
+#: src/app/scanPlugins.ts:186
+msgid "Aqua CLI Scanner (Docker)"
+msgstr "Aqua CLI Scanner (Docker)"
+
+#: src/pages/ResultsPage.tsx:6038
 msgid "Scan Results"
 msgstr "Scan Results"
 
-#: src/pages/ResultsPage.tsx:1726
+#: src/pages/ResultsPage.tsx:1724
 msgid "Found in source files:"
 msgstr "Found in source files:"
+
+#: src/pages/ResultsPage.tsx:5411
+#: src/pages/ResultsPage.tsx:5554
+msgid "Category"
+msgstr "Category"
+
+#: src/components/ApiKeys.tsx:501
+#: src/components/ApiKeys.tsx:504
+msgid "Add API key"
+msgstr "Add API key"
 
 #: src/components/ActivityTable.tsx:200
 msgid "View successful results in new tab"
 msgstr "View successful results in new tab"
 
-#: src/pages/ResultsPage.tsx:5121
-#: src/pages/ResultsPage.tsx:5127
-#: src/pages/ResultsPage.tsx:5139
+#: src/pages/ResultsPage.tsx:5179
+#: src/pages/ResultsPage.tsx:5185
+#: src/pages/ResultsPage.tsx:5197
 msgid "(light)"
 msgstr "(light)"
 
-#: src/pages/ResultsPage.tsx:1285
+#: src/components/TableMenu.tsx:120
+msgid "Table Options"
+msgstr "Table Options"
+
+#: src/pages/ResultsPage.tsx:4003
+msgid "Commit must be less than {COMMIT_LENGTH} characters"
+msgstr "Commit must be less than {COMMIT_LENGTH} characters"
+
+#: src/pages/ResultsPage.tsx:1283
 msgid "Click the \"Update\" button to add these source files to this hidden finding"
 msgstr "Click the \"Update\" button to add these source files to this hidden finding"
 
-#: src/pages/SearchPage.tsx:1577
-#: src/pages/SearchPage.tsx:3498
-#: src/pages/ResultsPage.tsx:3116
-#: src/pages/ResultsPage.tsx:3643
-#: src/pages/ResultsPage.tsx:4469
-#: src/pages/ResultsPage.tsx:5321
+#: src/pages/SearchPage.tsx:3626
+#: src/pages/SearchPage.tsx:3630
+msgid "Components or Licenses"
+msgstr "Components or Licenses"
+
+#: src/pages/ResultsPage.tsx:3115
+#: src/pages/ResultsPage.tsx:3642
+#: src/pages/ResultsPage.tsx:4468
+#: src/pages/ResultsPage.tsx:5379
+#: src/pages/SearchPage.tsx:1581
+#: src/pages/SearchPage.tsx:3507
 msgid "Invalid severity"
 msgstr "Invalid severity"
 
@@ -2335,42 +1693,43 @@ msgstr "Invalid severity"
 msgid "Email required"
 msgstr "Email required"
 
-#: src/custom/ListItemMetaMultiField.tsx:107
-#: src/custom/ListItemMetaMultiField.tsx:110
-msgid "How do I provide this data?"
-msgstr "How do I provide this data?"
+#. placeholder {0}: scan?.scan_options?.exclude_paths ? scan?.scan_options?.exclude_paths.length : 0
+#: src/pages/ResultsPage.tsx:5949
+msgid "Exclude Paths ({0})"
+msgstr "Exclude Paths ({0})"
 
-#: src/pages/ResultsPage.tsx:6050
+#: src/pages/MainPage.tsx:194
+msgid "{enabledCount} of {totalCount} plugins selected"
+msgstr "{enabledCount} of {totalCount} plugins selected"
+
+#: src/pages/ResultsPage.tsx:6108
 msgid "Initiated By"
 msgstr "Initiated By"
-
-#: src/pages/SearchPage.tsx:2907
-msgid "CI/CD Tool"
-msgstr "CI/CD Tool"
-
-#: src/components/TableMenu.tsx:120
-msgid "Table Options"
-msgstr "Table Options"
-
-#: src/pages/ResultsPage.tsx:4004
-msgid "Commit must be less than {COMMIT_LENGTH} characters"
-msgstr "Commit must be less than {COMMIT_LENGTH} characters"
-
-#: src/pages/SearchPage.tsx:3617
-#: src/pages/SearchPage.tsx:3621
-msgid "Components or Licenses"
-msgstr "Components or Licenses"
 
 #: src/components/EnhancedTable.tsx:218
 #: src/components/EnhancedTable.tsx:246
 msgid "This column is filtered"
 msgstr "This column is filtered"
 
-#: src/features/scans/scansSchemas.ts:484
+#: src/components/ApiKeys.tsx:464
+#: src/components/ApiKeys.tsx:1140
+#: src/pages/ResultsPage.tsx:5451
+msgid "Expires"
+msgstr "Expires"
+
+#: src/features/scans/scansSchemas.ts:483
 msgid "Missing \"Organization/\" Prefix"
 msgstr "Missing \"Organization/\" Prefix"
 
-#: src/components/ApiKeys.tsx:1441
+#: src/features/search/searchSchemas.ts:145
+msgid "Must be a valid service name [azure|bitbucket|github] or hostname"
+msgstr "Must be a valid service name [azure|bitbucket|github] or hostname"
+
+#: src/api/client.ts:180
+msgid "Not found"
+msgstr "Not found"
+
+#: src/components/ApiKeys.tsx:1446
 msgid "API Key Added"
 msgstr "API Key Added"
 
@@ -2378,17 +1737,27 @@ msgstr "API Key Added"
 msgid "Fetching vulnerability results..."
 msgstr "Fetching vulnerability results..."
 
-#: src/pages/SearchPage.tsx:4475
-#: src/pages/ResultsPage.tsx:6091
+#: src/pages/ResultsPage.tsx:6149
+#: src/pages/SearchPage.tsx:4484
 msgid "Results"
 msgstr "Results"
 
-#: src/components/ApiKeys.tsx:1442
+#: src/components/ApiKeys.tsx:1447
 msgid "Add New API Key"
 msgstr "Add New API Key"
 
+#: src/pages/SearchPage.tsx:2916
+msgid "CI/CD Tool"
+msgstr "CI/CD Tool"
+
+#: src/pages/SearchPage.tsx:2178
+#: src/pages/SearchPage.tsx:2694
+#: src/pages/SearchPage.tsx:3016
+msgid "Component Version"
+msgstr "Component Version"
+
+#: src/components/ApiKeys.tsx:999
 #: src/pages/UsersPage.tsx:1051
-#: src/components/ApiKeys.tsx:998
 msgid "Add Scope"
 msgstr "Add Scope"
 
@@ -2396,98 +1765,212 @@ msgstr "Add Scope"
 msgid "Unable to get system status"
 msgstr "Unable to get system status"
 
-#: src/pages/ResultsPage.tsx:5776
-#: src/pages/ResultsPage.tsx:5785
-#: src/pages/ResultsPage.tsx:5802
-#: src/pages/ResultsPage.tsx:5811
+#: src/pages/MainPage.tsx:826
+msgid "Select Version Control System or type to autocomplete"
+msgstr "Select Version Control System or type to autocomplete"
+
+#: src/pages/ResultsPage.tsx:984
+msgid "Date must be before {dateMaxStr}"
+msgstr "Date must be before {dateMaxStr}"
+
+#: src/pages/ResultsPage.tsx:5834
+#: src/pages/ResultsPage.tsx:5843
+#: src/pages/ResultsPage.tsx:5860
+#: src/pages/ResultsPage.tsx:5869
 msgid "Yes"
 msgstr "Yes"
 
-#: src/pages/SearchPage.tsx:1438
-#: src/pages/SearchPage.tsx:1448
+#: src/pages/SearchPage.tsx:1442
+#: src/pages/SearchPage.tsx:1452
 msgid "Invalid last qualified scan time matcher"
 msgstr "Invalid last qualified scan time matcher"
 
-#: src/pages/ResultsPage.tsx:2387
+#: src/components/ApiKeys.tsx:1111
+msgid "Allow this key to use additional scan features"
+msgstr "Allow this key to use additional scan features"
+
+#: src/pages/ResultsPage.tsx:2386
 msgid "Scan Warnings"
 msgstr "Scan Warnings"
 
-#: src/pages/ResultsPage.tsx:2521
+#: src/pages/ResultsPage.tsx:2520
 msgid "Vulnerabilities (Raw)"
 msgstr "Vulnerabilities (Raw)"
 
-#: src/custom/SearchMetaField.tsx:47
-msgid "No Meta Data Field"
-msgstr "No Meta Data Field"
-
-#: src/pages/ResultsPage.tsx:1399
-#: src/pages/ResultsPage.tsx:1474
-#: src/pages/ResultsPage.tsx:1530
-msgid "Type:"
-msgstr "Type:"
-
-#: src/pages/SearchPage.tsx:3118
-#: src/pages/ResultsPage.tsx:1996
-msgid "yyyy/MM/dd HH:mm (24-hour)"
-msgstr "yyyy/MM/dd HH:mm (24-hour)"
+#: src/custom/SearchMetaField.tsx:81
+msgid "Repository Contact"
+msgstr "Repository Contact"
 
 #: src/pages/UsersPage.tsx:945
 msgid "Restrict user to only these repositories. Must be a subset of scopes from groups user is a member of. Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 msgstr "Restrict user to only these repositories. Must be a subset of scopes from groups user is a member of. Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 
-#: src/pages/SearchPage.tsx:2962
+#: src/components/ApiKeys.tsx:823
+#: src/pages/UsersPage.tsx:937
+msgid "Current Scope"
+msgstr "Current Scope"
+
+#: src/custom/searchMetaSchemas.ts:27
+msgid "Invalid repository contact matcher"
+msgstr "Invalid repository contact matcher"
+
+#: src/pages/SearchPage.tsx:2971
 msgid "Remediation Match"
 msgstr "Remediation Match"
 
-#: src/app/scanPlugins.ts:163
+#: src/app/scanPlugins.ts:168
 msgid "Base Images (Docker)"
 msgstr "Base Images (Docker)"
 
-#: src/custom/searchMetaSchemas.ts:87
-msgid "Meta data field2 null must be either \"true\" or \"false\""
-msgstr "Meta data field2 null must be either \"true\" or \"false\""
+#: src/pages/ResultsPage.tsx:1420
+#: src/pages/ResultsPage.tsx:1500
+#: src/pages/ResultsPage.tsx:1540
+msgid "Found in source file:"
+msgstr "Found in source file:"
 
-#: src/pages/ResultsPage.tsx:1477
-#: src/pages/ResultsPage.tsx:1489
-#: src/pages/ResultsPage.tsx:1507
-#: src/pages/ResultsPage.tsx:1701
-#: src/pages/ResultsPage.tsx:1715
-#: src/pages/ResultsPage.tsx:1729
-#: src/pages/ResultsPage.tsx:6398
-#: src/pages/ResultsPage.tsx:6400
-#: src/pages/ResultsPage.tsx:6466
-#: src/pages/ResultsPage.tsx:6468
+#: src/pages/ResultsPage.tsx:1397
+#: src/pages/ResultsPage.tsx:1472
+#: src/pages/ResultsPage.tsx:1528
+msgid "Type:"
+msgstr "Type:"
+
+#: src/api/client.ts:535
+msgid "Vulnerability ID required"
+msgstr "Vulnerability ID required"
+
+#: src/pages/ResultsPage.tsx:1994
+#: src/pages/SearchPage.tsx:3127
+msgid "yyyy/MM/dd HH:mm (24-hour)"
+msgstr "yyyy/MM/dd HH:mm (24-hour)"
+
+#: src/pages/SearchPage.tsx:2945
+msgid "Vulnerability Match"
+msgstr "Vulnerability Match"
+
+#: src/pages/ResultsPage.tsx:1475
+#: src/pages/ResultsPage.tsx:1487
+#: src/pages/ResultsPage.tsx:1505
+#: src/pages/ResultsPage.tsx:1699
+#: src/pages/ResultsPage.tsx:1713
+#: src/pages/ResultsPage.tsx:1727
+#: src/pages/ResultsPage.tsx:6456
+#: src/pages/ResultsPage.tsx:6458
+#: src/pages/ResultsPage.tsx:6524
+#: src/pages/ResultsPage.tsx:6526
 msgid "Any"
 msgstr "Any"
 
+#. placeholder {0}: row?.results_summary?.configuration?.high || 0
+#: src/components/StatusCell.tsx:534
+msgid "{0, plural, one {# High configuration result} other {# High configuration results}}"
+msgstr "{0, plural, one {# High configuration result} other {# High configuration results}}"
+
+#: src/pages/ResultsPage.tsx:4793
+msgid "Tool"
+msgstr "Tool"
+
+#: src/components/TableMenu.tsx:125
+msgid "Close Table Menu"
+msgstr "Close Table Menu"
+
+#: src/components/ApiKeys.tsx:1190
+#: src/pages/ResultsPage.tsx:2073
 #: src/pages/UsersPage.tsx:1201
-#: src/pages/ResultsPage.tsx:2075
-#: src/components/ApiKeys.tsx:1189
 msgid "Add"
 msgstr "Add"
+
+#: src/pages/ResultsPage.tsx:1798
+msgid "Removing..."
+msgstr "Removing..."
+
+#: src/pages/ResultsPage.tsx:1374
+msgid "Name:"
+msgstr "Name:"
+
+#: src/components/ApiKeys.tsx:1504
+msgid "Fetching API keys..."
+msgstr "Fetching API keys..."
+
+#: src/pages/ResultsPage.tsx:7044
+msgid "Results for the specified scan can not be found."
+msgstr "Results for the specified scan can not be found."
+
+#: src/pages/ResultsPage.tsx:3630
+#: src/pages/ResultsPage.tsx:3987
+msgid "File path must be less than {FILEPATH_LENGTH} characters"
+msgstr "File path must be less than {FILEPATH_LENGTH} characters"
+
+#: src/pages/ResultsPage.tsx:2521
+#: src/pages/ResultsPage.tsx:2630
+#: src/pages/ResultsPage.tsx:6618
+msgid "Secrets"
+msgstr "Secrets"
+
+#: src/pages/ResultsPage.tsx:1905
+msgid "Justification for hiding this security finding"
+msgstr "Justification for hiding this security finding"
+
+#. placeholder {0}: row.batch_description
+#: src/components/ActivityTable.tsx:827
+msgid "Batched Scan: {0}"
+msgstr "Batched Scan: {0}"
 
 #: src/app/colors.ts:82
 msgid "Purple"
 msgstr "Purple"
 
-#: src/pages/ResultsPage.tsx:5825
-msgid "Batch Description"
-msgstr "Batch Description"
-
-#: src/pages/SearchPage.tsx:1939
-#: src/pages/SearchPage.tsx:4203
-msgid "Last Scan"
-msgstr "Last Scan"
-
 #: src/pages/SearchPage.tsx:958
-#: src/pages/SearchPage.tsx:2533
+#: src/pages/SearchPage.tsx:2542
 msgid "No Qualified Scans"
 msgstr "No Qualified Scans"
 
-#: src/pages/SearchPage.tsx:2072
-#: src/pages/SearchPage.tsx:4462
+#: src/pages/SearchPage.tsx:2076
+#: src/pages/SearchPage.tsx:4471
 msgid "Reset Filters"
 msgstr "Reset Filters"
+
+#: src/components/ApiKeys.tsx:1404
+msgid "Last Used Date"
+msgstr "Last Used Date"
+
+#: src/pages/ResultsPage.tsx:5883
+msgid "Batch Description"
+msgstr "Batch Description"
+
+#: src/app/NavBar.tsx:205
+#: src/app/NavBar.tsx:211
+msgid "Search for Components, Licenses, and Repositories"
+msgstr "Search for Components, Licenses, and Repositories"
+
+#: src/pages/SearchPage.tsx:1943
+#: src/pages/SearchPage.tsx:4212
+msgid "Last Scan"
+msgstr "Last Scan"
+
+#: src/pages/SearchPage.tsx:1585
+msgid "Invalid vulnerability id matcher"
+msgstr "Invalid vulnerability id matcher"
+
+#: src/custom/ListItemMetaMultiField.tsx:242
+msgid "Unknown Business Service"
+msgstr "Unknown Business Service"
+
+#: src/pages/ResultsPage.tsx:2124
+msgid "Modify hidden finding"
+msgstr "Modify hidden finding"
+
+#: src/pages/SearchPage.tsx:2688
+#: src/pages/SearchPage.tsx:3010
+msgid "Component Version Match"
+msgstr "Component Version Match"
+
+#: src/pages/SearchPage.tsx:2005
+msgid "Close repository details"
+msgstr "Close repository details"
+
+#: src/pages/SearchPage.tsx:2532
+msgid "After"
+msgstr "After"
 
 #: src/api/client.ts:177
 msgid "Session expired, redirecting to login..."
@@ -2497,144 +1980,277 @@ msgstr "Session expired, redirecting to login..."
 msgid "AWS CloudFormation Linter"
 msgstr "AWS CloudFormation Linter"
 
-#: src/pages/ResultsPage.tsx:1331
+#: src/custom/ListItemMetaMultiField.tsx:428
+msgid "This repository contains missing or invalid operational metadata, which provides critical information to WBD Information Security."
+msgstr "This repository contains missing or invalid operational metadata, which provides critical information to WBD Information Security."
+
+#: src/pages/ResultsPage.tsx:1329
 msgid "Hidden finding last updated by:"
 msgstr "Hidden finding last updated by:"
 
-#: src/pages/SearchPage.tsx:2718
-#: src/pages/SearchPage.tsx:2811
+#: src/pages/ResultsPage.tsx:2625
+msgid "No static analysis findings detected"
+msgstr "No static analysis findings detected"
+
+#: src/pages/SearchPage.tsx:2727
+#: src/pages/SearchPage.tsx:2820
 msgid "Select a service or enter a value to search for"
 msgstr "Select a service or enter a value to search for"
 
-#: src/components/ApiKeys.tsx:1498
+#: src/components/ApiKeys.tsx:1503
 msgid "No API keys found for this user."
 msgstr "No API keys found for this user."
 
-#: src/pages/SearchPage.tsx:2567
-#: src/pages/SearchPage.tsx:2621
-#: src/pages/ResultsPage.tsx:2514
-#: src/components/ChipCell.tsx:105
-#: src/components/ChipCell.tsx:164
-msgid "Low"
-msgstr "Low"
+#: src/components/ApiKeys.tsx:1028
+#: src/pages/UsersPage.tsx:1081
+msgid "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
+msgstr "This value has not been added to the Current Scope list above. Either click the + icon to add it or the X icon to clear the field"
 
-#: src/pages/ResultsPage.tsx:1879
-#: src/pages/ResultsPage.tsx:4198
+#: src/pages/ResultsPage.tsx:1877
+#: src/pages/ResultsPage.tsx:4197
 msgid "Finding Details"
 msgstr "Finding Details"
 
-#: src/pages/SearchPage.tsx:3641
-#: src/pages/SearchPage.tsx:3645
-#: src/pages/SearchPage.tsx:4265
-#: src/pages/ResultsPage.tsx:2520
-#: src/pages/ResultsPage.tsx:2613
-#: src/pages/ResultsPage.tsx:6528
+#: src/pages/ResultsPage.tsx:2519
+#: src/pages/ResultsPage.tsx:2612
+#: src/pages/ResultsPage.tsx:6586
+#: src/pages/SearchPage.tsx:3650
+#: src/pages/SearchPage.tsx:3654
+#: src/pages/SearchPage.tsx:4274
 msgid "Vulnerabilities"
 msgstr "Vulnerabilities"
+
+#: src/components/SecretValidityCell.tsx:85
+#: src/components/SecretValidityCell.tsx:135
+msgid "Inactive"
+msgstr "Inactive"
+
+#: src/custom/WelcomeDialogContent.tsx:128
+msgid "Open Documentation"
+msgstr "Open Documentation"
+
+#: src/features/hiddenFindings/hiddenFindingsSaga.ts:51
+msgid "Hidden finding removed"
+msgstr "Hidden finding removed"
+
+#: src/components/ChipCell.tsx:105
+#: src/components/ChipCell.tsx:164
+#: src/pages/ResultsPage.tsx:2513
+#: src/pages/SearchPage.tsx:2576
+#: src/pages/SearchPage.tsx:2630
+msgid "Low"
+msgstr "Low"
+
+#: src/pages/ResultsPage.tsx:3176
+#: src/pages/ResultsPage.tsx:4550
+#: src/pages/ResultsPage.tsx:4681
+#: src/pages/SearchPage.tsx:2411
+#: src/pages/SearchPage.tsx:2964
+msgid "Description"
+msgstr "Description"
+
+#: src/pages/ResultsPage.tsx:5793
+msgid "Categories"
+msgstr "Categories"
+
+#: src/pages/ResultsPage.tsx:4824
+msgid "Version Field"
+msgstr "Version Field"
 
 #: src/components/ActivityTable.tsx:204
 msgid "View failed results"
 msgstr "View failed results"
 
-#: src/pages/ResultsPage.tsx:6000
+#: src/pages/MainPage.tsx:878
+msgid "New Scan Options..."
+msgstr "New Scan Options..."
+
+#: src/api/client.ts:721
+msgid "Unable to get users"
+msgstr "Unable to get users"
+
+#: src/pages/ResultsPage.tsx:6058
 msgid "Organization / Repository"
 msgstr "Organization / Repository"
 
-#: src/custom/ExportDialogContent.tsx:13
+#: src/pages/ResultsPage.tsx:2600
+msgid "{hfCount, plural, one {{hfCount} hidden finding} other {{hfCount} hidden findings}}"
+msgstr "{hfCount, plural, one {{hfCount} hidden finding} other {{hfCount} hidden findings}}"
+
+#: src/pages/UserSettings.tsx:621
+#: src/pages/UsersPage.tsx:568
+#: src/pages/UsersPage.tsx:1275
+msgid "Email"
+msgstr "Email"
+
+#: src/pages/SearchPage.tsx:1299
+#: src/pages/SearchPage.tsx:1619
+msgid "Invalid component name matcher"
+msgstr "Invalid component name matcher"
+
+#: src/pages/MainPage.tsx:1184
+msgid "Reset"
+msgstr "Reset"
+
+#: src/components/ApiKeys.tsx:525
+msgid "API Key:"
+msgstr "API Key:"
+
+#: src/pages/ResultsPage.tsx:4974
+msgid "No technologies found"
+msgstr "No technologies found"
+
+#: src/pages/ResultsPage.tsx:5804
+msgid "Plugins"
+msgstr "Plugins"
+
+#: src/custom/ExportDialogContent.tsx:17
 msgid "To proceed, click “I Acknowledge\" below."
 msgstr "To proceed, click “I Acknowledge\" below."
+
+#: src/pages/SearchPage.tsx:1766
+#: src/pages/SearchPage.tsx:1995
+#: src/pages/SearchPage.tsx:2226
+#: src/pages/SearchPage.tsx:2485
+#: src/pages/SearchPage.tsx:3638
+#: src/pages/SearchPage.tsx:3642
+msgid "Repositories"
+msgstr "Repositories"
+
+#: src/components/ApiKeys.tsx:1159
+#: src/pages/ResultsPage.tsx:2006
+#: src/pages/UsersPage.tsx:1165
+msgid "This form contains unresolved errors. Please resolve these errors"
+msgstr "This form contains unresolved errors. Please resolve these errors"
+
+#: src/pages/ResultsPage.tsx:3457
+#: src/pages/ResultsPage.tsx:3915
+#: src/pages/ResultsPage.tsx:4386
+#: src/pages/ResultsPage.tsx:4698
+#: src/pages/ResultsPage.tsx:5653
+#: src/pages/UsersPage.tsx:1296
+msgid "Clear all filters"
+msgstr "Clear all filters"
 
 #: src/pages/MainPage.tsx:799
 msgid "Where is the source code you want to scan?"
 msgstr "Where is the source code you want to scan?"
 
-#: src/pages/ResultsPage.tsx:5746
-msgid "Plugins"
-msgstr "Plugins"
-
-#: src/pages/SearchPage.tsx:1762
-#: src/pages/SearchPage.tsx:1991
-#: src/pages/SearchPage.tsx:2217
-#: src/pages/SearchPage.tsx:2476
-#: src/pages/SearchPage.tsx:3629
-#: src/pages/SearchPage.tsx:3633
-msgid "Repositories"
-msgstr "Repositories"
-
-#: src/pages/UsersPage.tsx:1165
-#: src/pages/ResultsPage.tsx:2008
-#: src/components/ApiKeys.tsx:1158
-msgid "This form contains unresolved errors. Please resolve these errors"
-msgstr "This form contains unresolved errors. Please resolve these errors"
-
-#: src/pages/UsersPage.tsx:1296
-#: src/pages/ResultsPage.tsx:3458
-#: src/pages/ResultsPage.tsx:3916
-#: src/pages/ResultsPage.tsx:4387
-#: src/pages/ResultsPage.tsx:4699
-#: src/pages/ResultsPage.tsx:5595
-msgid "Clear all filters"
-msgstr "Clear all filters"
-
-#: src/pages/ResultsPage.tsx:6023
-#: src/pages/ResultsPage.tsx:6030
 #: src/components/ActivityTable.tsx:886
 #: src/components/ActivityTable.tsx:896
+#: src/pages/ResultsPage.tsx:6081
+#: src/pages/ResultsPage.tsx:6088
 msgid "Default"
 msgstr "Default"
+
+#: src/app/scanPlugins.ts:23
+msgid "Software Bill of Materials"
+msgstr "Software Bill of Materials"
+
+#: src/features/scans/scansSchemas.ts:526
+#: src/features/scans/scansSchemas.ts:544
+msgid "Invalid path, longer than {MAX_PATH_LENGTH} characters"
+msgstr "Invalid path, longer than {MAX_PATH_LENGTH} characters"
+
+#: src/api/client.ts:525
+msgid "Unable to get vulnerability search results"
+msgstr "Unable to get vulnerability search results"
+
+#: src/components/FormikPickers.tsx:167
+#: src/components/FormikPickers.tsx:209
+msgid "Date can not be after {format}"
+msgstr "Date can not be after {format}"
+
+#: src/pages/MainPage.tsx:850
+msgid "Repository Path"
+msgstr "Repository Path"
 
 #: src/features/users/usersSaga.ts:75
 msgid "User removed"
 msgstr "User removed"
 
-#: src/components/ApiKeys.tsx:1428
+#: src/app/scanPlugins.ts:163
+msgid "API Spec Discovery"
+msgstr "API Spec Discovery"
+
+#: src/components/ApiKeys.tsx:657
+msgid "No repository or path name pattern supplied after scan organization prefix"
+msgstr "No repository or path name pattern supplied after scan organization prefix"
+
+#. placeholder {0}: selectedRow?.filename ?? ""
+#: src/pages/ResultsPage.tsx:4129
+msgid "{0}{lineText}"
+msgstr "{0}{lineText}"
+
+#: src/components/ApiKeys.tsx:1433
 msgid "{title}"
 msgstr "{title}"
+
+#: src/pages/SearchPage.tsx:2675
+#: src/pages/SearchPage.tsx:2997
+msgid "Component Name Match"
+msgstr "Component Name Match"
+
+#: src/pages/ResultsPage.tsx:6187
+msgid "Queued Date / Queued Time Elapsed"
+msgstr "Queued Date / Queued Time Elapsed"
+
+#: src/pages/ResultsPage.tsx:965
+#: src/pages/ResultsPage.tsx:2721
+msgid "Modify Hidden Finding"
+msgstr "Modify Hidden Finding"
 
 #: src/pages/MainPage.tsx:1109
 msgid "Exclude Paths (optional)"
 msgstr "Exclude Paths (optional)"
 
+#: src/pages/ResultsPage.tsx:3032
+#: src/pages/ResultsPage.tsx:3034
+msgid "View in the National Vulnerability Database"
+msgstr "View in the National Vulnerability Database"
+
 #: src/components/StatusCell.tsx:732
 msgid "Terminated"
 msgstr "Terminated"
-
-#: src/custom/searchMetaSchemas.ts:29
-msgid "Invalid meta data field1 matcher"
-msgstr "Invalid meta data field1 matcher"
 
 #: src/pages/MainPage.tsx:891
 msgid "Default Branch"
 msgstr "Default Branch"
 
-#. placeholder {0}: selectedRow?.filename ?? ""
-#: src/pages/ResultsPage.tsx:4130
-msgid "{0}{lineText}"
-msgstr "{0}{lineText}"
+#: src/pages/ResultsPage.tsx:6819
+msgid "User does not have access to this service"
+msgstr "User does not have access to this service"
 
-#: src/pages/SearchPage.tsx:2666
-#: src/pages/SearchPage.tsx:2988
-msgid "Component Name Match"
-msgstr "Component Name Match"
-
-#: src/pages/ResultsPage.tsx:6129
-msgid "Queued Date / Queued Time Elapsed"
-msgstr "Queued Date / Queued Time Elapsed"
-
-#: src/pages/ResultsPage.tsx:5759
+#: src/pages/ResultsPage.tsx:5817
 msgid "Commit History"
 msgstr "Commit History"
 
-#: src/pages/SearchPage.tsx:2536
+#: src/components/ApiKeys.tsx:1307
+#: src/pages/UserSettings.tsx:780
+msgid "Features"
+msgstr "Features"
+
+#: src/pages/UserSettings.tsx:819
+msgid "User Category"
+msgstr "User Category"
+
+#: src/pages/SearchPage.tsx:1335
+#: src/pages/SearchPage.tsx:1446
+#: src/pages/SearchPage.tsx:1456
+#: src/pages/SearchPage.tsx:3130
+msgid "Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)"
+msgstr "Invalid date format, expected: yyyy/MM/dd HH:mm (24-hour)"
+
+#: src/pages/SearchPage.tsx:2545
 msgid "Any Qualified Scan"
 msgstr "Any Qualified Scan"
 
-#: src/pages/ResultsPage.tsx:5358
-#: src/pages/ResultsPage.tsx:5560
+#: src/pages/ResultsPage.tsx:5416
+#: src/pages/ResultsPage.tsx:5618
 msgid "Location/File"
 msgstr "Location/File"
 
-#: src/pages/ResultsPage.tsx:3213
+#: src/pages/ResultsPage.tsx:3212
 msgid "Found in Source Files"
 msgstr "Found in Source Files"
 
@@ -2642,36 +2258,63 @@ msgstr "Found in Source Files"
 msgid "Show {label} plugins"
 msgstr "Show {label} plugins"
 
+#: src/pages/ResultsPage.tsx:3640
+#: src/pages/ResultsPage.tsx:3997
+msgid "Resource must be less than {RESOURCE_LENGTH} characters"
+msgstr "Resource must be less than {RESOURCE_LENGTH} characters"
+
+#: src/pages/UserSettings.tsx:359
+msgid "Username:"
+msgstr "Username:"
+
 #: src/components/TableMenu.tsx:78
 msgid "Generating CSV File"
 msgstr "Generating CSV File"
 
-#: src/pages/ResultsPage.tsx:5382
-#: src/pages/ResultsPage.tsx:5578
+#: src/app/scanPlugins.ts:178
+msgid "Enry Technology Discovery"
+msgstr "Enry Technology Discovery"
+
+#: src/custom/WelcomeDialogContent.tsx:72
+msgid "If your source code repos are in <0>GitHub</0>, link your account in <1>User Settings</1> to provide Artemis access to scan your repos."
+msgstr "If your source code repos are in <0>GitHub</0>, link your account in <1>User Settings</1> to provide Artemis access to scan your repos."
+
+#: src/custom/ListItemMetaMultiField.tsx:179
+msgid "This repository contains missing or invalid repo metadata, which provides critical information to WBD Information Security."
+msgstr "This repository contains missing or invalid repo metadata, which provides critical information to WBD Information Security."
+
+#: src/pages/ResultsPage.tsx:5440
+#: src/pages/ResultsPage.tsx:5636
 msgid "Component/Commit"
 msgstr "Component/Commit"
 
-#: src/pages/SearchPage.tsx:2161
-#: src/pages/SearchPage.tsx:2672
-#: src/pages/SearchPage.tsx:2994
+#: src/pages/SearchPage.tsx:2165
+#: src/pages/SearchPage.tsx:2681
+#: src/pages/SearchPage.tsx:3003
 msgid "Component Name"
 msgstr "Component Name"
 
-#. placeholder {0}: item?.filename ?? ""
-#. placeholder {1}: item?.line ? ` (Line ${item.line})` : ""
-#: src/pages/ResultsPage.tsx:1429
-msgid "{0}{1}"
-msgstr "{0}{1}"
+#: src/utils/formatters.ts:256
+msgid "Commit Message"
+msgstr "Commit Message"
+
+#: src/pages/ResultsPage.tsx:4728
+msgid "No Name"
+msgstr "No Name"
 
 #: src/components/SecretValidityCell.tsx:151
 msgid "Multiple different validities reported"
 msgstr "Multiple different validities reported"
 
-#: src/pages/SearchPage.tsx:2658
+#: src/features/vcsServices/vcsServicesSaga.ts:55
+msgid "Service account unlinked"
+msgstr "Service account unlinked"
+
+#: src/pages/SearchPage.tsx:2667
 msgid "Any License"
 msgstr "Any License"
 
-#: src/pages/ResultsPage.tsx:6332
+#: src/pages/ResultsPage.tsx:6390
 msgid "Never"
 msgstr "Never"
 
@@ -2679,22 +2322,59 @@ msgstr "Never"
 msgid "Scan started"
 msgstr "Scan started"
 
-#: src/custom/searchMetaSchemas.ts:47
-#: src/custom/searchMetaSchemas.ts:83
-#: src/custom/searchMetaSchemas.ts:94
-msgid "Meta data field2 must be less than {META_FIELD2_LENGTH} characters"
-msgstr "Meta data field2 must be less than {META_FIELD2_LENGTH} characters"
+#. placeholder {0}: item?.filename ?? ""
+#. placeholder {1}: item?.line ? ` (Line ${item.line})` : ""
+#: src/pages/ResultsPage.tsx:1427
+msgid "{0}{1}"
+msgstr "{0}{1}"
 
+#: src/features/scans/scansSchemas.ts:503
 #: src/features/scans/scansSchemas.ts:504
-#: src/features/scans/scansSchemas.ts:505
 msgid "Positive integer"
 msgstr "Positive integer"
+
+#: src/components/StatusCell.tsx:754
+#: src/components/StatusCell.tsx:757
+#: src/custom/ListItemMetaMultiField.tsx:404
+#: src/custom/ListItemMetaMultiField.tsx:407
+msgid "View errors"
+msgstr "View errors"
+
+#: src/custom/SearchMetaField.tsx:50
+msgid "Any Application ID"
+msgstr "Any Application ID"
+
+#: src/app/colors.ts:52
+msgid "Yellow"
+msgstr "Yellow"
+
+#: src/api/client.ts:1207
+msgid "Unable to update hidden finding"
+msgstr "Unable to update hidden finding"
+
+#. placeholder {0}: idx + 1
+#: src/components/ApiKeys.tsx:930
+#: src/pages/UsersPage.tsx:993
+msgid "Remove scope {0}"
+msgstr "Remove scope {0}"
+
+#: src/pages/ResultsPage.tsx:2522
+msgid "Secrets (Raw)"
+msgstr "Secrets (Raw)"
+
+#: src/components/StatusCell.tsx:251
+msgid "This scan ran against a subset of source code due to include/exclude paths."
+msgstr "This scan ran against a subset of source code due to include/exclude paths."
 
 #: src/pages/UserSettings.tsx:362
 msgid "Linked:"
 msgstr "Linked:"
 
-#: src/pages/ResultsPage.tsx:6940
+#: src/custom/ExportDialogContent.tsx:7
+msgid "You are about to download data from Artemis classified as WM Proprietary (Restricted). Please take all appropriate precautions when handling, storing, or transmitting this data. This data should only be transferred via secure mechanisms and only to individuals that have an approved business need to use it. The data should be deleted after there is no longer a business need."
+msgstr "You are about to download data from Artemis classified as WM Proprietary (Restricted). Please take all appropriate precautions when handling, storing, or transmitting this data. This data should only be transferred via secure mechanisms and only to individuals that have an approved business need to use it. The data should be deleted after there is no longer a business need."
+
+#: src/pages/ResultsPage.tsx:6998
 msgid "Scan in progress, results subject to change"
 msgstr "Scan in progress, results subject to change"
 
@@ -2706,55 +2386,81 @@ msgstr "View results"
 msgid "Initializing"
 msgstr "Initializing"
 
-#: src/custom/SearchMetaField.tsx:104
-#: src/custom/ResultsMetaField.tsx:36
-msgid "Meta Data Sample3"
-msgstr "Meta Data Sample3"
+#: src/pages/ResultsPage.tsx:3664
+#: src/pages/ResultsPage.tsx:3889
+#: src/pages/ResultsPage.tsx:4032
+#: src/pages/ResultsPage.tsx:4352
+msgid "Line"
+msgstr "Line"
+
+#: src/pages/ResultsPage.tsx:4041
+#: src/pages/ResultsPage.tsx:4180
+#: src/pages/ResultsPage.tsx:4374
+msgid "Commit"
+msgstr "Commit"
 
 #: src/api/client.ts:830
 msgid "No current scan"
 msgstr "No current scan"
+
+#: src/components/StatusCell.tsx:654
+msgid "Fetching inventory results..."
+msgstr "Fetching inventory results..."
+
+#: src/pages/ResultsPage.tsx:1340
+msgid "Hidden finding created:"
+msgstr "Hidden finding created:"
 
 #: src/components/ActivityTable.tsx:618
 #: src/components/ActivityTable.tsx:630
 msgid "Refresh now"
 msgstr "Refresh now"
 
+#: src/pages/ResultsPage.tsx:805
+#: src/pages/ResultsPage.tsx:3268
+#: src/pages/ResultsPage.tsx:3440
+#: src/pages/SearchPage.tsx:2951
+#: src/pages/SearchPage.tsx:4265
+msgid "Vulnerability"
+msgstr "Vulnerability"
+
+#: src/pages/SearchPage.tsx:2446
+#: src/pages/SearchPage.tsx:4286
+msgid "Components"
+msgstr "Components"
+
+#: src/components/ActivityTable.tsx:757
+#: src/components/ActivityTable.tsx:770
+#: src/pages/MainPage.tsx:1155
+#: src/pages/ResultsPage.tsx:7178
+#: src/pages/ResultsPage.tsx:7191
+msgid "Start Scan"
+msgstr "Start Scan"
+
 #: src/api/client.ts:391
 msgid "Component version required"
 msgstr "Component version required"
 
-#: src/pages/SearchPage.tsx:4394
+#: src/pages/SearchPage.tsx:4403
 msgid "Search For"
 msgstr "Search For"
 
-#: src/pages/ResultsPage.tsx:3665
-#: src/pages/ResultsPage.tsx:3890
-#: src/pages/ResultsPage.tsx:4033
-#: src/pages/ResultsPage.tsx:4353
-msgid "Line"
-msgstr "Line"
-
-#: src/pages/ResultsPage.tsx:4042
-#: src/pages/ResultsPage.tsx:4181
-#: src/pages/ResultsPage.tsx:4375
-msgid "Commit"
-msgstr "Commit"
-
-#: src/pages/ResultsPage.tsx:7147
-#: src/pages/ResultsPage.tsx:7160
-#: src/pages/MainPage.tsx:1155
-#: src/components/ActivityTable.tsx:757
-#: src/components/ActivityTable.tsx:770
-msgid "Start Scan"
-msgstr "Start Scan"
+#. placeholder {0}: row?.results_summary?.inventory?.technology_discovery || 0
+#: src/components/StatusCell.tsx:609
+msgid "{0, plural, one {# Technology} other {# Technologies}}"
+msgstr "{0, plural, one {# Technology} other {# Technologies}}"
 
 #: src/utils/formatters.ts:264
 msgid "Issue Body"
 msgstr "Issue Body"
 
-#: src/pages/SearchPage.tsx:1428
-#: src/pages/SearchPage.tsx:3394
+#: src/pages/ResultsPage.tsx:2066
+#: src/pages/UsersPage.tsx:1194
+msgid "Updating..."
+msgstr "Updating..."
+
+#: src/pages/SearchPage.tsx:1432
+#: src/pages/SearchPage.tsx:3403
 msgid "Invalid risk"
 msgstr "Invalid risk"
 
@@ -2770,114 +2476,175 @@ msgstr "Unable to get repositories for vulnerability"
 msgid "{ago, plural, one {Queued # minute ago} other {Queued # minutes ago}}"
 msgstr "{ago, plural, one {Queued # minute ago} other {Queued # minutes ago}}"
 
-#: src/pages/SearchPage.tsx:1768
+#: src/pages/SearchPage.tsx:1772
 msgid "Fetching repositories..."
 msgstr "Fetching repositories..."
 
-#: src/pages/ResultsPage.tsx:1300
+#: src/pages/ResultsPage.tsx:2634
+msgid "No secrets detected"
+msgstr "No secrets detected"
+
+#: src/pages/ResultsPage.tsx:961
+#: src/pages/ResultsPage.tsx:2730
+msgid "Hide This Finding"
+msgstr "Hide This Finding"
+
+#: src/pages/ResultsPage.tsx:1298
 msgid "Category:"
 msgstr "Category:"
 
-#: src/pages/ResultsPage.tsx:3963
+#: src/pages/ResultsPage.tsx:3107
+msgid "Component must be less than {COMPONENT_LENGTH} characters"
+msgstr "Component must be less than {COMPONENT_LENGTH} characters"
+
+#: src/pages/ResultsPage.tsx:3962
 msgid "No static analysis findings"
 msgstr "No static analysis findings"
 
-#: src/pages/ResultsPage.tsx:3946
+#: src/pages/ResultsPage.tsx:3945
 msgid "No Type"
 msgstr "No Type"
 
-#: src/pages/SearchPage.tsx:1610
-#: src/pages/SearchPage.tsx:3543
-#: src/pages/SearchPage.tsx:3551
-msgid "Remediation must be less than {REMEDIATION_LENGTH} characters"
-msgstr "Remediation must be less than {REMEDIATION_LENGTH} characters"
+#. placeholder {0}: dt.toFormat("yyyy-LL-dd")
+#: src/components/MailToLink.tsx:61
+#: src/components/MailToLink.tsx:71
+msgid "{user} (Deleted {0})"
+msgstr "{user} (Deleted {0})"
 
-#. placeholder {0}: row?.source ? (row?.source as string[]).length : 0
-#: src/pages/ResultsPage.tsx:1654
-msgid "Found in source files ({0}):"
-msgstr "Found in source files ({0}):"
+#: src/custom/WelcomeDialogContent.tsx:130
+msgid "View Artemis documentation for using the UI, API, incorporating into a CI/CD workflow, and FAQ"
+msgstr "View Artemis documentation for using the UI, API, incorporating into a CI/CD workflow, and FAQ"
 
-#: src/pages/SearchPage.tsx:2195
-#: src/pages/SearchPage.tsx:4125
+#: src/pages/ResultsPage.tsx:4745
+msgid "No configuration findings"
+msgstr "No configuration findings"
+
+#: src/components/FormikPickers.tsx:52
+msgid "Select date"
+msgstr "Select date"
+
+#: src/components/ApiKeys.tsx:1381
+msgid "Expiration Date"
+msgstr "Expiration Date"
+
+#: src/components/StatusCell.tsx:734
+#: src/pages/ResultsPage.tsx:7042
+msgid "Error"
+msgstr "Error"
+
+#: src/api/client.ts:1309
+msgid "Unable to link user service"
+msgstr "Unable to link user service"
+
+#: src/pages/SearchPage.tsx:2199
+#: src/pages/SearchPage.tsx:4134
 msgid "Licenses"
 msgstr "Licenses"
 
-#: src/pages/SearchPage.tsx:2760
+#: src/pages/SearchPage.tsx:2769
 msgid "Scan Time Match"
 msgstr "Scan Time Match"
 
+#: src/custom/searchMetaSchemas.ts:79
+msgid "Application id null must be either \"true\" or \"false\""
+msgstr "Application id null must be either \"true\" or \"false\""
+
 #. placeholder {0}: row?.unhiddenFindings.length
-#: src/pages/ResultsPage.tsx:847
-#: src/pages/ResultsPage.tsx:2135
+#: src/pages/ResultsPage.tsx:845
+#: src/pages/ResultsPage.tsx:2133
 msgid "{0, plural, one {# Source file not covered by this hidden finding} other {# Source files not covered by this hidden finding}}"
 msgstr "{0, plural, one {# Source file not covered by this hidden finding} other {# Source files not covered by this hidden finding}}"
 
-#: src/pages/ResultsPage.tsx:6026
 #: src/components/ActivityTable.tsx:793
+#: src/pages/ResultsPage.tsx:6084
 msgid "Branch"
 msgstr "Branch"
+
+#: src/pages/SearchPage.tsx:1614
+#: src/pages/SearchPage.tsx:3552
+#: src/pages/SearchPage.tsx:3560
+msgid "Remediation must be less than {REMEDIATION_LENGTH} characters"
+msgstr "Remediation must be less than {REMEDIATION_LENGTH} characters"
+
+#: src/api/client.ts:1329
+msgid "Unable to unlink user service"
+msgstr "Unable to unlink user service"
+
+#. placeholder {0}: row?.source ? (row?.source as string[]).length : 0
+#: src/pages/ResultsPage.tsx:1652
+msgid "Found in source files ({0}):"
+msgstr "Found in source files ({0}):"
+
+#: src/pages/UsersPage.tsx:1383
+msgid "Users"
+msgstr "Users"
+
+#: src/pages/SearchPage.tsx:918
+#: src/pages/SearchPage.tsx:922
+#: src/pages/SearchPage.tsx:971
+#: src/pages/SearchPage.tsx:975
+msgid "Open this scan in a new tab"
+msgstr "Open this scan in a new tab"
 
 #: src/app/scanPlugins.ts:110
 msgid "FindSecBugs (Java 11)"
 msgstr "FindSecBugs (Java 11)"
 
-#: src/pages/UsersPage.tsx:531
-#: src/pages/UsersPage.tsx:548
-#: src/pages/ResultsPage.tsx:1802
-#: src/pages/ResultsPage.tsx:2034
 #: src/components/ApiKeys.tsx:400
 #: src/components/ApiKeys.tsx:419
+#: src/pages/ResultsPage.tsx:1800
+#: src/pages/ResultsPage.tsx:2032
+#: src/pages/UsersPage.tsx:531
+#: src/pages/UsersPage.tsx:548
 msgid "Remove"
 msgstr "Remove"
 
-#: src/app/NavBar.tsx:151
+#: src/pages/ResultsPage.tsx:6072
+#: src/pages/SearchPage.tsx:1705
+#: src/pages/SearchPage.tsx:1918
+#: src/pages/SearchPage.tsx:2257
+#: src/pages/SearchPage.tsx:2721
+#: src/pages/SearchPage.tsx:2814
+#: src/pages/SearchPage.tsx:4187
+msgid "Service"
+msgstr "Service"
+
+#: src/pages/ResultsPage.tsx:6145
+msgid "Potential Security Issues Found"
+msgstr "Potential Security Issues Found"
+
+#: src/app/NavBar.tsx:150
 msgid "[Hunt for security issues in source code]"
 msgstr "[Hunt for security issues in source code]"
 
-#: src/components/FormikPickers.tsx:195
-#: src/components/FormikPickers.tsx:239
+#: src/pages/ResultsPage.tsx:5265
+#: src/pages/ResultsPage.tsx:5268
+msgid "Download SBOM results"
+msgstr "Download SBOM results"
+
+#: src/components/FormikPickers.tsx:187
+#: src/components/FormikPickers.tsx:231
 msgid "Date can not be before {format}"
 msgstr "Date can not be before {format}"
+
+#. placeholder {0}: row?.scan_options?.include_paths.length > 0 ? row?.scan_options?.include_paths.join( ", ", ) : "None"
+#. placeholder {1}: row?.scan_options?.exclude_paths.length > 0 ? row?.scan_options?.exclude_paths.join( ", ", ) : "None"
+#: src/components/ActivityTable.tsx:851
+msgid "Include paths: {0} ; Exclude paths: {1}"
+msgstr "Include paths: {0} ; Exclude paths: {1}"
 
 #: src/api/client.ts:610
 msgid "Unable to add user"
 msgstr "Unable to add user"
 
-#: src/features/scans/scansSchemas.ts:494
+#: src/features/scans/scansSchemas.ts:493
 msgid "Contains one of more of the following invalid characters: space, , ~, ^, :, ?, *, ["
 msgstr "Contains one of more of the following invalid characters: space, , ~, ^, :, ?, *, ["
 
-#: src/components/ApiKeys.tsx:469
-msgid "Last Used"
-msgstr "Last Used"
-
-#: src/pages/ResultsPage.tsx:2579
-msgid "No images detected"
-msgstr "No images detected"
-
-#: src/utils/formatters.ts:272
-msgid "Pull Request Comment"
-msgstr "Pull Request Comment"
-
-#: src/pages/SearchPage.tsx:2373
-msgid "Vulnerability IDs"
-msgstr "Vulnerability IDs"
-
-#: src/components/ActivityTable.tsx:205
-msgid "View failed results in new tab"
-msgstr "View failed results in new tab"
-
-#: src/components/TableMenu.tsx:169
-msgid "Generating CSV File..."
-msgstr "Generating CSV File..."
-
-#: src/pages/ResultsPage.tsx:1959
-msgid "This secret ANYWHERE in this repository"
-msgstr "This secret ANYWHERE in this repository"
-
-#: src/components/ActivityTable.tsx:796
-msgid "Start"
-msgstr "Start"
+#: src/pages/SearchPage.tsx:2031
+#: src/pages/SearchPage.tsx:4430
+msgid "Search Filters"
+msgstr "Search Filters"
 
 #: src/utils/formatters.ts:258
 msgid "Discussion Body"
@@ -2888,15 +2655,95 @@ msgstr "Discussion Body"
 msgid "Must be between 1-256 characters"
 msgstr "Must be between 1-256 characters"
 
+#: src/components/ApiKeys.tsx:1337
+#: src/components/ApiKeys.tsx:1345
+#: src/pages/UserSettings.tsx:814
+#: src/pages/UserSettings.tsx:825
+msgid "Standard"
+msgstr "Standard"
+
+#: src/components/ApiKeys.tsx:469
+msgid "Last Used"
+msgstr "Last Used"
+
+#: src/pages/ResultsPage.tsx:2578
+msgid "No images detected"
+msgstr "No images detected"
+
+#: src/utils/formatters.ts:272
+msgid "Pull Request Comment"
+msgstr "Pull Request Comment"
+
 #: src/features/globalException/GlobalException.tsx:33
 msgid "Return to login"
 msgstr "Return to login"
 
-#: src/pages/ResultsPage.tsx:6996
+#: src/pages/SearchPage.tsx:2382
+msgid "Vulnerability IDs"
+msgstr "Vulnerability IDs"
+
+#: src/components/ApiKeys.tsx:561
+#: src/components/ApiKeys.tsx:566
+#: src/components/ApiKeys.tsx:568
+#: src/components/ApiKeys.tsx:569
+#: src/features/scans/scansSchemas.ts:470
+#: src/features/scans/scansSchemas.ts:474
+#: src/pages/ResultsPage.tsx:975
+#: src/pages/ResultsPage.tsx:988
+#: src/pages/SearchPage.tsx:3666
+#: src/pages/UsersPage.tsx:660
+msgid "Required"
+msgstr "Required"
+
+#: src/pages/ResultsPage.tsx:7053
 msgid "Please wait"
 msgstr "Please wait"
 
-#: src/pages/ResultsPage.tsx:2578
+#: src/components/ActivityTable.tsx:205
+msgid "View failed results in new tab"
+msgstr "View failed results in new tab"
+
+#: src/components/ApiKeys.tsx:1076
+#: src/pages/UsersPage.tsx:1129
+msgid "Add this item to scope"
+msgstr "Add this item to scope"
+
+#: src/app/scanPlugins.ts:100
+msgid "ESlint (JavaScript)"
+msgstr "ESlint (JavaScript)"
+
+#. placeholder {0}: row?.results_summary?.static_analysis?.critical || 0
+#: src/components/StatusCell.tsx:372
+msgid "{0, plural, one {# Critical static analysis result} other {# Critical static analysis results}}"
+msgstr "{0, plural, one {# Critical static analysis result} other {# Critical static analysis results}}"
+
+#: src/pages/ResultsPage.tsx:820
+msgid "Vulnerability Raw"
+msgstr "Vulnerability Raw"
+
+#: src/components/ChipCell.tsx:105
+#: src/components/ChipCell.tsx:164
+msgid "Low: {count}"
+msgstr "Low: {count}"
+
+#. placeholder {0}: row?.results_summary?.static_analysis?.high || 0
+#: src/components/StatusCell.tsx:393
+msgid "{0, plural, one {# High static analysis result} other {# High static analysis results}}"
+msgstr "{0, plural, one {# High static analysis result} other {# High static analysis results}}"
+
+#: src/components/TableMenu.tsx:169
+msgid "Generating CSV File..."
+msgstr "Generating CSV File..."
+
+#: src/pages/ResultsPage.tsx:1957
+msgid "This secret ANYWHERE in this repository"
+msgstr "This secret ANYWHERE in this repository"
+
+#: src/components/ActivityTable.tsx:796
+msgid "Start"
+msgstr "Start"
+
+#: src/pages/ResultsPage.tsx:2577
 msgid "Images:"
 msgstr "Images:"
 
@@ -2905,88 +2752,185 @@ msgstr "Images:"
 msgid "{0, plural, one {# Medium vulnerability} other {# Medium vulnerabilities}}"
 msgstr "{0, plural, one {# Medium vulnerability} other {# Medium vulnerabilities}}"
 
+#: src/pages/UsersPage.tsx:589
+msgid "Admin"
+msgstr "Admin"
+
 #: src/components/ActivityTable.tsx:840
 msgid "Qualified Scan"
 msgstr "Qualified Scan"
 
-#: src/pages/SearchPage.tsx:1305
-#: src/pages/SearchPage.tsx:1626
+#: src/pages/SearchPage.tsx:1309
+#: src/pages/SearchPage.tsx:1630
 msgid "Invalid component version matcher"
 msgstr "Invalid component version matcher"
-
-#: src/pages/ResultsPage.tsx:6074
-#: src/components/ActivityTable.tsx:805
-msgid "Status"
-msgstr "Status"
-
-#: src/app/scanPlugins.ts:150
-msgid "SwiftLint (Swift)"
-msgstr "SwiftLint (Swift)"
-
-#: src/pages/SearchPage.tsx:1588
-#: src/pages/SearchPage.tsx:3511
-#: src/pages/SearchPage.tsx:3519
-msgid "Vulnerability id must be less than {VULN_ID_LENGTH} characters"
-msgstr "Vulnerability id must be less than {VULN_ID_LENGTH} characters"
-
-#: src/components/ApiKeys.tsx:1127
-msgid "Snyk Vulnerability Plugin"
-msgstr "Snyk Vulnerability Plugin"
 
 #: src/components/TableMenu.tsx:126
 msgid "Open Table Menu"
 msgstr "Open Table Menu"
 
-#: src/pages/UsersPage.tsx:748
+#: src/components/ActivityTable.tsx:805
+#: src/pages/ResultsPage.tsx:6132
+msgid "Status"
+msgstr "Status"
+
 #: src/components/ApiKeys.tsx:675
+#: src/pages/UsersPage.tsx:748
 msgid "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !"
 msgstr "May only contain the characters: A-Z, a-z, 0-9, ., -, _, /, [, ], *, ?, !"
+
+#: src/app/scanPlugins.ts:150
+msgid "SwiftLint (Swift)"
+msgstr "SwiftLint (Swift)"
+
+#: src/pages/SearchPage.tsx:1592
+#: src/pages/SearchPage.tsx:3520
+#: src/pages/SearchPage.tsx:3528
+msgid "Vulnerability id must be less than {VULN_ID_LENGTH} characters"
+msgstr "Vulnerability id must be less than {VULN_ID_LENGTH} characters"
+
+#: src/components/ApiKeys.tsx:495
+msgid "API keys can not be modified after creation, they can only be removed and re-added"
+msgstr "API keys can not be modified after creation, they can only be removed and re-added"
+
+#: src/pages/SearchPage.tsx:2291
+#: src/pages/SearchPage.tsx:2883
+msgid "Last Scan Time"
+msgstr "Last Scan Time"
+
+#: src/pages/ResultsPage.tsx:1953
+msgid "This vulnerability in ALL components"
+msgstr "This vulnerability in ALL components"
 
 #: src/api/client.ts:411
 msgid "Unable to get repositories for component"
 msgstr "Unable to get repositories for component"
 
-#: src/custom/searchMetaSchemas.ts:40
-msgid "Invalid meta data field2 matcher"
-msgstr "Invalid meta data field2 matcher"
+#: src/components/StatusCell.tsx:748
+msgid "Errors"
+msgstr "Errors"
+
+#: src/components/ApiKeys.tsx:1128
+msgid "Snyk Vulnerability Plugin"
+msgstr "Snyk Vulnerability Plugin"
+
+#: src/api/client.ts:1249
+msgid "Unable to remove user key"
+msgstr "Unable to remove user key"
+
+#: src/pages/ResultsPage.tsx:4761
+msgid "Tag"
+msgstr "Tag"
+
+#: src/components/ApiKeys.tsx:801
+msgid "Create a user administrator API key"
+msgstr "Create a user administrator API key"
+
+#: src/pages/MainPage.tsx:849
+msgid "Organization/Repository Path"
+msgstr "Organization/Repository Path"
+
+#: src/pages/ResultsPage.tsx:3776
+#: src/pages/SearchPage.tsx:1785
+#: src/pages/SearchPage.tsx:2108
+msgid "Details"
+msgstr "Details"
+
+#. placeholder {0}: row?.results_summary?.configuration?.medium || 0
+#: src/components/StatusCell.tsx:553
+msgid "{0, plural, one {# Medium configuration result} other {# Medium configuration results}}"
+msgstr "{0, plural, one {# Medium configuration result} other {# Medium configuration results}}"
+
+#: src/pages/ResultsPage.tsx:4465
+#: src/pages/SearchPage.tsx:1603
+#: src/pages/SearchPage.tsx:3536
+#: src/pages/SearchPage.tsx:3544
+msgid "Description must be less than {DESCRIPTION_LENGTH} characters"
+msgstr "Description must be less than {DESCRIPTION_LENGTH} characters"
+
+#: src/custom/WelcomeDialogContent.tsx:117
+msgid "Navigation"
+msgstr "Navigation"
 
 #: src/components/ActivityTable.tsx:671
 msgid "Auto Refresh"
 msgstr "Auto Refresh"
+
+#: src/pages/ResultsPage.tsx:1594
+msgid "Hidden in source files ({hiddenFindingCount}):"
+msgstr "Hidden in source files ({hiddenFindingCount}):"
+
+#: src/pages/ResultsPage.tsx:976
+msgid "Must be 4 or more characters"
+msgstr "Must be 4 or more characters"
 
 #: src/components/MailToLink.tsx:64
 #: src/components/MailToLink.tsx:75
 msgid "{user} (Deleted)"
 msgstr "{user} (Deleted)"
 
-#: src/pages/ResultsPage.tsx:2617
-msgid "No vulnerabilities detected"
-msgstr "No vulnerabilities detected"
+#: src/components/ApiKeys.tsx:572
+#: src/components/FormikPickers.tsx:143
+#: src/pages/ResultsPage.tsx:983
+msgid "Must be a future date"
+msgstr "Must be a future date"
 
-#: src/app/scanPlugins.ts:36
-msgid "GitLab Repo Health Check"
-msgstr "GitLab Repo Health Check"
-
-#: src/pages/UsersPage.tsx:449
-msgid "Modify User"
-msgstr "Modify User"
-
-#: src/api/client.ts:164
-msgid "An unknown error occurred"
-msgstr "An unknown error occurred"
-
-#: src/pages/ResultsPage.tsx:4973
+#: src/pages/ResultsPage.tsx:5005
 msgid "No base images found"
 msgstr "No base images found"
+
+#: src/pages/ResultsPage.tsx:5535
+msgid "These findings will be excluded from all results for this repository, including all branches"
+msgstr "These findings will be excluded from all results for this repository, including all branches"
 
 #: src/components/TableMenu.tsx:171
 msgid "Download as CSV"
 msgstr "Download as CSV"
 
+#: src/pages/ResultsPage.tsx:2616
+msgid "No vulnerabilities detected"
+msgstr "No vulnerabilities detected"
+
+#: src/components/ApiKeys.tsx:807
+msgid "User administrator keys can manage other users"
+msgstr "User administrator keys can manage other users"
+
+#: src/app/scanPlugins.ts:36
+msgid "GitLab Repo Health Check"
+msgstr "GitLab Repo Health Check"
+
+#: src/pages/ResultsPage.tsx:1903
+msgid "Reason"
+msgstr "Reason"
+
+#: src/custom/ListItemMetaMultiField.tsx:435
+msgid "Errors:"
+msgstr "Errors:"
+
+#: src/app/scanPlugins.ts:173
+msgid "CI/CD Tool Discovery"
+msgstr "CI/CD Tool Discovery"
+
+#: src/pages/UsersPage.tsx:449
+msgid "Modify User"
+msgstr "Modify User"
+
+#: src/components/ApiKeys.tsx:567
+msgid "Must have at least 1 item"
+msgstr "Must have at least 1 item"
+
+#: src/pages/SearchPage.tsx:2701
+msgid "License Match"
+msgstr "License Match"
+
 #. placeholder {0}: selectedRow?.filename
-#: src/pages/ResultsPage.tsx:4143
+#: src/pages/ResultsPage.tsx:4142
 msgid "Found in {0}"
 msgstr "Found in {0}"
+
+#: src/api/client.ts:164
+msgid "An unknown error occurred"
+msgstr "An unknown error occurred"
 
 #: src/utils/formatters.ts:278
 msgid "Pull Request Title"
@@ -2997,48 +2941,32 @@ msgstr "Pull Request Title"
 msgid "Remove API key named \"{0}\"?"
 msgstr "Remove API key named \"{0}\"?"
 
-#: src/pages/ResultsPage.tsx:7137
+#: src/pages/ResultsPage.tsx:7168
 msgid "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 msgstr "Start a new scan using the same options used in this scan?<0/>Initiating a new scan will navigate to the main scan page to display scan progress."
 
-#: src/app/scanPlugins.ts:212
+#: src/app/scanPlugins.ts:217
 msgid "Veracode SCA"
 msgstr "Veracode SCA"
+
+#. placeholder {0}: props.version
+#. placeholder {1}: props.year
+#: src/custom/Footer.tsx:33
+msgid "v{APP_VERSION_INTERNAL} / v{0}, © {1} Warner Bros. Discovery Intellectual Property – Warner Bros. Discovery Property (Internal Use Only)"
+msgstr "v{APP_VERSION_INTERNAL} / v{0}, © {1} Warner Bros. Discovery Intellectual Property – Warner Bros. Discovery Property (Internal Use Only)"
 
 #: src/utils/formatters.ts:274
 msgid "Pull Request Review"
 msgstr "Pull Request Review"
 
-#: src/pages/ResultsPage.tsx:6750
-#: src/features/scans/scansSchemas.ts:472
+#: src/features/scans/scansSchemas.ts:471
+#: src/pages/ResultsPage.tsx:6808
 msgid "Invalid value"
 msgstr "Invalid value"
 
-#: src/pages/ResultsPage.tsx:5674
+#: src/pages/ResultsPage.tsx:5732
 msgid "{label}"
 msgstr "{label}"
-
-#: src/pages/ResultsPage.tsx:4032
-#: src/pages/ResultsPage.tsx:4344
-msgid "Location"
-msgstr "Location"
-
-#: src/pages/UsersPage.tsx:998
-#: src/components/ApiKeys.tsx:934
-msgid "Remove this scope item"
-msgstr "Remove this scope item"
-
-#: src/pages/ResultsPage.tsx:1444
-msgid "Found in:"
-msgstr "Found in:"
-
-#: src/pages/UserSettings.tsx:301
-msgid "Unlink service?"
-msgstr "Unlink service?"
-
-#: src/app/colors.ts:32
-msgid "Red"
-msgstr "Red"
 
 #: src/features/hiddenFindings/hiddenFindingsSaga.ts:91
 msgid "Hidden finding updated"
@@ -3046,19 +2974,63 @@ msgstr "Hidden finding updated"
 
 #. placeholder {0}: scan?.repo
 #. placeholder {1}: scan.branch
-#: src/pages/ResultsPage.tsx:6911
+#: src/pages/ResultsPage.tsx:6969
 msgid "Artemis - Scan Results: {0} ({1})"
 msgstr "Artemis - Scan Results: {0} ({1})"
 
-#: src/pages/ResultsPage.tsx:776
+#: src/app/colors.ts:62
+msgid "Teal"
+msgstr "Teal"
+
+#: src/api/client.ts:845
+#: src/api/client.ts:1036
+msgid "VCS/Org required"
+msgstr "VCS/Org required"
+
+#: src/pages/ResultsPage.tsx:774
 msgid "Secret Raw: {count}"
 msgstr "Secret Raw: {count}"
+
+#. placeholder {0}: userToDelete?.email ?? ""
+#: src/pages/UsersPage.tsx:527
+msgid "Remove user \"{0}\"?"
+msgstr "Remove user \"{0}\"?"
+
+#: src/pages/ResultsPage.tsx:4031
+#: src/pages/ResultsPage.tsx:4343
+msgid "Location"
+msgstr "Location"
 
 #: src/features/keys/keysSaga.ts:67
 msgid "User API key count exceeds {maxCount}. Currently users can only manage {maxCount} keys at a time. Please remove some expired or unused keys"
 msgstr "User API key count exceeds {maxCount}. Currently users can only manage {maxCount} keys at a time. Please remove some expired or unused keys"
 
-#: src/pages/ResultsPage.tsx:4218
+#: src/components/ApiKeys.tsx:935
+#: src/pages/UsersPage.tsx:998
+msgid "Remove this scope item"
+msgstr "Remove this scope item"
+
+#: src/pages/ResultsPage.tsx:1442
+msgid "Found in:"
+msgstr "Found in:"
+
+#: src/pages/ResultsPage.tsx:4794
+msgid "Config Files"
+msgstr "Config Files"
+
+#: src/pages/UserSettings.tsx:301
+msgid "Unlink service?"
+msgstr "Unlink service?"
+
+#: src/pages/ResultsPage.tsx:1973
+msgid "String to exclude from secret findings (future scans only)"
+msgstr "String to exclude from secret findings (future scans only)"
+
+#: src/app/scanPlugins.ts:196
+msgid "NPM Audit (NodeJS)"
+msgstr "NPM Audit (NodeJS)"
+
+#: src/pages/ResultsPage.tsx:4217
 msgid "Found By"
 msgstr "Found By"
 
@@ -3066,54 +3038,90 @@ msgstr "Found By"
 msgid "Unable to update user"
 msgstr "Unable to update user"
 
+#: src/app/colors.ts:32
+msgid "Red"
+msgstr "Red"
+
+#. placeholder {0}: component?.omd_sdm_owner_email
+#: src/custom/ListItemMetaMultiField.tsx:333
+msgid "Email SDM owner: {0}"
+msgstr "Email SDM owner: {0}"
+
 #: src/components/StatusCell.tsx:487
 msgid "Fetching secrets results..."
 msgstr "Fetching secrets results..."
 
-#: src/pages/UsersPage.tsx:970
 #: src/components/ApiKeys.tsx:907
+#: src/pages/UsersPage.tsx:970
 msgid "No scope is currently defined"
 msgstr "No scope is currently defined"
+
+#: src/components/ApiKeys.tsx:979
+#: src/pages/UsersPage.tsx:1031
+msgid "Top"
+msgstr "Top"
+
+#: src/app/scanPlugins.ts:85
+msgid "Brakeman (Ruby)"
+msgstr "Brakeman (Ruby)"
 
 #: src/pages/UsersPage.tsx:662
 #: src/pages/UsersPage.tsx:663
 msgid "Must be between 1-254 characters"
 msgstr "Must be between 1-254 characters"
 
+#: src/pages/ResultsPage.tsx:5031
+msgid "No CI/CD tools found"
+msgstr "No CI/CD tools found"
+
+#: src/pages/ResultsPage.tsx:3239
+#: src/pages/SearchPage.tsx:2468
+#: src/pages/SearchPage.tsx:4292
+msgid "Discovered By Plugins"
+msgstr "Discovered By Plugins"
+
+#: src/components/ApiKeys.tsx:1050
+#: src/components/ApiKeys.tsx:1054
+#: src/components/FormikPickers.tsx:58
 #: src/pages/UsersPage.tsx:1103
 #: src/pages/UsersPage.tsx:1107
-#: src/components/FormikPickers.tsx:64
-#: src/components/ApiKeys.tsx:1049
-#: src/components/ApiKeys.tsx:1053
 msgid "Clear"
 msgstr "Clear"
+
+#: src/pages/ResultsPage.tsx:3191
+#: src/pages/ResultsPage.tsx:4566
+#: src/pages/SearchPage.tsx:2426
+#: src/pages/SearchPage.tsx:2977
+msgid "Remediation"
+msgstr "Remediation"
 
 #: src/components/ActivityTable.tsx:799
 msgid "End"
 msgstr "End"
 
-#: src/pages/SearchPage.tsx:908
-msgid "No Scans"
-msgstr "No Scans"
-
-#: src/app/scanPlugins.ts:186
-msgid "Bundler Audit (Ruby)"
-msgstr "Bundler Audit (Ruby)"
-
-#: src/features/scans/scansSchemas.ts:555
-#: src/features/scans/scansSchemas.ts:593
-msgid "At least one scan feature or plugin must be enabled"
-msgstr "At least one scan feature or plugin must be enabled"
-
-#: src/components/ChipCell.tsx:152
-msgid "Medium: {count}"
-msgstr "Medium: {count}"
-
-#: src/pages/ResultsPage.tsx:6998
+#: src/pages/ResultsPage.tsx:7055
 msgid "Fetching scan results..."
 msgstr "Fetching scan results..."
 
-#: src/pages/SearchPage.tsx:4481
+#: src/components/SecretValidityCell.tsx:102
+msgid "This finding could not be determined to be either active or inactive"
+msgstr "This finding could not be determined to be either active or inactive"
+
+#: src/api/client.ts:811
+msgid "Unable to get scan by id"
+msgstr "Unable to get scan by id"
+
+#: src/components/ApiKeys.tsx:571
+#: src/components/FormikPickers.tsx:137
+#: src/pages/ResultsPage.tsx:982
+msgid "Invalid date format"
+msgstr "Invalid date format"
+
+#: src/pages/UsersPage.tsx:667
+msgid "Invalid email address"
+msgstr "Invalid email address"
+
+#: src/pages/SearchPage.tsx:4490
 msgid "Copy link to these search results"
 msgstr "Copy link to these search results"
 
@@ -3125,75 +3133,181 @@ msgstr "Negligible: {count}"
 msgid "Invalid theme value"
 msgstr "Invalid theme value"
 
+#: src/pages/ResultsPage.tsx:3499
+msgid "No vulnerabilities found"
+msgstr "No vulnerabilities found"
+
 #: src/app/scanPlugins.ts:22
 msgid "Technology Inventory"
 msgstr "Technology Inventory"
+
+#: src/app/scanPlugins.ts:95
+msgid "Detekt (Kotlin)"
+msgstr "Detekt (Kotlin)"
+
+#: src/pages/ResultsPage.tsx:819
+msgid "Vulnerability Raw: {count}"
+msgstr "Vulnerability Raw: {count}"
+
+#. placeholder {0}: missingServiceFields.join( ", ", )
+#: src/custom/ListItemMetaMultiField.tsx:271
+msgid "missing file .omd/now.yaml or fields: {0}"
+msgstr "missing file .omd/now.yaml or fields: {0}"
+
+#: src/pages/SearchPage.tsx:908
+msgid "No Scans"
+msgstr "No Scans"
+
+#: src/app/scanPlugins.ts:191
+msgid "Bundler Audit (Ruby)"
+msgstr "Bundler Audit (Ruby)"
 
 #: src/components/ApiKeys.tsx:882
 msgid "Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 msgstr "Supports Unix-style path name pattern expansion syntax, e.g. vcs/org/repoprefix-*. * indicates all repositories."
 
-#: src/pages/ResultsPage.tsx:3114
+#: src/pages/SearchPage.tsx:1339
+#: src/pages/SearchPage.tsx:1450
+#: src/pages/SearchPage.tsx:1460
+#: src/pages/SearchPage.tsx:2781
+#: src/pages/SearchPage.tsx:2888
+#: src/pages/SearchPage.tsx:2905
+#: src/pages/SearchPage.tsx:3341
+#: src/pages/SearchPage.tsx:3345
+#: src/pages/SearchPage.tsx:3413
+#: src/pages/SearchPage.tsx:3417
+#: src/pages/SearchPage.tsx:3424
+#: src/pages/SearchPage.tsx:3428
+msgid "Scan time can not be in the future"
+msgstr "Scan time can not be in the future"
+
+#: src/app/scanPlugins.ts:115
+msgid "FindSecBugs (Java 17)"
+msgstr "FindSecBugs (Java 17)"
+
+#: src/pages/SearchPage.tsx:1724
+#: src/pages/SearchPage.tsx:1937
+#: src/pages/SearchPage.tsx:2869
+#: src/pages/SearchPage.tsx:4206
+msgid "Risk"
+msgstr "Risk"
+
+#: src/features/scans/scansSchemas.ts:554
+#: src/features/scans/scansSchemas.ts:592
+msgid "At least one scan feature or plugin must be enabled"
+msgstr "At least one scan feature or plugin must be enabled"
+
+#: src/components/ChipCell.tsx:152
+msgid "Medium: {count}"
+msgstr "Medium: {count}"
+
+#: src/pages/ResultsPage.tsx:3113
 msgid "Vulnerability must be less than {VULN_ID_LENGTH} characters"
 msgstr "Vulnerability must be less than {VULN_ID_LENGTH} characters"
+
+#: src/custom/ListItemMetaMultiField.tsx:120
+msgid "No Owner Found"
+msgstr "No Owner Found"
 
 #: src/features/search/searchSchemas.ts:133
 msgid "Invalid repository name"
 msgstr "Invalid repository name"
 
-#: src/pages/ResultsPage.tsx:5098
+#: src/custom/ListItemMetaMultiField.tsx:507
+msgid "Unknown Component(s)"
+msgstr "Unknown Component(s)"
+
 #: src/components/TableMenu.tsx:115
+#: src/pages/ResultsPage.tsx:5156
 msgid "Confirm Download"
 msgstr "Confirm Download"
+
+#: src/utils/formatters.ts:276
+msgid "Pull Request Review Comment"
+msgstr "Pull Request Review Comment"
+
+#: src/api/client.ts:174
+msgid "Not authorized"
+msgstr "Not authorized"
+
+#: src/custom/ResultsMetaField.tsx:56
+#: src/custom/SearchMetaField.tsx:133
+msgid "Application IDs"
+msgstr "Application IDs"
 
 #: src/pages/UserSettings.tsx:372
 #: src/pages/UserSettings.tsx:393
 msgid "Link GitHub User"
 msgstr "Link GitHub User"
 
-#: src/pages/SearchPage.tsx:1571
-#: src/pages/SearchPage.tsx:3503
+#: src/pages/SearchPage.tsx:1575
+#: src/pages/SearchPage.tsx:3512
 msgid "Invalid plugin"
 msgstr "Invalid plugin"
 
-#: src/pages/ResultsPage.tsx:747
-#: src/pages/ResultsPage.tsx:2519
-#: src/pages/ResultsPage.tsx:2640
-#: src/pages/ResultsPage.tsx:6576
 #: src/app/scanPlugins.ts:21
+#: src/pages/ResultsPage.tsx:745
+#: src/pages/ResultsPage.tsx:2518
+#: src/pages/ResultsPage.tsx:2639
+#: src/pages/ResultsPage.tsx:6634
 msgid "Configuration"
 msgstr "Configuration"
 
-#: src/pages/SearchPage.tsx:2579
-#: src/pages/SearchPage.tsx:2633
-#: src/pages/ResultsPage.tsx:2512
 #: src/components/ChipCell.tsx:81
 #: src/components/ChipCell.tsx:140
+#: src/pages/ResultsPage.tsx:2511
+#: src/pages/SearchPage.tsx:2588
+#: src/pages/SearchPage.tsx:2642
 msgid "High"
 msgstr "High"
 
+#: src/pages/MainPage.tsx:837
+msgid "Missing an option? Request access"
+msgstr "Missing an option? Request access"
+
 #. placeholder {0}: currentUser?.scan_orgs ? currentUser.scan_orgs.length : 0
-#: src/pages/UserSettings.tsx:836
+#: src/pages/UserSettings.tsx:850
 msgid "Scan Organizations ({0})"
 msgstr "Scan Organizations ({0})"
+
+#: src/api/client.ts:1145
+msgid "Unable to remove hidden finding"
+msgstr "Unable to remove hidden finding"
+
+#: src/custom/ListItemMetaMultiField.tsx:186
+#: src/custom/ListItemMetaMultiField.tsx:449
+msgid "For more information, <0>refer to the documentation</0>."
+msgstr "For more information, <0>refer to the documentation</0>."
+
+#: src/components/TableMenu.tsx:93
+#: src/pages/ResultsPage.tsx:5107
+msgid "Generating JSON File"
+msgstr "Generating JSON File"
+
+#. placeholder {0}: item?.filename ?? ""
+#. placeholder {1}: item?.line ?? ""
+#: src/pages/ResultsPage.tsx:1547
+msgid "{0} (Line {1})"
+msgstr "{0} (Line {1})"
 
 #: src/api/client.ts:1360
 msgid "Unable to get user services"
 msgstr "Unable to get user services"
 
-#: src/pages/ResultsPage.tsx:806
-msgid "Vulnerability: {count}"
-msgstr "Vulnerability: {count}"
+#: src/pages/SearchPage.tsx:1328
+#: src/pages/SearchPage.tsx:1435
+msgid "Invalid service matcher"
+msgstr "Invalid service matcher"
 
-#: src/pages/SearchPage.tsx:1785
-#: src/pages/SearchPage.tsx:2114
-#: src/pages/SearchPage.tsx:2221
-#: src/pages/SearchPage.tsx:2480
-#: src/pages/ResultsPage.tsx:2736
-#: src/components/WelcomeDialog.tsx:90
-#: src/components/FormikPickers.tsx:67
-#: src/components/DraggableDialog.tsx:110
 #: src/components/ApiKeys.tsx:548
+#: src/components/DraggableDialog.tsx:110
+#: src/components/FormikPickers.tsx:61
+#: src/components/WelcomeDialog.tsx:90
+#: src/pages/ResultsPage.tsx:2735
+#: src/pages/SearchPage.tsx:1789
+#: src/pages/SearchPage.tsx:2118
+#: src/pages/SearchPage.tsx:2230
+#: src/pages/SearchPage.tsx:2489
 msgid "OK"
 msgstr "OK"
 
@@ -3205,17 +3319,56 @@ msgstr "Unable to queue new scan"
 msgid "Allow this user to use additional scan features"
 msgstr "Allow this user to use additional scan features"
 
+#: src/custom/searchMetaSchemas.ts:60
+msgid "Repository contact null must be either \"true\" or \"false\""
+msgstr "Repository contact null must be either \"true\" or \"false\""
+
+#: src/pages/SearchPage.tsx:1607
+msgid "Invalid remediation matcher"
+msgstr "Invalid remediation matcher"
+
 #: src/pages/UserSettings.tsx:332
 #: src/pages/UserSettings.tsx:354
 msgid "Unlink GitHub User"
 msgstr "Unlink GitHub User"
 
+#: src/app/colors.ts:72
+msgid "Blue"
+msgstr "Blue"
+
+#: src/api/client.ts:700
+msgid "Unable to get current user details"
+msgstr "Unable to get current user details"
+
 #: src/utils/formatters.ts:270
 msgid "Pull Request Body"
 msgstr "Pull Request Body"
 
-#: src/pages/ResultsPage.tsx:2962
-#: src/pages/ResultsPage.tsx:4037
-#: src/pages/ResultsPage.tsx:4215
+#: src/pages/ResultsPage.tsx:2648
+#: src/pages/ResultsPage.tsx:6650
+msgid "Inventory"
+msgstr "Inventory"
+
+#: src/pages/MainPage.tsx:1083
+#: src/pages/MainPage.tsx:1114
+msgid "One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)"
+msgstr "One or more file or directory paths separated by a comma or newline. Supports glob patterns (*, **, etc.)"
+
+#: src/pages/ResultsPage.tsx:2961
+#: src/pages/ResultsPage.tsx:4036
+#: src/pages/ResultsPage.tsx:4214
 msgid "Validity"
 msgstr "Validity"
+
+#. placeholder {0}: scan?.scan_options?.include_paths ? scan?.scan_options?.include_paths.length : 0
+#: src/pages/ResultsPage.tsx:5907
+msgid "Include Paths ({0})"
+msgstr "Include Paths ({0})"
+
+#: src/app/scanPlugins.ts:125
+msgid "GoSec (Golang)"
+msgstr "GoSec (Golang)"
+
+#: src/pages/ResultsPage.tsx:804
+msgid "Vulnerability: {count}"
+msgstr "Vulnerability: {count}"

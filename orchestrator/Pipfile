@@ -24,7 +24,7 @@ mock = "~=5.1"
 moto = {extras = ["awslambda", "ec2", "s3", "secretsmanager", "sqs"], version = "~=5.1"}
 pylint = "~=4.0"
 pyright = "~=1.1"
-pytest = "~=8.3"
+pytest = "~=9.0"
 pytest-cov = "~=7.0"
 responses = "~=0.25.3"
 ruff = "==0.14.0"  # Must match version in VSCode extension: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff

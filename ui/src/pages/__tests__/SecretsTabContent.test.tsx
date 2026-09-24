@@ -273,14 +273,7 @@ describe("SecretsTabContent component", () => {
 				obj[`${HASH_PREFIX}f_validity`] = validityValue;
 				const hash = queryString.stringify(obj);
 
-				// mock window.location.reload
-				const globalWindow = global.window;
-				global.window ??= Object.create(window);
-				Object.defineProperty(window, "location", {
-					value: {
-						hash,
-					},
-				});
+				window.location.hash = hash;
 
 				const { user } = render(
 					<SecretsTabContent
@@ -326,8 +319,6 @@ describe("SecretsTabContent component", () => {
 				await waitFor(() =>
 					expect(commitFilter).toHaveDisplayValue(commitValue),
 				);
-
-				global.window ??= globalWindow;
 			});
 		});
 	});

@@ -1,7 +1,8 @@
 import { Button, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { Email as EmailIcon } from "@mui/icons-material";
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import { APP_EMAIL_AUTHOR } from "app/globals";
 import { DELETED_REGEX } from "utils/formatters";
@@ -36,7 +37,7 @@ const MailToLink = (props: MailToLinkProps) => {
 	const { i18n } = useLingui();
 	const { classes } = useStyles();
 	const { subject, body, text, tooltip, iconButton, disabled = false } = props;
-	let { recipient } = props;
+	const { recipient } = props;
 	let elt = <>{text}</>;
 	let tooltipTitle = text;
 	const recipients = recipient

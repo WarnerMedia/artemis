@@ -7,8 +7,8 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	__esModule: true,
 	useLocation: jest.fn(),
 	useNavigate: jest.fn(),
@@ -18,16 +18,14 @@ jest.mock("api/client", () => ({
 	__esModule: true,
 	handleException: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { mockStoreEmpty } from "../../../../testData/testMockData";
 import { STORAGE_LOCAL_WELCOME } from "app/globals";
 
 let mockAppState: any;
 let mockLocation: any;
-let mockHistory: any[] = [];
+const mockHistory: any[] = [];
 let globalWindow: any;
 const mockUseLocation = useLocation as jest.Mock;
 const mockUseNavigate = useNavigate as jest.Mock;

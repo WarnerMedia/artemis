@@ -28,7 +28,7 @@ jobs:
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
 
       - name: Set up the npm version
-        run: npm install --global npm@$NPM_VERSION
+        run: npm install --global --ignore-scripts npm@$NPM_VERSION
 
       - name: Install npm packages
         run: make -C $UI_PATH install

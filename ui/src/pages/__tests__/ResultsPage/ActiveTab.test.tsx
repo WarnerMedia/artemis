@@ -6,8 +6,8 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	useLocation: jest.fn(),
 }));
 jest.mock("pages/MainPage", () => ({
@@ -15,10 +15,8 @@ jest.mock("pages/MainPage", () => ({
 	__esModule: true,
 	startScan: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import ResultsPage from "pages/ResultsPage";
 import {
 	mockScan001,
@@ -67,7 +65,7 @@ describe("ResultsPage component", () => {
 			mockAppState.scans.ids.push(id);
 			mockAppState.scans.entities[id] = scan;
 			mockAppState.scans.totalRecords = 2;
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const repo = scan.repo;
 			const service = scan.service;
 
@@ -91,7 +89,7 @@ describe("ResultsPage component", () => {
 			mockAppState.scans.ids.push(id);
 			mockAppState.scans.entities[id] = scan;
 			mockAppState.scans.totalRecords = 2;
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const repo = scan.repo;
 			const service = scan.service;
 
@@ -119,7 +117,7 @@ describe("ResultsPage component", () => {
 			mockAppState.scans.ids.push(id);
 			mockAppState.scans.entities[id] = scan;
 			mockAppState.scans.totalRecords = 2;
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const repo = scan.repo;
 			const service = scan.service;
 

@@ -1,4 +1,5 @@
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import ApiKeys from "components/ApiKeys";
 import {
@@ -42,7 +43,7 @@ import {
 } from "@mui/material";
 import queryString from "query-string";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { makeStyles, withStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
@@ -432,6 +433,7 @@ export default function UserSettings() {
 	});
 
 	useEffect(() => {
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setHideWelcome(
 			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME))),
 		);
@@ -489,6 +491,7 @@ export default function UserSettings() {
 		// re-add other query params if other page params added in future
 		navigate(location.pathname, { replace: true }); // /settings
 		if (searchParams?.code) {
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setFromRedirect(true);
 			dispatch(
 				linkVcsService({
@@ -502,7 +505,7 @@ export default function UserSettings() {
 				}),
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [dispatch, i18n]);
 
 	// scroll to last scope item added to current scope in addKeys

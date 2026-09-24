@@ -43,9 +43,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "heimdall_files_en
 }
 
 provider "aws" {
-  alias   = "artemis"
-  region  = var.artemis_region
-  profile = var.profile
+  alias  = "artemis"
+  region = var.artemis_region
 }
 
 data "aws_s3_bucket" "artemis_s3_bucket" {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	Box,
@@ -366,6 +367,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 			// unless already on page 1
 			if (filteredRows.length === 0 && page > 0) {
 				currentPage -= 1;
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setPage(currentPage);
 			}
 			if (reloadCount !== undefined) {
@@ -381,7 +383,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 				onDataLoad(params);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [reloadCount]);
 
 	const handleRequestSort = (
@@ -562,13 +564,14 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 	// with selection changes accordingly
 	useEffect(() => {
 		if (!selectedRow) {
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setSelected([]);
 			if (onRowSelect) {
 				onRowSelect(null);
 			}
 		}
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [selectedRow]);
 
 	let filteredRows: RowDef[] = [];
@@ -596,6 +599,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 	useEffect(() => {
 		// if filters change, reset current page
 		if (filters) {
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setPage(0);
 			if (onDataLoad) {
 				const params: RequestMeta = {
@@ -610,7 +614,7 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 				onDataLoad(params);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [filters]);
 
 	useEffect(() => {
@@ -618,11 +622,12 @@ const EnhancedTable = (props: EnhancedTableProps) => {
 		// if all items on a page are removed, goto previous page
 		// unless already on page 1
 		if (!onDataLoad && filteredRows.length === 0 && page > 0) {
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setPage((prevPage) => {
 				return prevPage > 0 ? (prevPage -= 1) : prevPage;
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [page, filteredRows.length]);
 
 	let exportFetch: FetchData = async () => Promise.resolve([]);

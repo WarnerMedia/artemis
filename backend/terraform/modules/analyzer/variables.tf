@@ -16,10 +16,6 @@ variable "aws_region" {
   description = "The region in which to deploy"
 }
 
-variable "profile" {
-  description = "AWS profile"
-}
-
 variable "availability_zone" {
   description = "The AZ in which to deploy NAT engine EC2s"
 }

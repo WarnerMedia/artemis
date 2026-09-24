@@ -15,7 +15,7 @@ import { Provider } from "react-redux";
 import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
 import { messages as enMessages } from "locale/en/messages";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import store from "app/store";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -46,12 +46,7 @@ const AllTheProviders = ({ children }: AllTheProvidersProps) => {
 			<I18nProvider i18n={i18n}>
 				<ThemeProvider theme={theme}>
 					<LocalizationProvider dateAdapter={DateAdapter}>
-						<MemoryRouter
-							future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
-							initialEntries={["/"]}
-						>
-							{children}
-						</MemoryRouter>
+						<MemoryRouter>{children}</MemoryRouter>
 					</LocalizationProvider>
 				</ThemeProvider>
 			</I18nProvider>

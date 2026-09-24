@@ -8,16 +8,14 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	__esModule: true,
 	useLocation: jest.fn(),
 	useNavigate: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import SearchPage from "pages/SearchPage";
 import {
 	mockStoreEmpty,
@@ -40,11 +38,11 @@ let mockLocation: any;
 let mockRequest: any;
 let mockGetComponentRepos: any;
 let mockGetRepos: any;
-let mockHistory: any[] = [];
 let globalWindow: any;
 let promiseSearchRepo: any;
 let promiseSearchComponentRepo: any;
 
+const mockHistory: any[] = [];
 const mockUseSelector = useSelector as jest.Mock;
 const mockUseDispatch = useDispatch as jest.Mock;
 const mockUseLocation = useLocation as jest.Mock;

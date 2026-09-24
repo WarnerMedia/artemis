@@ -3,7 +3,6 @@ terraform {
     region         = "REGION_NAME"
     bucket         = "S3_BUCKET_NAME"
     key            = "STATE_FILE_S3_KEY"
-    profile        = "AWS_PROFILE_NAME"
     dynamodb_table = "DYNAMO_DB_LOCK_TABLE_NAME"
   }
   required_providers {
@@ -23,7 +22,6 @@ locals {
   version             = "1.0.0"
   region              = "REGION_NAME"
   artemis_region      = "REGION_NAME"
-  profile             = "AWS_PROFILE_NAME"
   domain_name         = "ROUTE53_DOMAIN_NAME"
   domain_zone_id      = "ROUTE53_ZONE_ID"
   lambda_architecture = "arm64"
@@ -33,8 +31,7 @@ locals {
 }
 
 provider "aws" {
-  region  = local.region
-  profile = "AWS_PROFILE_NAME"
+  region = local.region
 }
 
 module "heimdall" {

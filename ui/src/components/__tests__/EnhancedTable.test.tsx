@@ -1517,7 +1517,7 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 
-			let menu = screen.getByRole("button", { name: /open table menu/i });
+			const menu = screen.getByRole("button", { name: /open table menu/i });
 			await user.click(menu);
 			screen.getByRole("button", {
 				name: /close table menu/i,
@@ -1556,7 +1556,7 @@ describe("EnhancedTable component", () => {
 			const exportData = jest.fn().mockImplementation(() => rows);
 			const spy = jest
 				.spyOn(formatters, "exportToJson")
-				.mockImplementation((fileName, data) => {
+				.mockImplementation((_fileName, _data) => {
 					return true;
 				});
 
@@ -1575,7 +1575,7 @@ describe("EnhancedTable component", () => {
 				/>,
 			);
 
-			let menu = screen.getByRole("button", { name: /open table menu/i });
+			const menu = screen.getByRole("button", { name: /open table menu/i });
 			await user.click(menu);
 			screen.getByRole("button", {
 				name: /close table menu/i,

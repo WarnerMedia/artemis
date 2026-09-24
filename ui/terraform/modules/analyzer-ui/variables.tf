@@ -20,8 +20,6 @@ variable "zone_name" {
   description = "Name of the zone in which the Cloudfront domain will be created"
 }
 
-variable "profile" {}
-
 variable "response_headers_policy_id" {
   description = "ID of a reponse header policy"
   type        = string

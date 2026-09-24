@@ -281,14 +281,7 @@ describe("VulnTabContent component", () => {
 				obj[`${HASH_PREFIX}id`] = vulnValue;
 				const hash = queryString.stringify(obj);
 
-				// mock window.location.reload
-				const globalWindow = global.window;
-				global.window ??= Object.create(window);
-				Object.defineProperty(window, "location", {
-					value: {
-						hash,
-					},
-				});
+				window.location.hash = hash;
 
 				const { user } = render(
 					<VulnTabContent
@@ -329,8 +322,6 @@ describe("VulnTabContent component", () => {
 					disabled: false,
 					user,
 				});
-
-				global.window ??= globalWindow;
 			});
 		});
 	});

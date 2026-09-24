@@ -6,8 +6,8 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	useLocation: jest.fn(),
 }));
 jest.mock("pages/MainPage", () => ({
@@ -15,10 +15,8 @@ jest.mock("pages/MainPage", () => ({
 	__esModule: true,
 	startScan: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import ResultsPage from "pages/ResultsPage";
 import {
 	mockScan001,
@@ -68,7 +66,7 @@ describe("ResultsPage component", () => {
 			global.scrollTo = jest.fn();
 
 			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const id = mockStoreScanId;
 			const repo = mockAppState.scans.entities[id].repo;
 			const service = mockAppState.scans.entities[id].service;
@@ -111,7 +109,7 @@ describe("ResultsPage component", () => {
 			);
 			mockAppState.scans.status = "success";
 			mockAppState.scans.totalRecords = 1;
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const id = mockScan001.scan_id;
 			const repo = mockScan001.repo;
 			const service = mockScan001.service;
@@ -153,7 +151,7 @@ describe("ResultsPage component", () => {
 			mockAppState.scans.totalRecords = 1;
 			const branch = "A Branch Name For Test";
 			mockAppState.scans.entities[mockScan001.scan_id].branch = branch;
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const id = mockScan001.scan_id;
 			const repo = mockScan001.repo;
 			const service = mockScan001.service;

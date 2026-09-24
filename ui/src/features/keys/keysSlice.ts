@@ -1,9 +1,9 @@
 import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
 
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 import createSagaActions from "utils/createSagaActions";
 import { Key, KeysResponse } from "features/keys/keysSchemas";
-import { UserKeyRequest } from "api/client";
+import type { UserKeyRequest } from "api/client";
 
 type SliceState = {
 	status: "idle" | "loading" | "succeeded" | "failed";

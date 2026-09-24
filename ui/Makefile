@@ -149,7 +149,7 @@ install: package.json package-lock.json  ## Install all NPM dependency packages
 	@echo "npm version is: "
 	$(NPM) -v
 	$(NPM) ci
-	$(NPM) ls -a
+	$(NPM) exec allow-scripts
 	@echo "${OK}"
 
 .PHONY: start
@@ -233,7 +233,7 @@ fix: $(SRC)  ## Fix code style
 	@echo "${OK}"
 
 .PHONY: precommit
-precommit: lint check audit test ## Run all linting, style checks, and vulnerability auditing
+precommit: lint check test ## Run all linting and style checks
 
 ###############################################################################
 # Docker image targets

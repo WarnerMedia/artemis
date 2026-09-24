@@ -1,4 +1,4 @@
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { ThemeColors } from "features/theme/themeSchemas";
 
 interface IThemeColorProps extends Omit<ThemeColors, "name"> {

@@ -237,9 +237,8 @@ resource "aws_secretsmanager_secret_version" "service-integration" {
 # The revproxy API key is managed externally to Artemis and may be stored in
 # another region
 provider "aws" {
-  alias   = "revproxy-key"
-  region  = var.revproxy_secret_region
-  profile = var.profile
+  alias  = "revproxy-key"
+  region = var.revproxy_secret_region
 }
 
 data "aws_secretsmanager_secret" "revproxy-api-key" {

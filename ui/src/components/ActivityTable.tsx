@@ -1,4 +1,5 @@
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	Assignment as AssignmentIcon,
@@ -44,7 +45,7 @@ import {
 import queryString from "query-string";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { keyframes } from "tss-react";
 import { makeStyles } from "tss-react/mui";
 import * as Yup from "yup";
@@ -162,7 +163,7 @@ const ReportAction = (props: ReportActionProps) => {
 	const { i18n } = useLingui();
 	const navigate = useNavigate();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [isCopied, setCopied] = useState(false);
+	const [isCopied, setIsCopied] = useState(false);
 	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 	const menuOpen = Boolean(anchorEl);
 	const resultsUrl = `results?org=${encodeURIComponent(
@@ -267,11 +268,11 @@ const ReportAction = (props: ReportActionProps) => {
 				<CopyToClipboard
 					text={window.location.origin + "/" + resultsUrl}
 					onCopy={() => {
-						setCopied(true);
+						setIsCopied(true);
 						setTimeoutId(
 							setTimeout(() => {
 								setTimeoutId(null);
-								setCopied(false);
+								setIsCopied(false);
 							}, APP_NOTIFICATION_DELAY),
 						);
 					}}
@@ -445,7 +446,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 				interval = null;
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [
 		scansTotal,
 		autoReload,
@@ -461,18 +462,28 @@ const ActivityTable = (props: ActivityTableProps) => {
 	useEffect(() => {
 		if (!data) {
 			// form data has been reset, reset table state
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setAutoReload(stateDefaults.autoReload);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setShowMyScans(stateDefaults.showMyScans);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setIncludeBatch(stateDefaults.includeBatch);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setCurrentPage(stateDefaults.currentPage);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setItemsPerPage(stateDefaults.itemsPerPage);
 		} else if (scansStatus !== "loading") {
 			// only load if not already loading
 			const hashParams = getHashParams();
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setAutoReload(hashParams.autoReload);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setShowMyScans(hashParams.showMyScans);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setIncludeBatch(hashParams.includeBatch);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setCurrentPage(hashParams.currentPage);
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setItemsPerPage(hashParams.itemsPerPage);
 
 			// passing-in hash param values since state values are not updated immediately after setState()
@@ -486,7 +497,7 @@ const ActivityTable = (props: ActivityTableProps) => {
 		// reload data only if form data changes, also needs to account for currentUser
 		// getting loaded async to allow filtering by current user
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [data, currentUser]);
 
 	const handleChangePage = (_event: unknown, newPage: number) => {
@@ -754,12 +765,12 @@ const ActivityTable = (props: ActivityTableProps) => {
 
 									<DialogActions>
 										<Button
+											autoFocus={Boolean(scanToRestart)}
 											aria-label={i18n._(t`Start Scan`)}
 											size="small"
 											variant="contained"
 											startIcon={<PlayCircleOutlineIcon />}
 											disabled={!scanToRestart || scansStatus === "loading"}
-											autoFocus={Boolean(scanToRestart)}
 											onClick={() => {
 												if (scanToRestart) {
 													handleRescan(scanToRestart);

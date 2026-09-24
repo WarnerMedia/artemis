@@ -1,8 +1,9 @@
 import { Field, Form, Formik, useFormikContext } from "formik";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
-import { t, Trans } from "@lingui/macro";
+import { NavigateFunction, useLocation, useNavigate } from "react-router";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	AccountTree as AccountTreeIcon,
@@ -686,12 +687,12 @@ const MainPage = () => {
 		// only show welcome if not returning to page with search params
 		if (!location.search) {
 			runMigrations();
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setHideWelcome(
 				Boolean(Number(localStorage.getItem(STORAGE_LOCAL_WELCOME))),
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [location.search]);
 
 	// because startScan updates url with SPA routing, app will not reload & parse updated query params
 	// instead, monitor search location for changes to ensure submitContext and validatedData.submitContext are current
@@ -705,7 +706,9 @@ const MainPage = () => {
 				(search["submitContext"] === "scan" ||
 					search["submitContext"] === "view")
 			) {
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setSubmitContext(search["submitContext"] as SubmitContext);
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setValidatedData((prevState) => {
 					return {
 						...prevState,
@@ -714,8 +717,7 @@ const MainPage = () => {
 				});
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [location.search]);
+	}, [location.search, submitContext]);
 
 	// initialize form with values from URL query params
 	// AFTER async call to get VCS/Orgs resolves
@@ -725,9 +727,13 @@ const MainPage = () => {
 			const searchParams = getSearchParams();
 			if (searchParams) {
 				console.debug("restoring prior form state");
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setReturning(true);
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setSubmitContext(searchParams?.submitContext ?? "view");
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setInitialValues(searchParams ?? emptyValues);
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setValidatedData(searchParams);
 				setPageTitle(searchParams);
 			} else {
@@ -739,6 +745,7 @@ const MainPage = () => {
 
 				// if there's just 1 option available, then make it the default value selected
 				if (currentUser.scan_orgs.length === 1) {
+					// eslint-disable-next-line @eslint-react/set-state-in-effect
 					setInitialValues({
 						...emptyValues,
 						vcsOrg: currentUser.scan_orgs[0],
@@ -747,6 +754,7 @@ const MainPage = () => {
 								? APP_DEMO_USER_REPO
 								: emptyValues.repo,
 					});
+					// eslint-disable-next-line @eslint-react/set-state-in-effect
 					setReturning(true);
 				}
 				// VCS/Org options loaded, focus the first form field
@@ -757,7 +765,7 @@ const MainPage = () => {
 			}
 		}
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [currentUser]);
 
 	// Formik Material-UI fields MUST include an "id" attribute

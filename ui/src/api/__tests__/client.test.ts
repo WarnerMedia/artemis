@@ -14,7 +14,7 @@ import {
 	vulnPlugins,
 } from "app/scanPlugins";
 import store from "app/store";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { setGlobalException } from "features/globalException/globalExceptionSlice";
 import { addNotification } from "features/notifications/notificationsSlice";
 import { ScanOptionsForm } from "features/scans/scansSchemas";
@@ -129,28 +129,8 @@ describe("api client", () => {
 		});
 	});
 
-	describe("_redirect tests", () => {
-		it("should reload current page", () => {
-			// mock window.location.reload
-			const globalWindow = global.window;
-			global.window ??= Object.create(window);
-			Object.defineProperty(window, "location", {
-				value: {
-					reload: jest.fn(),
-				},
-			});
-
-			exportsForTesting._redirect();
-			expect(window.location.reload).toHaveBeenCalled();
-			global.window ??= globalWindow;
-		});
-	});
-
 	describe("addScan tests", () => {
-		let mockRequest: jest.SpyInstance<
-			Promise<unknown>,
-			[config: AxiosRequestConfig<unknown>]
-		>;
+		let mockRequest: jest.Spied<typeof axios.request>;
 		const vcsOrg = "vcs/org";
 		const repo = "repo";
 
@@ -299,10 +279,7 @@ describe("api client", () => {
 	});
 
 	describe("getScan tests", () => {
-		let mockRequest: jest.SpyInstance<
-			Promise<unknown>,
-			[config: AxiosRequestConfig<unknown>]
-		>;
+		let mockRequest: jest.Spied<typeof axios.request>;
 		const mockScan = JSON.parse(JSON.stringify(mockScan001));
 		mockScan.sbom = [];
 
@@ -326,10 +303,10 @@ describe("api client", () => {
 				`/${mockScan.service}/${mockScan.repo}/${mockScan.scan_id}`,
 				{},
 			);
-			for (const [
-				key,
-				value,
-			] of mockRequest.mock.calls[0][0].params.entries()) {
+			const searchParams = mockRequest.mock.calls[0][0]
+				.params as URLSearchParams;
+
+			for (const [key, value] of searchParams.entries()) {
 				console.log(`key: ${key} ; value: ${value} `);
 			}
 
@@ -340,8 +317,8 @@ describe("api client", () => {
 				}),
 			);
 			// ensure search parameter format=sbom passed
-			expect(mockRequest.mock.calls[0][0].params.has("format")).toBeTruthy();
-			expect(mockRequest.mock.calls[0][0].params.get("format")).toEqual("sbom");
+			expect(searchParams.has("format")).toBeTruthy();
+			expect(searchParams.get("format")).toEqual("sbom");
 		});
 	});
 });

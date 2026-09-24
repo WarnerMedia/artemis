@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	CircularProgress,
@@ -42,7 +43,9 @@ const TableMenu = (props: TableMenuOptions) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [creatingCsv, setCreatingCsv] = useState(false);
 	const [creatingJson, setCreatingJson] = useState(false);
-	const [skipDialog, setSkipDialog] = useState(false);
+	const [skipDialog, setSkipDialog] = useState(() =>
+		Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
+	);
 	const [dialogOpen, setDialogOpen] = useState<null | "csv" | "json">(null);
 	const menuOpen = Boolean(anchorEl);
 
@@ -67,12 +70,6 @@ const TableMenu = (props: TableMenuOptions) => {
 		setDialogOpen(null);
 		setSkipDialog(disable);
 	};
-
-	useEffect(() => {
-		setSkipDialog(
-			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
-		);
-	}, []);
 
 	const handleCsvDownload = async () => {
 		dispatch(addNotification(i18n._(t`Generating CSV File`), "info"));

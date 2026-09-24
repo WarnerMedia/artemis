@@ -1,4 +1,5 @@
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	AccountCircle as AccountCircleIcon,
@@ -26,7 +27,7 @@ import {
 import { Theme, ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 
 import { APP_CUSTOM_LOGO, APP_DOC_URL_USAGE } from "app/globals";

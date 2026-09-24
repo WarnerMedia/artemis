@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 import createSagaActions from "utils/createSagaActions";
 import { ThemeColors } from "features/theme/themeSchemas";
 import { defaultTheme, IThemeColors, themeColors } from "app/colors";
-import { WritableDraft } from "immer/dist/internal";
+import type { Draft } from "immer";
 
 const initialState: ThemeColors = {
 	name: defaultTheme,
@@ -22,7 +22,7 @@ export const setTheme = createSagaActions<ThemeColors, keyof IThemeColors>(
 );
 
 const saveThemeState = (
-	state: WritableDraft<ThemeColors>,
+	state: Draft<ThemeColors>,
 	action:
 		| PayloadAction<ThemeColors, string, { arg: void }, never>
 		| PayloadAction<ThemeColors, string, { arg: keyof IThemeColors }, never>,

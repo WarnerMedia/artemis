@@ -4,9 +4,9 @@ import {
 	PayloadAction,
 } from "@reduxjs/toolkit";
 import { i18n } from "@lingui/core";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 
 // maps to MUI <Alert> severity types
 type NotificationType = "error" | "info" | "success" | "warning";

@@ -45,7 +45,7 @@ npm ci
 npm start
 ```
 
-This should install all project dependencies, start the app in development mode, and open a new web browser tab for [http://localhost:3000](http://localhost:3000).  
+This should install all project dependencies, start the app in development mode, and open a new web browser tab for [http://localhost:3000](http://localhost:3000).
 Note: The UI will "hot reload" in development mode when code changes are made.
 
 ### 🎨 Customization
@@ -61,7 +61,7 @@ Once you have the project running, you will want to customize it to meet your ne
 
 ### ✅ Prerequisites
 
-The following steps describe how to bootstrap this project for development on a Mac .  
+The following steps describe how to bootstrap this project for development on a Mac .
 For Windows or Linux development, comparable steps exist, omitting certain utilities like Homebrew.
 
 1. Install a terminal emulator, like [iTerm](https://iterm2.com/)
@@ -124,14 +124,14 @@ If you need to run utilities for linting, code checking, or auditing dependencie
 In the project directory, you can run:
 
 1. `npm start` or `yarn start` or `make start`
-   Runs the app in development mode.  
+   Runs the app in development mode.
    This should also open a new web browser tab for [http://localhost:3000](http://localhost:3000).
-   The page will reload if you make edits.  
+   The page will reload if you make edits.
    You will also see any lint errors in the console.
 2. `npm test` or `yarn test` or `make test`
    Launches the test runner in interactive watch mode.
 3. `npm run build` or `yarn build` or `make build|dist|all`
-   Builds the app for production to the `build` folder.  
+   Builds the app for production to the `build` folder.
    It correctly bundles React in production mode and optimizes the build for the best performance.
    The build is minified, and the filenames include the hashes, ready for deployment.
 4. `npm run lint` or `make lint`
@@ -273,15 +273,30 @@ This project is using the following checks for code style and standards:
 
 - ESLint - JavaScript linting
 - Prettier - JavaScript code style
-- NPM Audit - JavaScript dependency vulnerability auditing
 - Hadolint - Dockerfile linting
 - Markdownlint - Markdown linting
+
+Additionally, we are using the following tools for dependency security scanning:
+
+- GitHub Dependabot
+- Artemis
 
 ### 🛡️ Secure Coding
 
 - [Snyk: 10 React Security Best Practices](https://snyk.io/blog/10-react-security-best-practices/) - Good overview of security considerations when writing a React app
 - [Snyk: 10 npm Security Best Practices](https://snyk.io/blog/ten-npm-security-best-practices/) - Good recommendations for using npm in a project more securely
 - Any other standards/best practice guides related to the current application stack (JavaScript, React, Redux, etc.)
+
+#### Dependency Lifecycle Scripts
+
+Lifecycle scripts are disabled via `.npmrc` (`ignore-scripts=true`) and controlled through [`@lavamoat/allow-scripts`](https://lavamoat.github.io/guides/allow-scripts/). The allowlist lives in `package.json` under `lavamoat.allowScripts`.
+
+To update the allowlist when adding a dependency with install scripts:
+
+1. `make install` will fail and list packages that need to be allowlisted
+2. Run `npx allow-scripts auto` to populate new entries
+3. Review each entry and set to `true` only where functionally required
+4. Run `make install` to confirm
 
 ### 🛠️ Development Patterns
 
@@ -373,7 +388,7 @@ The following technologies are used in the production of this UI:
 - [React-Copy-To-Clipboard](https://github.com/nkbt/react-copy-to-clipboard) - Copy content to the clipboard
 - [React-Draggable](https://github.com/STRML/react-draggable) - Component for making elements draggable (such as dialog windows)
 - [React-Redux](https://react-redux.js.org/) (+[Redux-Toolkit](https://redux-toolkit.js.org/)) - Predictable state management for React
-- [React-Router/React-Router-DOM](https://reactrouter.com/) - SPA Router for React + DOM binding
+- [React-Router](https://reactrouter.com/) - SPA Router for React + DOM binding
 - [React-Syntax-Highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) - Code snippet syntax highlighting and formatting
 - [React-Testing-Library](https://testing-library.com/) - DOM-based testing library
 - [Recharts](http://recharts.org/) - Charting library for React

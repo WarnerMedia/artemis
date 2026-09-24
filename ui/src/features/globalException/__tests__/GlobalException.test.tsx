@@ -5,7 +5,6 @@ jest.mock("react-redux", () => ({
 	__esModule: true,
 	useSelector: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector } from "react-redux";
 
 let mockAppState: any;

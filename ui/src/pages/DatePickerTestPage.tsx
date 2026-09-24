@@ -1,4 +1,4 @@
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import { Box, Button, Paper } from "@mui/material";
 import DatePickerField from "components/FormikPickers";

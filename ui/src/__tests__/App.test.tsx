@@ -6,9 +6,7 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
 import { getCurrentUser } from "features/users/currentUserSlice";
 import { getSystemStatus } from "features/systemStatus/systemStatusSlice";
 import { mockStoreEmpty } from "../../testData/testMockData";
@@ -52,6 +50,7 @@ afterEach(() => {
 	mockDispatch.mockClear();
 });
 
+// eslint-disable-next-line jest/expect-expect
 test("default route renders mainpage form", async () => {
 	await screen.findByRole("heading", { name: /scan information/i });
 });
