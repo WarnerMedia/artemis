@@ -21,6 +21,8 @@ jobs:
 
       - name: Install tools
         uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8 # jdx/mise-action@v3.6.1
+        with:
+          working_directory: ui/
 
       - name: Set up the npm version
         run: npm install --global --ignore-scripts npm@$NPM_VERSION
