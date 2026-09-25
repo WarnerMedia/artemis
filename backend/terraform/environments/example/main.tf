@@ -3,7 +3,6 @@ terraform {
     region         = "REGION_NAME"
     bucket         = "S3_BUCKET_NAME"
     key            = "STATE_FILE_S3_KEY"
-    profile        = "AWS_PROFILE_NAME"
     dynamodb_table = "DYNAMO_DB_LOCK_TABLE_NAME"
   }
   required_providers {
@@ -14,8 +13,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "REGION_NAME"
-  profile = "AWS_PROFILE_NAME"
+  region = "REGION_NAME"
 }
 
 locals {
@@ -105,7 +103,6 @@ module "veracode_ecr" {
 module "analyzer" {
   source = "../../modules/analyzer"
 
-  profile                     = "user-profile"
   app                         = local.app
   ver                         = local.version
   environment                 = local.environment

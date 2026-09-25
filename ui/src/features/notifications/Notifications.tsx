@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Snackbar } from "@mui/material";
 import { Alert } from "@mui/material";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 import { APP_NOTIFICATION_DELAY } from "app/globals";
 import { AppDispatch } from "app/store";
@@ -27,27 +27,14 @@ const Notifications = () => {
 	const notificationsTotal = useSelector(selectTotalNotifications);
 	const allNotifications = useSelector(selectAllNotifications);
 	const defaultHideDuration = APP_NOTIFICATION_DELAY; // delay before auto-closing all alerts
-	const [autoHideDuration, setAutoHideDuration] = useState<number | null>(
-		defaultHideDuration,
-	);
 
 	// don't auto-close the snackbar if there are error|warning notifications
 	// ensures user has time to digest alert messages and any remediative actions
-	useEffect(() => {
-		const isAutoClosable = () => {
-			const foundIdx = allNotifications.findIndex((notification) => {
-				if (
-					notification?.type === "error" ||
-					notification?.type === "warning"
-				) {
-					return true;
-				}
-				return false;
-			});
-			return foundIdx === -1;
-		};
-
-		setAutoHideDuration(isAutoClosable() ? defaultHideDuration : null);
+	const autoHideDuration = useMemo<number | null>(() => {
+		const hasBlockingNotification = allNotifications.some(
+			(n) => n?.type === "error" || n?.type === "warning",
+		);
+		return hasBlockingNotification ? null : defaultHideDuration;
 	}, [allNotifications, defaultHideDuration]);
 
 	const onDismissAllNotifications = (

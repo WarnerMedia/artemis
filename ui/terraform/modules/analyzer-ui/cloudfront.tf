@@ -4,9 +4,8 @@
 
 # Cloudfront certificates can only reside in us-east-1
 provider "aws" {
-  alias   = "us-east-1"
-  region  = "us-east-1"
-  profile = var.profile
+  alias  = "us-east-1"
+  region = "us-east-1"
 }
 
 resource "aws_acm_certificate" "ui" {

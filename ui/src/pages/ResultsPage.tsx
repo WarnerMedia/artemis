@@ -1,4 +1,5 @@
-import { plural, t, Trans } from "@lingui/macro";
+import { plural, t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	AccountTree as AccountTreeIcon,
@@ -112,7 +113,7 @@ import {
 	NavigateFunction,
 	useLocation,
 	useNavigate,
-} from "react-router-dom";
+} from "react-router";
 import {
 	Cell,
 	Tooltip as ChartTooltip,
@@ -223,10 +224,7 @@ import {
 	SecretValidityChip,
 	SecretValidityChipProps,
 } from "components/SecretValidityCell";
-
-// generates random Material-UI palette colors we use for graphs
-// after imports to make TypeScript happy
-const randomMC = require("random-material-color");
+import randomMC from "random-material-color";
 
 const TAB_OVERVIEW = 0;
 const TAB_VULN = 1;
@@ -999,7 +997,9 @@ export const HiddenFindingDialog = (props: {
 			switch (hiddenFindingState.status) {
 				case "succeeded": {
 					dispatch(resetStatus());
+					// eslint-disable-next-line @eslint-react/set-state-in-effect
 					setDeleteConfirm(false);
+					// eslint-disable-next-line @eslint-react/set-state-in-effect
 					setAccordionExpanded(false);
 					onClose();
 					break;
@@ -1399,7 +1399,7 @@ export const HiddenFindingDialog = (props: {
 						/>,
 					);
 				}
-				item.commit &&
+				if (item.commit) {
 					details.push(
 						<FindingListItem
 							key="finding-details-commit"
@@ -1408,59 +1408,62 @@ export const HiddenFindingDialog = (props: {
 							value={item?.commit ?? ""}
 						/>,
 					);
-				!row?.locationType || row?.locationType === "commit"
-					? details.push(
-							<FindingListItem
-								key="finding-details-fileline"
-								id="finding-details-fileline"
-								label={
-									hiddenFindingCount ? (
-										<Trans>Hidden in source file:</Trans>
-									) : (
-										<Trans>Found in source file:</Trans>
-									)
-								}
-								value={
-									<ul>
-										<li>
-											<span>
-												<Trans>
-													{item?.filename ?? ""}
-													{item?.line ? ` (Line ${item.line})` : ""}
-												</Trans>
-												<SourceCodeHotLink row={row} addTitle={true} />
-											</span>
-										</li>
-									</ul>
-								}
-							/>,
-						)
-					: details.push(
-							<FindingListItem
-								key="finding-details-fileline"
-								id="finding-details-fileline"
-								label={<Trans>Found in:</Trans>}
-								value={
-									<ul>
-										<li>
-											<span>
-												<Box>
-													<Button
-														startIcon={<OpenInNewIcon />}
-														href={row?.url}
-														target="_blank"
-														rel="noopener noreferrer nofollow"
-														size="small"
-													>
-														{item?.filename}
-													</Button>
-												</Box>
-											</span>
-										</li>
-									</ul>
-								}
-							/>,
-						);
+				}
+				if (!row?.locationType || row?.locationType === "commit") {
+					details.push(
+						<FindingListItem
+							key="finding-details-fileline"
+							id="finding-details-fileline"
+							label={
+								hiddenFindingCount ? (
+									<Trans>Hidden in source file:</Trans>
+								) : (
+									<Trans>Found in source file:</Trans>
+								)
+							}
+							value={
+								<ul>
+									<li>
+										<span>
+											<Trans>
+												{item?.filename ?? ""}
+												{item?.line ? ` (Line ${item.line})` : ""}
+											</Trans>
+											<SourceCodeHotLink row={row} addTitle={true} />
+										</span>
+									</li>
+								</ul>
+							}
+						/>,
+					);
+				} else {
+					details.push(
+						<FindingListItem
+							key="finding-details-fileline"
+							id="finding-details-fileline"
+							label={<Trans>Found in:</Trans>}
+							value={
+								<ul>
+									<li>
+										<span>
+											<Box>
+												<Button
+													startIcon={<OpenInNewIcon />}
+													href={row?.url}
+													target="_blank"
+													rel="noopener noreferrer nofollow"
+													size="small"
+												>
+													{item?.filename}
+												</Button>
+											</Box>
+										</span>
+									</li>
+								</ul>
+							}
+						/>,
+					);
+				}
 				break;
 			}
 
@@ -2344,7 +2347,7 @@ export const OverviewCard = ({
 										</Pie>
 										<ChartTooltip
 											content={
-												// @ts-ignore
+												// @ts-expect-error recharts type mismatch
 												<CustomChartTooltip />
 											}
 										/>
@@ -2546,8 +2549,11 @@ export const OverviewTabContent = (props: {
 	Object.values(secrets).forEach((arr) => {
 		arr.forEach((secObject) => {
 			const { type } = secObject;
-			dictSecrets[type] ? (dictSecrets[type] += 1) : (dictSecrets[type] = 1);
-			return;
+			if (dictSecrets[type]) {
+				dictSecrets[type] += 1;
+			} else {
+				dictSecrets[type] = 1;
+			}
 		});
 	});
 
@@ -2579,7 +2585,11 @@ export const OverviewTabContent = (props: {
 
 	const hfDict = hfRows.reduce((prev, curr) => {
 		const t = curr["type"];
-		prev[t] ? (prev[t] += 1) : (prev[t] = 1);
+		if (prev[t]) {
+			prev[t] += 1;
+		} else {
+			prev[t] = 1;
+		}
 		return prev;
 	}, {});
 
@@ -2777,6 +2787,7 @@ const FilterField = (props: FilterFieldProps) => {
 	const debounceMs = 350;
 
 	useEffect(() => {
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setFieldValue(value);
 		return () => {
 			if (debounceRef && debounceRef.current) {
@@ -2947,7 +2958,10 @@ const SecretValidityFilterField = (props: SecretValidityFilterFieldProps) => {
 			// Prepend a prefix to the value we search on so that "active" does not match "inactive"
 			// For example, if the prefix is "_", the former becomes "_active", which will not match
 			// "_inactive"
-			<MenuItem value={addValidityFilterPrefix(validityValue)}>
+			<MenuItem
+				key={validityValue}
+				value={addValidityFilterPrefix(validityValue)}
+			>
 				<SecretValidityChip value={validityValue} tooltipDisabled />
 			</MenuItem>
 		);
@@ -3005,7 +3019,11 @@ const findingSourceFiles = (findings?: HiddenFinding[]) => {
 					</li>
 				);
 			}
-			return <></>;
+			return (
+				<React.Fragment
+					key={"finding-source-file-" + index.toString()}
+				></React.Fragment>
+			);
 		});
 	}
 	return <></>;
@@ -3114,7 +3132,7 @@ export const VulnTabContent = (props: {
 			),
 		vn_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
-	const [filters, setFilters] = useState<FilterDef>(
+	const [filters, setFilters] = useState<FilterDef>(() =>
 		getResultFilters(schema, hashPrefix, {
 			component: {
 				filter: "",
@@ -3641,7 +3659,7 @@ export const AnalysisTabContent = (props: {
 			),
 		sa_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
-	const [filters, setFilters] = useState<FilterDef>(
+	const [filters, setFilters] = useState<FilterDef>(() =>
 		getResultFilters(schema, hashPrefix, {
 			filename: {
 				filter: "",
@@ -4006,7 +4024,7 @@ export const SecretsTabContent = (props: {
 			.trim()
 			.oneOf(Object.values(SecretValidity).map(addValidityFilterPrefix)),
 	});
-	const [filters, setFilters] = useState<FilterDef>(
+	const [filters, setFilters] = useState<FilterDef>(() =>
 		getResultFilters(schema, hashPrefix, {
 			filename: {
 				filter: "",
@@ -4222,7 +4240,7 @@ export const SecretsTabContent = (props: {
 															{selectedRow.details.map(
 																(item: SecretDetail, index: number) => (
 																	<TableRow
-																		key={index}
+																		key={`${index}-${item.type}`} // eslint-disable-line @eslint-react/no-array-index-key
 																		hover
 																		className={classes.secretDetailsTableRow}
 																	>
@@ -4467,7 +4485,7 @@ export const ConfigTabContent = (props: {
 			),
 		cg_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
-	const [filters, setFilters] = useState<FilterDef>(
+	const [filters, setFilters] = useState<FilterDef>(() =>
 		getResultFilters(schema, hashPrefix, {
 			name: {
 				filter: "",
@@ -4797,7 +4815,7 @@ const InventoryTabContent = (props: {
 	const cicdToolsRows: RowDef[] = [];
 	for (const item of Object.values(scan.results?.inventory?.cicd_tools ?? {})) {
 		const configFileItems = item.configs.map((config: { path: string }) => (
-			<li>{config.path}</li>
+			<li key={config.path}>{config.path}</li>
 		));
 
 		cicdToolsRows.push({
@@ -4814,6 +4832,38 @@ const InventoryTabContent = (props: {
 			result.push({
 				tool: item.display_name,
 				files: item.configs.map((config: { path: string }) => config.path),
+			});
+		}
+		return result;
+	};
+
+	const apiSpecsColumns: ColDef[] = [
+		{ field: "file", headerName: i18n._(t`File`) },
+		{ field: "field", headerName: i18n._(t`Version Field`) },
+		{ field: "version", headerName: i18n._(t`Version Number`) },
+	];
+
+	const apiSpecsRows: RowDef[] = [];
+	for (const [file, values] of Object.entries(
+		scan.results?.inventory?.api_specs ?? {},
+	)) {
+		apiSpecsRows.push({
+			keyId: file,
+			file,
+			field: values.field,
+			version: values.version,
+		});
+	}
+
+	const getApiSpecExportData = () => {
+		const result = [];
+		for (const [file, values] of Object.entries(
+			scan.results?.inventory?.api_specs ?? {},
+		)) {
+			result.push({
+				file: file,
+				versionField: values.field,
+				versionNumber: values.version,
 			});
 		}
 		return result;
@@ -4902,7 +4952,7 @@ const InventoryTabContent = (props: {
 												// eg [{'name': 'Java', 'value': 66.77},{},{},...]
 												techData.map((entry, i) => (
 													<Cell
-														key={`cell-${i}`}
+														key={`cell-${entry.name ?? i}`}
 														fill={entry.palette.background}
 													/>
 												))
@@ -4911,7 +4961,7 @@ const InventoryTabContent = (props: {
 
 										<ChartTooltip
 											content={
-												// @ts-ignore
+												// @ts-expect-error recharts type mismatch
 												<CustomChartTooltip />
 											}
 										/>
@@ -4924,9 +4974,9 @@ const InventoryTabContent = (props: {
 											formatter={(value, entry) => {
 												// recharts LegendPayload includes a payload object that is not in the type description
 												// overriding type checking here but ensuring existence before use
-												// @ts-ignore
+												// @ts-expect-error recharts type mismatch
 												if (entry && entry.payload && entry.payload.value) {
-													// @ts-ignore
+													// @ts-expect-error recharts type mismatch
 													return `${value} (${entry.payload.value}%)`;
 												}
 												return value;
@@ -4977,7 +5027,7 @@ const InventoryTabContent = (props: {
 				<Toolbar>
 					<Typography variant="h6" id="cicd-tools-title" component="div">
 						<Trans>Potential CI/CD Tools</Trans>
-						{baseImageRows && (
+						{cicdToolsRows && (
 							<CustomCopyToClipboard
 								copyTarget={cicdToolsRows.map((data) => data.tool).join(", ")}
 							/>
@@ -4997,6 +5047,32 @@ const InventoryTabContent = (props: {
 					/>
 				) : (
 					<NoResults title={i18n._(t`No CI/CD tools found`)} />
+				)}
+			</Paper>
+			<Paper square className={classes.paper}>
+				<Toolbar>
+					<Typography variant="h6" id="api-specs-title" component="div">
+						<Trans>Potential API Specs</Trans>
+						{apiSpecsRows && (
+							<CustomCopyToClipboard
+								copyTarget={apiSpecsRows.map((item) => item.file).join(", ")}
+							/>
+						)}
+					</Typography>
+				</Toolbar>
+				{(scan.results_summary?.inventory?.api_specs || 0) > 0 ? (
+					<EnhancedTable
+						columns={apiSpecsColumns}
+						rows={apiSpecsRows}
+						defaultOrderBy="file"
+						menuOptions={{
+							exportFile: "api_specs",
+							exportFormats: ["csv", "json"],
+							exportData: getApiSpecExportData,
+						}}
+					/>
+				) : (
+					<NoResults title={i18n._(t`No API specs found`)} />
 				)}
 			</Paper>
 		</>
@@ -5081,6 +5157,7 @@ export const CodeTabContent = (props: {
 	};
 
 	useEffect(() => {
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setSkipDialog(
 			Boolean(Number(localStorage.getItem(STORAGE_LOCAL_EXPORT_ACKNOWLEDGE))),
 		);
@@ -5249,12 +5326,17 @@ export const CodeTabContent = (props: {
 								/>
 							</colgroup>
 							{tokens.map((line, i) => (
-								<tr key={i}>
+								// eslint-disable-next-line @eslint-react/no-array-index-key
+								<tr key={`line-${i}`}>
 									<td className={classes.rawViewLineNumber}>{i + 1}</td>
 									<td className={classes.rawViewLineContent}>
 										<div {...getLineProps({ line })}>
 											{line.map((token, key) => (
-												<span key={key} {...getTokenProps({ token })} />
+												<span
+													// eslint-disable-next-line @eslint-react/no-array-index-key
+													key={`token-${key}`}
+													{...getTokenProps({ token })}
+												/>
 											))}
 										</div>
 									</td>
@@ -5320,7 +5402,7 @@ export const HiddenFindingsTabContent = (props: {
 			),
 		hf_severity: severitySchema(i18n._(t`Invalid severity`)),
 	});
-	const [filters, setFilters] = useState<FilterDef>(
+	const [filters, setFilters] = useState<FilterDef>(() =>
 		getResultFilters(schema, hashPrefix, {
 			type: {
 				filter: "",
@@ -6281,7 +6363,7 @@ export const TabContent = (props: {
 		};
 	}, [scan?.results_summary]);
 
-	const [counts, setCount] = useState(getTotalCounts());
+	const [counts, setCounts] = useState(() => getTotalCounts());
 	const [hiddenFindingsConsolidatedRows, setHiddenFindingsConsolidatedRows] =
 		useState<RowDef[]>([]);
 	const [hiddenFindingsSummary, setHiddenFindingsSummary] =
@@ -6480,13 +6562,16 @@ export const TabContent = (props: {
 			}
 		});
 
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setHiddenFindingsConsolidatedRows(rows);
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setHiddenFindingsSummary(summary);
 	}, [hiddenFindings, scan, currentUser.email, i18n]);
 
 	// update tab badge counts if user or scan results change
 	useEffect(() => {
-		setCount(getTotalCounts());
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
+		setCounts(getTotalCounts());
 	}, [getTotalCounts, currentUser.email, scan?.results_summary]);
 
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -6706,6 +6791,77 @@ export const TabContent = (props: {
 	);
 };
 
+const ErrorContent = () => {
+	const { classes } = useStyles();
+	return (
+		<Container className={classes.alertContainer}>
+			<Alert variant="outlined" severity="error" className={classes.alert}>
+				<AlertTitle>
+					<Trans>Error</Trans>
+				</AlertTitle>
+				<Trans>Results for the specified scan can not be found.</Trans>
+			</Alert>
+		</Container>
+	);
+};
+
+const LoadingContent = () => {
+	const { classes } = useStyles();
+	return (
+		<Container className={classes.alertContainer}>
+			<Alert variant="outlined" severity="info" className={classes.alert}>
+				<AlertTitle>
+					<Trans>Please wait</Trans>
+				</AlertTitle>
+				<Trans>Fetching scan results...</Trans>
+			</Alert>
+		</Container>
+	);
+};
+
+interface BackButtonProps {
+	initialFindingCount: number | null;
+	startingRescan: boolean;
+}
+
+const BackButton = ({
+	initialFindingCount,
+	startingRescan,
+}: BackButtonProps) => {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const dispatch: AppDispatch = useDispatch();
+	const hiddenFindingsTotal = useSelector(selectTotalHiddenFindings);
+
+	const handBackButton = (event: React.SyntheticEvent) => {
+		event.preventDefault();
+
+		if (location?.state?.fromScanForm && window.history.length > 1) {
+			// user modified hidden findings while viewing scan results
+			// clear the scan cache so hidden finding changes will be applied to new scan results
+			// that will be fetched when navigating back to viewing scans on main page
+			if (initialFindingCount !== hiddenFindingsTotal) {
+				dispatch(clearScans());
+			}
+			// navigated here from scans form, so return to it
+			navigate(-1);
+		} else {
+			// navigated directly here (such as via URL), force nav to scans page
+			navigate("/");
+		}
+	};
+
+	return (
+		<Button
+			startIcon={<ArrowBackIosIcon />}
+			onClick={handBackButton}
+			disabled={startingRescan}
+		>
+			<Trans>Back to Scans</Trans>
+		</Button>
+	);
+};
+
 const ResultsPage = () => {
 	const { classes } = useStyles();
 	const { i18n } = useLingui();
@@ -6855,6 +7011,7 @@ const ResultsPage = () => {
 
 			const searchParams = getSearchParams();
 			if (searchParams) {
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setId(searchParams.id);
 				const repoUrl = [
 					searchParams.org ?? searchParams.service,
@@ -6888,11 +7045,12 @@ const ResultsPage = () => {
 		// getting loaded async to validate vcsOrg option passed in URL
 		// are valid for current user
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentUser]);
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
+	}, [currentUser, dispatch]);
 
 	useEffect(() => {
 		if (initialFindingCount === null) {
+			// eslint-disable-next-line @eslint-react/set-state-in-effect
 			setInitialFindingCount(hiddenFindingsTotal);
 		}
 	}, [hiddenFindingsTotal, initialFindingCount]);
@@ -6926,6 +7084,7 @@ const ResultsPage = () => {
 				) {
 					tab = TAB_OVERVIEW;
 				}
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setActiveTab(tab);
 			}
 
@@ -6944,8 +7103,8 @@ const ResultsPage = () => {
 			}
 		}
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentUser, scan]);
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
+	}, [currentUser, scan, dispatch]);
 
 	useEffect(() => {
 		function generateChartColors(count: number) {
@@ -6960,7 +7119,7 @@ const ResultsPage = () => {
 			for (let i = 0; i < count; i += 1) {
 				let color = randomMC.getColor({ shades: shades });
 				// don't reuse an existing selected color
-				while (colors.indexOf(color) !== -1) {
+				while (colors.some((palette) => palette.background === color)) {
 					color = randomMC.getColor({ shades: shades });
 				}
 				const textColor = theme.palette.getContrastText(color);
@@ -6974,60 +7133,9 @@ const ResultsPage = () => {
 		}
 
 		const numberOfColors = 25; // beyond approx 35, generating colors becomes an infinite loop, there must be a limited number of material ui colors available.
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setSharedColors(generateChartColors(numberOfColors));
 	}, [theme.palette]);
-
-	const ErrorContent = () => (
-		<Container className={classes.alertContainer}>
-			<Alert variant="outlined" severity="error" className={classes.alert}>
-				<AlertTitle>
-					<Trans>Error</Trans>
-				</AlertTitle>
-				<Trans>Results for the specified scan can not be found.</Trans>
-			</Alert>
-		</Container>
-	);
-
-	const LoadingContent = () => (
-		<Container className={classes.alertContainer}>
-			<Alert variant="outlined" severity="info" className={classes.alert}>
-				<AlertTitle>
-					<Trans>Please wait</Trans>
-				</AlertTitle>
-				<Trans>Fetching scan results...</Trans>
-			</Alert>
-		</Container>
-	);
-
-	const BackButton = () => {
-		const handBackButton = (event: React.SyntheticEvent) => {
-			event.preventDefault();
-
-			if (location?.state?.fromScanForm && window.history.length > 1) {
-				// user modified hidden findings while viewing scan results
-				// clear the scan cache so hidden finding changes will be applied to new scan results
-				// that will be fetched when navigating back to viewing scans on main page
-				if (initialFindingCount !== hiddenFindingsTotal) {
-					dispatch(clearScans());
-				}
-				// navigated here from scans form, so return to it
-				navigate(-1);
-			} else {
-				// navigated directly here (such as via URL), force nav to scans page
-				navigate("/");
-			}
-		};
-
-		return (
-			<Button
-				startIcon={<ArrowBackIosIcon />}
-				onClick={handBackButton}
-				disabled={startingRescan}
-			>
-				<Trans>Back to Scans</Trans>
-			</Button>
-		);
-	};
 
 	// create a new scan based on options from current scan results
 	const handleRescan = async (scan: AnalysisReport) => {
@@ -7150,7 +7258,10 @@ const ResultsPage = () => {
 				spacing={2}
 				className={classes.navButtons}
 			>
-				<BackButton />
+				<BackButton
+					initialFindingCount={initialFindingCount}
+					startingRescan={startingRescan}
+				/>
 
 				<Button
 					startIcon={

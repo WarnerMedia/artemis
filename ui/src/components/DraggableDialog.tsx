@@ -13,7 +13,7 @@ import {
 import { makeStyles } from "tss-react/mui";
 import { DragHandle as DragHandleIcon } from "@mui/icons-material";
 import Draggable from "react-draggable";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 
 import CustomCopyToClipboard from "components/CustomCopyToClipboard";
 

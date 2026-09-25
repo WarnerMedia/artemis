@@ -455,14 +455,7 @@ describe("HiddenFindingsTabContent component", () => {
 			obj[`${HASH_PREFIX}source`] = fileValue;
 			const hash = queryString.stringify(obj);
 
-			// mock window.location.reload
-			const globalWindow = global.window;
-			global.window ??= Object.create(window);
-			Object.defineProperty(window, "location", {
-				value: {
-					hash,
-				},
-			});
+			window.location.hash = hash;
 
 			const { user } = render(
 				<HiddenFindingsTabContent
@@ -523,8 +516,6 @@ describe("HiddenFindingsTabContent component", () => {
 				disabled: false,
 				user,
 			});
-
-			global.window ??= globalWindow;
 		});
 	});
 });

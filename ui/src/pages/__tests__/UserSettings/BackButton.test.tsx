@@ -6,15 +6,15 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	__esModule: true,
 	useNavigate: jest.fn(),
 	useLocation: jest.fn(),
 }));
 /* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import UserSettings from "pages/UserSettings";
 import { mockStoreEmpty } from "../../../../testData/testMockData";
 import { STORAGE_LOCAL_WELCOME } from "app/globals";

@@ -1,9 +1,9 @@
 import { DateTime } from "luxon";
-import { browserLanguage } from "App";
+import { browserLanguage } from "locale/browserLanguage";
 import { APP_EXPORT_CLASSIFICATION } from "app/globals";
 import { IServiceMapValue, serviceMap } from "app/services";
-import { RowDef } from "components/EnhancedTable";
-import { t } from "@lingui/macro";
+import type { RowDef } from "components/EnhancedTable";
+import { t } from "@lingui/core/macro";
 import { i18n } from "@lingui/core";
 
 // split multiline strings on comma, newline, (& space)

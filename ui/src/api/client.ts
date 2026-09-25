@@ -1,5 +1,5 @@
 import { i18n } from "@lingui/core";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import {
 	APP_NOTIFICATION_DELAY,
 	PREFIX_CVEID,
@@ -593,7 +593,13 @@ client.addUser = async ({ data, customConfig = {} }: UserRequest) => {
 		throw new Error(i18n._(t`Data required`));
 	}
 	// get fields that should not be included in API requests
-	const { id, email, last_login, scan_orgs, ...apiFields } = data;
+	const {
+		id: _id,
+		email,
+		last_login: _last_login,
+		scan_orgs: _scan_orgs,
+		...apiFields
+	} = data;
 	if (!email) {
 		throw new Error(i18n._(t`Email required`));
 	}
@@ -617,7 +623,13 @@ client.updateUser = async ({ data, customConfig = {} }: UserRequest) => {
 		throw new Error(i18n._(t`Data required`));
 	}
 	// get fields that should not be included in API requests
-	const { id, email, last_login, scan_orgs, ...apiFields } = data;
+	const {
+		id: _id,
+		email,
+		last_login: _last_login,
+		scan_orgs: _scan_orgs,
+		...apiFields
+	} = data;
 	if (!email) {
 		throw new Error(i18n._(t`Email required`));
 	}
@@ -1089,7 +1101,7 @@ client.addHiddenFinding = async ({
 	}
 
 	// any id, created_by fields should be removed from API data
-	const { id, created_by, ...requestData } = data;
+	const { id: _id, created_by, ...requestData } = data;
 
 	try {
 		const response: HiddenFinding | HiddenFinding[] = await client(
@@ -1185,7 +1197,14 @@ client.updateHiddenFinding = async ({
 	// remove existing id, created_by fields
 	// we need these to return the full object
 	// but API doesn't need these for save
-	const { id, created_by, created, updated_by, updated, ...requestData } = data;
+	const {
+		id: _id,
+		created_by: _created_by,
+		created: _created,
+		updated_by: _updated_by,
+		updated: _updated,
+		...requestData
+	} = data;
 
 	try {
 		await client(url, {

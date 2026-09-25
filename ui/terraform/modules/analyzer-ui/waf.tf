@@ -15,9 +15,8 @@ locals {
 }
 
 provider "aws" {
-  alias   = "global"
-  region  = "us-east-1" # Required for CLOUDFRONT scope
-  profile = var.profile
+  alias  = "global"
+  region = "us-east-1" # Required for CLOUDFRONT scope
 }
 
 resource "aws_wafv2_web_acl" "waf" {

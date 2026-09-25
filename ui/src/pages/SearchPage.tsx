@@ -1,4 +1,5 @@
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	ArrowBackIos as ArrowBackIosIcon,
@@ -144,7 +145,7 @@ import {
 	useState,
 } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 import { capitalize, formatDate } from "utils/formatters";
 import * as Yup from "yup";
@@ -628,8 +629,8 @@ const MatchChipField = (props: MatchFieldProps) => {
 			if (v?.props && !("group" in v.props)) {
 				nodes.push(
 					<Chip
-						{...v.props}
 						key={`${props.id}-chip-${label}`}
+						{...v.props}
 						role="checkbox"
 						disabled={props?.disabled}
 						label={i18n._(v.label)}
@@ -744,8 +745,8 @@ const MatchPluginsSelectorField = (props: MatchFieldProps) => {
 			if (v?.props && "group" in v.props) {
 				nodes.push(
 					<PluginsSelector
-						{...v.props}
 						key={`${props.id}-plugin-${label}`}
+						{...v.props}
 						disabled={props?.disabled}
 						label={i18n._(v.label)}
 						name={label}
@@ -806,6 +807,11 @@ const MatchStringField = (props: MatchFieldProps) => {
 	);
 };
 
+const FieldMuiTextField = (props: any) => {
+	const { field, _form, ...fieldProps } = props;
+	return <MuiTextField {...field} {...fieldProps} />;
+};
+
 const DropdownSelector = (props: MatchFieldProps) => {
 	const { classes } = useStyles();
 	const { matchOptions, ...fieldProps } = props;
@@ -832,11 +838,6 @@ const DropdownSelector = (props: MatchFieldProps) => {
 			);
 		}
 		return nodes;
-	};
-
-	const FieldMuiTextField = (props: any) => {
-		const { field, form, ...fieldProps } = props;
-		return <MuiTextField {...field} {...fieldProps} />;
 	};
 
 	return (
@@ -3729,7 +3730,8 @@ const SearchPage = () => {
 						// query string schema combines field+matcher as field__matcher
 						// form field schema splits these into separate fields
 						for (const [k, v] of Object.entries(validValues)) {
-							let [name, matcher] = k.split("__"); // field__matcher
+							const [name, matcherValue] = k.split("__"); // field__matcher
+							let matcher = matcherValue;
 							const matchName = `${name}_match`; // name already validated against schema
 							if (name in values) {
 								if (Array.isArray(v)) {
@@ -3849,8 +3851,8 @@ const SearchPage = () => {
 	});
 
 	const repoToCsv = (data: SearchRepo) => {
-		let scanUrl = getScanUrl(data.service, data.repo, data.scan);
-		let qualifiedScanUrl = getScanUrl(
+		const scanUrl = getScanUrl(data.service, data.repo, data.scan);
+		const qualifiedScanUrl = getScanUrl(
 			data.service,
 			data.repo,
 			data.qualified_scan,
@@ -4044,11 +4046,15 @@ const SearchPage = () => {
 	};
 
 	const onSubmit = (values: any) => {
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setTotalRows(0);
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setResultRows([]);
 		addQueryParams(values); // these are validated values from validateSync in handleSubmit()
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setTableFilters(getTableFilters(values));
 		// initiate a table reload. table has to initiate calling onDataLoad so it can pass-in current page & other table details
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setReloadCount((priorCount) => (priorCount += 1));
 	};
 
@@ -4057,15 +4063,17 @@ const SearchPage = () => {
 		if (searchParams) {
 			console.debug("restoring prior form state");
 			if (searchParams.category && searchParams.category in searchCategories) {
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setSearchCategory(searchParams.category);
 				searchCategories[searchParams.category].setValues(searchParams);
+				// eslint-disable-next-line @eslint-react/set-state-in-effect
 				setSubmitting(true);
 				// searchParams validated in getSearchParams, don't need to call schema.validateSync again
 				// call onSubmit directly instead of form handleSubmit to ensure searchParams values are used in submission instead of current form values
 				onSubmit(searchParams);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, []);
 
 	const searchFilters = () => {

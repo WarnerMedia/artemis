@@ -5,7 +5,7 @@ import { Autocomplete, AutocompleteRenderInputParams } from "formik-mui";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import React from "react";
 
 export interface AutoCompleteFieldProps extends FieldAttributes<any> {
@@ -17,7 +17,12 @@ const AutoCompleteField = React.forwardRef(
 		const { i18n } = useLingui();
 		const { loading = false, ...allParams } = props;
 		// remove N/A params for the Formik Field
-		const { helperText, error, InputProps, ...fieldParams } = allParams;
+		const {
+			helperText: _helperText,
+			error: _error,
+			InputProps: _InputProps,
+			...fieldParams
+		} = allParams;
 
 		return (
 			<>
@@ -69,9 +74,9 @@ const AutoCompleteField = React.forwardRef(
 						return (
 							<li key={key} {...otherProps}>
 								<div>
-									{parts.map((part, index) => (
+									{parts.map((part, _index) => (
 										<span
-											key={index}
+											key={part.text}
 											style={{
 												fontWeight: part.highlight ? 700 : 400,
 											}}

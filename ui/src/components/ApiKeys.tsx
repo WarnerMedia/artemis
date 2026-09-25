@@ -1,4 +1,5 @@
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	AddCircleOutline as AddCircleOutlineIcon,
@@ -47,7 +48,7 @@ import {
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Checkbox, Switch, TextField } from "formik-mui";
 import { DateTime } from "luxon";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
@@ -191,6 +192,108 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 // RedButton was removed as it's not used in this component
+
+interface ApiKeysContextType {
+	keysStatus: string;
+	deleteKey: Key | null;
+	setDeleteKey: (key: Key | null) => void;
+	user?: User | null;
+	dispatch: AppDispatch;
+}
+
+const ApiKeysContext = createContext<ApiKeysContextType>({
+	keysStatus: "idle",
+	deleteKey: null,
+	setDeleteKey: () => {},
+	dispatch: (() => {}) as AppDispatch,
+});
+
+const ActionsCell = (props: { row?: RowDef | null }) => {
+	const { i18n } = useLingui();
+	const { keysStatus, deleteKey, setDeleteKey } = useContext(ApiKeysContext);
+	const { row } = props;
+	return (
+		<>
+			<Tooltip title={i18n._(t`Remove API key`)}>
+				<span>
+					<IconButton
+						size="small"
+						color="error"
+						aria-label={i18n._(t`Remove API key`)}
+						disabled={keysStatus === "loading"}
+						onClick={(event: React.SyntheticEvent) => {
+							event.stopPropagation();
+							let key = null;
+							if (row?.id && (!deleteKey || deleteKey?.id !== row.id)) {
+								key = row as Key;
+							}
+							setDeleteKey(key);
+						}}
+					>
+						{deleteKey?.id === row?.id ? (
+							<KeyboardArrowUpIcon />
+						) : (
+							<DeleteIcon />
+						)}
+					</IconButton>
+				</span>
+			</Tooltip>
+		</>
+	);
+};
+
+const CollapsibleRow = () => {
+	const { i18n } = useLingui();
+	const { classes } = useStyles();
+	const { deleteKey, user, dispatch, setDeleteKey } =
+		useContext(ApiKeysContext);
+	return (
+		<Box className={classes.collapsibleRow}>
+			<Typography
+				color="inherit"
+				variant="subtitle1"
+				component="div"
+				className={classes.removeKey}
+			>
+				<Trans>Remove API key named "{deleteKey?.name ?? ""}"?</Trans>
+			</Typography>
+			<Box className={classes.tableToolbarButtons}>
+				<Button
+					autoFocus
+					aria-label={i18n._(t`Remove`)}
+					size="small"
+					variant="contained"
+					className={classes.deleteAltButton}
+					startIcon={<DeleteIcon />}
+					onClick={() => {
+						if (deleteKey?.id) {
+							// Use user.id if available (for other users), otherwise use "self" for the current user
+							const userPath = user?.id ? user.id : "self";
+							dispatch(
+								deleteUserKey({
+									url: `/users/${userPath}/keys/${deleteKey.id}`,
+								}),
+							);
+						}
+						setDeleteKey(null);
+					}}
+				>
+					<Trans>Remove</Trans>
+				</Button>
+				<Button
+					aria-label={i18n._(t`Cancel`)}
+					size="small"
+					className={classes.deleteAltButtonText}
+					onClick={() => {
+						setDeleteKey(null);
+					}}
+				>
+					<Trans>Cancel</Trans>
+				</Button>
+			</Box>
+		</Box>
+	);
+};
 
 interface ScrollToTopProps {
 	children: React.ReactElement; // element to put in the scroller (hint: a fab)
@@ -351,88 +454,6 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 		return [tooltips, chips];
 	};
 
-	const ActionsCell = (props: { row?: RowDef | null }) => {
-		const { i18n } = useLingui();
-		const { row } = props;
-		return (
-			<>
-				<Tooltip title={i18n._(t`Remove API key`)}>
-					<span>
-						<IconButton
-							size="small"
-							color="error"
-							aria-label={i18n._(t`Remove API key`)}
-							disabled={keysStatus === "loading"}
-							onClick={(event: React.SyntheticEvent) => {
-								event.stopPropagation();
-								let key = null;
-								if (row?.id && (!deleteKey || deleteKey?.id !== row.id)) {
-									key = row as Key;
-								}
-								setDeleteKey(key);
-							}}
-						>
-							{deleteKey?.id === row?.id ? (
-								<KeyboardArrowUpIcon />
-							) : (
-								<DeleteIcon />
-							)}
-						</IconButton>
-					</span>
-				</Tooltip>
-			</>
-		);
-	};
-
-	const CollapsibleRow = () => {
-		return (
-			<Box className={classes.collapsibleRow}>
-				<Typography
-					color="inherit"
-					variant="subtitle1"
-					component="div"
-					className={classes.removeKey}
-				>
-					<Trans>Remove API key named "{deleteKey?.name ?? ""}"?</Trans>
-				</Typography>
-				<Box className={classes.tableToolbarButtons}>
-					<Button
-						aria-label={i18n._(t`Remove`)}
-						size="small"
-						variant="contained"
-						className={classes.deleteAltButton}
-						startIcon={<DeleteIcon />}
-						autoFocus
-						onClick={() => {
-							if (deleteKey?.id) {
-								// Use user.id if available (for other users), otherwise use "self" for the current user
-								const userPath = user?.id ? user.id : "self";
-								dispatch(
-									deleteUserKey({
-										url: `/users/${userPath}/keys/${deleteKey.id}`,
-									}),
-								);
-							}
-							setDeleteKey(null);
-						}}
-					>
-						<Trans>Remove</Trans>
-					</Button>
-					<Button
-						aria-label={i18n._(t`Cancel`)}
-						size="small"
-						className={classes.deleteAltButtonText}
-						onClick={() => {
-							setDeleteKey(null);
-						}}
-					>
-						<Trans>Cancel</Trans>
-					</Button>
-				</Box>
-			</Box>
-		);
-	};
-
 	const columns: ColDef[] = [
 		{
 			field: "name",
@@ -556,6 +577,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 		const now = DateTime.utc();
 		const dateMin = now.plus({ days: 1 }).set({ second: 0, millisecond: 0 });
 		const dateMax = now.plus({ years: 1 });
+		const dateMaxText = dateMax.toLocaleString(DateTime.DATETIME_MED);
 		const addKeyFormSchema = Yup.object({
 			name: Yup.string()
 				.required(i18n._(t`Required`))
@@ -570,7 +592,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 			expires: Yup.date()
 				.typeError(i18n._(t`Invalid date format`))
 				.min(dateMin.toJSDate(), i18n._(t`Must be a future date`))
-				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMax}`))
+				.max(dateMax.toJSDate(), i18n._(t`Date must be before ${dateMaxText}`))
 				.required(i18n._(t`Expiration date is required`)),
 			snyk: Yup.boolean(),
 		});
@@ -589,7 +611,7 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 			values: AddKeyForm,
 			actions: FormikHelpers<AddKeyForm>,
 		) => {
-			let expires: string = values.expires.toUTC().toJSON()!;
+			const expires: string = values.expires.toUTC().toJSON()!;
 
 			try {
 				// not using redux-saga here because we aren't storing result in redux store
@@ -766,12 +788,12 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 							<DialogContent dividers={true}>
 								<Box className={classes.addKeyFormField}>
 									<Field
+										autoFocus
 										id="name"
 										name="name"
 										type="text"
 										maxRows="3"
 										className={classes.addKeyFormField}
-										autoFocus
 										inputProps={{ maxLength: 256 }}
 										component={TextField}
 										variant="outlined"
@@ -1428,86 +1450,90 @@ const ApiKeys: React.FC<ApiKeysProps> = ({ title = "API Keys", user }) => {
 	const isCurrentUserKeys = !user || user.email === currentUser?.email;
 
 	return (
-		<Paper className={classes.paper}>
-			<Typography component="h2" variant="h6" align="center">
-				<Trans>{title}</Trans>
-			</Typography>
+		<ApiKeysContext.Provider
+			value={{ keysStatus, deleteKey, setDeleteKey, user, dispatch }}
+		>
+			<Paper className={classes.paper}>
+				<Typography component="h2" variant="h6" align="center">
+					<Trans>{title}</Trans>
+				</Typography>
 
-			<>
-				{/* Only show the add key functionality for the current user */}
-				{isCurrentUserKeys && (keyCount || keysStatus !== "loading") && (
-					<>
-						{addKeyToolbar()}
-						<DraggableDialog
-							open={addDialogOpen}
-							onClose={() => setAddDialogOpen(false)}
+				<>
+					{/* Only show the add key functionality for the current user */}
+					{isCurrentUserKeys && (keyCount || keysStatus !== "loading") && (
+						<>
+							{addKeyToolbar()}
+							<DraggableDialog
+								open={addDialogOpen}
+								onClose={() => setAddDialogOpen(false)}
+								title={
+									newKeyValue
+										? i18n._(t`API Key Added`)
+										: i18n._(t`Add New API Key`)
+								}
+								maxWidth="md"
+								fullWidth={true}
+								TransitionProps={{
+									onExited: () => {
+										resetAddForm();
+										setNewKeyValue(null);
+										setNewKeyError(null);
+										setShowScanOrgs(false);
+									},
+								}}
+							>
+								{addKey()}
+							</DraggableDialog>
+						</>
+					)}
+					{keyCount ? (
+						<>
+							<EnhancedTable
+								id="id"
+								columns={columns}
+								rows={keys}
+								defaultOrderBy="name"
+								onRowSelect={onRowSelect}
+								selectedRow={selectedRow}
+								disableRowClick={keysStatus === "loading"}
+								collapsibleRow={CollapsibleRow}
+								collapsibleOpen={(id: string | number) => {
+									return deleteKey?.id === id;
+								}}
+								collapsibleParentClassName={classes.collapsibleParent}
+								menuOptions={{
+									exportFile: "keys",
+									exportFormats: ["csv", "json"],
+									exportData: exportData,
+									toCsv: toCsv,
+								}}
+							/>
+							<DraggableDialog
+								open={!!selectedRow}
+								onClose={() => onRowSelect(null)}
+								title={selectedRow?.name ?? i18n._(t`API Keys`)}
+								copyTitle={true}
+								maxWidth="md"
+								content={viewKey()}
+							/>
+						</>
+					) : (
+						<NoResults
 							title={
-								newKeyValue
-									? i18n._(t`API Key Added`)
-									: i18n._(t`Add New API Key`)
+								keysStatus !== "loading"
+									? isCurrentUserKeys
+										? i18n._(
+												t`No API keys found. Click the + button to add a new API key`,
+											)
+										: i18n._(t`No API keys found for this user.`)
+									: i18n._(t`Fetching API keys...`)
 							}
-							maxWidth="md"
-							fullWidth={true}
-							TransitionProps={{
-								onExited: () => {
-									resetAddForm();
-									setNewKeyValue(null);
-									setNewKeyError(null);
-									setShowScanOrgs(false);
-								},
-							}}
-						>
-							{addKey()}
-						</DraggableDialog>
-					</>
-				)}
-				{keyCount ? (
-					<>
-						<EnhancedTable
-							id="id"
-							columns={columns}
-							rows={keys}
-							defaultOrderBy="name"
-							onRowSelect={onRowSelect}
-							selectedRow={selectedRow}
-							disableRowClick={keysStatus === "loading"}
-							collapsibleRow={CollapsibleRow}
-							collapsibleOpen={(id: string | number) => {
-								return deleteKey?.id === id;
-							}}
-							collapsibleParentClassName={classes.collapsibleParent}
-							menuOptions={{
-								exportFile: "keys",
-								exportFormats: ["csv", "json"],
-								exportData: exportData,
-								toCsv: toCsv,
-							}}
 						/>
-						<DraggableDialog
-							open={!!selectedRow}
-							onClose={() => onRowSelect(null)}
-							title={selectedRow?.name ?? i18n._(t`API Keys`)}
-							copyTitle={true}
-							maxWidth="md"
-							content={viewKey()}
-						/>
-					</>
-				) : (
-					<NoResults
-						title={
-							keysStatus !== "loading"
-								? isCurrentUserKeys
-									? i18n._(
-											t`No API keys found. Click the + button to add a new API key`,
-										)
-									: i18n._(t`No API keys found for this user.`)
-								: i18n._(t`Fetching API keys...`)
-						}
-					/>
-				)}
-			</>
-			{keysStatus === "loading" && <LinearProgress />}
-		</Paper>
+					)}
+				</>
+				{keysStatus === "loading" && <LinearProgress />}
+			</Paper>
+		</ApiKeysContext.Provider>
 	);
 };
 

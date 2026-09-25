@@ -1,19 +1,13 @@
 import AppGlobals, { APP_VERSION } from "app/globals";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-	Navigate,
-	BrowserRouter as Router,
-	Routes,
-	Route,
-} from "react-router-dom";
+import { Navigate, BrowserRouter as Router, Routes, Route } from "react-router";
 import "@fontsource/roboto";
 
 import store, { AppDispatch } from "app/store";
 import { Provider } from "react-redux";
-import { i18n } from "@lingui/core";
+import { i18n } from "locale/i18n";
 import { I18nProvider } from "@lingui/react";
-import { messages as enMessages } from "locale/en/messages";
 
 // apply material-ui cross-browser style normalization
 import CssBaseline from "@mui/material/CssBaseline";
@@ -49,14 +43,7 @@ const UsersPage = React.lazy(() => import("pages/UsersPage"));
 const UserSettings = React.lazy(() => import("pages/UserSettings"));
 const DatePickerTestPage = React.lazy(() => import("pages/DatePickerTestPage"));
 
-// browser language preference
-// currently used for displaying times in locale-specific format
-export const browserLanguage = navigator.language || "en-US";
-
-// language hard-coded for now, can come from user profile in the future
-const locale = "en";
-i18n.load(locale, enMessages);
-i18n.activate(locale);
+const CURRENT_YEAR = new Date().getFullYear();
 
 const useStyles = makeStyles()((theme) => ({
 	footer: {
@@ -112,9 +99,7 @@ export const AppRoutes = () => {
 				interval = null;
 			}
 		};
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [dispatch]);
 
 	return (
 		<>
@@ -156,7 +141,7 @@ export const AppRoutes = () => {
 				</main>
 				<Footer
 					className={classes.footer}
-					year={new Date().getFullYear()}
+					year={CURRENT_YEAR}
 					version={APP_VERSION}
 				/>
 			</div>
@@ -166,15 +151,19 @@ export const AppRoutes = () => {
 
 // augment MUI style ts definitions to include our custom styles (in "custom" attribute)
 declare module "@mui/material/styles" {
-	interface CustomTheme {
+	interface Theme {
 		custom?: {
 			gradient?: string;
 			gradientText?: string;
 		};
 	}
 
-	interface Theme extends CustomTheme {}
-	interface ThemeOptions extends CustomTheme {}
+	interface ThemeOptions {
+		custom?: {
+			gradient?: string;
+			gradientText?: string;
+		};
+	}
 }
 
 const ThemedApp = () => {
@@ -186,9 +175,7 @@ const ThemedApp = () => {
 	const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 	useEffect(() => {
 		dispatch(getTheme());
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [dispatch]);
 
 	let theme = React.useMemo(
 		() =>
@@ -297,12 +284,7 @@ const ThemedApp = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<LocalizationProvider dateAdapter={DateAdapter}>
-				<Router
-					future={{
-						v7_startTransition: true,
-						v7_relativeSplatPath: true,
-					}}
-				>
+				<Router>
 					<AppRoutes />
 				</Router>
 			</LocalizationProvider>

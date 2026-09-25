@@ -11,7 +11,7 @@ on: pull_request
 
 jobs:
   scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Run Artemis scan
         env:

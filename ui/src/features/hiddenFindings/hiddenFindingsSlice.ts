@@ -1,9 +1,9 @@
 import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
 
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 import createSagaActions from "utils/createSagaActions";
 import { HiddenFinding } from "features/hiddenFindings/hiddenFindingsSchemas";
-import { HiddenFindingsRequest } from "api/client";
+import type { HiddenFindingsRequest } from "api/client";
 
 type SliceState = {
 	status: "idle" | "loading" | "succeeded" | "failed";

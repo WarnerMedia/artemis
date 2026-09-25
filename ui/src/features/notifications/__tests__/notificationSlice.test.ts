@@ -174,7 +174,7 @@ describe("addNotification", () => {
 		expect(() => {
 			// ts-ignore to force this use-case in test since typescript won't
 			// even allow this kind of funny business
-			// @ts-ignore
+			// @ts-expect-error testing invalid type
 			addNotification("Unknown Notification Type", "unknown");
 		}).toThrow(/invalid notification/i);
 	});

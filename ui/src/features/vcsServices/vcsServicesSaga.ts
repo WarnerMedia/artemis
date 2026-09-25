@@ -7,7 +7,7 @@ import {
 } from "redux-saga/effects";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { i18n } from "@lingui/core";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 import client, {
 	Client,

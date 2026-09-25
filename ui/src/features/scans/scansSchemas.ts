@@ -1,5 +1,5 @@
 import { i18n } from "@lingui/core";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import * as Yup from "yup";
 
 import { PagedResponse, Response, responseSchema } from "api/apiSchemas";
@@ -70,6 +70,7 @@ export interface ScanErrors {
 }
 
 interface ScanInventory {
+	api_specs?: object;
 	base_images?: object;
 	cicd_tools?: object;
 	technology_discovery?: object;
@@ -78,12 +79,7 @@ interface ScanInventory {
 export type Risks = "priority" | "critical" | "high" | "moderate" | "low";
 
 export type Severities =
-	| "critical"
-	| "high"
-	| "medium"
-	| "low"
-	| "negligible"
-	| "";
+	"critical" | "high" | "medium" | "low" | "negligible" | "";
 
 export interface SeverityLevels {
 	critical: number;
@@ -95,6 +91,7 @@ export interface SeverityLevels {
 }
 
 export interface SummaryInventory {
+	api_specs?: number;
 	technology_discovery?: number;
 	cicd_tools?: number;
 	base_images?: number;
@@ -331,6 +328,7 @@ const summaryInventorySchema: Yup.ObjectSchema<SummaryInventory> = Yup.object()
 		technology_discovery: Yup.number(),
 		cicd_tools: Yup.number(),
 		base_images: Yup.number(),
+		api_specs: Yup.number(),
 	})
 	.defined();
 
@@ -347,6 +345,7 @@ const scanResultsSummarySchema: Yup.ObjectSchema<ScanResultsSummary> =
 
 const scanInventorySchema: Yup.ObjectSchema<ScanInventory> = Yup.object()
 	.shape({
+		api_specs: Yup.object(), // object with varying keys based on images detected
 		base_images: Yup.object(), // object with varying keys based on images detected
 		cicd_tools: Yup.object(), // object with varying keys based on images detected
 		technology_discovery: Yup.object(), // object with varying keys based on languages detected

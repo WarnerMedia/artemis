@@ -13,34 +13,20 @@ jobs:
       contents: read
     env:
       UI_PATH: ./ui
-      HADOLINT_URL: https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
       NPM_VERSION: 10
 
     steps:
       - name: Checkout the code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # actions/checkout@v6.0.2
 
-      - name: Setup node from node version file
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # actions/setup-node@v6.2.0
-        with:
-          node-version-file: "${{ env.UI_PATH }}/.nvmrc"
-
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
+      - name: Install tools
+        uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8 # jdx/mise-action@v3.6.1
 
       - name: Set up the npm version
-        run: npm install --global npm@$NPM_VERSION
+        run: npm install --global --ignore-scripts npm@$NPM_VERSION
 
       - name: Install npm packages
         run: make -C $UI_PATH install
-
-      - name: Install hadolinter and check sha
-        run: wget --quiet -O ./hadolint $HADOLINT_URL && sha512sum -c hadolint.sha512 && chmod 0766 ./hadolint
-        working-directory: ${{ env.UI_PATH }}
-
-      - name: Install shfmt
-        run: |
-          curl -sSL https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_linux_amd64 -o /usr/local/bin/shfmt
-          chmod +x /usr/local/bin/shfmt
 
       - name: Run precommit checks (linting & testing etc)
         run: make -C $UI_PATH precommit

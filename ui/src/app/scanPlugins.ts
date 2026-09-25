@@ -1,4 +1,4 @@
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import {
 	APP_AQUA_ENABLED,
 	APP_GHAS_ENABLED,
@@ -159,6 +159,11 @@ export const staticPluginsKeys: ScanPluginKeys = {
 };
 
 export const techPluginsKeys: ScanPluginKeys = {
+	api_specs: {
+		displayName: t`API Spec Discovery`,
+		apiName: "api_specs",
+		group: GROUP_INVENTORY,
+	},
 	base_images: {
 		displayName: t`Base Images (Docker)`,
 		apiName: "base_images",

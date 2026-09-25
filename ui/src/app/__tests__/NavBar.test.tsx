@@ -7,7 +7,6 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
 import { mockStoreEmpty } from "../../../testData/testMockData";
 

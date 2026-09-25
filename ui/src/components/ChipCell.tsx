@@ -1,7 +1,7 @@
 import { Chip } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 import {
 	colorPriority,

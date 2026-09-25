@@ -1116,7 +1116,6 @@ export function makeServer() {
 								commit: "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee",
 							},
 							{
-								// @ts-ignore
 								_string: "test.me", // not part of API, used for filtering secret_raw by string value
 								type: "slack",
 								line: 22,
@@ -1208,7 +1207,6 @@ export function makeServer() {
 					],
 					"/path/postgres.pass": [
 						{
-							// @ts-ignore
 							_string: "test.me",
 							type: "postgres",
 							line: 2,
@@ -1227,7 +1225,6 @@ export function makeServer() {
 							],
 						},
 						{
-							// @ts-ignore
 							_string: "test.me",
 							type: "postgres",
 							line: 8,
@@ -1286,7 +1283,6 @@ export function makeServer() {
 					],
 					"/path/to/file/google.pass": [
 						{
-							// @ts-ignore
 							_string: "test.me",
 							type: "google",
 							line: 2,
@@ -1435,12 +1431,23 @@ export function makeServer() {
 
 			const generateInventoryResults = (scan: AnalysisReport) => {
 				scan!.results_summary!.inventory = {
+					api_specs: 2,
 					base_images: 3,
 					cicd_tools: 2,
 					technology_discovery: 12,
 				};
 
 				scan!.results!.inventory = {
+					api_specs: {
+						"spec.yaml": {
+							field: "openapi",
+							version: "3.1.0",
+						},
+						"other-spec.json": {
+							field: "asyncapi",
+							version: "1.2.3",
+						},
+					},
 					base_images: {
 						golang: {
 							tags: ["latest", "2.2", "3.3", "4.4"],

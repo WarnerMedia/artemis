@@ -6,7 +6,7 @@ import {
 	DialogContentText,
 } from "@mui/material";
 import { FirstPage as FirstPageIcon } from "@mui/icons-material";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 
 import { selectGlobalException } from "features/globalException/globalExceptionSlice";
 

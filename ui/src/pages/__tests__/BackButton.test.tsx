@@ -1,13 +1,12 @@
 import { render, screen } from "test-utils";
 import { BackButton } from "pages/UserSettings";
 
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	__esModule: true,
 	useNavigate: jest.fn(),
 }));
-/* eslint-disable */
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const mockUseNavigate = useNavigate as jest.Mock;
 const mockNavigate = jest.fn();

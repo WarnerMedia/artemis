@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2025",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -16,12 +16,25 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "src"
+    "paths": {
+      "*": ["./src/*"]
+    },
+    "types": [
+      "autosuggest-highlight",
+      "jest",
+      "luxon",
+      "node",
+      "react",
+      "react-copy-to-clipboard",
+      "react-dom",
+      "redux-logger",
+      "webpack-env"
+    ]
   },
   "include": ["src"]
 }

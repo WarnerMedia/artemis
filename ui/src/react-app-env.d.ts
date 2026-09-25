@@ -45,12 +45,6 @@ declare module "*.webp" {
 }
 
 declare module "*.svg" {
-	import * as React from "react";
-
-	export const ReactComponent: React.FunctionComponent<
-		React.SVGProps<SVGSVGElement> & { title?: string }
-	>;
-
 	const src: string;
 	export default src;
 }
@@ -68,4 +62,18 @@ declare module "*.module.scss" {
 declare module "*.module.sass" {
 	const classes: { readonly [key: string]: string };
 	export default classes;
+}
+
+declare module "random-material-color" {
+	interface RandomMaterialColorOptions {
+		shades?: string[];
+		palette?: Record<string, string[]>;
+		text?: string | null;
+		ignoreColors?: string[];
+	}
+
+	const randomMaterialColor: {
+		getColor: (options?: RandomMaterialColorOptions) => string;
+	};
+	export default randomMaterialColor;
 }

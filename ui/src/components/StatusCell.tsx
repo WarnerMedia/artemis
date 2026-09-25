@@ -23,9 +23,9 @@ import {
 } from "@mui/icons-material";
 import { Theme } from "@mui/material/styles";
 import { makeStyles, withStyles } from "tss-react/mui";
-import { Plural, Trans } from "@lingui/macro";
+import { Plural, Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
-import { t, plural } from "@lingui/macro";
+import { t, plural } from "@lingui/core/macro";
 import { DateTime } from "luxon";
 
 import {
@@ -231,7 +231,7 @@ const StatusCell = (props: StatusCellProps) => {
 
 			// if any results_summary section is null then some subset of plugins ran
 			// sbom category not default, so not running sbom not considered a subset
-			let info: { [key: string]: string } = {};
+			const info: { [key: string]: string } = {};
 			if (
 				row?.results_summary?.configuration === null ||
 				row?.results_summary?.vulnerabilities === null ||

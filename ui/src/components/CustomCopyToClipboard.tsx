@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { addNotification } from "features/notifications/notificationsSlice";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import {
@@ -27,7 +27,7 @@ interface CustomCopyToClipboardProps {
 const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 	const { i18n } = useLingui();
 	const dispatch = useDispatch();
-	const [isCopied, setCopied] = useState(false);
+	const [isCopied, setIsCopied] = useState(false);
 	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 	const {
 		autoFocus = false,
@@ -38,7 +38,12 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 		disabled = false,
 		...buttonProps
 	} = props;
-	const [copyText, setCopyText] = useState(copyTarget);
+	const copyText = useMemo(() => {
+		if (typeof copyTarget === "string") return copyTarget;
+		if (typeof copyTarget === "number") return copyTarget.toString();
+		if (Array.isArray(copyTarget)) return copyTarget.join(", ");
+		return JSON.stringify(copyTarget, null, 2);
+	}, [copyTarget]);
 	const [buttonUnclicked] = useState(
 		icon === "share" ? (
 			<ShareIcon fontSize={size} {...buttonProps} />
@@ -53,19 +58,6 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 			<AssignmentTurnedInIcon fontSize={size} {...buttonProps} />
 		),
 	);
-
-	// convert copyTarget to a string if needed
-	useEffect(() => {
-		if (typeof copyTarget === "string") {
-			setCopyText(copyTarget);
-		} else if (typeof copyTarget === "number") {
-			setCopyText(copyTarget.toString());
-		} else if (Array.isArray(copyTarget)) {
-			setCopyText(copyTarget.join(", "));
-		} else {
-			setCopyText(JSON.stringify(copyTarget, null, 2));
-		}
-	}, [copyTarget]);
 
 	// cancel any active setTimeout when component unmounted
 	useEffect(() => {
@@ -82,11 +74,11 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 			<CopyToClipboard
 				text={copyText}
 				onCopy={() => {
-					setCopied(true);
+					setIsCopied(true);
 					setTimeoutId(
 						setTimeout(() => {
 							setTimeoutId(null);
-							setCopied(false);
+							setIsCopied(false);
 						}, APP_NOTIFICATION_DELAY),
 					);
 				}}
@@ -94,9 +86,9 @@ const CustomCopyToClipboard = (props: CustomCopyToClipboardProps) => {
 				<Tooltip title={isCopied ? i18n._(t`Copied`) : copyLabel}>
 					<span>
 						<IconButton
+							autoFocus={autoFocus}
 							size={size === "large" ? "medium" : size}
 							aria-label={isCopied ? i18n._(t`Copied`) : copyLabel}
-							autoFocus={autoFocus}
 							disabled={disabled}
 							onClick={() =>
 								dispatch(

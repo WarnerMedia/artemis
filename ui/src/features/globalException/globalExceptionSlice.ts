@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 
 // will add a login redirect button after the error message
 type ActionType = "login";

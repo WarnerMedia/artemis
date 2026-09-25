@@ -1,12 +1,12 @@
 import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
 
-import { RootState } from "app/rootReducer";
+import type { RootState } from "app/rootReducer";
 import createSagaActions from "utils/createSagaActions";
 import {
 	VcsService,
 	VcsServicesGetResponse,
 } from "features/vcsServices/vcsServicesSchemas";
-import { UserServiceRequest } from "api/client";
+import type { UserServiceRequest } from "api/client";
 
 type SliceState = {
 	status: "idle" | "loading" | "succeeded" | "failed";

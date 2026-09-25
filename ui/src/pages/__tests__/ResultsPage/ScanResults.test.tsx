@@ -13,19 +13,16 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	useLocation: jest.fn(),
 }));
 jest.mock("pages/MainPage", () => ({
-	...(jest.requireActual("pages/MainPage") as any),
 	__esModule: true,
 	startScan: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { startScan } from "pages/MainPage";
 import { getScanById } from "features/scans/scansSlice";
 import ResultsPage from "pages/ResultsPage";
@@ -72,7 +69,7 @@ describe("ResultsPage component", () => {
 	describe("Scan Results", () => {
 		it("should display scan information", async () => {
 			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn(() => true);
 			const id = mockStoreScanId;
 			const scan = mockAppState.scans.entities[id];
 			const repo = scan.repo;
@@ -209,7 +206,7 @@ describe("ResultsPage component", () => {
 
 		it("should display batch description if it's in the scan data", async () => {
 			mockAppState = JSON.parse(JSON.stringify(mockStoreSingleScan));
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn(() => true);
 			const id = mockStoreScanId;
 			const scan = mockAppState.scans.entities[id];
 			const repo = scan.repo;
@@ -339,6 +336,7 @@ describe("ResultsPage component", () => {
 			const rescanButton = screen.getByRole("button", {
 				name: /new scan with these options/i,
 			});
+			await waitFor(() => expect(rescanButton).not.toBeDisabled());
 			await user.click(rescanButton);
 
 			// start scan in dialog
@@ -346,6 +344,7 @@ describe("ResultsPage component", () => {
 			const startScanButton = within(dialog).getByRole("button", {
 				name: /start scan/i,
 			});
+			await waitFor(() => expect(startScanButton).not.toBeDisabled());
 			await user.click(startScanButton);
 			await waitFor(() =>
 				expect(

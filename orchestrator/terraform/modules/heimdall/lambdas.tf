@@ -270,9 +270,8 @@ resource "aws_iam_role" "vpc-lambda-assume-role" {
 data "aws_caller_identity" "current" {}
 
 provider "aws" {
-  alias   = "artemis_revproxy"
-  region  = var.revproxy_secret_region
-  profile = var.profile
+  alias  = "artemis_revproxy"
+  region = var.revproxy_secret_region
 }
 
 data "aws_secretsmanager_secret" "artemis_proxy_secret" {

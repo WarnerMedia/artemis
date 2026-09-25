@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/material";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 
 const ScopeCell = (props: { value?: string | string[] | null }) => {
 	const { value } = props;

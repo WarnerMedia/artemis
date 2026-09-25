@@ -5,7 +5,6 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
 import {
 	clearAllNotifications,
@@ -14,7 +13,6 @@ import {
 import Notifications from "features/notifications/Notifications";
 import { APP_NOTIFICATION_DELAY } from "app/globals";
 
-/* eslint-enable */
 const initialState = {
 	notifications: {
 		entities: {

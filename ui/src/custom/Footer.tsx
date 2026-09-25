@@ -1,6 +1,6 @@
 import { makeStyles } from "tss-react/mui";
 import { Typography } from "@mui/material";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 
 const useStyles = makeStyles()(() => ({
 	pageFooter: {

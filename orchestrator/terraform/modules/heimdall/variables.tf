@@ -28,10 +28,6 @@ variable "artemis_region" {
   description = "The region that the Artemis S3 bucket resides in"
 }
 
-variable "profile" {
-  description = "AWS profile"
-}
-
 variable "tags" {
   type = map(string)
 }

@@ -3,7 +3,6 @@
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
-const resolve = require("resolve");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
@@ -12,9 +11,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
-const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
 const ModuleScopePlugin = require("react-dev-utils/ModuleScopePlugin");
 const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
+const {
+	createAppBabelOptions,
+	createDependenciesBabelOptions,
+} = require("./babel.config");
 const paths = require("./paths");
 const modules = require("./modules");
 const getClientEnvironment = require("./env");
@@ -23,24 +25,34 @@ const ForkTsCheckerWebpackPlugin =
 	process.env.TSC_COMPILE_ON_ERROR === "true"
 		? require("react-dev-utils/ForkTsCheckerWarningWebpackPlugin")
 		: require("react-dev-utils/ForkTsCheckerWebpackPlugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const safeRequire = (moduleName) => {
+	try {
+		return require(moduleName);
+	} catch {
+		return null;
+	}
+};
+
+const safeResolve = (moduleName) => {
+	try {
+		return require.resolve(moduleName);
+	} catch {
+		return null;
+	}
+};
 
 const createEnvironmentHash = require("./webpack/persistentCache/createEnvironmentHash");
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
 
-const reactRefreshRuntimeEntry = require.resolve("react-refresh/runtime");
-const reactRefreshWebpackPluginRuntimeEntry =
-	require.resolve("@pmmmwh/react-refresh-webpack-plugin");
-const babelRuntimeEntry = require.resolve("babel-preset-react-app");
-const babelRuntimeEntryHelpers = require.resolve(
-	"@babel/runtime/helpers/esm/assertThisInitialized",
-	{ paths: [babelRuntimeEntry] },
+const ReactRefreshWebpackPlugin = safeRequire(
+	"@pmmmwh/react-refresh-webpack-plugin",
 );
-const babelRuntimeRegenerator = require.resolve("@babel/runtime/regenerator", {
-	paths: [babelRuntimeEntry],
-});
+const reactRefreshRuntimeEntry = safeResolve("react-refresh/runtime");
+const reactRefreshWebpackPluginRuntimeEntry = safeResolve(
+	"@pmmmwh/react-refresh-webpack-plugin",
+);
 
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
@@ -49,17 +61,6 @@ const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== "false";
 const imageInlineSizeLimit = parseInt(
 	process.env.IMAGE_INLINE_SIZE_LIMIT || "10000",
 );
-
-// Check if TypeScript is setup
-const useTypeScript = fs.existsSync(paths.appTsConfig);
-
-// Check if Tailwind config exists
-const useTailwind = fs.existsSync(
-	path.join(paths.appPath, "tailwind.config.js"),
-);
-
-// Get the path to the uncompiled service worker (if it exists).
-const swSrc = paths.swSrc;
 
 // style files regexes
 const cssRegex = /\.css$/;
@@ -84,7 +85,17 @@ module.exports = function (webpackEnv) {
 	// Get environment variables to inject into our app.
 	const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 
-	const shouldUseReactRefresh = env.raw.FAST_REFRESH;
+	const shouldUseReactRefresh = Boolean(
+		env.raw.FAST_REFRESH && ReactRefreshWebpackPlugin,
+	);
+	const babelEnv = isEnvProduction ? "production" : "development";
+	const appBabelOptions = createAppBabelOptions({
+		env: babelEnv,
+		runtime: "automatic",
+	});
+	const dependenciesBabelOptions = createDependenciesBabelOptions({
+		env: babelEnv,
+	});
 
 	// common function to get style loaders
 	const getStyleLoaders = (cssOptions, preProcessor) => {
@@ -113,36 +124,22 @@ module.exports = function (webpackEnv) {
 						// https://github.com/facebook/create-react-app/issues/2677
 						ident: "postcss",
 						config: false,
-						plugins: !useTailwind
-							? [
-									"postcss-flexbugs-fixes",
-									[
-										"postcss-preset-env",
-										{
-											autoprefixer: {
-												flexbox: "no-2009",
-											},
-											stage: 3,
-										},
-									],
-									// Adds PostCSS Normalize as the reset css with default options,
-									// so that it honors browserslist config in package.json
-									// which in turn let's users customize the target behavior as per their needs.
-									"postcss-normalize",
-								]
-							: [
-									"tailwindcss",
-									"postcss-flexbugs-fixes",
-									[
-										"postcss-preset-env",
-										{
-											autoprefixer: {
-												flexbox: "no-2009",
-											},
-											stage: 3,
-										},
-									],
-								],
+						plugins: [
+							"postcss-flexbugs-fixes",
+							[
+								"postcss-preset-env",
+								{
+									autoprefixer: {
+										flexbox: "no-2009",
+									},
+									stage: 3,
+								},
+							],
+							// Adds PostCSS Normalize as the reset css with default options,
+							// so that it honors browserslist config in package.json
+							// which in turn let's users customize the target behavior as per their needs.
+							"postcss-normalize",
+						],
 					},
 					sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
 				},
@@ -289,9 +286,7 @@ module.exports = function (webpackEnv) {
 			// https://github.com/facebook/create-react-app/issues/290
 			// `web` extension prefixes have been added for better support
 			// for React Native Web.
-			extensions: paths.moduleFileExtensions
-				.map((ext) => `.${ext}`)
-				.filter((ext) => useTypeScript || !ext.includes("ts")),
+			extensions: paths.moduleFileExtensions.map((ext) => `.${ext}`),
 			alias: {
 				// Support React Native Web
 				// https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -309,14 +304,14 @@ module.exports = function (webpackEnv) {
 				// To fix this, we prevent you from importing files out of src/ -- if you'd like to,
 				// please link the files into your node_modules/ and let module-resolution kick in.
 				// Make sure your source files are compiled, as they will not be processed in any way.
-				new ModuleScopePlugin(paths.appSrc, [
-					paths.appPackageJson,
-					reactRefreshRuntimeEntry,
-					reactRefreshWebpackPluginRuntimeEntry,
-					babelRuntimeEntry,
-					babelRuntimeEntryHelpers,
-					babelRuntimeRegenerator,
-				]),
+				new ModuleScopePlugin(
+					paths.appSrc,
+					[
+						paths.appPackageJson,
+						reactRefreshRuntimeEntry,
+						reactRefreshWebpackPluginRuntimeEntry,
+					].filter(Boolean),
+				),
 			],
 		},
 		module: {
@@ -360,29 +355,7 @@ module.exports = function (webpackEnv) {
 						},
 						{
 							test: /\.svg$/,
-							use: [
-								{
-									loader: require.resolve("@svgr/webpack"),
-									options: {
-										prettier: false,
-										svgo: false,
-										svgoConfig: {
-											plugins: [{ removeViewBox: false }],
-										},
-										titleProp: true,
-										ref: true,
-									},
-								},
-								{
-									loader: require.resolve("file-loader"),
-									options: {
-										name: "static/media/[name].[hash].[ext]",
-									},
-								},
-							],
-							issuer: {
-								and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
-							},
+							type: "asset/resource",
 						},
 						// Process application JS with Babel.
 						// The preset includes JSX, Flow, TypeScript, and some ESnext features.
@@ -391,18 +364,9 @@ module.exports = function (webpackEnv) {
 							include: paths.appSrc,
 							loader: require.resolve("babel-loader"),
 							options: {
-								customize:
-									require.resolve("babel-preset-react-app/webpack-overrides"),
-								presets: [
-									[
-										require.resolve("babel-preset-react-app"),
-										{
-											runtime: "automatic",
-										},
-									],
-								],
-
+								...appBabelOptions,
 								plugins: [
+									...appBabelOptions.plugins,
 									isEnvDevelopment &&
 										shouldUseReactRefresh &&
 										require.resolve("react-refresh/babel"),
@@ -423,15 +387,8 @@ module.exports = function (webpackEnv) {
 							exclude: /@babel(?:\/|\\{1,2})runtime/,
 							loader: require.resolve("babel-loader"),
 							options: {
-								babelrc: false,
-								configFile: false,
+								...dependenciesBabelOptions,
 								compact: false,
-								presets: [
-									[
-										require.resolve("babel-preset-react-app/dependencies"),
-										{ helpers: true },
-									],
-								],
 								cacheDirectory: true,
 								// See #6846 for context on why cacheCompression is disabled
 								cacheCompression: false,
@@ -634,76 +591,51 @@ module.exports = function (webpackEnv) {
 					};
 				},
 			}),
-			// Moment.js is an extremely popular library that bundles large locale files
-			// by default due to how webpack interprets its code. This is a practical
-			// solution that requires the user to opt into importing specific locales.
-			// https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-			// You can remove this if you don't use Moment.js:
-			new webpack.IgnorePlugin({
-				resourceRegExp: /^\.\/locale$/,
-				contextRegExp: /moment$/,
-			}),
-			// Generate a service worker script that will precache, and keep up to date,
-			// the HTML & assets that are part of the webpack build.
-			isEnvProduction &&
-				fs.existsSync(swSrc) &&
-				new WorkboxWebpackPlugin.InjectManifest({
-					swSrc,
-					dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
-					exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/],
-					// Bump up the default maximum size (2mb) that's precached,
-					// to make lazy-loading failure scenarios less likely.
-					// See https://github.com/cra-template/pwa/issues/13#issuecomment-722667270
-					maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-				}),
 			// TypeScript type checking
-			useTypeScript &&
-				new ForkTsCheckerWebpackPlugin({
-					async: isEnvDevelopment,
-					typescript: {
-						typescriptPath: resolve.sync("typescript", {
-							basedir: paths.appNodeModules,
-						}),
-						configOverwrite: {
-							compilerOptions: {
-								sourceMap: isEnvProduction
-									? shouldUseSourceMap
-									: isEnvDevelopment,
-								skipLibCheck: true,
-								inlineSourceMap: false,
-								declarationMap: false,
-								noEmit: true,
-								incremental: true,
-								tsBuildInfoFile: paths.appTsBuildInfoFile,
-							},
+			new ForkTsCheckerWebpackPlugin({
+				async: isEnvDevelopment,
+				typescript: {
+					typescriptPath: require.resolve("typescript"),
+					configOverwrite: {
+						compilerOptions: {
+							sourceMap: isEnvProduction
+								? shouldUseSourceMap
+								: isEnvDevelopment,
+							skipLibCheck: true,
+							inlineSourceMap: false,
+							declarationMap: false,
+							noEmit: true,
+							incremental: true,
+							tsBuildInfoFile: paths.appTsBuildInfoFile,
 						},
-						context: paths.appPath,
-						diagnosticOptions: {
-							syntactic: true,
-						},
-						mode: "write-references",
-						// profile: true,
 					},
-					issue: {
-						// This one is specifically to match during CI tests,
-						// as micromatch doesn't match
-						// '../cra-template-typescript/template/src/App.tsx'
-						// otherwise.
-						include: [
-							{ file: "../**/src/**/*.{ts,tsx}" },
-							{ file: "**/src/**/*.{ts,tsx}" },
-						],
-						exclude: [
-							{ file: "**/src/**/__tests__/**" },
-							{ file: "**/src/**/?(*.){spec|test}.*" },
-							{ file: "**/src/setupProxy.*" },
-							{ file: "**/src/setupTests.*" },
-						],
+					context: paths.appPath,
+					diagnosticOptions: {
+						syntactic: true,
 					},
-					logger: {
-						infrastructure: "silent",
-					},
-				}),
+					mode: "write-references",
+					// profile: true,
+				},
+				issue: {
+					// This one is specifically to match during CI tests,
+					// as micromatch doesn't match
+					// '../cra-template-typescript/template/src/App.tsx'
+					// otherwise.
+					include: [
+						{ file: "../**/src/**/*.{ts,tsx}" },
+						{ file: "**/src/**/*.{ts,tsx}" },
+					],
+					exclude: [
+						{ file: "**/src/**/__tests__/**" },
+						{ file: "**/src/**/?(*.){spec|test}.*" },
+						{ file: "**/src/setupProxy.*" },
+						{ file: "**/src/setupTests.*" },
+					],
+				},
+				logger: {
+					infrastructure: "silent",
+				},
+			}),
 		].filter(Boolean),
 		// Turn off performance processing because we utilize
 		// our own hints via the FileSizeReporter

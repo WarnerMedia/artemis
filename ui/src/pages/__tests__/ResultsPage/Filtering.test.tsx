@@ -6,8 +6,8 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	useLocation: jest.fn(),
 }));
 jest.mock("pages/MainPage", () => ({
@@ -15,10 +15,8 @@ jest.mock("pages/MainPage", () => ({
 	__esModule: true,
 	startScan: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
-/* eslint-disable */
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import * as Yup from "yup";
 import ResultsPage, {
 	getResultFilters,
@@ -92,7 +90,7 @@ describe("ResultsPage component", () => {
 				}
 			});
 
-			document.execCommand = jest.fn((commandId, showUI, value) => true);
+			document.execCommand = jest.fn((_commandId, _showUI, _value) => true);
 			const repo = scan.repo;
 			const service = scan.service;
 
@@ -229,17 +227,8 @@ describe("ResultsPage component", () => {
 	});
 
 	describe("getResultFilters", () => {
-		let globalWindow: any;
-		const mockNavigate = jest.fn();
-
-		beforeEach(() => {
-			globalWindow = global.window;
-			global.window ??= Object.create(window);
-		});
-
 		afterEach(() => {
-			global.window ??= globalWindow;
-			mockNavigate.mockClear();
+			window.location.hash = "";
 		});
 
 		it("Modifies filters if all hash params are valid", () => {
@@ -259,12 +248,7 @@ describe("ResultsPage component", () => {
 			};
 
 			const hash = `#${prefix}a_string=stringValue&${prefix}a_number=1234`;
-			Object.defineProperty(window, "location", {
-				value: {
-					hash: hash,
-				},
-				writable: true,
-			});
+			window.location.hash = hash;
 
 			const results = getResultFilters(schema, prefix, filters);
 			expect(results).toEqual({
@@ -295,12 +279,7 @@ describe("ResultsPage component", () => {
 			};
 
 			const hash = `#${prefix}a_string=stringValue&${prefix}a_number=anotherStringValue`;
-			Object.defineProperty(window, "location", {
-				value: {
-					hash: hash,
-				},
-				writable: true,
-			});
+			window.location.hash = hash;
 
 			const results = getResultFilters(schema, prefix, filters);
 			expect(results).toEqual(filters); // no filter change since "anotherStringValue" !== number
@@ -308,16 +287,12 @@ describe("ResultsPage component", () => {
 	});
 
 	describe("setResultFilters", () => {
-		let globalWindow: any;
 		const mockNavigate = jest.fn();
 
-		beforeEach(() => {
-			globalWindow = global.window;
-			global.window ??= Object.create(window);
-		});
-
 		afterEach(() => {
-			global.window ??= globalWindow;
+			window.location.hash = "";
+			window.location.pathname = "/";
+			window.location.search = "";
 			mockNavigate.mockClear();
 		});
 
@@ -335,14 +310,9 @@ describe("ResultsPage component", () => {
 				testState: "testValue",
 			};
 
-			Object.defineProperty(window, "location", {
-				value: {
-					hash: hash,
-					pathname: pathname,
-					search: search,
-				},
-				writable: true,
-			});
+			window.location.hash = hash;
+			window.location.pathname = pathname;
+			window.location.search = search;
 			mockLocation = {
 				hash: hash,
 				pathname: pathname,
@@ -373,14 +343,9 @@ describe("ResultsPage component", () => {
 				testState: "testValue",
 			};
 
-			Object.defineProperty(window, "location", {
-				value: {
-					hash: hash,
-					pathname: pathname,
-					search: search,
-				},
-				writable: true,
-			});
+			window.location.hash = hash;
+			window.location.pathname = pathname;
+			window.location.search = search;
 			mockLocation = {
 				hash: hash,
 				pathname: pathname,
@@ -411,14 +376,9 @@ describe("ResultsPage component", () => {
 				testState: "testValue",
 			};
 
-			Object.defineProperty(window, "location", {
-				value: {
-					hash: hash,
-					pathname: pathname,
-					search: search,
-				},
-				writable: true,
-			});
+			window.location.hash = hash;
+			window.location.pathname = pathname;
+			window.location.search = search;
 			mockLocation = {
 				hash: hash,
 				pathname: pathname,

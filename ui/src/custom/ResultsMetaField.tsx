@@ -2,7 +2,7 @@ import { ListItem, ListItemIcon, ListItemText, Tooltip } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { Looks3 as Looks3Icon } from "@mui/icons-material";
 import { useLingui } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 import { RowDef } from "components/EnhancedTable";
 

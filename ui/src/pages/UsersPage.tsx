@@ -1,4 +1,5 @@
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useLingui } from "@lingui/react";
 import {
 	AddCircleOutline as AddCircleOutlineIcon,
@@ -41,7 +42,7 @@ import {
 import { Field, Form, Formik } from "formik";
 import { Checkbox, Switch, TextField } from "formik-mui";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 import * as Yup from "yup";
 
@@ -199,6 +200,7 @@ const FilterField = (props: FilterFieldProps) => {
 	const debounceMs = 1000; // make debounce a little longer than for client-side filtering since this is going to invoke a call to the server
 
 	useEffect(() => {
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setFieldValue(value);
 		return () => {
 			if (debounceRef && debounceRef.current) {
@@ -335,6 +337,130 @@ interface AddUserForm {
 const mapRules = (map: any, rule: any) =>
 	Object.keys(map).reduce((newMap, key) => ({ ...newMap, [key]: rule }), {});
 
+const ActionsCell = (props: {
+	row?: RowDef | null;
+	userToDelete: User | null;
+	setApiKeysUser: (user: User | null) => void;
+	setApiKeysDialogOpen: (open: boolean) => void;
+	setUserToDelete: (user: User | null) => void;
+}) => {
+	const { i18n } = useLingui();
+	const usersState = useSelector((state: RootState) => state.users);
+	const {
+		row,
+		userToDelete,
+		setApiKeysUser,
+		setApiKeysDialogOpen,
+		setUserToDelete,
+	} = props;
+	return (
+		<>
+			<Tooltip title={i18n._(t`View API Keys`)}>
+				<span>
+					<IconButton
+						size="small"
+						color="primary"
+						aria-label={i18n._(t`View API Keys`)}
+						onClick={() => {
+							// Create a clean user object without the "id-" prefix in the ID
+							const cleanUser = {
+								...(row as User),
+								id: (row as User).email, // Use the email directly as the ID
+							};
+							setApiKeysUser(cleanUser);
+							setApiKeysDialogOpen(true);
+						}}
+					>
+						<VpnKeyIcon />
+					</IconButton>
+				</span>
+			</Tooltip>
+			<Tooltip title={i18n._(t`Remove User`)}>
+				<span>
+					<IconButton
+						size="small"
+						color="error"
+						aria-label={i18n._(t`Remove User`)}
+						disabled={usersState.status === "loading"}
+						onClick={(event: React.SyntheticEvent) => {
+							event.stopPropagation();
+							let user = null;
+							if (
+								row?.email &&
+								(!userToDelete || userToDelete?.email !== row.email)
+							) {
+								user = row as User;
+							}
+							setUserToDelete(user);
+						}}
+					>
+						{userToDelete?.email === row?.email ? (
+							<KeyboardArrowUpIcon />
+						) : (
+							<DeleteIcon />
+						)}
+					</IconButton>
+				</span>
+			</Tooltip>
+		</>
+	);
+};
+
+const CollapsibleRow = (props: {
+	row?: RowDef | null;
+	userToDelete: User | null;
+	setUserToDelete: (user: User | null) => void;
+}) => {
+	const { classes } = useStyles();
+	const { i18n } = useLingui();
+	const dispatch: AppDispatch = useDispatch();
+	const { userToDelete, setUserToDelete } = props;
+	return (
+		<Box className={classes.collapsibleRow}>
+			<Typography
+				color="inherit"
+				variant="subtitle1"
+				component="div"
+				className={classes.removeUser}
+			>
+				<Trans>Remove user "{userToDelete?.email ?? ""}"?</Trans>
+			</Typography>
+			<Box className={classes.tableToolbarButtons}>
+				<Button
+					aria-label={i18n._(t`Remove`)}
+					size="small"
+					variant="contained"
+					className={classes.deleteAltButton}
+					startIcon={<DeleteIcon />}
+					autoFocus
+					onClick={() => {
+						if (userToDelete?.email) {
+							dispatch(
+								deleteUser({
+									email: userToDelete.email,
+								}),
+							);
+						}
+						setUserToDelete(null);
+					}}
+				>
+					<Trans>Remove</Trans>
+				</Button>
+				<Button
+					aria-label={i18n._(t`Cancel`)}
+					size="small"
+					className={classes.deleteAltButtonText}
+					onClick={() => {
+						setUserToDelete(null);
+					}}
+				>
+					<Trans>Cancel</Trans>
+				</Button>
+			</Box>
+		</Box>
+	);
+};
+
 export default function UsersPage() {
 	const navigate = useNavigate();
 	const { i18n } = useLingui();
@@ -346,7 +472,7 @@ export default function UsersPage() {
 	);
 	const users = useSelector((state: RootState) => selectAllUsers(state));
 	const usersState = useSelector((state: RootState) => state.users);
-	const prevUsersState = useRef<RootState["users"]["action"]>(null);
+	const prevUsersStateRef = useRef<RootState["users"]["action"]>(null);
 	const [userToDelete, setUserToDelete] = useState<User | null>(null);
 	const [addDialogOpen, setAddDialogOpen] = useState(false);
 	const [newScopeValue, setNewScopeValue] = useState("");
@@ -423,13 +549,13 @@ export default function UsersPage() {
 		if (
 			usersState.action === null &&
 			usersState.status === "succeeded" &&
-			["add", "delete", "update"].includes(prevUsersState?.current ?? "")
+			["add", "delete", "update"].includes(prevUsersStateRef?.current ?? "")
 		) {
 			onRowSelect(null); // de-select row to close any open dialog
 			setReloadCount((prevCount) => (prevCount += 1));
 		}
-		prevUsersState.current = usersState.action;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		prevUsersStateRef.current = usersState.action;
+		// eslint-disable-next-line @eslint-react/exhaustive-deps
 	}, [usersState.action]);
 
 	// scroll to last scope item added to current scope in addUsers
@@ -457,109 +583,6 @@ export default function UsersPage() {
 		setNewScopeValue("");
 		setNewScopeError(null);
 		setNewScopeValid(false);
-	};
-
-	const ActionsCell = (props: { row?: RowDef | null }) => {
-		const { i18n } = useLingui();
-		const { row } = props;
-		return (
-			<>
-				<Tooltip title={i18n._(t`View API Keys`)}>
-					<span>
-						<IconButton
-							size="small"
-							color="primary"
-							aria-label={i18n._(t`View API Keys`)}
-							onClick={() => {
-								// Create a clean user object without the "id-" prefix in the ID
-								const cleanUser = {
-									...(row as User),
-									id: (row as User).email, // Use the email directly as the ID
-								};
-								setApiKeysUser(cleanUser);
-								setApiKeysDialogOpen(true);
-							}}
-						>
-							<VpnKeyIcon />
-						</IconButton>
-					</span>
-				</Tooltip>
-				<Tooltip title={i18n._(t`Remove User`)}>
-					<span>
-						<IconButton
-							size="small"
-							color="error"
-							aria-label={i18n._(t`Remove User`)}
-							disabled={usersState.status === "loading"}
-							onClick={(event: React.SyntheticEvent) => {
-								event.stopPropagation();
-								let user = null;
-								if (
-									row?.email &&
-									(!userToDelete || userToDelete?.email !== row.email)
-								) {
-									user = row as User;
-								}
-								setUserToDelete(user);
-							}}
-						>
-							{userToDelete?.email === row?.email ? (
-								<KeyboardArrowUpIcon />
-							) : (
-								<DeleteIcon />
-							)}
-						</IconButton>
-					</span>
-				</Tooltip>
-			</>
-		);
-	};
-
-	const CollapsibleRow = () => {
-		return (
-			<Box className={classes.collapsibleRow}>
-				<Typography
-					color="inherit"
-					variant="subtitle1"
-					component="div"
-					className={classes.removeUser}
-				>
-					<Trans>Remove user "{userToDelete?.email ?? ""}"?</Trans>
-				</Typography>
-				<Box className={classes.tableToolbarButtons}>
-					<Button
-						aria-label={i18n._(t`Remove`)}
-						size="small"
-						variant="contained"
-						className={classes.deleteAltButton}
-						startIcon={<DeleteIcon />}
-						autoFocus
-						onClick={() => {
-							if (userToDelete?.email) {
-								dispatch(
-									deleteUser({
-										email: userToDelete.email,
-									}),
-								);
-							}
-							setUserToDelete(null);
-						}}
-					>
-						<Trans>Remove</Trans>
-					</Button>
-					<Button
-						aria-label={i18n._(t`Cancel`)}
-						size="small"
-						className={classes.deleteAltButtonText}
-						onClick={() => {
-							setUserToDelete(null);
-						}}
-					>
-						<Trans>Cancel</Trans>
-					</Button>
-				</Box>
-			</Box>
-		);
 	};
 
 	const columns: ColDef[] = [
@@ -599,7 +622,15 @@ export default function UsersPage() {
 		{
 			field: "id",
 			headerName: i18n._(t`Actions`),
-			children: ActionsCell,
+			children: (props: { row?: RowDef | null; value?: string }) => (
+				<ActionsCell
+					{...props}
+					userToDelete={userToDelete}
+					setApiKeysUser={setApiKeysUser}
+					setApiKeysDialogOpen={setApiKeysDialogOpen}
+					setUserToDelete={setUserToDelete}
+				/>
+			),
 			disableRowClick: true,
 			sortable: false,
 			bodyStyle: {
@@ -621,8 +652,11 @@ export default function UsersPage() {
 	});
 
 	const onRowSelect = (row: RowDef | null) => {
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setUserToDelete(null);
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setSelectedRow(row);
+		// eslint-disable-next-line @eslint-react/set-state-in-effect
 		setAddDialogOpen(row !== null);
 		addUserForm();
 	};
@@ -1316,7 +1350,13 @@ export default function UsersPage() {
 					defaultOrderBy="email"
 					onRowSelect={onRowSelect}
 					selectedRow={selectedRow}
-					collapsibleRow={CollapsibleRow}
+					collapsibleRow={(props: { row?: RowDef | null }) => (
+						<CollapsibleRow
+							{...props}
+							userToDelete={userToDelete}
+							setUserToDelete={setUserToDelete}
+						/>
+					)}
 					disableRowClick={usersState.status === "loading"}
 					collapsibleOpen={(id: string | number) => {
 						return userToDelete?.email === id;
