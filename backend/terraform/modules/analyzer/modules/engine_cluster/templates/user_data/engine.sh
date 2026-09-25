@@ -58,11 +58,11 @@ else
 fi
 
 # Make sure packages are up-to-date
-yum -y update
+dnf -y upgrade
 
 # Install dependencies
-yum -y install jq
-yum -y install 'docker-25.0.*'
+dnf -y install jq
+dnf -y install 'docker-25.0.*'
 
 # Allow ec2-user to use docker
 usermod -a -G docker ec2-user
@@ -126,7 +126,12 @@ EOF
 chown -R ec2-user:ec2-user /home/ec2-user
 
 # Log into ECR and save credentials as ec2-user
-sudo --login --set-home --user=ec2-user <<<"$(aws ecr get-login --no-include-email --region="${aws_region}")"
+# account_id is being used to derive url below. Shellcheck thinks it's not used
+# shellcheck disable=SC2034
+account_id=$(aws sts get-caller-identity --query Account --output text)
+aws ecr get-login-password --region "${aws_region}" |
+  sudo --login --set-home --user=ec2-user docker login --username AWS --password-stdin \
+    "$${account_id}.dkr.ecr.${aws_region}.amazonaws.com"
 
 # Start the engine as ec2-user
 sudo --login --set-home --user=ec2-user <<<'/usr/local/bin/docker-compose -f docker-compose.aws.yml -p artemis up -d'

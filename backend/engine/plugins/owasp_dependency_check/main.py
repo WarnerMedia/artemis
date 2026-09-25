@@ -98,6 +98,10 @@ def run_owasp_dep_check(repo_path: str, owasp_path: str, repo_name: str, temp_pa
             "--disableBundleAudit",
             "--disableNodeJS",
             "--disableYarnAudit",
+            # The database is updated when the plugin container image is built.
+            # At scan time, no NVD API key is set so updates would be
+            # extremely slow, so we skip updates.
+            "--noupdate",
             "--scan",
             repo_path,
         ],

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Optional
 from aws_lambda_powertools.metrics.provider.datadog import DatadogMetrics, DatadogProvider
 
 from heimdall_utils.metrics.base import MetricsProvider, MetricsConfig

@@ -1,0 +1,17 @@
+name: Example
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  first:
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: First step
+        run: |
+          make FOO_KEY=${{ secrets.FOO_KEY }}

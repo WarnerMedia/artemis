@@ -272,7 +272,7 @@ paths:
         required: false
         schema:
           type: integer
-      - name: inititated_by
+      - name: initiated_by
         in: query
         description: Filter history to scans initiated by just this user.
         required: false
@@ -1348,6 +1348,53 @@ paths:
                 $ref: "#/components/schemas/PagedSBOMRepositories"
         "404":
           description: Component version not found
+  "/sbom/components/search":
+    post:
+      summary: Search for repositories containing a list of components
+      tags:
+        - sbom
+      operationId: sbom_components_search
+      requestBody:
+        description: A list of components to search for. Each component can be just a name, or a name and version separated by a colon.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              minItems: 1
+              example:
+                - "express:4.16.4"
+                - "lodash"
+      responses:
+        "200":
+          description: A list of repositories containing the requested components.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  repos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        service:
+                          type: string
+                        repo:
+                          type: string
+                        name:
+                          type: string
+                        version:
+                          type: string
+                        component_type:
+                          type: string
+            text/csv:
+              schema:
+                type: string
+        "400":
+          description: Request validation failed
   /sbom/licenses:
     parameters:
       - name: limit
@@ -1522,7 +1569,7 @@ paths:
           type: string
       - name: app_id__isnull
         in: query
-        description: Filter on the presense of any repository application ID (exact match)
+        description: Filter on the presence of any repository application ID (exact match)
         required: false
         schema:
           type: boolean
@@ -1546,7 +1593,7 @@ paths:
           type: string
       - name: repo_contact__isnull
         in: query
-        description: Filter on the presense of a repository contact
+        description: Filter on the presence of a repository contact
         required: false
         schema:
           type: boolean
@@ -2088,6 +2135,7 @@ components:
               - python_code_checker
               - technology_discovery
               - cicd_tools
+              - api_specs
               - trufflehog
               - brakeman
               - bundler_audit
@@ -2355,7 +2403,7 @@ components:
           properties:
             vulnerabilities:
               type: object
-              description: The summary of vulnerablities
+              description: The summary of vulnerabilities
               properties:
                 critical:
                   description: The number of critical severity vulnerabilities

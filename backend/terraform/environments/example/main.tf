@@ -1,13 +1,13 @@
 terraform {
   backend "s3" {
-    region         = "REGION_NAME"
-    bucket         = "S3_BUCKET_NAME"
-    key            = "STATE_FILE_S3_KEY"
-    dynamodb_table = "DYNAMO_DB_LOCK_TABLE_NAME"
+    region       = "REGION_NAME"
+    bucket       = "S3_BUCKET_NAME"
+    key          = "STATE_FILE_S3_KEY"
+    use_lockfile = true
   }
   required_providers {
     aws = {
-      version = "3.64.2"
+      version = "5.100.0"
     }
   }
 }
@@ -29,7 +29,6 @@ locals {
   zone_map = {
     "ARTEMIS_ROUTE53_FQDN" = "ROUTE53_ZONEID"
   }
-  saml_role           = "AWS_PROFILE_NAME"
   aqua_enabled        = false
   veracode_enabled    = false
   snyk_enabled        = false
@@ -73,6 +72,7 @@ module "ecr" {
     golang         = "Artemis Golang Image Repository",
     java           = "Artemis Java Image Repository",
     swift          = "Artemis Swift Image Repository",
+    minimal        = "Artemis Minimal Image Repository",
     ruby           = "Artemis Ruby Image Repository",
     db_maintenance = "Artemis DB Maintenance Image Repository"
   }

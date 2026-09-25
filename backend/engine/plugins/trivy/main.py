@@ -4,6 +4,7 @@ trivy image scanning plugin
 
 import json
 import subprocess
+import sys
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.trivy_common.parsing_util import parse_output
 from engine.plugins.lib.utils import setup_logging
@@ -86,7 +87,7 @@ def main():
     results.extend(image_outputs)
 
     # Return results
-    print(json.dumps({"success": not bool(results), "details": results}))
+    json.dump({"success": not bool(results), "details": results}, sys.stdout)
 
 
 if __name__ == "__main__":

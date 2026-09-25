@@ -2,7 +2,7 @@
 
 This script runs a core plugin locally in a similar way to in a deployed environment (i.e., in a container).
 
-Running plugins this way enables rapid local testing and debuggging of changes to the container image without needing to spin up a full local environment.
+Running plugins this way enables rapid local testing and debugging of changes to the container image without needing to spin up a full local environment.
 
 This is intended to only support basic plugins that do not need the Artemis services in order to run.
 

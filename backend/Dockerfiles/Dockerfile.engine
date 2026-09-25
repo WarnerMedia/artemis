@@ -1,23 +1,34 @@
 # syntax=docker/dockerfile:1
-ARG ENGINE_BASE=3.12-slim-bullseye
+ARG ENGINE_BASE=3.13-debian13-dev
 
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.12-bullseye AS builder
+FROM dhi.io/python:3.13-debian13-dev AS builder
 
 # Install the Docker repository
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update \
     && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        debian-archive-keyring \
+        gnupg \
         lsb-release \
-        software-properties-common \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN wget --quiet -O - https://download.docker.com/linux/debian/gpg | apt-key add -
+    && install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+    && chmod a+r /etc/apt/keyrings/docker.asc \
+    && tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/debian
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
 
 # Libc-specific boxed plugin bundle builders.
 # Built from Dockerfile.boxed by context in the bakefile.
@@ -29,7 +40,7 @@ FROM boxed-musl AS boxed-musl
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python:$ENGINE_BASE AS app
+FROM dhi.io/python:$ENGINE_BASE AS app
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -38,26 +49,23 @@ RUN mkdir -p /srv/engine
 
 WORKDIR /src
 COPY libs/ .
-COPY Pipfile .
-COPY Pipfile.lock .
+COPY build/requirements-engine.txt /tmp/requirements-engine.txt
 
 # Copy over the apt config from the builder that has the Docker repository
 # already set up.
 COPY --from=builder /etc/apt /etc/apt
+COPY --from=builder /usr/share/keyrings /usr/share/keyrings
 
 # Run all additional config in a single RUN to reduce the layers:
 # - Apply security updates
 # - Install Engine prerequisites
-# - Install Pipenv environment
+# - Install dependencies from requirements
 # - Install Artemis libraries
 # hadolint ignore=DL3008,DL3013,DL3042
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=cache,target=/root/.cache/pipenv,sharing=locked \
     apt-get update \
-    && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
     && apt-get upgrade -y \
-    && apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list \
     && apt-get install -y --no-install-recommends \
         docker-buildx-plugin \
         docker-ce-cli \
@@ -66,10 +74,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip install --upgrade setuptools==70.3.0 \
-    && pip install pipenv==2024.0.1 \
-    && pipenv install --system --deploy \
-    && pip install /src/artemislib \
-    && pip install /src/artemisdb \
+    && pip install --no-cache-dir -r /tmp/requirements-engine.txt \
+    && pip install --no-deps /src/artemislib \
+    && pip install --no-deps /src/artemisdb \
     && rm -r /src
 
 WORKDIR /srv/engine

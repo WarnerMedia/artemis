@@ -1,0 +1,5 @@
+# This Zizmor configuration should be ignored.
+rules:
+  dependabot-cooldown:
+    config:
+      days: 20

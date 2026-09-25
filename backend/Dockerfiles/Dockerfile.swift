@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM alpine:3.20 AS common
+FROM dhi.io/alpine-base:3.22-dev AS common
 
 # We're using Alpine's /bin/sh, so disable pipefail suggestion.
 # hadolint global ignore=DL4006
@@ -8,10 +8,12 @@ FROM alpine:3.20 AS common
 ARG SWIFTLINT_VER
 ARG SWIFTLINT_SHA
 
-RUN wget -q -O /tmp/swiftlint.zip "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VER}/swiftlint_linux.zip" && \
+RUN apk add --no-cache curl ca-certificates && \
+    curl -fsSL -o /tmp/swiftlint.zip "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VER}/swiftlint_linux.zip" && \
     echo "$SWIFTLINT_SHA  /tmp/swiftlint.zip" | sha256sum -c - && \
     unzip /tmp/swiftlint.zip -d /opt/swiftlint && \
-    chmod a+x /opt/swiftlint/swiftlint
+    chmod a+x /opt/swiftlint/swiftlint && \
+    apk del curl
 
 
 FROM swift:5.5.2-focal

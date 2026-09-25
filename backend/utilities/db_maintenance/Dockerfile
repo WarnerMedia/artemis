@@ -1,7 +1,7 @@
 ###############################################################################
 # Build stage
 ###############################################################################
-FROM python:3.12-bullseye AS builder
+FROM dhi.io/python:3.13-debian13-dev AS builder
 
 WORKDIR /src
 
@@ -14,9 +14,12 @@ ENV PATH="/venv/bin:$PATH"
 # Create the venv
 RUN python -m venv /venv
 
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl gnupg && \
+    mkdir -p /usr/share/keyrings && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor > /usr/share/keyrings/postgresql-archive-keyring.gpg && \
+    chmod a+r /usr/share/keyrings/postgresql-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 
 # Copy the source tree into the WORKDIR
 COPY ./lambdas/api ./api
@@ -31,7 +34,7 @@ RUN pip install --no-cache-dir ./libs/artemislib ./libs/artemisdb ./api/repo
 ###############################################################################
 # App stage
 ###############################################################################
-FROM python:3.12-slim-bullseye AS app
+FROM dhi.io/python:3.13-debian13-dev AS app
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
@@ -45,15 +48,14 @@ ENV PATH="/venv/bin:$PATH"
 COPY --from=builder /venv /venv
 
 COPY --from=builder /etc/apt /etc/apt
+COPY --from=builder /usr/share/keyrings /usr/share/keyrings
 
 # Run all additional config in a single RUN to reduce the layers:
 # - Apply security updates
 # - Install PostgreSQL client
 # hadolint ignore=DL3008
 RUN apt-get update \
-    && grep security /etc/apt/sources.list > /etc/apt/security.sources.list \
     && apt-get upgrade -y \
-    && apt-get upgrade -y -o Dir::Etc::Sourcelist=/etc/apt/security.sources.list \
     && apt-get install postgresql-client-12 -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

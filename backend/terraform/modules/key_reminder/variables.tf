@@ -22,7 +22,7 @@ variable "lambda_architecture" {
 
 variable "lambda_runtime" {
   description = "Runtime of the lambda functions"
-  default     = "python3.12"
+  default     = "python3.13"
 }
 
 variable "lambda_subnet" {

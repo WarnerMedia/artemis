@@ -94,14 +94,14 @@ The `runner` plugin setting sets how the plugin is run inside a container and wh
 
 These plugins are run via the system Python in the container.
 
-- The container must have Python 3.12 available as `python` in the PATH.
+- The container must have Python 3.13 available as `python` in the PATH.
 - All Python dependencies needed by the plugin must be installed in the system Python.
 
 ### `boxed`
 
 These plugins are bundled together with a standalone Python distribution along with all dependencies into a single self-extracting executable.
 
-- The container must be glibc-based (i.e. musl-based distrbutions such as Alpine are *not* supported).
+- The container must be glibc-based (i.e. musl-based distributions such as Alpine are *not* supported).
 - The container must have `/bin/sh` available, along with standard tools such as `tar` in the PATH. This may be supplied by BusyBox.
 
 The container does *not* need a system Python or Python dependencies since they are included in the "boxed" plugin bundle.

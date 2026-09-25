@@ -2,11 +2,11 @@
 # Build stages
 ###############################################################################
 
-ARG PYTHON_IMG_VER=python:3.12-bookworm
+ARG PYTHON_IMG_VER=python:3.13-trixie
 
-ARG PYTHON_SLIM_IMG_VER=python:3.12-slim-bookworm
+ARG PYTHON_SLIM_IMG_VER=python:3.13-slim-trixie
 
-ARG PHP_IMG_VER=php:8.2-cli-bookworm
+ARG PHP_IMG_VER=php:8.2-cli-trixie
 
 # False-positive, see: https://github.com/hadolint/hadolint/issues/979
 # hadolint global ignore=DL3006
@@ -179,7 +179,7 @@ RUN apt-get update && \
         "srcclr=3.8.*" \
         "zlib1g=1:1.2.*" && \
     apt-get -s dist-upgrade | { grep -E '^Inst ' | grep -F 'Debian-Security' || true; } | awk '{print $2}' | xargs apt-get -y --no-install-recommends -o "dpkg::Options::=--refuse-downgrade" install && \
-    npm install --global \
+    npm install --global --ignore-scripts \
         "bower@1.8.x" \
         "yarn@1.22.x" && \
     apt-get clean && \

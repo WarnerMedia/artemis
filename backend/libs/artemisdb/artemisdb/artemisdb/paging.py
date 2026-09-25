@@ -1,7 +1,7 @@
 import importlib
+from collections.abc import Callable
 from enum import Enum
 from http import HTTPStatus
-from typing import Callable
 
 from django.db.models.query import QuerySet
 

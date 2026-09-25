@@ -1,12 +1,11 @@
 from http import HTTPStatus
-from typing import Type
 
 from artemisapi.response import response
 from artemisdb.artemisdb.models import UserService
 from artemislib.datetime import format_timestamp
 
 
-def get(parsed_event: dict) -> Type[response]:
+def get(parsed_event: dict) -> type[response]:
     """
     Get a given user service (if specified)
     Otherwise, return a list of services for a given user

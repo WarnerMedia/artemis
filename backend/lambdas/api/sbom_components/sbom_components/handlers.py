@@ -4,12 +4,13 @@ from artemisapi.authorizer import get_authorizer_info
 from artemisapi.response import response
 from artemisapi.validators import ValidationError
 from sbom_components.get import get
+from sbom_components.post import post
 from sbom_components.util.events import ParsedEvent
 
 
 def handler(event, _):
     auth = get_authorizer_info(event)
-    if auth["principal"]["type"] == "group_api_key":
+    if not auth or auth["principal"]["type"] == "group_api_key":
         # Group API keys are not allowed to use this API
         return response(code=HTTPStatus.FORBIDDEN)
 
@@ -20,6 +21,8 @@ def handler(event, _):
 
     if event.get("httpMethod") == "GET":
         resp = get(parsed_event, scope=auth["authz"])
+    elif event.get("httpMethod") == "POST":
+        resp = post(event, scope=auth["authz"])
     else:
         return response(code=HTTPStatus.METHOD_NOT_ALLOWED)
 

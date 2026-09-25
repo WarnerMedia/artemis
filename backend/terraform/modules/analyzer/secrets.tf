@@ -341,6 +341,18 @@ resource "aws_secretsmanager_secret" "private_docker_repo_creds" {
   description = "Private Docker repository configuration and authentication information"
 }
 
+# A list of container registries with creds
+#
+# Structure:
+# [
+#   {
+#     "url": "Docker login url",
+#     "search": "Search string for identifying whether a Dockerfile uses this repo. Required for private registries. Should be omitted for public."
+#     "username": "Registry username",
+#     "password": "Registry password",
+#     "private": Boolean indicating whether this is a private registry. Defaults to true in application logic if omitted.
+#   }
+# ]
 resource "aws_secretsmanager_secret_version" "private_docker_repo_creds" {
   secret_id = aws_secretsmanager_secret.private_docker_repo_creds.id
   secret_string = jsonencode([
@@ -348,7 +360,8 @@ resource "aws_secretsmanager_secret_version" "private_docker_repo_creds" {
       "url" : "REPLACEWITHREGISTRYURL",
       "search" : "FROMLINEFORIDENTIFYINGPRIVATEBASEIMAGES",
       "username" : "REPLACEWITHUSERNAME",
-      "password" : "REPLACEWITHPASSWORD"
+      "password" : "REPLACEWITHPASSWORD",
+      "private" : true
     }
   ])
 }

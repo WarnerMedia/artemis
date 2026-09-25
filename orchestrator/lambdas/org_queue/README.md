@@ -10,10 +10,10 @@ To trigger this lambda, invoke this function with a message in this format:
 
 ```jsonc
 {
-  // "scan_orgs": is a List that identifies which organizations should be scanned.
+  // "orgs": is a List that identifies which organizations should be scanned.
   // When this field is defined, it will overwrite the default list.
   // The default list is all organizations in the services.json file
-  "scan_orgs": [],
+  "orgs": [],
 
   // "exclude_orgs": is a List of organizations that should not be scanned.
   // When used, it will exclude any organizations in the services.json file

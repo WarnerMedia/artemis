@@ -1,14 +1,17 @@
 # syntax=docker/dockerfile:1
-FROM node:22-bookworm-slim
+FROM dhi.io/node:22-debian13-dev
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
+
+# Copy uv for Python package management
+COPY --from=ghcr.io/astral-sh/uv:0.9.28 /uv /uvx /bin/
 
 # hadolint ignore=DL3008,DL3016
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && \
     apt-get upgrade -y && \
-    apt-get install python3 python3-pip git -y --no-install-recommends && \
+    apt-get install python3 git -y --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -16,28 +19,26 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Install eslint and dependencies for eslint plugin.
 WORKDIR /opt/eslint
 RUN --mount=type=cache,target=/root/.npm,sharing=locked \
-    npm install -g npm@10.9.2 && \
-    npm install \
+    npm install -g --ignore-scripts --force npm@10.9.8 && \
+    npm install --ignore-scripts \
     eslint@8.57.1 \
     eslint-plugin-security@3.0.1 \
     typescript@5.7.2 \
-    @typescript-eslint/parser@8.18.0
+    @typescript-eslint/parser@8.57.2 && \
+    npm install --ignore-scripts minimatch@10.2.3 picomatch@4.0.4 brace-expansion@2.0.3 diff@5.2.2
 
 # Provide our own eslint wrapper to set the plugin search directory.
 # We assume that eslint will always be called with absolute paths.
-RUN printf "#!/bin/sh\ncd /opt/eslint\n"'npx eslint --resolve-plugins-relative-to=/opt/eslint "$@"' > /usr/local/bin/eslint && \
+RUN mkdir -p /usr/local/bin && \
+    printf "#!/bin/sh\ncd /opt/eslint\n"'npx eslint --resolve-plugins-relative-to=/opt/eslint "$@"' > /usr/local/bin/eslint && \
     chmod 755 /usr/local/bin/eslint
+
+WORKDIR /
 
 # Install nodejsscan for the nodejsscan plugin.
 # hadolint ignore=DL3013,DL3042
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --break-system-packages --upgrade pip setuptools && \
-    pip install --break-system-packages nodejsscan
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv venv --python 3.13 && \
+    uv pip install nodejsscan
 
-# Clean up old python packages.
-RUN apt-get remove -y --purge \
-    python3-distutils \
-    python3-pip \
-    python3-setuptools \
-    python3-wheel \
-    python3-pkg-resources
+ENV PATH="/.venv/bin:$PATH"

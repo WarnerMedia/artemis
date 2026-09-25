@@ -4,10 +4,10 @@ node_dependencies plugin
 
 import json
 import os
-from glob import glob
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.line_numbers.resolver import LineNumberResolver
+from engine.plugins.lib.node_common import DirLockfileMap, build_npm_context
 from engine.plugins.node_dependencies.audit import npm_audit
 from engine.plugins.node_dependencies.parse import parse_advisory
 from engine.plugins.lib.write_npmrc import handle_npmrc_creation
@@ -25,22 +25,37 @@ def check_package_files(path: str, include_dev: bool = False) -> tuple:
     errors = []
     alerts = []
 
-    # Find and loop through all the package.json files in the path
-    files = glob("%s/**/package.json" % path, recursive=True)
+    ctx = build_npm_context(path)
+    alerts.extend(ctx.alerts)
 
-    log.info("Found %d package.json files", len(files))
+    # Collect directories to audit: workspace roots & standalone directories
+    audit_dirs: DirLockfileMap = {
+        **ctx.workspace_roots,
+        **ctx.standalone_dirs,
+    }
 
-    # Build a set of all directories containing package files
-    paths = set()
-    for filename in files:
-        paths.add(os.path.dirname(filename))
+    if not audit_dirs:
+        log.info("No package.json directories to audit")
+        return results, errors, alerts
 
-    # Write a .npmrc file based on the set of package.json files found
-    handle_npmrc_creation(log, paths)
+    handle_npmrc_creation(log, set(audit_dirs) | ctx.workspace_members)
 
-    for sub_path in paths:
-        absolute_package_file = f"{sub_path}/package.json"
+    for sub_path, lockfile_type in audit_dirs.items():
+        absolute_package_file = os.path.join(sub_path, "package.json")
         relative_package_file = absolute_package_file.replace(path, "")
+
+        # Skip non-npm ecosystems: npm audit requires package-lock.json
+        has_package_lock = os.path.isfile(os.path.join(sub_path, "package-lock.json"))
+        if lockfile_type in ("yarn", "pnpm", "bun") and not has_package_lock:
+            msg = f"Skipping {relative_package_file}: project uses {lockfile_type}"
+            log.info(msg)
+            alerts.append(msg)
+            continue
+
+        # Skip lockfile generation when the registry is unreachable
+        if not has_package_lock and not ctx.registry_reachable:
+            log.info("Skipping %s: registry unreachable, cannot generate lockfile", relative_package_file)
+            continue
 
         # Run npm audit against the package file
         audit = npm_audit(sub_path, include_dev, path)

@@ -1,0 +1,159 @@
+[
+  {
+    "ident": "artipacked",
+    "desc": "credential persistence through GitHub Actions artifacts",
+    "url": "https://docs.zizmor.sh/audits/#artipacked",
+    "determinations": {
+      "confidence": "Low",
+      "severity": "Medium",
+      "persona": "Regular"
+    },
+    "locations": [
+      {
+        "symbolic": {
+          "key": {
+            "Local": {
+              "prefix": "/work/data/",
+              "given_path": "/work/data/.github/workflows/ci.yml"
+            }
+          },
+          "annotation": "does not set persist-credentials: false",
+          "route": {
+            "route": [
+              {
+                "Key": "jobs"
+              },
+              {
+                "Key": "test"
+              },
+              {
+                "Key": "steps"
+              },
+              {
+                "Index": 0
+              }
+            ]
+          },
+          "feature_kind": "Normal",
+          "kind": "Primary"
+        },
+        "concrete": {
+          "location": {
+            "start_point": {
+              "row": 14,
+              "column": 8
+            },
+            "end_point": {
+              "row": 14,
+              "column": 97
+            },
+            "offset_span": {
+              "start": 222,
+              "end": 311
+            }
+          },
+          "feature": "uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # actions/checkout@v6.0.0",
+          "comments": [
+            "# actions/checkout@v6.0.0"
+          ]
+        }
+      }
+    ],
+    "ignored": false
+  },
+  {
+    "ident": "secrets-outside-env",
+    "desc": "secrets referenced without a dedicated environment",
+    "url": "https://docs.zizmor.sh/audits/#secrets-outside-env",
+    "determinations": {
+      "confidence": "High",
+      "severity": "High",
+      "persona": "Regular"
+    },
+    "locations": [
+      {
+        "symbolic": {
+          "key": {
+            "Local": {
+              "prefix": "/work/data/",
+              "given_path": "/work/data/.github/workflows/announce.yml"
+            }
+          },
+          "annotation": "this job",
+          "route": {
+            "route": [
+              {
+                "Key": "jobs"
+              },
+              {
+                "Key": "slack-unlock"
+              }
+            ]
+          },
+          "feature_kind": "KeyOnly",
+          "kind": "Related"
+        },
+        "concrete": {
+          "location": {
+            "start_point": {
+              "row": 27,
+              "column": 2
+            },
+            "end_point": {
+              "row": 27,
+              "column": 14
+            },
+            "offset_span": {
+              "start": 878,
+              "end": 890
+            }
+          },
+          "feature": "slack-unlock",
+          "comments": []
+        }
+      },
+      {
+        "symbolic": {
+          "key": {
+            "Local": {
+              "prefix": "/work/data/",
+              "given_path": "/work/data/.github/workflows/announce.yml"
+            }
+          },
+          "annotation": "secret is accessed outside of a dedicated environment",
+          "route": {
+            "route": [
+              {
+                "Key": "jobs"
+              },
+              {
+                "Key": "slack-unlock"
+              }
+            ]
+          },
+          "feature_kind": "Normal",
+          "kind": "Primary"
+        },
+        "concrete": {
+          "location": {
+            "start_point": {
+              "row": 41,
+              "column": 29
+            },
+            "end_point": {
+              "row": 41,
+              "column": 50
+            },
+            "offset_span": {
+              "start": 1432,
+              "end": 1453
+            }
+          },
+          "feature": "secrets.WEBHOOK",
+          "comments": []
+        }
+      }
+    ],
+    "ignored": false
+  }
+]

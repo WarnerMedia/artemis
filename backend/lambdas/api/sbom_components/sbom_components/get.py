@@ -28,7 +28,7 @@ def get(parsed_event, scope):
     elif parsed_event.component_name and parsed_event.component_version:
         # Endpoint:
         #   /sbom/components/NAME/VERSION
-        # Return the repsonse for a single version of a component
+        # Return the response for a single version of a component
         return _single_component(name=parsed_event.component_name, version=parsed_event.component_version, scope=scope)
     else:
         # Endpoints:

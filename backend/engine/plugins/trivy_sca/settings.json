@@ -1,8 +1,9 @@
 {
-    "name": "Trivy SCA Scanner",
-    "type": "vulnerability",
-    "image": "$ECR/artemis/dind:latest",
-    "build_images": false,
-    "enabled": true,
-    "writable": true
+  "name": "Trivy SCA Scanner",
+  "type": "vulnerability",
+  "image": "$ECR/artemis/dind:latest",
+  "build_images": false,
+  "docker": true,
+  "enabled": true,
+  "writable": true
 }

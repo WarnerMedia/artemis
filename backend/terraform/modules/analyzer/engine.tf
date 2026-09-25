@@ -58,6 +58,7 @@ module "public_engine_cluster" {
   metadata_events_enabled       = var.metadata_events_enabled
   datadog_enabled               = var.datadog_enabled
   datadog_environment_variables = var.datadog_environment_variables
+  private_docker_repos_key      = var.private_docker_repos_key
 }
 
 module "nat_engine_cluster" {
@@ -121,4 +122,5 @@ module "nat_engine_cluster" {
   metadata_events_enabled       = var.metadata_events_enabled
   datadog_enabled               = var.datadog_enabled
   datadog_environment_variables = var.datadog_environment_variables
+  private_docker_repos_key      = var.private_docker_repos_key
 }

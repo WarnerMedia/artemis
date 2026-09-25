@@ -5,6 +5,12 @@ resource "aws_ecr_repository" "module_repo" {
   tags = var.tags
 }
 
+resource "aws_ecr_lifecycle_policy" "lifecycle_policy" {
+  count      = var.lifecycle_policy == {} ? 0 : 1
+  repository = aws_ecr_repository.module_repo.name
+  policy     = jsonencode(var.lifecycle_policy)
+}
+
 ###############################################################################
 # ECR Permissions
 ###############################################################################

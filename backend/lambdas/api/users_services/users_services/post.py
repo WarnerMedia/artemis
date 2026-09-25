@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import Type
 
 from artemisapi.response import response
 from artemisapi.validators import ValidationError
@@ -9,7 +8,7 @@ from artemislib.datetime import format_timestamp
 from users_services.util.github import get_github_username
 
 
-def post(parsed_event: dict, post_body: dict) -> Type[response]:
+def post(parsed_event: dict, post_body: dict) -> type[response]:
     """
     Link a new service for a given user
     """

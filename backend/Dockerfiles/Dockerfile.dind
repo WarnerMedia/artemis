@@ -1,18 +1,21 @@
-FROM docker:28.3-dind
+FROM docker:29.2-dind
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
 ARG TRIVY_VER=v0.67.0
 ARG TRIVY_COMMIT=4b9f310b9c5ff3460675db9614e12f4689f6485b
-ARG TRUFFLEHOG_VER=v3.90.5
-ARG TRUFFLEHOG_COMMIT=0f58ae7c5036094a1e3e750d18772af92821b503
+ARG TRUFFLEHOG_VER=v3.93.6
+ARG TRUFFLEHOG_COMMIT=041f07e9df901a1038a528e5525b0226d04dd5ea
 ARG SNYK_VER=v1.889.0
 ARG SNYK_FLAG
 
 # Install specific Go version.
-COPY --from=golang:1.24.5-alpine /usr/local/go /opt/go
+COPY --from=dhi.io/golang:1.24.13-alpine3.22 /usr/local/go /opt/go
 ENV PATH="/opt/go/bin:$PATH"
+
+# We use uv to install our preferred Python version.
+COPY --from=ghcr.io/astral-sh/uv:0.9.28 /uv /uvx /bin/
 
 # Copy Artemis libraries into /src for installation
 RUN mkdir -p /src
@@ -20,26 +23,23 @@ COPY ./libs/ /src/
 
 # - Base apk requirements to execute script
 # - Upgrade pip and install boto3 for plugin utils
-# - Symlink python3 to python for Analyzer Engine benefit
-RUN apk update && apk add git unzip python3 py3-pip libgcc libstdc++ && \
+RUN apk update && apk add git curl unzip libgcc libstdc++ && \
     apk upgrade && \
     apk add npm && \
-    python3 -m venv /venv && \
-    . /venv/bin/activate && \
-    pip install --upgrade pip setuptools boto3 && \
-    pip install 'docker~=7.1' && \
-    wget -O - https://raw.githubusercontent.com/aquasecurity/trivy/$TRIVY_COMMIT/contrib/install.sh | sh -s -- -b /usr/local/bin $TRIVY_VER && \
-    pip install /src/artemislib && \
-    pip install /src/artemisdb && \
+    uv venv --python 3.13 && \
+    uv pip install --upgrade pip setuptools boto3 && \
+    uv pip install 'docker~=7.1' && \
+    curl -fsSL https://raw.githubusercontent.com/aquasecurity/trivy/$TRIVY_COMMIT/contrib/install.sh | sh -s -- -b /usr/local/bin $TRIVY_VER && \
+    curl -fsSL https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_COMMIT/scripts/install.sh | sh -s -- -b /usr/local/bin $TRUFFLEHOG_VER && \
+    uv pip install /src/artemislib && \
+    uv pip install /src/artemisdb && \
     rm -r /src
 
-ENV PATH="/venv/bin:$PATH"
-
-RUN wget -O - https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_COMMIT/scripts/install.sh | sh -s -- -b /usr/local/bin $TRUFFLEHOG_VER
+ENV PATH="/.venv/bin:$PATH"
 
 RUN if [ "${SNYK_FLAG}" = "true" ]; then \
-    wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine && \
-    wget https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine.sha256 && \
+    curl -fsSL https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine && \
+    curl -fsSL https://github.com/snyk/snyk/releases/download/$SNYK_VER/snyk-alpine.sha256 && \
     sha256sum -c snyk-alpine.sha256 && \
     rm snyk-alpine.sha256 && \
     mv snyk-alpine snyk && \

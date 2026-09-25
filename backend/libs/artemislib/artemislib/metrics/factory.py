@@ -2,7 +2,6 @@ from typing import Literal
 
 from artemislib.env import DATADOG_ENABLED, APPLICATION
 from artemislib.metrics.base import MetricsConfig, MetricsProvider, DefaultMetricsProvider
-from artemislib.metrics.provider.datadog import DatadogMetricsProvider
 
 MetricsProviderName = Literal["Datadog", "Default"]
 
@@ -20,6 +19,8 @@ class MetricsFactory:
     @classmethod
     def create_metrics_provider(cls, provider: MetricsProviderName, config: MetricsConfig = DEFAULT_CONFIG):
         if provider == "Datadog" and DATADOG_ENABLED:
+            from artemislib.metrics.provider.datadog import DatadogMetricsProvider
+
             cls._instances[provider] = DatadogMetricsProvider(config)
             return cls._instances[provider]
         return cls._instances["Default"]

@@ -135,7 +135,7 @@ class TestPluginTrivySBOMIntegration(unittest.TestCase):
 
     @pytest.mark.integtest
     def test_build_scan_parse_images(self):
-        results = Trivy.build_scan_parse_images(self.images)
+        results, _ = Trivy.process_docker_images(self.images["results"])
         replace_root = TEST_DATA
         if replace_root.startswith("/"):
             replace_root = replace_root[1:]
@@ -151,17 +151,17 @@ class TestPluginTrivySBOMIntegration(unittest.TestCase):
 
     @pytest.mark.integtest
     def test_execute_trivy_no_files(self):
-        result = Trivy.execute_trivy_application_sbom(os.path.abspath(os.path.join(TRIVY_DATA, "no_files")))
+        result = Trivy.execute_trivy_application_sbom(os.path.abspath(os.path.join(TRIVY_DATA, "no_files")), False)
         self.assertEqual(None, result)
 
     @pytest.mark.integtest
     def test_execute_trivy_success(self):
-        result = Trivy.execute_trivy_application_sbom(TEST_ROOT)
+        result = Trivy.execute_trivy_application_sbom(TEST_ROOT, False)
         self.assertIsInstance(result, str)
 
     @pytest.mark.integtest
     def test_convert_output_success(self):
-        response = Trivy.execute_trivy_application_sbom(TEST_ROOT)
+        response = Trivy.execute_trivy_application_sbom(TEST_ROOT, False)
         result = convert_string_to_json(response, logger)
         self.assertNotIn(result, [[], None])
         self.assertIsInstance(result, list)

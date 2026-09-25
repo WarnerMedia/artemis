@@ -1,0 +1,29 @@
+# Global Zizmor plugin configuration.
+# More information: https://docs.zizmor.sh/configuration/
+#
+# This configuration overrides any configuration file set within the repository
+# being scanned.
+#
+# This sets a common policy baseline for mass-scanning of repositories and
+# guards against repositories with malformed config files or configs which
+# attempt to fly under the radar by disabling all checks.
+
+rules:
+  dependabot-cooldown:
+    config:
+      # Default audit check is 7 days minimum.
+      #
+      # We adjust this down when used for mass-scanning for a couple of reasons:
+      #   - Most major supply-chain attacks have been detected rapidly, with
+      #     affected versions pulled within 24 hours.
+      #   - For legit security updates, a 7-day cooldown causes confusion
+      #     with the findings of other supply-chain security scanners and so
+      #     negatively affects time-to-remediate.
+      #
+      # Setting this to "1" effectively lowers the check to requiring *a*
+      # cooldown, with individual repos choosing their own values based on
+      # the time-to-remediate vs. potential malware tradeoff.
+      #
+      # Note that Zizmor currently does not have a way to specify a maximum
+      # cooldown period, only a minimum.
+      days: 1

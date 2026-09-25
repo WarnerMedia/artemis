@@ -1,6 +1,6 @@
 {
     "name": "Technology Discovery",
     "type": "inventory",
-    "image": "$ECR/artemis/golang:latest",
+    "image": "$ECR/artemis/minimal:latest",
     "runner": "boxed"
 }

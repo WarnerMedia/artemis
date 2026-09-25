@@ -1,11 +1,41 @@
 [project]
 name = "artemis-heimdall"
 version = "2.7.0"
-requires-python = ">= 3.12"
+requires-python = ">= 3.13"
+dependencies = [
+    "heimdall_utils",
+    "heimdall_orgs",
+    "heimdall_repos",
+    "aws-lambda-powertools~=3.25",
+    "boto3~=1.42",
+    "cryptography~=50.0",
+    "pyjwt~=2.10",
+    "requests~=2.33",
+]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.40",
+    "autopep8~=2.3",
+    "flake8~=7.2",
+    "mock~=5.1",
+    "moto[awslambda,ec2,s3,secretsmanager,sqs]~=5.1",
+    "pylint~=4.0",
+    "pyright~=1.1",
+    "pytest~=9.0",
+    "pytest-cov~=7.0",
+    "responses~=0.26",
+    "ruff==0.15.22",
+]
+
+[tool.uv.sources]
+heimdall_utils = { path = "lambdas/layers/heimdall_utils" }
+heimdall_orgs = { path = "lambdas/layers/heimdall_orgs" }
+heimdall_repos = { path = "lambdas/layers/heimdall_repos" }
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
+target-version = "py313"
 
 [tool.isort]
 profile = "black"
@@ -19,20 +49,14 @@ known_first_party = [
     "repo_queue",
     "repo_scan",
     "repo_scan_loop",
-    "lambdas"
+    "lambdas",
 ]
 
 [tool.pyright]
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 typeCheckingMode = "standard"
-include = [
-    "lambdas",
-]
-exclude = [
-    "**/.eggs",
-    "**/build",
-    "**/dist",
-]
+include = ["lambdas"]
+exclude = ["**/.eggs", "**/build", "**/dist"]
 extraPaths = [
     "lambdas/layers/heimdall_orgs",
     "lambdas/layers/heimdall_repos",

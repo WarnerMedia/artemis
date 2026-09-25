@@ -150,6 +150,10 @@ class EngineProcessor:
                 else:
                     logger.info("Plugin %s completed, updating results", plugin)
 
+                    if results.timed_out:
+                        error_plugins.append(plugin)
+                        logger.warning("Plugin %s timed out", plugin)
+
                     if results.type == PluginType.SBOM.value and plugin == "veracode_sbom":
                         process_sbom(results, self.scan.get_scan_object())
 

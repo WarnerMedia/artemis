@@ -1,7 +1,7 @@
 # Note: This Dockerfile creates an image intended ONLY for local development and testing
-# it may contain unnessary source code and artifacts that are NOT intended for deployment
+# it may contain unnecessary source code and artifacts that are NOT intended for deployment
 
-FROM node:20-bookworm-slim
+FROM node:22-trixie-slim
 
 WORKDIR /app
 
@@ -17,10 +17,9 @@ COPY package*.json hadolint.sha512 .npmrc ./
 # hadolint ignore=DL3008
 RUN apt-get update && \
 	apt-get upgrade -y && \
-	apt-get install -y --no-install-recommends jq wget ca-certificates make && \
-	wget --quiet \
-	https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 \
-	-O ./hadolint && \
+	apt-get install -y --no-install-recommends jq ca-certificates make && \
+	curl https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 \
+	-o ./hadolint && \
 	sha512sum -c hadolint.sha512 && \
 	chmod 0766 ./hadolint && \
 	apt-get clean && \

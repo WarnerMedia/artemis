@@ -3,7 +3,7 @@ import os
 import re
 import time
 from datetime import datetime, timezone
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 from django.db import transaction
 from joserfc import jwk, jwt
@@ -301,7 +301,7 @@ def _get_user(email: str) -> Optional[User]:
         return None
 
 
-def _get_group_permissions(user: User) -> Tuple[dict, list, dict, list]:
+def _get_group_permissions(user: User) -> tuple[dict, list, dict, list]:
     """
     Get the consolidated group permissions for a user.
 
@@ -376,7 +376,7 @@ def _get_group_permissions(user: User) -> Tuple[dict, list, dict, list]:
     return auth, scopes, consolidated_features, list(set(allowlist_denied))
 
 
-def _get_api_key_group_permissions(key: APIKey) -> Tuple[list, dict, list]:
+def _get_api_key_group_permissions(key: APIKey) -> tuple[list, dict, list]:
     """
     Get the consolidated group permissions for an API key.
 

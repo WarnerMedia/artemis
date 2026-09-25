@@ -16,14 +16,14 @@ jobs:
       - name: setup python environment
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # actions/setup-python@v6.2.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           architecture: x64
-          cache: pipenv
-          cache-dependency-path: orchestrator/Pipfile.lock
+      - name: Setup UV
+        uses: astral-sh/setup-uv@ae62891fec2bb8e7d6c99fc78c9fec3a63790f8d # v10
+        with:
+          enable-cache: true
+          cache-dependency-glob: "orchestrator/uv.lock"
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # hashicorp/setup-terraform@v3.1.2
-      - name: Install Test Dependencies
-        run: |
-          pip install --upgrade pipenv wheel
       - name: Install shfmt
         run: |
           curl -sSL https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_linux_amd64 -o /usr/local/bin/shfmt

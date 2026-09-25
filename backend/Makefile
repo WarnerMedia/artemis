@@ -35,6 +35,7 @@ DOCKER := docker
 PYTHON := python3
 PIP := pip3
 TERRAFORM := terraform
+UV := uv
 
 VERSION := 2.0.0
 
@@ -123,6 +124,9 @@ DIND_TAG := ${DIND_PKG}:latest
 GOLANG_PKG := ${PREFIX}/golang
 GOLANG_TAG := ${GOLANG_PKG}:latest
 
+MINIMAL_PKG := ${PREFIX}/minimal
+MINIMAL_TAG := ${MINIMAL_PKG}:latest
+
 RUBY_PKG := ${PREFIX}/ruby
 RUBY_TAG := ${RUBY_PKG}:latest
 
@@ -161,7 +165,7 @@ SHARED_LIB_SRC = $(shell find ${ARTEMISLIB} -type f -name '*.py' -o -name '*.cfg
 API_LIB_SRC = $(shell find ${ARTEMISAPI} -type f -name '*.py' -o -name '*.cfg')
 
 # Engine base image
-ENGINE_BASE := 3.12-slim-bullseye
+ENGINE_BASE := 3.13-debian13-dev
 
 # Enry Info
 ENRYVER := 1.1.0
@@ -182,7 +186,7 @@ TFLINT_VER := 0.20.2
 TFLINT_SHA := 9d0c2a6da320e55018c1ae3df9d5f4e4fe0f34274a609b29f306f407db9e6a2e
 
 # CFN Python Lint
-CFN_VER = 1.40.4
+CFN_VER = 1.44.0
 
 # Bandit
 BANDIT_VER = 1.8.6
@@ -198,12 +202,12 @@ SEVERITY_LEVELS := critical,high
 PHP_SCANNER_VER := 6.10.3
 
 # Trivy
-TRIVY_COMMIT := 4b9f310b9c5ff3460675db9614e12f4689f6485b
-TRIVY_VER := v0.67.0
+TRIVY_COMMIT := cfa322ed23f2e33ef1632ae3a5a8c7172f06a5c3
+TRIVY_VER := v0.69.2
 
 # Trufflehog Version
-TRUFFLEHOG_COMMIT := 0f58ae7c5036094a1e3e750d18772af92821b503
-TRUFFLEHOG_VER := v3.90.5
+TRUFFLEHOG_COMMIT := 041f07e9df901a1038a528e5525b0226d04dd5ea
+TRUFFLEHOG_VER := v3.93.6
 
 # Snyk
 SNYK_VER := v1.889.0
@@ -214,11 +218,14 @@ SNYK_FLAG := $(shell egrep "snyk_enabled\s+=\s+(true|false)" ${TERRAFORM_DIR}/en
 DETEKT_VER := 1.19.0
 DETEKT_SHA := 4bc545c95c3711daeedd7766a9884ac50f2a49a0b472cef2b14dae332c58294d
 
+# Zizmor
+ZIZMOR_VER := 1.23.1
+
 # Lambdas
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
-LAMBDA_PYTHON_VER := 3.12.6
-LAMBDA_RUNTIME_VER := python3.12
-LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
+LAMBDA_PYTHON_VER := 3.13.14
+LAMBDA_RUNTIME_VER := python3.13
+LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM} --platform manylinux_2_28_${LAMBDA_PLATFORM}
 LAMBDA_LAYERS_BUILD_DIR := $(BUILD_DIR)/lambdas/layers
 
 # Artemis scan configuration
@@ -247,7 +254,7 @@ $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt.jar:
 	echo "${DETEKT_SHA} $@" | sha256sum -c -
 
 # The detekt wrapper script is renamed from detekt.sh to "detekt"
-# This is for compatability with installations done via a package manager
+# This is for compatibility with installations done via a package manager
 $(ROOT_DIR)/.temp/detekt-${DETEKT_VER}/detekt:
 	mkdir -p $(@D)
 	cp ${ROOT_DIR}/engine/plugins/detekt/detekt.sh $@
@@ -281,20 +288,25 @@ ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy:
 get-trivy: ${ROOT_DIR}/.temp/trivy-${TRIVY_VER}/trivy
 .PHONY: get-trivy
 
-install-plugin-dependencies:
-	@echo "${INFO}Installing plugin dependencies..."
-	${PYTHON} -m pipenv run pip install ${ROOT_DIR}/engine/plugins/github_repo_health/lib
+${ROOT_DIR}/.temp/zizmor-${ZIZMOR_VER}/zizmor:
+	mkdir -p $(@D)
+	utilities/zizmor-release-url.sh $(ZIZMOR_VER) > ${ROOT_DIR}/.temp/zizmor-release.txt
+	wget -q -i ${ROOT_DIR}/.temp/zizmor-release.txt -O ${ROOT_DIR}/.temp/zizmor-${ZIZMOR_VER}.tar.gz
+	tar -xzf ${ROOT_DIR}/.temp/zizmor-${ZIZMOR_VER}.tar.gz -C ${@D}
+
+get-zizmor: ${ROOT_DIR}/.temp/zizmor-${ZIZMOR_VER}/zizmor
+.PHONY: get-zizmor
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${PATH}:'; \
-	export PIPENV_DONT_LOAD_ENV=1; \
-	${PYTHON} -m pipenv sync --dev; \
-	${PYTHON} -m pipenv run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
+	export PATH='${ROOT_DIR}/.temp/shellcheck-${SHELLCHECKVER}:${ROOT_DIR}/.temp/detekt-${DETEKT_VER}:${ROOT_DIR}/.temp/swiftlint:${ROOT_DIR}/.temp/trivy-${TRIVY_VER}:${ROOT_DIR}/.temp/zizmor-${ZIZMOR_VER}:${PATH}:'; \
+	${UV} sync --locked --inexact --group engine; \
+	${UV} pip install ${ROOT_DIR}/engine/plugins/github_repo_health/lib; \
+	${UV} run pytest -c pytest.ini $2 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
 
-test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy install-plugin-dependencies
+test-deps: get-shell-check get-detekt get-mock-swiftlint get-trivy get-zizmor
 .PHONY: test-deps
 
 unit-test-no-deps:
@@ -319,10 +331,10 @@ test: test-deps style-test
 
 style-test:
 	@echo "${INFO}Running code style checks"
-	${PYTHON} -m pipenv sync --dev
-	${PYTHON} -m pipenv run ruff format --check .
+	${UV} sync --locked
+	${UV} run ruff format --check .
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
-#	not overrrides.
+#	not overrides.
 	${TERRAFORM} fmt -check -recursive terraform
 	$(CURDIR)/../tests/test_shellcheck.sh
 	$(CURDIR)/../tests/test_shfmt.sh
@@ -402,7 +414,7 @@ dist/lambdas/layers/backend_core.zip: ${SHARED_LIB_SRC} ${DB_LIB_SRC} ${API_LIB_
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${ARTEMISAPI}
 
 	@echo "${INFO} Adding dependencies to Lambda Layer"
-	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
+	${UV} export --group lambda-core --locked --no-dev --no-editable --no-emit-project --no-emit-local -o ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
 	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/backend_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS}
 
 	mkdir -p ${DIST_DIR}/lambdas/layers/backend_core/python
@@ -427,8 +439,10 @@ dist/engine_scripts.zip: docker-compose.aws.yml aws_env.py
 # Docker images
 ###############################################################################
 
-dist/docker/engine: docker-bake.hcl Dockerfiles/Dockerfile.boxed Dockerfiles/Dockerfile.engine Pipfile Pipfile.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
+dist/docker/engine: docker-bake.hcl Dockerfiles/Dockerfile.boxed Dockerfiles/Dockerfile.engine pyproject.toml uv.lock $(ENGINE_SRC) $(DB_LIB_SRC) $(SHARED_LIB_SRC)
 	@echo "${INFO}Building $@"
+	mkdir -p build
+	${UV} export --locked --group engine --no-dev --no-editable --no-emit-project --no-emit-local -o build/requirements-engine.txt
 	MAINTAINER=${MAINTAINER} \
 	ENGINE_BASE=${ENGINE_BASE} \
 	ENGINE_TAG=${ENGINE_TAG} \
@@ -468,7 +482,6 @@ dist/docker/node: Dockerfiles/Dockerfile.node
 	${DOCKER} tag ${NODE_TAG} ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT}
 	touch $@
 	@echo "${OK}"
-dist/docker/node14: dist/docker/node
 
 dist/docker/php: Dockerfiles/Dockerfile.php
 	@echo "${INFO}Building $@"
@@ -504,8 +517,6 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 	$(DOCKER) build . --pull -t ${GOLANG_TAG} -f Dockerfiles/Dockerfile.golang \
 		${DOCKER_BUILD_EXTRA_ARGS} \
 		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg ENRYVER=${ENRYVER} \
-		--build-arg ENRYSHA=${ENRYSHA} \
 		--build-arg GOSECVER=${GOSECVER} \
 		--build-arg GOSECSHA=${GOSECSHA}
 	mkdir -p ${DIST_DIR}/docker
@@ -514,12 +525,25 @@ dist/docker/golang: Dockerfiles/Dockerfile.golang
 	touch $@
 	@echo "${OK}"
 
+dist/docker/minimal: Dockerfiles/Dockerfile.minimal
+	@echo "${INFO}Building $@"
+	$(DOCKER) build . --pull -t ${MINIMAL_TAG} -f Dockerfiles/Dockerfile.minimal \
+		${DOCKER_BUILD_EXTRA_ARGS} \
+		--build-arg MAINTAINER=${MAINTAINER} \
+		--build-arg ENRYVER=${ENRYVER} \
+		--build-arg ENRYSHA=${ENRYSHA} \
+		--build-arg ZIZMOR_VER=${ZIZMOR_VER}
+	mkdir -p ${DIST_DIR}/docker
+	${DOCKER} tag ${MINIMAL_TAG} ${ECR_URL}${MINIMAL_TAG}
+	${DOCKER} tag ${MINIMAL_TAG} ${ECR_URL}${MINIMAL_TAG}-stage-${LATEST_COMMIT}
+	touch $@
+	@echo "${OK}"
+
 dist/docker/ruby: Dockerfiles/Dockerfile.ruby
 	@echo "${INFO}Building $@"
 	$(DOCKER) build . --pull -t ${RUBY_TAG} -f Dockerfiles/Dockerfile.ruby \
 		${DOCKER_BUILD_EXTRA_ARGS} \
-		--build-arg MAINTAINER=${MAINTAINER} \
-		--build-arg RUBY_VER=3.3-slim-bookworm
+		--build-arg MAINTAINER=${MAINTAINER}
 	mkdir -p ${DIST_DIR}/docker
 	${DOCKER} tag ${RUBY_TAG} ${ECR_URL}${RUBY_TAG}
 	${DOCKER} tag ${RUBY_TAG} ${ECR_URL}${RUBY_TAG}-stage-${LATEST_COMMIT}
@@ -612,6 +636,7 @@ docker: dist/docker/engine \
 		dist/docker/dind \
 		dist/docker/golang \
 		docker-java \
+		dist/docker/minimal \
 		dist/docker/ruby \
 		dist/docker/db_maintenance \
 		dist/docker/veracode \
@@ -632,120 +657,64 @@ build: lambdas \
 # Staging
 ###############################################################################
 
-stage/docker/engine: dist/docker/engine
-	@echo "${INFO}Staging $@ in ECR"
+# Push the image to ECR with a staging tag.
+#   $1 - Target (e.g. stage/docker/engine)
+#   $2 - Image base tag (e.g. ${ENGINE_TAG})
+define docker-stage
+	@echo "${INFO}Staging $1 in ECR"
 	mkdir -p ${STAGE_DIR}/docker
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${ENGINE_TAG}-stage-${LATEST_COMMIT}
-	touch $@
+	${DOCKER} push ${ECR_URL}$2-stage-${LATEST_COMMIT}
+	touch $1
 	@echo "${OK}"
+endef
+
+stage/docker/engine: dist/docker/engine
+	$(call docker-stage,$@,${ENGINE_TAG})
 
 stage/docker/python3: dist/docker/python3
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${PYTHON_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${PYTHON_TAG})
 
 stage/docker/node: dist/docker/node
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
-stage/docker/node14: stage/docker/node
+	$(call docker-stage,$@,${NODE_TAG})
 
 stage/docker/php: dist/docker/php
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${PHP_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${PHP_TAG})
 
 stage/docker/dind: dist/docker/dind
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${DIND_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${DIND_TAG})
 
 stage/docker/golang: dist/docker/golang
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${GOLANG_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
-
-stage/docker/java11: dist/docker/java11
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${JAVA11_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${GOLANG_TAG})
 
 stage/docker/java8: dist/docker/java8
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${JAVA8_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${JAVA8_TAG})
 
-stage/docker/java21: dist/docker/java21
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${JAVA21_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+stage/docker/java11: dist/docker/java11
+	$(call docker-stage,$@,${JAVA11_TAG})
 
 stage/docker/java17: dist/docker/java17
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${JAVA17_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${JAVA17_TAG})
+
+stage/docker/java21: dist/docker/java21
+	$(call docker-stage,$@,${JAVA21_TAG})
+
+stage/docker/minimal: dist/docker/minimal
+	$(call docker-stage,$@,${MINIMAL_TAG})
 
 stage/docker/ruby: dist/docker/ruby
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${RUBY_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${RUBY_TAG})
 
 stage/docker/db_maintenance: dist/docker/db_maintenance
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${DB_MAINT_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${DB_MAINT_TAG})
 
 stage/docker/veracode: dist/docker/veracode
 ifeq (${VERACODE_FLAG}, true)
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${VERACODE_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${VERACODE_TAG})
 endif
 
 stage/docker/swift: dist/docker/swift
-	@echo "${INFO}Staging $@ in ECR"
-	mkdir -p ${STAGE_DIR}/docker
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	${DOCKER} push ${ECR_URL}${SWIFT_TAG}-stage-${LATEST_COMMIT}
-	touch $@
-	@echo "${OK}"
+	$(call docker-stage,$@,${SWIFT_TAG})
 
 docker_push:  ## Stage all docker images in ECR
 docker_push: stage/docker/engine \
@@ -766,7 +735,10 @@ docker_push: stage/docker/engine \
 
 upload_lambda_%:
 	@echo "${INFO}Uploading $* lambda bundle"
-	aws s3 cp ${DIST_DIR}/$(shell echo $* | sed "s/-/\//g").zip s3://${S3_BUCKET}/lambdas/$(shell echo $* | sed "s/.*-//g")/v${VERSION}/$(shell echo $* | sed "s/.*-//g")-stage-${LATEST_COMMIT}.zip
+	aws s3api put-object --bucket ${S3_BUCKET} \
+		--key lambdas/$(shell echo $* | sed "s/.*-//g")/v${VERSION}/$(shell echo $* | sed "s/.*-//g")-stage-${LATEST_COMMIT}.zip \
+		--body ${DIST_DIR}/$(shell echo $* | sed "s/-/\//g").zip \
+		--tagging 'status=inactive'
 	@echo "${OK}"
 .PHONY: upload_lambda_%
 
@@ -815,7 +787,10 @@ upload_lambda_layers: upload_lambda_lambdas-layers-backend_core
 
 stage_scripts: dist/engine_scripts.zip  ## Stage scripts in S3
 	@echo "${INFO}Deploying scripts bundle"
-	aws s3 cp ${DIST_DIR}/engine_scripts.zip s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip
+	aws s3api put-object --bucket ${S3_BUCKET} \
+		--key scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip \
+		--body ${DIST_DIR}/engine_scripts.zip \
+		--tagging 'status=inactive'
 	@echo "${OK}"
 .PHONY: stage_scripts
 
@@ -835,6 +810,9 @@ upload: upload_lambdas stage_scripts docker_push upload_lambda_layers## Upload a
 move_lambda_bundle_%:
 	@echo "${INFO}Moving staged lambda bundle $* into place"
 	aws s3 mv s3://${S3_BUCKET}/lambdas/$*/v${VERSION}/$*-stage-${LATEST_COMMIT}.zip s3://${S3_BUCKET}/lambdas/$*/v${VERSION}/$*.zip
+	aws s3api put-object-tagging --bucket ${S3_BUCKET} \
+		--key lambdas/$*/v${VERSION}/$*.zip \
+		--tagging 'TagSet=[{Key=status,Value=active}]'
 	@echo "${OK}"
 .PHONY: move_lambda_bundle_%
 
@@ -1477,6 +1455,9 @@ deploy_lambdas: deploy_repo \
 deploy_scripts:  ## Deploy scripts to S3
 	@echo "${INFO}Deploying scripts bundle"
 	aws s3 mv s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts-stage-${LATEST_COMMIT}.zip s3://${S3_BUCKET}/scripts/v${VERSION}/engine_scripts.zip
+	aws s3api put-object-tagging --bucket ${S3_BUCKET} \
+		--key scripts/v${VERSION}/engine_scripts.zip \
+		--tagging 'TagSet=[{Key=status,Value=active}]'
 	@echo "${OK}"
 .PHONY: deploy_scripts
 
@@ -1495,138 +1476,83 @@ deploy_ci_tools_scripts:  ## Deploy CI tools to S3
 	@echo "${OK}"
 .PHONY: deploy_ci_tools_scripts
 
-deploy_engine_image:
-	@echo "${INFO}Moving staged engine image into place"
+ecr-login:
 	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${ENGINE_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${ENGINE_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${ENGINE_TAG}
-	docker push ${ECR_URL}${ENGINE_TAG}
+.PHONY: ecr-login
+
+# Tag a staged image as the current deployed version.
+#   $1 - Target name (e.g. engine)
+#   $2 - Image base tag (e.g. ${ENGINE_TAG})
+define docker-deploy
+	@echo "${INFO}Moving staged $1 image into place"
+	docker buildx imagetools create --tag ${ECR_URL}$2 ${ECR_URL}$2-stage-${LATEST_COMMIT}
 	@echo "${OK}"
+endef
+
+deploy_engine_image: ecr-login
+	$(call docker-deploy,engine,${ENGINE_TAG})
 .PHONY: deploy_engine_image
 
-deploy_python_image:
-	@echo "${INFO}Moving staged python image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${PYTHON_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${PYTHON_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${PYTHON_TAG}
-	docker push ${ECR_URL}${PYTHON_TAG}
-	@echo "${OK}"
+deploy_python_image: ecr-login
+	$(call docker-deploy,python,${PYTHON_TAG})
 .PHONY: deploy_python_image
 
-deploy_node_image:
-	@echo "${INFO}Moving staged node image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${NODE_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${NODE_TAG}
-	docker push ${ECR_URL}${NODE_TAG}
-	@echo "${OK}"
+deploy_node_image: ecr-login
+	$(call docker-deploy,node,${NODE_TAG})
 .PHONY: deploy_node_image
 
-deploy_node14_image: deploy_node_image
-.PHONY: deploy_node14_image
+deploy_php_image: ecr-login
+	$(call docker-deploy,php,${PHP_TAG})
+.PHONY: deploy_php_image
 
-deploy_php_image:
-	@echo "${INFO}Moving staged php image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${PHP_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${PHP_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${PHP_TAG}
-	docker push ${ECR_URL}${PHP_TAG}
-	@echo "${OK}"
-.PHONY: deploy_node_image
-
-deploy_dind_image:
-	@echo "${INFO}Moving staged dind image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${DIND_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${DIND_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${DIND_TAG}
-	docker push ${ECR_URL}${DIND_TAG}
-	@echo "${OK}"
+deploy_dind_image: ecr-login
+	$(call docker-deploy,dind,${DIND_TAG})
 .PHONY: deploy_dind_image
 
-deploy_golang_image:
-	@echo "${INFO}Moving staged golang image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${GOLANG_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${GOLANG_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${GOLANG_TAG}
-	docker push ${ECR_URL}${GOLANG_TAG}
-	@echo "${OK}"
+deploy_golang_image: ecr-login
+	$(call docker-deploy,golang,${GOLANG_TAG})
 .PHONY: deploy_golang_image
 
-deploy_java11_image:
-	@echo "${INFO}Moving staged java11 image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${JAVA11_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${JAVA11_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA11_TAG}
-	docker push ${ECR_URL}${JAVA11_TAG}
-	@echo "${OK}"
-.PHONY: deploy_java11_image
-
-deploy_java8_image:
-	@echo "${INFO}Moving staged java8 image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${JAVA8_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${JAVA8_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA8_TAG}
-	docker push ${ECR_URL}${JAVA8_TAG}
-	@echo "${OK}"
+deploy_java8_image: ecr-login
+	$(call docker-deploy,java8,${JAVA8_TAG})
 .PHONY: deploy_java8_image
 
-deploy_java21_image:
-	@echo "${INFO}Moving staged java21 image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${JAVA21_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${JAVA21_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA21_TAG}
-	docker push ${ECR_URL}${JAVA21_TAG}
-	@echo "${OK}"
-.PHONY: deploy_java21_image
+deploy_java11_image: ecr-login
+	$(call docker-deploy,java11,${JAVA11_TAG})
+.PHONY: deploy_java11_image
 
-deploy_java17_image:
-	@echo "${INFO}Moving staged java17 image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${JAVA17_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${JAVA17_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${JAVA17_TAG}
-	docker push ${ECR_URL}${JAVA17_TAG}
-	@echo "${OK}"
+deploy_java17_image: ecr-login
+	$(call docker-deploy,java17,${JAVA17_TAG})
 .PHONY: deploy_java17_image
 
-deploy_ruby_image:
-	@echo "${INFO}Moving staged ruby image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${RUBY_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${RUBY_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${RUBY_TAG}
-	docker push ${ECR_URL}${RUBY_TAG}
-	@echo "${OK}"
+deploy_java21_image: ecr-login
+	$(call docker-deploy,java21,${JAVA21_TAG})
+.PHONY: deploy_java21_image
+
+deploy_minimal_image: ecr-login
+	$(call docker-deploy,ruby,${MINIMAL_TAG})
+.PHONY: deploy_minimal_image
+
+deploy_ruby_image: ecr-login
+	$(call docker-deploy,ruby,${RUBY_TAG})
 .PHONY: deploy_ruby_image
 
-deploy_db_maint_image:
-	@echo "${INFO}Moving staged db_maintenance image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${DB_MAINT_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${DB_MAINT_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${DB_MAINT_TAG}
-	docker push ${ECR_URL}${DB_MAINT_TAG}
-	@echo "${OK}"
+deploy_db_maint_image: ecr-login
+	$(call docker-deploy,db_maintenance,${DB_MAINT_TAG})
 .PHONY: deploy_db_maint_image
 
-deploy_veracode_image:
+deploy_veracode_image: ecr-login
 ifeq (${VERACODE_FLAG}, true)
-	@echo "${INFO}Moving staged veracode image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${VERACODE_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${VERACODE_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${VERACODE_TAG}
-	docker push ${ECR_URL}${VERACODE_TAG}
-	@echo "${OK}"
+	$(call docker-deploy,veracode,${VERACODE_TAG})
 endif
 .PHONY: deploy_veracode_image
 
-deploy_swift_image:
-	@echo "${INFO}Moving staged swift image into place"
-	aws ecr get-login-password --region=${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-	docker pull ${ECR_URL}${SWIFT_TAG}-stage-${LATEST_COMMIT}
-	docker tag ${ECR_URL}${SWIFT_TAG}-stage-${LATEST_COMMIT} ${ECR_URL}${SWIFT_TAG}
-	docker push ${ECR_URL}${SWIFT_TAG}
-	@echo "${OK}"
+deploy_swift_image: ecr-login
+	$(call docker-deploy,swift,${SWIFT_TAG})
 .PHONY: deploy_swift_image
 
-deploy_images: deploy_engine_image \
+deploy_images: ecr-login \
+			   deploy_engine_image \
 			   deploy_python_image \
 			   deploy_node_image \
 			   deploy_php_image \
@@ -1636,6 +1562,7 @@ deploy_images: deploy_engine_image \
 			   deploy_java11_image \
 			   deploy_java17_image \
 			   deploy_java21_image \
+			   deploy_minimal_image \
 			   deploy_ruby_image \
 			   deploy_db_maint_image \
 			   deploy_veracode_image \

@@ -50,11 +50,13 @@ PLUGIN_LIST_BY_CATEGORY = {
         "swiftlint": None,
         "checkov": None,
         "psalm": None,
+        "zizmor": None,
     },
     "inventory": {
         "technology_discovery": None,
         "base_images": None,
         "cicd_tools": None,
+        "api_specs": None,
     },
     "configuration": {"github_repo_health": None, "gitlab_repo_health": None},
     "sbom": {"trivy_sbom": None},
