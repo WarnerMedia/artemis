@@ -126,7 +126,9 @@ EOF
 chown -R ec2-user:ec2-user /home/ec2-user
 
 # Log into ECR and save credentials as ec2-user
-account_id=$(aws sts get-caller-identity --query Account --output text)
+# account_id is being used to derive url below. Shellcheck thinks it's not used
+# shellcheck disable=SC2034
+account_id=$(aws sts get-caller-identity --query Account --output text) 
 aws ecr get-login-password --region "${aws_region}" | \
   sudo --login --set-home --user=ec2-user docker login --username AWS --password-stdin \
   "$${account_id}.dkr.ecr.${aws_region}.amazonaws.com"
