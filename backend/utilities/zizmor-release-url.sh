@@ -17,10 +17,11 @@ fi
 platform="$(uname | tr '[:upper:]' '[:lower:]')" || exit 1
 case "$platform" in
   darwin) platform=apple-darwin ;;
-  linux) platform=unknown-linux-gnu ;;  # Assuming test platform is glibc.
+  linux) platform=unknown-linux-gnu ;; # Assuming test platform is glibc.
   *)
     echo "Unsupported Zizmor release platform: $platform" >&2
     exit 1
+    ;;
 esac
 readonly platform
 
