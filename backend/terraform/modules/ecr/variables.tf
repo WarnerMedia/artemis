@@ -14,6 +14,6 @@ variable "tags" {
 
 variable "lifecycle_policy" {
   description = "ECR Lifecycle Policy"
-  type = map(any)
-  default = {}
+  type        = map(any)
+  default     = {}
 }

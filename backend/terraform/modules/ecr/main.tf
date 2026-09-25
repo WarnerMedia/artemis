@@ -6,9 +6,9 @@ resource "aws_ecr_repository" "module_repo" {
 }
 
 resource "aws_ecr_lifecycle_policy" "lifecycle_policy" {
-  count = var.lifecycle_policy == {} ? 0 : 1
+  count      = var.lifecycle_policy == {} ? 0 : 1
   repository = aws_ecr_repository.module_repo.name
-  policy = jsonencode(var.lifecycle_policy)
+  policy     = jsonencode(var.lifecycle_policy)
 }
 
 ###############################################################################
