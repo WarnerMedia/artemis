@@ -14,7 +14,6 @@ jest.mock("react-router-dom", () => ({
 	useLocation: jest.fn(),
 	useNavigate: jest.fn(),
 }));
-/* eslint-disable */
 import { useSelector, useDispatch } from "react-redux";
 /* eslint-disable */
 import { useLocation, useNavigate } from "react-router-dom";
