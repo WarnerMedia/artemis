@@ -9,9 +9,9 @@ description = "Shared library for Artemis"
 readme = "README.md"
 authors = [{ name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }]
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 classifiers = [
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -19,16 +19,18 @@ classifiers = [
     "Topic :: Security",
 ]
 dependencies = [
-    "aws-lambda-powertools~=3.19",
-    "boto3~=1.40",
-    "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.40",
+    "boto3~=1.42",
+    "boto3-stubs[ec2,lambda,s3,secretsmanager,sqs]~=1.41",
     "pyjwt[crypto]~=2.10",
     "pymemcache~=4.0",
     "requests~=2.32",
 ]
 
 [project.optional-dependencies]
-test = ["pytest~=8.3", "pytest-runner"]
+lambda = [
+    "aws-lambda-powertools~=3.25",
+]
+test = ["pytest~=9.0", "pytest-runner"]
 
 [project.urls]
 Homepage = "https://github.com/warnermedia/artemis/backend/libs/artemislib"

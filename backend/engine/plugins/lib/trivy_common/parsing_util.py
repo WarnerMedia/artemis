@@ -2,7 +2,6 @@
 trivy output parser
 """
 
-from typing import NamedTuple
 from engine.plugins.lib.utils import setup_logging
 
 logger = setup_logging("trivy")
@@ -10,7 +9,7 @@ logger = setup_logging("trivy")
 DESC_REMEDIATION_SPLIT = "## Recommendation"
 
 
-def parse_output(output: list) -> list:
+def parse_output(output: list | None) -> list:
     results = []
     if output:
         for item in output:
@@ -24,7 +23,9 @@ def parse_output(output: list) -> list:
                 if vuln_id in cve_set:
                     continue
                 cve_set.add(vuln_id)
-                description_result = get_description_and_remediation(vuln.get("Description"), vuln.get("FixedVersion"))
+                description, remediation = get_description_and_remediation(
+                    vuln.get("Description"), vuln.get("FixedVersion")
+                )
 
                 component = vuln.get("PkgName")
                 if vuln.get("InstalledVersion"):
@@ -34,9 +35,9 @@ def parse_output(output: list) -> list:
                         "component": component,
                         "source": source,
                         "id": vuln_id,
-                        "description": description_result.description,
+                        "description": description,
                         "severity": vuln.get("Severity", "").lower(),
-                        "remediation": description_result.remediation,
+                        "remediation": remediation,
                         "inventory": {
                             "component": {
                                 "name": vuln.get("PkgName"),
@@ -52,14 +53,13 @@ def parse_output(output: list) -> list:
     return results
 
 
-def get_description_and_remediation(description, fixed_version) -> NamedTuple:
+def get_description_and_remediation(description, fixed_version) -> tuple[str, str]:
     """
     gets the description and remediation fields after pulling them from the vuln and appending/removing additional info
     :param fixed_version:
     :param description:
-    :return: NamedTuple containing the description and remediation
+    :return: tuple containing the description and remediation
     """
-    result = NamedTuple("DescriptionResult", [("description", str), ("remediation", str)])
     if not description:
         description = ""
     remediation = ""
@@ -69,9 +69,7 @@ def get_description_and_remediation(description, fixed_version) -> NamedTuple:
         description = des_split[0].strip()
     if fixed_version:
         remediation = f"Fixed Version: {fixed_version}. {remediation}".strip()
-    result.description = description
-    result.remediation = remediation
-    return result
+    return description, remediation
 
 
 def convert_type(component_type: str) -> str:

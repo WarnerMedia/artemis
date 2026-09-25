@@ -1,11 +1,9 @@
-from typing import Tuple
-
 from metadata.util import is_name_in_patterns, load_schemes
 
 default_schemes = load_schemes()
 
 
-def get_all_metadata(app_metadata_settings, service, repo, working_dir, schemes: dict = None) -> Tuple[dict, dict]:
+def get_all_metadata(app_metadata_settings, service, repo, working_dir, schemes: dict = None) -> tuple[dict, dict]:
     """Get the metadata for all supported schemes
 
     The available schemes are expected to have been loaded via load_schemes().

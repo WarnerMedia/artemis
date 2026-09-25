@@ -69,7 +69,7 @@ def parse_advisory(
 def _find_versions(lockfile: dict, component: str, nodes: list, resolver: LineNumberResolver) -> list:
     if lockfile["lockfileVersion"] == 1:
         return _find_versions_v1(lockfile, component, resolver)
-    elif lockfile["lockfileVersion"] == 2:
+    elif lockfile["lockfileVersion"] in (2, 3):
         return _find_versions_v2(lockfile, nodes, resolver)
     return []
 

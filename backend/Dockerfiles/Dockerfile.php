@@ -1,23 +1,30 @@
-FROM php:8.4-bookworm
+# Build stage with dev tools
+FROM dhi.io/composer:2.9-debian13-php8.4-dev AS builder
+
+ARG PHP_SCANNER_VER
+
+# Install dependencies for downloading tools
+# `--fix-broken` step is added to fix a (probably temporary) regression in the base image. If
+#   you're seeing this in the future, they may have fixed this, so feel free to remove that line
+#   and try again
+RUN apt-get update && \
+    apt-get --fix-broken -y install && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# Download Psalm
+RUN curl -fsSL https://github.com/vimeo/psalm/releases/download/${PHP_SCANNER_VER}/psalm.phar -o /tmp/psalm && \
+    chmod a+x /tmp/psalm
+
+# Final runtime stage - clean image without dev packages
+FROM dhi.io/composer:2.9-debian13-php8.4-dev
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-ARG PHP_SCANNER_VER
+# Copy tools from builder stage
+COPY --from=builder /tmp/psalm /usr/local/bin/psalm
 
-# Run all additional config in a single RUN to reduce the layers:
-# - Base apk requirements to execute script
-# - Upgrade pip and install boto3 for plugin utils
-# - Symlink python3 to python for Analyzer Engine benefit
-# - Setup directory for scanner binary to sit
-# - Download and Install Composer
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends git wget && \
-    rm -rf /var/lib/apt/lists/* && \
-    curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-
-# Download the Psalm PHAR and place it in /usr/local/bin
-RUN wget https://github.com/vimeo/psalm/releases/download/${PHP_SCANNER_VER}/psalm.phar -O /usr/local/bin/psalm && \
-    chmod a+x /usr/local/bin/psalm 
+ENTRYPOINT [ "" ]

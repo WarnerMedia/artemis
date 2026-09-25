@@ -4,8 +4,6 @@ Takes care of gitlab service queries, returning a list of repositories to be que
 
 # pylint: disable=no-name-in-module, no-member
 
-from typing import Tuple
-
 import requests
 from aws_lambda_powertools import Logger
 
@@ -206,7 +204,7 @@ class ProcessGitlabRepos:
                         )
         return repos
 
-    def _get_branch_names(self, project_id: str, ref: str = None) -> Tuple[list, dict]:
+    def _get_branch_names(self, project_id: str, ref: str = None) -> tuple[list, dict]:
         """
         Queries the service (using api/v4/ currently) to get all branches for a project.
         :param project_id: str unique id of project
@@ -224,7 +222,7 @@ class ProcessGitlabRepos:
             return self._process_refs(response)
         return [], {}
 
-    def _query_gitlab_api(self, url) -> str or None:
+    def _query_gitlab_api(self, url) -> str | None:
         """
         Sends a POST request to get all repositories under a gitlab group
         :param url: str url of the service to send the POST request to
@@ -244,7 +242,7 @@ class ProcessGitlabRepos:
             return None
         return response.text
 
-    def _get_project_branches(self, project_id: str, ref: str = None) -> str or None:
+    def _get_project_branches(self, project_id: str, ref: str = None) -> str | None:
         """
         Sends a GET request to obtain all branches for a project
         :return: str response text containing project branches or None if the request was not successful
@@ -281,7 +279,7 @@ class ProcessGitlabRepos:
 
         return headers
 
-    def _process_refs(self, resp) -> Tuple[list, dict]:
+    def _process_refs(self, resp) -> tuple[list, dict]:
         ref_names = set()
         timestamps = {}
         for ref in resp:

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import argparse
 import json
@@ -17,7 +17,9 @@ def parse_args():
 
 args = parse_args()
 
-resp = requests.put("http://169.254.169.254/latest/api/token", headers={"X-aws-ec2-metadata-token-ttl-seconds": 21600})
+resp = requests.put(
+    "http://169.254.169.254/latest/api/token", headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"}
+)
 if resp.status_code != 200:
     sys.exit(1)
 

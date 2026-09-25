@@ -2,14 +2,13 @@ import json
 import os
 import subprocess
 import unittest
-from unittest.mock import patch
 import uuid
-
-from artemislib.logging import Logger
-from oci import builder
+from unittest.mock import call, patch
 
 import docker
 import docker.errors
+from artemislib.logging import Logger
+from oci import builder
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,7 +22,15 @@ TEST_DOCKERFILE_ERROR = os.path.join(TEST_DATA, "image", "Dockerfile.error")
 TEST_DOCKERFILE_SIMPLE = os.path.join(TEST_DATA, "image", "Dockerfile.simple")
 
 TEST_PRIVATE_DOCKER_REPOS_CONFIGS = [
-    {"url": "test.io", "search": "FROM test", "username": "test-username", "password": "test-password"}
+    {"url": "test.io", "search": "FROM test", "username": "test-username", "password": "test-password"},
+    {"url": "public-test.io", "username": "public-username", "password": "public-password", "private": False},
+    {
+        "url": "another-test.io",
+        "search": "FROM another-test",
+        "username": "another-username",
+        "password": "another-password",
+        "private": True,
+    },
 ]
 
 TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT = {"status": True, "response": json.dumps(TEST_PRIVATE_DOCKER_REPOS_CONFIGS)}
@@ -96,10 +103,10 @@ class TestImageBuilder(unittest.TestCase):
         result = image_builder.find_dockerfiles()
         self.assertGreater(len(result), 5)
 
-    def test_private_docker_repos_login(self):
+    def test_private_docker_registries_login(self):
         image_builder = builder.ImageBuilder(os.path.join(TEST_ROOT, "Dockerfiles"), None, None, None)
         with patch("plugins.lib.utils.get_secret_with_status") as mock_get_secret_with_status:
-            with patch("oci.builder.ImageBuilder.docker_login_needed") as mock_docker_login_needed:
+            with patch("oci.builder.ImageBuilder.private_docker_login_needed") as mock_docker_login_needed:
                 mock_get_secret_with_status.return_value = TEST_GET_SECRET_WITH_STATUS_MOCK_OUTPUT
 
                 # return true to test docker_login arguments
@@ -108,21 +115,22 @@ class TestImageBuilder(unittest.TestCase):
                 with patch("plugins.lib.utils.docker_login") as mock_docker_login:
                     mock_docker_login.return_value = True
 
-                    image_builder.private_docker_repos_login(os.path.join(TEST_ROOT, "Dockerfiles"))
+                    image_builder.docker_registries_login(os.path.join(TEST_ROOT, "Dockerfiles"))
                     mock_get_secret_with_status.assert_called_once()
 
-                    mock_docker_login_needed.assert_called_once_with(
-                        os.path.join(TEST_ROOT, "Dockerfiles"),
-                        TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["search"],
-                        TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["url"],
-                    )
+                    # this should only be called for private repos (if private is not set, it defaults to true)
+                    docker_login_needed_calls = [
+                        call(os.path.join(TEST_ROOT, "Dockerfiles"), repo.get("search"), repo["url"])
+                        for repo in TEST_PRIVATE_DOCKER_REPOS_CONFIGS
+                        if repo.get("private") is True or repo.get("private") is None
+                    ]
+                    mock_docker_login_needed.assert_has_calls(docker_login_needed_calls)
 
-                    mock_docker_login.assert_called_once_with(
-                        TEST_LOGGER,
-                        TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["url"],
-                        TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["username"],
-                        TEST_PRIVATE_DOCKER_REPOS_CONFIGS[0]["password"],
-                    )
+                    docker_login_calls = [
+                        call(TEST_LOGGER, repo["url"], repo["username"], repo["password"])
+                        for repo in TEST_PRIVATE_DOCKER_REPOS_CONFIGS
+                    ]
+                    mock_docker_login.assert_has_calls(docker_login_calls)
 
     def test_build_local_image(self):
         self.maxDiff = None

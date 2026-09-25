@@ -9,8 +9,10 @@ LOG = Logger(__name__)
 SERVICES_S3_KEY = "services.json"
 
 
-def handler(event=None, context=None):
-    github_username = event.get("github_username")
+def handler(event: dict | None = None, _=None):
+    github_username = None
+    if event:
+        github_username = event.get("github_username")
 
     # If a GitHub username is given, only process that user
     # Otherwise, process all users
@@ -23,7 +25,7 @@ def handler(event=None, context=None):
             return None
 
         github_user = {}
-        github_user["artemis_user_id"] = user_service.user_id
+        github_user["artemis_user_id"] = user_service.user.id
         github_user["username"] = user_service.username
         github_user["query_name"] = "q1"
         github_users.append(github_user)
@@ -32,7 +34,7 @@ def handler(event=None, context=None):
         count = 1
         for user_service in user_services:
             github_user = {}
-            github_user["artemis_user_id"] = user_service.user_id
+            github_user["artemis_user_id"] = user_service.user.id
             github_user["username"] = user_service.username
             github_user["query_name"] = f"q{count}"
             github_users.append(github_user)
@@ -41,6 +43,10 @@ def handler(event=None, context=None):
     # Get a list of all GitHub orgs
     services_dict = get_services_dict(SERVICES_S3_KEY)
     orgs = []
+
+    if not services_dict:
+        LOG.error("Unable to load services dict")
+        return
 
     for row in services_dict["scan_orgs"]:
         if row.startswith("github/"):
@@ -56,27 +62,28 @@ def handler(event=None, context=None):
     for org in orgs:
         authorization = get_token(org, service_secret)
         query_response = query_users_for_org(authorization, github_users, org)
-
-        for github_user in github_users:
+        if query_response and isinstance(query_response, dict):
             errors = query_response.get("errors")
             data = query_response.get("data")
-            data_user = None
-            user_in_organization = None
             if errors:
                 LOG.error(errors)
-            if data:
-                data_user = data.get(github_user["query_name"])
-            if data_user:
-                user_in_organization = data_user.get("organization")
-            if user_in_organization:
-                new_scan_orgs[github_user["artemis_user_id"]].append(f"github/{org}")
+
+            for github_user in github_users:
+                data_user = None
+                user_in_organization = None
+                if data:
+                    data_user = data.get(github_user["query_name"])
+                if data_user:
+                    user_in_organization = data_user.get("organization")
+                if user_in_organization:
+                    new_scan_orgs[github_user["artemis_user_id"]].append(f"github/{org}")
 
     # Update scan_orgs in DB
     for user_id in new_scan_orgs:
-        userservice_obj = UserService.objects.get(user_id=user_id, service="github")
+        user_service_obj = UserService.objects.get(user_id=user_id, service="github")
         timestamp = format_timestamp(get_utc_datetime())
-        userservice_obj.scan_orgs = {"orgs": new_scan_orgs[user_id], "updated": timestamp}
-        userservice_obj.save()
+        user_service_obj.scan_orgs = {"orgs": new_scan_orgs[user_id], "updated": timestamp}
+        user_service_obj.save()
 
 
 if __name__ == "__main__":

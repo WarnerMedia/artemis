@@ -1,6 +1,5 @@
 import json
 import os
-from typing import Tuple
 
 import boto3
 import requests
@@ -66,7 +65,7 @@ def get_secret(secret_name, region=REGION):
     return None
 
 
-def get_hec_config() -> Tuple[str, str]:
+def get_hec_config() -> tuple[str, str]:
     secret = get_secret(SM_KEY)
     if secret:
         return (secret.get("key"), secret.get("url"))

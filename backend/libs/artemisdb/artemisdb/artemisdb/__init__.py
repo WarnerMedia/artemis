@@ -10,7 +10,7 @@ settings.configure(
     LANGUAGE_CODE=artemisdb_settings.LANGUAGE_CODE,
     TIME_ZONE=artemisdb_settings.TIME_ZONE,
     USE_I18N=artemisdb_settings.USE_I18N,
-    US_TZ=artemisdb_settings.USE_TZ,
+    USE_TZ=artemisdb_settings.USE_TZ,
     MIGRATION_MODULES=artemisdb_settings.MIGRATION_MODULES,
     DEFAULT_AUTO_FIELD=artemisdb_settings.DEFAULT_AUTO_FIELD,
 )

@@ -1,5 +1,4 @@
 # pylint: disable=no-name-in-module,no-member
-from typing import Tuple
 
 import requests
 import time
@@ -158,7 +157,7 @@ class ProcessBitbucketRepos:
                 branch_tasks.append(task)
         return branch_tasks
 
-    def _get_branch_names(self, repo: str) -> Tuple[list, dict]:
+    def _get_branch_names(self, repo: str) -> tuple[list, dict]:
         """
         Retrieves the branches and timestamps for a given repository.
 
@@ -166,7 +165,7 @@ class ProcessBitbucketRepos:
             repo (str): name of the repo to process
 
         Returns:
-            Tuple[list, dict]: A list of branches for the given repo and
+            tuple[list, dict]: A list of branches for the given repo and
             a dictionary mapping each branch to the timestamp of the last commit
 
             For example:
@@ -279,7 +278,7 @@ class ProcessBitbucketRepos:
 
         return timestamp
 
-    def _query_bitbucket_api(self, url: str) -> str or None:
+    def _query_bitbucket_api(self, url: str) -> str | None:
         with requests.session() as session:
             headers = {
                 "Authorization": f"Basic {self.service_info.api_key}",

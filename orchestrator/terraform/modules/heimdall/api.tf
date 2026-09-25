@@ -124,15 +124,37 @@ resource "aws_wafv2_web_acl" "on_demand_api" {
       }
 
       visibility_config {
-        cloudwatch_metrics_enabled = false
+        cloudwatch_metrics_enabled = true
         metric_name                = "${rule.value.name}-rule-metric"
         sampled_requests_enabled   = false
       }
     }
   }
 
+  rule {
+    name     = "AWSManagedRulesKnownBadInputsRuleSet-rule"
+    priority = length(var.waf_rule_groups) + 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesKnownBadInputsRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesKnownBadInputsRuleSet-rule-metric"
+      sampled_requests_enabled   = false
+    }
+  }
+
   visibility_config {
-    cloudwatch_metrics_enabled = false
+    cloudwatch_metrics_enabled = true
     metric_name                = "${var.app}-on-demand-api-acl"
     sampled_requests_enabled   = false
   }

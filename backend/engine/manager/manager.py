@@ -4,7 +4,6 @@ from random import randint
 from time import sleep
 
 import django.db
-import psycopg2
 
 from artemisdb.artemisdb.models import Engine, EnginePlugin, EngineState, Plugin
 from artemislib.aws import AWSConnect, LambdaError
@@ -46,7 +45,7 @@ class EngineManager:
                     log.error("Reconnection attempts exceeded retry limit")
                     self._abnormal_shutdown = True  # This is not going to be a normal shutdown
                     return
-            except (django.db.utils.OperationalError, psycopg2.InterfaceError, django.db.utils.InterfaceError) as e:
+            except (django.db.utils.OperationalError, django.db.utils.InterfaceError) as e:
                 log.error("Unable to connect to database: %s", e)
                 django.db.close_old_connections()  # Close existing connections so they will be recreated
                 sleep(DB_RETRY_WAIT)  # Give the DB time to recover
@@ -87,7 +86,7 @@ class EngineManager:
             if retry > 0:
                 log.info("Attempting to refresh engine info from database")
             self._engine.refresh_from_db()
-        except (django.db.utils.OperationalError, psycopg2.InterfaceError, django.db.utils.InterfaceError) as e:
+        except (django.db.utils.OperationalError, django.db.utils.InterfaceError) as e:
             log.error("Unable to refresh engine info from database: %s", e)
         else:
             if retry > 0:
@@ -106,7 +105,7 @@ class EngineManager:
                 log.error("Reconnection attempts exceeded retry limit")
                 self._abnormal_shutdown = True  # This is not going to be a normal shutdown
                 return False
-        except (django.db.utils.OperationalError, psycopg2.InterfaceError, django.db.utils.InterfaceError) as e:
+        except (django.db.utils.OperationalError, django.db.utils.InterfaceError) as e:
             log.error("Connection error: %s", e)
             django.db.close_old_connections()  # Close existing connections so they will be recreated
             sleep(DB_RETRY_WAIT)  # Give the DB time to recover

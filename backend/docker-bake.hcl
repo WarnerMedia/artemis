@@ -41,7 +41,7 @@ target "boxed-glibc" {
   dockerfile = "Dockerfiles/Dockerfile.boxed"
 
   args = {
-    PYTHON_VER = "3.12-bookworm"
+    PYTHON_VER = "3.13-debian13-dev"
     LIBC = "glibc"
   }
 }
@@ -50,15 +50,7 @@ target "boxed-musl" {
   dockerfile = "Dockerfiles/Dockerfile.boxed"
 
   args = {
-    # For Musl, temporarily use Python 3.13 to fix issues with
-    # ModuleNotFoundError at runtime:
-    # https://github.com/python/cpython/issues/95855
-    #
-    # Plugin authors choosing to use Musl-based distributions (e.g. Alpine)
-    # in their containers must check for compatibility.
-    #
-    # This can be reverted if the linked issue is backported to 3.12.
-    PYTHON_VER = "3.13-alpine"
+    PYTHON_VER = "3.13-alpine3.23-dev"
     PYTHON_TARGET_VER = "3.13"
     LIBC = "musl"
   }
@@ -95,7 +87,7 @@ target "java8" {
   no-cache = true
 
   args = merge(java_args, {
-    OPENJDK_VER = "8-jdk-alpine-3.21"
+    OPENJDK_VER = "8-jdk-alpine3.22-dev"
   })
 }
 
@@ -104,12 +96,8 @@ target "java11" {
   tags = full_tags(JAVA11_TAG)
   no-cache = true
 
-  secret = [
-    "type=env,id=NVD_API_KEY,env=NVD_API_KEY"
-  ]
-
   args = merge(java_args, {
-    OPENJDK_VER = "11-jdk-alpine-3.21"
+    OPENJDK_VER = "11-jdk-alpine3.22-dev"
     # OWASP Dependency Check enabled for Java 11 only.
     OWASP_DC = OWASP_DC
     OWASP_DC_SHA = OWASP_DC_SHA
@@ -122,7 +110,7 @@ target "java17" {
   no-cache = true
 
   args = merge(java_args, {
-    OPENJDK_VER = "17-jdk-alpine-3.21"
+    OPENJDK_VER = "17-jdk-alpine3.22-dev"
   })
 }
 
@@ -132,6 +120,6 @@ target "java21" {
   no-cache = true
 
   args = merge(java_args, {
-    OPENJDK_VER = "21-jdk-alpine-3.21"
+    OPENJDK_VER = "21-jdk-alpine3.22-dev"
   })
 }

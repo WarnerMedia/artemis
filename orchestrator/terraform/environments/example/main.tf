@@ -1,13 +1,13 @@
 terraform {
   backend "s3" {
-    region         = "REGION_NAME"
-    bucket         = "S3_BUCKET_NAME"
-    key            = "STATE_FILE_S3_KEY"
-    dynamodb_table = "DYNAMO_DB_LOCK_TABLE_NAME"
+    region       = "REGION_NAME"
+    bucket       = "S3_BUCKET_NAME"
+    key          = "STATE_FILE_S3_KEY"
+    use_lockfile = true
   }
   required_providers {
     aws = {
-      version = "3.64.2"
+      version = "5.100.0"
     }
   }
 }
@@ -49,6 +49,7 @@ module "heimdall" {
   lambda_availability_zone = "${local.region}a"
   db_read_capacity         = "5"
   db_write_capacity        = "5"
+  artemis_region           = local.region
 
   tags = local.tags
 

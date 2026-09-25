@@ -4,19 +4,17 @@ Artemis is an extensible source code scanning tool developed by the WarnerMedia 
 
 ## 📖 Contents
 
-- [🔗 Links](#-links)
 - [🗂 Version Overview](#-version-overview)
 - [🏠 Local Development](#-local-development)
   - [🚀 Quick Start](#-quick-start)
   - [✅ Prerequisites](#-prerequisites)
     - [🐍 Python](#-python)
-    - [⛅ AWS CLI](#-aws-cli)
   - [📃 Coding Conventions](#-coding-conventions)
 - [🚢 Initial Deployment](#-initial-deployment)
 - [🏛 Architecture](#-architecture)
   - [🔭 Overview](#-overview)
   - [🔬 Detailed Architecture](#-detailed-architecture)
-  - [🔐 Authentication](#-authentication)
+  - [🔐 Authentication](#-authentication-architecture)
     - [🔀 Authentication Workflow](#-authentication-workflow)
 - [🛠 Maintenance Mode](#-maintenance-mode)
   - [🔧 Enable Maintenance Mode](#-enable-maintenance-mode)
@@ -51,11 +49,11 @@ This will build all of the Docker images, create a file with all of the required
 To interface with the local Artemis the [api_runner](https://github.com/warnermedia/artemis/tree/master/utilities/api_runner) utility is used to run the API Lambda code without requiring API Gateway and Lambda environments.
 
 ```shell
-pipenv shell
-ls -d libs/* | xargs pip install -e
-ls -d lambdas/api/* | grep -v lambdas/api/spec.yaml | xargs pip install -e
-pip install -e utilities/api_runner
-api_runner --help
+uv sync --locked --inexact
+ls -d libs/* | xargs uv pip install -e
+ls -d lambdas/api/* | grep -v lambdas/api/spec.yaml | xargs uv pip install -e
+uv pip install -e utilities/api_runner
+uv run api_runner --help
 ```
 
 ### ✅ Prerequisites
@@ -71,9 +69,8 @@ The following steps describe how to bootstrap this project for development on a 
 7. Clone _this_ GitHub project
 8. Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 9. Install [Terraform](https://www.terraform.io/) via Homebrew or [directly](https://www.terraform.io/downloads.html)
-10. Install [pipenv](https://pypi.org/project/pipenv/) via pip3
-    - `pip3 install -g pipenv`
-11. [optional] Request an NVD API Key [here](https://nvd.nist.gov/developers/request-an-api-key) to speed up Docker builds for the OWASP Dependency Checker
+10. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+11. [optional] [Request an NVD API Key here](https://nvd.nist.gov/developers/request-an-api-key) to speed up Docker builds for the OWASP Dependency Checker
 
 #### 🐍 Python
 
@@ -90,7 +87,7 @@ The following steps describe how to bootstrap this project for development on a 
 
 ## 🚢 Initial deployment
 
-1. Create a new environment in `terraform/environments`, copying the example and modifing as needed.
+1. Create a new environment in `terraform/environments`, copying the example and modifying as needed.
 2. Create a KMS key with permissions for `AWSServiceRoleForRDS` and set the ARN in `terraform/environments/ENV/main.tf`
 3. Create S3 buckets and ECR repositories: `terraform -chdir=terraform/environments/ENV apply -target module.s3 -target module.ecr`
 4. Copy `example.mk` to a new `.mk` file that matches the name of the environment created in step 1. The `Makefile` expects `nonprod.mk` to exist by default but can be overridden by setting the `ENV` var to a different value when running make (`make ENV=name`).
@@ -134,9 +131,9 @@ Authentication is provided by integrating API Gateway with Cognito. Cognito can 
 
 ## 🛠 Maintenance Mode
 
-Maintenance mode is used when Artemis needs to be made inaccessible to users in order to perform distruptive maintenance tasks. An example of such a task is a long-running DB migration that will lock tables. In addition to taking the system offline for users, maintenance mode also disables several backend processes that access the database.
+Maintenance mode is used when Artemis needs to be made inaccessible to users in order to perform disruptive maintenance tasks. An example of such a task is a long-running DB migration that will lock tables. In addition to taking the system offline for users, maintenance mode also disables several backend processes that access the database.
 
-Maintenance mode is controlled via Terraform. The control values are stored in variables so that it can be toggled via the CLI without having to modify the Terraform iteself. For this reason, care should be taken to coordinate with the rest of the Artemis team so that other, unrelated Terraform changes are not applied that accidentally disable maintenance mode.
+Maintenance mode is controlled via Terraform. The control values are stored in variables so that it can be toggled via the CLI without having to modify the Terraform itself. For this reason, care should be taken to coordinate with the rest of the Artemis team so that other, unrelated Terraform changes are not applied that accidentally disable maintenance mode.
 
 The variables are:
 

@@ -5,19 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "GithubRepoHealth"
 version = "1.1.0"
-dependencies = [
-    "jsonschema",
-    "pygithub",
+requires-python = ">= 3.13"
+dependencies = ["jsonschema", "pygithub"]
+
+[dependency-groups]
+dev = [
+    "pytest~=9.0",
+    "ruff==0.15.22",
+    "isort~=8.0",
 ]
 
 [project.scripts]
 repo-health = "github_repo_health.cli:main"
 
 [tool.pytest.ini_options]
-pythonpath = [
-  "src/github_repo_health"
-]
+pythonpath = ["src/github_repo_health"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
+target-version = "py313"

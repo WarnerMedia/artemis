@@ -47,6 +47,13 @@ resource "aws_api_gateway_resource" "api_v1_sbom_components_name_version_resourc
   path_part   = "{resource}"
 }
 
+# /api/v1/sbom/components/search
+resource "aws_api_gateway_resource" "api_v1_sbom_components_search" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api_v1_sbom_components.id
+  path_part   = "search"
+}
+
 # /api/v1/sbom/licenses
 resource "aws_api_gateway_resource" "api_v1_sbom_licenses" {
   rest_api_id = aws_api_gateway_rest_api.api.id
@@ -100,6 +107,16 @@ resource "aws_api_gateway_method" "api_v1_sbom_components_name_version_resource"
   rest_api_id      = aws_api_gateway_rest_api.api.id
   resource_id      = aws_api_gateway_resource.api_v1_sbom_components_name_version_resource.id
   http_method      = "ANY"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.authorizer.id
+  api_key_required = false
+}
+
+# ANY /api/v1/sbom/components/search
+resource "aws_api_gateway_method" "api_v1_sbom_components_search" {
+  rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource.api_v1_sbom_components_search.id
+  http_method      = "POST"
   authorization    = "CUSTOM"
   authorizer_id    = aws_api_gateway_authorizer.authorizer.id
   api_key_required = false
@@ -163,6 +180,16 @@ resource "aws_api_gateway_integration" "api_v1_sbom_components_name_version_reso
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_method.api_v1_sbom_components_name_version_resource.resource_id
   http_method = aws_api_gateway_method.api_v1_sbom_components_name_version_resource.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.sbom_components.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "api_v1_sbom_components_search" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_method.api_v1_sbom_components_search.resource_id
+  http_method = aws_api_gateway_method.api_v1_sbom_components_search.http_method
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"

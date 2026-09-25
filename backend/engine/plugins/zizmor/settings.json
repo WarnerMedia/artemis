@@ -1,0 +1,6 @@
+{
+    "name": "Zizmor",
+    "type": "static_analysis",
+    "image": "$ECR/artemis/minimal:latest",
+    "runner": "boxed"
+}

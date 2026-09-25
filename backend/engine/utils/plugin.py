@@ -48,6 +48,8 @@ from oci.builder import ScanImages
 
 log = Logger(__name__)
 
+DEFAULT_PLUGIN_TIMEOUT = 3600  # 1 hour timeout for plugins without an explicit timeout
+
 UI_SECRETS_TAB_INDEX = 3
 
 TEMP_VOLUME_NAME_PREFIX = "artemis-plugin-temp-"
@@ -84,6 +86,7 @@ class Result:
     debug: list
     dirty: bool = False  # Working directory potentially has been modified.
     disabled: bool = False
+    timed_out: bool = False  # Plugin exceeded its timeout.
 
 
 class PluginSettings(BaseModel):
@@ -390,17 +393,37 @@ def run_plugin(
     # container exits.
     with temporary_volume(f"{TEMP_VOLUME_NAME_PREFIX}-{plugin}") as volname:
         container_name = get_container_name()
+
+        force_remove_command = get_force_remove_command(container_name)
         plugin_command = get_plugin_command(
             scan, plugin, container_name, settings, depth, include_dev, volname, scan_images, plugin_config, services
         )
+
+        try:
+            # Force remove the plugin container, in case there were issues on a previous run that
+            # prevented it from being stopped
+            subprocess.run(
+                force_remove_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+                timeout=10,  # Normal runtime is less than a second. The timeout is just in case something goes wrong
+            )
+        except subprocess.TimeoutExpired:
+            log.error("Force remove of existing containers timed out.")
+
         try:
             # Run the plugin inside the settings.image
+            plugin_timeout = DEFAULT_PLUGIN_TIMEOUT
+            if settings.timeout is not None:
+                plugin_timeout = settings.timeout
+
             r = subprocess.run(
                 plugin_command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 check=False,
-                timeout=settings.timeout,
+                timeout=plugin_timeout,
             )
         except subprocess.TimeoutExpired:
             stop_command = get_plugin_stop_command(container_name)
@@ -423,10 +446,11 @@ def run_plugin(
                 success=False,
                 truncated=False,
                 details=[],
-                errors=[f"Plugin {settings.name} exceeded maximum runtime ({settings.timeout} seconds)."],
+                errors=[f"Plugin {settings.name} exceeded maximum runtime ({plugin_timeout} seconds)."],
                 alerts=[],
                 debug=[],
                 dirty=settings.writable,
+                timed_out=True,
             )
 
     inject_plugin_logs(r.stderr.decode("utf-8"), plugin)
@@ -865,6 +889,17 @@ def get_plugin_stop_command(container_name: str) -> list[str]:
     cmd = [
         "docker",
         "stop",
+        container_name,
+    ]
+
+    return cmd
+
+
+def get_force_remove_command(container_name: str) -> list[str]:
+    cmd = [
+        "docker",
+        "rm",
+        "-f",
         container_name,
     ]
 

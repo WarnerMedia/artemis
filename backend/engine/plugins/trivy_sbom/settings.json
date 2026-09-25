@@ -3,7 +3,7 @@
   "type": "sbom",
   "image": "$ECR/artemis/dind:latest",
   "build_images": true,
+  "docker": true,
   "enabled": true,
-  "writable": true,
-  "docker": true
+  "writable": true
 }

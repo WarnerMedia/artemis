@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Callable, TypedDict, Optional, Any
+from collections.abc import Callable
+
+from typing import TypedDict, Optional, Any
 
 
 class MetricsConfig(TypedDict):

@@ -1,5 +1,5 @@
 # pylint: disable=no-member
-from typing import Optional, Tuple, Any
+from typing import Optional, Any
 
 import requests
 from aws_lambda_powertools import Logger
@@ -196,7 +196,7 @@ class ProcessGithubRepos:
 
         return repos
 
-    def _process_query_response(self, resp: dict[str, Any]) -> Tuple[list, dict[str, Any]]:
+    def _process_query_response(self, resp: dict[str, Any]) -> tuple[list, dict[str, Any]]:
         """
         Parses the Github Query response and returns the pageInfo and a list of repositories
 
@@ -318,7 +318,7 @@ class ProcessGithubRepos:
                 tasks.append(task)
         return tasks
 
-    def _get_branch_names(self, repo: str, refs: dict, default_branch_ref) -> Tuple[list, dict]:
+    def _get_branch_names(self, repo: str, refs: dict, default_branch_ref) -> tuple[list, dict]:
         """
         Retrieves the names of branches and their corresponding commit timestamps for a repository.
 
@@ -328,7 +328,7 @@ class ProcessGithubRepos:
             default_branch_ref: The reference dict for the default branch.
 
         Returns:
-            Tuple[list, dict]: A tuple containing:
+            tuple[list, dict]: A tuple containing:
                 - A list of branch names (refs) for the given repository.
                 - A dictionary mapping each branch name to the timestamp of its last commit.
 
@@ -381,7 +381,7 @@ class ProcessGithubRepos:
         # Fall back to using the PAT
         return f"bearer {self.service_info.api_key}"
 
-    def _get_branch_details(self, branch_ref: dict) -> Tuple[Optional[str], str]:
+    def _get_branch_details(self, branch_ref: dict) -> tuple[Optional[str], str]:
         """
         Retrieves the branch name and timestamp from a dictionary
         """

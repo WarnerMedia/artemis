@@ -4,8 +4,10 @@ trivy SBOM plugin
 
 import json
 import subprocess
+import sys
 from typing import Optional
-from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_npm_locks import check_npm_package_files
+from engine.plugins.lib.trivy_common.generate_composer_locks import check_composer_package_files
 from engine.plugins.lib.sbom_common.go_installer import go_mod_download
 from engine.plugins.trivy_sbom.parser import clean_output_application_sbom
 from engine.plugins.trivy_sbom.parser import edit_application_sbom_path
@@ -75,16 +77,6 @@ def process_docker_images(images: list) -> tuple[list, list]:
     return outputs, parsed
 
 
-def build_scan_parse_images(images: dict) -> tuple[list, list]:
-    results = []
-    parsed = []
-    logger.info("Dockerfiles found: %d", images["dockerfile_count"])
-    outputs, parsed_image = process_docker_images(images["results"])
-    results.extend(outputs)
-    parsed.extend(parsed_image)
-    return results, parsed
-
-
 def main():
     logger.info("Executing Trivy SBOM")
     args = parse_args()
@@ -96,7 +88,12 @@ def main():
     errors = []
 
     # Generate Lock files (and install npm packages for license info)
-    lock_file_errors, lock_file_alerts = check_package_files(args.path, include_dev, True)
+    lock_file_errors, lock_file_alerts = check_npm_package_files(args.path, include_dev, True)
+    alerts.extend(lock_file_alerts)
+    errors.extend(lock_file_errors)
+
+    # Generate Lock files (and install composer packages for license info)
+    lock_file_errors, lock_file_alerts = check_composer_package_files(args.path, include_dev)
     alerts.extend(lock_file_alerts)
     errors.extend(lock_file_errors)
 
@@ -121,17 +118,19 @@ def main():
         parsed.extend(application_sbom_output_parsed)
 
     # Scan Images
-    image_outputs, parsed_images = build_scan_parse_images(args.images)
-    if not image_outputs:
-        logger.warning("Images SBOM output is None. Continuing.")
-    else:
-        logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
-        results.extend(image_outputs)
-        parsed.extend(parsed_images)
+    if args.images:
+        image_outputs, parsed_images = process_docker_images(args.images["results"])
+
+        if not image_outputs:
+            logger.warning("Images SBOM output is None. Continuing.")
+        else:
+            logger.info("Images SBOM generated. Success: %s", bool(image_outputs))
+            results.extend(image_outputs)
+            parsed.extend(parsed_images)
 
     # Return results
     result_parser = [results, parsed]
-    print(json.dumps({"success": not bool(results), "details": result_parser, "errors": errors, "alerts": alerts}))
+    json.dump({"success": not bool(results), "details": result_parser, "errors": errors, "alerts": alerts}, sys.stdout)
 
 
 if __name__ == "__main__":

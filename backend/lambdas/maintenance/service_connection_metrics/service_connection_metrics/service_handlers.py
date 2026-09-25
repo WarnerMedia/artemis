@@ -1,7 +1,7 @@
 from aiohttp import ClientSession
 from base64 import b64encode
 from dataclasses import dataclass
-from typing import TypedDict, Literal, Optional
+from typing import Optional
 
 from artemislib.env import REV_PROXY_DOMAIN_SUBSTRING, REV_PROXY_SECRET_HEADER
 from artemislib.github.app import GithubApp

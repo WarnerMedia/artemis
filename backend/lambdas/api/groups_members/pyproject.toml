@@ -11,9 +11,9 @@ authors = [
     { name = "WMCSO AppSec", email = "cso_appsec@warnermedia.com" }
 ]
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 classifiers = [
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,7 +23,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest~=8.3", "pytest-runner"]
+test = ["pytest~=9.0", "pytest-runner"]
 
 [project.urls]
 Homepage = "https://github.com/warnermedia/artemis/backend/lambdas/api/groups_members"

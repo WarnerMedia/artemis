@@ -1,33 +1,24 @@
-FROM alpine:3.22 AS verifier
+# We're using Alpine's /bin/sh, so disable pipefail suggestion.
+# hadolint global ignore=DL4006
 
-ARG ENRYVER
-ARG ENRYSHA
+# wget from Alpine doesn't support --progress.
+# hadolint global ignore=DL3047
+
+FROM dhi.io/alpine-base:3.22-dev AS verifier
 
 ARG GOSECVER
 ARG GOSECSHA
 
-RUN mkdir -p /enry && \
-    echo "$ENRYSHA  /enry/enry.tar.gz" > /enry_checksum.txt && \
-    wget -q -O /enry/enry.tar.gz https://github.com/go-enry/enry/releases/download/v$ENRYVER/enry-v$ENRYVER-linux-amd64.tar.gz && \
-    sha256sum -c /enry_checksum.txt && \
-    tar -xzvf /enry/enry.tar.gz -C /enry && \
-    rm /enry/enry.tar.gz && \
-    mkdir -p /gosec && \
-    echo "$GOSECSHA  /gosec/gosec.tar.gz" > /gosec_checksum.txt && \
-    wget -q -O /gosec/gosec.tar.gz https://github.com/securego/gosec/releases/download/v${GOSECVER}/gosec_${GOSECVER}_linux_amd64.tar.gz && \
-    sha256sum -c /gosec_checksum.txt && \
-    tar -xzvf /gosec/gosec.tar.gz -C /gosec && \
-    rm /gosec/gosec.tar.gz
+RUN mkdir -p /tmp/gosec && \
+    wget -O /tmp/gosec.tar.gz https://github.com/securego/gosec/releases/download/v${GOSECVER}/gosec_${GOSECVER}_linux_amd64.tar.gz && \
+    echo "$GOSECSHA  /tmp/gosec.tar.gz" | sha256sum -c - && \
+    tar -xzvf /tmp/gosec.tar.gz -C /tmp/gosec
 
 # Base image requirements:
 #   - Go toolchain (gosec)
-FROM golang:1.24.5-alpine
+FROM dhi.io/golang:1.24.13-alpine3.22
 
 ARG MAINTAINER
 LABEL maintainer=$MAINTAINER
 
-RUN mkdir -p /enry && \
-    mkdir -p /gosec
-COPY --from=verifier /enry/enry /enry
-COPY --from=verifier /gosec/gosec /gosec
-ENV PATH=/enry:/gosec:$PATH
+COPY --from=verifier /tmp/gosec/gosec /usr/local/bin/gosec

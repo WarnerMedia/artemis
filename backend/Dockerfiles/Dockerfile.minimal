@@ -1,0 +1,45 @@
+# syntax=docker/dockerfile:1
+
+# Plugin container for tools with minimal runtime dependencies
+# (i.e., no language runtimes, etc.).
+# All plugins must use the boxed runner.
+
+# We're using Alpine's /bin/sh, so disable pipefail suggestion.
+# hadolint global ignore=DL4006
+
+# wget from Alpine doesn't support --progress.
+# hadolint global ignore=DL3047
+
+FROM dhi.io/alpine-base:3.22-dev AS enry
+
+ARG ENRYVER
+ARG ENRYSHA
+
+RUN mkdir -p /tmp/enry && \
+    wget -O /tmp/enry.tar.gz https://github.com/go-enry/enry/releases/download/v$ENRYVER/enry-v$ENRYVER-linux-amd64.tar.gz && \
+    echo "$ENRYSHA  /tmp/enry.tar.gz" | sha256sum -c - && \
+    tar -xzvf /tmp/enry.tar.gz -C /tmp/enry
+
+
+# No Docker Hardened Image is available yet for Rust on Alpine,
+# so we use the non-DHI image.
+FROM rust:1.94-alpine3.22 AS zizmor
+
+# Zizmor requires make to build with jemalloc.
+RUN apk add --no-cache make=4.4.1-r3 && \
+    rm -f /var/cache/apk/*
+
+ARG ZIZMOR_VER
+
+# No static release of Zizmor is available yet, so build via Cargo.
+RUN --mount=type=cache,target=/root/.cache/cargo \
+    cargo install --target-dir /root/.cache/cargo --locked "zizmor@$ZIZMOR_VER"
+
+
+FROM dhi.io/alpine-base:3.22
+
+ARG MAINTAINER
+LABEL maintainer=$MAINTAINER
+
+COPY --from=enry /tmp/enry/enry /usr/local/bin/enry
+COPY --from=zizmor /usr/local/cargo/bin/zizmor /usr/local/bin/zizmor

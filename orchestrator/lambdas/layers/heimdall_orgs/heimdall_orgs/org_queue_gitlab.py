@@ -1,5 +1,5 @@
 # pylint: disable=no-name-in-module, no-member
-from typing import Tuple, Union
+from typing import Union
 
 import requests
 from aws_lambda_powertools import Logger
@@ -55,7 +55,7 @@ class GitlabOrgs:
 
         return org_set
 
-    def _get_all_subgroups(self, group: Tuple[str, int]):
+    def _get_all_subgroups(self, group: tuple[str, int]):
         """
         takes a gitlab group and recursively gets all associated subgroups
         """
@@ -66,7 +66,7 @@ class GitlabOrgs:
             index += 1
         return [str(subgroup["full_path"]) for subgroup in subgroups]
 
-    def _request_subgroups(self, group: Tuple[str, int]) -> list:
+    def _request_subgroups(self, group: tuple[str, int]) -> list:
         """Grabs the subgroup ids of a group if they exist.
         NOTE: subgroups can only be referenced by ID.
         """

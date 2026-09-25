@@ -55,6 +55,7 @@ verified_detectors_allowlist = [
     "GitHubOld",
     "Gitlab",
     "GoogleApiKey",
+    "GoogleGeminiAPIKey",
     "GoogleOauth2",
     "Grafana",
     "GrafanaServiceAccount",

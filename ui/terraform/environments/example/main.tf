@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    region       = "REGION_NAME"
-    bucket       = "S3_BUCKET_NAME"
-    key          = "STATE_FILE_S3_KEY"
-    use_lockfile = true
+    region         = "REGION_NAME"
+    bucket         = "S3_BUCKET_NAME"
+    key            = "STATE_FILE_S3_KEY"
+    dynamodb_table = "DYNAMO_DB_LOCK_TABLE_NAME"
   }
   required_providers {
     aws = {

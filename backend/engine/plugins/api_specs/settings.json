@@ -1,0 +1,6 @@
+{
+    "name": "API Spec Discovery",
+    "type": "inventory",
+    "image": "$ECR/artemis/python:3-latest",
+    "runner": "boxed"
+}

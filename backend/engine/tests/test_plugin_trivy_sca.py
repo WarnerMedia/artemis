@@ -5,11 +5,12 @@ import pytest
 
 from subprocess import CompletedProcess
 from unittest.mock import patch
-from oci import remover
 from engine.plugins.trivy_sca import main as Trivy
-from engine.plugins.lib.trivy_common.generate_locks import check_package_files
+from engine.plugins.lib.trivy_common.generate_npm_locks import check_npm_package_files
+from engine.plugins.lib.trivy_common.generate_composer_locks import check_composer_package_files
 from engine.plugins.lib.utils import convert_string_to_json
 from engine.plugins.lib.utils import setup_logging
+from engine.plugins.lib.node_common import NpmScanContext
 
 logger = setup_logging("trivy_sca_test")
 
@@ -18,7 +19,8 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 NODE_DIR = os.path.join(TEST_DIR, "data", "node")
 
 TEST_ROOT = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
-GENERATE_LOCKS_PREFIX = "engine.plugins.lib.trivy_common.generate_locks."
+COMPOSER_GENERATE_LOCKS_PREFIX = "engine.plugins.lib.trivy_common.generate_composer_locks."
+NPM_GENERATE_LOCKS_PREFIX = "engine.plugins.lib.trivy_common.generate_npm_locks."
 
 TEST_DATA = os.path.join(TEST_DIR, "data")
 
@@ -111,26 +113,46 @@ class TestPluginTrivySCA(unittest.TestCase):
         with open(TEST_OUTPUT) as output_file:
             self.demo_results_dict = json.load(output_file)
 
-    def test_lock_file_exists(self):
-        with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
-            mock_glob.return_value = ["/mocked/path/package.json"]
-            with patch(f"{GENERATE_LOCKS_PREFIX}handle_npmrc_creation"):
-                with patch(f"{GENERATE_LOCKS_PREFIX}os.path.exists", return_value=True):
-                    with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
-                        mock_proc.stderr = mock_proc.stdout = None
-                        mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                        actual = check_package_files("/mocked/path/", False, False)
+    def test_npm_lock_file_exists(self):
+        """When lockfile exists and npm install not requested, no errors or warnings."""
+        preflight = NpmScanContext(
+            standalone_dirs={"/mocked/path": "npm"},
+            needs_npm_generation=[],
+        )
+        with patch(f"{NPM_GENERATE_LOCKS_PREFIX}build_npm_context", return_value=preflight):
+            with patch(f"{NPM_GENERATE_LOCKS_PREFIX}handle_npmrc_creation"):
+                errors, alerts = check_npm_package_files("/mocked/path/", False, False)
+        self.assertEqual(len(errors), 0, "There should be no errors")
+        self.assertEqual(len(alerts), 0, "There should NOT be a warning of a lock file missing")
+
+    def test_composer_lock_file_exists(self):
+        with patch(f"{COMPOSER_GENERATE_LOCKS_PREFIX}glob") as mock_glob:
+            mock_glob.return_value = ["/mocked/path/composer.json"]
+            with patch(f"{COMPOSER_GENERATE_LOCKS_PREFIX}os.path.exists", return_value=True):
+                actual = check_composer_package_files("/mocked/path/", False)
         self.assertEqual(len(actual[1]), 0, "There should NOT be a warning of a lock file missing")
 
-    def test_lock_file_missing(self):
-        with patch(f"{GENERATE_LOCKS_PREFIX}glob") as mock_glob:
-            mock_glob.return_value = ["/mocked/path/package.json"]
-            with patch(f"{GENERATE_LOCKS_PREFIX}handle_npmrc_creation"):
-                with patch(f"{GENERATE_LOCKS_PREFIX}os.path.exists", return_value=False):
-                    with patch(f"{GENERATE_LOCKS_PREFIX}subprocess.run") as mock_proc:
-                        mock_proc.stderr = mock_proc.stdout = None
-                        mock_proc.return_value = CompletedProcess(args="", returncode=0)
-                        actual = check_package_files("/mocked/path/", False, False)
+    def test_npm_lock_file_missing(self):
+        """When lockfile is missing, a warning is emitted and generation is attempted."""
+        preflight = NpmScanContext(
+            standalone_dirs={"/mocked/path": None},
+            needs_npm_generation=["/mocked/path"],
+        )
+        with patch(f"{NPM_GENERATE_LOCKS_PREFIX}build_npm_context", return_value=preflight):
+            with patch(f"{NPM_GENERATE_LOCKS_PREFIX}handle_npmrc_creation"):
+                with patch(f"{NPM_GENERATE_LOCKS_PREFIX}run_npm_install") as mock_install:
+                    mock_install.return_value = CompletedProcess(args="", returncode=0)
+                    errors, alerts = check_npm_package_files("/mocked/path/", False, False)
+        self.assertEqual(len(alerts), 1, "There should be a warning of a lock file missing")
+        mock_install.assert_called_once()
+
+    def test_composer_lock_file_missing(self):
+        with patch(f"{COMPOSER_GENERATE_LOCKS_PREFIX}glob") as mock_glob:
+            mock_glob.return_value = ["/mocked/path/composer.json"]
+            with patch(f"{COMPOSER_GENERATE_LOCKS_PREFIX}os.path.exists", return_value=False):
+                # We don't want to actually generate the lock file.
+                with patch(f"{COMPOSER_GENERATE_LOCKS_PREFIX}install_package_files"):
+                    actual = check_composer_package_files("/mocked/path/", False)
         self.assertEqual(len(actual[1]), 1, "There should be a warning of a lock file missing")
 
     def test_check_output(self):
@@ -149,23 +171,19 @@ class TestPluginTrivySCA(unittest.TestCase):
 
 @pytest.mark.integtest
 class TestPluginTrivySCAIntegration(unittest.TestCase):
-    def tearDown(self) -> None:
-        for image in self.images["results"]:
-            remover.remove_docker_image(image)
-
     @pytest.mark.integtest
     def test_execute_trivy_no_files(self):
-        result = Trivy.execute_trivy_lock_scan(os.path.abspath(os.path.join(TRIVY_DATA, "no_files")))
+        result = Trivy.execute_trivy_lock_scan(os.path.abspath(os.path.join(TRIVY_DATA, "no_files")), False)
         self.assertEqual(None, result)
 
     @pytest.mark.integtest
     def test_execute_trivy_success(self):
-        result = Trivy.execute_trivy_lock_scan(TEST_ROOT)
+        result = Trivy.execute_trivy_lock_scan(TEST_ROOT, False)
         self.assertIsInstance(result, str)
 
     @pytest.mark.integtest
     def test_convert_output_success(self):
-        response = Trivy.execute_trivy_lock_scan(TEST_ROOT)
+        response = Trivy.execute_trivy_lock_scan(TEST_ROOT, False)
         result = convert_string_to_json(response, logger)
         self.assertNotIn(result, [[], None])
         self.assertIsInstance(result, list)
@@ -173,8 +191,11 @@ class TestPluginTrivySCAIntegration(unittest.TestCase):
     @pytest.mark.integtest
     def test_convert_output_output_correct(self):
         self.maxDiff = None
-        response = Trivy.execute_trivy_lock_scan(TRIVY_DATA)
+        response = Trivy.execute_trivy_lock_scan(TRIVY_DATA, False)
         result = convert_string_to_json(response, logger)
-        self.assertIsInstance(result[0]["Vulnerabilities"], list)
-        result[0]["Vulnerabilities"] = None
-        self.assertEqual(ARTEMIS_VULN, result)
+        self.assertIsNotNone(result)
+
+        if result is not None:
+            self.assertIsInstance(result[0]["Vulnerabilities"], list)
+            result[0]["Vulnerabilities"] = None
+            self.assertEqual(ARTEMIS_VULN, result)

@@ -1,11 +1,10 @@
 from http import HTTPStatus
-from typing import Type
 
 from artemisapi.response import response
 from artemisdb.artemisdb.models import UserService
 
 
-def delete(parsed_event: dict) -> Type[response]:
+def delete(parsed_event: dict) -> type[response]:
     """
     Delete a linked service for a user
     """

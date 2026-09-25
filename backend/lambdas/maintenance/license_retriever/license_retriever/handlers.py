@@ -1,6 +1,5 @@
 import asyncio
 import re
-from typing import Tuple
 
 import requests
 from django.db.models import Q
@@ -160,7 +159,7 @@ async def process_unknown_component(component, spdx_licenses: dict):
     await sync_to_async(component.save)()
 
 
-def license_lookup(license, spdx_licenses) -> Tuple[str | None, str | None]:
+def license_lookup(license, spdx_licenses) -> tuple[str | None, str | None]:
     if license in spdx_licenses:
         return license, spdx_licenses[license]
     elif license in PYPI_LICENSE_MAP:

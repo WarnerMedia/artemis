@@ -30,6 +30,10 @@ log = Logger(__name__)
 DEFAULT_POLL_WAIT = 20  # Seconds
 PRIORITY_POLL_WAIT = 5  # Seconds
 
+# Flag for enabling/disabling building of docker images. If this is disabled, args.images that gets
+# passed to plugins will be empty
+BUILD_CONTAINER_IMAGES_ENABLED = False
+
 
 def poll(queue, wait_time=DEFAULT_POLL_WAIT):
     try:
@@ -95,7 +99,7 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
                 log.info("Repo Processed")
                 engine_processor.update_scan_post_pull_repo()
 
-                if build_images:
+                if build_images and BUILD_CONTAINER_IMAGES_ENABLED:
                     repo_path = os.path.join(engine_processor.get_scan_working_dir(), "base")
                     images = _build_docker_images(repo_path, repo, ENGINE_ID, untag_images=True)
                     built = []
@@ -115,6 +119,11 @@ def process(msg, manager=None):  # pylint: disable=too-many-statements
                         )
                         debug.append(message)
                         log.warning(message)
+                elif not BUILD_CONTAINER_IMAGES_ENABLED:
+                    message = "Building container images is disabled. Contact the Artemis admins for more information."
+                    debug.append(message)
+                    log.warning(message)
+
                 # Run analysis tasks here
                 engine_processor.process_plugins(images, services)
             else:

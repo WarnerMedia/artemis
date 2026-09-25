@@ -4,7 +4,6 @@ import subprocess
 import uuid
 from copy import deepcopy
 from decimal import Decimal
-from typing import Tuple
 
 from engine.plugins.lib import utils
 from engine.plugins.lib.const import DEFAULT_PLUGIN_JAVA_HEAP_SIZE
@@ -228,7 +227,7 @@ def check_graph_coords(pkg: str, coords: dict) -> bool:
     return f"{coords.get('coordinate1')}-{coords.get('version')}" == pkg
 
 
-def library_lookup(libs: list, link: str) -> Tuple[str, str, str, str]:
+def library_lookup(libs: list, link: str) -> tuple[str, str, str, str]:
     # The link string is a reference into structure of the JSON returned by the agent. Since we're starting from
     # the "libraries" key we only need the last three parts of the path to find the object within the dictionary that
     # is being referenced.

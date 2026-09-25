@@ -43,6 +43,29 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "analyzer_files_en
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "analyzer_files_lifecycle" {
+  bucket = aws_s3_bucket.analyzer_files.id
+
+  rule {
+    id     = "expire-stage-artifacts"
+    status = "Enabled"
+
+    filter {
+      tag {
+        key   = "status"
+        value = "inactive"
+      }
+    }
+
+    expiration {
+      days = 30
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+}
 
 resource "aws_s3_bucket" "analyzer_docs" {
   bucket = "${var.app}-docs-${data.aws_caller_identity.current.account_id}"

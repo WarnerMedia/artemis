@@ -1,17 +1,16 @@
-from contextlib import contextmanager
-from glob import glob
 import os
 import secrets
 import subprocess
-from typing import Annotated
 import uuid
-
-from docker.errors import DockerException
-from pydantic import BaseModel, ConfigDict, Field
+from contextlib import contextmanager
+from glob import glob
+from typing import Annotated
 
 from artemislib.logging import Logger
+from docker.errors import DockerException
 from env import ARTEMIS_PRIVATE_DOCKER_REPOS_KEY
 from plugins.lib import utils
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
 from .remover import remove_docker_image
 
@@ -86,6 +85,18 @@ def temporary_builder(name_prefix: str):
             log.error("Failed to remove builder %s: %s", name, rm_proc.stderr.decode("utf-8"))
 
 
+class ContainerRegistry(BaseModel):
+    """Credentials for logging into a container registry (e.g. Docker Hub)."""
+
+    url: str
+    username: str
+    password: str
+    private: bool = True
+    """Whether this is a private registry."""
+    search: str | None = None
+    """Optional search string to identify whether a Dockerfile uses this registry. Only needed for private registries."""
+
+
 class ImageBuilder:
     def __init__(self, path, repo_name, ignore_prefixes, engine_id):
         """
@@ -120,7 +131,7 @@ class ImageBuilder:
         # Find and loop through all the Dockerfile* files in the path
         files = self.find_dockerfiles()
 
-        self.private_docker_repos_login(files)
+        self.docker_registries_login(files)
 
         # Perform all builds in an isolated builder so we can clean up all
         # resources after the build.
@@ -216,44 +227,44 @@ class ImageBuilder:
                 # Log the error but keep going
                 log.error(r.stderr.decode("utf-8"))
 
-    def private_docker_repos_login(self, files) -> None:
+    def docker_registries_login(self, files) -> None:
         """
-        Gets Private Docker Repo Config/Credentials from Secrets Manager and login to the Docker Repo if needed.
+        Gets container registry Config/Credentials from Secrets Manager and login to the registries if needed.
+        All public registries are logged into unconditionally to avoid rate limits on pulls.
+        Private registries are only logged into if any Dockerfiles depend on them.
         :param files: List of Dockerfiles to check
         :return: None
         """
-        # Get Artemis private docker repo configs and credentials
-        private_docker_repos = utils.get_secret_with_status(ARTEMIS_PRIVATE_DOCKER_REPOS_KEY, log)
 
-        # Convert config and credentials to json format or return if private_docker_repos status shows false
-        if private_docker_repos["status"]:
-            private_docker_repos_response = utils.convert_string_to_json(private_docker_repos["response"], log)
+        # Get Artemis container registry configs and credentials
+        registries_secret = utils.get_secret_with_status(ARTEMIS_PRIVATE_DOCKER_REPOS_KEY, log)
+
+        if registries_secret["status"]:
+            try:
+                registries = TypeAdapter(list[ContainerRegistry]).validate_json(registries_secret["response"])
+            except ValidationError as e:
+                log.error(f"Error validating private docker repos JSON: {e}")
+                return
         else:
             return
 
-        if not private_docker_repos_response:
-            # Error already logged in convert_string_to_json.
-            return
-
-        # A list of private docker repos with creds stored in Secrets Manager (at ARTEMIS_PRIVATE_DOCKER_REPOS_KEY)
-        #
-        # Structure:
-        # [
-        #   {
-        #     "url": "Docker login url",
-        #     "search": "Search string for identifying whether a Dockerfile uses this repo",
-        #     "username": "Private docker repo username",
-        #     "password": "Private docker repo password"
-        #   }
-        # ]
-        for repo in private_docker_repos_response:
-            log.info("Checking if any Dockerfiles depend on %s", repo["url"])
-            if self.docker_login_needed(files, repo["search"], repo["url"]):
-                utils.docker_login(log, repo["url"], repo["username"], repo["password"])
+        for registry in registries:
+            if registry.private:
+                if not registry.search:
+                    log.error(
+                        f"No search string provided for private container registry {registry.url}; skipping usage check in Dockerfiles."
+                    )
+                    continue
+                log.info("Checking if any Dockerfiles depend on %s", registry.url)
+                if self.private_docker_login_needed(files, registry.search, registry.url):
+                    utils.docker_login(log, registry.url, registry.username, registry.password)
+                else:
+                    log.info("No Dockerfiles depend on %s", registry.url)
             else:
-                log.info("No Dockerfiles depend on %s", repo["url"])
+                # Public registry
+                utils.docker_login(log, registry.url, registry.username, registry.password)
 
-    def docker_login_needed(self, files: list, search: str, url: str) -> bool:
+    def private_docker_login_needed(self, files: list, search: str, url: str) -> bool:
         """
         Determine if any Dockerfiles in the list depend on the private repo
         :param files: List of Dockerfiles to check

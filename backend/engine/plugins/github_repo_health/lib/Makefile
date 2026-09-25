@@ -1,15 +1,16 @@
-.PHONY: install install-dev test format update-requirements
+.PHONY: install install-dev test format
+
+UV := uv
 
 install:
-	@python -m pipenv sync
+	@${UV} sync --locked --no-dev --no-editable
 
 install-dev:
-	@python -m pipenv sync --dev
-	@pip install --editable .
+	@${UV} sync --locked
 
 test:
-	@python -m pipenv run pytest
+	@${UV} run pytest
 
 format:
-	@python -m pipenv run ruff src/ --line-length=120
-	@python -m pipenv run isort src/ --profile black
+	@${UV} run ruff check src/
+	@${UV} run isort src/ --profile black

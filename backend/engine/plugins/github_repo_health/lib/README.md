@@ -69,8 +69,8 @@ Tool for checking that github repositories are configured to meet a security bas
 ### Environment Variables
 
 `repo-health` uses environment variables for authentication and configuration.
-They can either be directly in the environment or loaded from a `.env` file if
-run through `pipenv` during development.
+They must either be exported directly or supplied during development with
+`uv run --env-file .env repo-health ...`.
 
 #### Authentication
 

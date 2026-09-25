@@ -32,6 +32,7 @@ BACKEND := ${ROOT_DIR}/../backend
 PYTHON := python3
 PIP := pip3
 TERRAFORM := terraform
+UV := uv
 
 VERSION := 1.0.0
 
@@ -62,8 +63,8 @@ HEIMDALL_UTILS_SRC = $(shell find ${HEIMDALL_UTILS_DIR} -type f -name '*.py' -o 
 HEIMDALL_REPOS_SRC = $(shell find ${HEIMDALL_REPOS_DIR} -type f -name '*.py' -o -name '*.cfg')
 
 LAMBDA_PLATFORM := $(shell tr -d '[:blank:]"' <${TERRAFORM_DIR}/environments/${ENV}/main.tf | grep -xE 'lambda_architecture=(x86_64|arm64)' | cut -d '=' -f 2 | sed 's/arm64/aarch64/g')
-LAMBDA_PYTHON_VER := 3.12.10
-LAMBDA_RUNTIME_VER := python3.12
+LAMBDA_PYTHON_VER := 3.13.14
+LAMBDA_RUNTIME_VER := python3.13
 LAMBDA_PLATFORM_FLAGS := --platform manylinux2010_$(LAMBDA_PLATFORM) --platform manylinux2014_$(LAMBDA_PLATFORM) --platform manylinux_2_24_${LAMBDA_PLATFORM}
 
 help:
@@ -77,10 +78,10 @@ help:
 
 define run-pytest
 	@echo "${INFO}Running $1"
-	export PIPENV_DONT_LOAD_ENV=1 DATADOG_ENABLED=True;\
+	export DATADOG_ENABLED=True;\
 	$2 \
-	${PYTHON} -m pipenv sync --dev; \
-	${PYTHON} -m pipenv run pytest -c pytest.ini $3 ${PYTEST_EXTRA_ARGS};
+	${UV} sync --locked; \
+	${UV} run pytest -c pytest.ini $3 ${PYTEST_EXTRA_ARGS};
 	@echo "${OK}"
 endef
 
@@ -108,8 +109,8 @@ test: style-test
 
 style-test:
 	@echo "${INFO}Running code style checks"
-	${PYTHON} -m pipenv sync --dev
-	${PYTHON} -m pipenv run ruff format --check .
+	${UV} sync --locked
+	${UV} run ruff format --check .
 #	Note: Not using TERRAFORM_DIR since we're only checking the local sources,
 #	not overrrides.
 	${TERRAFORM} fmt -check -recursive terraform
@@ -146,11 +147,11 @@ dist/lambdas/layers/heimdall_core.zip: ${HEIMDALL_ORGS_SRC} ${HEIMDALL_UTILS_SRC
 	${PIP} install --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --no-deps ${HEIMDALL_REPOS_DIR}
 
 	@echo "{INFO} Adding dependencies to Lambda Layer"
-	${PYTHON} -m pipenv requirements > ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
+	${UV} export --locked --no-dev --no-editable --no-emit-project --no-emit-local -o ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt
 	${PIP} install -r ${LAMBDA_LAYERS_BUILD_DIR}/requirements.txt --upgrade --target ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core/python --python-version ${LAMBDA_PYTHON_VER} --only-binary=:all: ${LAMBDA_PLATFORM_FLAGS}
 
 	mkdir -p ${DIST_DIR}/lambdas/layers/heimdall_core/python
-	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core; zip -r ${DIST_DIR}/lambdas/layers/heimdall_core.zip *
+	cd ${LAMBDA_LAYERS_BUILD_DIR}/heimdall_core; zip -r ${DIST_DIR}/lambdas/layers/heimdall_core.zip * -x "*/__pycache__/*"
 	@echo "${OK}"
 
 lambdas: dist/lambdas/org_queue.zip \
