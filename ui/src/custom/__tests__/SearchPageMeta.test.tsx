@@ -8,15 +8,15 @@ jest.mock("react-redux", () => ({
 	useSelector: jest.fn(),
 	useDispatch: jest.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-	...(jest.requireActual("react-router-dom") as any),
+jest.mock("react-router", () => ({
+	...(jest.requireActual("react-router") as any),
 	__esModule: true,
 	useLocation: jest.fn(),
 	useNavigate: jest.fn(),
 }));
 import { useSelector, useDispatch } from "react-redux";
 /* eslint-disable */
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import SearchPage from "pages/SearchPage";
 import {
 	mockStoreEmpty,
