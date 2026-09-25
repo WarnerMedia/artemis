@@ -2,17 +2,17 @@ import asyncio
 import re
 
 import requests
-from django.db.models import Q
-from asgiref.sync import sync_to_async
-
 from artemisdb.artemisdb.consts import ComponentType
 from artemisdb.artemisdb.models import Component, License
 from artemislib.logging import Logger
+from asgiref.sync import sync_to_async
+from django.db.models import Q
+
 from license_retriever.retrievers.gem import retrieve_gem_licenses_batch
 from license_retriever.retrievers.go import retrieve_go_licenses_batch
 from license_retriever.retrievers.npm import retrieve_npm_licenses_batch
 from license_retriever.retrievers.php import retrieve_php_licenses_batch
-from license_retriever.retrievers.pypi import retrieve_pypi_licenses_batch, PYPI_LICENSE_MAP
+from license_retriever.retrievers.pypi import PYPI_LICENSE_MAP, retrieve_pypi_licenses_batch
 
 LOG = Logger("license_retriever")
 
@@ -74,9 +74,11 @@ async def async_handler():
 
     # Report on unsupported types
     not_supported = await sync_to_async(
-        lambda: Component.objects.filter(licenses__isnull=True, component_type__isnull=False)
-        .exclude(component_type__in=list(BATCH_RETRIEVERS.keys()))
-        .count()
+        lambda: (
+            Component.objects.filter(licenses__isnull=True, component_type__isnull=False)
+            .exclude(component_type__in=list(BATCH_RETRIEVERS.keys()))
+            .count()
+        )
     )()
     LOG.info("%s components with unsupported types are missing licenses", not_supported)
 
@@ -106,7 +108,7 @@ async def process_component_type_batch(component_type: str, components: list, sp
     except Exception as e:
         LOG.error("Error processing %s batch: %s", component_type, str(e))
         # No fallback - batch processing is required
-        raise e
+        raise e  # noqa: TRY201
 
 
 async def create_and_assign_licenses(component, licenses: list, spdx_licenses: dict):
@@ -132,12 +134,10 @@ async def process_unknown_component(component, spdx_licenses: dict):
     LOG.info("Package type for %s is not known, attempting all batch retrievers", component)
 
     # Try each batch retriever type to identify the component
-    for component_type in BATCH_RETRIEVERS:
+    for component_type, batch_retriever in BATCH_RETRIEVERS.items():
         LOG.info("Trying %s batch retriever", component_type)
         try:
-            single_batch_result = await BATCH_RETRIEVERS[component_type](
-                [(component.name, component.version)], max_concurrent=1
-            )
+            single_batch_result = await batch_retriever([(component.name, component.version)], max_concurrent=1)
             package_key = f"{component.name}@{component.version}"
             licenses = single_batch_result.get(package_key, [])
 
@@ -150,7 +150,7 @@ async def process_unknown_component(component, spdx_licenses: dict):
                 await create_and_assign_licenses(component, licenses, spdx_licenses)
                 return
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             LOG.error("Error trying %s batch retriever for %s: %s", component_type, component, str(e))
 
     # Package type was not identified by any batch retriever
