@@ -3,11 +3,12 @@ terraform {
     region         = "REGION_NAME"
     bucket         = "S3_BUCKET_NAME"
     key            = "STATE_FILE_S3_KEY"
+    profile        = "AWS_PROFILE_NAME"
     dynamodb_table = "DYNAMO_DB_LOCK_TABLE_NAME"
   }
   required_providers {
     aws = {
-      version = "5.100.0"
+      version = "3.6.0"
     }
   }
 }
@@ -20,10 +21,12 @@ locals {
   app         = "artemis-ui"
   region      = "REGION_NAME"
   environment = "DEPLOYMENT_NAME"
+  profile     = "AWS_PROFILE_NAME"
 }
 
 provider "aws" {
-  region = local.region
+  region  = local.region
+  profile = local.profile
 }
 
 module "analyzer-ui" {
@@ -32,6 +35,7 @@ module "analyzer-ui" {
   app               = local.app
   environment       = local.environment
   tags              = local.tags
+  profile           = local.profile
   cloudfront_domain = "artemis-ui.example.com"
   zone_name         = "artemis.example.com"
 
